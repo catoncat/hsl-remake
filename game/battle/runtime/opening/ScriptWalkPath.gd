@@ -13,6 +13,7 @@ extends RefCounted
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
 ##   rules: provisional (breadth-first tie order up／down／left／right, nearest-reachable fallback metric)
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 
 const HARD_BLOCK := 0x4000
 const MAX_HEIGHT_STEP := 2
@@ -91,7 +92,7 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 		status = "nearest_reachable"
 		var best := -1
 		for cell in queue:
-			var distance: int = absi(cell.x - target_cell.x) + absi(cell.y - target_cell.y)
+			var distance: int = TacticalGridRules.manhattan(cell, target_cell)
 			if best < 0 or distance < best:
 				best = distance
 				end_cell = cell

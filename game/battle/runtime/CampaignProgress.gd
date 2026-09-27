@@ -59,7 +59,7 @@ static func load_campaign(path: String = "") -> Dictionary:
 		path = campaign_path
 	if not FileAccess.file_exists(path):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY or str(parsed.get("schema", "")) != "hsl_campaign.v1":
 		return {}
 	return parsed
@@ -108,7 +108,7 @@ static func save_progress(handoff: Dictionary, path: String = PROGRESS_PATH) -> 
 static func load_progress(path: String = PROGRESS_PATH) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {}
 	var record: Dictionary = parsed
@@ -268,7 +268,7 @@ static func battle_record_entries(campaign_data: Dictionary = {}) -> Array:
 		var scenario_path := str((entry as Dictionary).get("scenario", ""))
 		if scenario_path == "" or not FileAccess.file_exists(scenario_path):
 			continue
-		var scenario: Variant = JSON.parse_string(FileAccess.get_file_as_string(scenario_path))
+		var scenario: Variant = ContentPaths.read_json(scenario_path)
 		if typeof(scenario) != TYPE_DICTIONARY:
 			continue
 		var save_path := scenario_save_path(scenario)

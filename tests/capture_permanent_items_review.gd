@@ -27,7 +27,7 @@ func setup_permanent() -> void:
 	if mode != "manual":
 		scene.set_process(false)
 		var loop := run_permanent_items_tests.fixture()
-		var actor := BattlePlayLoop._unit(loop,"tina"); var ally := BattlePlayLoop._unit(loop,"companion"); var foe := BattlePlayLoop._unit(loop,"enemy026_1")
+		var actor := BattlePlayLoop.unit_ref(loop,"tina"); var ally := BattlePlayLoop.unit_ref(loop,"companion"); var foe := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 		actor["equipment"] = actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
 		actor["inventory"] = [253,253,254,255,256,227,232,0]
 		ally["inventory"] = [259,260,261,247,0,0,0,0]
@@ -81,7 +81,7 @@ func setup_permanent() -> void:
 			unit["grid_coord"] = unit["coord"]; unit["ai_home_coord"] = unit["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"]) == "","legal source terrain placement")
 		loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"tina"), "test")
+		scene.apply_loop(BattlePlayLoop.return_to_player(loop,"tina"), "test")
 		for art in scene.actors_root.get_children(): scene.actors_root.remove_child(art); art.queue_free()
 		scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(actor["coord"]); scene.set_process(true)
 	initial_state = scene.play_loop.duplicate(true)

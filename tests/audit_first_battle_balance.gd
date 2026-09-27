@@ -44,7 +44,7 @@ func _initialize() -> void:
 				elif policy != "retreat":
 					# Existing nearest/reachable ordinary AI as an explicit simple player
 					# policy; no injected health/damage and no assertion of optimal tactics.
-					battle = BattleLoopAI._ai_take_turn(battle, "leonard", rng)["loop"]
+					battle = BattleLoopAI.ai_take_turn(battle, "leonard", rng)["loop"]
 				battle = BattlePlayLoop.begin_wait_resolution(battle)
 			var player := BattlePlayLoop.unit(battle, "leonard")
 			var result := {"policy": policy, "seed": trial + 10, "outcome": battle["battle_outcome"], "turn": battle["turn"], "hp": player["hp"], "level": player["level"], "potions_used": healing, "steps": steps}

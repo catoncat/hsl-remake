@@ -107,7 +107,7 @@ func setup(loop: Dictionary, post_report: bool = false) -> void:
 	scene.settlement_controller.checkpoint_path = PATH
 	if not loop.is_empty():
 		scene.start_dev_first_control_harness()
-		BattlePlayLoop._unit(loop, "leonard")["hit_bonus_accum"] = 9
+		BattlePlayLoop.unit_ref(loop, "leonard")["hit_bonus_accum"] = 9
 		scene.apply_loop(loop, "test")
 		for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 		scene.unit_grid_coords.clear()

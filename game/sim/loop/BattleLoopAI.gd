@@ -1,7 +1,7 @@
 extends RefCounted
 ## Battle loop AI turn driving: `step_ai_turn` resolves the current queue slot (treasure
 ## hand-off, dead slot, paralysis skip, player hand-back, or one AI action) and
-## `_ai_take_turn` performs that action — the read-only preflight `_prepare_ai_turn`
+## `ai_take_turn` performs that action — the read-only preflight `prepare_ai_turn`
 ## (identity／strategy／skill validation, source target rows, approach routes, call state,
 ## skill／physical candidates: all before any RNG), then the decision in native order
 ## (wait round → self／dying／support priority → fixed-point guard → target lock → state
@@ -55,6 +55,7 @@ const AISupportPlanning = preload("res://game/sim/AISupportPlanning.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 ## Memo of `_ai_target_rows`' per-unit input validation (stamina／experience／combat), a
 ## pure function of one unit and the shared `equipment_items` block. Every AI actor
@@ -71,7 +72,7 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 	if BattleLoopRewards.loot_waiting(loop): return next
 	if str(next.get("interaction", "")) != "ai_resolving":
 		return next
-	var reward_error := BattleLoopRewards._reward_input_error(loop)
+	var reward_error := BattleLoopRewards.reward_input_error(loop)
 	if reward_error != "":
 		next["scenario_ok"] = false
 		next["scenario_error"] = reward_error
@@ -79,21 +80,21 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 		return next
 	if Treasure.awaiting_handoff(next):
 		next["treasures"]["handoff"] = {}
-		return BattlePlayLoop._advance_current_actor(next)
+		return BattlePlayLoop.advance_current_actor(next)
 	var cur: Dictionary = CoreTurnQueue.current(next.get("turn_queue", {}))
 	var actor_id := str(cur.get("id", ""))
 	if actor_id == "":
 		next["interaction"] = "idle"
 		return next
-	var actor: Dictionary = BattlePlayLoop._unit(next, actor_id)
+	var actor: Dictionary = BattlePlayLoop.unit_ref(next, actor_id)
 	if not Presence.living(actor):
-		return BattlePlayLoop._advance_current_actor(next)
+		return BattlePlayLoop.advance_current_actor(next)
 	var entry := ActionEntryRules.prepare(actor)
 	if not entry["ok"]:
 		next.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": entry["reason"]}, true)
 		return next
 	if entry["skip"]:
-		var error := BattlePlayLoop._skill_input_error(next, actor)
+		var error := BattlePlayLoop.skill_input_error(next, actor)
 		if error != "":
 			next.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": error}, true)
 			return next
@@ -103,14 +104,14 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 		next["last_ai_actions"].append(action)
 		next["selected_unit_id"] = ""
 		next["command_menu"] = {"commands": []}
-		next = BattleLoopScript._resolve_outcome(next)
+		next = BattleLoopScript.resolve_outcome(next)
 		if BattleOutcome.decided(next):
 			next["interaction"] = "battle_result"
 			return next
-		return next if not BattlePlayLoop._is_current_actor(next, actor_id) else BattlePlayLoop._advance_current_actor(next, true)
+		return next if not BattlePlayLoop.is_current_actor(next, actor_id) else BattlePlayLoop.advance_current_actor(next, true)
 	if bool(actor.get("player_commandable", false)):
-		return BattlePlayLoop._return_to_player(next, actor_id)
-	var resource_error := BattlePlayLoop._skill_input_error(next, actor)
+		return BattlePlayLoop.return_to_player(next, actor_id)
+	var resource_error := BattlePlayLoop.skill_input_error(next, actor)
 	if resource_error != "":
 		next["scenario_ok"] = false
 		next["scenario_error"] = resource_error
@@ -133,27 +134,27 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 	if int(next.get("last_combat", {}).get("sequence", 0)) > int(loop.get("last_combat", {}).get("sequence", 0)):
 		next["last_attack"] = next["last_combat"].duplicate(true)
 		next["action_attacker_id"] = actor_id
-	next = BattleLoopScript._resolve_outcome(next)
+	next = BattleLoopScript.resolve_outcome(next)
 	if BattleOutcome.decided(next):
 		next["interaction"] = "battle_result"
 		return next
-	return next if not BattlePlayLoop._is_current_actor(next, actor_id) else BattlePlayLoop._advance_current_actor(next)
+	return next if not BattlePlayLoop.is_current_actor(next, actor_id) else BattlePlayLoop.advance_current_actor(next)
 
 
-static func _ai_take_turn(loop: Dictionary, actor_id: String, rng: Variant = null) -> Dictionary:
+static func ai_take_turn(loop: Dictionary, actor_id: String, rng: Variant = null) -> Dictionary:
 	return _ai_take_owned_turn(BattlePlayLoop.copy(loop), loop, actor_id, rng)
 
 
-## `_ai_take_turn` on `next`, a loop the caller owns and lets the turn write in place;
+## `ai_take_turn` on `next`, a loop the caller owns and lets the turn write in place;
 ## `loop` holds the state `next` had on entry and is what a rejected step copies.
-## `skill_inputs_checked`: the caller has just found `BattlePlayLoop._skill_input_error` empty for
+## `skill_inputs_checked`: the caller has just found `BattlePlayLoop.skill_input_error` empty for
 ## this actor on this state (`step_ai_turn`), so the preflight does not run it again.
 static func _ai_take_owned_turn(next: Dictionary, loop: Dictionary, actor_id: String, rng: Variant = null, skill_inputs_checked: bool = false) -> Dictionary:
-	var actor: Dictionary = BattlePlayLoop._unit(next, actor_id)
-	if _idle_without_strategy(next, actor):
+	var actor: Dictionary = BattlePlayLoop.unit_ref(next, actor_id)
+	if idle_without_strategy(next, actor):
 		return {"loop": next, "action": {"actor_id": actor_id, "kind": "wait", "wait_reason": "no_selectable_target",
 			"from": actor["coord"], "to": actor["coord"], "path": [], "source": "undeclared_ai_empty_target_scan"}}
-	var prepared := _prepare_ai_turn(next, actor_id, skill_inputs_checked)
+	var prepared := prepare_ai_turn(next, actor_id, skill_inputs_checked)
 	if not prepared["ok"]:
 		next["scenario_ok"] = false
 		next["scenario_error"] = prepared["reason"]
@@ -181,7 +182,7 @@ static func _ai_take_owned_turn(next: Dictionary, loop: Dictionary, actor_id: St
 ## native scan, provisional). A PLAYERS no_attack row without a strategy (level 18's door 100,
 ## the level-12／26 hull pieces 101) waits too, hostile units or not: it has no attack to plan.
 ## With any hostile unit alive any other missing strategy still fails.
-static func _idle_without_strategy(loop: Dictionary, actor: Dictionary) -> bool:
+static func idle_without_strategy(loop: Dictionary, actor: Dictionary) -> bool:
 	var declared: Dictionary = loop.get("ai_profiles", {}).get("actors", {}).get(str(actor.get("actor_id", "")), {})
 	if declared.is_empty() or (declared.get("missing_required", []) as Array).is_empty():
 		return false
@@ -237,18 +238,18 @@ static func _ai_priority_action(loop: Dictionary, next: Dictionary, turn: Dictio
 	turn["priority"] = priority
 	if priority["kind"] == "use_item":
 		var slot := int(priority["item_slot"])
-		var effect := BattleLoopInventory._resolve_item_use(next, actor_id, actor_id, str(int(actor["inventory"][slot])), slot)
+		var effect := BattleLoopInventory.resolve_item_use(next, actor_id, actor_id, str(int(actor["inventory"][slot])), slot)
 		if effect.is_empty(): return _ai_rejected_step(loop, "prepared_ai_item_changed")
 		action.merge({"kind": "use_item", "target_id": actor_id, "item_use": effect}, true)
 		return _finish_ai_call(next, actor_id, action, prepared, turn["adoption"])
 	if priority["kind"] in ["self_skill", "ally_skill"]:
-		action = _execute_ai_skill_choice(next, actor_id, priority["intent"], turn["source"])
+		action = execute_ai_skill_choice(next, actor_id, priority["intent"], turn["source"])
 		if action.is_empty(): return _ai_rejected_step(loop, "prepared_ai_support_changed")
 		action["ai_decision"] = decision
 		action["ai_skill_decision"] = priority["self_skill_decision"] if priority["kind"] == "self_skill" else priority["support_decision"]
 		return _finish_ai_call(next, actor_id, action, prepared, turn["adoption"])
 	if priority["kind"] == "ally_item":
-		action = _execute_ai_support_item(next,actor_id,priority["intent"])
+		action = execute_ai_support_item(next,actor_id,priority["intent"])
 		if action.is_empty(): return _ai_rejected_step(loop,"prepared_ai_support_item_changed")
 		action["ai_decision"] = decision
 		action["ai_support_decision"] = priority["support_decision"]
@@ -271,7 +272,7 @@ static func _ai_lock_check(_loop: Dictionary, _next: Dictionary, turn: Dictionar
 	var decision: Dictionary = turn["decision"]
 	var draws: Array = []
 	var roll := int(priority.get("lock_roll", -1))
-	if roll < 1: roll = AIDecisionRules._draw(99, turn["source"], draws) + 1
+	if roll < 1: roll = AIDecisionRules.recorded_draw(99, turn["source"], draws) + 1
 	decision["lock_check"] = {"roll": roll, "threshold": prepared["profile"]["ai_lock"], "draws": draws}
 	if roll > int(prepared["profile"]["ai_lock"]):
 		var replacement := AIDecisionRules.select_registered_target(prepared["rows"], prepared["registry"], prepared["owner_index"], prepared["profile"], int(turn["actor"]["move_point"]), turn["source"])
@@ -314,9 +315,9 @@ static func _ai_fixed_guard(_loop: Dictionary, next: Dictionary, turn: Dictionar
 	action["wait_reason"] = "no_valid_action"
 	if actor["coord"] == actor["ai_home_coord"]:
 		if bool(actor.get("ai_fixed_point_pending", false)):
-			BattlePlayLoop._unit(next, actor_id)["ai_fixed_point_pending"] = false
+			BattlePlayLoop.unit_ref(next, actor_id)["ai_fixed_point_pending"] = false
 			# The release writes the live ai_fixed to 0, whichever word last set it.
-			BattlePlayLoop._unit(next, actor_id).erase("ai_fixed_radius")
+			BattlePlayLoop.unit_ref(next, actor_id).erase("ai_fixed_radius")
 			action["wait_reason"] = "fixed_point_reached"
 	else:
 		var approach := AINavigationRules.approach_home(next, actor, prepared["envelope"], turn["source"])
@@ -324,7 +325,7 @@ static func _ai_fixed_guard(_loop: Dictionary, next: Dictionary, turn: Dictionar
 		if approach["path"].size() > 1:
 			action.merge({"to": approach["to"], "path": approach["path"], "cost": approach["cost"], "goal": approach["goal"], "route_cost": approach["route_cost"]}, true)
 			action.merge({"kind": "move", "purpose": "return_home"}, true)
-			BattlePlayLoop._set_unit_coord(next, actor_id, approach["to"])
+			BattlePlayLoop.set_unit_coord(next, actor_id, approach["to"])
 	return _finish_ai_call(next, actor_id, action, prepared, turn["adoption"])
 
 
@@ -428,16 +429,16 @@ static func _ai_side_walk(next: Dictionary, turn: Dictionary) -> Dictionary:
 	if not step["ok"]: return {}
 	var near_draws: Array = []
 	var mask := AINavigationRules.blocker_mask(AINavigationRules.side_word(actor))
-	var pick := AINavigationRules._nearest_stoppable(step["reachable_by_coord"].keys(), first, origin, turn["source"], near_draws, AINavigationRules.neighbour_words(next), mask, next["map_size"])
+	var pick := AINavigationRules.nearest_stoppable(step["reachable_by_coord"].keys(), first, origin, turn["source"], near_draws, AINavigationRules.neighbour_words(next), mask, next["map_size"])
 	receipt["near_draws"] = near_draws
 	if pick.is_empty() or not routes.has(pick["cell"]): return {}
 	var destination: Vector2i = pick["cell"]
 	receipt["to"] = destination
 	var target: Dictionary = next["units"][int(turn["target_index"])]
-	BattlePlayLoop._set_unit_coord(next, actor_id, destination)
+	BattlePlayLoop.set_unit_coord(next, actor_id, destination)
 	var terrain: Dictionary = prepared.get("weapon_terrain", {})
 	var in_range := false
-	if not terrain.is_empty(): in_range = AINavigationRules.target_in_range(next, BattlePlayLoop._unit(next, actor_id), target, terrain)
+	if not terrain.is_empty(): in_range = AINavigationRules.target_in_range(next, BattlePlayLoop.unit_ref(next, actor_id), target, terrain)
 	else:
 		for offset in BattlePlayLoop.weapon_pattern(next, actor)["offsets"]:
 			for point in Footprint.cells(target):
@@ -450,7 +451,7 @@ static func _ai_side_walk(next: Dictionary, turn: Dictionary) -> Dictionary:
 			"kind": "move", "toward": str(target["id"]), "purpose": "side_walk"}, true)
 		return _finish_ai_call(next, actor_id, action, prepared, turn["adoption"])
 	# Settlement draws from the loop's damage stream (0x42c780), not the decision source.
-	var strike := BattleLoopCombat._resolve_exchange(next, actor_id, target["id"], null)
+	var strike := BattleLoopCombat.resolve_exchange(next, actor_id, target["id"], null)
 	strike.merge({"actor_id": actor_id, "target_id": target["id"], "to": destination, "path": routes[destination]["path"],
 		"kind": "move_then_attack", "purpose": "side_walk", "ai_decision": decision}, true)
 	return _finish_ai_call(next, actor_id, strike, prepared, turn["adoption"])
@@ -491,9 +492,9 @@ static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dicti
 	var station := AINavigationRules.attack_station(choice, origin, foes_adjacent, turn["source"])
 	decision["attack_station"] = {"to": station["to"], "reason": station["reason"], "order": station["order"], "draws": station["draws"], "foes_adjacent": foes_adjacent, "roll": station["roll"], "source": "0x40d8b0 / 0x413390 / 0x440b2c state 0xb sub 0"}
 	var destination: Vector2i = station["to"]
-	BattlePlayLoop._set_unit_coord(next, actor_id, destination)
+	BattlePlayLoop.set_unit_coord(next, actor_id, destination)
 	var terrain: Dictionary = turn["prepared"].get("weapon_terrain", {})
-	if not terrain.is_empty() and not AINavigationRules.target_in_range(next, BattlePlayLoop._unit(next, actor_id), target, terrain):
+	if not terrain.is_empty() and not AINavigationRules.target_in_range(next, BattlePlayLoop.unit_ref(next, actor_id), target, terrain):
 		decision["attack_station"]["arrival_in_range"] = false
 		var missed: Dictionary = turn["action"]
 		missed["wait_reason"] = "station_out_of_range"
@@ -502,7 +503,7 @@ static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dicti
 				"kind": "move", "toward": str(target["id"]), "purpose": "attack_station"}, true)
 		return _finish_ai_call(next, actor_id, missed, turn["prepared"], turn["adoption"])
 	# Settlement draws from the loop's damage stream (0x42c780), not the decision source.
-	var action := BattleLoopCombat._resolve_exchange(next, actor_id, target["id"], null)
+	var action := BattleLoopCombat.resolve_exchange(next, actor_id, target["id"], null)
 	action.merge({"actor_id": actor_id, "target_id": target["id"], "to": destination,
 		"path": [] if destination == origin else routes[destination]["path"],
 		"kind": "attack" if destination == origin else "move_then_attack", "ai_decision": decision}, true)
@@ -520,7 +521,7 @@ static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictiona
 	if not decision.has("skill_attempts"): decision["skill_attempts"] = []
 	decision["skill_attempts"].append(selected_skill["decision"])
 	if selected_skill["intent"].is_empty(): return {}
-	var action := _execute_ai_skill_choice(next, turn["actor_id"], selected_skill["intent"], turn["source"])
+	var action := execute_ai_skill_choice(next, turn["actor_id"], selected_skill["intent"], turn["source"])
 	if action.is_empty(): return _ai_rejected_step(loop, "prepared_ai_skill_changed")
 	action["ai_skill_decision"] = selected_skill["decision"]
 	action["ai_decision"] = decision
@@ -544,14 +545,14 @@ static func _ai_pursuit(next: Dictionary, turn: Dictionary) -> Dictionary:
 	if not route.is_empty() and bool(turn["actor"].get("no_attack", false)):
 		var advance := AINavigationRules.advance_path(turn["actor"], route)
 		if advance["path"].size() > 1:
-			BattlePlayLoop._set_unit_coord(next, actor_id, advance["to"])
+			BattlePlayLoop.set_unit_coord(next, actor_id, advance["to"])
 			action.merge(advance, true)
 			action.merge({"kind": "move", "toward": str(target["id"]), "purpose": "pursuit"}, true)
 	elif armed:
 		var approach := AINavigationRules.approach_point(next, turn["actor"], turn["prepared"]["envelope"], target["coord"], turn["source"])
 		turn["decision"]["pursuit_approach"] = {"goal": approach["goal"], "refinements": approach["refinements"], "draws": approach["draws"], "reason": approach["reason"], "source": "0x440d5c / 0x4111a0 / 0x411080 / 0x413740"}
 		if approach["path"].size() > 1:
-			BattlePlayLoop._set_unit_coord(next, actor_id, approach["to"])
+			BattlePlayLoop.set_unit_coord(next, actor_id, approach["to"])
 			action.merge({"to": approach["to"], "path": approach["path"], "cost": approach["cost"], "goal": approach["goal"], "route_cost": approach["route_cost"]}, true)
 			action.merge({"kind": "move", "toward": str(target["id"]), "purpose": "pursuit"}, true)
 	return _finish_ai_call(next, actor_id, action, turn["prepared"], turn["adoption"])
@@ -563,26 +564,26 @@ static func _ai_rejected_step(loop: Dictionary, reason: String) -> Dictionary:
 	return {"loop": next, "action": {}}
 
 
-static func _execute_ai_support_item(loop: Dictionary, actor_id: String, intent: Dictionary) -> Dictionary:
-	var actor := BattlePlayLoop._unit(loop,actor_id)
-	var target := BattlePlayLoop._unit(loop,intent["target_id"])
+static func execute_ai_support_item(loop: Dictionary, actor_id: String, intent: Dictionary) -> Dictionary:
+	var actor := BattlePlayLoop.unit_ref(loop,actor_id)
+	var target := BattlePlayLoop.unit_ref(loop,intent["target_id"])
 	if actor.get("battle_actor_role") not in SkillTargetRules.ROLES or target.get("battle_actor_role") not in SkillTargetRules.ROLES: return {}
-	if not SkillTargetRules._living(actor) or not SkillTargetRules._living(target) or BattlePlayLoop._are_enemies(actor,target): return {}
+	if not Presence.living(actor) or not Presence.living(target) or BattlePlayLoop.are_enemies(actor,target): return {}
 	if StatusEffectRules.input_error(actor) != "" or StatusEffectRules.paralyzed(actor): return {}
 	var origin: Vector2i = actor["coord"]
 	var destination: Vector2i = intent["destination"]
 	if Footprint.distance(actor,target,destination) > 1: return {}
 	var path := BattlePlayLoop.movement_path(loop,actor_id,destination) if destination != origin else []
 	if destination != origin and (path.is_empty() or path.back() != destination): return {}
-	var effect := BattleLoopInventory._resolve_item_use(loop,actor_id,target["id"],intent["item_code"],int(intent["item_slot"]))
+	var effect := BattleLoopInventory.resolve_item_use(loop,actor_id,target["id"],intent["item_code"],int(intent["item_slot"]))
 	if effect.is_empty(): return {}
-	BattlePlayLoop._set_unit_coord(loop,actor_id,destination)
+	BattlePlayLoop.set_unit_coord(loop,actor_id,destination)
 	return {"actor_id":actor_id,"target_id":target["id"],"kind":"use_item" if destination == origin else "move_then_item",
 		"to":destination,"path":path,"item_use":effect}
 
 
 static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Dictionary, rng: Variant) -> Dictionary:
-	var actor := BattlePlayLoop._unit(loop, actor_id)
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	var support_roll := -1
 	var attempted := (2 if int(prepared["healing_slot"]) < 0 and prepared["self_support"]["healing"].is_empty() else 0) | (1 if prepared["opportunity_ids"].is_empty() else 0)
 	var result := {"kind": "ordinary", "index": -1, "checks": [], "scans": [],
@@ -632,7 +633,7 @@ static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Di
 ## here). `to`／`cost` summarise it before the draw — the actor's own cell when it can
 ## already hit the target, else the first collected station; the walk target is settled
 ## at commit by AINavigationRules.attack_station.
-static func _ai_physical_choice(loop: Dictionary, actor: Dictionary, target: Dictionary, envelope: Dictionary, terrain: Variant = null) -> Dictionary:
+static func ai_physical_choice(loop: Dictionary, actor: Dictionary, target: Dictionary, envelope: Dictionary, terrain: Variant = null) -> Dictionary:
 	if bool(actor.get("no_attack", false)): return {}
 	var pattern := BattlePlayLoop.weapon_pattern(loop, actor)
 	if not pattern["ok"]: return {}
@@ -648,23 +649,23 @@ static func _ai_physical_choice(loop: Dictionary, actor: Dictionary, target: Dic
 static func _finish_ai_call(loop: Dictionary, actor_id: String, action: Dictionary, prepared: Dictionary, adoption: Dictionary) -> Dictionary:
 	# Publish call changes only with a settled action. Failed preflight cannot
 	# consume a call or expose half a broadcast to the next actor.
-	if adoption["consumed"]: BattlePlayLoop._unit(loop, actor_id)["ai_call_target_id"] = ""
-	var actor := BattlePlayLoop._unit(loop, actor_id)
+	if adoption["consumed"]: BattlePlayLoop.unit_ref(loop, actor_id)["ai_call_target_id"] = ""
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	if prepared.has("navigation_selection"):
 		actor["ai_wait_remaining"] = prepared["navigation_selection"]["wait_remaining"]
 		actor["ai_target_id"] = str(loop["units"][int(adoption["index"])]["id"]) if int(adoption["index"]) >= 0 else ""
 	if adoption["broadcast"]:
 		var target_id: String = loop["units"][int(adoption.get("broadcast_index", adoption["index"]))]["id"]
 		for recipient_id in prepared["call"]["recipient_ids"]:
-			BattlePlayLoop._unit(loop, recipient_id)["ai_call_target_id"] = target_id
-	_prune_ai_calls(loop)
+			BattlePlayLoop.unit_ref(loop, recipient_id)["ai_call_target_id"] = target_id
+	prune_ai_calls(loop)
 	return {"loop": loop, "action": action}
 
 
-static func _prune_ai_calls(loop: Dictionary) -> void:
+static func prune_ai_calls(loop: Dictionary) -> void:
 	# Stable-ID cleanup is remake lifecycle policy, not a claim about native slot
 	# reuse. It runs after death, skill settlement, script departure and outcome.
-	# `by_id` is `BattlePlayLoop._unit` for every id at once (first unit with that id); the
+	# `by_id` is `BattlePlayLoop.unit_ref` for every id at once (first unit with that id); the
 	# cleanup rewrites only the two target fields, never an id.
 	var by_id := {}
 	for unit in loop["units"]:
@@ -678,13 +679,13 @@ static func _prune_ai_calls(loop: Dictionary) -> void:
 			actor["ai_target_id"] = ""
 			continue
 		var target: Dictionary = by_id.get(str(actor["ai_call_target_id"]), {})
-		if not Presence.living(target) or not BattlePlayLoop._are_enemies(actor, target):
+		if not Presence.living(target) or not BattlePlayLoop.are_enemies(actor, target):
 			actor["ai_call_target_id"] = ""
 		var held: Dictionary = by_id.get(str(actor.get("ai_target_id", "")), {})
-		if held.is_empty() or not SkillTargetRules._living(held) or not BattlePlayLoop._are_enemies(actor, held): actor["ai_target_id"] = ""
+		if held.is_empty() or not Presence.living(held) or not BattlePlayLoop.are_enemies(actor, held): actor["ai_target_id"] = ""
 
 
-static func _prepare_ai_turn(loop: Dictionary, actor_id: String, skill_inputs_checked: bool = false) -> Dictionary:
+static func prepare_ai_turn(loop: Dictionary, actor_id: String, skill_inputs_checked: bool = false) -> Dictionary:
 	# Read-only preflight across eligible source targets; all failures precede RNG.
 	# Each phase fills `work` (the intermediates below) or returns the failing receipt
 	# unchanged; the accepted preparation is assembled last in one fixed key order.
@@ -702,13 +703,13 @@ static func _prepare_ai_turn(loop: Dictionary, actor_id: String, skill_inputs_ch
 ## Actor identity, source strategy, skill／status／equipment inputs, the first owned
 ## healing medicine, unit identities and the live near-range budget.
 static func _ai_preflight_actor(loop: Dictionary, actor_id: String, work: Dictionary) -> Dictionary:
-	var actor := BattlePlayLoop._unit(loop, actor_id)
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	if not Presence.living(actor): return {"ok": false, "reason": "ai_actor_unavailable"}
 	var declared: Dictionary = loop.get("ai_profiles", {}).get("actors", {}).get(str(actor.get("actor_id", "")), {})
 	if declared.is_empty() or not declared.get("missing_required", ["unknown"]).is_empty(): return {"ok": false, "reason": "missing_ai_strategy"}
 	var profile: Dictionary = AINavigationRules.instance_profile(actor, declared["profile"])
 	var error := AIDecisionRules.profile_error(profile)
-	if error == "" and not work.get("skill_inputs_checked", false): error = BattlePlayLoop._skill_input_error(loop, actor)
+	if error == "" and not work.get("skill_inputs_checked", false): error = BattlePlayLoop.skill_input_error(loop, actor)
 	if error == "": error = AIPriorityRules.profile_error(profile)
 	if error == "": error = AINavigationRules.profile_error(profile)
 	if error == "": error = AINavigationRules.state_error(actor, int(profile["ai_fixed"]))
@@ -729,7 +730,7 @@ static func _ai_preflight_actor(loop: Dictionary, actor_id: String, work: Dictio
 		if not unit.get("ai_call_target_id") is String:
 			return {"ok": false, "reason": "invalid_ai_call_target_id"}
 		identities[unit["id"]] = true
-	if SkillResourceRules._integer(actor.get("move_point")) < 0 or int(actor["move_point"]) > 512:
+	if Values.non_negative_int(actor.get("move_point")) < 0 or int(actor["move_point"]) > 512:
 		return {"ok": false, "reason": "invalid_ai_near_range"}
 	# `healing_index` is the registered slot the ally-support planner reads; `healing_slot`
 	# is the self-use slot, cleared when the medicine has no effect on the actor.
@@ -751,7 +752,7 @@ static func _ai_target_rows(loop: Dictionary, actor_id: String, work: Dictionary
 		if not Presence.living(unit):
 			rows.append(null)
 			continue
-		if not unit.get("coord") is Vector2i or not SkillTargetRules._inside(unit["coord"], loop["map_size"]):
+		if not unit.get("coord") is Vector2i or not SkillTargetRules.inside(unit["coord"], loop["map_size"]):
 			# No AI branch reads a living unit standing outside the map; name it instead of
 			# letting the row kernel report the current actor's turn as the fault.
 			return {"ok": false, "reason": "ai_unit_off_map:" + str(unit["id"])}
@@ -768,7 +769,7 @@ static func _ai_target_rows(loop: Dictionary, actor_id: String, work: Dictionary
 		# only then falls back to the previous candidate (AIDecisionRules.select_target).
 		row["excluded"] = row["removed"]
 		rows.append(row)
-		if str(unit["id"]) != actor_id and not row["removed"] and BattlePlayLoop._are_enemies(actor, unit): foes.append(unit)
+		if str(unit["id"]) != actor_id and not row["removed"] and BattlePlayLoop.are_enemies(actor, unit): foes.append(unit)
 	var error := AIPriorityRules.scan_error(rows, owner_index, int(profile["find_range"]), int(profile["find_no_id"]))
 	if error != "": return {"ok": false, "reason": error}
 	# The scans walk the object array 0x4c34c0, not the roster (CoreTurnQueue.registry_layout).
@@ -810,7 +811,7 @@ static func _ai_approach_routes(loop: Dictionary, _actor_id: String, work: Dicti
 	# One traversal context (map tables, occupancy) serves this turn's full-map flood and
 	# the movement envelope of `_ai_action_candidates`; a rejected one is left to each
 	# flood to prepare and report in its own order.
-	var traversal := BattlePlayLoop._traversal_context(loop, actor, loop["units"])
+	var traversal := BattlePlayLoop.traversal_context(loop, actor, loop["units"])
 	if not traversal["ok"]: traversal = {}
 	# The goal cells do not depend on the flood, so they are known before it and the flood
 	# builds routes to them alone; a goal failure still reports after a flood failure.
@@ -831,7 +832,7 @@ static func _ai_approach_routes(loop: Dictionary, _actor_id: String, work: Dicti
 	var candidate_filters := {"living_foes": foes.size(), "without_approach": 0, "guard_excluded": 0,
 		"unarmed": int(actor.get("weapon_code", 0)) == 0 or bool(actor.get("no_attack", false))}
 	for index in range(rows.size()):
-		if rows[index] == null or not BattlePlayLoop._are_enemies(actor, loop["units"][index]): continue
+		if rows[index] == null or not BattlePlayLoop.are_enemies(actor, loop["units"][index]): continue
 		var foe_id: String = loop["units"][index]["id"]
 		if not approaches.has(foe_id): candidate_filters["without_approach"] += 1
 		if not AINavigationRules.guard_allows(actor, loop["units"][index], profile):
@@ -855,7 +856,7 @@ static func _ai_call_state(loop: Dictionary, _actor_id: String, work: Dictionary
 	for index in range(loop["units"].size()):
 		if loop["units"][index]["id"] == pending_id:
 			pending_index = index
-			pending_eligible = rows[index] != null and not rows[index]["removed"] and BattlePlayLoop._are_enemies(actor, loop["units"][index])
+			pending_eligible = rows[index] != null and not rows[index]["removed"] and BattlePlayLoop.are_enemies(actor, loop["units"][index])
 	var call_recipient_ids: Array = []
 	if int(profile["ai_call_range"]) > 0:
 		var broadcast := AICallRules.recipients(rows, work["owner_index"], int(profile["ai_call_range"]))
@@ -883,7 +884,7 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 		skill_foes.append(loop["units"][work["pending_index"]])
 	# One movement envelope serves both skill channels, the ally support plan and the
 	# physical choices: the same read-only query over the same board.
-	var envelope := BattlePlayLoop._movement_envelope(loop, actor_id, work["traversal"])
+	var envelope := BattlePlayLoop.movement_envelope(loop, actor_id, work["traversal"])
 	var skills := {}
 	var offensive_skills := {}
 	var any_skills := {}
@@ -904,7 +905,7 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 		if not station_foes.has(foe): station_foes.append(foe)
 	var terrain := AINavigationRules.weapon_terrain(loop, actor, BattlePlayLoop.weapon_pattern(loop, actor))
 	for foe in station_foes:
-		var choice := _ai_physical_choice(loop, actor, foe, envelope, terrain)
+		var choice := ai_physical_choice(loop, actor, foe, envelope, terrain)
 		if not choice.is_empty(): physical[foe["id"]] = choice
 	var opportunity_ids: Array = []
 	for foe in square_foes:
@@ -915,15 +916,15 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 	return {}
 
 
-static func _ai_skill_candidates(loop: Dictionary, actor_id: String, foes: Array, channel: String) -> Dictionary:
-	var actor := BattlePlayLoop._unit(loop, actor_id)
-	var error := BattlePlayLoop._skill_input_error(loop, actor)
+static func ai_skill_candidates(loop: Dictionary, actor_id: String, foes: Array, channel: String) -> Dictionary:
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
+	var error := BattlePlayLoop.skill_input_error(loop, actor)
 	if error != "": return {"ok": false, "reason": error}
-	return _ai_skill_plans(loop, actor, foes, channel, BattlePlayLoop._movement_envelope(loop, actor_id))
+	return _ai_skill_plans(loop, actor, foes, channel, BattlePlayLoop.movement_envelope(loop, actor_id))
 
 
 ## One channel's skill plans over the actor's current movement envelope, without
-## `_ai_skill_candidates`' input check: `_ai_action_candidates` runs after
+## `ai_skill_candidates`' input check: `_ai_action_candidates` runs after
 ## `_ai_preflight_actor` checked the same actor's skill inputs on the same read-only loop.
 static func _ai_skill_plans(loop: Dictionary, actor: Dictionary, foes: Array, channel: String, envelope: Dictionary) -> Dictionary:
 	var fields_by_id := {}
@@ -933,8 +934,8 @@ static func _ai_skill_plans(loop: Dictionary, actor: Dictionary, foes: Array, ch
 	return AISkillPlanning.prepare(loop, actor, foes, channel, fields_by_id, envelope)
 
 
-static func _try_skill_turn(loop: Dictionary, actor_id: String, foes: Array, rng: Variant, channel: String = "magic") -> Dictionary:
-	var prepared := _ai_skill_candidates(loop, actor_id, foes, channel)
+static func try_skill_turn(loop: Dictionary, actor_id: String, foes: Array, rng: Variant, channel: String = "magic") -> Dictionary:
+	var prepared := ai_skill_candidates(loop, actor_id, foes, channel)
 	if not prepared["ok"]: return {"kind": "invalid_skill_input", "reason": prepared["reason"]}
 	var choice := {}
 	for target in prepared["targets"].values():
@@ -943,14 +944,14 @@ static func _try_skill_turn(loop: Dictionary, actor_id: String, foes: Array, rng
 	var source: Variant = rng if rng != null else GlobalRandomStream.loop_source(loop)
 	var selected := AISkillPlanning.choose(choice, source)
 	if selected["intent"].is_empty(): return {}
-	var action := _execute_ai_skill_choice(loop, actor_id, selected["intent"], source)
+	var action := execute_ai_skill_choice(loop, actor_id, selected["intent"], source)
 	if not action.is_empty(): action["ai_skill_decision"] = selected["decision"]
 	return action
 
 
-static func _execute_ai_skill_choice(loop: Dictionary, actor_id: String, choice: Dictionary, rng: Variant) -> Dictionary:
+static func execute_ai_skill_choice(loop: Dictionary, actor_id: String, choice: Dictionary, rng: Variant) -> Dictionary:
 	var source: Variant = rng if rng != null else GlobalRandomStream.loop_source(loop)
-	var origin: Vector2i = BattlePlayLoop._unit(loop, actor_id)["coord"]
+	var origin: Vector2i = BattlePlayLoop.unit_ref(loop, actor_id)["coord"]
 	var destination: Vector2i = choice["destination"]
 	var target_id: String = choice["target_id"]
 	var path := BattlePlayLoop.movement_path(loop, actor_id, destination) if destination != origin else []
@@ -958,7 +959,7 @@ static func _execute_ai_skill_choice(loop: Dictionary, actor_id: String, choice:
 	var key: String = choice["skill_id"]
 	var fields := BattlePlayLoop.skill_fields(loop, key)
 	# Settlement draws from the loop's damage stream (0x42c780), not the decision source.
-	var strike := BattleLoopCombat._resolve_skill(loop, actor_id, target_id, key, fields, destination, null, choice.get("cast_center"))
+	var strike := BattleLoopCombat.resolve_skill(loop, actor_id, target_id, key, fields, destination, null, choice.get("cast_center"))
 	if strike.is_empty():
 		return {}
 	strike.merge({"actor_id": actor_id, "target_id": target_id, "kind": "attack" if destination == origin else "move_then_attack", "to": destination, "path": path}, true)

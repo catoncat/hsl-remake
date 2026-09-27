@@ -526,7 +526,7 @@ static func arg(args: Array, index: int, default: String = "") -> String:
 
 static func int_arg(args: Array, index: int, default: int = 0) -> int:
 	## Script argument `index` when it is an integer literal; `default` when missing or not
-	## an integer (same contract as TownEventRules._int_arg).
+	## an integer (same contract as TownEventRules.int_arg).
 	var value := arg(args, index)
 	return int(value) if value.is_valid_int() else default
 

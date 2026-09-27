@@ -20,6 +20,7 @@ const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const MOVE_ABSOLUTE := ["actWalk", "actWalkWait"]
 const MOVE_RELATIVE := ["actWalkDisp", "actWalkDispWait"]
 const MOVE_TO_ACTOR := ["actWalkToPlayerDisp", "actWalkToPlayerDispWait"]
@@ -89,7 +90,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 	var receipt := {"policy": POLICY, "firing_index": firing, "key": status["key"],
 		"actions": [], "created_ids": [], "placements": []}
 	var positions := {}
-	for actor in loop["units"]: positions[actor["id"]] = actor["coord"] * 32
+	for actor in loop["units"]: positions[actor["id"]] = TacticalGridRules.cell_pixel(actor["coord"])
 	var departed: Array = []
 	var touched: Array = []
 	var previous := ""
@@ -131,7 +132,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 				row["skipped"] = str(spec["insert_skip"])
 				receipt["actions"].append(row)
 				continue
-			var installed := _install(loop, spec, symbol, firing, action_index, insert_request)
+			var installed := install_actor(loop, spec, symbol, firing, action_index, insert_request)
 			if not installed["ok"]: return installed
 			var id: String = installed["unit_id"]
 			previous = id
@@ -182,7 +183,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 			var id := _actor_id(loop, str(args[0]), int(args[1]), departed)
 			row["bindings"] = _bindings(loop, departed)
 			if id != "":
-				WinfailActions.write_dead_message(_unit(loop, id), runtime, status["key"], args)
+				WinfailActions.write_dead_message(WinfailConditions.unit(loop, id), runtime, status["key"], args)
 				row["dead_message"] = {"unit_id": id}
 			else:
 				row["missing_actor"] = true
@@ -194,9 +195,9 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 	var occupants: Array = loop["units"].filter(func(a): return not touched.has(a["id"]) and not runtime["departed_unit_ids"].has(a["id"]))
 	for id in touched:
 		if departed.has(id): continue
-		var actor := _unit(loop, id)
-		var requested: Vector2i = positions[id] / 32
-		var landing := _landing(actor, requested, occupants, loop)
+		var actor := WinfailConditions.unit(loop, id)
+		var requested: Vector2i = positions[id] / TacticalGridRules.CELL_PIXELS
+		var landing := nearest_landing(actor, requested, occupants, loop)
 		if not landing["ok"]: return landing
 		actor["coord"] = landing["coord"]
 		actor["grid_coord"] = actor["coord"]
@@ -208,19 +209,19 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		for index in range(receipt["actions"].size() - 1, -1, -1):
 			var row: Dictionary = receipt["actions"][index]
 			if row.get("motion", {}).get("unit_id") == id:
-				row["motion"]["to"] = actor["coord"] * 32
+				row["motion"]["to"] = TacticalGridRules.cell_pixel(actor["coord"])
 				break
 			if row.get("install", {}).get("unit_id") == id:
-				row["install"]["position"] = actor["coord"] * 32
+				row["install"]["position"] = TacticalGridRules.cell_pixel(actor["coord"])
 				break
 	return {"ok": true, "receipt": receipt}
 
 
-static func _install(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action: int, request: Dictionary) -> Dictionary:
+static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, firing: int, action: int, request: Dictionary) -> Dictionary:
 	var actor: Dictionary = spec["actor"].duplicate(true)
 	var registered: bool = spec["kind"] == "registered_player"
 	var id := str(actor["id"]) if registered else "%s_script_%d_%d" % [actor["class_id"], firing, action]
-	var existing := _unit(loop, id)
+	var existing := WinfailConditions.unit(loop, id)
 	if not existing.is_empty():
 		if not registered or existing["actor_id"] != spec["source_actor_id"]: return {"ok": false, "reason": "script_actor_id_collision"}
 		return {"ok": true, "unit_id": id, "created": false}
@@ -275,7 +276,7 @@ static func _move(positions: Dictionary, touched: Array, row: Dictionary, id: St
 
 static func _actor_id(loop: Dictionary, token: String, serial: int, departed: Array) -> String:
 	var ids: Array = WinfailConditions.units_for_token(loop, token)
-	ids = ids.filter(func(id): return not departed.has(id) and not _unit(loop, id).get("defeated", false) and not _unit(loop, id).get("departed", false))
+	ids = ids.filter(func(id): return not departed.has(id) and not WinfailConditions.unit(loop, id).get("defeated", false) and not WinfailConditions.unit(loop, id).get("departed", false))
 	return "" if ids.is_empty() else str(ids[clampi(serial - 1, 0, ids.size() - 1)])
 
 
@@ -287,30 +288,24 @@ static func _bindings(loop: Dictionary, departed: Array) -> Dictionary:
 		if str(actor.get("class_id", "")).begins_with("Enemy"): tokens["SID_ENEMY" + str(actor["actor_id"])] = true
 	var result := {}
 	for token in tokens:
-		var ids: Array = WinfailConditions.units_for_token(loop, token).filter(func(id): return not departed.has(id) and not _unit(loop, id).get("defeated", false) and not _unit(loop, id).get("departed", false))
+		var ids: Array = WinfailConditions.units_for_token(loop, token).filter(func(id): return not departed.has(id) and not WinfailConditions.unit(loop, id).get("defeated", false) and not WinfailConditions.unit(loop, id).get("departed", false))
 		for serial in range(1, maxi(ids.size(), 1) + 1):
 			var id := "" if ids.is_empty() else str(ids[serial - 1])
-			result["%s/%d" % [token, serial]] = {"unit_id": id, "actor_id": str(_unit(loop, id).get("actor_id", ""))}
+			result["%s/%d" % [token, serial]] = {"unit_id": id, "actor_id": str(WinfailConditions.unit(loop, id).get("actor_id", ""))}
 	return result
 
 
-static func _landing(actor: Dictionary, requested: Vector2i, occupants: Array, loop: Dictionary) -> Dictionary:
+static func nearest_landing(actor: Dictionary, requested: Vector2i, occupants: Array, loop: Dictionary) -> Dictionary:
 	var candidate := actor.duplicate(true)
 	var size: Vector2i = loop["map_size"]
 	var origin := Vector2i(clampi(requested.x, 0, size.x - 1), clampi(requested.y, 0, size.y - 1))
 	for distance in range(size.x + size.y):
 		for y in range(maxi(0, origin.y - distance), mini(size.y, origin.y + distance + 1)):
 			for x in range(maxi(0, origin.x - distance), mini(size.x, origin.x + distance + 1)):
-				if absi(x - origin.x) + absi(y - origin.y) != distance: continue
+				if TacticalGridRules.manhattan(Vector2i(x, y), origin) != distance: continue
 				candidate["coord"] = Vector2i(x, y)
 				if ActorTraversalRules.placement_error(candidate, occupants, TerrainEditRules.tiles(loop), size) == "": return {"ok": true, "coord": candidate["coord"]}
 	return {"ok": false, "reason": "no_legal_script_landing"}
-
-
-static func _unit(loop: Dictionary, id: String) -> Dictionary:
-	for actor in loop["units"]:
-		if actor["id"] == id: return actor
-	return {}
 
 
 static func state_error(loop: Dictionary) -> String:
@@ -339,16 +334,16 @@ static func state_error(loop: Dictionary) -> String:
 				var install: Variant = step["install"]
 				if not install is Dictionary or install.get("symbol") != original["args"][0] or not install.get("position") is Vector2i or not install.get("created") is bool: return "invalid_script_install_receipt"
 				var spec: Dictionary = source["templates"].get(install["symbol"], {})
-				if spec.is_empty() or install.get("actor_id") != spec["source_actor_id"] or _unit(loop, str(install.get("unit_id", ""))).is_empty(): return "script_install_identity_mismatch"
+				if spec.is_empty() or install.get("actor_id") != spec["source_actor_id"] or WinfailConditions.unit(loop, str(install.get("unit_id", ""))).is_empty(): return "script_install_identity_mismatch"
 				if install["created"]:
 					if installed.has(install["unit_id"]): return "duplicate_script_install"
 					installed[install["unit_id"]] = ordinal
 			if step.has("motion"):
 				var motion: Variant = step["motion"]
-				if not motion is Dictionary or not motion.get("from") is Vector2i or not motion.get("to") is Vector2i or _unit(loop, str(motion.get("unit_id", ""))).is_empty(): return "invalid_script_motion_receipt"
+				if not motion is Dictionary or not motion.get("from") is Vector2i or not motion.get("to") is Vector2i or WinfailConditions.unit(loop, str(motion.get("unit_id", ""))).is_empty(): return "invalid_script_motion_receipt"
 		if installed.keys() != row["created_ids"]: return "script_actor_creation_order_mismatch"
 		for id in row["created_ids"]:
-			var actor := _unit(loop, id)
+			var actor := WinfailConditions.unit(loop, id)
 			var birth: Variant = actor.get("script_creation")
 			if actor.is_empty() or created.has(id) or not birth is Dictionary or birth.get("policy") != POLICY or birth.get("firing_index") != index:
 				return "invalid_script_created_identity"
@@ -366,7 +361,7 @@ static func state_error(loop: Dictionary) -> String:
 			created[id] = true
 		var placed := {}
 		for placement in row["placements"]:
-			if not placement is Dictionary or not placement.get("requested") is Vector2i or not placement.get("coord") is Vector2i or not placement.get("adjusted") is bool or placed.has(placement.get("unit_id")) or _unit(loop, str(placement.get("unit_id", ""))).is_empty(): return "invalid_script_placement_receipt"
+			if not placement is Dictionary or not placement.get("requested") is Vector2i or not placement.get("coord") is Vector2i or not placement.get("adjusted") is bool or placed.has(placement.get("unit_id")) or WinfailConditions.unit(loop, str(placement.get("unit_id", ""))).is_empty(): return "invalid_script_placement_receipt"
 			if placement["adjusted"] != (placement["coord"] != placement["requested"]): return "inconsistent_script_landing"
 			var coord: Vector2i = placement["coord"]
 			if coord.x < 0 or coord.y < 0 or coord.x >= loop["map_size"].x or coord.y >= loop["map_size"].y: return "script_landing_outside_map"

@@ -9,6 +9,7 @@ extends RefCounted
 ##     as data, not decided here)
 
 const UnitSchema = preload("res://game/sim/UnitSchema.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const BATTLE_SCHEMA_PATH := "res://content/schema/battle.schema.json"
 const BATTLE_CONTRACT := "hsl_battle.v1"
 
@@ -17,7 +18,7 @@ static var _cached_battle_schema: Dictionary = {}
 
 static func battle_schema() -> Dictionary:
 	if _cached_battle_schema.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(BATTLE_SCHEMA_PATH)) if FileAccess.file_exists(BATTLE_SCHEMA_PATH) else null
+		var parsed: Variant = ContentPaths.read_json(BATTLE_SCHEMA_PATH) if FileAccess.file_exists(BATTLE_SCHEMA_PATH) else null
 		_cached_battle_schema = parsed if parsed is Dictionary else {}
 	return _cached_battle_schema
 

@@ -11,6 +11,9 @@ const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
+const Values = preload("res://game/sim/Values.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: String, fields_by_id: Dictionary, envelope: Dictionary) -> Dictionary:
@@ -23,15 +26,15 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 	if channel != "magic" or capability["effects"]["move_magic_use"]:
 		for cell in envelope["reachable_coords"]:
 			if not cells.has(cell): cells.append(cell)
-	cells.sort_custom(_cell_before)
+	cells.sort_custom(cell_before)
 	var primaries: Array = []
 	var centers: Array = []
 	for unit in loop["units"]:
-		if not SkillTargetRules._living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES: continue
+		if not BattlePresenceRules.living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES: continue
 		if not SkillTargetRules.ActorRoleRules.hostile(actor, unit): continue
 		centers.append(unit)
 		if foes.any(func(foe): return foe.get("id") == unit.get("id")): primaries.append(unit)
-	centers.sort_custom(func(a, b): return _cell_before(a["coord"], b["coord"]))
+	centers.sort_custom(func(a, b): return cell_before(a["coord"], b["coord"]))
 	var targets := {}
 	var offensive_targets := {}
 	var any_skills: Array = []
@@ -39,13 +42,13 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 	for id in fields_by_id:
 		var fields: Dictionary = fields_by_id[id]
 		var descriptor: Dictionary = book["skills"][id]
-		var rate := SkillResourceRules._integer(fields.get("use_ratio"), true)
+		var rate := Values.non_negative_int(fields.get("use_ratio"), true)
 		if rate < 0 or rate > 100: return {"ok": false, "reason": "invalid_ai_skill_use_ratio"}
-		var source_order := SkillResourceRules._integer(descriptor.get("source_order"))
+		var source_order := Values.non_negative_int(descriptor.get("source_order"))
 		if source_order < 0 or source_order > 223: return {"ok": false, "reason": "invalid_ai_skill_source_order"}
 		# 0x43f7bf draws 0x40d4e0 before 0x40c570 picks the channel; both 0x40d340 (MAGIC) and
 		# 0x40df70 (SPECIAL) receive the same (first, fallback) offensive bucket pair.
-		var flag := SkillResourceRules._integer(profile.get("ai_magic_multi_first"))
+		var flag := Values.non_negative_int(profile.get("ai_magic_multi_first"))
 		if flag not in [0, 1]: return {"ok": false, "reason": "missing_ai_magic_multi_first"}
 		var eligibility := SkillResolutionRules.available(actor, id, fields, book, targeting, loop["equipment_items"])
 		if not eligibility["ok"]:
@@ -92,25 +95,25 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 		for primary_id in by_primary:
 			var candidate := {"skill_id": id, "source_order": source_order,
 				"use_ratio": rate, "bucket": offense_bucket, "intents": by_primary[primary_id]}
-			if not targets.has(primary_id): targets[primary_id] = _target_plan(primary_id, channel, profile, actor, centers)
+			if not targets.has(primary_id): targets[primary_id] = target_plan(primary_id, channel, profile, actor, centers)
 			targets[primary_id]["skills"].append(candidate)
 			if mask & 1:
-				if not offensive_targets.has(primary_id): offensive_targets[primary_id] = _target_plan(primary_id, channel, profile, actor, centers)
+				if not offensive_targets.has(primary_id): offensive_targets[primary_id] = target_plan(primary_id, channel, profile, actor, centers)
 				offensive_targets[primary_id]["skills"].append(candidate)
-	var any_target := _target_plan("", channel, profile, actor, centers)
+	var any_target := target_plan("", channel, profile, actor, centers)
 	any_target.merge({"skills": any_skills, "available": not any_skills.is_empty(),
 		"move_search": channel != "magic" or bool(capability["effects"]["move_magic_use"])}, true)
 	return {"ok": true, "targets": targets, "offensive_targets": offensive_targets, "any_target": any_target}
 
 
-static func _target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, foes: Array) -> Dictionary:
+static func target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, foes: Array) -> Dictionary:
 	var threat: Variant = null
 	var distance := 0x7fffffff
 	# Current roster/WRD adapter: nearest living enemy in the 8-cell threat search.
 	# Native nearest-target tie quirks and movement grid remain separate evidence.
 	for foe in foes:
 		var delta: Vector2i = foe["coord"] - actor["coord"]
-		var current := absi(delta.x) + absi(delta.y)
+		var current := TacticalGridRules.manhattan(foe["coord"], actor["coord"])
 		if delta.length_squared() <= 64 and current < distance:
 			distance = current
 			threat = foe["coord"]
@@ -155,7 +158,7 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	for intent in finalists:
 		var previous := destinations.find(intent["destination"])
 		if previous >= 0:
-			var replace := AISkillDecisionRules._draw(2, rng, center_draws) != 0
+			var replace := AISkillDecisionRules.recorded_draw(2, rng, center_draws) != 0
 			if best == 1:
 				var old_at_target: bool = distinct[previous].get("center_is_primary", false)
 				var new_at_target: bool = intent.get("center_is_primary", false)
@@ -174,7 +177,7 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 		index = int(position["index"])
 		decision["position_selection"] = position
 	elif distinct.size() > 1:
-		index = CoreCombatRules._rand_range(distinct.size(), rng)
+		index = CoreCombatRules.rand_range(distinct.size(), rng)
 	decision["coverage"] = best
 	decision["threat"] = plan["threat"]
 	decision["skill_id"] = skill["skill_id"]
@@ -230,7 +233,7 @@ static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng:
 	var receipt := {"centre_draws": [], "stations": [], "position_draws": []}
 	if bool(plan["move_search"]):
 		var cells: Array = by_cell.keys().filter(func(cell): return cell != origin)
-		cells.sort_custom(_cell_before)
+		cells.sort_custom(cell_before)
 		var best := 0
 		var stations: Array = []
 		for cell in cells:
@@ -249,7 +252,7 @@ static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng:
 				receipt["position_draws"] = position["draws"]
 				receipt["position_selection"] = position
 			elif stations.size() > 1:
-				index = AISkillDecisionRules._draw(stations.size(), rng, receipt["position_draws"])
+				index = AISkillDecisionRules.recorded_draw(stations.size(), rng, receipt["position_draws"])
 			return {"intent": stations[index], "count": best, "receipt": receipt}
 	var scan := centre_scan(by_cell.get(origin, []), held_id, rng, receipt["centre_draws"])
 	return {"intent": scan["intent"], "count": scan["count"], "receipt": receipt}
@@ -263,7 +266,7 @@ static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng:
 ## returns the general best (0x40cc6f..0x40cc77), wherever the held target is.
 static func centre_scan(intents: Array, held_id: String, rng: Variant, draws: Array) -> Dictionary:
 	var ordered := intents.duplicate()
-	ordered.sort_custom(func(a, b): return _cell_before(a["cast_center"], b["cast_center"]))
+	ordered.sort_custom(func(a, b): return cell_before(a["cast_center"], b["cast_center"]))
 	var best := 0
 	var best_holding := 0
 	var chosen := {}
@@ -272,11 +275,11 @@ static func centre_scan(intents: Array, held_id: String, rng: Variant, draws: Ar
 		if count <= 0: continue
 		if held_id != "" and intent["affected_ids"].has(held_id):
 			if count > best_holding: best_holding = count
-			elif count == best_holding: AISkillDecisionRules._draw(2, rng, draws)
+			elif count == best_holding: AISkillDecisionRules.recorded_draw(2, rng, draws)
 		if count > best:
 			best = count
 			chosen = intent
-		elif count == best and AISkillDecisionRules._draw(2, rng, draws) & 1:
+		elif count == best and AISkillDecisionRules.recorded_draw(2, rng, draws) & 1:
 			chosen = intent
 	return {"intent": chosen, "count": best}
 
@@ -285,7 +288,7 @@ static func target_for_center(actor: Dictionary, units: Array, fields: Dictionar
 	var footprint := SkillTargetRules.effect_cells(center, fields, targeting, map_size, origin)
 	var first := {}
 	for unit in units:
-		if not SkillTargetRules._living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES or not SkillTargetRules.side_matches(actor, unit, fields, targeting): continue
+		if not BattlePresenceRules.living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES or not SkillTargetRules.side_matches(actor, unit, fields, targeting): continue
 		var coord: Vector2i = origin if unit["id"] == actor["id"] else unit["coord"]
 		if not SkillTargetRules.Footprint.overlaps(unit,footprint,coord): continue
 		if SkillTargetRules.Footprint.contains(unit,center,coord): return unit
@@ -321,5 +324,5 @@ static func useful_ids(ready: Dictionary) -> Array:
 	return result
 
 
-static func _cell_before(a: Vector2i, b: Vector2i) -> bool:
+static func cell_before(a: Vector2i, b: Vector2i) -> bool:
 	return a.y < b.y or (a.y == b.y and a.x < b.x)

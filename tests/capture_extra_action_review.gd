@@ -80,7 +80,7 @@ func setup_extra() -> void:
 	if mode in ["victory","escape"]:
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			player = BattlePlayLoop._unit(loop,"leonard"); BattlePlayLoop._unit(loop,"enemy021_1")["coord"] = Vector2i(17,18)
+			player = BattlePlayLoop.unit_ref(loop,"leonard"); BattlePlayLoop.unit_ref(loop,"enemy021_1")["coord"] = Vector2i(17,18)
 			landing = loop["escape_zone"][0]
 			var found := false
 			for y in range(loop["map_size"].y):
@@ -118,7 +118,7 @@ func setup_extra() -> void:
 		actor["grid_coord"] = actor["coord"]; actor["ai_home_coord"] = actor["coord"]
 		check(not loop["tiles"].get(actor["coord"],{}).get("blocks_movement",false),"fixture actor starts on the source ground")
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"extra-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"extra-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = EXTRA_OUT+mode+".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(BattlePlayLoop.unit(loop,owner)["coord"])

@@ -18,6 +18,7 @@ extends RefCounted
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 ## Compiled-timeline event kinds (tools/hsltools/levels/timeline.py) back to
 ## the script token TownEventRules interprets.
@@ -62,7 +63,7 @@ static func scene_config(campaign: Dictionary) -> Dictionary:
 	var scene_path := str((entry as Dictionary).get("scenario", "")) if typeof(entry) == TYPE_DICTIONARY else ""
 	if scene_path == "" or not FileAccess.file_exists(scene_path):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(scene_path))
+	var parsed: Variant = ContentPaths.read_json(scene_path)
 	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 
 

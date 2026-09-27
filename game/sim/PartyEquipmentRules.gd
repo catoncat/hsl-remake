@@ -38,6 +38,7 @@ const ResourceRecoveryRules = preload("res://game/sim/ResourceRecoveryRules.gd")
 const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd")
 const PositionCapabilities = preload("res://game/sim/PositionCapabilityRules.gd")
 const CombatSequence = preload("res://game/sim/CombatSequenceRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const ROLE_PLAYER := "player_controlled"
 const SKIPPED_KINDS := ["story", "game_clear", "world_map"]
@@ -58,7 +59,7 @@ static func template_scenario_path(campaign: Dictionary, from_scenario_id: Strin
 		var path := str((entry as Dictionary).get("scenario", ""))
 		if path == "" or not path.ends_with(".json") or not FileAccess.file_exists(path):
 			continue
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+		var parsed: Variant = ContentPaths.read_json(path)
 		if typeof(parsed) == TYPE_DICTIONARY and str((parsed as Dictionary).get("id", "")) == from_scenario_id:
 			return path
 	return ""

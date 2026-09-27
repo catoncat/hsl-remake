@@ -78,7 +78,7 @@ func setup_treasure() -> void:
 	if mode in ["full", "duplicates", "attack", "defeat", "victory"]:
 		scene.set_process(false)
 		var loop := run_treasure_tests.placed(1, "leonard", 0) if mode == "full" else run_treasure_tests.placed(2, "hu", 0 if mode == "duplicates" else 1)
-		var actor := BattlePlayLoop._unit(loop, "leonard" if mode == "full" else "hu")
+		var actor := BattlePlayLoop.unit_ref(loop, "leonard" if mode == "full" else "hu")
 		if mode == "full":
 			actor["inventory"] = [241,241,241,241,241,241,241,241]
 			actor["equipment"] = actor["equipment"].filter(func(row): return row["slot"] != "accessory2")
@@ -90,7 +90,7 @@ func setup_treasure() -> void:
 		elif mode == "duplicates":
 			setup_note = "Gol source west box; Hu starts on its tile. Default gear/inventory/abilities, duplicate source items retained."
 		elif mode == "attack":
-			var victim:=BattlePlayLoop._unit(loop,"actor028_2")
+			var victim:=BattlePlayLoop.unit_ref(loop,"actor028_2")
 			victim["hp"]=1; actor["hit_bonus_accum"]=1000
 			for offset in BattlePlayLoop.weapon_pattern(loop,actor)["offsets"]:
 				victim["coord"]=actor["coord"]+Vector2i(int(offset[0]),int(offset[1]))
@@ -101,7 +101,7 @@ func setup_treasure() -> void:
 			actor["hp"] = 1
 			actor["growth_profile"]["source"]["speed"] += 500
 			actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"]), true)
-			var enemy := BattlePlayLoop._unit(loop, "actor028_1")
+			var enemy := BattlePlayLoop.unit_ref(loop, "actor028_1")
 			enemy["growth_profile"]["source"]["attack_power"] += 5000
 			enemy["growth_profile"]["source"]["speed"] += 300
 			enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy, loop["equipment_items"]), true)
@@ -112,14 +112,14 @@ func setup_treasure() -> void:
 			loop = run_gol_road_tests.owned_turn(loop, "hu")
 			setup_note = "Gol east box; Hu1HP on the box, fast Hu then adjacent lethal accurate raider. Defeat is caused by the real subsequent AI attack."
 		else:
-			loop=BattlePlayLoop._resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(run_treasure_tests.initial())))
-			actor=BattlePlayLoop._unit(loop,"hu")
+			loop=BattlePlayLoop.resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(run_treasure_tests.initial())))
+			actor=BattlePlayLoop.unit_ref(loop,"hu")
 			actor["coord"]=loop["treasure_source"]["chests"][1]["coord"]; actor["ai_home_coord"]=actor["coord"]
 			actor["equipment"].append({"slot":"accessory2","item_code":227})
 			actor["growth_profile"]["source"]["speed"]+=300; actor["hit_bonus_accum"]=1000
 			actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 			var guards: Array=loop["units"].filter(func(a):return a["actor_id"]=="023")
-			for index in range(2,guards.size()): BattlePlayLoop._set_unit_defeated(loop,guards[index]["id"],true)
+			for index in range(2,guards.size()): BattlePlayLoop.set_unit_defeated(loop,guards[index]["id"],true)
 			guards[0]["hp"]=1
 			for offset in BattlePlayLoop.weapon_pattern(loop,actor)["offsets"]:
 				guards[0]["coord"]=actor["coord"]+Vector2i(int(offset[0]),int(offset[1]))

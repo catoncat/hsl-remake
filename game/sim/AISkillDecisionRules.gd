@@ -5,6 +5,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_skills.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 
 
 static func buckets(mask: int, area: bool) -> Array:
@@ -20,7 +21,7 @@ static func buckets(mask: int, area: bool) -> Array:
 
 static func area_order(flag: int, rng: Variant) -> Dictionary:
 	var draws: Array = []
-	var roll := _draw(100, rng, draws) + 1
+	var roll := recorded_draw(100, rng, draws) + 1
 	var first := roll > 30 if flag != 0 else roll <= 30
 	return {"area_first": first, "order": [3, 4] if first else [4, 3], "draws": draws,
 		"source": "0x40d4e0"}
@@ -38,11 +39,11 @@ static func select_index(rates: Array, rng: Variant, channel: String = "magic", 
 	var draws: Array = []
 	var visited: Array = []
 	if not rates.is_empty():
-		var start := _draw(32, rng, draws) % rates.size()
+		var start := recorded_draw(32, rng, draws) % rates.size()
 		for offset in range(rates.size()):
 			var index := (start + offset) % rates.size()
 			visited.append(index)
-			var roll := _draw(100, rng, draws) + 1
+			var roll := recorded_draw(100, rng, draws) + 1
 			if useful_accepts: roll = 0
 			if roll <= int(rates[index]):
 				return {"index": index, "visited": visited, "draws": draws, "source": source, "useful_accepts": useful_accepts}
@@ -55,17 +56,17 @@ static func farthest_index(positions: Array, threat: Vector2i, rng: Variant) -> 
 	var draws: Array = []
 	for index in range(positions.size()):
 		var point: Vector2i = positions[index]
-		var distance := absi(point.x - threat.x) + absi(point.y - threat.y)
+		var distance := TacticalGridRules.manhattan(point, threat)
 		if distance > best:
 			best = distance
 			selected = index
-		elif distance == best and _draw(2, rng, draws) != 0:
+		elif distance == best and recorded_draw(2, rng, draws) != 0:
 			selected = index
 	return {"index": selected, "distance": best, "draws": draws, "source": "0x40d200..0x40d2b0",
 		"whole_native_planner": false}
 
 
-static func _draw(bound: int, rng: Variant, draws: Array) -> int:
-	var value := CoreCombatRules._rand_range(bound, rng)
+static func recorded_draw(bound: int, rng: Variant, draws: Array) -> int:
+	var value := CoreCombatRules.rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

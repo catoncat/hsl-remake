@@ -6,6 +6,7 @@ extends RefCounted
 ##   rules: runtime-measured docs/evidence_packets/static_reverse/original_stamina.md
 ##     (opening ST: ActorInitializationRules, CampaignCarryRules)
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const CAP := 60
 const DOUBLE := 0x40
 const BLOCK := 0x400
@@ -15,11 +16,11 @@ static func effects(unit: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not unit.get("equipment") is Array: return {"ok": false, "reason": "missing_stamina_equipment"}
 	var flags := 0
 	for entry in unit["equipment"]:
-		if not entry is Dictionary or SkillResourceRules._integer(entry.get("item_code")) <= 0:
+		if not entry is Dictionary or Values.non_negative_int(entry.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_stamina_equipment"}
 		var item: Variant = catalog.get(str(int(entry["item_code"])))
 		if not item is Dictionary: return {"ok": false, "reason": "missing_stamina_equipment_effect"}
-		var value := SkillResourceRules._integer(item.get("stamina_effect_flags"))
+		var value := Values.non_negative_int(item.get("stamina_effect_flags"))
 		if value < 0 or (value & ~(DOUBLE | BLOCK)) != 0:
 			return {"ok": false, "reason": "invalid_stamina_equipment_effect"}
 		flags |= value # Same predicate bit; two pieces never multiply the multiplier.
@@ -27,10 +28,10 @@ static func effects(unit: Dictionary, catalog: Dictionary) -> Dictionary:
 
 
 static func input_error(unit: Dictionary, catalog: Dictionary) -> String:
-	var stamina := SkillResourceRules._integer(unit.get("stamina"))
+	var stamina := Values.non_negative_int(unit.get("stamina"))
 	if stamina < 0 or stamina > CAP: return "invalid_stamina"
-	if SkillResourceRules._integer(unit.get("level")) <= 0: return "invalid_stamina_level"
-	if SkillResourceRules._integer(unit.get("max_hp")) <= 0: return "invalid_stamina_max_hp"
+	if Values.non_negative_int(unit.get("level")) <= 0: return "invalid_stamina_level"
+	if Values.non_negative_int(unit.get("max_hp")) <= 0: return "invalid_stamina_max_hp"
 	var equipment := effects(unit, catalog)
 	return "" if equipment["ok"] else equipment["reason"]
 

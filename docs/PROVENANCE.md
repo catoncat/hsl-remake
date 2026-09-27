@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (192 modules, 149 remake-invented cells, 77 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (193 modules, 150 remake-invented cells, 77 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (192)
+### 模块矩阵 (193)
 
 #### game/battle/runtime (19)
 
@@ -132,7 +132,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
-#### game/sim (87)
+#### game/sim (88)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
@@ -217,6 +217,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TreasureRules](../game/sim/TreasureRules.gd) | static-derived [original_treasure.md](../docs/evidence_packets/static_reverse/original_treasure.md); resource-derived [treasures](../content/generated/hsl/treasures) | n/a | n/a | n/a | n/a |
 | [TurnEndRules](../game/sim/TurnEndRules.gd) | static-derived [original_resource_recovery.md](../docs/evidence_packets/static_reverse/original_resource_recovery.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md); static-derived [original_status_effects.md](../docs/evidence_packets/static_reverse/original_status_effects.md) | n/a | n/a | n/a | n/a |
 | [UnitSchema](../game/sim/UnitSchema.gd) | remake-invented | n/a | n/a | n/a | n/a |
+| [Values](../game/sim/Values.gd) | remake-invented | n/a | n/a | n/a | n/a |
 | [WeaponEffectRules](../game/sim/WeaponEffectRules.gd) | static-derived [original_weapon_effects.md](../docs/evidence_packets/static_reverse/original_weapon_effects.md) | n/a | n/a | n/a | n/a |
 | [WinfailActions](../game/sim/WinfailActions.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_player_mode.md](../docs/evidence_packets/static_reverse/original_player_mode.md); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_fixpos_fly_prev_insert.md](../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md); static-derived [original_story_object_terrain.md](../docs/evidence_packets/static_reverse/original_story_object_terrain.md); static-derived [original_exec_mode_sys_arrive.md](../docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md); static-derived [original_use_item_no_attack.md](../docs/evidence_packets/static_reverse/original_use_item_no_attack.md); static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md); static-derived [original_drop_lightning.md](../docs/evidence_packets/static_reverse/original_drop_lightning.md); static-derived [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md); provisional | n/a | n/a | n/a | n/a |
 | [WinfailCompiler](../game/sim/WinfailCompiler.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
@@ -266,7 +267,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (149)
+### remake-invented 清单 (150)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -390,6 +391,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [StatusCatalog](../game/sim/StatusCatalog.gd) | strings | name, cure_label, stronger_label: captions for effects the original shows no glyph for |
 | [TerrainEditRules](../game/sim/TerrainEditRules.gd) | rules | edits kept as a loop state list over the shared map, memoised edited copy |
 | [UnitSchema](../game/sim/UnitSchema.gd) | rules | unit dictionary contract derived from remake data by tools/hsltools/schema/unit.py — content/schema/unit.schema.json |
+| [Values](../game/sim/Values.gd) | rules | input validation shared by the rule modules |
 | [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | rules | party_wiped defeat rule — negative-evidence in original_check_targets.md §R8 |
 | [BattleLoopAI](../game/sim/loop/BattleLoopAI.gd) | rules | paralysis_skip and candidate_filters receipts |
 | [BattleLoopCombat](../game/sim/loop/BattleLoopCombat.gd) | rules | one-owner commit ordering and receipt shape — docs/architecture/BATTLE_SYSTEMS.md#corecombatrulesgd |
@@ -518,7 +520,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 33 | 16 | 0 | 25 | 3 | 77 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
-| remake-invented | 52 | 44 | 38 | 14 | 1 | 149 |
-| n/a | 62 | 113 | 141 | 133 | 162 | 611 |
+| remake-invented | 53 | 44 | 38 | 14 | 1 | 150 |
+| n/a | 62 | 114 | 142 | 134 | 163 | 615 |
 
 <!-- provenance:end -->

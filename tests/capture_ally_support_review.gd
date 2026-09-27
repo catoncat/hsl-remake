@@ -54,10 +54,10 @@ func prepare_case() -> void:
 	var loop := run_ai_support_tests.fixture(supported_skill)
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var owner := BattlePlayLoop._unit(loop,"leonard")
+	var owner := BattlePlayLoop.unit_ref(loop,"leonard")
 	owner["exp"] = 99
-	var patient := BattlePlayLoop._unit(loop,"enemy023_1")
-	var other := BattlePlayLoop._unit(loop,"enemy021_2")
+	var patient := BattlePlayLoop.unit_ref(loop,"enemy023_1")
+	var other := BattlePlayLoop.unit_ref(loop,"enemy021_2")
 	other["live_speed"] = 80
 	other["player_commandable"] = true
 	other["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
@@ -69,7 +69,7 @@ func prepare_case() -> void:
 		other["coord"] = Vector2i(10,11)
 	if mode == "enemy_heal":
 		owner["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
-		BattlePlayLoop._unit(loop,"enemy021_1").merge({"hp":4,"coord":Vector2i(13,8)},true)
+		BattlePlayLoop.unit_ref(loop,"enemy021_1").merge({"hp":4,"coord":Vector2i(13,8)},true)
 	if mode == "no_mp": owner["mp"] = 0
 	if mode == "silence": owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner,"no_magic",2)["changes"],true)
 	if mode.begins_with("item_"):
@@ -89,7 +89,7 @@ func prepare_case() -> void:
 	initial.merge({"id":"review-initial","coord":Vector2i(7,8),"hp":100,"max_hp":100,"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"live_speed":110,"inventory":[0,0,0,0,0,0,0,0]},true)
 	loop["units"].append(initial)
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"review-initial"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"review-initial"), "test")
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
 	for unit in loop["units"]: unit["grid_coord"] = unit["coord"]

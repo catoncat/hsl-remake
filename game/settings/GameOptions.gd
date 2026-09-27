@@ -21,6 +21,7 @@ extends RefCounted
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const REGISTRY_PATH := "res://content/authored/options/remake_options.json"
 const SCHEMA := "hsl_remake_options.v1"
 const PRESET_ORIGINAL := "original"
@@ -173,7 +174,7 @@ static func summary() -> Dictionary:
 
 
 static func _load_registry() -> Dictionary:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(REGISTRY_PATH)) if FileAccess.file_exists(REGISTRY_PATH) else null
+	var parsed: Variant = ContentPaths.read_json(REGISTRY_PATH) if FileAccess.file_exists(REGISTRY_PATH) else null
 	if not parsed is Dictionary or str(parsed.get("schema", "")) != SCHEMA or not parsed.get("options") is Array or not parsed.get("page") is Dictionary:
 		push_error("GameOptions: option registry missing or not %s: %s" % [SCHEMA, REGISTRY_PATH])
 		return {"options": [], "by_id": {}, "page": {}}

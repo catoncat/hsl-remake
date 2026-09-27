@@ -207,7 +207,7 @@ func _prepare(opts: Dictionary) -> Dictionary:
 		# Mid-round, a unit already down acted (or fell) earlier in the round.
 		for unit in loop["units"]:
 			if bool(unit.get("defeated", false)) or int(unit.get("hp", 1)) <= 0: prep["acted"].append(str(unit["id"]))
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	prep["loop"] = BattlePlayLoop.begin_battle(loop)
 	return prep
 
@@ -305,7 +305,7 @@ func _inject(base: Dictionary, state: Dictionary) -> Dictionary:
 				unit["hp"] = 0
 				unit["defeated"] = true
 			if targets.has(key): unit["ai_target_id"] = _id(str(targets[key]))
-	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(loop))
 	if state.has("turn"):
 		# The loop counts rounds from 1, the queue from 0; keep them paired so the wrap
 		# still advances the counter.
@@ -333,7 +333,7 @@ func _streams(loop: Dictionary, ai_seed: int, rng: RandomNumberGenerator) -> Dic
 func _action_entry(before: Dictionary, after: Dictionary, draws: Array) -> Dictionary:
 	var action: Dictionary = after.get("last_ai_action", {})
 	var actor_id := str(action.get("actor_id", ""))
-	var start: Vector2i = action.get("from", BattlePlayLoop._unit(before, actor_id).get("coord", Vector2i(-1, -1)))
+	var start: Vector2i = action.get("from", BattlePlayLoop.unit_ref(before, actor_id).get("coord", Vector2i(-1, -1)))
 	var to: Vector2i = action.get("to", start)
 	var kind := str(action.get("kind", ""))
 	var skill_id := str(action.get("skill_id", ""))
@@ -353,7 +353,7 @@ func _action_entry(before: Dictionary, after: Dictionary, draws: Array) -> Dicti
 	elif kind in ["wait", "move"]:
 		verb = "wait"
 		# The unit's held pursuit target (ai_target_id; the original's object +0x88), null if none.
-		var held := str(BattlePlayLoop._unit(after, actor_id).get("ai_target_id", ""))
+		var held := str(BattlePlayLoop.unit_ref(after, actor_id).get("ai_target_id", ""))
 		if held != "": target = held
 	var ai_draws: Array = []
 	for draw in draws:
@@ -386,8 +386,8 @@ func _site(stack: Array) -> String:
 		var script := str(frame.get("source", "")).get_file().get_basename()
 		var function := str(frame.get("function", ""))
 		if script == "export_enemy_turns": continue
-		if script == "CoreCombatRules" and function in ["_rand_range", "native_draw"]: continue
-		if function == "_draw": continue
+		if script == "CoreCombatRules" and function in ["rand_range", "native_draw"]: continue
+		if function == "recorded_draw": continue
 		return "%s.%s" % [script, function] if script in AI_SOURCES else ""
 	return ""
 
@@ -428,7 +428,7 @@ func _player_turn(loop: Dictionary, commands: Array, source: Variant) -> Diction
 			var cell := Vector2i(int(xy[0]), int(xy[1]))
 			next = BattlePlayLoop.choose_command(next, "move")
 			var moved := BattlePlayLoop.move_unit_to(next, cell)
-			next = moved if BattlePlayLoop._unit(moved, unit_id)["coord"] == cell else BattlePlayLoop.cancel_interaction(next)
+			next = moved if BattlePlayLoop.unit_ref(moved, unit_id)["coord"] == cell else BattlePlayLoop.cancel_interaction(next)
 		elif verb in ["attack", "special"] and parts.size() > 1:
 			var xy := parts[1].split("/")
 			if verb == "special":

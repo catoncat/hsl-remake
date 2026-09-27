@@ -1,5 +1,5 @@
 """Whole-exchange check of an ordinary attack: the original's exchange, value for value, beside
-the remake's `BattleLoopCombat._resolve_exchange` from the same exchange-start damage state.
+the remake's `BattleLoopCombat.resolve_exchange` from the same exchange-start damage state.
 
 Diagnostic tool beside the damage-random packet (original_damage_random.md, no registry task).
 The original side runs a level through the round referee `_enemy_level.run_level` (board and

@@ -1,10 +1,10 @@
 # 原作通关尾声独白 STORYOVER 的加载者（static-derived）
 
-> evidence: static-derived · status: live · functions: 0x415730, 0x42cd10, 0x43e2a0, 0x44cce0, 0x45e307 · tools: hsltools/assets/title_assets.py · updated: 2026-09-26
+> evidence: static-derived · status: live · functions: 0x415730, 0x42cd10, 0x43e2a0, 0x44cce0, 0x45e307 · tools: hsltools/assets/title_assets.py · updated: 2026-09-27
 
 ## 结论
 
-`DATA\STORYOVER.TXT`（緹娜／漢克斯十句、含 WALKSOUND 脚步声、以 actDeleteDarkScreen 收尾）由 **GameClear（level 998）的 BOSS 物件过程 `defProcClearBOSS`** 加载并执行，不是战败（GameOver，level 999）侧的脚本。此前 P-049 把它读作"战败尾声独白（level 999 GameOver 侧）"，该读法作废。
+`DATA\STORYOVER.TXT`（緹娜／漢克斯十句、含 WALKSOUND 脚步声、以 actDeleteDarkScreen 收尾）由 **GameClear（level 998）的 BOSS 物件过程 `defProcClearBOSS`** 加载并执行，不是战败（GameOver，level 999）侧的脚本。
 
 | 事实 | 证据 | 等级 |
 | --- | --- | --- |
@@ -16,7 +16,7 @@
 
 ## 重制接入
 
-`tools/hsltools/assets/title_assets.py` 把 STORYOVER（tracked 语料 `content/imported/hsl/story_corpus/scripts/STORYOVER.json`）编成 `manifest.game_clear_epilogue.steps`（delay／message／sound／reveal），并解码 `WAV\WALKSOUND.WAV` → `content/imported/hsl/global/title/walksound.wav`；`game/title/GameClearScreen.gd` 按状态顺序把它放在 Over001 与 Over002 两段之间（状态 1／3／9，见 [原版配乐](original_music.md) §3.5），以黑场＋共享对白板播放。回执见 [story_scene_endgame_previews](../runtime_observations/story_scene_endgame_previews/README.md)。
+`tools/hsltools/assets/title_assets.py` 把 STORYOVER（tracked 语料 `content/imported/hsl/story_corpus/scripts/STORYOVER.json`）编成 `manifest.game_clear_epilogue.steps`（delay／message／sound／reveal），并解码 `WAV\WALKSOUND.WAV` → `content/imported/hsl/global/title/walksound.wav`；`game/title/GameClearScreen.gd` 按状态顺序把它放在 Over001 与 Over002 两段之间（状态 1／3／9，见 [原版配乐](original_music.md) §3.5），以黑场＋共享对白板播放。回执见 [story_scene_endgame_previews](../runtime_observations/story_scene_001_preview/README.md)。
 
 ## 边界
 

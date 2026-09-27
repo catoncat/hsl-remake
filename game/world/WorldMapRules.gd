@@ -23,6 +23,7 @@ extends RefCounted
 ##   rules: provisional (track reveal trigger — what sets mode 1 is not located)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/world_map.json
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const STATE_SCHEMA := "hsl_world_state.v1"
 const DATA_SCHEMA := "hsl_world_map.v1"
@@ -51,7 +52,7 @@ const COMPLETION_DENOMINATOR_OFFSET := 1
 static func load_world_map(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {"ok": false, "error": "missing_world_map", "path": path}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY or str((parsed as Dictionary).get("schema", "")) != DATA_SCHEMA:
 		return {"ok": false, "error": "unsupported_world_map_schema", "path": path}
 	var data: Dictionary = parsed

@@ -23,7 +23,7 @@ static func initial(level: int = 2) -> Dictionary:
 
 static func placed(level: int = 2, id: String = "hu", box: int = 1) -> Dictionary:
 	var loop := initial(level)
-	var actor := BattlePlayLoop._unit(loop, id)
+	var actor := BattlePlayLoop.unit_ref(loop, id)
 	var coord: Vector2i = loop["treasure_source"]["chests"][box]["coord"]
 	actor["coord"] = coord
 	actor["ai_home_coord"] = coord
@@ -62,7 +62,7 @@ func run() -> void:
 func movement_and_pickup() -> void:
 	var loop := placed()
 	var chest: Dictionary = loop["treasure_source"]["chests"][1]
-	var actor := BattlePlayLoop._unit(loop, "hu")
+	var actor := BattlePlayLoop.unit_ref(loop, "hu")
 	actor["coord"] = chest["coord"] + Vector2i(0, 1)
 	actor["ai_home_coord"] = actor["coord"]
 	loop = run_gol_road_tests.owned_turn(loop, "hu")
@@ -100,7 +100,7 @@ func movement_and_pickup() -> void:
 
 func full_bag_extra_action_and_combat() -> void:
 	var loop := placed(1, "leonard", 0)
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	actor["inventory"] = [241, 241, 241, 241, 241, 241, 241, 241]
 	actor["equipment"] = actor["equipment"].filter(func(row): return row["slot"] != "accessory2")
 	actor["equipment"].append({"slot": "accessory2", "item_code": 227})
@@ -117,12 +117,12 @@ func full_bag_extra_action_and_combat() -> void:
 	var second := BattlePlayLoop.step_ai_turn(defer_loot(swapped))
 	check(second["selected_unit_id"] == "leonard" and second["extra_action"]["pending"] and not second["moved_this_action"], "White Wings grants its genuine independent second action only after collection is closed")
 	check(second["action_end_sequence"] == before["action_end_sequence"] and BattlePlayLoop.unit(second, "leonard")["status_counters"] == actor["status_counters"], "first-action chest collection does not tick silence or apply a second resource tail")
-	var victim := BattlePlayLoop._unit(second, "enemy028_1")
+	var victim := BattlePlayLoop.unit_ref(second, "enemy028_1")
 	if victim.is_empty():
 		victim = second["units"].filter(func(unit): return unit["actor_id"] == "028")[0]
 	victim["hp"] = 1
 	victim["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # Important guaranteed-drop fixture, not formal default loot.
-	var hitter := BattlePlayLoop._unit(second, "leonard")
+	var hitter := BattlePlayLoop.unit_ref(second, "leonard")
 	hitter["hit_bonus_accum"] = 1000
 	for offset in BattlePlayLoop.weapon_pattern(second, hitter)["offsets"]:
 		victim["coord"] = hitter["coord"] + Vector2i(int(offset[0]), int(offset[1]))
@@ -219,10 +219,10 @@ func presentation_and_restore() -> void:
 	# A complete source victory with deferred treasure must remain reachable in
 	# the product UI, not only through a direct prepare_handoff unit test.
 	var won := BattlePlayLoop.step_ai_turn(defer_loot(before))
-	won = BattlePlayLoop._resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(won)))
+	won = BattlePlayLoop.resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(won)))
 	var guards: Array = won["units"].filter(func(a):return a["actor_id"]=="023")
-	for index in range(1,guards.size()): BattlePlayLoop._set_unit_defeated(won,guards[index]["id"],true)
-	won = BattlePlayLoop._resolve_outcome(won)
+	for index in range(1,guards.size()): BattlePlayLoop.set_unit_defeated(won,guards[index]["id"],true)
+	won = BattlePlayLoop.resolve_outcome(won)
 	runtime.apply_loop(won, "test"); runtime.interaction_state = won["interaction"]
 	runtime.script_cutscene_consumed = won["winfail_runtime"]["fired"].size()
 	presentation.battle_finished = true; treasure.restore(won["treasures"]["receipts"].size())

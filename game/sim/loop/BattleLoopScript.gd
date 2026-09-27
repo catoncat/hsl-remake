@@ -1,9 +1,9 @@
 extends RefCounted
-## Battle loop script progression: `_resolve_outcome` is the one seam that, after every
+## Battle loop script progression: `resolve_outcome` is the one seam that, after every
 ## settled action, consumes the scenario script's pending transactions on the loop —
 ## fired actor installs (ScriptActorCreationRules), event wait counters (ScriptWaitRules),
 ## departures (BattlePresenceRules), winfail reinforcement pressure
-## (`_maintain_script_pressure` materializing `reinforcement_deficits` at the spawn
+## (`maintain_script_pressure` materializing `reinforcement_deficits` at the spawn
 ## cells) — then asks the scenario rule adapter for the victory state and freezes the
 ## loop on a terminal outcome after the adapter has committed the deciding status' result
 ## chain. Static functions over the one loop dictionary; BattlePlayLoop forwards to
@@ -36,7 +36,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const SharedRecordRules = preload("res://game/sim/SharedRecordRules.gd")
 
 
-static func _resolve_outcome(next: Dictionary) -> Dictionary:
+static func resolve_outcome(next: Dictionary) -> Dictionary:
 	# Pieces sharing one live record (level 12／26 hulls) settle the action's HP into one pool.
 	SharedRecordRules.sync(next)
 	if BattleOutcome.decided(next):
@@ -44,7 +44,7 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 	_consume_script_actors(next)
 	if not next["scenario_ok"]: return next
 	var old_current := str(CoreTurnQueue.current(next["turn_queue"]).get("id", ""))
-	_consume_script_waits(next)
+	consume_script_waits(next)
 	if not next["scenario_ok"]: return next
 	_consume_script_departures(next)
 	if not next["scenario_ok"]: return next
@@ -52,11 +52,11 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 	# it before a second action or clear-victory query can observe the old roster.
 	# The separate first-battle pressure policy keeps its existing handoff seam.
 	if next.get("rule_adapter") == "winfail":
-		_maintain_script_pressure(next)
+		maintain_script_pressure(next)
 		if not next["scenario_ok"]: return next
 	var result := BattleScenarioRuleAdapter.victory_state(next, next.get("escape_zone", []))
 	if not result.is_empty():
-		BattlePlayLoop._clear_extra_action(next)
+		BattlePlayLoop.clear_extra_action(next)
 		# Scenario rules record the deciding status and apply its result chain once
 		# (next level event, hand-off carry, dialogue) before the loop freezes.
 		var committed := BattleScenarioRuleAdapter.commit_outcome(next)
@@ -67,7 +67,7 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 		# The already-decided win/fail chain may itself order a retreat. Finish its
 		# presence cleanup once, before freezing, without firing another victory.
 		_consume_script_departures(next)
-		_consume_script_waits(next)
+		consume_script_waits(next)
 		if not next["scenario_ok"]: return next
 		next["battle_outcome"] = result
 		next["interaction"] = "battle_result"
@@ -76,9 +76,9 @@ static func _resolve_outcome(next: Dictionary) -> Dictionary:
 		next["command_menu"] = {"commands": []}
 		if BattleOutcome.is_victory(result) and not next.get("settlement", {}).get("pending", []).is_empty():
 			next["settlement"]["closed"] = false
-		BattleLoopAI._prune_ai_calls(next)
+		BattleLoopAI.prune_ai_calls(next)
 	elif old_current != str(CoreTurnQueue.current(next["turn_queue"]).get("id", "")):
-		return BattlePlayLoop._finish_ai_or_continue(next)
+		return BattlePlayLoop.finish_ai_or_continue(next)
 	return next
 
 
@@ -91,32 +91,32 @@ static func _consume_script_actors(loop: Dictionary) -> void:
 	loop.merge(result["loop"], true)
 
 
-static func _consume_script_waits(loop: Dictionary) -> void:
+static func consume_script_waits(loop: Dictionary) -> void:
 	if BattleOutcome.decided(loop): return
 	var proposal := ScriptWait.prepare(loop)
 	if not proposal["ok"]:
 		loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": proposal["reason"]}, true)
 		return
-	for id in proposal["values"]: BattlePlayLoop._unit(loop, id)["ai_wait_remaining"] = proposal["values"][id]
+	for id in proposal["values"]: BattlePlayLoop.unit_ref(loop, id)["ai_wait_remaining"] = proposal["values"][id]
 	loop["script_wait_cursor"] = proposal["cursor"]
 	loop["last_script_wait"] = proposal["receipt"]
 
 
-static func _commit_departures(loop: Dictionary, ids: Array, source: String, key: String = "") -> bool:
+static func commit_departures(loop: Dictionary, ids: Array, source: String, key: String = "") -> bool:
 	var proposal := Presence.prepare(loop, ids, source, key)
 	if not proposal["ok"]:
 		loop.merge({"scenario_ok": false, "scenario_error": proposal["reason"], "interaction": "scenario_error"}, true)
 		return false
 	if not proposal["changed"]: return false
-	for change in proposal["units"]: BattlePlayLoop._unit(loop, change["id"]).merge(change["changes"], true)
+	for change in proposal["units"]: BattlePlayLoop.unit_ref(loop, change["id"]).merge(change["changes"], true)
 	loop["turn_queue"] = proposal["queue"]
 	loop["last_departure"] = proposal["receipt"]
 	loop["departure_sequence"] = proposal["receipt"]["sequence"]
-	if proposal["receipt"]["unit_ids"].has(loop["extra_action"]["owner_id"]): BattlePlayLoop._clear_extra_action(loop)
+	if proposal["receipt"]["unit_ids"].has(loop["extra_action"]["owner_id"]): BattlePlayLoop.clear_extra_action(loop)
 	if proposal["receipt"]["unit_ids"].has(loop.get("selected_unit_id", "")):
 		loop.merge({"selected_unit_id": "", "interaction": "ai_resolving", "pending_move": false,
 			"moved_this_action": false, "attacked_this_action": false, "command_menu": {"commands": []}, "give_session": {}}, true)
-	BattleLoopAI._prune_ai_calls(loop)
+	BattleLoopAI.prune_ai_calls(loop)
 	return true
 
 
@@ -130,11 +130,11 @@ static func _consume_script_departures(loop: Dictionary) -> void:
 		if not index is int or index < 0 or index >= fired.size() or fired[index].get("key") != request["key"]:
 			loop.merge({"scenario_ok": false, "scenario_error": "invalid_departure_firing", "interaction": "scenario_error"}, true)
 			return
-		_commit_departures(loop, request["unit_ids"], "winfail", request["key"])
+		commit_departures(loop, request["unit_ids"], "winfail", request["key"])
 		if not loop["scenario_ok"]: return
 
 
-static func _maintain_script_pressure(loop: Dictionary) -> void:
+static func maintain_script_pressure(loop: Dictionary) -> void:
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false): return
 	if BattleScenarioRuleAdapter.reinforcement_deficits(loop).is_empty(): return
 	var proposed := BattlePlayLoop.copy(loop)
@@ -171,7 +171,7 @@ static func _materialize_script_pressure(loop: Dictionary) -> void:
 			AINavigationRules.initialize(recruit, loop["ai_profiles"]["actors"][recruit["actor_id"]]["profile"])
 			# The birth 0x407cc0 rolls a pmEnemy's carry (0x407c40) before its level adjustment 0x40e870.
 			recruit["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
-			BattleLoopRewards._initial_carry(loop, recruit)
+			BattleLoopRewards.initial_carry(loop, recruit)
 			var insertion := ScriptWait.next_insert(loop, class_id)
 			if insertion >= 0:
 				var request: Dictionary = loop["winfail_runtime"]["inserts"][insertion]

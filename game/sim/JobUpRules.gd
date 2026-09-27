@@ -28,6 +28,7 @@ const CONDITION_MARGIN := 50
 const SOURCE_TEMPLATE_DIR := "res://content/generated/hsl/actors/%s.json"
 const SOURCE_TEMPLATE_SCHEMA := "hsl_source_actor_template.v1"
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ADDITIVE_SOURCE_KEYS := ["attack_power", "magic_attack_power", "defense", "speed", "hit_point", "magic_point", "avoid_hit_ratio", "attack_back", "attack_damagex2"]
 
 
@@ -76,7 +77,7 @@ static func load_source_template(actor_id: String) -> Dictionary:
 	var path := SOURCE_TEMPLATE_DIR % actor_id
 	if not FileAccess.file_exists(path):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY or str((parsed as Dictionary).get("schema", "")) != SOURCE_TEMPLATE_SCHEMA:
 		return {}
 	var actor: Variant = (parsed as Dictionary).get("actor", {})

@@ -1,10 +1,8 @@
 # 原作对白框：位置、顶槽、换行、四行窗口与上卷、擦出与淡入淡出
 
-> evidence: static-derived; runtime-measured: 2026-09-24 用户录屏 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头 · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x455612, 0x45f5b4 · tools: run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-25
+> evidence: static-derived; runtime-measured: 2026-09-24 原版录屏 307.9–309.9 s 与 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头; negative-evidence: 无方框 SHP · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145b4, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4146e0, 0x41475b, 0x414794, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x455612, 0x45f5b4, 0x460884 · tools: capture_dialogue_selection_review.gd, run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-25
-
-**static-derived**（objdump／r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无 Wine、无有界执行）＋ **runtime-measured**（用户原版录屏 `录屏2026-09-24 中午12.03.22.mov`，游戏区 `crop=1280:960:112:140` 缩到 640×480，按源帧逐帧量）。回答[差异清单](parity_gap_inventory.md)的 `dialogue-top-slot`、`dialogue-timing`、`dialogue-line-breaks`。翻页提示 ▼／□ 另见[翻页提示包](original_dialogue_marker.md)。
+**static-derived**（objdump／r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无 Wine、无有界执行）＋ **runtime-measured**（原版录屏 `录屏2026-09-24 中午12.03.22.mov`，游戏区 `crop=1280:960:112:140` 缩到 640×480，按源帧逐帧量）。对应[差异清单](parity_gap_inventory.md)的 `dialogue-top-slot`、`dialogue-timing`、`dialogue-line-breaks`、`dialogue-continue-marker`。
 
 ## 一句话
 
@@ -72,7 +70,19 @@ WINFAIL051 消息 369（雷歐納德「……原來……弟兄們！你們也�
 | 翻页 | 399.73 s 确认后文字逐行上卷：名字行被文字窗顶 337 裁掉、底边 449 处新行由下往上露出；4 行上卷到 400.53 s 停（0.80 s），停后显示正文第 4–7 行与 □ | 上卷 3 px/tick，4 行 40 tick × 19.4 ms ＝ 0.78 s；□ 为最后一屏 |
 | 淡入 | 框体平均亮度 398.61→399.19 s 逐帧上升 | 16 tick × 19.4 ms ＝ 0.31 s（dialogue_death 包量得 0.29 s）|
 
-录屏里同一段也有 ▼（399.29–399.44 s 亮、399.46–399.64 s 灭），与[翻页提示包](original_dialogue_marker.md)的 10 tick 闪烁一致。录屏第一、二战没有 `actShapeMessage` 与 `defNoOne` 旁白，顶槽与旁白居中只有静态证据；18.5–25.4 s 等全部 `actMessage` 台词都在底部，与静态规则一致。
+录屏里同一段也有 ▼（399.29–399.44 s 亮、399.46–399.64 s 灭），与下节的 10 tick 闪烁一致。录屏第一、二战没有 `actShapeMessage` 与 `defNoOne` 旁白，顶槽与旁白居中只有静态证据；18.5–25.4 s 等全部 `actMessage` 台词都在底部，与静态规则一致。
+
+## 翻页提示 ▼／□（static-derived＋runtime-measured）
+
+| 项 | 原版 | 地址／读数 |
+| --- | --- | --- |
+| 格位 | (`+4` ＋ `+0x70` − 30, `+8` ＋ `+0x74` − 30)，`+0x70`／`+0x74` 为框形状宽高（BOARD02 489×145，`0x414463` 写入）；底槽即屏幕 (603,435) | `0x414794–0x4147bf`；框左上 `0x4145b4` 起写入 |
+| 字形 | `+0xa0`（下一页正文指针）非空画 `0x476c58` 的 Big5 `A1 BF`「▼」，为空（最后一页）画 `0x476c54` 的 `A1 BC`「□」；都经文字例程 `0x460884`（模式 `0x1800000`）先在 (+1,+1) 用 `0x8430`、再在原位用 `0xffff` 各画一遍 | `0x4148ba–0x4148e0` |
+| 不是图片 | hsl.pak 4519 个 SHP 中 16–24 px 尺寸的全部形状里没有 20×20 空心方框（negative-evidence） | — |
+| 闪烁 | 擦出到头时 `0x4146e0` 置 `+0x98 = 0x000a000a`、`+0x94 = 1`；子状态 2 每 tick `word +0x98` 减一，归零重载 10 并翻转 `+0x94`，为 1 才画字：亮 10 tick、灭 10 tick | `0x41475b–0x414782`、`0x414788` |
+| 录屏实测（307.9–309.9 s，最后一页） | 白色 1 px 空心方框，白边 20×20、左上 (605,438)，右下一条灰阴影；亮 0.17–0.20 s、灭 0.17–0.20 s（tick 19.4 ms × 10 ＝ 0.194 s） | — |
+
+重制：`BattleDialogue` 的 `continue_label` 只在还有下一页时显示 `▼`（系统字＋`TEXT_SHADOW`，格位 `MARKER_CELL`）；最后一页显示 `end_marker`（按录屏墨迹画的 20×20 白框＋(+1,+1) 阴影框，墨迹在格位 ＋(2,3)，落在 (605,438)）；两者在擦出结束后按 `MARKER_BLINK_TICKS = 10` 亮灭（`marker_shown`）。provisional：▼ 用系统字、原版位图字形未导入；□ 墨迹偏移 (2,3) 按录屏量。
 
 ## 重制
 
@@ -89,9 +99,11 @@ WINFAIL051 消息 369（雷歐納德「……原來……弟兄們！你們也�
 
 检查：`run_presentation_contract_tests.dialogue_contracts` 用录屏里的 369 当判据（首屏＝名字＋三行、确认后上卷四行到「看看地上……」「!!」），另有 19 字／38 半角断行、硬换行、只剩两行时只卷两行（前两行留在上面）、旁白四行无名字行、擦出 17→112、16 tick 淡入、上卷 3 px/tick 每 10 tick 一行。消融：行宽 40 字节 → 4 条失败；每次卷 3 行 → 5 条；擦出 6 px/tick → 1 条；淡入 18 tick → 2 条。
 
+对白与选择反馈的重制侧窗口回执：`tests/capture_dialogue_selection_review.gd`（长消息 369 两页、同消息刷新不回首页、暂停期间战斗状态不变）。
+
 **有意偏离（登记在差异清单）**：
 
-1. 专名保护：原版 38 字节断点会切开名字（语料里 17 句，如「雪｜拉」「通行｜證」）；重制在断点切开 `protected_words.json` 里的名字时把断点前移到名字前——用户 P9 实玩报过名字被拆，保留为重制改善。检查 `run_ui_class_contract_tests.word_breaks` 按源字符对照行首（插入的换行不再掩盖切开的名字）；消融：不前移 → 34 条失败（17 句 × 对白／旁白两框）。
+1. 专名保护：原版 38 字节断点会切开名字（语料里 17 句，如「雪｜拉」「通行｜證」）；重制在断点切开 `protected_words.json` 里的名字时把断点前移到名字前，作为重制改善保留。检查 `run_ui_class_contract_tests.word_breaks` 按源字符对照行首（插入的换行不再掩盖切开的名字）；消融：不前移 → 34 条失败（17 句 × 对白／旁白两框）。
 2. 即时确认：原版在擦出（状态 1）与上卷（状态 4）期间不读确认键；重制保持宿主的即时输入，擦出／上卷只是画面，确认立即翻到下一屏或下一句。
 3. 名字后的冒号用全角「：」（原版半角 `:`），避免改动所有读 `speaker_label` 的断言；字形仍是系统字，原版位图字库未导入（`bitmap-font` 条目）。
 

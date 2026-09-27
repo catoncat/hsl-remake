@@ -1,11 +1,11 @@
 extends RefCounted
 ## Battle loop inventory and equipment transactions: the shared player／AI item commit
-## (`_resolve_item_use`) and the player's Use, Drop, Give session
+## (`resolve_item_use`) and the player's Use, Drop, Give session
 ## (`begin_give` → `confirm_give*` → `finish_give`) and Equip (`change_equipment`:
 ## validate every current-equipment effect, then commit inventory, equipped codes and the
 ## refreshed attributes together), plus the equipment screen's projection of a carry into
 ## the live battle (`apply_battle_equipment_carry`). Each transaction ends in
-## BattlePlayLoop._settle_action, which owns the action budget and turn hand-off.
+## BattlePlayLoop.settle_action, which owns the action budget and turn hand-off.
 ## Static functions over the one loop dictionary; BattlePlayLoop forwards to them and
 ## stays the single mutable battle-state owner.
 ## provenance:
@@ -43,24 +43,24 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 
 static func use_item(loop: Dictionary, item_code: String, target_id: String = "", inventory_index: int = -1) -> Dictionary:
-	if not BattlePlayLoop._player_action_valid(loop, "action_menu"):
+	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
 	var unit_id := str(next.get("selected_unit_id", ""))
 	var recipient_id := target_id if target_id != "" else unit_id
 	if not recovery_target_ids(next).has(recipient_id):
 		return next
-	if _resolve_item_use(next, unit_id, recipient_id, item_code, inventory_index, true).is_empty(): return next
-	return BattlePlayLoop._settle_action(next, "use")
+	if resolve_item_use(next, unit_id, recipient_id, item_code, inventory_index, true).is_empty(): return next
+	return BattlePlayLoop.settle_action(next, "use")
 
 
-static func _resolve_item_use(loop: Dictionary, actor_id: String, recipient_id: String, item_code: String, inventory_index: int, spend: bool = false) -> Dictionary:
+static func resolve_item_use(loop: Dictionary, actor_id: String, recipient_id: String, item_code: String, inventory_index: int, spend: bool = false) -> Dictionary:
 	# Shared player/AI commit. The caller owns command eligibility and exactly one handoff.
 	# Only the player's Use passes `spend` (a use without effect still spends the item);
 	# the AI callers keep the refusal until AI-PRIO-2 decides their original behaviour.
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false) or ItemResolutionRules.state_error(loop) != "": return {}
-	var actor := BattlePlayLoop._unit(loop, actor_id)
-	var recipient := BattlePlayLoop._unit(loop, recipient_id)
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
+	var recipient := BattlePlayLoop.unit_ref(loop, recipient_id)
 	var proposed := ItemResolutionRules.prepare(actor,recipient,item_code,inventory_index,loop["consumables"].get(item_code,{}),loop["equipment_items"],loop[DamageRandomStream.LOOP_KEY],int(loop["item_use_sequence"])+1,spend)
 	if not proposed["ok"]: return {}
 	recipient.merge(proposed["target_changes"],true)
@@ -73,11 +73,11 @@ static func _resolve_item_use(loop: Dictionary, actor_id: String, recipient_id: 
 
 static func discard_item(loop: Dictionary, item_code: String, inventory_index: int = -1) -> Dictionary:
 	# Ordinary Drop changes only inventory. Give has its own checked session.
-	if not BattlePlayLoop._player_action_valid(loop, "action_menu"):
+	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
 	var unit_id := str(next.get("selected_unit_id", ""))
-	var actor := BattlePlayLoop._unit(next, unit_id)
+	var actor := BattlePlayLoop.unit_ref(next, unit_id)
 	var index := InventoryRules.find_item(actor["inventory"], int(item_code), inventory_index)
 	if index < 0:
 		return next
@@ -85,11 +85,11 @@ static func discard_item(loop: Dictionary, item_code: String, inventory_index: i
 	if not discarded["ok"]:
 		return next
 	actor["inventory"] = discarded["inventory"]
-	return BattlePlayLoop._settle_action(next, "drop")
+	return BattlePlayLoop.settle_action(next, "drop")
 
 
 static func begin_give(loop: Dictionary) -> Dictionary:
-	if not BattlePlayLoop._player_action_valid(loop, "action_menu"):
+	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
 	next["give_session"] = {"owner_id": next["selected_unit_id"], "action_used": false}
@@ -103,41 +103,41 @@ static func give_target_ids(loop: Dictionary) -> Array:
 
 
 static func confirm_give(loop: Dictionary, target_id: String, index: int, expected_code: int, target_index: int, expected_return: int, revision: int) -> Dictionary:
-	if not BattlePlayLoop._player_action_valid(loop, "give_session") or loop["give_session"].get("owner_id") != loop["selected_unit_id"] or revision != int(loop["item_revision"]):
+	if not BattlePlayLoop.player_action_valid(loop, "give_session") or loop["give_session"].get("owner_id") != loop["selected_unit_id"] or revision != int(loop["item_revision"]):
 		return BattlePlayLoop.copy(loop)
 	if not give_target_ids(loop).has(target_id) or not loop["equipment_items"].has(str(expected_code)) or (expected_return > 0 and not loop["equipment_items"].has(str(expected_return))):
 		return BattlePlayLoop.copy(loop)
-	var actor := BattlePlayLoop._unit(loop, str(loop["selected_unit_id"]))
-	var target := BattlePlayLoop._unit(loop, target_id)
+	var actor := BattlePlayLoop.unit_ref(loop, str(loop["selected_unit_id"]))
+	var target := BattlePlayLoop.unit_ref(loop, target_id)
 	if not InventoryRules.valid(actor.get("inventory")) or not InventoryRules.valid(target.get("inventory")):
 		return BattlePlayLoop.copy(loop)
 	var result := InventoryRules.exchange(actor["inventory"], index, expected_code, target["inventory"], target_index, expected_return)
 	if not result["ok"]:
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
-	BattlePlayLoop._unit(next, str(loop["selected_unit_id"]))["inventory"] = result["sender"]
-	BattlePlayLoop._unit(next, target_id)["inventory"] = result["receiver"]
+	BattlePlayLoop.unit_ref(next, str(loop["selected_unit_id"]))["inventory"] = result["sender"]
+	BattlePlayLoop.unit_ref(next, target_id)["inventory"] = result["receiver"]
 	next["give_session"]["action_used"] = ActionBudgetRules.give_used(bool(next["give_session"]["action_used"]), expected_code, int(result["returned"]))
 	next["item_revision"] = int(next["item_revision"]) + 1
 	return next
 
 
 static func finish_give(loop: Dictionary, revision: int) -> Dictionary:
-	if not BattlePlayLoop._player_action_valid(loop, "give_session") or loop["give_session"].get("owner_id") != loop["selected_unit_id"] or revision != int(loop["item_revision"]):
+	if not BattlePlayLoop.player_action_valid(loop, "give_session") or loop["give_session"].get("owner_id") != loop["selected_unit_id"] or revision != int(loop["item_revision"]):
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
 	var used := bool(next["give_session"]["action_used"])
 	next["give_session"] = {}
 	next["item_revision"] = int(next["item_revision"]) + 1
 	next["interaction"] = "action_menu"
-	return BattlePlayLoop._settle_action(next, "give", used)
+	return BattlePlayLoop.settle_action(next, "give", used)
 
 
 static func change_equipment(loop: Dictionary, slot: String, inventory_index: int, expected_code: int) -> Dictionary:
-	if not BattlePlayLoop._player_action_valid(loop, "action_menu"):
+	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)
 	var id := str(loop.get("selected_unit_id", ""))
-	var actor := BattlePlayLoop._unit(loop, id)
+	var actor := BattlePlayLoop.unit_ref(loop, id)
 	if ProgressionRules.refresh_input_error(actor, loop["equipment_items"]) != "":
 		return BattlePlayLoop.copy(loop)
 	if StaminaRules.input_error(actor, loop["equipment_items"]) != "": return BattlePlayLoop.copy(loop)
@@ -151,7 +151,7 @@ static func change_equipment(loop: Dictionary, slot: String, inventory_index: in
 	if not loop["weapon_ranges"].has(str(weapon)):
 		return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
-	var changed := BattlePlayLoop._unit(next, id)
+	var changed := BattlePlayLoop.unit_ref(next, id)
 	changed["inventory"] = result["inventory"]
 	changed["equipment"] = result["equipment"]
 	changed["weapon_code"] = weapon
@@ -167,7 +167,7 @@ static func change_equipment(loop: Dictionary, slot: String, inventory_index: in
 	changed.merge(ProgressionRules.refresh_growth_stats(changed, next["equipment_items"]), true)
 	# Confirmed exchange, not a UI-held item. Preserve this round's queue snapshot.
 	# Native ordinary Equip is free; confirmation/move rollback are remake choices.
-	return BattlePlayLoop._settle_action(next, "equip")
+	return BattlePlayLoop.settle_action(next, "equip")
 
 
 static func recovery_target_ids(loop: Dictionary) -> Array:
@@ -180,7 +180,7 @@ static func recovery_target_ids(loop: Dictionary) -> Array:
 ## not enter a 0x20000 cell unless the user is no_block. Body-edge distance 1 stands in for the
 ## flood; a large user's range-2 flood is not modelled.
 static func _item_recipient_ids(loop: Dictionary, use: bool) -> Array:
-	var actor := BattlePlayLoop._unit(loop, str(loop.get("selected_unit_id", "")))
+	var actor := BattlePlayLoop.unit_ref(loop, str(loop.get("selected_unit_id", "")))
 	if not Presence.living(actor):
 		return []
 	var targets: Array = []

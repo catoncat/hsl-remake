@@ -6,13 +6,14 @@ extends RefCounted
 ##   layout: static-derived content/imported/hsl/shared/command_menu/native_layout.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/native_presentation_helpers.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SOURCE := "res://content/imported/hsl/shared/command_menu/native_layout.json"
 static var _source: Dictionary = {}
 
 
 static func data() -> Dictionary:
 	if _source.is_empty():
-		_source = JSON.parse_string(FileAccess.get_file_as_string(SOURCE))
+		_source = ContentPaths.read_json(SOURCE)
 	return _source
 
 

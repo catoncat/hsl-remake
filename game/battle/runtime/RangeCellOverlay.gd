@@ -17,6 +17,7 @@ extends Node2D
 ##     (pulse counter 0x4c1a7c walks the 17-value triangle live)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/shared/range_cells/manifest.json"
 const PALETTES: PackedStringArray = ["move", "attack", "magic", "special"]
@@ -41,7 +42,7 @@ var _tick: int = 0
 
 static func manifest() -> Dictionary:
 	if _manifest.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+		var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 		assert(parsed is Dictionary and (parsed as Dictionary).has("palettes"), "range cell manifest missing: " + MANIFEST_PATH)
 		_manifest = parsed
 	return _manifest

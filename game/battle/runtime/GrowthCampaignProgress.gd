@@ -32,7 +32,7 @@ func deferred_rewards_ready() -> bool:
 	if settlement.get("pending", []).is_empty() or not settlement.get("closed", false): return false
 	if not BattleOutcome.won(loop) or not runtime.get_node("BattlePresentation").battle_finished: return false
 	if separate_party(campaign, str(runtime.scenario_path)) or not runtime.settlement_controller.quiet(): return false
-	if runtime.BattlePlayLoop._reward_input_error(loop) != "": return false
+	if runtime.BattlePlayLoop.reward_input_error(loop) != "": return false
 	return str(next_destination(campaign, loop, str(runtime.scenario_path)).get("path", "")) != ""
 
 

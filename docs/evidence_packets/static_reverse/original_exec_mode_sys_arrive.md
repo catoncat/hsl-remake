@@ -1,32 +1,45 @@
-# Winfail Exec Mode and System Arrival Position
+# Winfail 执行模式与系统到达点：actSetPlayerExecMode／actRandomSetSysArrivePos／actCheckPlayerArriveSysPos
 
-> evidence: static-derived · status: live · functions: 0x44fad0, 0x450840, 0x458c10, 0x458c80 · updated: 2026-09-20
+> evidence: static-derived; resource-derived: ACTION.H 值与 WINFAIL017／902 用法; provisional: 同一时钟种子选中哪一组 · status: live · functions: 0x44fad0, 0x450840, 0x458c10, 0x458c80 · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
 
-## Scope
+## 结论
 
-This packet records the resource-derived argument shapes and bounded static-derived reads for the three winfail tokens added for levels 17 and 902. The native global random sequence is not reconstructed; the remake boundary is explicit below.
+- 原版 `actSetPlayerExecMode` 把对象 `+0x64` 写成 3（参数 0）或 5（参数非 0），与 `actSetPlayerMode` 分开；`actRandomSetSysArrivePos` 用一次 `0x458c80(N)` 从 N 组候选里选一组、两轴各按 32 像素对齐存进全局；`actCheckPlayerArriveSysPos` 以同样对齐的对象像素比较（static-derived）。
+- 重制 `game/sim/WinfailActions.gd`／`WinfailScenarioRules.gd` 按此记录 `player_exec_mode` 与系统到达点，抽取走 loop 的全局流 `global_rng`（static-derived）。
+- 差异：抽取之前的全局流消费（AI 决策链、动画延迟）尚未与原版一致，同一时钟种子不一定选中原版那一组（provisional）。
 
-## Resource uses
+## 证据
 
-`ACTION.H` assigns the `0x450840` dispatcher cases:
+### resource-derived
 
-- `actSetPlayerExecMode` = 83 (`0x53`), arguments `[code][serial][mode]`;
-- `actRandomSetSysArrivePos` = 86 (`0x56`), arguments `[num][x1][y1][x2][y2]...`;
-- `actCheckPlayerArriveSysPos` = 87 (`0x57`), arguments `[code][serial]`.
+| token | 值 | 参数 |
+| --- | --- | --- |
+| `actSetPlayerExecMode` | 83（`0x53`） | `[code][serial][mode]` |
+| `actRandomSetSysArrivePos` | 86（`0x56`） | `[num][x1][y1][x2][y2]...` |
+| `actCheckPlayerArriveSysPos` | 87（`0x57`） | `[code][serial]` |
 
-`WINFAIL017` uses `actSetPlayerExecMode SID_嚎,1,0` in its win section and mode 1 after the scripted arrival. `WINFAIL902` uses mode 1 after installing 嚎, chooses five system-arrival candidates, and checks the selected point for each party actor before granting item 281. These script uses are resource-derived.
+`WINFAIL017` 在 win 段用 `actSetPlayerExecMode SID_嚎,1,0`，脚本到达后用 mode 1；`WINFAIL902` 安装 嚎 后用 mode 1，从五个系统到达候选中选一，逐个检查队员是否到达选中点后给物品 281。
 
-## Static dispatcher read
+### static-derived（`0x450840` 分派）
 
-The available decompilation of `0x450840.c` shows:
+| case | 原版 |
+| --- | --- |
+| `0x53` | `0x44fad0(code, serial)` 找 actor，第三参为 0 时对象 `+0x64`（十进制 100）写 3，非 0 写 5；与 case `0x42`（`actSetPlayerMode`，写 player-table 模式并改表现／AI 角色）分开 |
+| `0x56` | 第一参为候选数，`0x458c80(count)`（调用点 `0x451787`）选一组 (x,y)，各与 `0xffffffe0` 相与后写全局 `0x4c2968`／`0x4c296c`：低 5 位丢弃，存的点按 32 像素对齐 |
+| `0x57` | 找 actor，比较对象 `+0x4`／`+0x8` 与 `0xffffffe0` 相与后的值与两个全局：是对齐像素比较，不是格坐标比较 |
+| `0x458c80` | 界为 0 返回 0；否则调 `0x458c10`，界 < `0x10000` 时取低 16 位对界取模，更大时取全值取模 |
 
-- Case `0x53` resolves the actor by `0x44fad0(code, serial)` and writes object offset `+0x64` (decimal 100) to 3 when the third argument is zero, or 5 when it is nonzero. This is separate from case `0x42` / `actSetPlayerMode`, which writes the player-table mode and changes the presentation/AI role. The remake therefore records the source execution mode on the unit and does not change `battle_actor_role` or `player_commandable`.
-- Case `0x56` reads the first argument as a candidate count, calls `0x458c80(count)`, selects the corresponding (x,y) pair, and writes both coordinates to globals `0x4c2968` and `0x4c296c` after masking each with `0xffffffe0`. The low five bits are therefore discarded and the stored system point is 32-pixel aligned.
-- Case `0x57` resolves the actor and compares its object x/y fields at `+0x4` and `+0x8`, each masked with `0xffffffe0`, to those two globals. The condition is an aligned pixel comparison, not a direct grid-coordinate comparison.
-- `0x458c80` returns zero for a zero bound; otherwise it calls `0x458c10` and returns the low 16 bits modulo the bound for bounds below `0x10000`, or the full value modulo the bound for larger bounds. The original global RNG state and sequence are not established here.
+## 重制接线
 
-## Runtime boundary
+- `game/sim/WinfailActions.gd`：`actSetPlayerExecMode` 在解析出的单位上写 `player_exec_mode` 与原生 3／5 值，记 `exec_mode_changes`；不改 `battle_actor_role` 与 `player_commandable`。
+- `actRandomSetSysArrivePos` 在 `winfail_runtime.system_arrival_position` 与 `system_arrival_position_changes` 记对齐后的候选表、选中下标、选中像素、触发序号与全局流 `global_rng`（`GlobalRandomStream`，原版 `0x4795d4`／`0x4795d8`）前后两个字；`actCheckPlayerArriveSysPos` 把单位格坐标按 `cell_size` 换成像素后与同一对齐点比较。
+- 边界 id `exec_mode`、`random_sys_arrive_pos` 见 [winfail_claim_limits](winfail_claim_limits.md)。
 
-`WinfailScenarioRules` applies `actSetPlayerExecMode` to the resolved unit(s) as `player_exec_mode` plus the native 3/5 value, with an immutable `exec_mode_changes` receipt. It intentionally leaves faction and commandability untouched because those belong to `actSetPlayerMode`.
+## 复现
 
-`actRandomSetSysArrivePos` stores the aligned candidate list, selected index, selected pixel position, firing index, and RNG before/after values in `winfail_runtime.system_arrival_position` and `system_arrival_position_changes`. The pick is one `rand(N)` (0x458c80, called at 0x451787) on the loop's global stream `global_rng` (`GlobalRandomStream`, the original's words 0x4795d4／0x4795d8; lane RNG-A 2026-09-25), and the before/after values are that stream's two words. The draw itself is static-derived; which pair a given clock seed picks stays provisional, because the global draws before it (AI decision chain, animation delays) are not yet the original's. `actCheckPlayerArriveSysPos` compares the live resolved unit's grid position converted by `cell_size` to the same aligned pixel position.
+`tools/godot.sh --headless --script res://tests/run_winfail_rules_tests.gd`（`_exec_mode_and_system_arrival`）
+
+## 边界
+
+- 原版全局随机序列未重建；抽取前的全局流消费与原版不同，选中哪一组仍是 provisional。
+- 执行模式 3／5 的消费者（该字影响哪些对象过程分支）本包未读。

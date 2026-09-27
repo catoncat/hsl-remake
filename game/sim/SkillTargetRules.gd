@@ -1,6 +1,7 @@
 extends RefCounted
 const Footprint = preload("res://game/sim/FootprintRules.gd")
 const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 ## Pure source-backed skill targeting. Native mode selection is separate from
 ## the current battle-role adapter and the subset of effects actually implemented.
 ## `terrain` (optional, RangePropagationRules.player_skill_terrain) switches the cast range
@@ -123,7 +124,7 @@ static func line_cells(center: Vector2i, size: int, origin: Vector2i, map_size: 
 	var result: Array = []
 	for index in range(1 if step == Vector2i.ZERO else size):
 		var cell: Vector2i = center + step * index
-		if not _inside(cell, map_size): break
+		if not inside(cell, map_size): break
 		if terrain.has("words") and not coverage.has(cell): continue
 		result.append(cell)
 	return result
@@ -139,14 +140,14 @@ static func effect_cells(center: Vector2i, fields: Dictionary, data: Dictionary,
 		if not origin is Vector2i: return []
 		return line_cells(center, int(pattern["size"]), origin, map_size, terrain if area else {}, mode)
 	if area:
-		if not _inside(center, map_size): return []
+		if not inside(center, map_size): return []
 		return RangePropagationRules.cells(RangePropagationRules.area_coverage(pattern["data"], center, terrain["words"], map_size, mode))
 	var result: Array = []
 	var half := int(pattern["size"]) / 2
 	for y in range(int(pattern["size"])):
 		for x in range(int(pattern["size"])):
 			var cell := center + Vector2i(x - half, y - half)
-			if int(pattern["data"][y][x]) > 0 and _inside(cell, map_size): result.append(cell)
+			if int(pattern["data"][y][x]) > 0 and inside(cell, map_size): result.append(cell)
 	return result
 
 
@@ -167,7 +168,7 @@ static func candidate_centers(caster: Dictionary, units: Array, fields: Dictiona
 	var pattern: Dictionary = data["ranges"][fields["effect_range"]]
 	var half := int(pattern["size"]) / 2
 	for unit in units:
-		if not _living(unit) or unit.get("battle_actor_role") not in ROLES or not side_matches(caster, unit, fields, data): continue
+		if not BattlePresenceRules.living(unit) or unit.get("battle_actor_role") not in ROLES or not side_matches(caster, unit, fields, data): continue
 		for coord in Footprint.cells(unit, origin if unit["id"] == caster["id"] else null):
 			if is_line(pattern):
 				# Inverse line: a center reaches this cell only along the four axes; test
@@ -175,7 +176,7 @@ static func candidate_centers(caster: Dictionary, units: Array, fields: Dictiona
 				for step in [Vector2i.ZERO, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 					for index in range(1 if step == Vector2i.ZERO else int(pattern["size"])):
 						var center: Vector2i = coord - step * index
-						if _inside(center, map_size) and not seen.has(center) and line_cells(center, int(pattern["size"]), origin, map_size).has(coord):
+						if inside(center, map_size) and not seen.has(center) and line_cells(center, int(pattern["size"]), origin, map_size).has(coord):
 							seen[center] = true
 							result.append(center)
 				continue
@@ -183,7 +184,7 @@ static func candidate_centers(caster: Dictionary, units: Array, fields: Dictiona
 				for x in range(int(pattern["size"])):
 					if int(pattern["data"][y][x]) <= 0: continue
 					var center: Vector2i = coord - Vector2i(x - half, y - half)
-					if _inside(center, map_size) and not seen.has(center):
+					if inside(center, map_size) and not seen.has(center):
 						seen[center] = true
 						result.append(center)
 	result.sort_custom(func(a, b): return a.y < b.y or (a.y == b.y and a.x < b.x))
@@ -193,7 +194,7 @@ static func candidate_centers(caster: Dictionary, units: Array, fields: Dictiona
 ## The cast range. With `terrain` the cells are the 0x40f8b0 coverage (mode `cast_mode`,
 ## flag 0): walls stop it, occupants never do; the origin keeps the remake rule below.
 static func cells(origin: Vector2i, fields: Dictionary, data: Dictionary, map_size: Vector2i, terrain: Dictionary = {}) -> Array:
-	if definition_error(fields, data) != "" or not _inside(origin, map_size):
+	if definition_error(fields, data) != "" or not inside(origin, map_size):
 		return []
 	var pattern: Dictionary = data["ranges"][fields["range"]]
 	var support := is_support(fields, data)
@@ -203,17 +204,13 @@ static func cells(origin: Vector2i, fields: Dictionary, data: Dictionary, map_si
 	for y in range(int(pattern["size"])):
 		for x in range(int(pattern["size"])):
 			var point := origin + Vector2i(x - half, y - half)
-			if int(pattern["data"][y][x]) > 0 and (point != origin or support or self_centered(fields)) and _inside(point, map_size) and (not terrain.has("words") or reached.has(point)):
+			if int(pattern["data"][y][x]) > 0 and (point != origin or support or self_centered(fields)) and inside(point, map_size) and (not terrain.has("words") or reached.has(point)):
 				result.append(point)
 	return result
 
 
-static func _inside(point: Vector2i, map_size: Vector2i) -> bool:
+static func inside(point: Vector2i, map_size: Vector2i) -> bool:
 	return point.x >= 0 and point.y >= 0 and point.x < map_size.x and point.y < map_size.y
-
-
-static func _living(unit: Dictionary) -> bool:
-	return Footprint.Presence.living(unit)
 
 
 static func is_support(fields: Dictionary, data: Dictionary) -> bool:
@@ -255,7 +252,7 @@ static func target_error(caster: Dictionary, target: Dictionary, origin: Vector2
 		return error
 	if caster.get("battle_actor_role") not in ROLES or target.get("battle_actor_role") not in ROLES:
 		return "unsupported_target_role"
-	if not _living(caster) or not _living(target):
+	if not BattlePresenceRules.living(caster) or not BattlePresenceRules.living(target):
 		return "target_unavailable"
 	if str(caster.get("id", "")) == "" or str(target.get("id", "")) == "":
 		return "invalid_target_identity"

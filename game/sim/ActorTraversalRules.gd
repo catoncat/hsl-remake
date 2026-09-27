@@ -8,6 +8,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const HARD_BLOCK := 0x4000
 const NO_STOP := 0x100000
 const MAP_FLAGS := 0x974000
@@ -22,7 +23,7 @@ const FIXTURE_SIDES := {"npc": 0x40000}
 static func trait_error(value: Variant) -> String:
 	if not value is Dictionary or not value.get("flying") is bool or not value.get("no_block") is bool:
 		return "missing_actor_traversal"
-	var size := SkillResourceRules._integer(value.get("size_type"))
+	var size := Values.non_negative_int(value.get("size_type"))
 	if size < 0: return "invalid_actor_size"
 	if size not in [0,1]: return "unsupported_actor_size"
 	return ""
@@ -61,11 +62,11 @@ static func mode(actor: Dictionary) -> int:
 
 static func tile_error(tile: Variant) -> String:
 	if not tile is Dictionary: return "invalid_traversal_tile"
-	var cost := SkillResourceRules._integer(tile.get("move_cost", 1))
+	var cost := Values.non_negative_int(tile.get("move_cost", 1))
 	if cost <= 0 or cost > 100: return "invalid_ai_move_cost"
-	var flags := SkillResourceRules._integer(tile.get("movement_flags", 0))
+	var flags := Values.non_negative_int(tile.get("movement_flags", 0))
 	if flags < 0 or (flags & ~MAP_FLAGS) != 0: return "invalid_ai_movement_flags"
-	var elevation := SkillResourceRules._integer(tile.get("elevation", 0))
+	var elevation := Values.non_negative_int(tile.get("elevation", 0))
 	if elevation < 0 or elevation > 255: return "invalid_traversal_height"
 	if tile.has("blocks_movement") and not tile["blocks_movement"] is bool: return "invalid_traversal_blocker"
 	return ""

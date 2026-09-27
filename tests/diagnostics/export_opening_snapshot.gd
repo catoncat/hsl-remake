@@ -126,7 +126,7 @@ func _run(path: String, mode: String, seed: int, with_bounds: bool) -> Dictionar
 	for unit in loop["units"]: templates[str(unit["id"])] = _plain(unit.get("inventory", []))
 	loop = BattlePlayLoop.initialize_roster_growth(loop)
 	if not bool(loop.get("scenario_ok", false)): return {"error": "births:%s" % str(loop.get("scenario_error", ""))}
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	loop = BattlePlayLoop.begin_battle(loop)
 	var layout := CoreTurnQueue.registry_layout(loop["units"])
 	var units: Array = []
@@ -240,7 +240,7 @@ func _variant(loop: Dictionary, unit: Dictionary, reward: Dictionary, target: Ar
 	for key in ["level", "exp", "stamina", "kill_exp"]: next[key] = result[key]
 	for key in EntryGrowthRules.KEYS: next["combat_profile"][key] = result["attributes"][key]
 	if ProgressionRules.refresh_input_error(next, loop["equipment_items"]) != "": return {}
-	next = ProgressionRules._refreshed_growth_stats(next, loop["equipment_items"])
+	next = ProgressionRules.refreshed_growth_stats(next, loop["equipment_items"])
 	next["hp"] = next["max_hp"]
 	next["mp"] = next["max_mp"]
 	var bound := {}

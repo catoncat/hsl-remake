@@ -44,17 +44,17 @@ func run() -> void:
 	current_scene = scene
 	await process_frame
 	await process_frame
-	var leonard: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var leonard: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	leonard["level"] = 3
 	scene.play_loop["gold"] = 275
 	scene.play_loop["turn"] = 9
 	# Decide the battle the product way: the boss falls, the PlayLoop resolves the
 	# outcome and commits WINFAIL052 win_0, whose chain (378) plays as a script
 	# cutscene before the result page.
-	var emperor: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "emperor025")
+	var emperor: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "emperor025")
 	emperor["hp"] = 0
 	emperor["defeated"] = true
-	scene.apply_loop(scene.BattlePlayLoop._resolve_outcome(scene.play_loop), "test")
+	scene.apply_loop(scene.BattlePlayLoop.resolve_outcome(scene.play_loop), "test")
 	check(BattleOutcome.of(scene.play_loop) == BattleOutcome.VICTORY_BOSS, "the fallen boss decides the level-52 victory")
 	var view = scene.get_node("BattlePresentation")
 	var opening_coordinator = scene.opening_coordinator
@@ -184,7 +184,7 @@ func run() -> void:
 	for actor in preview.play_loop["units"]:
 		if actor["battle_actor_role"]==preview.BattlePlayLoop.ROLE_ENEMY:
 			actor["hp"]=0;actor["defeated"]=true
-	preview.apply_loop(preview.BattlePlayLoop._resolve_outcome(preview.play_loop), "test")
+	preview.apply_loop(preview.BattlePlayLoop.resolve_outcome(preview.play_loop), "test")
 	preview.apply_loop(preview.play_loop, "test")
 	frames=0
 	while frames<6000 and not preview.get_node("BattlePresentation").battle_finished:

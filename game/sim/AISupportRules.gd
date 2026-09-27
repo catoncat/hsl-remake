@@ -8,12 +8,13 @@ const AIPriorityRules = preload("res://game/sim/AIPriorityRules.gd")
 const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const SEARCH_RADIUS := 8
 
 
 static func profile_error(profile: Dictionary, include_buffs: bool = false) -> String:
 	for key in (["ai_help_otherhp", "ai_help_status", "ai_help_attack"] if include_buffs else ["ai_help_otherhp", "ai_help_status"]):
-		var value := SkillResourceRules._integer(profile.get(key))
+		var value := Values.non_negative_int(profile.get(key))
 		if value < 0 or value > 100: return "invalid_ai_support_" + key
 	return ""
 
@@ -27,7 +28,7 @@ static func next_check(profile: Dictionary, attempted: int, roll: int, rng: Vari
 		if roll <= int(profile[{4: "ai_help_otherhp", 8: "ai_help_status", 16: "ai_help_attack"}[flag]]):
 			mode = {4: 3, 8: 4, 16: 6}[flag]
 			break
-		roll = AIDecisionRules._draw(99, rng, draws) + 1
+		roll = AIDecisionRules.recorded_draw(99, rng, draws) + 1
 	return {"mode": mode, "attempted": attempted, "next_roll": roll, "draws": draws,
 		"source": "0x440e3d..0x440ef1" if include_buffs else "0x440e3d..0x440eb5"}
 

@@ -72,7 +72,7 @@ func inventory_cases() -> void:
 
 func equipment_cases() -> void:
 	var loop := controlled()
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	actor["inventory"] = [241, 3, 241, 246, 0, 0, 0, 0]
 	actor["hp"] = 17
 	loop["pending_move"] = true
@@ -102,7 +102,7 @@ func equipment_cases() -> void:
 	var player_slot: Dictionary = rebuilt["slots"].filter(func(entry): return entry["id"] == "leonard")[0]
 	check(player_slot["live_speed"] == 16, "next-round rebuild consumes equipped speed")
 	var full := original.duplicate(true)
-	BattlePlayLoop._unit(full, "leonard")["inventory"] = [241, 241, 241, 241, 241, 241, 241, 3]
+	BattlePlayLoop.unit_ref(full, "leonard")["inventory"] = [241, 241, 241, 241, 241, 241, 241, 3]
 	var full_swap := BattlePlayLoop.change_equipment(full, "weapon", 7, 3)
 	check(BattlePlayLoop.unit(full_swap, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 2], "full bag exchange uses selected item's freed slot")
 	check(BattlePlayLoop.change_equipment(full, "head", -1, 0) == full, "full bag cannot lose an unequipped helmet")
@@ -121,7 +121,7 @@ func equipment_cases() -> void:
 	check(BattlePlayLoop.change_equipment(locked, "weapon", 1, 3) == locked, "old equipment lock rejects complete transaction")
 	for field in ["attack_power", "has_magic", "base_resist_by_type"]:
 		var incomplete := original.duplicate(true)
-		var incomplete_unit := BattlePlayLoop._unit(incomplete, "leonard")
+		var incomplete_unit := BattlePlayLoop.unit_ref(incomplete, "leonard")
 		incomplete_unit["growth_profile"]["source"].erase(field)
 		incomplete_unit["pending_stat_points"] = 5
 		incomplete_unit["exp"] = 99
@@ -142,10 +142,10 @@ func equipment_cases() -> void:
 	wrong_job["growth_profile"]["job_code"] = 83
 	check(EquipmentRules.replace(wrong_job, "weapon", 1, 3, original["equipment_items"])["reason"] == "wrong_job", "class eligibility is checked before replacement")
 	var enemy := original.duplicate(true)
-	BattlePlayLoop._unit(enemy, "leonard")["player_commandable"] = false
+	BattlePlayLoop.unit_ref(enemy, "leonard")["player_commandable"] = false
 	check(BattlePlayLoop.change_equipment(enemy, "weapon", 1, 3) == enemy, "non-commandable actor rejects equipment mutation")
 	var dead := original.duplicate(true)
-	BattlePlayLoop._unit(dead, "leonard")["hp"] = 0
+	BattlePlayLoop.unit_ref(dead, "leonard")["hp"] = 0
 	check(BattlePlayLoop.change_equipment(dead, "weapon", 1, 3) == dead, "dead actor rejects equipment mutation")
 	var helmet_off := BattlePlayLoop.change_equipment(original, "head", -1, 0)
 	check(BattlePlayLoop.unit(helmet_off, "leonard")["combat_profile"]["live_defense"] == 37, "head slot contributes defense, not attack")
@@ -166,7 +166,7 @@ func equipment_cases() -> void:
 	if accessory > 0:
 		for slot in ["accessory1", "accessory2"]:
 			var ready := original.duplicate(true)
-			BattlePlayLoop._unit(ready, "leonard")["inventory"] = [accessory, 0, 0, 0, 0, 0, 0, 0]
+			BattlePlayLoop.unit_ref(ready, "leonard")["inventory"] = [accessory, 0, 0, 0, 0, 0, 0, 0]
 			var equipped := BattlePlayLoop.change_equipment(ready, slot, 0, accessory)
 			check(EquipmentRules.equipped_code(BattlePlayLoop.unit(equipped, "leonard")["equipment"], slot) == accessory, "accessory enters selected slot: " + slot)
 			var removed := BattlePlayLoop.change_equipment(equipped, slot, -1, 0)
@@ -210,8 +210,8 @@ func saved_native_growth_cases() -> void:
 
 func transfer_cases() -> void:
 	var loop := controlled()
-	var actor := BattlePlayLoop._unit(loop, "leonard")
-	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
+	var ally := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	ally["inventory"] = [241, 241, 241, 241, 241, 241, 241, 241]
 	var session := BattlePlayLoop.begin_give(loop)
@@ -225,7 +225,7 @@ func transfer_cases() -> void:
 
 func important_item_cases() -> void:
 	var loop := controlled()
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	loop["pending_move"] = true
 	loop["pending_move_from"] = actor["coord"] - Vector2i.DOWN
 	loop["moved_this_action"] = true
@@ -248,7 +248,7 @@ func important_item_cases() -> void:
 	var unrelated_lock := catalog.duplicate(true)
 	unrelated_lock["241"]["unequip_blocked"] = true
 	check(InventoryRules.discard(actor["inventory"], 1, 241, unrelated_lock)["ok"], "unequip lock is not confused with the discard restriction")
-	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	var session := BattlePlayLoop.begin_give(loop)
 	var given := BattlePlayLoop.confirm_give(session, ally["id"], 0, 281, -1, 0, session["item_revision"])
@@ -258,7 +258,7 @@ func important_item_cases() -> void:
 func discard_action_cases() -> void:
 	for moved in [false, true]:
 		var loop := controlled()
-		BattlePlayLoop._unit(loop, "leonard")["inventory"] = [241, 241, 246, 0, 0, 0, 0, 0]
+		BattlePlayLoop.unit_ref(loop, "leonard")["inventory"] = [241, 241, 246, 0, 0, 0, 0, 0]
 		var origin: Vector2i = BattlePlayLoop.unit(loop, "leonard")["coord"]
 		if moved:
 			var destinations: Array = BattlePlayLoop.movement_cells(loop, "leonard").filter(func(cell): return cell != origin)
@@ -268,7 +268,7 @@ func discard_action_cases() -> void:
 			loop = BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop, "move"), destinations[0])
 		var original := loop.duplicate(true)
 		var expected := loop.duplicate(true)
-		BattlePlayLoop._unit(expected, "leonard")["inventory"] = [241, 246, 0, 0, 0, 0, 0, 0]
+		BattlePlayLoop.unit_ref(expected, "leonard")["inventory"] = [241, 246, 0, 0, 0, 0, 0, 0]
 		var discarded := BattlePlayLoop.discard_item(loop, "241", 0)
 		check(discarded == expected, "discard only changes the requested inventory, including after a move")
 		check(loop == original, "discard does not mutate its input snapshot")
@@ -293,9 +293,9 @@ func controlled_give_exchange() -> Dictionary:
 		if loop["turn_queue"]["slots"][index]["id"] == "leonard":
 			loop["turn_queue"]["index"] = index
 	loop = BattlePlayLoop.select_player_unit(loop, "leonard")
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	actor["inventory"] = [241, 241, 246, 281, 0, 0, 0, 0]
-	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	ally["inventory"] = [246, 241, 0, 0, 0, 0, 0, 0]
 	return loop
@@ -385,8 +385,8 @@ func session_cases() -> void:
 	var charged_then_same := confirm(first, 0, 1)
 	check(charged_then_same["give_session"]["action_used"], "same-code later exchange cannot erase prior action charge")
 	var full := controlled_give_exchange()
-	BattlePlayLoop._unit(full, "leonard")["inventory"] = [241,241,241,241,241,241,241,241]
-	BattlePlayLoop._unit(full, "enemy023_1")["inventory"] = [246,241,241,241,241,241,241,241]
+	BattlePlayLoop.unit_ref(full, "leonard")["inventory"] = [241,241,241,241,241,241,241,241]
+	BattlePlayLoop.unit_ref(full, "enemy023_1")["inventory"] = [246,241,241,241,241,241,241,241]
 	full = BattlePlayLoop.begin_give(full)
 	var exchanged := confirm(full, 0, 0)
 	check(BattlePlayLoop.unit(exchanged, "leonard")["inventory"] == [241,241,241,241,241,241,241,246], "full sender gets returned item in freed tail")
@@ -403,7 +403,7 @@ func movement_cases() -> void:
 	check(not cells.is_empty(), "movement fixture has a legal destination")
 	if cells.is_empty(): return
 	var moved := BattlePlayLoop.move_unit_to(moving, cells[0])
-	BattlePlayLoop._unit(moved, "enemy023_1")["coord"] = cells[0] + Vector2i.RIGHT
+	BattlePlayLoop.unit_ref(moved, "enemy023_1")["coord"] = cells[0] + Vector2i.RIGHT
 	var started := BattlePlayLoop.begin_give(moved)
 	check(BattlePlayLoop.cancel_pending_move(started) == started, "movement cannot be rolled back while a give session is open")
 	var cancelled := BattlePlayLoop.finish_give(started, started["item_revision"])

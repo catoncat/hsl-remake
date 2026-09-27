@@ -44,6 +44,7 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## OPT-RETRY menu rows (remake layout): centred under the GAME OVER text, one 32 px pitch.
 const RETRY_ROWS := [{"id": "retry", "text": "重新挑戰本戰"}, {"id": "title", "text": "回到標題"}]
 const RETRY_MENU_TOP := 352.0
@@ -93,7 +94,7 @@ var retry_focus := 0
 
 
 func _ready() -> void:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Title manifest missing or invalid: " + MANIFEST_PATH)
 		return
@@ -128,7 +129,7 @@ func _ready() -> void:
 	_fade.color = Color(0, 0, 0, 1)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay.add_child(_fade)
-	var audio: Variant = JSON.parse_string(FileAccess.get_file_as_string(INTERFACE_AUDIO_PATH))
+	var audio: Variant = ContentPaths.read_json(INTERFACE_AUDIO_PATH)
 	var cue_path := str((((audio if typeof(audio) == TYPE_DICTIONARY else {}) as Dictionary).get("sounds", {}) as Dictionary).get("game_over", {}).get("res_path", ""))
 	if cue_path != "" and ResourceLoader.exists(cue_path):
 		_cue = AudioStreamPlayer.new()

@@ -6,6 +6,8 @@ extends RefCounted
 ##   rules: provisional (stable-id adapter)
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 ## 0x43ff3a: cmp eax, 0xa; jg 0x440041 — the side walk is taken on rand(100) <= 10.
 const SIDE_WALK_AT_MOST := 10
 const JOB_GROUPS := {
@@ -16,13 +18,13 @@ const JOB_GROUPS := {
 
 static func profile_error(profile: Dictionary) -> String:
 	for key in ["find_type", "find_flag", "find_range", "ai_att_special", "ai_att_magic", "ai_call_range", "ai_fixed", "job"]:
-		if SkillResourceRules._integer(profile.get(key)) < 0: return "missing_ai_profile_" + key
+		if Values.non_negative_int(profile.get(key)) < 0: return "missing_ai_profile_" + key
 	if int(profile["find_type"]) > 6 or int(profile["find_flag"]) > 6 or int(profile["find_range"]) > 512 or int(profile["ai_call_range"]) > 512 or int(profile["ai_fixed"]) > 512:
 		return "unsupported_ai_profile"
 	if int(profile["ai_att_special"]) > 100 or int(profile["ai_att_magic"]) > 100:
 		return "invalid_ai_probability"
 	var excluded: Variant = profile.get("find_no_id")
-	if excluded != -1 and (SkillResourceRules._integer(excluded) < 0 or SkillResourceRules._integer(excluded) > 32767):
+	if excluded != -1 and (Values.non_negative_int(excluded) < 0 or Values.non_negative_int(excluded) > 32767):
 		return "invalid_ai_exclusion"
 	return ""
 
@@ -36,7 +38,7 @@ static func select_action(profile: Dictionary, status_flags: int, magic: bool, s
 	if error != "": return {"ok": false, "reason": error}
 	if status_flags < 0 or status_flags > 0xffffffff: return {"ok": false, "reason": "invalid_ai_status_flags"}
 	var draws: Array = []
-	var roll := _draw(99, rng, draws) + 1
+	var roll := recorded_draw(99, rng, draws) + 1
 	var order := [2, 1] if roll & 1 else [1, 2]
 	var selected := 0
 	for index in range(2):
@@ -46,7 +48,7 @@ static func select_action(profile: Dictionary, status_flags: int, magic: bool, s
 		if roll <= int(profile["ai_att_special" if channel == 2 else "ai_att_magic"]):
 			selected = channel
 			break
-		if index == 0: roll = _draw(99, rng, draws) + 1
+		if index == 0: roll = recorded_draw(99, rng, draws) + 1
 	return {"ok": true, "kind": selected, "order": action_order(selected), "draws": draws,
 		"source": "0x40c570; caller cycle 0x43fa8d..0x43face"}
 
@@ -55,7 +57,7 @@ static func select_action(profile: Dictionary, status_flags: int, magic: bool, s
 ## rand(100) and takes the side walk at 10 or below (11 in 100).
 static func side_walk_roll(rng: Variant) -> Dictionary:
 	var draws: Array = []
-	var roll := _draw(100, rng, draws)
+	var roll := recorded_draw(100, rng, draws)
 	return {"roll": roll, "taken": roll <= SIDE_WALK_AT_MOST, "draws": draws, "source": "0x43ff32"}
 
 
@@ -69,7 +71,7 @@ static func rows_error(units: Array, owner_index: int) -> String:
 		if unit["coord"].x < 0 or unit["coord"].y < 0 or unit["coord"].x > 512 or unit["coord"].y > 512:
 			return "unsupported_ai_coordinates"
 		for key in ["hp", "level", "job", "side", "sid"]:
-			if SkillResourceRules._integer(unit.get(key)) < 0: return "invalid_ai_actor_" + key
+			if Values.non_negative_int(unit.get(key)) < 0: return "invalid_ai_actor_" + key
 	return ""
 
 
@@ -95,16 +97,15 @@ static func select_target(units: Array, owner_index: int, profile: Dictionary, n
 		# never hold 026_1, which scores worse than the excluded emperor 025 scanned before it).
 		if unit == null or index == owner_index or (unit["removed"] and not unit.get("excluded", false)) or (int(owner["side"]) & int(unit["side"]) & 0x870000) != 0:
 			continue
-		var distance := _squared_distance(unit["coord"], owner["coord"])
+		var distance := squared_distance(unit["coord"], owner["coord"])
 		if distance > int(profile["find_range"]) * int(profile["find_range"]): continue
-		var delta: Vector2i = unit["coord"] - owner["coord"]
-		var score := int(unit["hp"]) if mode in [1, 2] else int(unit["level"]) if mode in [5, 6] else 32 * (absi(delta.x) + absi(delta.y))
+		var score := int(unit["hp"]) if mode in [1, 2] else int(unit["level"]) if mode in [5, 6] else 32 * TacticalGridRules.manhattan(unit["coord"], owner["coord"])
 		var improved := mode == 0 or (score < minimum if mode in [1, 3, 5] else score > maximum)
 		if improved:
 			# The native score changes BEFORE its retain-old-candidate coin draw.
 			if mode in [1, 3, 5]: minimum = score
 			if mode in [2, 4, 6]: maximum = score
-			if best != -1 and _draw(2, rng, draws) != 0: continue
+			if best != -1 and recorded_draw(2, rng, draws) != 0: continue
 			previous = best
 			best = index
 		elif preference == 0:
@@ -113,7 +114,7 @@ static func select_target(units: Array, owner_index: int, profile: Dictionary, n
 			best = previous
 			continue
 		if distance > near_range * near_range or int(unit["job"]) not in JOB_GROUPS.get(preference, []): continue
-		if preferred not in [0, -1] and _draw(2, rng, draws) != 0: continue
+		if preferred not in [0, -1] and recorded_draw(2, rng, draws) != 0: continue
 		preferred = index
 	var selected := preferred if preferred != 0 else best
 	return {"ok": true, "index": selected, "native_index": selected + 1, "draws": draws,
@@ -145,12 +146,12 @@ static func select_registered_target(rows: Array, layout: Array, owner_index: in
 	return result
 
 
-static func _squared_distance(a: Vector2i, b: Vector2i) -> int:
+static func squared_distance(a: Vector2i, b: Vector2i) -> int:
 	var delta := a - b
 	return delta.x * delta.x + delta.y * delta.y
 
 
-static func _draw(bound: int, rng: Variant, draws: Array) -> int:
-	var value := CoreCombatRules._rand_range(bound, rng)
+static func recorded_draw(bound: int, rng: Variant, draws: Array) -> int:
+	var value := CoreCombatRules.rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

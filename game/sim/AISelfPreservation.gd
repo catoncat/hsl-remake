@@ -12,6 +12,7 @@ const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
@@ -26,8 +27,8 @@ static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
 		var entry: Dictionary = book["skills"][id]
 		if not SkillResolutionRules.is_kind(entry["damage_policy"], ["support"]) or SkillResolutionRules.ownership_error(actor, id, book) != "": continue
 		var fields: Dictionary = entry["fields"]
-		var rate := SkillResourceRules._integer(fields.get("use_ratio"), true)
-		var order := SkillResourceRules._integer(entry.get("source_order"))
+		var rate := Values.non_negative_int(fields.get("use_ratio"), true)
+		var order := Values.non_negative_int(entry.get("source_order"))
 		if rate < 0 or rate > 100 or order < 0 or order > 223: return {"ok": false, "reason": "invalid_support_ai_definition"}
 		var ready := SkillResolutionRules.prepare_cast(actor, actor, loop["units"], id, fields, book, loop["skill_target_data"], loop["equipment_items"], actor["coord"], loop["map_size"])
 		if not ready["ok"]:

@@ -22,6 +22,7 @@ const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const POLICY := "source_initial_roster_v1"
 
 
@@ -121,7 +122,7 @@ static func state_error(loop: Dictionary) -> String:
 		var matches: Array = loop["units"].filter(func(a): return a["id"] == row.get("unit_id"))
 		if matches.size() != 1 or matches[0]["actor_id"] != row.get("actor_id") or seen.has(row["unit_id"]): return "initial_player_identity_mismatch"
 		for key in ReinforcementGrowthRules.Entry.KEYS:
-			if ReinforcementGrowthRules.Entry.SkillResourceRules._integer(row["attributes"].get(key)) < 1 or int(matches[0]["combat_profile"][key]) < int(row["attributes"][key]): return "initial_player_attribute_rollback"
+			if ReinforcementGrowthRules.Entry.Values.non_negative_int(row["attributes"].get(key)) < 1 or int(matches[0]["combat_profile"][key]) < int(row["attributes"][key]): return "initial_player_attribute_rollback"
 		if row.get("level") != ReinforcementGrowthRules.Entry.inferred_level(row["attributes"]) or int(matches[0]["level"]) < int(row["level"]): return "initial_player_level_rollback"
 		seen[row["unit_id"]] = true
 	for id in record["carried"]:

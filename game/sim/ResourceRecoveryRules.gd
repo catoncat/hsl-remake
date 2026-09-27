@@ -7,6 +7,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const Values = preload("res://game/sim/Values.gd")
 const KEYS := ["mp_use_half", "hp_auto_restore", "mp_auto_restore", "hp_transfer_mp"]
 
 
@@ -21,7 +22,7 @@ static func effects(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_recovery_equipment"}
 	var result := {"mp_use_half": false, "hp_auto_restore": false, "mp_auto_restore": false, "hp_transfer_mp": false}
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0: return {"ok": false, "reason": "invalid_recovery_equipment"}
+		if not slot is Dictionary or Values.non_negative_int(slot.get("item_code")) <= 0: return {"ok": false, "reason": "invalid_recovery_equipment"}
 		var item: Variant = catalog.get(str(int(slot["item_code"])))
 		var error := effect_error(item)
 		if error != "": return {"ok": false, "reason": error}
@@ -31,7 +32,7 @@ static func effects(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 
 static func health_error(actor: Dictionary) -> String:
 	for key in ["hp", "max_hp", "mp", "max_mp"]:
-		var number := SkillResourceRules._integer(actor.get(key))
+		var number := Values.non_negative_int(actor.get(key))
 		if number < 0 or number > 1000000: return "invalid_recovery_" + key
 	if actor["max_hp"] <= 0 or actor["hp"] > actor["max_hp"] or actor["mp"] > actor["max_mp"]: return "inconsistent_recovery_vitals"
 	return ""

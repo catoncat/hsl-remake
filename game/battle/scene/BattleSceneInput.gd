@@ -159,7 +159,7 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 			runtime.attack_selected_coord(runtime.hovered_grid_cell)
 		return
 	if runtime.hovered_unit_id != "":
-		if runtime.interaction_state == Interaction.ACTION_MENU and (not runtime.is_player_commandable_unit(runtime.hovered_unit_id) or not BattlePlayLoop._is_current_actor(runtime.play_loop, runtime.hovered_unit_id)):
+		if runtime.interaction_state == Interaction.ACTION_MENU and (not runtime.is_player_commandable_unit(runtime.hovered_unit_id) or not BattlePlayLoop.is_current_actor(runtime.play_loop, runtime.hovered_unit_id)):
 			# 0x443cfa: the page (mode 1, no gold box) opens only for a known unit; an unknown
 			# one falls to 0x443d9d like a click on empty ground (OPT-INFO=公開 knows everyone).
 			var known := BattlePlayLoop.unit_known(runtime.play_loop, runtime.hovered_unit_id)

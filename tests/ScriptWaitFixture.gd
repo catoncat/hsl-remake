@@ -9,9 +9,9 @@ const FAR_MODES := ["guard", "double_guard", "wounded", "silenced", "paralyzed"]
 
 static func build(mode: String) -> Dictionary:
 	var loop := run_mobile_jobs_tests.fixture("006" if mode == "mage" else "004", mode in ["event", "sync", "depart", "mage"], mode == "defeat")
-	var owner := BattlePlayLoop._unit(loop,loop["player_unit_id"])
-	var friend := BattlePlayLoop._unit(loop,"tina")
-	var foe := BattlePlayLoop._unit(loop,"enemy026_1")
+	var owner := BattlePlayLoop.unit_ref(loop,loop["player_unit_id"])
+	var friend := BattlePlayLoop.unit_ref(loop,"tina")
+	var foe := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 	friend["coord"] = Vector2i(14,15)
 	owner["inventory"] = [232,241,244,253,0,0,0,0]
 	foe["no_attack"] = false
@@ -93,5 +93,5 @@ static func build(mode: String) -> Dictionary:
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 		actor["grid_coord"] = actor["coord"]; actor["ai_home_coord"] = actor["coord"]
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	loop = BattlePlayLoop._return_to_player(loop,loop["player_unit_id"])
+	loop = BattlePlayLoop.return_to_player(loop,loop["player_unit_id"])
 	return {"loop":loop,"scenario":config,"owner_id":loop["player_unit_id"],"first_id":loop["player_unit_id"],"target_id":owner["id"] if mode == "support" else "enemy026_1"}

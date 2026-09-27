@@ -12,6 +12,8 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 ## global.obs 706 obj_Fire_Smoke: MAGIC\SMOKE001.SHP, obj_Shape_Delay 3 (+0x7c). From its second
 ## call defProcFireSmoke (0x43c260) writes +0x30 = +0x32 each tick, so the MIN20 frame the gas put
@@ -72,7 +74,7 @@ static func play(coordinator: Node, event: Dictionary) -> float:
 	burst.visible = false
 	runtime.world_root.add_child(burst)
 	var centre: Vector2i = gas.get("centre", Vector2i.ZERO)
-	var pixel := Vector2(centre) * 32.0 + Vector2(16.0, 16.0)
+	var pixel := Vector2(TacticalGridRules.cell_center_pixel(centre))
 	var entry: Dictionary = _frames().get(SMOKE_FRAME, {})
 	var texture: Texture2D = load(str(entry["res_path"])) if not entry.is_empty() else null
 	var origin: Array = entry.get("draw_origin", [0, 0])
@@ -109,7 +111,7 @@ static func play(coordinator: Node, event: Dictionary) -> float:
 	tween.tween_callback(func():
 		burst.visible = true
 		for unit_id in hit_ids:
-			_shake(runtime, burst, str(unit_id)))
+			shake(runtime, burst, str(unit_id)))
 	# The gas releases the script after its hold; the smoke objects run their own course.
 	tween.tween_interval(OriginalTick.seconds(maxi(int(gas.get("linger_ticks", 40)) + 1, smoke_ticks)))
 	tween.tween_callback(burst.queue_free)
@@ -122,7 +124,7 @@ static func play(coordinator: Node, event: Dictionary) -> float:
 ## 0x407230 puts the victim into the hit state: hit frame plus the 60-tick shake (0x43f288 phase
 ## byte 1,2,3,−3,−2,−1,0,…; ≥ 0 draws at cell x + 15, else + 17). MapHitState is the one reader
 ## of that state (STRIKEFX 2026-09-27); the drop-lightning victims call it through here too.
-static func _shake(runtime: Node, owner: Node, unit_id: String) -> void:
+static func shake(runtime: Node, owner: Node, unit_id: String) -> void:
 	MapHitState.begin(runtime, owner, unit_id)
 
 
@@ -154,5 +156,5 @@ static func _smoke_tick(sprite: Sprite2D, base: Vector2, k: int, hold: int, spee
 
 
 static func _frames() -> Dictionary:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST)
 	return (parsed as Dictionary).get("frames", {}) if parsed is Dictionary else {}

@@ -18,9 +18,9 @@ static func section(kind: String, code: int, actions: Array) -> Dictionary:
 
 static func build(mode: String) -> Dictionary:
 	var loop := run_mobile_jobs_tests.fixture("006" if mode in ["mage","blocked","ai"] else "004",true,mode == "defeat")
-	var owner := BattlePlayLoop._unit(loop,loop["player_unit_id"])
-	var friend := BattlePlayLoop._unit(loop,"tina")
-	var foe := BattlePlayLoop._unit(loop,"enemy026_1")
+	var owner := BattlePlayLoop.unit_ref(loop,loop["player_unit_id"])
+	var friend := BattlePlayLoop.unit_ref(loop,"tina")
+	var foe := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 	var config := BattlePlayLoop.BattleScenario.load_file(run_mobile_jobs_tests.PATH).duplicate(true)
 	owner["inventory"] = [232,241,244,253,0,0,0,0]
 	friend["coord"] = Vector2i(14,15)
@@ -109,5 +109,5 @@ static func build(mode: String) -> Dictionary:
 	loop = WinfailScenarioRules.initialize_script_state(loop,config,seed)
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	var first_id: String = friend["id"] if mode in ["ai","paralysis"] else owner["id"]
-	loop = BattlePlayLoop._return_to_player(loop,first_id)
+	loop = BattlePlayLoop.return_to_player(loop,first_id)
 	return {"loop":loop,"scenario":config,"owner_id":owner["id"],"target_id":target["id"],"retiring_id":retiring["id"],"first_id":first_id,"attacker_id":attacker["id"]}

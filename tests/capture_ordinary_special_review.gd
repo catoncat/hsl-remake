@@ -54,8 +54,8 @@ func prepare_case() -> void:
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
 	for unit in loop["units"]: unit["hp"] = 500; unit["max_hp"] = 500
-	var owner := BattlePlayLoop._unit(loop,"leonard")
-	var target := BattlePlayLoop._unit(loop,"enemy021_1")
+	var owner := BattlePlayLoop.unit_ref(loop,"leonard")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	if mode in ["ordinary","critical_kill"]: owner["combat_profile"]["attack_damagex2"] = 100
 	if mode == "counter": target["combat_profile"].merge({"attack_damagex2":100,"attack_back":100},true)
 	if mode.ends_with("equipment"): owner["inventory"] = [6,7,216,0,0,0,0,0]
@@ -73,7 +73,7 @@ func prepare_case() -> void:
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = DEST + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()

@@ -11,13 +11,13 @@ func _init() -> void:
 
 func controlled() -> Dictionary:
 	var loop := BattleFixture.loop()
-	BattlePlayLoop._unit(loop,"leonard")["live_speed"] = 100
-	var next := BattlePlayLoop._unit(loop,"enemy023_1")
+	BattlePlayLoop.unit_ref(loop,"leonard")["live_speed"] = 100
+	var next := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	next["live_speed"] = 99
 	next["player_commandable"] = true
 	next["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	BattlePlayLoop._unit(loop,"leonard")["stamina"] = 20
+	BattlePlayLoop.unit_ref(loop,"leonard")["stamina"] = 20
 	return BattlePlayLoop.select_player_unit(loop,"leonard")
 
 
@@ -76,8 +76,8 @@ func run() -> void:
 				draws.clear()
 				var as_player := SkillResolutionRules.resolve(actor,target,case[0],case[1],book,targeting,items,actor["coord"],loop["map_size"],rng)
 				check(as_player==result,"role change alone cannot select a different skill formula")
-	var caster := BattlePlayLoop._unit(loop,"leonard")
-	var target := BattlePlayLoop._unit(loop,"enemy021_1")
+	var caster := BattlePlayLoop.unit_ref(loop,"leonard")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	target["coord"] = caster["coord"] + Vector2i.UP
 	target["hp"] = 100
 	target["combat_profile"]["live_defense"] = 10000
@@ -97,7 +97,7 @@ func run() -> void:
 		check(not SkillResolutionRules.resolve(caster,target,"special:magicOTHER:magicCode01",invalid,book,targeting,items,caster["coord"],loop["map_size"],no_rng)["ok"],"invalid source value rejects before RNG")
 	check(SkillResolutionRules.resolve(caster,target,"missing-skill",fields,book,targeting,items,caster["coord"],loop["map_size"],no_rng)["reason"]=="unknown_skill","unknown requested skill ID is refused")
 	var false_owner := loop.duplicate(true)
-	BattlePlayLoop._unit(false_owner,"leonard")["actor_id"] = "023"
+	BattlePlayLoop.unit_ref(false_owner,"leonard")["actor_id"] = "023"
 	check(not BattlePlayLoop.can_use_special(false_owner,"leonard"),"a stamina field does not grant Leonard's special to another original actor")
 	false_owner["interaction"] = "attack_select"
 	false_owner["selected_attack"] = "special"
@@ -121,7 +121,7 @@ func run() -> void:
 			var from: Vector2i = BattlePlayLoop.unit(ready,"leonard")["coord"]
 			var candidates: Array = BattlePlayLoop.movement_cells(ready,"leonard").filter(func(p):return p!=from)
 			ready = BattlePlayLoop.move_unit_to(ready,candidates[0])
-		var enemy := BattlePlayLoop._unit(ready,"enemy021_1")
+		var enemy := BattlePlayLoop.unit_ref(ready,"enemy021_1")
 		enemy["coord"] = BattlePlayLoop.unit(ready,"leonard")["coord"]+Vector2i.UP
 		enemy["hp"] = 2
 		enemy["combat_profile"]["live_defense"] = 0
@@ -138,18 +138,18 @@ func run() -> void:
 	# A character with another wind skill must not gain Code01 merely because
 	# it has MP and a wind declaration (025 owns a different source bit).
 	var ai := BattleFixture.loop()
-	var mage := BattlePlayLoop._unit(ai,"enemy026_1")
+	var mage := BattlePlayLoop.unit_ref(ai,"enemy026_1")
 	mage["actor_id"] = "025"
 	mage["mp"] = 30
-	var enemy := BattlePlayLoop._unit(ai,"leonard")
+	var enemy := BattlePlayLoop.unit_ref(ai,"leonard")
 	mage["coord"] = enemy["coord"] + Vector2i.RIGHT
 	var initial := ai.duplicate(true)
 	var unowned := SkillResolutionRules.resolve(mage, enemy, "magic:magicAIR:magicCode01", BattlePlayLoop.skill_fields(ai, "magic:magicAIR:magicCode01"), ai["skill_book"], ai["skill_target_data"], ai["equipment_items"], mage["coord"], ai["map_size"], no_rng)
 	check(not unowned["ok"] and unowned["reason"] == "skill_not_owned" and ai == initial, "another wind declaration still cannot grant Code01; actual 025 Acid Mist is covered separately")
 	for missing in ["damage","hit_ratio","resistance","skill_id"]:
 		var invalid := BattleFixture.loop()
-		var real_mage := BattlePlayLoop._unit(invalid,"enemy026_1")
-		var real_target := BattlePlayLoop._unit(invalid,"leonard")
+		var real_mage := BattlePlayLoop.unit_ref(invalid,"enemy026_1")
+		var real_target := BattlePlayLoop.unit_ref(invalid,"leonard")
 		real_mage["coord"] = real_target["coord"]+Vector2i.RIGHT
 		# Isolate the invalid target: choosing another valid nearby ally is a
 		# legitimate plan, not evidence that the invalid target was accepted.
@@ -173,13 +173,13 @@ func run() -> void:
 	# A learned source skill uses the same atomic magic transaction as an initial grant.
 	var learned := BattleFixture.loop()
 	var earth_id := "magic:magicEARTH:magicCode01"
-	var earth_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var earth_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	earth_caster["actor_id"] = "026"
 	earth_caster["growth_profile"]["job_code"] = 90
 	earth_caster["level"] = 1
 	earth_caster["mp"] = 20
 	earth_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":90,"level":1,"attributes":{"str":10,"dex":10,"mind":10,"con":10},"trigger":"level_up","id":earth_id,"name":"地裂"}]
-	var earth_target := BattlePlayLoop._unit(learned,"leonard")
+	var earth_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	earth_caster["coord"] = Vector2i(8,8)
 	earth_target["coord"] = Vector2i(8,9)
 	earth_target["hp"] = 100
@@ -189,14 +189,14 @@ func run() -> void:
 	check(learned_result["ok"] and learned_result.get("receipt", {}).get("damage", 0) > 0 and learned_result.get("caster_changes", {}).get("mp", earth_caster["mp"]) < earth_caster["mp"],"learned Earth source skill resolves with HP damage and one MP payment")
 	check(learned_result.get("receipt", {}).get("magic_key", "") == "earth" and learned_result.get("target_changes", {}).get("hp", earth_target["hp"]) < earth_target["hp"],"Earth source element reaches the target HP/resistance path")
 	var blade_id := "special:magicAIR:magicCode01"
-	var blade_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var blade_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	blade_caster["actor_id"] = "026"
 	blade_caster["growth_profile"]["job_code"] = 80
 	blade_caster["level"] = 1
 	blade_caster["stamina"] = 100
 	for key in ["str", "dex", "mind", "con"]: blade_caster["combat_profile"][key] = 30
 	blade_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":80,"level":1,"attributes":{"str":30,"dex":25,"mind":25,"con":30},"trigger":"allocation","id":blade_id,"name":"天雷猛襲劍"}]
-	var blade_target := BattlePlayLoop._unit(learned,"leonard")
+	var blade_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	blade_caster["coord"] = Vector2i(8,8)
 	blade_target["coord"] = Vector2i(8,9)
 	blade_target["hp"] = 100
@@ -205,13 +205,13 @@ func run() -> void:
 	check(blade_result.get("ok", false) and blade_result.get("receipt", {}).get("damage", 0) > 0 and blade_result.get("caster_changes", {}).get("stamina", blade_caster["stamina"]) < blade_caster["stamina"],"learned source special resolves its area target with one ST payment")
 	check(blade_result.get("targets", []).size() == 1 and blade_result.get("receipt", {}).get("cast_center", Vector2i(-1,-1)) == blade_target["coord"],"source special effect range is honored by the shared cast transaction")
 	var mind_id := "magic:magicMIND:magicCode01"
-	var mind_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var mind_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	mind_caster["actor_id"] = "026"
 	mind_caster["growth_profile"]["job_code"] = 98
 	mind_caster["level"] = 5
 	mind_caster["mp"] = 30
 	mind_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":98,"level":5,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":mind_id,"name":"咒殺"}]
-	var mind_target := BattlePlayLoop._unit(learned,"leonard")
+	var mind_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	mind_caster["coord"] = Vector2i(8,8)
 	mind_target["coord"] = Vector2i(8,9)
 	mind_target["hp"] = 100
@@ -220,13 +220,13 @@ func run() -> void:
 	check(mind_result.get("ok", false) and mind_result.get("receipt", {}).get("damage", 0) > 0 and mind_result.get("caster_changes", {}).get("mp", mind_caster["mp"]) < mind_caster["mp"],"learned Mind source magic resolves through native damage with MP payment")
 	check(mind_result.get("receipt", {}).get("magic_key", "") == "mind" and mind_result.get("target_changes", {}).get("hp", mind_target["hp"]) < mind_target["hp"],"Mind source element reaches the target resistance path")
 	var water_id := "magic:magicWATER:magicCode02"
-	var water_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var water_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	water_caster["actor_id"] = "026"
 	water_caster["growth_profile"]["job_code"] = 90
 	water_caster["level"] = 10
 	water_caster["mp"] = 30
 	water_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":90,"level":10,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":water_id,"name":"水龍波"}]
-	var water_target := BattlePlayLoop._unit(learned,"leonard")
+	var water_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	water_caster["coord"] = Vector2i(8,8)
 	water_target["coord"] = Vector2i(8,9)
 	water_target["hp"] = 100
@@ -235,13 +235,13 @@ func run() -> void:
 	check(water_result.get("ok", false) and water_result.get("receipt", {}).get("damage", 0) > 0 and water_result.get("caster_changes", {}).get("mp", water_caster["mp"]) < water_caster["mp"],"learned Water source magic resolves through native damage with MP payment")
 	check(water_result.get("receipt", {}).get("magic_key", "") == "water" and water_result.get("target_changes", {}).get("hp", water_target["hp"]) < water_target["hp"],"Water source element reaches the target resistance path")
 	var fire_id := "magic:magicFIRE:magicCode02"
-	var fire_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var fire_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	fire_caster["actor_id"] = "026"
 	fire_caster["growth_profile"]["job_code"] = 90
 	fire_caster["level"] = 12
 	fire_caster["mp"] = 30
 	fire_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":90,"level":12,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":fire_id,"name":"熾焰鳥"}]
-	var fire_target := BattlePlayLoop._unit(learned,"leonard")
+	var fire_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	fire_caster["coord"] = Vector2i(8,8)
 	fire_target["coord"] = Vector2i(8,9)
 	fire_target["hp"] = 100
@@ -250,13 +250,13 @@ func run() -> void:
 	check(fire_result.get("ok", false) and fire_result.get("receipt", {}).get("damage", 0) > 0 and fire_result.get("caster_changes", {}).get("mp", fire_caster["mp"]) < fire_caster["mp"],"learned Fire source magic resolves through native damage with MP payment")
 	check(fire_result.get("receipt", {}).get("magic_key", "") == "fire" and fire_result.get("target_changes", {}).get("hp", fire_target["hp"]) < fire_target["hp"],"Fire source element reaches the target resistance path")
 	var wind_id := "magic:magicAIR:magicCode02"
-	var wind_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var wind_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	wind_caster["actor_id"] = "026"
 	wind_caster["growth_profile"]["job_code"] = 92
 	wind_caster["level"] = 12
 	wind_caster["mp"] = 30
 	wind_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":92,"level":12,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":wind_id,"name":"空鳴破"}]
-	var wind_target := BattlePlayLoop._unit(learned,"leonard")
+	var wind_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	wind_caster["coord"] = Vector2i(8,8)
 	wind_target["coord"] = Vector2i(8,9)
 	wind_target["hp"] = 100
@@ -265,13 +265,13 @@ func run() -> void:
 	check(wind_result.get("ok", false) and wind_result.get("receipt", {}).get("damage", 0) > 0 and wind_result.get("caster_changes", {}).get("mp", wind_caster["mp"]) < wind_caster["mp"],"learned Wind source magic resolves through native damage with MP payment")
 	check(wind_result.get("receipt", {}).get("magic_key", "") == "wind" and wind_result.get("target_changes", {}).get("hp", wind_target["hp"]) < wind_target["hp"],"Wind source element reaches the target resistance path")
 	var earth_two_id := "magic:magicEARTH:magicCode02"
-	var earth_two_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var earth_two_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	earth_two_caster["actor_id"] = "026"
 	earth_two_caster["growth_profile"]["job_code"] = 98
 	earth_two_caster["level"] = 12
 	earth_two_caster["mp"] = 30
 	earth_two_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":98,"level":12,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":earth_two_id,"name":"地龍震"}]
-	var earth_two_target := BattlePlayLoop._unit(learned,"leonard")
+	var earth_two_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	earth_two_caster["coord"] = Vector2i(8,8)
 	earth_two_target["coord"] = Vector2i(8,9)
 	earth_two_target["hp"] = 100
@@ -280,13 +280,13 @@ func run() -> void:
 	check(earth_two_result.get("ok", false) and earth_two_result.get("receipt", {}).get("damage", 0) > 0 and earth_two_result.get("caster_changes", {}).get("mp", earth_two_caster["mp"]) < earth_two_caster["mp"],"learned Earth level-two magic resolves through native damage with MP payment")
 	check(earth_two_result.get("receipt", {}).get("magic_key", "") == "earth" and earth_two_result.get("target_changes", {}).get("hp", earth_two_target["hp"]) < earth_two_target["hp"],"Earth level-two source element reaches the target resistance path")
 	var bind_id := "magic:magicMIND:magicCode03"
-	var bind_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var bind_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	bind_caster["actor_id"] = "026"
 	bind_caster["growth_profile"]["job_code"] = 85
 	bind_caster["level"] = 25
 	bind_caster["mp"] = 50
 	bind_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":85,"level":25,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":bind_id,"name":"咒靈縛剎"}]
-	var bind_target := BattlePlayLoop._unit(learned,"leonard")
+	var bind_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	bind_caster["coord"] = Vector2i(8,8)
 	bind_target["coord"] = Vector2i(8,9)
 	bind_target["hp"] = 100
@@ -297,13 +297,13 @@ func run() -> void:
 	check(bind_effects.any(func(effect): return effect.get("status", "") == "paralysis" and effect.get("applied", false)) and bind_result.get("target_changes", {}).get("hp", bind_target["hp"]) < bind_target["hp"],"attack-plus-paralysis source function applies status after damage")
 	# Lane A: 魂體衰竭 (magic Weaken) introduces the 衰弱 status: flag 8, packed word, refresh.
 	var weaken_id := "magic:magicMIND:magicCode04"
-	var weaken_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var weaken_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	weaken_caster["actor_id"] = "026"
 	weaken_caster["growth_profile"]["job_code"] = 98
 	weaken_caster["level"] = 19
 	weaken_caster["mp"] = 30
 	weaken_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":98,"level":19,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":weaken_id,"name":"魂體衰竭"}]
-	var weaken_target := BattlePlayLoop._unit(learned,"leonard")
+	var weaken_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	weaken_caster["coord"] = Vector2i(8,8)
 	weaken_target["coord"] = Vector2i(8,9)
 	weaken_target["hp"] = 100
@@ -343,7 +343,7 @@ func run() -> void:
 	check(immune_result.get("ok", false) and immune_result["receipt"]["status_effects"][0]["reason"] == "immune" and (int(immune_result["target_changes"]["status_flags"]) & 8) == 0,"PLAYERS no_weaken (0x2000 -> 0x2000000) makes an equipped target immune")
 	# 弱體箭: special channel Attack+Weaken shares the status applicator with channel1 rolls.
 	var arrow_id := "special:magicMIND:magicCode04"
-	var arrow_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var arrow_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	arrow_caster["actor_id"] = "026"
 	arrow_caster["growth_profile"]["job_code"] = 83
 	arrow_caster["level"] = 10
@@ -353,7 +353,7 @@ func run() -> void:
 	arrow_caster["learned_skills"] = []
 	var arrow_book: Dictionary = learned["skill_book"].duplicate(true)
 	arrow_book["actors"]["026"]["supported_initial_ids"].append(arrow_id)
-	var arrow_target := BattlePlayLoop._unit(learned,"leonard")
+	var arrow_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	arrow_caster["coord"] = Vector2i(8,8)
 	arrow_target["coord"] = Vector2i(8,10)
 	arrow_target["hp"] = 1000
@@ -368,7 +368,7 @@ func run() -> void:
 	var shadow_caster := arrow_caster.duplicate(true)
 	shadow_caster["growth_profile"]["job_code"] = 83
 	shadow_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":83,"level":1,"attributes":{"str":28,"dex":24,"mind":12,"con":25},"trigger":"allocation","id":shadow_id,"name":"影纏"}]
-	var shadow_target := BattlePlayLoop._unit(learned,"leonard")
+	var shadow_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	shadow_target["coord"] = Vector2i(8,9)
 	shadow_target["hp"] = 100
 	var shadow_result := SkillResolutionRules.resolve(shadow_caster,shadow_target,shadow_id,BattlePlayLoop.skill_fields(learned,shadow_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],shadow_caster["coord"],learned["map_size"],func(_n): return 0)
@@ -377,13 +377,13 @@ func run() -> void:
 	check(shadow_effects.size() == 1 and shadow_effects[0]["status"] == "paralysis" and shadow_effects[0]["applied"] and (int(shadow_result["target_changes"]["status_flags"]) & 4) != 0,"special Paralysis reuses the shared paralysis applicator")
 	# Lane A support family: 聖靈祝福 cures four states in one cast (0x40aa80 cure bits).
 	var bless_id := "magic:magicMIND:magicCode07"
-	var bless_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var bless_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	bless_caster["actor_id"] = "026"
 	bless_caster["growth_profile"]["job_code"] = 85
 	bless_caster["level"] = 39
 	bless_caster["mp"] = 50
 	bless_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":85,"level":39,"attributes":{"str":1,"dex":1,"mind":1,"con":1},"trigger":"level_up","id":bless_id,"name":"聖靈祝福"}]
-	var bless_target := BattlePlayLoop._unit(learned,"enemy021_1")
+	var bless_target := BattlePlayLoop.unit_ref(learned,"enemy021_1")
 	bless_caster["coord"] = Vector2i(8,8)
 	bless_target["coord"] = Vector2i(8,9)
 	bless_target["status_flags"] = 1 | 4 | 8
@@ -391,7 +391,7 @@ func run() -> void:
 	bless_target["status_counters"]["paralysis"] = 2
 	bless_target["status_counters"]["weaken"] = (5 << 16) | 2
 	bless_target = SkillResolutionRules.StatMagic.Progression.refresh_growth_stats(bless_target, learned["equipment_items"])
-	BattlePlayLoop._unit(learned,"enemy021_1").merge(bless_target, true)
+	BattlePlayLoop.unit_ref(learned,"enemy021_1").merge(bless_target, true)
 	var bless_before := bless_target.duplicate(true)
 	var bless_result := SkillResolutionRules.resolve(bless_caster,bless_target,bless_id,BattlePlayLoop.skill_fields(learned,bless_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],bless_caster["coord"],learned["map_size"],no_rng)
 	var bless_changes: Dictionary = bless_result.get("target_changes", {})
@@ -405,18 +405,18 @@ func run() -> void:
 	check(SkillResolutionRules.resolve(bless_caster,healthy,bless_id,BattlePlayLoop.skill_fields(learned,bless_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],bless_caster["coord"],learned["map_size"],no_rng).get("reason", "") == "skill_has_no_effect","a target without any of the four states is refused before payment")
 	# 萬息集氣法: special channel Heal, self-centered area, one ST payment for every ally inside.
 	var gather_id := "special:magicWATER:magicCode02"
-	var gather_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var gather_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	gather_caster["growth_profile"]["job_code"] = 85
 	gather_caster["level"] = 10
 	gather_caster["stamina"] = 100
 	for key in ["str", "dex", "mind", "con"]: gather_caster["combat_profile"][key] = 30
 	gather_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":85,"level":1,"attributes":{"str":22,"dex":22,"mind":26,"con":16},"trigger":"allocation","id":gather_id,"name":"萬息集氣法"}]
 	gather_caster["hp"] = int(gather_caster["max_hp"]) - 30
-	var gather_ally := BattlePlayLoop._unit(learned,"enemy021_1")
+	var gather_ally := BattlePlayLoop.unit_ref(learned,"enemy021_1")
 	gather_ally.merge(healthy, true)
 	gather_ally["coord"] = Vector2i(9,8)
 	gather_ally["hp"] = int(gather_ally["max_hp"]) - 10
-	var gather_result := SkillResolutionRules.resolve_cast(gather_caster,gather_caster,[gather_caster,gather_ally,BattlePlayLoop._unit(learned,"leonard")],gather_id,BattlePlayLoop.skill_fields(learned,gather_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],gather_caster["coord"],learned["map_size"],func(_n): return 0,gather_caster["coord"])
+	var gather_result := SkillResolutionRules.resolve_cast(gather_caster,gather_caster,[gather_caster,gather_ally,BattlePlayLoop.unit_ref(learned,"leonard")],gather_id,BattlePlayLoop.skill_fields(learned,gather_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],gather_caster["coord"],learned["map_size"],func(_n): return 0,gather_caster["coord"])
 	var gathered: Array = gather_result.get("targets", [])
 	check(gather_result.get("ok", false) and gather_result.get("caster_changes", {}).get("stamina", 100) == 60 and not gather_result["caster_changes"].has("hp"),"learned 萬息集氣法 pays 40ST once and keeps the caster's HP proposal with the targets")
 	check(gathered.size() == 2 and gathered.all(func(row): return int(row["changes"]["hp"]) > 0) and gather_result["receipt"].get("special_key") == "special_support" and int(gather_result["receipt"]["healing"]) == 30,"self-centered special heal reaches the caster and the adjacent ally, capped at missing HP")
@@ -439,14 +439,14 @@ func run() -> void:
 	critical_caster["hp"] = int(critical_caster["max_hp"]) - 30
 	var critical_book: Dictionary = learned["skill_book"].duplicate(true)
 	critical_book["actors"]["026"]["supported_initial_ids"].append(critical_id)
-	var critical_result := SkillResolutionRules.resolve_cast(critical_caster,critical_caster,[critical_caster,BattlePlayLoop._unit(learned,"leonard")],critical_id,BattlePlayLoop.skill_fields(learned,critical_id),critical_book,learned["skill_target_data"],learned["equipment_items"],critical_caster["coord"],learned["map_size"],func(_n): return 0,critical_caster["coord"])
+	var critical_result := SkillResolutionRules.resolve_cast(critical_caster,critical_caster,[critical_caster,BattlePlayLoop.unit_ref(learned,"leonard")],critical_id,BattlePlayLoop.skill_fields(learned,critical_id),critical_book,learned["skill_target_data"],learned["equipment_items"],critical_caster["coord"],learned["map_size"],func(_n): return 0,critical_caster["coord"])
 	var critical_basis: Dictionary = critical_result.get("receipt", {}).get("experience_basis", {})
 	var critical_immediate: Array = critical_basis.get("immediate_experience", [])
 	check(critical_result.get("ok", false) and int(critical_result["receipt"]["healing"]) == 30 and int(critical_result["receipt"]["restored_mp"]) == 10,"learned 萬息臨界法 heals HP and MP in one cast")
 	check(critical_result["receipt"].get("immediate_contributions") == [1] and int(critical_basis.get("contribution", -1)) == 15 and critical_immediate.size() == 1 and int(critical_immediate[0]["contribution"]) == 1 and int(critical_basis["points"]) == int(critical_basis["tail_points"]) + int(critical_immediate[0]["points"]) and int(critical_immediate[0]["points"]) > 0,"HealMP converts rand(level)+1 through 0x40a5d0 at once and the heal contribution again at the tail (0x40b49e / 0x40b866)")
 	# Lane A stat family: 千羽風靈壁 (special DefUp on self) and 精神統一 (DefUp+AttUp in native order).
 	var wall_id := "special:magicAIR:magicCode05"
-	var wall_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var wall_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	wall_caster["actor_id"] = "026"
 	wall_caster["growth_profile"]["job_code"] = 92
 	wall_caster["level"] = 10
@@ -459,7 +459,7 @@ func run() -> void:
 	var refreshed_wall := SkillResolutionRules.StatMagic.Progression.refresh_growth_stats(wall_caster, learned["equipment_items"])
 	wall_caster.merge(refreshed_wall, true)
 	var wall_before := wall_caster.duplicate(true)
-	var wall_result := SkillResolutionRules.resolve_cast(wall_caster,wall_caster,[wall_caster,BattlePlayLoop._unit(learned,"leonard")],wall_id,BattlePlayLoop.skill_fields(learned,wall_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],wall_caster["coord"],learned["map_size"],func(_n): return 0)
+	var wall_result := SkillResolutionRules.resolve_cast(wall_caster,wall_caster,[wall_caster,BattlePlayLoop.unit_ref(learned,"leonard")],wall_id,BattlePlayLoop.skill_fields(learned,wall_id),learned["skill_book"],learned["skill_target_data"],learned["equipment_items"],wall_caster["coord"],learned["map_size"],func(_n): return 0)
 	var wall_effects: Array = wall_result.get("receipt", {}).get("stat_effects", [])
 	check(wall_result.get("ok", false) and wall_result.get("caster_changes", {}).get("stamina", 100) == 60 and not wall_result["caster_changes"].has("mp"),"learned 千羽風靈壁 targets the caster for one 40ST payment")
 	check(wall_effects.size() == 1 and wall_effects[0]["kind"] == "defense_up" and int(wall_result["target_changes"]["combat_profile"]["live_defense"]) > int(wall_before["combat_profile"]["live_defense"]) and wall_result["receipt"].get("special_key") == "special_stat","special DefUp raises live defense through the shared enhancement word")
@@ -478,7 +478,7 @@ func run() -> void:
 	check(SkillResolutionRules.StatMagic.receipt_error(focus_result["receipt"], focus_book) == "","two-kind special buff receipts replay through the checkpoint validator")
 	# Lane A utility family: 吸血劍 drains the applied damage back to the caster.
 	var drain_id := "special:magicOTHER:magicCode24"
-	var drain_caster := BattlePlayLoop._unit(learned,"enemy026_1")
+	var drain_caster := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	drain_caster["actor_id"] = "026"
 	drain_caster["growth_profile"]["job_code"] = 98
 	drain_caster["level"] = 10
@@ -489,7 +489,7 @@ func run() -> void:
 	drain_caster["learned_skills"] = [{"policy":"source_growth_lifecycle_v1","actor_id":"026","job":98,"level":1,"attributes":{"str":30,"dex":30,"mind":34,"con":32},"trigger":"allocation","id":drain_id,"name":"吸血劍"}]
 	drain_caster.merge(SkillResolutionRules.StatMagic.Progression.refresh_growth_stats(drain_caster, learned["equipment_items"]), true)
 	drain_caster["hp"] = int(drain_caster["max_hp"]) - 20
-	var drain_target := BattlePlayLoop._unit(learned,"leonard")
+	var drain_target := BattlePlayLoop.unit_ref(learned,"leonard")
 	drain_caster["coord"] = Vector2i(8,8)
 	drain_target["coord"] = Vector2i(8,10)
 	drain_target["hp"] = 1000
@@ -505,7 +505,7 @@ func run() -> void:
 	var roar := controlled()
 	var roar_actor: String = BattlePlayLoop.unit(roar,"leonard")["actor_id"]
 	own(roar, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(roar_id)
-	var roar_target := BattlePlayLoop._unit(roar,"enemy021_1")
+	var roar_target := BattlePlayLoop.unit_ref(roar,"enemy021_1")
 	roar_target["coord"] = BattlePlayLoop.unit(roar,"leonard")["coord"] + Vector2i(0,2)
 	roar = BattlePlayLoop.choose_command(roar,"special")
 	roar = BattlePlayLoop.choose_special(roar, roar_id)
@@ -518,13 +518,13 @@ func run() -> void:
 	check(BattlePlayLoop.attack_target(roar,"enemy023_1",no_rng)["last_attack_reject"].get("reason","") in ["not_enemy","out_of_range"],"a non-enemy is not a CancelActive target")
 	var wake_id := "special:magicMIND:magicCode02"
 	var wake := controlled()
-	BattlePlayLoop._unit(wake,"enemy023_1")["live_speed"] = 101
+	BattlePlayLoop.unit_ref(wake,"enemy023_1")["live_speed"] = 101
 	wake["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(wake["units"])
 	wake["turn_queue"]["index"] = 1 # enemy023_1 (player-controlled ally) already acted; leonard is current
 	wake = BattlePlayLoop.select_player_unit(wake,"leonard")
-	BattlePlayLoop._unit(wake,"leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(wake,"leonard")["stamina"] = 60
 	own(wake, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(wake_id)
-	BattlePlayLoop._unit(wake,"enemy023_1")["coord"] = BattlePlayLoop.unit(wake,"leonard")["coord"] + Vector2i(1,0)
+	BattlePlayLoop.unit_ref(wake,"enemy023_1")["coord"] = BattlePlayLoop.unit(wake,"leonard")["coord"] + Vector2i(1,0)
 	wake = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(wake,"special"), wake_id)
 	var woken := BattlePlayLoop.attack_coord(wake, BattlePlayLoop.unit(wake,"enemy023_1")["coord"], func(_n): return 0)
 	var wake_effects: Array = woken.get("last_attack", {}).get("turn_effects", [])
@@ -532,8 +532,8 @@ func run() -> void:
 	check(woken["turn_queue"]["slots"][0].get("reactivated", false) and woken["turn_queue"]["index"] == 1,"reactivation marks the earlier slot without moving the current actor")
 	var untouched := controlled()
 	own(untouched, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(wake_id)
-	BattlePlayLoop._unit(untouched,"leonard")["stamina"] = 60
-	BattlePlayLoop._unit(untouched,"enemy023_1")["coord"] = BattlePlayLoop.unit(untouched,"leonard")["coord"] + Vector2i(1,0)
+	BattlePlayLoop.unit_ref(untouched,"leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(untouched,"enemy023_1")["coord"] = BattlePlayLoop.unit(untouched,"leonard")["coord"] + Vector2i(1,0)
 	untouched = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(untouched,"special"), wake_id)
 	check(BattlePlayLoop.attack_coord(untouched, BattlePlayLoop.unit(untouched,"enemy023_1")["coord"], no_rng)["last_attack_reject"].get("reason","") == "skill_has_no_effect","an ally that has not acted yet is refused before payment (0x4075a0 would return 0)")
 	# 0x4074a0 second pass: the re-enabled slot is served before the round rebuilds.
@@ -550,7 +550,7 @@ func run() -> void:
 	var steal_id := "special:magicOTHER:magicCode13"
 	var steal := controlled()
 	own(steal, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(steal_id)
-	var steal_target := BattlePlayLoop._unit(steal,"enemy021_1")
+	var steal_target := BattlePlayLoop.unit_ref(steal,"enemy021_1")
 	steal_target["coord"] = BattlePlayLoop.unit(steal,"leonard")["coord"] + Vector2i(0,2)
 	steal_target["hp"] = 1000
 	var target_gold: int = int(steal["reward_data"]["actors"][str(steal_target["actor_id"])]["gold"])
@@ -564,7 +564,7 @@ func run() -> void:
 	# A synthetic override below the rand-free amount (31) and the 021 template makes the two readings differ.
 	var carried := controlled()
 	own(carried, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(steal_id)
-	var carried_target := BattlePlayLoop._unit(carried,"enemy021_1")
+	var carried_target := BattlePlayLoop.unit_ref(carried,"enemy021_1")
 	carried_target["coord"] = BattlePlayLoop.unit(carried,"leonard")["coord"] + Vector2i(0,2)
 	carried_target["hp"] = 1000
 	carried_target["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 17, "overrides": {"gold": 7}}
@@ -577,21 +577,21 @@ func run() -> void:
 	# 0x442856..0x442875), so the same cap then reads instance 7 + B's 12 = 19 (< the rand-free 31).
 	var grown := controlled()
 	own(grown, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(steal_id)
-	var grown_target := BattlePlayLoop._unit(grown,"enemy021_1")
+	var grown_target := BattlePlayLoop.unit_ref(grown,"enemy021_1")
 	grown_target["coord"] = BattlePlayLoop.unit(grown,"leonard")["coord"] + Vector2i(0,2)
 	grown_target["hp"] = 1000
 	grown_target["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 17, "overrides": {"gold": 7}}
-	var fallen := BattlePlayLoop._unit(grown,"enemy023_1")
+	var fallen := BattlePlayLoop.unit_ref(grown,"enemy023_1")
 	fallen["coord"] = grown_target["coord"] + Vector2i(1,0)
 	fallen["hp"] = 1
 	fallen["combat_profile"]["live_defense"] = 0
 	fallen["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 18, "overrides": {"gold": 12}}
-	BattleLoopCombat._resolve_exchange(grown,"enemy021_1","enemy023_1",func(_n): return 0)
+	BattleLoopCombat.resolve_exchange(grown,"enemy021_1","enemy023_1",func(_n): return 0)
 	check(BattlePlayLoop.unit(grown,"enemy023_1")["defeated"] and int(BattlePlayLoop.unit(grown,"enemy021_1").get(BattlePlayLoop.RewardRules.CARRIED_GAINED,0)) == 12 and int(grown["gold"]) == 0,"enemy A's kill of controlled B keeps B's kill gold 12 on A, not the party")
 	grown = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(grown,"special"), steal_id)
 	var grown_effects: Array = BattlePlayLoop.attack_target(grown,"enemy021_1",func(_n): return 0).get("last_attack", {}).get("gold_effects", [])
 	check(grown_effects.size() == 1 and grown_effects[0]["from"] == "target_carry" and int(grown_effects[0]["amount"]) == 7 + 12,"竊殺 against A caps at its instance gold + B's kill gold: " + str(grown_effects))
-	var thief := BattlePlayLoop._unit(learned,"enemy026_1")
+	var thief := BattlePlayLoop.unit_ref(learned,"enemy026_1")
 	thief["actor_id"] = "026"
 	thief["growth_profile"]["job_code"] = 88
 	thief["level"] = 10
@@ -600,7 +600,7 @@ func run() -> void:
 	thief.merge(SkillResolutionRules.StatMagic.Progression.refresh_growth_stats(thief, learned["equipment_items"]), true)
 	var thief_book: Dictionary = learned["skill_book"].duplicate(true)
 	thief_book["actors"]["026"]["supported_initial_ids"].append(steal_id)
-	var victim := BattlePlayLoop._unit(learned,"leonard")
+	var victim := BattlePlayLoop.unit_ref(learned,"leonard")
 	thief["coord"] = Vector2i(8,8)
 	victim["coord"] = Vector2i(8,10)
 	victim["hp"] = 1000
@@ -611,7 +611,7 @@ func run() -> void:
 	# The drained take also goes into 0x4c2c84 (0x40b568..0x40b572), which 0x4416bc pays the caster
 	# through 0x442720 state 2: an enemy caster keeps it on its own record +0x98.
 	var robbed := controlled()
-	var robber := BattlePlayLoop._unit(robbed,"enemy026_1")
+	var robber := BattlePlayLoop.unit_ref(robbed,"enemy026_1")
 	robber["actor_id"] = "026"
 	robber["growth_profile"]["job_code"] = 88
 	robber["level"] = 10
@@ -619,25 +619,25 @@ func run() -> void:
 	robber["learned_skills"] = []
 	robber.merge(SkillResolutionRules.StatMagic.Progression.refresh_growth_stats(robber, robbed["equipment_items"]), true)
 	own(robbed, "skill_book")["actors"]["026"]["supported_initial_ids"].append(steal_id)
-	var robbed_leonard := BattlePlayLoop._unit(robbed,"leonard")
+	var robbed_leonard := BattlePlayLoop.unit_ref(robbed,"leonard")
 	robbed_leonard["hp"] = 1000
 	robber["coord"] = robbed_leonard["coord"] + Vector2i(0,2)
 	robbed["gold"] = 12
-	var robbery := BattleLoopCombat._resolve_skill(robbed,"enemy026_1","leonard",steal_id,BattlePlayLoop.skill_fields(robbed,steal_id),robber["coord"],func(_n): return 0,robbed_leonard["coord"])
+	var robbery := BattleLoopCombat.resolve_skill(robbed,"enemy026_1","leonard",steal_id,BattlePlayLoop.skill_fields(robbed,steal_id),robber["coord"],func(_n): return 0,robbed_leonard["coord"])
 	var robbery_effects: Array = robbery.get("gold_effects", [])
 	check(robbery_effects.size() == 1 and robbery_effects[0]["from"] == "party" and int(robbed["gold"]) == 0 and int(BattlePlayLoop.unit(robbed,"enemy026_1").get(BattlePlayLoop.RewardRules.CARRIED_GAINED,0)) == 12 and robbery_effects[0].get("carried_by","") == "enemy026_1","an enemy thief keeps the drained 12 on its own record +0x98: " + str(robbery_effects))
 	var robber_gold: int = BattlePlayLoop.RewardRules.kill_gold(BattlePlayLoop.unit(robbed,"enemy026_1"), int(robbed["reward_data"]["actors"]["026"]["gold"]))
-	BattlePlayLoop._unit(robbed,"enemy026_1")["hp"] = 1
-	BattlePlayLoop._unit(robbed,"enemy026_1")["stamina"] = 0 # the synthetic 100ST is outside 026's stamina domain for an exchange
-	BattleLoopCombat._resolve_exchange(robbed,"leonard","enemy026_1",func(_n): return 0)
+	BattlePlayLoop.unit_ref(robbed,"enemy026_1")["hp"] = 1
+	BattlePlayLoop.unit_ref(robbed,"enemy026_1")["stamina"] = 0 # the synthetic 100ST is outside 026's stamina domain for an exchange
+	BattleLoopCombat.resolve_exchange(robbed,"leonard","enemy026_1",func(_n): return 0)
 	check(BattlePlayLoop.unit(robbed,"enemy026_1")["defeated"] and int(robbed["gold"]) == robber_gold + 12,"killing the thief pays its template gold + the gold it stole: " + str(robbed["gold"]))
 	check(SkillResolutionRules.resolve_cast(thief,victim,[thief,victim],steal_id,BattlePlayLoop.skill_fields(learned,steal_id),thief_book,learned["skill_target_data"],learned["equipment_items"],thief["coord"],learned["map_size"],no_rng,victim["coord"]).get("reason","") == "missing_reward_context","StealGold without the reward context fails before RNG")
 	# 金之手: StealItem walks the target's slots and moves the first passing item into the shared pending loot.
 	var hand_id := "special:magicOTHER:magicCode12"
 	var hand := controlled()
 	own(hand, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(hand_id)
-	BattlePlayLoop._unit(hand,"leonard")["stamina"] = 60
-	var hand_target := BattlePlayLoop._unit(hand,"enemy021_1")
+	BattlePlayLoop.unit_ref(hand,"leonard")["stamina"] = 60
+	var hand_target := BattlePlayLoop.unit_ref(hand,"enemy021_1")
 	hand_target["coord"] = BattlePlayLoop.unit(hand,"leonard")["coord"] + Vector2i(1,0)
 	var loot_code := int(210)
 	hand_target["inventory"] = [loot_code, 0, 0, 0, 0, 0, 0, 0]
@@ -669,7 +669,7 @@ func run() -> void:
 	var missed := BattlePlayLoop.attack_target(hand,"enemy021_1",at_call.call(steal_call, 81))
 	check(missed["last_attack"]["stolen_items"].is_empty() and BattlePlayLoop.unit(missed,"enemy021_1")["inventory"][0] == loot_code and BattlePlayLoop.unit(missed,"leonard")["stamina"] == 0,"draw 82 fails the default threshold: the item stays and the 60ST is still spent")
 	var thief_hand := hand.duplicate(true)
-	var thief_leonard := BattlePlayLoop._unit(thief_hand,"leonard")
+	var thief_leonard := BattlePlayLoop.unit_ref(thief_hand,"leonard")
 	thief_leonard["combat_profile"]["base_steal_ratio"] = 30  # 004 漢克斯's PLAYERS word
 	thief_leonard.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(thief_leonard,thief_hand["equipment_items"]),true)
 	check(int(thief_leonard["combat_profile"]["steal_ratio"]) == 30,"a nonzero steal_ratio word replaces the default 12 in the refresh")
@@ -677,36 +677,36 @@ func run() -> void:
 	check(bonus["last_attack"]["stolen_items"].size() == 1 and int(bonus["last_attack"]["stolen_items"][0]["steal_roll"]) == 99,"draw 99 < 60+10+30 steals with the 漢克斯 word")
 	check(BattlePlayLoop.attack_target(thief_hand,"enemy021_1",at_call.call(steal_call, 99))["last_attack"]["stolen_items"].is_empty(),"draw 100 fails even the 漢克斯 threshold")
 	var cloaked := hand.duplicate(true)
-	var cloaked_leonard := BattlePlayLoop._unit(cloaked,"leonard")
+	var cloaked_leonard := BattlePlayLoop.unit_ref(cloaked,"leonard")
 	cloaked_leonard["equipment"] = cloaked_leonard["equipment"].filter(func(entry): return entry["slot"] != "armor") + [{"slot":"armor","item_code":131,"name":"隱忍黑衣"}]
 	var cloak_delta := BattlePlayLoop.EquipmentRules.effect_delta(cloaked_leonard["equipment"],cloaked["equipment_items"])
 	check(cloak_delta["ok"] and int(cloak_delta["delta"]["steal_ratio"]) == 20,"131 隱忍黑衣 add_steal_ratio 20 is a supported equipment effect (item +0x40)")
 	cloaked_leonard.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(cloaked_leonard,cloaked["equipment_items"]),true)
 	check(int(cloaked_leonard["combat_profile"]["steal_ratio"]) == 32,"the work value is the default 12 plus the equipped 20")
 	var unrefreshed := hand.duplicate(true)
-	BattlePlayLoop._unit(unrefreshed,"leonard")["combat_profile"].erase("steal_ratio")
+	BattlePlayLoop.unit_ref(unrefreshed,"leonard")["combat_profile"].erase("steal_ratio")
 	check(BattlePlayLoop.attack_target(unrefreshed,"enemy021_1",no_rng)["last_attack_reject"].get("reason","") == "missing_steal_ratio","a caster without the +0x196 work value is refused instead of stealing at an assumed 0")
 	var empty_handed := controlled()
 	own(empty_handed, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(hand_id)
-	BattlePlayLoop._unit(empty_handed,"leonard")["stamina"] = 60
-	BattlePlayLoop._unit(empty_handed,"enemy021_1")["coord"] = BattlePlayLoop.unit(empty_handed,"leonard")["coord"] + Vector2i(1,0)
-	BattlePlayLoop._unit(empty_handed,"enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(empty_handed,"leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(empty_handed,"enemy021_1")["coord"] = BattlePlayLoop.unit(empty_handed,"leonard")["coord"] + Vector2i(1,0)
+	BattlePlayLoop.unit_ref(empty_handed,"enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	empty_handed = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(empty_handed,"special"), hand_id)
 	check(BattlePlayLoop.attack_target(empty_handed,"enemy021_1",no_rng)["last_attack_reject"].get("reason","") == "skill_has_no_effect","a target with nothing to steal is refused before payment")
 	# 0x40b5e1..0x40b5e5 (native receipt original_steal_ratio.json): the slot walk ends at the first empty slot,
 	# so an item behind a hole is never rolled and a target whose first slot is empty has nothing to steal.
 	var holed := controlled()
 	own(holed, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(hand_id)
-	BattlePlayLoop._unit(holed,"leonard")["stamina"] = 60
-	BattlePlayLoop._unit(holed,"enemy021_1")["coord"] = BattlePlayLoop.unit(holed,"leonard")["coord"] + Vector2i(1,0)
-	BattlePlayLoop._unit(holed,"enemy021_1")["inventory"] = [0, loot_code, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(holed,"leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(holed,"enemy021_1")["coord"] = BattlePlayLoop.unit(holed,"leonard")["coord"] + Vector2i(1,0)
+	BattlePlayLoop.unit_ref(holed,"enemy021_1")["inventory"] = [0, loot_code, 0, 0, 0, 0, 0, 0]
 	holed = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(holed,"special"), hand_id)
 	check(BattlePlayLoop.attack_target(holed,"enemy021_1",no_rng)["last_attack_reject"].get("reason","") == "skill_has_no_effect","an item behind an empty first slot is out of the native walk's reach, so the use is refused like an empty inventory")
 	var behind_hole := controlled()
 	own(behind_hole, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(hand_id)
-	BattlePlayLoop._unit(behind_hole,"leonard")["stamina"] = 60
-	BattlePlayLoop._unit(behind_hole,"enemy021_1")["coord"] = BattlePlayLoop.unit(behind_hole,"leonard")["coord"] + Vector2i(1,0)
-	BattlePlayLoop._unit(behind_hole,"enemy021_1")["inventory"] = [loot_code, 0, loot_code, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(behind_hole,"leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(behind_hole,"enemy021_1")["coord"] = BattlePlayLoop.unit(behind_hole,"leonard")["coord"] + Vector2i(1,0)
+	BattlePlayLoop.unit_ref(behind_hole,"enemy021_1")["inventory"] = [loot_code, 0, loot_code, 0, 0, 0, 0, 0]
 	behind_hole = BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(behind_hole,"special"), hand_id)
 	var hole_recorded: Array = []
 	var hole_stop := BattlePlayLoop.attack_target(behind_hole,"enemy021_1",func(n): hole_recorded.append(n); return 81 if n == 100 and hole_recorded.count(100) == 2 else 0)
@@ -744,8 +744,8 @@ func run() -> void:
 		check(learned["skill_book"]["actors"].values().all(func(actor): return not actor["supported_initial_ids"].has(twin_id)) and SkillResolutionRules.descriptor_error(twin_id, twin["fields"], learned["skill_book"], learned["skill_target_data"]) == "","no source actor holds the row, yet its descriptor passes the shared gate: " + twin_id)
 		var twin_loop := controlled()
 		own(twin_loop, "skill_book")["actors"][roar_actor]["supported_initial_ids"].append(twin_id)
-		BattlePlayLoop._unit(twin_loop,"leonard")["stamina"] = 60
-		var twin_target := BattlePlayLoop._unit(twin_loop,"enemy021_1")
+		BattlePlayLoop.unit_ref(twin_loop,"leonard")["stamina"] = 60
+		var twin_target := BattlePlayLoop.unit_ref(twin_loop,"enemy021_1")
 		twin_target["coord"] = BattlePlayLoop.unit(twin_loop,"leonard")["coord"] + Vector2i(1,0)
 		twin_target["hp"] = 1000
 		twin_target["inventory"] = [210, 0, 0, 0, 0, 0, 0, 0]
@@ -800,7 +800,7 @@ func run_skill_footprint_preview() -> void:
 	caster["mp"] = 9000 # below the maximum: an MP heal on the caster has something to restore
 	caster["stamina"] = 100
 	_afflict(caster)
-	var context := BattlePlayLoop.Combat._skill_context(base)
+	var context := BattlePlayLoop.Combat.skill_context(base)
 	var shapes := {}
 	var verified := 0
 	var unverified: Array[String] = []
@@ -955,14 +955,14 @@ func run_skill_resource() -> void:
 	check(not SkillResourceRules.amounts("special",2147483647)["ok"],"overflowing source cost is refused")
 	check(SkillResourceRules.amounts("special","1")["amount"] == 20,"raw source text uses the same recovered cost")
 	var loop := controlled_skill_resource()
-	var actor := BattlePlayLoop._unit(loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 	actor["stamina"] = 19
 	var page := BattlePlayLoop.choose_command(loop,"special")
 	check(not BattlePlayLoop.can_use_special(loop,"leonard") and BattlePlayLoop.command_available(loop,"special") and page["interaction"] == "special_select" and page["units"] == loop["units"],"19 ST still opens the skill page (the original opens it with the gauge empty)")
 	check(BattlePlayLoop.choose_special(page,"special:magicOTHER:magicCode01") == page,"19 ST cannot start the source cost20 skill from the page")
 	check(BattlePlayLoop.cancel_interaction(page)["interaction"] == "action_menu","the page is left by cancelling back to the action menu")
 	actor["stamina"] = 20
-	var foe := BattlePlayLoop._unit(loop,"enemy021_1")
+	var foe := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	foe["coord"] = actor["coord"] + Vector2i.UP
 	foe["hp"] = 100
 	foe["combat_profile"]["live_defense"] = 10000
@@ -982,7 +982,7 @@ func run_skill_resource() -> void:
 	var wrong_target := BattlePlayLoop.attack_target(selected,"enemy023_1",no_random)
 	check(wrong_target["units"] == selected["units"] and wrong_target["turn_queue"] == selected["turn_queue"],"wrong-target special cannot spend any resource")
 	var stale := selected.duplicate(true)
-	BattlePlayLoop._unit(stale,"leonard")["stamina"] = 19
+	BattlePlayLoop.unit_ref(stale,"leonard")["stamina"] = 19
 	var refused := BattlePlayLoop.attack_target(stale,"enemy021_1",no_random)
 	check(refused["units"] == stale["units"] and not refused["attacked_this_action"],"cost rechecked after target selection")
 	var missing := selected.duplicate(true)
@@ -998,8 +998,8 @@ func run_skill_resource() -> void:
 	check(not halves.is_empty(),"source catalog contains actual half-MP items")
 	for half in [false,true]:
 		var magic_loop := BattleFixture.loop()
-		var mage := BattlePlayLoop._unit(magic_loop,"enemy026_1")
-		var target := BattlePlayLoop._unit(magic_loop,"leonard")
+		var mage := BattlePlayLoop.unit_ref(magic_loop,"enemy026_1")
+		var target := BattlePlayLoop.unit_ref(magic_loop,"leonard")
 		mage["coord"] = target["coord"] + Vector2i.RIGHT
 		mage["move_point"] = 0 # Isolate cost/hit draws from the independent position tie chooser.
 		target["hp"] = 100
@@ -1010,7 +1010,7 @@ func run_skill_resource() -> void:
 			mage["equipment"] = [{"slot":"accessory1","item_code":int(halves[0])}]
 		var wind: Dictionary = magic_loop["skill_book"]["skills"]["magic:magicAIR:magicCode01"]
 		own(magic_loop, "skill_book")["skills"]["magic:magicFIRE:magicCode01"].erase("fields")
-		check(BattlePlayLoop._skill_input_error(magic_loop, mage) == "skill_identity_mismatch", "missing definition for a declared owned spell fails before enumeration")
+		check(BattlePlayLoop.skill_input_error(magic_loop, mage) == "skill_identity_mismatch", "missing definition for a declared owned spell fails before enumeration")
 		# This isolated cost route grants only wind; removing a definition alone
 		# must no longer silently hide another source-owned spell.
 		own(magic_loop, "skill_book")["actors"]["026"]["supported_initial_ids"] = ["magic:magicAIR:magicCode01"]
@@ -1025,7 +1025,7 @@ func run_skill_resource() -> void:
 			var start: Array = stream_of(fixture, "damage")
 			var draws := [0,0,0]
 			var bounds: Array = []
-			var strike := BattleLoopAI._try_skill_turn(fixture,"enemy026_1",[BattlePlayLoop._unit(fixture,"leonard")],func(n):
+			var strike := BattleLoopAI.try_skill_turn(fixture,"enemy026_1",[BattlePlayLoop.unit_ref(fixture,"leonard")],func(n):
 				bounds.append(n)
 				check(not draws.is_empty(), "cost route received an unexpected random request")
 				return draws.pop_front() if not draws.is_empty() else 0)
@@ -1035,11 +1035,11 @@ func run_skill_resource() -> void:
 			check(BattlePlayLoop.unit(fixture,"enemy026_1")["mp"] == 0 and strike["resource_payment"]["amount"] == price,"AI availability and debit share exact normal/half cost")
 		mage["mp"] = price-1
 		var poor := magic_loop.duplicate(true)
-		check(BattleLoopAI._try_skill_turn(magic_loop,"enemy026_1",[target],no_random).is_empty() and magic_loop == poor,"unaffordable AI choice cannot move, damage or consume RNG")
+		check(BattleLoopAI.try_skill_turn(magic_loop,"enemy026_1",[target],no_random).is_empty() and magic_loop == poor,"unaffordable AI choice cannot move, damage or consume RNG")
 		mage["mp"] = price
 		own(magic_loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"].erase("expend")
 		var malformed := magic_loop.duplicate(true)
-		check(BattleLoopAI._try_skill_turn(magic_loop,"enemy026_1",[target],no_random).get("reason") == "invalid_skill_cost" and magic_loop == malformed,"malformed AI cost is explicitly rejected before effects or RNG")
+		check(BattleLoopAI.try_skill_turn(magic_loop,"enemy026_1",[target],no_random).get("reason") == "invalid_skill_cost" and magic_loop == malformed,"malformed AI cost is explicitly rejected before effects or RNG")
 		for index in range(magic_loop["turn_queue"]["slots"].size()):
 			if magic_loop["turn_queue"]["slots"][index]["id"] == "enemy026_1":
 				magic_loop["turn_queue"]["index"] = index
@@ -1060,7 +1060,7 @@ func controlled_skill_target() -> Dictionary:
 	for index in range(loop["turn_queue"]["slots"].size()):
 		if loop["turn_queue"]["slots"][index]["id"] == "leonard":
 			loop["turn_queue"]["index"] = index
-	BattlePlayLoop._unit(loop,"leonard")["stamina"] = 20
+	BattlePlayLoop.unit_ref(loop,"leonard")["stamina"] = 20
 	return BattlePlayLoop.select_player_unit(loop,"leonard")
 
 
@@ -1088,8 +1088,8 @@ func run_skill_target() -> void:
 					var allowed: bool = point!=origin and offset.x>=0 and offset.y>=0 and offset.x<int(pattern["size"]) and offset.y<int(pattern["size"])
 					if allowed: allowed = pattern["data"][offset.y][offset.x]>0
 					check(cells.has(point)==allowed,"cast coverage follows each original source cell including map clipping")
-	var caster := BattlePlayLoop._unit(loop,"leonard")
-	var target := BattlePlayLoop._unit(loop,"enemy021_1")
+	var caster := BattlePlayLoop.unit_ref(loop,"leonard")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	caster["coord"] = Vector2i(8,8)
 	target["coord"] = Vector2i(10,8)
 	target["hp"] = 100
@@ -1099,7 +1099,7 @@ func run_skill_target() -> void:
 	check(BattlePlayLoop.attack_cells(selected).has(Vector2i(10,8)) and not BattlePlayLoop.attack_cells(selected).has(Vector2i(9,9)),"source special range is a two-cell cross, not a diamond")
 	for reason in ["diagonal","same_side","dead","defeated","unknown_role","self"]:
 		var denied := selected.duplicate(true)
-		var foe := BattlePlayLoop._unit(denied,"enemy021_1")
+		var foe := BattlePlayLoop.unit_ref(denied,"enemy021_1")
 		var id := "enemy021_1"
 		match reason:
 			"diagonal": foe["coord"] = Vector2i(9,9)
@@ -1143,27 +1143,27 @@ func run_skill_target() -> void:
 	check(BattlePlayLoop.strike_range_cells(hit,hit["last_attack"]) == BattlePlayLoop.attack_cells(selected),"attack preview and settled special range share the same mask")
 	# Two different source ranges must constrain which spell the AI can choose.
 	var ai := BattleFixture.loop()
-	var mage := BattlePlayLoop._unit(ai,"enemy026_1")
+	var mage := BattlePlayLoop.unit_ref(ai,"enemy026_1")
 	mage["coord"] = Vector2i(6,6)
 	mage["mp"] = 30
-	var foe := BattlePlayLoop._unit(ai,"leonard")
+	var foe := BattlePlayLoop.unit_ref(ai,"leonard")
 	foe["coord"] = Vector2i(8,7)
 	foe["hp"] = 100
 	foe["max_hp"] = 100
 	own(ai, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["range"] = "range2Cell"
 	var before := ai.duplicate(true)
-	var result := BattleLoopAI._try_skill_turn(ai,"enemy026_1",[foe],func(_n): return 0)
+	var result := BattleLoopAI.try_skill_turn(ai,"enemy026_1",[foe],func(_n): return 0)
 	check(result.get("magic_key")=="fire" and result["path"]==BattlePlayLoop.movement_path(before,"enemy026_1",result["to"]),"AI chooses source-prepended fire and its own legal casting route, including staying put")
 	check(BattlePlayLoop.strike_range_cells(ai,result).has(foe["coord"]) and BattlePlayLoop.unit(ai,"enemy026_1")["mp"]==22,"AI range cue and charged spell match its eligible target")
 	for corruption in ["friendly","unknown_id","stale_dead"]:
 		var invalid := before.duplicate(true)
 		var proposed: Dictionary = BattlePlayLoop.unit(invalid,"leonard").duplicate(true)
 		match corruption:
-			"friendly": BattlePlayLoop._unit(invalid,"leonard")["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
+			"friendly": BattlePlayLoop.unit_ref(invalid,"leonard")["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
 			"unknown_id": proposed["id"] = "not_in_roster"
-			"stale_dead": BattlePlayLoop._unit(invalid,"leonard")["hp"] = 0
+			"stale_dead": BattlePlayLoop.unit_ref(invalid,"leonard")["hp"] = 0
 		var initial := invalid.duplicate(true)
-		check(BattleLoopAI._try_skill_turn(invalid,"enemy026_1",[proposed],no_rng).is_empty() and invalid==initial,"AI rereads real target identity/state before choosing or spending: "+corruption)
+		check(BattleLoopAI.try_skill_turn(invalid,"enemy026_1",[proposed],no_rng).is_empty() and invalid==initial,"AI rereads real target identity/state before choosing or spending: "+corruption)
 	for bad in ["magicFun_Heal", "magicFun_Attack,magicFun_Poison"]:
 		var invalid := before.duplicate(true)
 		own(invalid, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["function"] = bad
@@ -1204,17 +1204,17 @@ func run_skill_target() -> void:
 	var dragon := controlled_skill_target()
 	var dragon_id := "special:magicOTHER:magicCode02"
 	own(dragon, "skill_book")["actors"]["001"]["supported_initial_ids"].append(dragon_id)
-	BattlePlayLoop._unit(dragon, "leonard")["stamina"] = 80
-	BattlePlayLoop._unit(dragon, "leonard")["coord"] = Vector2i(8, 8)
-	var near := BattlePlayLoop._unit(dragon, "enemy021_1")
+	BattlePlayLoop.unit_ref(dragon, "leonard")["stamina"] = 80
+	BattlePlayLoop.unit_ref(dragon, "leonard")["coord"] = Vector2i(8, 8)
+	var near := BattlePlayLoop.unit_ref(dragon, "enemy021_1")
 	near["coord"] = Vector2i(9, 8)
 	near["hp"] = 400
 	near["max_hp"] = 400
-	var behind := BattlePlayLoop._unit(dragon, "enemy021_2")
+	var behind := BattlePlayLoop.unit_ref(dragon, "enemy021_2")
 	behind["coord"] = Vector2i(11, 8)
 	behind["hp"] = 400
 	behind["max_hp"] = 400
-	var beside := BattlePlayLoop._unit(dragon, "enemy021_3")
+	var beside := BattlePlayLoop.unit_ref(dragon, "enemy021_3")
 	beside["coord"] = Vector2i(8, 9)
 	beside["hp"] = 400
 	beside["max_hp"] = 400
@@ -1232,20 +1232,20 @@ func run_skill_target() -> void:
 	var rain := controlled_skill_target()
 	var rain_id := "special:magicWATER:magicCode01"
 	own(rain, "skill_book")["actors"]["001"]["supported_initial_ids"].append(rain_id)
-	var rain_caster := BattlePlayLoop._unit(rain, "leonard")
+	var rain_caster := BattlePlayLoop.unit_ref(rain, "leonard")
 	rain_caster["stamina"] = 40
 	rain_caster["coord"] = Vector2i(8, 8)
-	var ring := BattlePlayLoop._unit(rain, "enemy021_1")
+	var ring := BattlePlayLoop.unit_ref(rain, "enemy021_1")
 	ring["coord"] = Vector2i(9, 9)
 	ring["hp"] = 400
 	ring["max_hp"] = 400
 	ring["combat_profile"]["resist_by_type"] = {"1": 0}
-	var ring_two := BattlePlayLoop._unit(rain, "enemy021_2")
+	var ring_two := BattlePlayLoop.unit_ref(rain, "enemy021_2")
 	ring_two["coord"] = Vector2i(7, 8)
 	ring_two["hp"] = 400
 	ring_two["max_hp"] = 400
 	ring_two["combat_profile"]["resist_by_type"] = {"1": 80}
-	var outside := BattlePlayLoop._unit(rain, "enemy021_3")
+	var outside := BattlePlayLoop.unit_ref(rain, "enemy021_3")
 	outside["coord"] = Vector2i(10, 8)
 	outside["hp"] = 400
 	outside["max_hp"] = 400
@@ -1264,11 +1264,11 @@ func run_skill_target() -> void:
 	var Resolution := BattlePlayLoop.SkillResolutionRules
 	var other_loop := controlled_skill_target()
 	var other_id := "magic:magicOTHER:magicCode01"
-	var other_caster := BattlePlayLoop._unit(other_loop, "enemy026_1")
+	var other_caster := BattlePlayLoop.unit_ref(other_loop, "enemy026_1")
 	other_caster["actor_id"] = "052"
 	other_caster["mp"] = 40
 	other_caster["coord"] = Vector2i(8, 8)
-	var other_target := BattlePlayLoop._unit(other_loop, "leonard")
+	var other_target := BattlePlayLoop.unit_ref(other_loop, "leonard")
 	other_target["coord"] = Vector2i(8, 10)
 	other_target["hp"] = 300
 	other_target["combat_profile"]["resist_by_type"] = {}
@@ -1281,14 +1281,14 @@ func run_skill_target() -> void:
 	check(shielded_result.get("ok", false) and shielded_result["receipt"]["damage"] == other_result["receipt"]["damage"], "elemental resistances do not scale magicOTHER magic")
 	# eff_proc_Global wind magic (逆風裂空): same native wind policy as 風刃 with a wide footprint.
 	var gale_id := "magic:magicAIR:magicCode03"
-	var gale_caster := BattlePlayLoop._unit(other_loop, "enemy026_1")
+	var gale_caster := BattlePlayLoop.unit_ref(other_loop, "enemy026_1")
 	gale_caster["actor_id"] = "056"
 	gale_caster["mp"] = 40
-	var gale_center := BattlePlayLoop._unit(other_loop, "leonard")
+	var gale_center := BattlePlayLoop.unit_ref(other_loop, "leonard")
 	gale_center["coord"] = Vector2i(8, 12)
 	gale_center["hp"] = 300
 	gale_center["combat_profile"]["resist_by_type"] = {"2": 0}
-	var gale_second := BattlePlayLoop._unit(other_loop, "enemy023_1")
+	var gale_second := BattlePlayLoop.unit_ref(other_loop, "enemy023_1")
 	gale_second["coord"] = Vector2i(8, 13)
 	gale_second["hp"] = 300
 	gale_second["combat_profile"]["resist_by_type"] = {"2": 0}
@@ -1320,21 +1320,21 @@ func run_skill_target() -> void:
 	# range1Cell, reads earth resistance), 克羅蒂 009 魔晃斬 (special_mind, range2Cell→range1Cell).
 	for row in [["006", "special:magicOTHER:magicCode16", Vector2i(10, 8), Vector2i(9, 9), ""], ["007", "special:magicEARTH:magicCode01", Vector2i(9, 9), Vector2i(11, 8), "0"], ["009", "special:magicMIND:magicCode05", Vector2i(10, 8), Vector2i(9, 9), "4"]]:
 		var party := controlled_skill_target()
-		var member := BattlePlayLoop._unit(party, "leonard")
+		var member := BattlePlayLoop.unit_ref(party, "leonard")
 		member["actor_id"] = row[0]
 		member["stamina"] = 40
 		member["coord"] = Vector2i(8, 8)
 		check(party["skill_book"]["actors"][row[0]]["supported_initial_ids"].has(row[1]), "the PLAYERS declaration grants the member's initial special: " + row[0])
-		var victim := BattlePlayLoop._unit(party, "enemy021_1")
+		var victim := BattlePlayLoop.unit_ref(party, "enemy021_1")
 		victim["coord"] = row[2]
 		victim["hp"] = 400
 		victim["max_hp"] = 400
 		victim["combat_profile"]["resist_by_type"] = {"0": 40, "4": 40}
-		var off_cell := BattlePlayLoop._unit(party, "enemy021_2")
+		var off_cell := BattlePlayLoop.unit_ref(party, "enemy021_2")
 		off_cell["coord"] = row[3]
 		off_cell["hp"] = 400
 		off_cell["max_hp"] = 400
-		BattlePlayLoop._unit(party, "enemy021_4")["coord"] = Vector2i(1, 1)
+		BattlePlayLoop.unit_ref(party, "enemy021_4")["coord"] = Vector2i(1, 1)
 		var chosen := BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(party, "special"), row[1])
 		check(chosen["interaction"] == "attack_select" and chosen["selected_skill_id"] == row[1], "the granted special is selectable from the member's special menu: " + row[1])
 		check(BattlePlayLoop.attack_cells(chosen).has(row[2]) and not BattlePlayLoop.attack_cells(chosen).has(row[3]), "cast range follows the source range symbol (cross vs circle): " + row[1])
@@ -1355,11 +1355,11 @@ func run_skill_target() -> void:
 	for pair in [["030", "special:magicOTHER2:magicCode01"], ["049", "special:magicOTHER2:magicCode01"], ["051", "special:magicOTHER2:magicCode02"], ["032", "special:magicEARTH:magicCode04"], ["033", "special:magicEARTH:magicCode05"], ["055", "special:magicEARTH:magicCode04"], ["055", "special:magicEARTH:magicCode05"], ["045", "special:magicAIR:magicCode06"], ["048", "special:magicWATER:magicCode05"], ["054", "special:magicOTHER:magicCode31"]]:
 		check(book_actors[pair[0]]["supported_initial_ids"].has(pair[1]), "special_earth/wind/water/other2 declarations grant the 2 variant: " + pair[0] + " " + pair[1])
 	var two_loop := controlled_skill_target()
-	var two_caster := BattlePlayLoop._unit(two_loop, "enemy021_1")
+	var two_caster := BattlePlayLoop.unit_ref(two_loop, "enemy021_1")
 	two_caster["actor_id"] = "049"
 	two_caster["stamina"] = 20
 	two_caster["coord"] = Vector2i(8, 8)
-	var two_target := BattlePlayLoop._unit(two_loop, "leonard")
+	var two_target := BattlePlayLoop.unit_ref(two_loop, "leonard")
 	two_target["coord"] = Vector2i(10, 8)
 	two_target["hp"] = 400
 	two_target["combat_profile"]["resist_by_type"] = {"0": 80, "1": 80, "2": 80, "3": 80, "4": 80}
@@ -1381,7 +1381,7 @@ func run_skill_target() -> void:
 	check(SkillTargetRules.effect_cells(Vector2i(8, 7), wrath, data, map, Vector2i(8, 8)) == [Vector2i(8, 7), Vector2i(8, 6), Vector2i(8, 5), Vector2i(8, 4)], "神罰 projects a four-cell line north from the adjacent target cell")
 	var void_loop := controlled_skill_target()
 	var void_id := "special:magicOTHER:magicCode28"
-	var void_caster := BattlePlayLoop._unit(void_loop, "enemy021_1")
+	var void_caster := BattlePlayLoop.unit_ref(void_loop, "enemy021_1")
 	void_caster["actor_id"] = "057"
 	void_caster["stamina"] = 80
 	void_caster["coord"] = Vector2i(8, 8)
@@ -1390,15 +1390,15 @@ func run_skill_target() -> void:
 	check(void_cells.has(Vector2i(12, 8)) and void_cells.has(Vector2i(10, 10)) and not void_cells.has(Vector2i(11, 10)) and not void_cells.has(Vector2i(8, 8)), "虛空無轉 casts anywhere within Manhattan distance 4 except the caster's cell")
 	var void_footprint := SkillTargetRules.effect_cells(Vector2i(12, 8), void_fields, data, map, Vector2i(8, 8))
 	check(void_footprint.has(Vector2i(13, 9)) and void_footprint.has(Vector2i(14, 8)) and not void_footprint.has(Vector2i(15, 8)), "its footprint is the range2CellCircle around the chosen cell")
-	var void_center := BattlePlayLoop._unit(void_loop, "leonard")
+	var void_center := BattlePlayLoop.unit_ref(void_loop, "leonard")
 	void_center["coord"] = Vector2i(12, 8)
 	void_center["hp"] = 900
 	void_center["max_hp"] = 900
-	var void_second := BattlePlayLoop._unit(void_loop, "enemy023_1")
+	var void_second := BattlePlayLoop.unit_ref(void_loop, "enemy023_1")
 	void_second["coord"] = Vector2i(13, 9)
 	void_second["hp"] = 900
 	void_second["max_hp"] = 900
-	var void_outside := BattlePlayLoop._unit(void_loop, "enemy023_2")
+	var void_outside := BattlePlayLoop.unit_ref(void_loop, "enemy023_2")
 	void_outside["coord"] = Vector2i(15, 8)
 	void_outside["hp"] = 900
 	void_outside["max_hp"] = 900
@@ -1411,21 +1411,21 @@ func run_skill_target() -> void:
 	var apex_id := "magic:magicOTHER:magicCode03"
 	check(book_actors["059"]["supported_initial_ids"].has(apex_id) and book_actors["060"]["supported_initial_ids"].has(apex_id), "059 and 060 hold 極 from magic_other")
 	var apex_loop := controlled_skill_target()
-	var apex_caster := BattlePlayLoop._unit(apex_loop, "enemy026_1")
+	var apex_caster := BattlePlayLoop.unit_ref(apex_loop, "enemy026_1")
 	apex_caster["actor_id"] = "059"
 	apex_caster["mp"] = 130
 	apex_caster["coord"] = Vector2i(8, 8)
-	var apex_center := BattlePlayLoop._unit(apex_loop, "leonard")
+	var apex_center := BattlePlayLoop.unit_ref(apex_loop, "leonard")
 	apex_center["coord"] = Vector2i(13, 8)
 	apex_center["hp"] = 900
 	apex_center["max_hp"] = 900
 	apex_center["combat_profile"]["resist_by_type"] = {"0": 80, "1": 80, "2": 80, "3": 80, "4": 80}
-	var apex_second := BattlePlayLoop._unit(apex_loop, "enemy023_1")
+	var apex_second := BattlePlayLoop.unit_ref(apex_loop, "enemy023_1")
 	apex_second["coord"] = Vector2i(15, 9)
 	apex_second["hp"] = 900
 	apex_second["max_hp"] = 900
 	apex_second["combat_profile"]["resist_by_type"] = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0}
-	var apex_outside := BattlePlayLoop._unit(apex_loop, "enemy023_2")
+	var apex_outside := BattlePlayLoop.unit_ref(apex_loop, "enemy023_2")
 	apex_outside["coord"] = Vector2i(17, 8)
 	apex_outside["hp"] = 900
 	apex_outside["max_hp"] = 900
@@ -1448,21 +1448,21 @@ func run_skill_target() -> void:
 		var tier_id: String = row[0]
 		check(book_actors[row[1]]["supported_initial_ids"].has(tier_id), "the PLAYERS declaration grants the high-tier magic to its source holder: " + tier_id)
 		var tier_loop := controlled_skill_target()
-		var tier_caster := BattlePlayLoop._unit(tier_loop, "enemy026_1")
+		var tier_caster := BattlePlayLoop.unit_ref(tier_loop, "enemy026_1")
 		tier_caster["actor_id"] = row[1]
 		tier_caster["mp"] = 200
 		tier_caster["coord"] = Vector2i(8, 8)
-		var tier_center := BattlePlayLoop._unit(tier_loop, "leonard")
+		var tier_center := BattlePlayLoop.unit_ref(tier_loop, "leonard")
 		tier_center["coord"] = row[5]
 		tier_center["hp"] = 900
 		tier_center["max_hp"] = 900
 		tier_center["combat_profile"]["resist_by_type"] = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0}
-		var tier_inside := BattlePlayLoop._unit(tier_loop, "enemy023_1")
+		var tier_inside := BattlePlayLoop.unit_ref(tier_loop, "enemy023_1")
 		tier_inside["coord"] = row[6]
 		tier_inside["hp"] = 900
 		tier_inside["max_hp"] = 900
 		tier_inside["combat_profile"]["resist_by_type"] = {"0": 80, "1": 80, "2": 80, "3": 80, "4": 80}
-		var tier_outside := BattlePlayLoop._unit(tier_loop, "enemy023_2")
+		var tier_outside := BattlePlayLoop.unit_ref(tier_loop, "enemy023_2")
 		tier_outside["coord"] = row[7]
 		tier_outside["hp"] = 900
 		tier_outside["max_hp"] = 900
@@ -1474,11 +1474,11 @@ func run_skill_target() -> void:
 		# Player path: a member who learned the row picks it from the magic menu and settles at a chosen cell.
 		var learned := controlled_skill_target()
 		own(learned, "skill_book")["actors"]["001"]["supported_initial_ids"].append(tier_id)
-		var learner := BattlePlayLoop._unit(learned, "leonard")
+		var learner := BattlePlayLoop.unit_ref(learned, "leonard")
 		learner["mp"] = 200
 		learner["max_mp"] = 200
 		learner["coord"] = Vector2i(8, 8)
-		var learned_foe := BattlePlayLoop._unit(learned, "enemy021_1")
+		var learned_foe := BattlePlayLoop.unit_ref(learned, "enemy021_1")
 		learned_foe["coord"] = row[5]
 		learned_foe["hp"] = 900
 		learned_foe["max_hp"] = 900
@@ -1499,15 +1499,15 @@ func run_skill_target() -> void:
 		var late_id: String = row[0]
 		var late := controlled_skill_target()
 		own(late, "skill_book")["actors"]["001"]["supported_initial_ids"].append(late_id)
-		var late_caster := BattlePlayLoop._unit(late, "leonard")
+		var late_caster := BattlePlayLoop.unit_ref(late, "leonard")
 		late_caster["stamina"] = 60
 		late_caster["coord"] = Vector2i(8, 8)
-		var late_target := BattlePlayLoop._unit(late, "enemy021_1")
+		var late_target := BattlePlayLoop.unit_ref(late, "enemy021_1")
 		late_target["coord"] = row[2]
 		late_target["hp"] = 900
 		late_target["max_hp"] = 900
 		late_target["combat_profile"]["resist_by_type"] = {"0": 80, "1": 80, "2": 80, "3": 80, "4": 80}
-		var late_off := BattlePlayLoop._unit(late, "enemy021_2")
+		var late_off := BattlePlayLoop.unit_ref(late, "enemy021_2")
 		late_off["coord"] = row[3]
 		late_off["hp"] = 900
 		late_off["max_hp"] = 900

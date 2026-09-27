@@ -3,22 +3,13 @@ extends RefCounted
 ## One read-only quote serves availability and actual MP/ST debit.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_resources.md
+const Values = preload("res://game/sim/Values.gd")
 const ST_PER_EXPEND := 20
 const MAX_SIGNED := 2147483647
 
 
-static func _integer(value: Variant, source_text: bool = false) -> int:
-	if source_text and value is String:
-		if not value.is_valid_int():
-			return -1
-		value = int(value)
-	if typeof(value) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(value)) or value < 0 or value > MAX_SIGNED or value != int(value):
-		return -1
-	return int(value)
-
-
 static func amounts(channel: String, expend: Variant, half_mp: bool = false) -> Dictionary:
-	var raw := _integer(expend, true)
+	var raw := Values.non_negative_int(expend, true)
 	if raw < 0 or channel not in ["special", "magic"] or (channel == "special" and raw > MAX_SIGNED / ST_PER_EXPEND):
 		return {"ok": false, "reason": "invalid_skill_cost"}
 	var cost := raw * ST_PER_EXPEND if channel == "special" else raw
@@ -36,7 +27,7 @@ static func quote(unit: Dictionary, fields: Dictionary, channel: String, catalog
 		if not unit.get("equipment") is Array:
 			return {"ok": false, "reason": "missing_cost_equipment"}
 		for entry in unit["equipment"]:
-			if not entry is Dictionary or _integer(entry.get("item_code")) <= 0:
+			if not entry is Dictionary or Values.non_negative_int(entry.get("item_code")) <= 0:
 				return {"ok": false, "reason": "invalid_cost_equipment"}
 			var item: Variant = catalog.get(str(int(entry["item_code"])))
 			if not item is Dictionary or not item.get("mp_use_half") is bool:
@@ -45,7 +36,7 @@ static func quote(unit: Dictionary, fields: Dictionary, channel: String, catalog
 	var result := amounts(channel, fields.get("expend"), half_mp)
 	if not result["ok"]:
 		return result
-	var available := _integer(unit.get(result["resource"]))
+	var available := Values.non_negative_int(unit.get(result["resource"]))
 	if available < 0:
 		return {"ok": false, "reason": "invalid_" + result["resource"]}
 	result["before"] = available

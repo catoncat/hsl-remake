@@ -24,7 +24,7 @@ static func fixture(code: String="004", twice: bool=false, counter: bool=false) 
 	var loop := fresh()
 	if not loop["scenario_ok"]: return loop
 	var owner: Dictionary=loop["units"].filter(func(a):return a["actor_id"]==code)[0]
-	var friend:=BattlePlayLoop._unit(loop,"tina");var foe:=BattlePlayLoop._unit(loop,"enemy026_1")
+	var friend:=BattlePlayLoop.unit_ref(loop,"tina");var foe:=BattlePlayLoop.unit_ref(loop,"enemy026_1")
 	owner.merge({"player_commandable":true,"battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"coord":Vector2i(14,16),"hit_bonus_accum":1000},true)
 	owner["inventory"]=[108,102,227,232,241,244,253,0]
 	if code in ["004","028"]: run_weapon_effect_tests.set_gear(owner,loop["equipment_items"],"weapon",108)
@@ -39,7 +39,7 @@ static func fixture(code: String="004", twice: bool=false, counter: bool=false) 
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 		actor["hp"]=actor["max_hp"];actor["mp"]=actor["max_mp"];actor["ai_home_coord"]=actor["coord"]
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,owner["id"])
+	return BattlePlayLoop.return_to_player(loop,owner["id"])
 
 func run() -> void:
 	var loop:=fresh()
@@ -80,7 +80,7 @@ func native_mana() -> void:
 	var initial:=fixture()
 	for row in packet["caller"]:
 		var c:Dictionary=row["input"];var loop:=initial.duplicate(true)
-		var owner:=BattlePlayLoop._unit(loop,"thief");var target:=BattlePlayLoop._unit(loop,"enemy026_1")
+		var owner:=BattlePlayLoop.unit_ref(loop,"thief");var target:=BattlePlayLoop.unit_ref(loop,"enemy026_1")
 		owner["id"]="0";target["id"]="1"
 		own(loop, "equipment_items")["108"]["weapon_effect_flags"]=int(c["effects"])
 		target["equipment"]=target["equipment"].filter(func(s):return s["slot"]!="accessory1")
@@ -112,9 +112,9 @@ func abilities_and_growth() -> void:
 	# implemented from the PLAYERS declaration itself — never an unrelated replacement.
 	check(BattlePlayLoop.special_options(loop,"thief").map(func(o):return o["id"])==["special:magicOTHER:magicCode10"] and BattlePlayLoop.special_options(loop,"wing").map(func(o):return o["id"])==["special:magicOTHER:magicCode16"],"declared initial specials are exactly 銀之手 (004) and 連續突刺 (006); no unrelated replacement")
 	for code in ["004","006"]:
-		var battle:=fixture(code);var id:=str(battle["selected_unit_id"]);var actor:=BattlePlayLoop._unit(battle,id)
+		var battle:=fixture(code);var id:=str(battle["selected_unit_id"]);var actor:=BattlePlayLoop.unit_ref(battle,id)
 		actor["exp"]=99
-		check(not BattleLoopInventory._resolve_item_use(battle,id,id,"253",6).is_empty(),"new source profession acquires permanent item through real commit")
+		check(not BattleLoopInventory.resolve_item_use(battle,id,id,"253",6).is_empty(),"new source profession acquires permanent item through real commit")
 		var gained:Dictionary=actor["permanent_gains"].duplicate(true)
 		actor.merge(BattlePlayLoop.ProgressionRules.resolve_experience(actor,1,battle["equipment_items"]),true)
 		var queue:Dictionary=battle["turn_queue"].duplicate(true)
@@ -157,18 +157,18 @@ func series() -> void:
 		check(again["action_end_sequence"]==1 and not again["extra_action"]["pending"],"two accepted series execute just one final status tail")
 	for hp in [1,3,7]:
 		var lethal:=fixture();own(lethal, "skill_book")["actors"]["004"]["double_attack"]=true
-		BattlePlayLoop._unit(lethal,"enemy026_1")["hp"]=hp
+		BattlePlayLoop.unit_ref(lethal,"enemy026_1")["hp"]=hp
 		var hit:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(lethal,"attack"),"enemy026_1",zero)
 		var s:Dictionary=hit["last_attack"]
 		check(s["followups"].is_empty() and int(s["weapon_effects"]["mana"]["loss"])==hp/3,"first lethal skips second and uses capped HP: "+str(hp))
-	var missed:=fixture();BattlePlayLoop._unit(missed,"thief")["hit_bonus_accum"]=0
-	BattlePlayLoop._unit(missed,"thief")["combat_profile"]["live_hit_ratio"]=0 # Explicit low-accuracy final-miss fixture.
-	var first:=BattleLoopCombat._apply_strike(missed,"thief","enemy026_1",zero,false,1)
+	var missed:=fixture();BattlePlayLoop.unit_ref(missed,"thief")["hit_bonus_accum"]=0
+	BattlePlayLoop.unit_ref(missed,"thief")["combat_profile"]["live_hit_ratio"]=0 # Explicit low-accuracy final-miss fixture.
+	var first:=BattleLoopCombat.apply_strike(missed,"thief","enemy026_1",zero,false,1)
 	var before_mp:=int(BattlePlayLoop.unit(missed,"enemy026_1")["mp"])
-	var last:=BattleLoopCombat._apply_strike(missed,"thief","enemy026_1",high,false,0)
+	var last:=BattleLoopCombat.apply_strike(missed,"thief","enemy026_1",high,false,0)
 	check(not first.has("weapon_effects") and not last["hit"] and not last.has("weapon_effects") and BattlePlayLoop.unit(missed,"enemy026_1")["mp"]==before_mp,"final miss cannot borrow earlier HP contribution for mana")
 	var counter:=fixture("006",false,true)
-	var defender:=BattlePlayLoop._unit(counter,"enemy026_1")
+	var defender:=BattlePlayLoop.unit_ref(counter,"enemy026_1")
 	# Explicit ability source fixture: the opposite actor carries the same MP bit.
 	own(counter, "equipment_items")[str(int(defender["weapon_code"]))]["weapon_effect_flags"]=WeaponEffectRules.MANA
 	own(counter, "skill_book")["actors"]["026"]["double_attack"]=true
@@ -182,9 +182,9 @@ func cross_battle() -> void:
 	for code in ["004","006"]:
 		var battle:=fixture(code,true)
 		var id:=str(battle["player_unit_id"])
-		var actor:=BattlePlayLoop._unit(battle,id)
-		check(not BattleLoopInventory._resolve_item_use(battle,id,id,"253",6).is_empty(),"new profession permanently gains through production item commit")
-		actor["exp"]=99;BattlePlayLoop._unit(battle,"enemy026_1")["hp"]=1
+		var actor:=BattlePlayLoop.unit_ref(battle,id)
+		check(not BattleLoopInventory.resolve_item_use(battle,id,id,"253",6).is_empty(),"new profession permanently gains through production item commit")
+		actor["exp"]=99;BattlePlayLoop.unit_ref(battle,"enemy026_1")["hp"]=1
 		actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"poison",3,5)["changes"],true)
 		battle=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(battle,"attack"),"enemy026_1",zero)
 		check(battle["battle_outcome"]==BattleOutcome.VICTORY_ENEMIES_CLEARED and BattlePlayLoop.unit(battle,id)["level"]==2,"new profession carries actual final kill/EXP result")

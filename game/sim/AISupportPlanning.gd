@@ -18,6 +18,8 @@ const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
 const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
+const Values = preload("res://game/sim/Values.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 ## RANGE row 1 (range1Cell), the range 0x40d530 hands 0x40fa80 round the patient: its four
 ## orthogonal neighbours.
 const ITEM_REACH := [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, 1)]
@@ -41,11 +43,11 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 	if not capability["ok"]: return capability
 	var error := Rules.profile_error(profile, true)
 	if error != "": return {"ok": false, "reason": error}
-	if SkillResourceRules._integer(profile.get("ai_magic_multi_first")) not in [0,1]: return {"ok": false, "reason": "missing_ai_magic_multi_first"}
+	if Values.non_negative_int(profile.get("ai_magic_multi_first")) not in [0,1]: return {"ok": false, "reason": "missing_ai_magic_multi_first"}
 	var primaries: Array = []
 	var foes: Array = []
 	for unit in loop["units"]:
-		if not SkillTargetRules._living(unit): continue
+		if not BattlePresenceRules.living(unit): continue
 		if unit.get("battle_actor_role") not in SkillTargetRules.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
 		if SkillTargetRules.ActorRoleRules.hostile(actor, unit):
 			foes.append(unit)
@@ -53,13 +55,13 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 		error = StatusEffectRules.input_error(unit)
 		if error != "": return {"ok": false, "reason": error}
 		if unit["id"] != actor["id"] and Rules.AIPriorityRules.within_square(unit["coord"], actor["coord"], Rules.SEARCH_RADIUS): primaries.append(unit)
-	foes.sort_custom(func(a, b): return AISkillPlanning._cell_before(a["coord"], b["coord"]))
+	foes.sort_custom(func(a, b): return AISkillPlanning.cell_before(a["coord"], b["coord"]))
 	# The buff check also plans the caster itself: 0x43fce1..0x43fd46 falls back to it (see choose).
 	if primaries.is_empty() and ids.is_empty(): return result
 	var cells: Array = [actor["coord"]]
 	for cell in envelope["reachable_coords"]:
 		if not cells.has(cell): cells.append(cell)
-	cells.sort_custom(AISkillPlanning._cell_before)
+	cells.sort_custom(AISkillPlanning.cell_before)
 	if healing_slot >= 0:
 		var code := str(int(actor["inventory"][healing_slot]))
 		for primary in primaries:
@@ -70,7 +72,7 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 			var selected := _item_intent(actor, primary, envelope, healing_slot, code)
 			if selected.is_empty(): continue
 			result["items"][primary["id"]] = selected
-			result["heal"][primary["id"]] = AISkillPlanning._target_plan(primary["id"],"magic",profile,actor,foes)
+			result["heal"][primary["id"]] = AISkillPlanning.target_plan(primary["id"],"magic",profile,actor,foes)
 	if curing["index"] >= 0:
 		for primary in primaries:
 			var slot := ItemUseRules.first_status_slot(actor["inventory"], loop["consumables"], int(primary["status_flags"]))
@@ -82,12 +84,12 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 			var selected := _item_intent(actor, primary, envelope, int(slot["index"]), code)
 			if selected.is_empty(): continue
 			result["status_items"][primary["id"]] = selected
-			result["status"][primary["id"]] = AISkillPlanning._target_plan(primary["id"], "magic", profile, actor, foes)
+			result["status"][primary["id"]] = AISkillPlanning.target_plan(primary["id"], "magic", profile, actor, foes)
 	for id in ids:
 		var entry: Dictionary = book["skills"][id]
 		var fields: Dictionary = entry["fields"]
-		var rate := SkillResourceRules._integer(fields.get("use_ratio"), true)
-		var source_order := SkillResourceRules._integer(entry.get("source_order"))
+		var rate := Values.non_negative_int(fields.get("use_ratio"), true)
+		var source_order := Values.non_negative_int(entry.get("source_order"))
 		if rate < 0 or rate > 100 or source_order < 0 or source_order > 223: return {"ok": false, "reason": "invalid_support_ai_definition"}
 		var available := SkillResolutionRules.available(actor, id, fields, book, loop["skill_target_data"], loop["equipment_items"])
 		if not available["ok"]:
@@ -126,7 +128,7 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 						"useful_ids": useful, "score": useful.size(), "movement_cost": 0 if cell == actor["coord"] else int(route["cost"]),
 						"path": [] if cell == actor["coord"] else route["path"]})
 		for primary_id in by_primary:
-			if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning._target_plan(primary_id, "magic", profile, actor, foes)
+			if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning.target_plan(primary_id, "magic", profile, actor, foes)
 			result[kind][primary_id]["skills"].append({"skill_id": id, "source_order": source_order, "use_ratio": rate,
 				"bucket": bucket, "channel": entry["channel"], "intents": by_primary[primary_id]})
 	return result
@@ -150,7 +152,7 @@ static func _item_intent(actor: Dictionary, primary: Dictionary, envelope: Dicti
 			if cell != actor["coord"] and envelope["reachable_by_coord"].has(cell):
 				stations.append({"cell": cell, "cost": int(envelope["reachable_by_coord"][cell]["cost"])})
 		if stations.is_empty(): continue
-		stations.sort_custom(func(a, b): return AISkillPlanning._cell_before(a["cell"], b["cell"]))
+		stations.sort_custom(func(a, b): return AISkillPlanning.cell_before(a["cell"], b["cell"]))
 		return _item_station({"target_id": str(primary["id"]), "item_slot": slot, "item_code": code, "centre": centre, "stations": stations}, func(_n: int) -> int: return 0)
 	return {}
 
@@ -175,7 +177,7 @@ static func choose(prepared: Dictionary, actor: Dictionary, profile: Dictionary,
 	if attempted == 28: return {"kind": "ordinary", "lock_roll": carried_roll}
 	var roll := carried_roll
 	while attempted != 28:
-		if roll < 1: roll = Rules.AIDecisionRules._draw(99, rng, []) + 1
+		if roll < 1: roll = Rules.AIDecisionRules.recorded_draw(99, rng, []) + 1
 		var phase := Rules.next_check(profile, attempted, roll, rng, true)
 		attempted = phase["attempted"]
 		decision["checks"].append(phase)
@@ -216,7 +218,7 @@ static func choose(prepared: Dictionary, actor: Dictionary, profile: Dictionary,
 				# 0x440a86..0x440ad3: the buff aid draws one AI random (0x458c10) and its low bit orders
 				# magic (0) / special (1); two attempts, no item category, no ai_att_* probability.
 				var draws: Array = []
-				var special_first := Rules.AIDecisionRules._draw(2, rng, draws) != 0
+				var special_first := Rules.AIDecisionRules.recorded_draw(2, rng, draws) != 0
 				categories = {"ok": true, "kind": 2 if special_first else 1, "order": [2, 1] if special_first else [1, 2], "draws": draws, "source": "0x440a86..0x440ad3"}
 			else:
 				# 0x440796 / 0x440959: 0x40c570(actor, magic bucket non-empty, special bucket non-empty).

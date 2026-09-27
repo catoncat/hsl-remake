@@ -35,7 +35,7 @@ func run() -> void:
 	current_scene = scene
 	await process_frame
 	await process_frame
-	var leonard: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var leonard: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	leonard["level"] = 2
 	leonard["exp"] = 20
 	scene.play_loop["gold"] = 150

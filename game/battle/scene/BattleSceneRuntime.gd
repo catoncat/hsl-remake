@@ -627,7 +627,7 @@ func mark_cutscene_messages_shown(status_key: String, events: Array) -> void:
 func on_script_cutscene_finished(_status_key: String) -> void:
 	## Resolve status changes selected or fired inside the completed cutscene only
 	## after its presentation timeline has finished.
-	apply_loop(BattlePlayLoop._resolve_outcome(play_loop), "resolve_outcome_after_cutscene")
+	apply_loop(BattlePlayLoop.resolve_outcome(play_loop), "resolve_outcome_after_cutscene")
 	## An event-only terminal (WINFAIL073 event_2 / WINFAIL078 event_3 / WINFAIL900
 	## event_4) has no win status deciding the battle: the fired event itself carries
 	## actSetNextPlayLevelEvent. Only that event's cutscene ends the scene, through the
@@ -1043,7 +1043,7 @@ func enter_first_control_state(source_event_id: String) -> void:
 	apply_opening_object_deletes()
 	# Opening choices use the same status interpreter as in-battle cutscenes.
 	# Resolve them at the first-control boundary, after the inserted branch played.
-	apply_loop(BattlePlayLoop._resolve_outcome(play_loop), "resolve_outcome_at_first_control")
+	apply_loop(BattlePlayLoop.resolve_outcome(play_loop), "resolve_outcome_at_first_control")
 	if BattleOutcome.decided(play_loop):
 		return
 	var loop := BattlePlayLoop.begin_battle(play_loop)

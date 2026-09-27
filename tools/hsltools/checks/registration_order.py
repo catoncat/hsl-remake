@@ -22,7 +22,7 @@ hsl01.exe (static-derived, docs/evidence_packets/static_reverse/initial_battle_i
 Remake: CoreTurnQueue.registration_slot reserves PLAYERS code − 1 for growth_profile.allocation
 "manual" and leaves every other unit to roster (loop units) order after the players; the
 assembler writes the roster in trace_opening order and runtime inserts append
-(ScriptActorCreationRules._install).
+(ScriptActorCreationRules.install_actor).
 
 Per content/battles scenario with a playable roster this check FAILs when
   - a unit's class differs (original reserved slot ⇔ remake manual allocation) or its reserved

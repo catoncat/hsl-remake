@@ -64,13 +64,13 @@ func fixture() -> Node:
 
 func cast_case() -> void:
 	var scene: Node = await fixture()
-	var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
-	var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var caster := BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
+	var target := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	target["coord"] = caster["coord"] + Vector2i.RIGHT
 	target["hp"] = 200
 	caster["mp"] = 100
 	var id := "magic:magicFIRE:magicCode01"
-	BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+	BattleLoopCombat.resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 	scene.apply_loop(scene.play_loop, "capture")
 	var actor: Node2D = scene.actor_node_for_unit(caster["id"])
 	for _guard in range(600):
@@ -87,8 +87,8 @@ func cast_case() -> void:
 
 func level_up_case() -> void:
 	var scene: Node = await fixture()
-	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var player := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var enemy := BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	player["exp"] = 99
 	enemy["coord"] = player["coord"] + Vector2i.UP
 	enemy["hp"] = 1
@@ -118,7 +118,7 @@ func digits_case() -> void:
 	var scene: Node = await fixture()
 	var view: Node = scene.get_node("BattlePresentation")
 	# The camera opens on 雷歐納德; 021 starts ten rows north, off screen — stand it next to him.
-	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["coord"] = BattlePlayLoop._unit(scene.play_loop, "leonard")["coord"] + Vector2i.UP
+	BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")["coord"] = BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["coord"] + Vector2i.UP
 	scene.apply_loop(scene.play_loop, "capture")
 	for _guard in range(600):
 		await process_frame

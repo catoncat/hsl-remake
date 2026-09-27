@@ -31,12 +31,12 @@ func _init() -> void:
 
 static func fixture(role: String = "026", ai: bool = false) -> Dictionary:
 	var loop := run_job_stats_tests.fixture(role, not ai)
-	var actor := BattlePlayLoop._unit(loop,"leonard")
-	BattlePlayLoop._unit(loop,"enemy023_1")["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
+	BattlePlayLoop.unit_ref(loop,"enemy023_1")["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	actor["inventory"] = [232,233,236,227,218,241,0,0]
 	actor["hp"] = actor["max_hp"];actor["mp"] = actor["max_mp"]
-	BattlePlayLoop._unit(loop,"enemy021_1")["no_attack"] = true
-	BattlePlayLoop._unit(loop,"enemy021_1")["inventory"] = [0,0,0,0,0,0,0,0]
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["no_attack"] = true
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["inventory"] = [0,0,0,0,0,0,0,0]
 	return loop
 
 
@@ -54,17 +54,17 @@ static func moved(loop: Dictionary, at: Vector2i = Vector2i(9,8)) -> Dictionary:
 
 static func casting_fixture(code: String = "026") -> Dictionary:
 	var loop := run_job_stats_tests.fixture(code)
-	BattlePlayLoop._unit(loop,"leonard")["inventory"] = [145,128,217,219,215,226,218,227]
-	BattlePlayLoop._unit(loop,"enemy021_1")["inventory"] = [0,0,0,0,0,0,0,0]
+	BattlePlayLoop.unit_ref(loop,"leonard")["inventory"] = [145,128,217,219,215,226,218,227]
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["inventory"] = [0,0,0,0,0,0,0,0]
 	return loop
 
 
 static func mobility_fixture() -> Dictionary:
 	var loop := run_ordinary_special_tests.fixture()
-	BattlePlayLoop._unit(loop,"leonard")["coord"] = Vector2i(4,8)
-	BattlePlayLoop._unit(loop,"enemy021_1")["coord"] = Vector2i(18,8)
-	BattlePlayLoop._unit(loop,"enemy023_1")["coord"] = Vector2i(2,2)
-	BattlePlayLoop._unit(loop,"leonard")["inventory"] = [193,138,231,231,0,0,0,0]
+	BattlePlayLoop.unit_ref(loop,"leonard")["coord"] = Vector2i(4,8)
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["coord"] = Vector2i(18,8)
+	BattlePlayLoop.unit_ref(loop,"enemy023_1")["coord"] = Vector2i(2,2)
+	BattlePlayLoop.unit_ref(loop,"leonard")["inventory"] = [193,138,231,231,0,0,0,0]
 	return loop
 
 
@@ -86,7 +86,7 @@ func native_cases() -> void:
 	for row in packet["cases"]:
 		var input: Dictionary = row["input"]
 		var loop := fixture()
-		var actor := BattlePlayLoop._unit(loop,"leonard")
+		var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["equipment"].append({"slot":"accessory1","item_code":232})
 		own(loop, "equipment_items")["232"]["move_magic_use"] = (int(input["effects"]) & 0x1000) != 0
 		own(loop, "equipment_items")["232"]["add_attack_range"] = (int(input["effects"]) & 1) != 0
@@ -102,7 +102,7 @@ func native_cases() -> void:
 			var result := PositionCapabilityRules.attack_pattern(actor,loop["equipment_items"],loop["attack_patterns"],{"1":"range1Cell","2":"range2Cell"})
 			check(result["ok"] and result["index"] == int(row["native"]["value"]),"native weapon range index advances exactly one source record")
 	for row in packet["gear"]:
-		var loop := fixture();var actor := BattlePlayLoop._unit(loop,"leonard")
+		var loop := fixture();var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["equipment"] = []
 		for code in row["input"]["codes"]: actor["equipment"].append({"item_code":int(code)})
 		own(loop, "skill_book")["actors"]["026"]["move_magic_use"] = bool(int(row["input"]["capability"]) & 0x400)
@@ -123,7 +123,7 @@ func permission_cases() -> void:
 	var forged := walk.duplicate(true);forged.merge({"interaction":"attack_select","selected_attack":"magic","selected_skill_id":WIND},true)
 	var rejected := BattlePlayLoop.attack_target(forged,"enemy021_1",no_rng)
 	check(rejected["units"] == walk["units"] and rejected["last_attack_reject"]["reason"] == "magic_unavailable_after_movement", "stale magic selection fails before payment, RNG or EXP")
-	check(BattleLoopCombat._resolve_skill(walk,"leonard","enemy021_1",WIND,BattlePlayLoop.skill_fields(walk,WIND),Vector2i(9,8),no_rng).is_empty(),"shared commit cannot bypass pending player movement")
+	check(BattleLoopCombat.resolve_skill(walk,"leonard","enemy021_1",WIND,BattlePlayLoop.skill_fields(walk,WIND),Vector2i(9,8),no_rng).is_empty(),"shared commit cannot bypass pending player movement")
 	var cancel := BattlePlayLoop.cancel_interaction(BattlePlayLoop.cancel_pending_move(walk))
 	check(BattlePlayLoop.unit(cancel,"leonard")["coord"] == Vector2i(8,8) and BattlePlayLoop.command_available(cancel,"magic") and base == before,"cancelling the walk restores stationary casting without mutating original state")
 	var grant := equip(walk,"accessory1",232)
@@ -143,7 +143,7 @@ func permission_cases() -> void:
 	check(not BattlePlayLoop.command_available(moved(again,Vector2i(10,8)),"magic"),"movement in second action requires its own current permission")
 	for condition in ["mp","silence"]:
 		var limited := equip(fixture(),"accessory1",232)
-		var actor := BattlePlayLoop._unit(limited,"leonard")
+		var actor := BattlePlayLoop.unit_ref(limited,"leonard")
 		if condition == "mp": actor["mp"] = 0
 		else: actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
 		limited = moved(limited)
@@ -177,10 +177,10 @@ func range_and_growth() -> void:
 	var enhanced_magic := BattlePlayLoop.attack_cells(selected(equip(fixture(),"accessory1",233)))
 	check(bare_magic==enhanced_magic,"weapon range bonus leaves actual player magic selection cells unchanged")
 	var hit := equip(fixture("001"),"accessory1",233)
-	BattlePlayLoop._unit(hit,"enemy021_1")["coord"] = Vector2i(10,8)
-	BattlePlayLoop._unit(hit,"enemy021_1")["hp"] = 1
-	BattlePlayLoop._unit(hit,"leonard")["hit_bonus_accum"] = 1000
-	BattlePlayLoop._unit(hit,"leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(hit,"enemy021_1")["coord"] = Vector2i(10,8)
+	BattlePlayLoop.unit_ref(hit,"enemy021_1")["hp"] = 1
+	BattlePlayLoop.unit_ref(hit,"leonard")["hit_bonus_accum"] = 1000
+	BattlePlayLoop.unit_ref(hit,"leonard")["exp"] = 99
 	var resolved := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(hit,"attack"),"enemy021_1",zero)
 	check(BattlePlayLoop.unit(resolved,"enemy021_1")["defeated"] and BattlePlayLoop.unit(resolved,"leonard")["level"] == 2,"extended ordinary attack reaches lethal settlement and final EXP growth")
 	for bad in ["effect","source","range"]:
@@ -204,7 +204,7 @@ func casting_native_cases() -> void:
 		check(loss == row["native"]["hp_loss"] and gain == row["native"]["mp_gain"] and int(c["hp"]) - loss == row["native"]["hp"] and int(c["mp"]) + gain == row["native"]["mp"],"native actual HP loss and independently capped MP")
 	for row in packet["gear"]:
 		var loop := casting_fixture("001" if row["input"]["job"] == 80 else "026")
-		var actor := BattlePlayLoop._unit(loop,"leonard")
+		var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["equipment"] = []
 		var accessory := 1
 		for value in row["input"]["codes"]:
@@ -233,7 +233,7 @@ func equipment_cases() -> void:
 			var twice := BattlePlayLoop.ProgressionRules.refresh_growth_stats(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,after["equipment_items"]),after["equipment_items"])
 			check(twice == actor and BattleCheckpoint.encode(after,run_resource_recovery_tests.VIEW)["ok"],"equipped job refresh and save do not stack or lose capabilities")
 	var stacked := equip(equip(casting_fixture(),"accessory1",215),"accessory2",226)
-	var actor := BattlePlayLoop._unit(stacked,"leonard")
+	var actor := BattlePlayLoop.unit_ref(stacked,"leonard")
 	check(StatusApplicationRules.modifiers(actor,stacked["skill_book"],stacked["equipment_items"])["magic_hit_bonus"] == 20,"both real accessories add magic hit once")
 	actor["pending_stat_points"] = 5
 	var grown := BattlePlayLoop.allocate_growth(stacked,"leonard",{"str":1,"dex":1,"mind":2,"con":1})
@@ -241,7 +241,7 @@ func equipment_cases() -> void:
 	var removed := equip(grown,"accessory2",0)
 	check(StatusApplicationRules.modifiers(BattlePlayLoop.unit(removed,"leonard"),removed["skill_book"],removed["equipment_items"])["magic_hit_bonus"] == 10,"unequip removes only its own magic hit contribution")
 	var afflicted := casting_fixture()
-	var target := BattlePlayLoop._unit(afflicted,"leonard")
+	var target := BattlePlayLoop.unit_ref(afflicted,"leonard")
 	target.merge(BattlePlayLoop.StatusEffectRules.apply(target,"poison",3,7)["changes"],true)
 	target.merge(BattlePlayLoop.StatusEffectRules.apply(target,"no_magic",2)["changes"],true)
 	var protected := equip(equip(afflicted,"accessory1",217),"accessory2",219)
@@ -256,9 +256,9 @@ func equipment_cases() -> void:
 
 func transfer_lifecycle() -> void:
 	var loop := casting_fixture()
-	BattlePlayLoop._unit(loop,"leonard")["inventory"] = [145,223,224,227,218,0,0,0]
+	BattlePlayLoop.unit_ref(loop,"leonard")["inventory"] = [145,223,224,227,218,0,0,0]
 	loop = equip(equip(equip(loop,"armor",145),"accessory1",223),"accessory2",224)
-	var actor := BattlePlayLoop._unit(loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 	actor["growth_profile"]["source"]["hit_point"] += 100
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	actor["hp"] = 20; actor["mp"] = 0
@@ -284,7 +284,7 @@ func transfer_lifecycle() -> void:
 			check(result["ok"] and result["changes"]["mp"] == max_mp and result["changes"]["hp"] >= 1 and (result["changes"]["hp"] < hp) == (hp > 1),"full or nonexistent MP still costs HP but cannot kill")
 			check(result["draws"].size() == 2 and result["state"] == DamageRandomStream.advance(DamageRandomStream.seeded(19),2),"1HP still consumes the two original transfer samples")
 	var wings := equip(equip(casting_fixture(),"armor",145),"accessory2",227)
-	BattlePlayLoop._unit(wings,"leonard")["mp"] = 0
+	BattlePlayLoop.unit_ref(wings,"leonard")["mp"] = 0
 	var first := BattlePlayLoop.choose_command(wings,"wait")
 	check(first["extra_action"]["pending"] and no_draw(first, wings, "damage") and first["action_end_sequence"] == 0,"blood conversion is deferred across independent first action")
 	var second_removed := equip(first,"armor",0)
@@ -295,8 +295,8 @@ func transfer_lifecycle() -> void:
 func protected_spells() -> void:
 	var fitted := equip(casting_fixture("001"),"accessory1",217)
 	var area := run_ai_skill_tests.area_fixture()
-	BattlePlayLoop._unit(area,"leonard")["equipment"] = BattlePlayLoop.unit(fitted,"leonard")["equipment"].duplicate(true)
-	var cast := BattleLoopCombat._resolve_skill(area,"enemy026_1","leonard",POISON,BattlePlayLoop.skill_fields(area,POISON),Vector2i(4,6),zero)
+	BattlePlayLoop.unit_ref(area,"leonard")["equipment"] = BattlePlayLoop.unit(fitted,"leonard")["equipment"].duplicate(true)
+	var cast := BattleLoopCombat.resolve_skill(area,"enemy026_1","leonard",POISON,BattlePlayLoop.skill_fields(area,POISON),Vector2i(4,6),zero)
 	check(not cast.is_empty() and cast["affected_targets"].size() >= 2,"original owned poison still commits a mixed protected/unprotected area")
 	if cast.is_empty(): return
 	check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(area,"leonard")) and BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(area,"area-center")),"equipment immunity is applied per living target, not to the whole cast")
@@ -357,7 +357,7 @@ func equipment_growth_cases() -> void:
 		check(loop["turn_queue"] == original["turn_queue"] and actor["stamina"] == BattlePlayLoop.unit(original,"leonard")["stamina"],"free mobility exchange preserves queue and stamina")
 		for _repeat in range(3): actor = BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"])
 		check(actor["move_point"] == row[2],"repeated refresh cannot compound equipped movement")
-	actor = BattlePlayLoop._unit(loop,"leonard")
+	actor = BattlePlayLoop.unit_ref(loop,"leonard")
 	actor["hp"] = 17; actor["exp"] = 99
 	var levelled := BattlePlayLoop.ProgressionRules.resolve_experience(actor,1,loop["equipment_items"])
 	check(levelled["level"] == 2 and levelled["move_point"] == 9 and levelled["hp"] == 17,"native level refresh preserves mobility equipment without healing")

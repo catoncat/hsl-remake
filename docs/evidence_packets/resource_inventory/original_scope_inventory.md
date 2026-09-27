@@ -1,6 +1,6 @@
 # Original scope inventory versus remake coverage
 
-> evidence: resource-derived · status: live · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-18
+> evidence: resource-derived · status: record-only · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-27
 
 **Claim boundary.** Counts only. The original-side numbers are `resource-derived`: record names and INI-style
 section headers read from `hsl.pak` by `tools/hsltools/data/scope_inventory.py`. The remake-side numbers come from the
@@ -8,7 +8,7 @@ tracked `content/battles/campaign.json` and the scenario files it references. No
 for unimplemented levels, and nothing here claims original equivalence for implemented ones (see
 [机制矩阵](../../MECHANICS_EVIDENCE_MATRIX.md) for that).
 
-Machine-readable output: `content/generated/hsl/static/hsl01/scope_inventory.json` (schema `hsl_scope_inventory.v1`).
+Machine-readable output: `content/generated/hsl/static/hsl01/scope_inventory.json` (schema `hsl_scope_inventory.v1`). The remake-side counts below are a snapshot; current counts are in that JSON (`python3 tools/hsl.py check scope_inventory`).
 
 ```bash
 PYTHONPATH=. python3 tools/hsl.py generate scope_inventory                 # rebuild from the PAK (needs $WINEPREFIX)

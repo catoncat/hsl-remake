@@ -33,15 +33,15 @@ func run() -> void:
 	scene.apply_loop(run_status_application_tests.fixture(), "test")
 	# Source-owned 025 spell; deterministic success is explicitly fixture-only.
 	TestSuite.own(scene.play_loop, "skill_book")["skills"][run_status_application_tests.POISON]["fields"]["status_hit_ratio"] = "100"
-	BattlePlayLoop._unit(scene.play_loop, "enemy021_2")["coord"] = Vector2i(13, 13)
-	var mage := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
+	BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_2")["coord"] = Vector2i(13, 13)
+	var mage := BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
 	mage["coord"] = Vector2i(10, 8)
 	mage["live_speed"] = 98
 	mage["hp"] = 1000
 	mage["max_hp"] = 1000
 	mage["status_flags"] = 2
 	mage["status_counters"]["no_magic"] = 1
-	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	ally["player_commandable"] = true
 	ally["live_speed"] = 97

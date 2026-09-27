@@ -127,7 +127,7 @@ static func line_coverage(size: int, caster: Vector2i, target: Vector2i, words: 
 	var cell := target
 	var length := 1 if step == Vector2i.ZERO else size
 	for remaining in range(length - 1, -1, -1):
-		if not _inside(cell, map_size): break
+		if not inside(cell, map_size): break
 		var word := int(words.get(cell, 0))
 		if word & WALL: break
 		if not (word & excl and word & ALL != ALL) and not _no_magic_npc(word): cov[cell] = remaining + 1
@@ -166,7 +166,7 @@ static func _visit(state: Dictionary, cell: Vector2i, power: int, direction: int
 	var rows: Array = state["rows"]
 	var offset: Vector2i = Vector2i(state["half"], state["half"]) - state["anchor"]
 	while power > 0:
-		if not _inside(cell, state["map_size"]): return
+		if not inside(cell, state["map_size"]): return
 		var word := int(words.get(cell, 0))
 		if word & WALL: return
 		var local: Vector2i = cell + offset
@@ -220,9 +220,9 @@ static func _onward_clear(cell: Vector2i, direction: int, words: Dictionary, map
 		_: ahead = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(1, 0)]
 	for delta in ahead:
 		var point: Vector2i = cell + delta
-		if _inside(point, map_size) and int(words.get(point, 0)) & WALL: return false
+		if inside(point, map_size) and int(words.get(point, 0)) & WALL: return false
 	return true
 
 
-static func _inside(point: Vector2i, map_size: Vector2i) -> bool:
+static func inside(point: Vector2i, map_size: Vector2i) -> bool:
 	return point.x >= 0 and point.y >= 0 and point.x < map_size.x and point.y < map_size.y

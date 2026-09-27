@@ -1439,7 +1439,7 @@
         "game/sim/SkillTargetRules.gd",
         "game/sim/RangePropagationRules.gd:area_coverage",
         "game/sim/loop/BattlePlayLoop.gd:player_cast_terrain",
-        "game/sim/loop/BattleLoopCombat.gd:_skill_context"
+        "game/sim/loop/BattleLoopCombat.gd:skill_context"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1566,7 +1566,7 @@
       ],
       "remake": "BattlePlayLoop 阵亡当前者只调一次 CoreTurnQueue.end_turn",
       "remake_code": [
-        "game/sim/loop/BattlePlayLoop.gd:_advance_current_actor",
+        "game/sim/loop/BattlePlayLoop.gd:advance_current_actor",
         "game/sim/CoreTurnQueue.gd"
       ],
       "original_status": "read_complete",
@@ -2736,6 +2736,9 @@
     "provenance:game/sim/UnitSchema.gd|rules|remake-invented|": {
       "no_visible_effect": "单位字典合同，由生成器推导"
     },
+    "provenance:game/sim/Values.gd|rules|remake-invented|": {
+      "no_visible_effect": "规则输入的整数校验"
+    },
     "provenance:game/sim/WinfailActions.gd|rules|provisional|": {
       "item": "winfail-readings"
     },
@@ -2865,30 +2868,18 @@
     "scope:docs/evidence_packets/runtime_observations/battle_006/README.md|provisional|敌人随机调级与携带品的逐项对照": {
       "item": "npc-level-policy"
     },
-    "scope:docs/evidence_packets/runtime_observations/battle_013/README.md|provisional|": {
-      "item": "script-entry-paths"
-    },
-    "scope:docs/evidence_packets/runtime_observations/battle_028/README.md|provisional|": {
-      "item": "script-entry-paths"
-    },
     "scope:docs/evidence_packets/runtime_observations/battle_053/README.md|provisional|机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品": {
       "item": "ai-first-battle-moves"
     },
-    "scope:docs/evidence_packets/runtime_observations/battle_073/README.md|provisional|": {
-      "item": "winfail-readings"
-    },
     "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|": {
-      "item": "carry-model"
+      "item": [
+        "carry-model",
+        "script-entry-paths",
+        "winfail-readings"
+      ]
     },
     "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|": {
       "item": "script-entry-paths"
-    },
-    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）": {
-      "item": [
-        "title-ornaments",
-        "system-scroll-speed",
-        "memoir-list"
-      ]
     },
     "scope:docs/evidence_packets/runtime_observations/original_level17_escort/README.md|provisional|item consumption and NPC movement rule": {
       "item": "ai-first-battle-moves"
@@ -2902,35 +2893,17 @@
     "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|negative-evidence|城镇根画面上没有金钱显示（只有商店窗的金钱框）": {
       "item": "town-layout-extras"
     },
-    "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|provisional|由 7 帧归纳出的\"teShapeMessage 在上、tePlayerMessage 在下\"": {
-      "item": "town-layout-extras"
-    },
     "scope:docs/evidence_packets/runtime_observations/remake_notes.md|negative-evidence|纯首控帧与镜头曲线": {
       "item": "ai-first-battle-moves"
     },
     "scope:docs/evidence_packets/runtime_observations/remake_notes.md|provisional|": {
       "item": "stage-placement"
     },
-    "scope:docs/evidence_packets/runtime_observations/story_scene_053_preview/README.md|provisional|": {
-      "no_visible_effect": "预览回执（53 已是正式战斗，预览只作独立回归）"
-    },
-    "scope:docs/evidence_packets/runtime_observations/story_scene_058/README.md|provisional|": {
-      "item": "script-walk-path"
-    },
-    "scope:docs/evidence_packets/runtime_observations/story_scene_060/README.md|provisional|": {
-      "item": "script-walk-path"
-    },
-    "scope:docs/evidence_packets/runtime_observations/town_scene/README.md|provisional|": {
-      "item": "town-event-timing"
-    },
     "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|": {
       "item": "timing-estimates"
     },
     "scope:docs/evidence_packets/static_reverse/first_battle_initial_skill.md|provisional|": {
       "resolved": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
-    },
-    "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化": {
-      "item": "npc-level-policy"
     },
     "scope:docs/evidence_packets/static_reverse/original_ai_navigation.md|provisional|固定点逐格路线": {
       "item": "ai-first-battle-moves"
@@ -3051,10 +3024,6 @@
       "item": "panel-slide-formula",
       "text": "**静态**：未找到面板滑动的 EXE 常数（系统卷轴的 `0x45e80d` 消费者未读）；"
     },
-    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#90ab3e8987": {
-      "resolved": "level 1 歐姆村已是正式战斗，53 胜利经 [1,1] 进 level 1（PROJECT 战役注册）",
-      "text": "level 53 之后的 level 1 尚未重制，53 胜利结果页以「第一章 完 · level 1 尚未重製，回到第一戰」结束本章（见 [PROJECT Next steps](../../../PROJECT.md#next-steps)）。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/dialogue_death/README.md#2b1345e3f4": {
       "item": "highlight-colours",
       "text": "原版高亮的绘制过程未读；"
@@ -3094,34 +3063,6 @@
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#c5e5888398": {
       "item": "map-object-flash",
       "text": "`mapobjFlash` 的 `defProcStandObject` 分支未读"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_058/README.md#12a26dfd1c": {
-      "resolved": "58 → 60 → 53 → 1 的承接已接通，战役进度随 hand-off 写入（PROJECT 序章链）",
-      "text": "原作 level 60 之后的承接未重制，跨关存档仍未实现。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_060/README.md#78e6c6bec6": {
-      "resolved": "level 53 已是正式战斗（PROJECT 序章链）",
-      "text": "level 53（winfail053 战斗）尚未重制，战役在此止于章末卡。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_901_preview/README.md#9526c253ae": {
-      "resolved": "901 已转正式战斗（PROJECT 正式战斗注册）",
-      "text": "战斗本体（第 8 回合增援 031／027／030、琥 与 031 交锋事件 3–5）未重制；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_chapter2_previews/README.md#0b7c4645f5": {
-      "item": "carry-model",
-      "text": "战斗本体、条件成员的在队判定、-1 物件号语义、level 39 等的 shapeless 物件均未重制。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/story_scene_endgame_previews/README.md#6df6bf4b03": {
-      "item": "job-model-gaps",
-      "text": "终战本体、九槽受控与第三章职业模型未重制。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/town_scene/README.md#d7de99b176": {
-      "resolved": "level 6 席達鎮已是正式战斗（PROJECT 正式战斗）",
-      "text": "席達鎮事件 23 的 teSetNextPlayLevelEvent 6 关城并弹未重制关卡卡。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/world_map_scene/README.md#d74d3e7de4": {
-      "resolved": "level 1 已是正式战斗，胜利执行城镇事件 9 并回大地图（PROJECT 序章链）",
-      "text": "level 1 战斗未重制，其 winfail001 胜利动作（`actSetTownExecEvent,town_歐姆村,9`、消息 736–738）在从预览进入大地图时**未施加**——机制已就位（战斗 hand-off 经 `WorldScriptActions` 施加脚本记录的城镇／大地图动作，见 world_map／campaign tests），随 level 1 战斗接入即自动生效。"
     },
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51": {
       "item": "closeup-object-timing",
@@ -3231,10 +3172,6 @@
       "item": "special-object-motion",
       "text": "② 对象寿命 `shape_number × (shape_delay+1)` tick、舞台外（x∉[0,640] 或 y∉[0,320]）插入的对象直线飞向目标中心 (320,160) 并在同阶段下一个命中标记落地（无则 30 tick）、其余静止——`defProcObjectMove` 与 `obj_Data7` 运动程序未读；"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_story_object_terrain.md#3b7e6437e8": {
-      "no_visible_effect": "说明句：该字段位置已由本包读出，不是缺口",
-      "text": "所以 `actCheckEnemy,1,5000` 查的就是被改成 5000 的那名守门者（这也补上了 [出场检查](original_check_targets.md) 未读的「`0x44fa80` 取 code 的字段位置」）。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#17b232e51f": {
       "item": "dark-screen-fade",
       "text": "渐暗节拍在对象 700 的过程里，**未读**——重制 `OpeningCinematics.DARK_SCREEN_FADE_SECONDS` 保持 provisional，替换证据是该过程每 tick 的亮度步进。"
@@ -3328,9 +3265,6 @@
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#e9d9d6c1f8": {
       "item": "panel-slide-formula",
       "text": "provisional：原压暗过程未读，层级是亮度比的拟合，节拍按录屏 tick 数折成 16 ms tick。"
-    },
-    "scope:docs/evidence_packets/static_reverse/original_dialogue_marker.md|negative-evidence|无方框 SHP": {
-      "resolved": "翻页提示认定为对白框处理器 0x414280 画的 Big5 字形 ▼／□，重制照做（R7-UI 86d52a99）"
     },
     "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧": {
       "resolved": "升級窗已用用户录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
@@ -3488,10 +3422,6 @@
     "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|": {
       "item": "drop-lightning-presentation"
     },
-    "sentence:docs/evidence_packets/runtime_observations/original_world_town/README.md#072cc1e6c9": {
-      "item": "town-layout-extras",
-      "text": "`0x414220` 按第 2 参给消息对象 `+0x80` 置 `0x4000`、按 if_wait 置 `0x2000`、有头像置 `0x1000`——上下之分只能来自这一位，但读 `0x4000` 的摆放代码仍未读。"
-    },
     "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193": {
       "item": "town-event-timing",
       "text": "`0x2000` 位在消息对象里的作用未读"
@@ -3523,6 +3453,143 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|0x407230 写的三个显示字（+0x92=60、+0x98=0x300、+0x80 置 0x800）＝受击态：hit 帧＋60 tick 抖动，读法见 original_map_strike.md（STRIKEFX）；烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；0x407230 抖动期间行动者过程写的局部状态 6 的消费者未追": {
       "item": "poison-gas-presentation"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d": {
+      "item": "carry-model",
+      "text": "原版关卡之间 HP/MP 是否回满、金币／物品如何结算、跨关存档流程均未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#5548a11867": {
+      "item": "carry-model",
+      "text": "原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；"
+    },
+    "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader": {
+      "item": "script-walk-path"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf": {
+      "item": "script-walk-path",
+      "text": "token 顺序、cast、对白号与世界写入可从资源读出，走位速度、延时与镜头曲线未读（resource-derived；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc": {
+      "item": "carry-model",
+      "text": "条件成员在队判定、-1 物件号（STORY013 `actWalkDispWait(-1,…)`）语义未读。"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|negative-evidence|无方框 SHP": {
+      "resolved": "翻页提示认定为对白框处理器 0x414280 画的 Big5 字形 ▼／□，重制照做（original_dialogue_board 翻页提示节）"
+    },
+    "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|节奏、镜头、条件极性": {
+      "item": "winfail-readings"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb": {
+      "item": "winfail-readings",
+      "text": "对象生命周期、阵营与脚点未读。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#49015c7643": {
+      "item": "winfail-readings",
+      "text": "节奏：走位 160 px/s、`actDelay` 每单位 0.025 s、标题 1.4 s、镜头滚动 0.6 s 为重制值，原延迟单位与走位速度未读。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#87910702c4": {
+      "item": "winfail-readings",
+      "text": "handler 时序、镜头与走位速度未读（resource-derived；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0": {
+      "item": "winfail-readings",
+      "text": "`actCheckPlayerAttacked` 的触发极性、对白在攻击演出前后的时机、`actCheckEnemyNumber` 的比较极性、增援是否伴随镜头移动与等待回合未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199": {
+      "item": "winfail-readings",
+      "text": "`actCheckPlayer` 参数 1 的存活极性、`actCheckEnemyNumber` 的比较关系与一次性执行、`actCheckPlayerAttacked` 是否含反击／技能未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290": {
+      "item": "winfail-readings",
+      "text": "差异：handler 时序、镜头、坐标空间、条件极性未读；"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_world_town.md|negative-evidence|独立默认 level 表、路线红白插值、买卖 handler 执行回执": {
+      "item": "town-event-timing"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_world_town.md#27b5dd1452": {
+      "item": "town-event-timing",
+      "text": "点 16 命運的神殿在 bigmap.dat 没有路线相连，进入方式未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_world_town.md#643c1d19ff": {
+      "item": "town-event-timing",
+      "text": "if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_world_town.md#69bfcfd889": {
+      "item": "town-event-timing",
+      "text": "大地图上 `0x43bf30` 是否走剧情步长 16 未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf": {
+      "item": "winfail-readings",
+      "text": "道具等待时序、安装对象渲染、packed serial 的完整边界与 no-attack 的全部 AI 分支未读。"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组": {
+      "item": "winfail-readings"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000": {
+      "item": "winfail-readings"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量": {
+      "item": "winfail-readings"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接": {
+      "item": "winfail-readings"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md#804d52228f": {
+      "item": "winfail-readings",
+      "text": "执行模式 3／5 的消费者（该字影响哪些对象过程分支）本包未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457": {
+      "item": "winfail-readings",
+      "text": "原版 handler 是否置对象旗标 0x4000 未读（provisional；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e": {
+      "item": "winfail-readings",
+      "text": "差异：原版菜单光标、消息框版式与事件调度边界本包未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a": {
+      "item": "winfail-readings",
+      "text": "原版菜单光标、消息框版式、事件状态调度边界与 `0x450840` 之后的 handler 调用目标本包未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37": {
+      "item": "winfail-readings",
+      "text": "全局容量溢出处理、渲染时序与脚本 VM 重入时序未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf": {
+      "item": "winfail-readings",
+      "text": "差异：容量溢出、渲染时序、VM 重入时序未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5": {
+      "item": "winfail-readings",
+      "text": "`0x45e307` 内部是否抽随机本包未读。"
+    },
+    "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合": {
+      "item": "carry-model"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78": {
+      "item": "winfail-readings",
+      "text": "差异：宝石无 AI 时原地等待、白光演出与随机落点未重制、复制字段的完整语义未重建（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1": {
+      "item": "winfail-readings",
+      "text": "回合显示对象的重入时序未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/world_map_data.md#79d6ecfe5d": {
+      "item": "town-event-timing",
+      "text": "遭遇关成三时引擎是否在三个里掷选、没有 `actSetNextPlayLevelEvent` 的战斗的默认回图行为未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/world_map_data.md#8eb537d377": {
+      "item": "town-event-timing",
+      "text": "点 16 命運的神殿没有 track，进入方式（脚本 `teSetBMWalkToPoint` 或直接进入）未读。"
+    },
+    "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；卷轴卷动、回憶錄列表与標題语义等重制读法（§6）": {
+      "item": [
+        "title-ornaments",
+        "system-scroll-speed",
+        "memoir-list"
+      ]
+    },
+    "scope:docs/evidence_packets/static_reverse/original_job_stats.md|provisional|合成初始化": {
+      "item": "npc-level-policy"
     },
     "sentence:docs/evidence_packets/static_reverse/original_growth_refresh.md#1f3e9c1039": {
       "item": "job-model-gaps",

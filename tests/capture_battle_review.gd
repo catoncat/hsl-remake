@@ -137,14 +137,14 @@ func run() -> void:
 		var scripted_080: Dictionary = scene.play_loop.duplicate(true)
 		scripted_080["win_statuses"] = [0]
 		scripted_080["event_statuses"] = []
-		scripted_080 = rules._resolve_outcome(scripted_080)
+		scripted_080 = rules.resolve_outcome(scripted_080)
 		scene.apply_loop(scripted_080, "test")
 		scene.set_process(true)
 	elif (scene.play_loop.get("win_statuses", []) as Array).is_empty() and scene.play_loop.get("event_statuses", []).has(3):
 		var scripted: Dictionary = scene.play_loop.duplicate(true)
 		scripted["turn"] = 5
 		scripted = rules.BattleScenarioRuleAdapter.run_event_hooks(scripted)
-		scripted = rules._resolve_outcome(scripted)
+		scripted = rules.resolve_outcome(scripted)
 		scene.apply_loop(scripted, "test")
 	for _phase in range(6):
 		if presentation.battle_finished:
@@ -153,15 +153,15 @@ func run() -> void:
 		scene.set_process(false)
 		for actor in scene.play_loop["units"]:
 			if actor["battle_actor_role"] == rules.ROLE_ENEMY and rules.Presence.living(actor):
-				rules._set_unit_defeated(scene.play_loop, actor["id"], true)
+				rules.set_unit_defeated(scene.play_loop, actor["id"], true)
 				living += 1
 		if living == 0:
 			scene.set_process(true)
-			scene.apply_loop(rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+			scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 			if BattleOutcome.decided(scene.play_loop):
 				break
 			continue
-		scene.apply_loop(rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+		scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 		if level == 7:
 			var settlement: Dictionary = scene.play_loop.get("settlement", {})
 			if not settlement.is_empty() and not bool(settlement.get("closed", true)):
@@ -208,7 +208,7 @@ func _complete_level73_event(battle: Node, rules) -> void:
 	loop["turn"] = 10
 	loop["event_statuses"] = [2]
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	loop["battle_outcome"] = BattleOutcome.VICTORY_SCRIPT
 	loop["interaction"] = "battle_result"
 	battle.apply_loop(loop, "test")
@@ -231,7 +231,7 @@ func _complete_level78_event(battle: Node, rules) -> void:
 	loop["turn"] = 10
 	loop["event_statuses"] = [2]
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 	var coordinator = battle.opening_coordinator
@@ -251,12 +251,12 @@ func prepare_level13_arrival(battle: Node, rules) -> void:
 	var loop: Dictionary = battle.play_loop
 	loop["fail_statuses"] = []
 	check(not BattleOutcome.decided(loop), "level 13 has no outcome at first control")
-	var original_coord: Vector2i = rules._unit(loop, "leonard").get("coord", Vector2i.ZERO)
-	rules._set_unit_coord(loop, "leonard", Vector2i(13, 9))
+	var original_coord: Vector2i = rules.unit_ref(loop, "leonard").get("coord", Vector2i.ZERO)
+	rules.set_unit_coord(loop, "leonard", Vector2i(13, 9))
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	# Preserve the logical victory while restoring a valid presentation footprint.
-	rules._set_unit_coord(loop, "leonard", original_coord)
+	rules.set_unit_coord(loop, "leonard", original_coord)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 
@@ -270,10 +270,10 @@ func prepare_level28_scripted_win(battle: Node, rules) -> void:
 	loop["turn"] = 4
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 	loop["fail_statuses"] = []
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	check((loop.get("win_statuses", []) as Array).has(0), "level 28 event_2 arms win_0 at the source round-display transition")
 	loop["fail_statuses"] = []
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 
@@ -290,7 +290,7 @@ func prepare_level31_scripted_win(battle: Node, rules) -> void:
 			actor["defeated"] = true
 	loop["event_statuses"] = [4]
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 	check((loop.get("win_statuses", []) as Array).has(0), "level 31 arms source event_4 win status before capture victory")
@@ -308,7 +308,7 @@ func prepare_level33_scripted_win(battle: Node, rules) -> void:
 			actor["defeated"] = true
 	loop["event_statuses"] = [4]
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 	check((loop.get("win_statuses", []) as Array).has(0), "level 33 arms source event_4 win status before capture victory")
@@ -321,7 +321,7 @@ func prepare_level36_scripted_win(battle: Node, rules) -> void:
 	var loop: Dictionary = battle.play_loop.duplicate(true)
 	loop["fail_statuses"] = []
 	loop["win_statuses"] = [0]
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 	check((loop.get("win_statuses", []) as Array).has(0), "level 36 arms source actTRUE win status before capture victory")
@@ -345,7 +345,7 @@ func prepare_level38_arrival(battle: Node, rules) -> void:
 		if actor.get("battle_actor_role") == rules.ROLE_PLAYER:
 			actor["coord"] = destination
 	loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 
@@ -356,13 +356,13 @@ func prepare_level902_arrival(battle: Node, rules) -> void:
 	battle.set_process(false)
 	var loop: Dictionary = battle.play_loop
 	loop["fail_statuses"] = []
-	var leonard: Dictionary = rules._unit(loop, "leonard")
+	var leonard: Dictionary = rules.unit_ref(loop, "leonard")
 	leonard["coord"] = Vector2i(39, 18)
 	# The source arms win_0 through the preceding multi-party arrival events;
 	# this review focuses the authored arrival predicate and result presentation.
 	loop["win_statuses"] = [0]
 	loop["event_statuses"] = []
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	check(BattleOutcome.won(loop), "level 902 resolves its authored arrival victory")
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
@@ -375,15 +375,15 @@ func prepare_level34_scripted_rounds(battle: Node, rules) -> void:
 	var loop: Dictionary = battle.play_loop
 	loop["fail_statuses"] = []
 	loop["turn"] = 6
-	loop = rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
+	loop = rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
 	loop["fail_statuses"] = []
 	for _phase in range(4):
 		var converted := 0
 		for actor in loop.get("units", []):
 			if actor["battle_actor_role"] == rules.ROLE_ENEMY and rules.Presence.living(actor):
-				rules._set_unit_defeated(loop, actor["id"], true)
+				rules.set_unit_defeated(loop, actor["id"], true)
 				converted += 1
-		loop = rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
+		loop = rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
 		loop["fail_statuses"] = []
 		if BattleOutcome.decided(loop) or converted == 0:
 			break
@@ -403,13 +403,13 @@ func prepare_level17_scripted_rounds(battle: Node, rules) -> void:
 		loop["fail_statuses"] = []
 		loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 		loop["fail_statuses"] = []
-		loop = rules._resolve_outcome(loop)
+		loop = rules.resolve_outcome(loop)
 		loop["fail_statuses"] = []
 		check(int(loop.get("turn", 0)) >= target_round or BattleOutcome.decided(loop), "level 17 reaches scripted round %d before capture victory" % target_round)
 	for actor in loop.get("units", []):
 		if actor["battle_actor_role"] == rules.ROLE_ENEMY and rules.Presence.living(actor):
-			rules._set_unit_defeated(loop, actor["id"], true)
-	loop = rules._resolve_outcome(loop)
+			rules.set_unit_defeated(loop, actor["id"], true)
+	loop = rules.resolve_outcome(loop)
 	battle.apply_loop(loop, "test")
 	battle.set_process(true)
 
@@ -425,7 +425,7 @@ func prepare_level12_scripted_rounds(battle: Node, rules) -> void:
 		loop["fail_statuses"] = []
 		loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 		loop["fail_statuses"] = []
-		loop = rules._resolve_outcome(loop)
+		loop = rules.resolve_outcome(loop)
 		loop["fail_statuses"] = []
 		check(int(loop.get("turn", 0)) >= target_round or BattleOutcome.decided(loop), "level 12 reaches scripted round %d before capture victory" % target_round)
 	battle.apply_loop(loop, "test")
@@ -443,7 +443,7 @@ func prepare_level7_scripted_rounds(battle: Node, rules) -> void:
 			if str(loop.get("interaction", "")) == "action_menu":
 				loop = rules.choose_command(loop, "wait")
 			elif str(loop.get("interaction", "")) == "ai_resolving":
-				loop = rules._advance_current_actor(loop)
+				loop = rules.advance_current_actor(loop)
 			else:
 				break
 			guard += 1
@@ -452,7 +452,7 @@ func prepare_level7_scripted_rounds(battle: Node, rules) -> void:
 		if str(loop.get("interaction", "")) == "action_menu":
 			loop = rules.choose_command(loop, "wait")
 		elif str(loop.get("interaction", "")) == "ai_resolving":
-			loop = rules._advance_current_actor(loop)
+			loop = rules.advance_current_actor(loop)
 		check(int(loop.get("turn", 0)) >= target_round, "level 7 reaches scripted round %d before capture victory" % target_round)
 	var shera: Dictionary = rules.unit(loop, "shera")
 	check(str(shera.get("actor_id", "")) == "005" and str(shera.get("battle_actor_role", "")) == rules.ROLE_PLAYER, "level 7 capture includes player-controlled Shera")

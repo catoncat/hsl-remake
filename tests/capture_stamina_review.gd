@@ -51,9 +51,9 @@ func route(with_equipment: bool) -> void:
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
 	var loop: Dictionary = scene.play_loop
-	var player := BattlePlayLoop._unit(loop, "leonard")
-	var enemy := BattlePlayLoop._unit(loop, "enemy024_1")
-	var ally := BattlePlayLoop._unit(loop, "enemy021_1")
+	var player := BattlePlayLoop.unit_ref(loop, "leonard")
+	var enemy := BattlePlayLoop.unit_ref(loop, "enemy024_1")
+	var ally := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	loop["units"] = [player, enemy, ally]
 	loop["reinforcement_templates"] = []
 	player["live_speed"] = 110
@@ -85,7 +85,7 @@ func route(with_equipment: bool) -> void:
 		unit["grid_coord"] = unit["coord"]
 		unit["ai_call_target_id"] = ""
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop, "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop, "leonard"), "test")
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
 		child.queue_free()

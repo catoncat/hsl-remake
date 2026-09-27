@@ -16,7 +16,7 @@ static func recipients(rows: Array, owner_index: int, radius: int) -> Dictionary
 		if row == null or index == owner_index: continue
 		# Unlike target search, native broadcast uses exact masked equality and
 		# does not inspect the removed bit. Live unavailable slots are null inputs.
-		if (int(row["side"]) & 0x870000) == (int(owner["side"]) & 0x870000) and AIDecisionRules._squared_distance(row["coord"], owner["coord"]) <= radius * radius:
+		if (int(row["side"]) & 0x870000) == (int(owner["side"]) & 0x870000) and AIDecisionRules.squared_distance(row["coord"], owner["coord"]) <= radius * radius:
 			indices.append(index)
 	return {"ok": true, "indices": indices, "source": "0x40bee0"}
 

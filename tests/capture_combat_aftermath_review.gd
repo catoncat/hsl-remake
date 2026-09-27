@@ -87,17 +87,17 @@ func fixture() -> void:
 	current_scene = scene
 	scene.start_dev_first_control_harness()
 	view = scene.get_node("BattlePresentation")
-	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	# Isolate this historical death/EXP/growth route from the separate loot modal.
-	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	player["exp"] = 99
 	player["stamina"] = 60
 	player["live_speed"] = 100
-	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	ally["live_speed"] = 99
 	ally["player_commandable"] = true
 	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var enemy := BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 1
 	scene.play_loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])

@@ -33,7 +33,7 @@ func setup_moon() -> void:
 		var loop:=run_moon_dance_tests.fixture()
 		# Keep the real original051 ground/art, not the flat headless fixture.
 		loop["tiles"]=scene.play_loop["tiles"];loop["map_size"]=scene.play_loop["map_size"]
-		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var enemy:=BattlePlayLoop._unit(loop,"enemy021_1")
+		var actor:=BattlePlayLoop.unit_ref(loop,"tina");var ally:=BattlePlayLoop.unit_ref(loop,"companion");var enemy:=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		actor["growth_profile"]["source"]["hit_point"]+=300
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
 		actor["inventory"]=[227,228,232,233,244,241,248,0]
@@ -87,7 +87,7 @@ func setup_moon() -> void:
 			unit["live_speed"]=200 if unit["id"]=="tina" else (300 if mode.begins_with("ai_") else 100) if unit["id"]=="companion" else 50
 			check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false),"authored fixture remains on original ground")
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
+		scene.apply_loop(BattlePlayLoop.return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)

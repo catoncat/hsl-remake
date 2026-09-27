@@ -53,7 +53,7 @@ class SiteMapTests(unittest.TestCase):
         self.assertTrue(draws)
         self.assertTrue(all(set(d) == {'site', 'n', 'value'} for d in draws))
         self.assertFalse([d for d in draws if d['site'] in et.DAMAGE_SITE_MAP])
-        raw = [d for d in draws if d['site'] in ('AIDecisionRules.select_target', 'AINavigationRules._nearest_stoppable')]
+        raw = [d for d in draws if d['site'] in ('AIDecisionRules.select_target', 'AINavigationRules.nearest_stoppable')]
         self.assertTrue(raw and all(d['n'] == 2 and d['value'] in (0, 1) for d in raw))
         self.assertTrue(all(a['draws'] == [] for line in et.round_lines(turn) for a in line['actions']))
 

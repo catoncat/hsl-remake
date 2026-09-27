@@ -752,9 +752,9 @@ func inventory_contracts() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var ally: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
-	var foe: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var ally: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
+	var foe: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	ally["coord"] = player["coord"] + Vector2i.RIGHT
 	foe["coord"] = player["coord"] + Vector2i.LEFT
 	player["hp"] = 10
@@ -813,8 +813,8 @@ func cast_overlay_contracts() -> void:
 	scene.set_process(false)
 	var view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
-	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
@@ -848,14 +848,14 @@ func cast_overlay_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var caster: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1")
+	var caster: Dictionary = BattlePlayLoop.unit_ref(loop, "enemy026_1")
 	caster["mp"] = caster["max_mp"]
-	var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
+	var leonard: Dictionary = BattlePlayLoop.unit_ref(loop, "leonard")
 	leonard["coord"] = caster["coord"] + Vector2i.RIGHT
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
 	var spell := "magic:magicAIR:magicCode01"
-	var receipt: Dictionary = BattleLoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
+	var receipt: Dictionary = BattleLoopCombat.resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
 	check(receipt.has("skill_id") and not bool(caster.get("player_commandable", false)), "fixture settles a real AI cast receipt")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(caster["coord"])
@@ -894,8 +894,8 @@ func lead_in_contracts() -> void:
 	scene.set_process(false)
 	var view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
-	var player: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var player: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
@@ -929,12 +929,12 @@ func lead_in_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var attacker: Dictionary = BattlePlayLoop._unit(loop, "enemy021_1")
-	var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
+	var attacker: Dictionary = BattlePlayLoop.unit_ref(loop, "enemy021_1")
+	var leonard: Dictionary = BattlePlayLoop.unit_ref(loop, "leonard")
 	leonard["coord"] = attacker["coord"] + Vector2i.RIGHT
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
-	var receipt: Dictionary = BattleLoopCombat._resolve_exchange(loop, attacker["id"], "leonard", func(_n): return 0)
+	var receipt: Dictionary = BattleLoopCombat.resolve_exchange(loop, attacker["id"], "leonard", func(_n): return 0)
 	check(not receipt.is_empty() and not receipt.has("skill_id"), "fixture settles a real AI attack receipt")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(attacker["coord"])
@@ -980,14 +980,14 @@ func lead_in_contracts() -> void:
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
 	loop = scene.play_loop.duplicate(true)
-	var caster: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1")
+	var caster: Dictionary = BattlePlayLoop.unit_ref(loop, "enemy026_1")
 	caster["mp"] = caster["max_mp"]
-	leonard = BattlePlayLoop._unit(loop, "leonard")
+	leonard = BattlePlayLoop.unit_ref(loop, "leonard")
 	leonard["coord"] = caster["coord"] + Vector2i(2, 0)
 	leonard["hp"] = 200
 	leonard["max_hp"] = 200
 	var spell := "magic:magicAIR:magicCode01"
-	receipt = BattleLoopCombat._resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
+	receipt = BattleLoopCombat.resolve_skill(loop, caster["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), caster["coord"], func(_n): return 0)
 	check(receipt.has("skill_id"), "fixture settles a real AI cast receipt two cells away")
 	# The lead-in's camera stage (0x43bf30 to the actor) is empty when the view already frames it.
 	scene.center_camera_on_grid(caster["coord"])
@@ -1044,8 +1044,8 @@ func ai_cue_camera_area_contracts() -> void:
 		var reference_camera := Camera2D.new()
 		var reference = BattleCameraController.create(reference_camera, scene.map_config, controller.logical_viewport_size)
 		var loop: Dictionary = scene.play_loop.duplicate(true)
-		var actor: Dictionary = BattlePlayLoop._unit(loop, "enemy026_1" if kind == "cast" else "enemy021_1")
-		var leonard: Dictionary = BattlePlayLoop._unit(loop, "leonard")
+		var actor: Dictionary = BattlePlayLoop.unit_ref(loop, "enemy026_1" if kind == "cast" else "enemy021_1")
+		var leonard: Dictionary = BattlePlayLoop.unit_ref(loop, "leonard")
 		if kind == "attack":
 			# Mid-map, so the one-cell glide right stays short of the far half-view bands.
 			var map_size: Vector2i = loop[LoopKeys.MAP_SIZE]
@@ -1060,9 +1060,9 @@ func ai_cue_camera_area_contracts() -> void:
 		var spell := "magic:magicAIR:magicCode01"
 		if kind == "cast":
 			actor["mp"] = actor["max_mp"]
-			receipt = BattleLoopCombat._resolve_skill(loop, actor["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), actor["coord"], func(_n): return 0)
+			receipt = BattleLoopCombat.resolve_skill(loop, actor["id"], "leonard", spell, BattlePlayLoop.skill_fields(loop, spell), actor["coord"], func(_n): return 0)
 		else:
-			receipt = BattleLoopCombat._resolve_exchange(loop, actor["id"], "leonard", func(_n): return 0)
+			receipt = BattleLoopCombat.resolve_exchange(loop, actor["id"], "leonard", func(_n): return 0)
 		check(not receipt.is_empty() and receipt.has("skill_id") == (kind == "cast"), "%s: fixture settles a real AI receipt" % kind)
 		# Start with the view on the far corner: the lead-in first brings it to the actor.
 		scene.center_camera_on_grid(Vector2i.ZERO)

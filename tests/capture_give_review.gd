@@ -84,7 +84,7 @@ func run() -> void:
 		await click_point(scene.grid_cell_center_to_logical_position(destination))
 		await create_timer(0.6).timeout
 		check(scene.play_loop["pending_move"], "mouse move creates pending movement")
-		BattlePlayLoop._unit(scene.play_loop,"enemy023_1")["coord"] = destination + Vector2i.RIGHT
+		BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")["coord"] = destination + Vector2i.RIGHT
 		scene.apply_loop(scene.play_loop, "test")
 		var before_give: Dictionary = scene.play_loop.duplicate(true)
 		await open_give()
@@ -111,10 +111,10 @@ func handoff_review() -> void:
 	root.title = "HSL Action Handoff Review"
 	for operation in ["wait","use","give"]:
 		await fixture([241,241,246,0,0,0,0,0],[0,0,0,0,0,0,0,0])
-		var actor := BattlePlayLoop._unit(scene.play_loop,"leonard")
+		var actor := BattlePlayLoop.unit_ref(scene.play_loop,"leonard")
 		actor["live_speed"] = 30
 		actor["hp"] = 10
-		var ally := BattlePlayLoop._unit(scene.play_loop,"enemy023_1")
+		var ally := BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")
 		ally["live_speed"] = 29
 		ally["player_commandable"] = true
 		ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
@@ -165,15 +165,15 @@ func action_state_review() -> void:
 	root.title = "HSL Action State Review"
 	for route in ["wait", "drop_attack", "move_cancel_give", "special"]:
 		await fixture([241,241,246,0,0,0,0,0], [0,0,0,0,0,0,0,0])
-		var actor := BattlePlayLoop._unit(scene.play_loop,"leonard")
+		var actor := BattlePlayLoop.unit_ref(scene.play_loop,"leonard")
 		actor["live_speed"] = 30
 		actor["stamina"] = 60
 		var origin: Vector2i = actor["coord"]
-		var ally := BattlePlayLoop._unit(scene.play_loop,"enemy023_1")
+		var ally := BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")
 		ally["live_speed"] = 29
 		ally["player_commandable"] = true
 		ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-		var enemy := BattlePlayLoop._unit(scene.play_loop,"enemy021_1")
+		var enemy := BattlePlayLoop.unit_ref(scene.play_loop,"enemy021_1")
 		enemy["coord"] = origin + Vector2i.UP
 		enemy["hp"] = 100
 		enemy["max_hp"] = 100
@@ -200,7 +200,7 @@ func action_state_review() -> void:
 			await click_point(scene.grid_cell_center_to_logical_position(destination))
 			await create_timer(0.6).timeout
 			check(scene.play_loop["pending_move"] and BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"] == destination, "a new destination can be selected immediately after cancel")
-			BattlePlayLoop._unit(scene.play_loop,"enemy023_1")["coord"] = destination + Vector2i.RIGHT
+			BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")["coord"] = destination + Vector2i.RIGHT
 			scene.apply_loop(scene.play_loop, "test")
 			await click(scene.action_menu.get_node("ItemCommand"))
 			await create_timer(0.3).timeout
@@ -263,15 +263,15 @@ func skill_cost_review() -> void:
 	var prefix := "resolution" if resolution_review else "cost"
 	root.title = "HSL Shared Skill Resolution Review" if resolution_review else "HSL Skill Resource Review"
 	await fixture([241,241,246,0,0,0,0,0],[0,0,0,0,0,0,0,0])
-	var actor := BattlePlayLoop._unit(scene.play_loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop,"leonard")
 	actor["live_speed"] = 30
 	actor["stamina"] = 19
 	var move_origin: Vector2i = actor["coord"]
-	var ally := BattlePlayLoop._unit(scene.play_loop,"enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")
 	ally["live_speed"] = 29
 	ally["player_commandable"] = true
 	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-	var enemy := BattlePlayLoop._unit(scene.play_loop,"enemy021_1")
+	var enemy := BattlePlayLoop.unit_ref(scene.play_loop,"enemy021_1")
 	enemy["coord"] = actor["coord"] + Vector2i.UP
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
@@ -290,7 +290,7 @@ func skill_cost_review() -> void:
 	await click_point(scene.magic_panel.choices["special:magicOTHER:magicCode01"].get_global_rect().get_center())
 	check(scene.play_loop["units"] == denied["units"] and scene.play_loop["turn_queue"] == denied["turn_queue"] and scene.interaction_state == "special_select","disabled row cannot alter battle state")
 	await click_point(scene.magic_panel.choices["special:magicOTHER:magicCode01"].get_global_rect().get_center(), MOUSE_BUTTON_RIGHT)
-	BattlePlayLoop._unit(scene.play_loop,"leonard")["stamina"] = 20
+	BattlePlayLoop.unit_ref(scene.play_loop,"leonard")["stamina"] = 20
 	scene.apply_loop(BattlePlayLoop.select_player_unit(scene.play_loop,"leonard"), "test")
 	scene.resume_turn_presentation()
 	await create_timer(0.3).timeout
@@ -306,7 +306,7 @@ func skill_cost_review() -> void:
 		var destination: Vector2i = cells[0]
 		await click_point(scene.grid_cell_center_to_logical_position(destination))
 		await create_timer(0.6).timeout
-		enemy = BattlePlayLoop._unit(scene.play_loop,"enemy021_1")
+		enemy = BattlePlayLoop.unit_ref(scene.play_loop,"enemy021_1")
 		enemy["coord"] = destination+Vector2i.UP
 		scene.apply_loop(scene.play_loop, "test")
 		check(scene.play_loop["pending_move"] and BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]==destination,"actual movement precedes the shared skill operation")
@@ -346,16 +346,16 @@ func skill_cost_review() -> void:
 func skill_target_review() -> void:
 	root.title = "HSL Skill Target Review"
 	await fixture([241,241,246,0,0,0,0,0],[0,0,0,0,0,0,0,0])
-	var actor := BattlePlayLoop._unit(scene.play_loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop,"leonard")
 	actor["live_speed"] = 30
 	actor["stamina"] = 20
 	var origin: Vector2i = actor["coord"]
-	var ally := BattlePlayLoop._unit(scene.play_loop,"enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")
 	ally["live_speed"] = 29
 	ally["player_commandable"] = true
 	ally["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-	var diagonal := BattlePlayLoop._unit(scene.play_loop,"enemy021_1")
-	var axial := BattlePlayLoop._unit(scene.play_loop,"enemy021_2")
+	var diagonal := BattlePlayLoop.unit_ref(scene.play_loop,"enemy021_1")
+	var axial := BattlePlayLoop.unit_ref(scene.play_loop,"enemy021_2")
 	diagonal["coord"] = origin+Vector2i(1,-1)
 	axial["coord"] = origin+Vector2i(0,-2)
 	for foe in [diagonal,axial]:
@@ -417,9 +417,9 @@ func fixture(sender: Array, receiver: Array) -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	var actor := BattlePlayLoop._unit(scene.play_loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop,"leonard")
 	actor["inventory"] = sender.duplicate()
-	var ally := BattlePlayLoop._unit(scene.play_loop,"enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop,"enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	ally["inventory"] = receiver.duplicate()
 	scene.apply_loop(scene.play_loop, "test")

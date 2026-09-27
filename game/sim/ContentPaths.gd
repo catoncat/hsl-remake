@@ -46,10 +46,17 @@ const MOON_DANCE := "res://content/imported/hsl/shared/moon_dance/manifest.json"
 const POISON_ARROW := "res://content/imported/hsl/shared/poison_arrow/manifest.json"
 
 
+## Parsed JSON at `path`: null when the path is empty, missing or not JSON.
+static func read_json(path: String) -> Variant:
+	if path == "" or not FileAccess.file_exists(path):
+		return null
+	return JSON.parse_string(FileAccess.get_file_as_string(path))
+
+
 ## `actors` table of the roster face manifest; an unreadable table is a data error,
 ## not a reason to draw from another chapter.
 static func actor_portraits() -> Dictionary:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(ACTOR_PORTRAITS)) if FileAccess.file_exists(ACTOR_PORTRAITS) else null
+	var parsed: Variant = read_json(ACTOR_PORTRAITS)
 	if not parsed is Dictionary or not (parsed as Dictionary).get("actors") is Dictionary:
 		push_error("Roster portrait manifest missing or invalid: " + ACTOR_PORTRAITS)
 		return {}

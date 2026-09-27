@@ -23,7 +23,7 @@ func run() -> void:
 	create_timer(1200).timeout.connect(func():check(false,"bounded campaign route timeout"))
 	mode="campaign53";owner_id="tina"
 	var preceding:=BattlePlayLoop.initialize_roster_growth(BattleFixture.loop())
-	var leader:=BattlePlayLoop._unit(preceding,"leonard")
+	var leader:=BattlePlayLoop.unit_ref(preceding,"leonard")
 	var steps:int=7-int(leader["level"])
 	var experience:=0
 	for level in range(int(leader["level"]),7):experience+=BattlePlayLoop.ProgressionRules.exp_to_next(level)
@@ -40,12 +40,12 @@ func run() -> void:
 	scene.settlement_controller.checkpoint_path=OHM_OUT+mode+".save"
 	check(scene.play_loop["scenario_ok"] and scene.scenario_path.ends_with("battle_053.json"),"actual Runtime consumes the third-battle handoff")
 	scene.set_process(false)
-	var tina:=BattlePlayLoop._unit(scene.play_loop,"tina")
+	var tina:=BattlePlayLoop.unit_ref(scene.play_loop,"tina")
 	tina["coord"]=Vector2i(29,35);tina["grid_coord"]=tina["coord"];tina["ai_home_coord"]=tina["coord"]
 	tina["growth_profile"]["source"]["speed"]+=500
 	tina.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(tina,scene.play_loop["equipment_items"]),true)
 	scene.play_loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(scene.play_loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(scene.play_loop,"tina"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(scene.play_loop,"tina"), "test")
 	for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(tina["coord"])
 	scene.set_process(true)

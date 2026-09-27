@@ -22,6 +22,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 ## v1 carries may hold `damage_rng` (two u32 words, JSON numbers); older ones without it
 ## are still accepted and the next battle keeps its freshly seeded stream. Carries written
@@ -139,7 +140,7 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 	var unfielded := {}
 	for unit_id in carried_units:
 		var value: Variant = carried_units[unit_id].get("stamina", 0) if kept and carried_units[unit_id] is Dictionary else 0
-		unfielded[str(unit_id)] = SkillResourceRules._integer(value)
+		unfielded[str(unit_id)] = Values.non_negative_int(value)
 	for unit_value in next.get("units", []):
 		if typeof(unit_value) != TYPE_DICTIONARY:
 			continue

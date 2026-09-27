@@ -21,6 +21,7 @@ extends RefCounted
 ##     as ‧ - → >)
 
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const TABLE_PATH := "res://content/generated/hsl/fonts/original_fonts.json"
 const SCHEMA := "hsl_original_fonts.v2"
 const SYSTEM_FONT := "res://game/assets/ui_font.tres"
@@ -40,7 +41,7 @@ static var _font: FontFile = null
 
 static func table() -> Dictionary:
 	if _table.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TABLE_PATH))
+		var parsed: Variant = ContentPaths.read_json(TABLE_PATH)
 		assert(typeof(parsed) == TYPE_DICTIONARY and str(parsed.get("schema", "")) == SCHEMA,
 			"OriginalBitmapFont: %s missing or not %s" % [TABLE_PATH, SCHEMA])
 		_table = parsed

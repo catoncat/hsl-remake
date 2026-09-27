@@ -51,7 +51,7 @@ func route(key: String) -> void:
 	var fixture := run_ai_skill_tests.area_fixture() if key == "poison" else run_ai_decision_tests.live_fixture()
 	fixture["tiles"] = scene.play_loop["tiles"]
 	fixture["map_size"] = scene.play_loop["map_size"]
-	var caster := BattlePlayLoop._unit(fixture, "enemy026_1")
+	var caster := BattlePlayLoop.unit_ref(fixture, "enemy026_1")
 	TestSuite.own(fixture, "ai_profiles")["actors"][caster["actor_id"]]["profile"]["ai_att_magic"] = 100
 	if key == "poison": BattlePlayLoop.skill_fields(fixture, run_ai_skill_tests.POISON)["use_ratio"] = "100"
 	else:
@@ -68,7 +68,7 @@ func route(key: String) -> void:
 		child.queue_free()
 	fixture["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(fixture["units"])
 	var before := fixture.duplicate(true)
-	scene.apply_loop(BattlePlayLoop._return_to_player(fixture, initial["id"]), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(fixture, initial["id"]), "test")
 	scene.interaction_state = scene.play_loop["interaction"]
 	scene.menus.rebuild_action_menu_buttons()
 	scene.center_camera_on_grid(Vector2i(10, 10))

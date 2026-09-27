@@ -74,13 +74,13 @@ func setup_gol() -> void:
 		scene.set_process(false)
 		var loop := run_gol_road_tests.attack_fixture()
 		if mode == "arrival":
-			BattlePlayLoop._unit(loop, "leonard")["hp"] = 10
+			BattlePlayLoop.unit_ref(loop, "leonard")["hp"] = 10
 			# Isolate post-join support and queue review: pursuit/Wait still run, but
 			# these test guards cannot kill the patient before the healing input.
 			TestSuite.own(loop, "script_actor_source")["templates"]["obj_Story_Level2_Enemy23"]["actor"]["no_attack"] = true
 		else:
-			loop = BattlePlayLoop._resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(run_gol_road_tests.initial())))
-			var target := BattlePlayLoop._unit(loop, "tina")
+			loop = BattlePlayLoop.resolve_outcome(run_gol_road_tests.WinfailScenarioRules.run_event_hooks(run_gol_road_tests.ready_event(run_gol_road_tests.initial())))
+			var target := BattlePlayLoop.unit_ref(loop, "tina")
 			target["hp"] = 1
 			var guard: Dictionary = loop["units"].filter(func(a): return a["actor_id"] == "023")[0]
 			guard["growth_profile"]["source"]["attack_power"] += 5000
@@ -92,7 +92,7 @@ func setup_gol() -> void:
 				if BattlePlayLoop.TraversalRules.placement_error(guard, loop["units"], loop["tiles"], loop["map_size"]) == "": break
 			guard["ai_home_coord"] = guard["coord"]
 			TestSuite.own(loop, "ai_profiles")["actors"]["023"]["profile"]["find_type"] = loop["ai_profiles"]["find_types"]["AI_HPMIN"]
-			var hu := BattlePlayLoop._unit(loop, "hu")
+			var hu := BattlePlayLoop.unit_ref(loop, "hu")
 			hu["growth_profile"]["source"]["speed"] += 500
 			hu.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(hu, loop["equipment_items"]), true)
 			loop = run_gol_road_tests.owned_turn(loop, "hu")

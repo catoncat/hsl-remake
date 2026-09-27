@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Whole-exchange replay (`hsl_exchange_replay.v1`): every exchange a
 ## tools/hsltools/probes/_exchange_check.py `record` file caught on the original program is
-## replayed through the remake's one exchange seam `BattleLoopCombat._resolve_exchange`, from
+## replayed through the remake's one exchange seam `BattleLoopCombat.resolve_exchange`, from
 ## the same exchange-start state — board cells／HP from the case, both participants' HP,
 ## EXP, level, hit bonus (+0xb0) and kill chain (+0xa8) from their live records, the loop
 ## damage stream `damage_rng` set to the original's words 0x4c3044／0x4c3040. The rng handed
@@ -32,7 +32,7 @@ const InitialRosterGrowthRules = preload("res://game/sim/InitialRosterGrowthRule
 
 const SCHEMA := "hsl_exchange_replay.v1"
 ## Frames that only forward a draw; the logged site is the first frame outside them.
-const FORWARDERS := ["draw", "_rand_range", "native_draw", "_draw", "loop_draw"]
+const FORWARDERS := ["draw", "rand_range", "native_draw", "recorded_draw", "loop_draw"]
 ## Record field (_exchange_check.py LIVE: +0xc0 attack, +0xb4 defense, +0xbc hit, +0x4c str,
 ## +0x50 dex, +0x19a avoid, +0x19e counter, +0x1a2 critical) → combat_profile key.
 const PROFILE_FIELDS := {"attack": "live_attack_damage", "defense": "live_defense", "hit": "live_hit_ratio",
@@ -124,7 +124,7 @@ func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
 			unit["kill_chain_word"] = int(live["kill_chain"])
 	var overrides := {}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := BattlePlayLoop._unit(loop, id)
+		var unit := BattlePlayLoop.unit_ref(loop, id)
 		if unit.is_empty(): return {"error": "no_remake_unit:%s" % id}
 		# A participant that still differs from the original's live record at this start takes
 		# the original's level and live combat words, listed under `overrides`; the exchange
@@ -139,12 +139,12 @@ func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
 			overrides[id][field] = [mine[field], int(live[field])]
 			if field in ["level", "max_hp"]: unit[field] = int(live[field])
 			else: unit["combat_profile"][PROFILE_FIELDS[field]] = int(live[field])
-	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(loop))
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	loop = BattlePlayLoop.begin_battle(loop)
 	var profiles := {}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := BattlePlayLoop._unit(loop, id)
+		var unit := BattlePlayLoop.unit_ref(loop, id)
 		var profile := CoreCombatRules.combat_profile_from_unit(unit)
 		profiles[id] = {"hp": int(unit["hp"]), "max_hp": int(unit["max_hp"]), "level": int(unit["level"]), "exp": int(unit["exp"]),
 			"attack": profile["live_attack_damage"], "defense": profile["live_defense"], "hit": profile["live_hit_ratio"],
@@ -154,10 +154,10 @@ func _replay(base: Dictionary, exchange: Dictionary) -> Dictionary:
 	loop[DamageRandomStream.LOOP_KEY] = [int(start["damage"][0]), int(start["damage"][1])]
 	var recorder := DamageRecorder.new()
 	recorder.loop = loop
-	var receipt := BattleLoopCombat._resolve_exchange(loop, str(exchange["striker"]), str(exchange["defender"]), Callable(recorder, "draw"))
+	var receipt := BattleLoopCombat.resolve_exchange(loop, str(exchange["striker"]), str(exchange["defender"]), Callable(recorder, "draw"))
 	var end := {"damage": loop[DamageRandomStream.LOOP_KEY], "units": {}}
 	for id in [str(exchange["striker"]), str(exchange["defender"])]:
-		var unit := BattlePlayLoop._unit(loop, id)
+		var unit := BattlePlayLoop.unit_ref(loop, id)
 		end["units"][id] = {"hp": int(unit["hp"]), "exp": int(unit["exp"]), "level": int(unit["level"]),
 			"hit_bonus": int(unit.get("hit_bonus_accum", 0)), "kill_chain": int(unit.get("kill_chain_word", 0))}
 	var row := {"receipt": receipt, "draws": recorder.log, "profiles": profiles, "overrides": overrides, "end": end}

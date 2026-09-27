@@ -25,6 +25,7 @@ extends RefCounted
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const PATH := "user://settings.json"
 const SCHEMA := "hsl_settings.v1"
@@ -47,7 +48,7 @@ static func load_settings() -> Dictionary:
 		return _cache.duplicate(true)
 	var settings := DEFAULTS.duplicate(true)
 	if FileAccess.file_exists(PATH):
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+		var parsed: Variant = ContentPaths.read_json(PATH)
 		if typeof(parsed) == TYPE_DICTIONARY and str(parsed.get("schema", "")) == SCHEMA:
 			for key in DEFAULTS:
 				if parsed.has(key):

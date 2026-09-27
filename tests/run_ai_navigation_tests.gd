@@ -109,7 +109,7 @@ func native_cases() -> void:
 			var actor: Dictionary = loop["units"][0]
 			actor.merge({"hp": int(input["hp"]), "max_hp": 100, "ai_wait_remaining": int(input["wait"]), "status_flags": int(input["flags"])}, true)
 			actor["status_counters"] = {"poison": (7<<16)|2 if input["flags"] == 1 else 0, "paralysis": 2 if int(input["flags"]) & 4 else 0, "no_magic": 2 if input["flags"] == 2 else 0}
-			var prepared := BattleLoopAI._prepare_ai_turn(loop, actor["id"])
+			var prepared := BattleLoopAI.prepare_ai_turn(loop, actor["id"])
 			check(prepared["ok"], "native wait fixture preflight")
 			if not prepared["ok"]: continue
 			var selected := AINavigationRules.acquire(actor, loop["units"], prepared, zero)
@@ -124,7 +124,7 @@ func native_cases() -> void:
 			if input["removed"]: loop["units"][1].merge({"hp": 0, "defeated": true}, true)
 			var profile: Dictionary = TestSuite.own(loop, "ai_profiles")["actors"][actor["actor_id"]]["profile"]
 			profile.merge({"find_range": 8, "ai_fixed": int(input["fixed"])}, true)
-			var prepared := BattleLoopAI._prepare_ai_turn(loop, actor["id"])
+			var prepared := BattleLoopAI.prepare_ai_turn(loop, actor["id"])
 			check(prepared["ok"], "native retained target fixture preflight")
 			if prepared["ok"]: check(AINavigationRules.acquire(actor, loop["units"], prepared, zero)["retained"] == (row["native"]["next"] == "retain"), "retention matches original removal, diamond range and home-radius prefix")
 		elif kind == "lock":
@@ -136,7 +136,7 @@ func native_cases() -> void:
 			loop["units"][1]["coord"] = Vector2i(5,5)
 			loop["units"][2]["coord"] = Vector2i(1,5)
 			TestSuite.own(loop, "ai_profiles")["actors"][actor["actor_id"]]["profile"]["ai_lock"] = int(input["rate"])
-			var step := BattleLoopAI._ai_take_turn(loop, actor["id"], func(bound): return int(input["roll"])-1 if bound == 99 else 0)
+			var step := BattleLoopAI.ai_take_turn(loop, actor["id"], func(bound): return int(input["roll"])-1 if bound == 99 else 0)
 			check(step["loop"]["scenario_ok"] and BattlePlayLoop.unit(step["loop"], actor["id"])["ai_target_id"] == ("leonard" if row["native"]["next"] == "retain" else "enemy023_1"), "actual retained-target branch matches every native lock probability boundary")
 
 
@@ -163,7 +163,7 @@ func registry_cases() -> void:
 		var scripted := func(bound: int) -> int:
 			if bound == 99: return roll - 1
 			return int(coins.pop_front()) if bound == 2 and not coins.is_empty() else 0
-		var step := BattleLoopAI._ai_take_turn(fresh, owner["id"], scripted)
+		var step := BattleLoopAI.ai_take_turn(fresh, owner["id"], scripted)
 		var held: String = BattlePlayLoop.unit(step["loop"], owner["id"])["ai_target_id"]
 		check(step["loop"]["scenario_ok"] and step["action"]["ai_decision"]["target_selection"]["reason"] == "new_target" and held == ("enemy023_1" if roll > 50 else "leonard"), "the lock also replaces a target acquired this turn (roll %d, ai_lock 50): %s" % [roll, held])
 
@@ -181,9 +181,9 @@ func route_cases() -> void:
 		var path: Array = action.get("path", [])
 		var costs := BattlePlayLoop.TacticalGridRules.path_costs(path, loop["units"], loop["tiles"], loop["units"][0]["id"])
 		for index in range(1, path.size()):
-			check(BattlePlayLoop._manhattan(path[index], path[index-1]) == 1 and not loop["tiles"].get(path[index], {}).get("blocks_movement", false) and BattlePlayLoop.unit_id_at_coord(loop, path[index]) == "", "every path edge respects shared terrain, directions and occupied cells")
+			check(BattlePlayLoop.TacticalGridRules.manhattan(path[index], path[index-1]) == 1 and not loop["tiles"].get(path[index], {}).get("blocks_movement", false) and BattlePlayLoop.unit_id_at_coord(loop, path[index]) == "", "every path edge respects shared terrain, directions and occupied cells")
 		check(path.is_empty() or (costs.size() == path.size() and int(costs.back()) <= int(loop["units"][0]["move_point"])), "actual path obeys this action's terrain and clearance budget")
-		if mode == "detour": check(action["kind"] == "move" and BattlePlayLoop._manhattan(action["to"], loop["units"][1]["coord"]) > BattlePlayLoop._manhattan(loop["units"][0]["coord"], loop["units"][1]["coord"]), "AI takes the necessary step away from its target to pass a long wall")
+		if mode == "detour": check(action["kind"] == "move" and BattlePlayLoop.TacticalGridRules.manhattan(action["to"], loop["units"][1]["coord"]) > BattlePlayLoop.TacticalGridRules.manhattan(loop["units"][0]["coord"], loop["units"][1]["coord"]), "AI takes the necessary step away from its target to pass a long wall")
 		# 0x40bb80 reads positions, never routes: the walled-off closest enemy is the pick and
 		# the armed unit walks toward its cell (0x440d5c／0x4111a0 needs no route to it).
 		if mode == "unreachable": check(action["kind"] == "move" and action.get("toward") == "leonard" and BattlePlayLoop.unit(after, loop["units"][0]["id"])["ai_target_id"] == "leonard", "a sealed-off closest enemy is still the scan's pick and the pursuit walks toward it (0x40bb80 without reachability)")
@@ -242,18 +242,18 @@ func movement_cases() -> void:
 	var route := AINavigationRules.route_to_goals(full, [Vector2i(8,5)])
 	check(route["cost"] == 4 and route["path_costs"] == [0,1,3,4], "passing a living occupied neighbor costs an extra point only after arrival")
 	var advance := AINavigationRules.advance_path(actor, route)
-	var current := BattlePlayLoop._movement_envelope(loop, actor["id"])
+	var current := BattlePlayLoop.movement_envelope(loop, actor["id"])
 	check(advance["to"] == Vector2i(7,5) and advance["cost"] == current["reachable_by_coord"][advance["to"]]["cost"], "full pursuit prefix and actual action envelope share one budget")
 	check(not current["reachable_coords"].has(Vector2i(8,5)), "player range cannot offer a destination beyond the actual clearance budget")
 	loop["units"][1].merge({"hp": 0, "defeated": true}, true)
-	var opened := BattlePlayLoop._movement_envelope(loop, actor["id"])
+	var opened := BattlePlayLoop.movement_envelope(loop, actor["id"])
 	check(opened["reachable_by_coord"][Vector2i(8,5)]["cost"] == 3, "defeated occupant immediately releases both occupancy and adjacency cost")
 	var blocked := fixture("cast")
-	var prepared := BattleLoopAI._prepare_ai_turn(blocked, blocked["units"][0]["id"])
+	var prepared := BattleLoopAI.prepare_ai_turn(blocked, blocked["units"][0]["id"])
 	var proposal: Dictionary = AISkillPlanning.choose(prepared["skills"]["magic"]["leonard"], zero)["intent"]
 	TestSuite.own(blocked, "tiles")[proposal["destination"]] = {"blocks_movement": true, "move_cost": 1, "movement_flags": 0x4000}
 	var before := blocked.duplicate(true)
-	check(BattleLoopAI._execute_ai_skill_choice(blocked, blocked["units"][0]["id"], proposal, forbidden_rng).is_empty() and blocked == before, "an invalidated moving-cast destination cannot teleport or spend MP")
+	check(BattleLoopAI.execute_ai_skill_choice(blocked, blocked["units"][0]["id"], proposal, forbidden_rng).is_empty() and blocked == before, "an invalidated moving-cast destination cannot teleport or spend MP")
 	var replanned := BattlePlayLoop.step_ai_turn(blocked, zero)
 	check(replanned["scenario_ok"] and replanned["last_ai_action"].get("to") != proposal["destination"] and replanned["last_ai_actions"].size() == 1, "normal AI entry recomputes a legal action after a planned cell becomes blocked")
 	var sealed := fixture("unreachable")
@@ -272,7 +272,7 @@ func memory_cases() -> void:
 	check(remembered == "leonard", "accepted pursuit persists only the target identity in the PlayLoop actor")
 	# A nearer enemy with no attack station this turn (two moves short of a cell beside it):
 	# the lock alone decides, the station switch 0x40d8b0 finds nobody to strike.
-	BattlePlayLoop._unit(first, "enemy023_1")["coord"] = Vector2i(2,8)
+	BattlePlayLoop.unit_ref(first, "enemy023_1")["coord"] = Vector2i(2,8)
 	var next_round := next_owner(first, owner)
 	check(next_round["turn_queue"]["round"] == 1, "ordinary player waits really reach the next queue round")
 	var second := BattlePlayLoop.step_ai_turn(next_round, zero)
@@ -281,7 +281,7 @@ func memory_cases() -> void:
 	# walks the object array from Leonard's slot to the first object with a station — the
 	# enemy now beside the actor — writes it to +0x88 and state 0xb sub 0 strikes it.
 	var strikeable := next_owner(first, owner)
-	BattlePlayLoop._unit(strikeable, "enemy023_1")["coord"] = BattlePlayLoop.unit(strikeable, owner)["coord"] + Vector2i(-1, 0)
+	BattlePlayLoop.unit_ref(strikeable, "enemy023_1")["coord"] = BattlePlayLoop.unit(strikeable, owner)["coord"] + Vector2i(-1, 0)
 	var struck := BattlePlayLoop.step_ai_turn(strikeable, zero)
 	var struck_decision: Dictionary = struck["last_ai_action"]["ai_decision"]
 	check(struck_decision["target_selection"]["retained"] and struck_decision["station_switch"]["held_id"] == "leonard" and struck["last_ai_action"]["kind"] == "attack" and struck["last_ai_action"]["target_id"] == "enemy023_1" and BattlePlayLoop.unit(struck, owner)["ai_target_id"] == "enemy023_1", "a retained target without a station yields to the first registry object with one (0x40d8b0 switch, +0x88 rewritten at 0x440069)")
@@ -290,14 +290,14 @@ func memory_cases() -> void:
 	var changed := BattlePlayLoop.step_ai_turn(unlocked, zero)
 	check(BattlePlayLoop.unit(changed, owner)["ai_target_id"] == "enemy023_1", "declined source lock performs a fresh legal target selection")
 	var dead := next_round.duplicate(true)
-	BattlePlayLoop._set_unit_hp(dead, remembered, 0)
-	BattlePlayLoop._set_unit_defeated(dead, remembered, true)
-	var replanned := BattleLoopAI._ai_take_turn(dead, owner, zero)
+	BattlePlayLoop.set_unit_hp(dead, remembered, 0)
+	BattlePlayLoop.set_unit_defeated(dead, remembered, true)
+	var replanned := BattleLoopAI.ai_take_turn(dead, owner, zero)
 	check(replanned["loop"]["scenario_ok"] and BattlePlayLoop.unit(replanned["loop"], owner)["ai_target_id"] == "enemy023_1", "dead held target is replaced without replaying the prior attack or route")
 	for outcome in [BattleOutcome.VICTORY_ESCAPE, BattleOutcome.VICTORY_ENEMIES_CLEARED, BattleOutcome.DEFEAT_FALLEN]:
 		var terminal := second.duplicate(true)
 		terminal["battle_outcome"] = outcome
-		BattleLoopAI._prune_ai_calls(terminal)
+		BattleLoopAI.prune_ai_calls(terminal)
 		var saved := terminal.duplicate(true)
 		check(terminal["units"].all(func(unit): return unit["ai_target_id"] == "" and unit["ai_call_target_id"] == ""), "terminal clears every pending target: "+BattleOutcome.describe(outcome))
 		check(BattlePlayLoop.step_ai_turn(terminal, forbidden_rng) == saved, "terminal cannot debit, move or start another turn: "+BattleOutcome.describe(outcome))
@@ -364,7 +364,7 @@ func instance_cases() -> void:
 	check(action["kind"] == "move" and action.get("purpose") == "return_home" and landed != Vector2i(2, 5) and int(home_distances[landed]["cost"]) < int(home_distances[Vector2i(2, 5)]["cost"]), "fixed-point guard's refined walk (0x411080: flood 18 down to move, nearest cell to the previous pick) rounds the wall instead of pressing against it")
 	var approach: Dictionary = action["ai_decision"]["home_approach"]
 	var refinements: Array = approach["refinements"]
-	check(approach["goal"] == point and int(approach["route_cost"]) == BattlePlayLoop._manhattan(landed, point) and BattlePlayLoop.unit(stepped, actor_id)["ai_fixed_point_pending"], "approach receipt names the point and the Manhattan distance left; the release is still armed")
+	check(approach["goal"] == point and int(approach["route_cost"]) == BattlePlayLoop.TacticalGridRules.manhattan(landed, point) and BattlePlayLoop.unit(stepped, actor_id)["ai_fixed_point_pending"], "approach receipt names the point and the Manhattan distance left; the release is still armed")
 	check(refinements.size() == 9 and int(refinements[0]["radius"]) == AINavigationRules.FIXED_POINT_FLOOD_RADIUS and refinements[0]["target"] == point and refinements[0]["pick"] == point and int(refinements.back()["radius"]) == 2 and refinements.back()["pick"] == landed, "refinement floods 18,16,..,2: the first pick is the free point itself, each later flood targets the previous pick, the last is the move")
 	var walking := stepped
 	var arrived := false
@@ -411,12 +411,12 @@ func script_anchor_cases() -> void:
 		var action: Dictionary = stepped["last_ai_action"]
 		var landed: Vector2i = BattlePlayLoop.unit(stepped, actor["id"])["coord"]
 		check(action["kind"] == "move" and action.get("purpose") == "return_home" and action["ai_decision"]["candidate_filters"]["guard_excluded"] == 2 and not stepped.has("last_combat"), "an adjacent foe outside the anchor radius is not attacked; the guard walks instead (0x440ef1 -> 0x440fd3)")
-		check(landed == Vector2i(4, 12) and int(action["ai_decision"]["home_approach"]["route_cost"]) == BattlePlayLoop._manhattan(landed, Vector2i(-5, 57)), "the retreating unit spends its move toward the off-map anchor and the receipt keeps the Manhattan distance left")
+		check(landed == Vector2i(4, 12) and int(action["ai_decision"]["home_approach"]["route_cost"]) == BattlePlayLoop.TacticalGridRules.manhattan(landed, Vector2i(-5, 57)), "the retreating unit spends its move toward the off-map anchor and the receipt keeps the Manhattan distance left")
 	# A living unit standing off the map has no AI branch: the preflight names it instead of
 	# the current actor's row kernel failing.
 	var stranded := fixture("detour")
 	stranded["units"][2]["coord"] = Vector2i(-5, 57)
-	var prepared := BattleLoopAI._prepare_ai_turn(stranded, stranded["units"][0]["id"])
+	var prepared := BattleLoopAI.prepare_ai_turn(stranded, stranded["units"][0]["id"])
 	check(not prepared["ok"] and prepared["reason"] == "ai_unit_off_map:" + str(stranded["units"][2]["id"]), "a unit outside the map is an explicit, named scenario error")
 
 
@@ -431,7 +431,7 @@ func pursuit_walk_cases() -> void:
 	for seed in range(1, 9):
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed
-		var step: Dictionary = BattleLoopAI._ai_take_turn(base, "actor021_3", rng)
+		var step: Dictionary = BattleLoopAI.ai_take_turn(base, "actor021_3", rng)
 		landed[step["action"]["to"]] = step["action"]
 	var action: Dictionary = landed.values()[0]
 	var refinements: Array = action["ai_decision"].get("pursuit_approach", {}).get("refinements", [])
@@ -440,13 +440,13 @@ func pursuit_walk_cases() -> void:
 	# Enemy021 (17,6) after the first two moves: the recording has (12,6); equal cells are
 	# a rand(2) coin, so (12,6) is one of the seeded outcomes (the prefix only gave (13,7)).
 	var board := BattlePlayLoop.copy(base)
-	BattlePlayLoop._unit(board, "actor021_3")["coord"] = Vector2i(10, 8)
-	BattlePlayLoop._unit(board, "actor023_2")["coord"] = Vector2i(14, 14)
+	BattlePlayLoop.unit_ref(board, "actor021_3")["coord"] = Vector2i(10, 8)
+	BattlePlayLoop.unit_ref(board, "actor023_2")["coord"] = Vector2i(14, 14)
 	var reached := {}
 	for seed in range(1, 17):
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed
-		reached[BattleLoopAI._ai_take_turn(board, "actor021_1", rng)["action"]["to"]] = true
+		reached[BattleLoopAI.ai_take_turn(board, "actor021_1", rng)["action"]["to"]] = true
 	check(reached.has(Vector2i(12, 6)) and reached.has(Vector2i(13, 7)) and reached.size() == 2, "level 51 round 1: Enemy021 (17,6) ties (12,6)／(13,7) on the walk's coin: %s" % str(reached.keys()))
 
 
@@ -462,13 +462,13 @@ func crowded_filter_cases() -> void:
 	# cell and the held best stays; 80..99 keeps it.
 	var cells := [Vector2i(4, 0), Vector2i(2, 2)]
 	var skip_draws: Array = []
-	var skipped: Dictionary = AINavigationRules._nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 79 if bound == 100 else 0, skip_draws, words, 0x64000, size)
+	var skipped: Dictionary = AINavigationRules.nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 79 if bound == 100 else 0, skip_draws, words, 0x64000, size)
 	check(skipped["cell"] == Vector2i(4, 0) and int(skipped["crowded_skips"]) == 1 and skip_draws == [{"bound": 100, "value": 79}], "0x413740: a cell with >= 3 flagged neighbours is skipped when rand(100) < 80: %s" % str(skipped))
 	var kept_draws: Array = []
-	var kept: Dictionary = AINavigationRules._nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 80 if bound == 100 else 0, kept_draws, words, 0x64000, size)
+	var kept: Dictionary = AINavigationRules.nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 80 if bound == 100 else 0, kept_draws, words, 0x64000, size)
 	check(kept["cell"] == Vector2i(2, 2) and int(kept["crowded_skips"]) == 0, "0x413740: rand(100) >= 80 keeps the crowded nearest cell")
 	var level_draws: Array = []
-	var level: Dictionary = AINavigationRules._nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 0, level_draws, words, 0x4000, size)
+	var level: Dictionary = AINavigationRules.nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 0, level_draws, words, 0x4000, size)
 	check(level["cell"] == Vector2i(2, 2) and level_draws.is_empty(), "a shrinking level (side 0) counts only hard-blocked cells, so one 0x4000 neighbour draws nothing")
 
 
@@ -523,8 +523,8 @@ func attack_station_cases() -> void:
 ## beside the walled pocket around gulu／rett／leonard.
 static func walled_board(cell: Vector2i, level: String = "battle_504", actor_id: String = "actor036_1", weapon: int = 61) -> Dictionary:
 	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/%s.json" % level), 1)
-	BattlePlayLoop._unit(loop, actor_id)["weapon_code"] = weapon
-	BattlePlayLoop._set_unit_coord(loop, actor_id, cell)
+	BattlePlayLoop.unit_ref(loop, actor_id)["weapon_code"] = weapon
+	BattlePlayLoop.set_unit_coord(loop, actor_id, cell)
 	return loop
 
 
@@ -538,12 +538,12 @@ func terrain_range_cases() -> void:
 	var actor := BattlePlayLoop.unit(loop, "actor036_1")
 	var leonard := BattlePlayLoop.unit(loop, "leonard")
 	var pattern := BattlePlayLoop.weapon_pattern(loop, actor)
-	var routes: Dictionary = BattlePlayLoop._movement_envelope(loop, "actor036_1")["reachable_by_coord"]
+	var routes: Dictionary = BattlePlayLoop.movement_envelope(loop, "actor036_1")["reachable_by_coord"]
 	var flat := AINavigationRules.attack_stations(actor, leonard, pattern["offsets"], false, routes)
 	var land := AINavigationRules.attack_stations(actor, leonard, pattern["offsets"], false, routes, AINavigationRules.weapon_terrain(loop, actor, pattern))
 	check(flat["in_place"] and flat["stations"].map(func(s): return s["cell"]) == [Vector2i(10, 16), Vector2i(11, 16), Vector2i(12, 16)], "flat record: (10,16) reaches leonard and is a station (the pre-terrain AI path)")
 	check(not land["in_place"] and land["stations"].map(func(s): return s["cell"]) == [Vector2i(11, 16), Vector2i(12, 16)], "0x40d8b0／0x40fb20 on terrain: leonard is out of reach from (10,16) and (10,16) is no station: %s" % str(land["stations"].map(func(s): return s["cell"])))
-	var walked: Dictionary = BattleLoopAI._ai_take_turn(loop, "actor036_1", zero)["action"]
+	var walked: Dictionary = BattleLoopAI.ai_take_turn(loop, "actor036_1", zero)["action"]
 	check(walked.get("kind") == "move_then_attack" and walked.get("target_id") == "leonard" and walked.get("to") == Vector2i(12, 16), "a terrain station is walked to before the strike (504, (10,16) → (12,16)): %s %s" % [walked.get("kind"), walked.get("to")])
 	# The flood is not symmetric: (6,16) is in rett's coverage (a station) but rett (8,15)
 	# is not in the coverage from (6,16). After the walk 0x441311..0x441369 tests the held
@@ -551,7 +551,7 @@ func terrain_range_cases() -> void:
 	# and the turn ends there without a strike.
 	var short := walled_board(Vector2i(8, 16))
 	var rett_hp := int(BattlePlayLoop.unit(short, "rett")["hp"])
-	var step: Dictionary = BattleLoopAI._ai_take_turn(short, "actor036_1", zero)
+	var step: Dictionary = BattleLoopAI.ai_take_turn(short, "actor036_1", zero)
 	var missed: Dictionary = step["action"]
 	check(missed.get("kind") == "move" and missed.get("toward") == "rett" and missed.get("to") == Vector2i(6, 16) and missed.get("wait_reason") == "station_out_of_range" and not missed["ai_decision"]["attack_station"]["arrival_in_range"], "0x441311..0x441369: the station (6,16) does not see rett back, so the walk ends the turn without a strike: %s %s %s" % [missed.get("kind"), missed.get("to"), missed.get("wait_reason")])
 	check(int(BattlePlayLoop.unit(step["loop"], "rett")["hp"]) == rett_hp and BattlePlayLoop.unit(step["loop"], "actor036_1")["coord"] == Vector2i(6, 16), "the failed arrival test settles no exchange and keeps the walk")
@@ -569,11 +569,11 @@ func terrain_range_cases() -> void:
 				var tile: Dictionary = BattlePlayLoop.TerrainEdits.tiles(opening).get(cell, {})
 				if tile.is_empty() or int(tile.get("movement_flags", 0)) & 0x4000 or BattlePlayLoop.unit_id_at_coord(opening, cell) not in ["", probe[2]]: continue
 				var board := walled_board(cell, probe[0], probe[2], probe[3])
-				var action: Dictionary = BattleLoopAI._ai_take_turn(board, probe[2], zero)["action"]
+				var action: Dictionary = BattleLoopAI.ai_take_turn(board, probe[2], zero)["action"]
 				if str(action.get("kind", "")) not in ["attack", "move_then_attack"]: continue
 				strikes += 1
 				var struck: Vector2i = BattlePlayLoop.unit(board, str(action["target_id"]))["coord"]
-				BattlePlayLoop._set_unit_coord(board, probe[2], action["to"])
+				BattlePlayLoop.set_unit_coord(board, probe[2], action["to"])
 				if not BattlePlayLoop.attack_cells(board, probe[2]).has(struck): outside.append([probe[0], probe[3], cell, action["to"], action["target_id"]])
 	check(strikes > 40 and outside.is_empty(), "no AI strike through a wall on the battle_003／504 probe boards (%d strikes): %s" % [strikes, str(outside)])
 

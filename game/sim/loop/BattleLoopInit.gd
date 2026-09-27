@@ -47,6 +47,8 @@ const ActorInitializationRules = preload("res://game/sim/ActorInitializationRule
 const ScriptActorCreationRules = preload("res://game/sim/ScriptActorCreationRules.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const Values = preload("res://game/sim/Values.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 
 
 ## `global_state`: the global stream words the battle starts from (the scene passes the
@@ -172,7 +174,7 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		"last_command_reject": {},
 		"last_ai_actions": [],
 		"battle_outcome": {},
-		"command_menu": BattlePlayLoop._product_command_menu(
+		"command_menu": BattlePlayLoop.product_command_menu(
 			CoreTurnQueue.build_command_menu(
 				bool(command_flags.get("has_special", false)),
 				bool(command_flags.get("has_magic", false))
@@ -183,12 +185,6 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		"formula_source": "core_logic",
 		"opening_skeleton_status": "owned_by_BattleSceneRuntime",
 	}
-
-
-static func _read_json(path: String) -> Variant:
-	if path == "" or not FileAccess.file_exists(path):
-		return null
-	return JSON.parse_string(FileAccess.get_file_as_string(path))
 
 
 static func _load_terrain(_loop: Dictionary, _scenario: Dictionary, intake: Dictionary) -> String:
@@ -211,7 +207,7 @@ static func _load_roster_contract(loop: Dictionary, _scenario: Dictionary, intak
 
 
 static func _load_skill_targeting(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
-	var targeting: Variant = _read_json(ContentPaths.SKILL_TARGETING)
+	var targeting: Variant = ContentPaths.read_json(ContentPaths.SKILL_TARGETING)
 	if not targeting is Dictionary:
 		return "missing_skill_target_data"
 	loop["skill_target_data"] = targeting
@@ -219,7 +215,7 @@ static func _load_skill_targeting(loop: Dictionary, _scenario: Dictionary, _inta
 
 
 static func _load_skill_book(loop: Dictionary, scenario: Dictionary, _intake: Dictionary) -> String:
-	var skill_book: Variant = _read_json(ContentPaths.SKILL_BOOK)
+	var skill_book: Variant = ContentPaths.read_json(ContentPaths.SKILL_BOOK)
 	if not skill_book is Dictionary or skill_book.get("schema") != "hsl_initial_supported_skills.v1":
 		return "missing_skill_book"
 	if scenario.has("training_skill_grants"):
@@ -234,7 +230,7 @@ static func _load_skill_book(loop: Dictionary, scenario: Dictionary, _intake: Di
 
 
 static func _load_growth_lifecycle(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
-	var learning_data: Variant = _read_json(ContentPaths.GROWTH_LIFECYCLE)
+	var learning_data: Variant = ContentPaths.read_json(ContentPaths.GROWTH_LIFECYCLE)
 	if not learning_data is Dictionary or learning_data.get("schema") != "hsl_growth_lifecycle.v1":
 		return "missing_growth_lifecycle_data"
 	loop["skill_book"]["learning"] = learning_data
@@ -242,7 +238,7 @@ static func _load_growth_lifecycle(loop: Dictionary, _scenario: Dictionary, _int
 
 
 static func _load_ai_profiles(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
-	var ai_profiles: Variant = _read_json(ContentPaths.AI_PROFILES)
+	var ai_profiles: Variant = ContentPaths.read_json(ContentPaths.AI_PROFILES)
 	if not ai_profiles is Dictionary or ai_profiles.get("schema") != "hsl_ai_profiles.v1":
 		return "missing_ai_profiles"
 	loop["ai_profiles"] = ai_profiles
@@ -250,7 +246,7 @@ static func _load_ai_profiles(loop: Dictionary, _scenario: Dictionary, _intake: 
 
 
 static func _load_entry_growth(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
-	var entry_data: Variant = _read_json(ContentPaths.ENTRY_GROWTH)
+	var entry_data: Variant = ContentPaths.read_json(ContentPaths.ENTRY_GROWTH)
 	if not entry_data is Dictionary or entry_data.get("schema") != "hsl_entry_growth_sources.v1":
 		return "missing_entry_growth_data"
 	loop["entry_growth_data"] = entry_data
@@ -258,7 +254,7 @@ static func _load_entry_growth(loop: Dictionary, _scenario: Dictionary, _intake:
 
 
 static func _load_progression(loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:
-	var progression: Variant = _read_json(BattleScenario.resource_path(scenario, "progression"))
+	var progression: Variant = ContentPaths.read_json(BattleScenario.resource_path(scenario, "progression"))
 	if not progression is Dictionary or not progression.get("actors") is Dictionary:
 		return "missing_progression_data"
 	intake["progression"] = progression["actors"]
@@ -272,7 +268,7 @@ static func _load_initial_stamina(loop: Dictionary, scenario: Dictionary, intake
 	# only a development fixture pins them all with skill_rules.initial_stamina (-1: no pin).
 	intake["initial_stamina"] = -1
 	if loop["skill_rules"].has("initial_stamina"):
-		var pinned := SkillResourceRules._integer(loop["skill_rules"]["initial_stamina"])
+		var pinned := Values.non_negative_int(loop["skill_rules"]["initial_stamina"])
 		if pinned < 0 or pinned > StaminaRules.CAP:
 			return "invalid_initial_stamina"
 		intake["initial_stamina"] = pinned
@@ -282,7 +278,7 @@ static func _load_initial_stamina(loop: Dictionary, scenario: Dictionary, intake
 static func _load_inventory_catalog(loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:
 	# The catalog's shape is judged by _check_inventory_catalog after the reward source
 	# (that order is the existing failure order); here it only has to be a dictionary.
-	var items: Variant = _read_json(BattleScenario.resource_path(scenario, "consumables"))
+	var items: Variant = ContentPaths.read_json(BattleScenario.resource_path(scenario, "consumables"))
 	intake["items"] = items if items is Dictionary else {}
 	loop["consumables"] = intake["items"].get("items", {})
 	loop["equipment_items"] = EquipmentCatalog.items()
@@ -290,7 +286,7 @@ static func _load_inventory_catalog(loop: Dictionary, scenario: Dictionary, inta
 
 
 static func _load_rewards(loop: Dictionary, _scenario: Dictionary, _intake: Dictionary) -> String:
-	var rewards: Variant = _read_json(ContentPaths.BATTLE_REWARDS)
+	var rewards: Variant = ContentPaths.read_json(ContentPaths.BATTLE_REWARDS)
 	if not rewards is Dictionary or BattleRewardRules.data_error(rewards, loop["units"]) != "":
 		return "invalid_reward_source"
 	loop["reward_data"] = rewards
@@ -317,7 +313,7 @@ static func _check_roster_inputs(loop: Dictionary, _scenario: Dictionary, _intak
 		var placement_error := TraversalRules.placement_error(actor, loop["units"], loop["tiles"], loop["map_size"], true)
 		if placement_error != "":
 			return placement_error
-		var resource_error := BattlePlayLoop._skill_input_error(loop, actor)
+		var resource_error := BattlePlayLoop.skill_input_error(loop, actor)
 		if resource_error == "": resource_error = CoreCombatRules.input_error(actor)
 		if resource_error != "":
 			return resource_error
@@ -352,7 +348,7 @@ static func _load_script_actor_templates(loop: Dictionary, scenario: Dictionary,
 			if not prepared["ok"]:
 				return str(prepared["reason"])
 			spec["actor"] = prepared["actor"]
-			var error := BattlePlayLoop._skill_input_error(loop, spec["actor"])
+			var error := BattlePlayLoop.skill_input_error(loop, spec["actor"])
 			if error == "": error = CoreCombatRules.input_error(spec["actor"])
 			if error != "":
 				return error
@@ -365,7 +361,7 @@ static func _load_script_actor_templates(loop: Dictionary, scenario: Dictionary,
 static func _load_treasures(loop: Dictionary, scenario: Dictionary, _intake: Dictionary) -> String:
 	if not scenario.get("resources", {}).has("treasures"):
 		return ""
-	var data: Variant = _read_json(str(scenario["resources"]["treasures"]))
+	var data: Variant = ContentPaths.read_json(str(scenario["resources"]["treasures"]))
 	var initialized := Treasure.initialize(data if data is Dictionary else {}, int(scenario.get("level", 0)), loop["equipment_items"], loop["map_size"])
 	if not initialized["ok"]:
 		return str(initialized["reason"])
@@ -378,12 +374,12 @@ static func _rebuild_queue(loop: Dictionary, _scenario: Dictionary, _intake: Dic
 	# Initial queue is built from refreshed speeds. Mid-round changes still wait
 	# for the ordinary queue wrap; this seam is initialization only.
 	# The enemies' birth carry rolls with their level adjustment (InitialRosterGrowthRules).
-	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(loop))
 	return ""
 
 
 static func _load_attack_ranges(loop: Dictionary, scenario: Dictionary, _intake: Dictionary) -> String:
-	var range_manifest: Variant = _read_json(BattleScenario.resource_path(scenario, "attack_ranges"))
+	var range_manifest: Variant = ContentPaths.read_json(BattleScenario.resource_path(scenario, "attack_ranges"))
 	if typeof(range_manifest) != TYPE_DICTIONARY or not range_manifest.has("patterns") or not range_manifest.has("weapons"):
 		return "missing_attack_ranges"
 	loop["attack_patterns"] = range_manifest["patterns"]
@@ -397,7 +393,7 @@ static func _load_attack_ranges(loop: Dictionary, scenario: Dictionary, _intake:
 
 static func _load_script_payload(_loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:
 	var script_key := BattleScenarioRuleAdapter.script_resource_key(scenario)
-	var script: Variant = _read_json(BattleScenario.resource_path(scenario, script_key))
+	var script: Variant = ContentPaths.read_json(BattleScenario.resource_path(scenario, script_key))
 	if not BattleScenarioRuleAdapter.script_payload_valid(scenario, script):
 		return "missing_battle_script_payload"
 	intake["script"] = script
@@ -412,7 +408,7 @@ static func _load_scenario_rules(loop: Dictionary, scenario: Dictionary, _intake
 	loop["events"] = rules["events"]
 	loop["reinforcement_templates"] = []
 	for entry in rules["reinforcements"]:
-		var template := BattlePlayLoop._unit(loop, str(entry["template_unit_id"])).duplicate(true)
+		var template := BattlePlayLoop.unit_ref(loop, str(entry["template_unit_id"])).duplicate(true)
 		if template.is_empty():
 			return "missing_reinforcement_template"
 		loop["reinforcement_templates"].append(template)
@@ -450,7 +446,7 @@ static func _load_opening_timeline(_loop: Dictionary, scenario: Dictionary, inta
 	var timeline_path := BattleScenario.resource_path(scenario, "opening_timeline")
 	if timeline_path == "":
 		return ""
-	var timeline: Variant = JSON.parse_string(FileAccess.get_file_as_string(timeline_path))
+	var timeline: Variant = ContentPaths.read_json(timeline_path)
 	if not timeline is Dictionary or not timeline.get("events") is Array:
 		return "invalid_wait_opening_source"
 	intake["opening_events"] = timeline["events"]
@@ -513,11 +509,11 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 				inserts[symbol] = int(inserts.get(symbol, 0)) + 1
 				var slot := int(str(args[3])) if args.size() > 3 else -1
 				var binding: Dictionary = scenario.get("opening", {}).get("actor_bindings", {}).get("%s/insert%d" % [symbol, inserts[symbol]], {})
-				var unit := BattlePlayLoop._unit(loop, str(binding.get("unit_id", "")))
+				var unit := BattlePlayLoop.unit_ref(loop, str(binding.get("unit_id", "")))
 				if unit.is_empty() or slot < 0 or slot >= order.size():
 					continue
 				var pixel: Vector2i = table[order[slot]] + Vector2i(int(str(args[1])), int(str(args[2])))
-				var cell := Vector2i(floori(pixel.x / 32.0), floori(pixel.y / 32.0))
+				var cell := Vector2i(floori(pixel.x / float(TacticalGridRules.CELL_PIXELS)), floori(pixel.y / float(TacticalGridRules.CELL_PIXELS)))
 				if unit.get("ai_home_coord") == unit["coord"]:
 					unit["ai_home_coord"] = cell
 				unit["coord"] = cell
@@ -531,7 +527,7 @@ static func _load_script_waits(loop: Dictionary, scenario: Dictionary, intake: D
 		return str(wait_source["reason"])
 	loop["script_wait_source"] = wait_source["source"]
 	for assignment in wait_source["source"]["initial"]:
-		BattlePlayLoop._unit(loop, assignment["unit_id"])["ai_wait_remaining"] = assignment["rounds"]
+		BattlePlayLoop.unit_ref(loop, assignment["unit_id"])["ai_wait_remaining"] = assignment["rounds"]
 	return ""
 
 
@@ -544,7 +540,7 @@ static func initialize_roster_growth(loop: Dictionary) -> Dictionary:
 		failed.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": proposal.get("reason", "invalid_initial_roster")}, true)
 		return failed
 	var next: Dictionary = proposal["loop"]
-	if not loop.has("initial_roster_growth"): next["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(next))
+	if not loop.has("initial_roster_growth"): next["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(next))
 	return next
 
 

@@ -45,9 +45,9 @@ func setup_role() -> void:
 	chosen_role = "024" if mode == "heavy_growth" else "001" if mode in ["sword_double","victory","defeat","escape","detour"] else "026"
 	var loop := run_job_stats_tests.fixture(chosen_role)
 	loop["tiles"]=scene.play_loop["tiles"];loop["map_size"]=scene.play_loop["map_size"]
-	var player := BattlePlayLoop._unit(loop,"leonard")
-	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
-	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	var player := BattlePlayLoop.unit_ref(loop,"leonard")
+	var enemy := BattlePlayLoop.unit_ref(loop,"enemy021_1")
+	var ally := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	player["inventory"]=[218,223,224,138 if chosen_role == "024" else 193,227,12 if chosen_role == "001" else 94,246,241]
 	player["hp"]=mini(10,int(player["max_hp"]));player["hit_bonus_accum"]=1000
 	enemy["inventory"]=[0,0,0,0,0,0,0,0];enemy["combat_profile"]["attack_back"]=0
@@ -92,7 +92,7 @@ func setup_role() -> void:
 		if mode=="defeat": player["hp"]=1;enemy["combat_profile"].merge({"live_attack_damage":200,"attack_back":100},true)
 		else:
 			scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
-			player=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy021_1")
+			player=BattlePlayLoop.unit_ref(loop,"leonard");enemy=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 			if mode=="victory": player["exp"]=99;enemy["hp"]=1
 			else:
 				enemy["coord"]=Vector2i(17,18);landing=loop["escape_zone"][0]
@@ -110,7 +110,7 @@ func setup_role() -> void:
 		a["grid_coord"]=a["coord"];a["ai_home_coord"]=a["coord"]
 		check(not loop["tiles"].get(a["coord"],{}).get("blocks_movement",false),"fixture stands on actual source ground")
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path=REVIEW_OUT+mode+".save"
 	for a in scene.actors_root.get_children():scene.actors_root.remove_child(a);a.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(player["coord"])
@@ -170,7 +170,7 @@ func play_role() -> void:
 			var found:=false
 			for cell in BattlePlayLoop.movement_cells(scene.play_loop):
 				var path:=BattlePlayLoop.movement_path(scene.play_loop,"leonard",cell)
-				if path.size()>BattlePlayLoop._manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):
+				if path.size()>BattlePlayLoop.TacticalGridRules.manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):
 					landing=cell;found=true;break
 			check(found,"source obstacles require a real affordable detour")
 			if not found:return

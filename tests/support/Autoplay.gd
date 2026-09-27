@@ -226,7 +226,7 @@ static func play_battle(tree: SceneTree, scene: Node, round_limit: int = DEFAULT
 			continue
 		match str(loop.get("interaction", "")):
 			"action_menu":
-				var step := AutoplayBrain.take_player_action(brain, loop, rng) if not brain.is_empty() else _take_player_action(loop, rng)
+				var step := AutoplayBrain.take_player_action(brain, loop, rng) if not brain.is_empty() else take_player_action(loop, rng)
 				if str(step["action"]) == "":
 					_dead_end(result, loop, REASON_NO_LEGAL_ACTION, "commands=%s" % str((loop.get("command_menu", {}) as Dictionary).get("commands", [])))
 					break
@@ -413,7 +413,7 @@ static func _play_scene_phase(tree: SceneTree, scene: Node, loop: Dictionary, to
 
 ## Greedy player turn through the public command entry points. Returns {loop, action};
 ## action "" means no command made progress (the caller records no_legal_action).
-static func _take_player_action(loop: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
+static func take_player_action(loop: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
 	var id := str(loop.get("selected_unit_id", ""))
 	if BattlePlayLoop.action_exhausted(loop):
 		# An offense whose completion waited on loot collection ends the action now.
@@ -425,7 +425,7 @@ static func _take_player_action(loop: Dictionary, rng: RandomNumberGenerator) ->
 		if not struck.is_empty():
 			return {"loop": struck, "action": "attack"}
 	if BattlePlayLoop.command_available(next, "move"):
-		var destination: Variant = _destination(next, id)
+		var destination: Variant = attack_destination(next, id)
 		if destination is Vector2i:
 			var moving := BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(next, "move"), destination)
 			if bool(moving.get("moved_this_action", false)):
@@ -477,9 +477,9 @@ static func _try_attack(loop: Dictionary, id: String, _rng: RandomNumberGenerato
 ## Movement destination: a reachable cell from which the weapon touches a foe (cheapest
 ## path, weakest foe), else the reachable cell nearest to the nearest foe; null when staying
 ## put is as good as any reachable cell. The flat pattern only proposes cells: a cell counts
-## when the weapon's real reach from it (_weapon_cells_from — the cells _try_attack strikes
+## when the weapon's real reach from it (weapon_cells_from — the cells _try_attack strikes
 ## through after the move) touches that foe, so a wall between never draws the unit there.
-static func _destination(loop: Dictionary, id: String) -> Variant:
+static func attack_destination(loop: Dictionary, id: String) -> Variant:
 	var actor := BattlePlayLoop.unit(loop, id)
 	var origin: Vector2i = actor["coord"]
 	var cells: Array = BattlePlayLoop.movement_cells(loop, id)
@@ -504,7 +504,7 @@ static func _destination(loop: Dictionary, id: String) -> Variant:
 					if cell == origin or not reachable.has(cell):
 						continue
 					if not reach.has(cell):
-						reach[cell] = _weapon_cells_from(loop, actor, pattern, cell)
+						reach[cell] = weapon_cells_from(loop, actor, pattern, cell)
 					if BattlePlayLoop.Footprint.contact(foe, reach[cell]) == null:
 						continue
 					var cost := BattlePlayLoop.movement_path(loop, id, cell).size()
@@ -528,7 +528,7 @@ static func _destination(loop: Dictionary, id: String) -> Variant:
 ## The weapon cells `actor` covers once standing on `cell`: BattlePlayLoop.weapon_cells (the
 ## original 0x40f8b0 flood over the map words) with the actor moved there, as attack_cells
 ## reads them after move_unit_to.
-static func _weapon_cells_from(loop: Dictionary, actor: Dictionary, pattern: Dictionary, cell: Vector2i) -> Array:
+static func weapon_cells_from(loop: Dictionary, actor: Dictionary, pattern: Dictionary, cell: Vector2i) -> Array:
 	var moved := actor.duplicate()
 	moved["coord"] = cell
 	var probe := loop.duplicate()

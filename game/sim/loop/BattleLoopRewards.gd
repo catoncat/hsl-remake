@@ -1,9 +1,9 @@
 extends RefCounted
-## Battle loop settlement: the once-per-exchange reward commit (`_commit_rewards`: shared
+## Battle loop settlement: the once-per-exchange reward commit (`commit_rewards`: shared
 ## gold, instantiated pending loot, death de-duplication, kill tallies), the pending-loot
 ## interaction (`loot_waiting`, `claim_reward`, `finish_rewards`, `reopen_rewards`), the
-## enemy installation carry roll (`_initial_carry`), the completed-action experience award
-## with its level-up learning (`_award_experience`) and the player's manual growth
+## enemy installation carry roll (`initial_carry`), the completed-action experience award
+## with its level-up learning (`award_experience`) and the player's manual growth
 ## allocation (`allocate_growth`), plus the reward/experience input validators. Static
 ## functions over the one loop dictionary; BattlePlayLoop forwards to them and stays
 ## the single mutable battle-state owner.
@@ -31,12 +31,13 @@ const TurnEndRules = preload("res://game/sim/TurnEndRules.gd")
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 const Treasure = preload("res://game/sim/TreasureRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 ## `ended`: a reason the action ended before its completion award (the exchange's undead
-## attacker revived after the counter — BattleLoopCombat._resolve_exchange); nothing is paid.
-static func _award_experience(loop: Dictionary, strike: Dictionary, ended: String = "") -> void:
-	var actor := BattlePlayLoop._unit(loop, str(strike["attacker_id"]))
+## attacker revived after the counter — BattleLoopCombat.resolve_exchange); nothing is paid.
+static func award_experience(loop: Dictionary, strike: Dictionary, ended: String = "") -> void:
+	var actor := BattlePlayLoop.unit_ref(loop, str(strike["attacker_id"]))
 	var total := 0
 	var killed := false
 	for hit in CombatSequence.participant_outcomes(strike):
@@ -74,7 +75,7 @@ static func _award_experience(loop: Dictionary, strike: Dictionary, ended: Strin
 static func allocate_growth(loop: Dictionary, unit_id: String, allocation: Dictionary) -> Dictionary:
 	var next := BattlePlayLoop.copy(loop)
 	if loot_waiting(loop): return next
-	var actor := BattlePlayLoop._unit(next, unit_id)
+	var actor := BattlePlayLoop.unit_ref(next, unit_id)
 	# A won battle still takes the final blow's points (0x442720 phase 8 opens the window before
 	# the win scan); a lost one takes none. Nothing else is allowed after the result.
 	if not bool(next.get("scenario_ok", false)) or (BattleOutcome.decided(next) and not BattleOutcome.won(next)):
@@ -89,7 +90,7 @@ static func allocate_growth(loop: Dictionary, unit_id: String, allocation: Dicti
 	return next
 
 
-static func _reward_input_error(loop: Dictionary) -> String:
+static func reward_input_error(loop: Dictionary) -> String:
 	var treasure_error := Treasure.state_error(loop)
 	if treasure_error != "": return treasure_error
 	var settlement_error := Treasure.settlement_error(loop)
@@ -99,9 +100,9 @@ static func _reward_input_error(loop: Dictionary) -> String:
 	var tail_error := TurnEndRules.state_error(loop)
 	if tail_error != "": return tail_error
 	if loop.get("stat_refresh_policy") != ProgressionRules.JobStats.MODEL: return "invalid_stat_refresh_policy"
-	var extra_error := BattlePlayLoop._extra_action_input_error(loop)
+	var extra_error := BattlePlayLoop.extra_action_input_error(loop)
 	if extra_error != "": return extra_error
-	if not BattleRewardRules.integer(loop.get("gold"), 0, 9000000000000000) or not BattleRewardRules.GlobalRandomStream.valid(loop.get(BattleRewardRules.GlobalRandomStream.LOOP_KEY)):
+	if not Values.is_integer_in(loop.get("gold"), 0, 9000000000000000) or not BattleRewardRules.GlobalRandomStream.valid(loop.get(BattleRewardRules.GlobalRandomStream.LOOP_KEY)):
 		return "invalid_reward_state"
 	return BattleRewardRules.data_error(loop.get("reward_data", {}), loop.get("units", []))
 
@@ -109,12 +110,12 @@ static func _reward_input_error(loop: Dictionary) -> String:
 ## The birth 0x407cc0 calls the carry selector 0x407c40 once for a pmEnemy (0x407e3b), on the
 ## global stream after the frame-delay rand(24) and before the level adjustment 0x40e870. Friendly
 ## inventories and Leonard's authored starting medicine are retained. Respawns sample afresh.
-static func _initial_carry(loop: Dictionary, actor: Dictionary) -> void:
+static func initial_carry(loop: Dictionary, actor: Dictionary) -> void:
 	var error := BattleRewardRules.install_carry(loop, actor)
 	assert(error == "", "Initial carry needs an available source inventory slot")
 
 
-static func _commit_rewards(loop: Dictionary, receipt: Dictionary) -> void:
+static func commit_rewards(loop: Dictionary, receipt: Dictionary) -> void:
 	var sequence := int(receipt["sequence"])
 	if sequence <= BattleRewardRules.combat_sequence(loop["settlement"]): return
 	assert(not loot_waiting(loop), "Unclaimed loot must finish before another exchange")
@@ -123,7 +124,7 @@ static func _commit_rewards(loop: Dictionary, receipt: Dictionary) -> void:
 	# drops use, so claiming, deferring and the full-pack exchange path are shared. A caster that
 	# is not a player process takes it into its own bag at state 4 (0x44f600).
 	var caster_id := str(receipt.get("attacker_id", ""))
-	var caster := BattlePlayLoop._unit(loop, caster_id)
+	var caster := BattlePlayLoop.unit_ref(loop, caster_id)
 	var ai_caster := not caster.is_empty() and not bool(caster.get("player_commandable", false))
 	for item in receipt.get("stolen_items", []):
 		var entry := {"code": int(item["code"]), "source_slot": int(item["source_slot"]), "source_id": str(item["unit_id"]),
@@ -139,21 +140,21 @@ static func _commit_rewards(loop: Dictionary, receipt: Dictionary) -> void:
 	loop[BattleRewardRules.GlobalRandomStream.LOOP_KEY] = result["state"]
 	for id in result["deaths"]:
 		loop["rewarded_unit_ids"].append(id)
-		BattlePlayLoop._unit(loop, id)["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
+		BattlePlayLoop.unit_ref(loop, id)["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	# 0x442720 state 4 → 0x44f600: an AI recipient takes the collection into its own bag.
 	var taken: Array = []
 	var recipients: Array = []
 	for entry in result["taken"]:
 		if not recipients.has(entry["unit_id"]): recipients.append(entry["unit_id"])
 	for unit_id in recipients:
-		var recipient := BattlePlayLoop._unit(loop, unit_id)
+		var recipient := BattlePlayLoop.unit_ref(loop, unit_id)
 		var handed := BattleRewardRules.hand_over(recipient.get("inventory", BattleRewardRules.EMPTY_BAG), result["taken"].filter(func(entry): return entry["unit_id"] == unit_id), loop["reward_data"]["items"])
 		recipient["inventory"] = handed["inventory"]
 		for row in handed["rows"]:
 			row["unit_id"] = unit_id
 			taken.append(row)
 	for kill in result["kills"]:
-		var owner := BattlePlayLoop._unit(loop, kill["attacker_id"])
+		var owner := BattlePlayLoop.unit_ref(loop, kill["attacker_id"])
 		owner["kills"] = int(owner.get("kills", 0)) + 1
 	# 0x442720 state 2: an enemy／NPC killer's kill gold goes to its own record +0x98.
 	BattleRewardRules.accrue(loop["units"], result["carried"])
@@ -174,10 +175,10 @@ static func loot_recipients(loop: Dictionary) -> Array:
 
 static func claim_reward(loop: Dictionary, sequence: int, revision: int, entry_id: String, recipient_id: String, slot: int = -1, expected_code: int = 0) -> Dictionary:
 	if not _claim_current(loop, sequence, revision) or not loot_recipients(loop).has(recipient_id): return BattlePlayLoop.copy(loop)
-	var proposal := BattleRewardRules.transfer(loop["settlement"]["pending"], entry_id, BattlePlayLoop._unit(loop, recipient_id)["inventory"], slot, expected_code)
+	var proposal := BattleRewardRules.transfer(loop["settlement"]["pending"], entry_id, BattlePlayLoop.unit_ref(loop, recipient_id)["inventory"], slot, expected_code)
 	if not proposal["ok"]: return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
-	BattlePlayLoop._unit(next, recipient_id)["inventory"] = proposal["inventory"]
+	BattlePlayLoop.unit_ref(next, recipient_id)["inventory"] = proposal["inventory"]
 	next["settlement"]["pending"] = proposal["pending"]
 	var claimed: Dictionary = proposal["item"]
 	claimed.merge({"recipient_id": recipient_id, "returned_code": proposal["returned_code"]})
@@ -204,7 +205,7 @@ static func finish_rewards(loop: Dictionary, sequence: int, revision: int, aband
 
 
 static func reopen_rewards(loop: Dictionary) -> Dictionary:
-	var allowed: bool = BattlePlayLoop._player_action_valid(loop, "action_menu", true) or (bool(loop.get("scenario_ok", false)) and BattleOutcome.decided(loop) and not loot_waiting(loop))
+	var allowed: bool = BattlePlayLoop.player_action_valid(loop, "action_menu", true) or (bool(loop.get("scenario_ok", false)) and BattleOutcome.decided(loop) and not loot_waiting(loop))
 	if not allowed or loop.get("settlement", {}).get("pending", []).is_empty(): return BattlePlayLoop.copy(loop)
 	var next := BattlePlayLoop.copy(loop)
 	next["settlement"]["closed"] = false
@@ -213,7 +214,7 @@ static func reopen_rewards(loop: Dictionary) -> Dictionary:
 
 
 static func _claim_current(loop: Dictionary, sequence: int, revision: int) -> bool:
-	return bool(loop.get("scenario_ok", false)) and loot_waiting(loop) and _reward_input_error(loop) == "" and int(loop["settlement"]["sequence"]) == sequence and int(loop["settlement"]["revision"]) == revision
+	return bool(loop.get("scenario_ok", false)) and loot_waiting(loop) and reward_input_error(loop) == "" and int(loop["settlement"]["sequence"]) == sequence and int(loop["settlement"]["revision"]) == revision
 
 
 ## 0x40b4e8 StealGold proposals: a caster with +0x28 bit 0x10000 takes from the target's +0x98
@@ -222,10 +223,10 @@ static func _claim_current(loop: Dictionary, sequence: int, revision: int) -> bo
 ## state 2 (0x4416bc／0x4447d8): into the party (`party_recipient`, capped 0x44283e..0x44284a) or
 ## its own record +0x98 (0x442856..0x442875) — the same branch as the kill gold, doubled first when
 ## the caster wears gold_x2 (0x442819..0x442825, BattleRewardRules.gold_multiplier).
-static func _apply_gold_effects(loop: Dictionary, strike: Dictionary, effects: Array) -> void:
+static func apply_gold_effects(loop: Dictionary, strike: Dictionary, effects: Array) -> void:
 	if effects.is_empty(): return
 	var applied: Array = []
-	var caster := BattlePlayLoop._unit(loop, str(strike["attacker_id"]))
+	var caster := BattlePlayLoop.unit_ref(loop, str(strike["attacker_id"]))
 	for effect in effects:
 		var before := int(loop["gold"])
 		var take := int(effect["amount"])

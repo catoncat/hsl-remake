@@ -19,6 +19,7 @@ const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 # Live-record AI fields an EVEF instance word may replace (install callback 0x42bd50,
@@ -79,9 +80,9 @@ static func instance_profile(actor: Dictionary, declared: Dictionary) -> Diction
 
 static func state_error(actor: Dictionary, guard_radius: int = 0) -> String:
 	if not actor.get("ai_target_id") is String: return "invalid_ai_target_id"
-	if SkillResourceRules._integer(actor.get("ai_wait_remaining")) < 0 or int(actor["ai_wait_remaining"]) > 10000: return "invalid_ai_wait_remaining"
+	if Values.non_negative_int(actor.get("ai_wait_remaining")) < 0 or int(actor["ai_wait_remaining"]) > 10000: return "invalid_ai_wait_remaining"
 	if not actor.get("ai_home_coord") is Vector2i: return "invalid_ai_home_coord"
-	if actor.has("ai_fixed_radius") and (SkillResourceRules._integer(actor["ai_fixed_radius"]) <= 0 or int(actor["ai_fixed_radius"]) > COORDINATE_LIMIT): return "invalid_ai_fixed_radius"
+	if actor.has("ai_fixed_radius") and (Values.non_negative_int(actor["ai_fixed_radius"]) <= 0 or int(actor["ai_fixed_radius"]) > COORDINATE_LIMIT): return "invalid_ai_fixed_radius"
 	# A free-moving actor never reads the guard anchor. A guard's anchor may lie beyond
 	# the map (WINFAIL012 retreat points -160,1824 / 576,-160 / 1632,608 / 736,2112 on a
 	# 45x60 map): the walk measures Manhattan distance to it and stops at the edge, so
@@ -95,14 +96,14 @@ static func _measurable(anchor: Vector2i) -> bool:
 
 
 static func profile_error(profile: Dictionary) -> String:
-	if SkillResourceRules._integer(profile.get("wait_round")) < 0 or int(profile["wait_round"]) > 10000: return "invalid_ai_wait_round"
-	if SkillResourceRules._integer(profile.get("ai_lock")) < 0 or int(profile["ai_lock"]) > 100: return "invalid_ai_lock"
+	if Values.non_negative_int(profile.get("wait_round")) < 0 or int(profile["wait_round"]) > 10000: return "invalid_ai_wait_round"
+	if Values.non_negative_int(profile.get("ai_lock")) < 0 or int(profile["ai_lock"]) > 100: return "invalid_ai_lock"
 	return ""
 
 
 static func within(a: Vector2i, b: Vector2i, radius: int, diamond: bool) -> bool:
 	var delta := a - b
-	return absi(delta.x) + absi(delta.y) <= radius if diamond else delta.length_squared() <= radius * radius
+	return TacticalGridRules.manhattan(a, b) <= radius if diamond else delta.length_squared() <= radius * radius
 
 
 static func guard_allows(actor: Dictionary, target: Dictionary, profile: Dictionary, retained: bool = false) -> bool:
@@ -151,7 +152,7 @@ static func acquire(actor: Dictionary, units: Array, prepared: Dictionary, rng: 
 ## routes every reached cell. The actor's own cell always has its one-cell route.
 static func full_routes(loop: Dictionary, actor: Dictionary, traversal: Dictionary = {}, route_cells: Variant = null) -> Dictionary:
 	var size: Vector2i = loop["map_size"]
-	if size.x <= 0 or size.y <= 0 or size.x > 256 or size.y > 256 or not SkillTargetRules._inside(actor["coord"], size): return {"ok": false, "reason": "invalid_ai_map"}
+	if size.x <= 0 or size.y <= 0 or size.x > 256 or size.y > 256 or not SkillTargetRules.inside(actor["coord"], size): return {"ok": false, "reason": "invalid_ai_map"}
 	# An accepted traversal context of this map has already passed every tile through
 	# `tile_error` and carries the largest arrival cost; without one, check the map here.
 	var max_cost := 1
@@ -176,7 +177,7 @@ static func approach_goals(loop: Dictionary, actor: Dictionary, foes: Array, fie
 		var entry: Dictionary = loop["skill_book"]["skills"][id]
 		var fields: Dictionary = fields_by_id[id]
 		if SkillTargetRules.is_support(fields, loop["skill_target_data"]) or SkillResolutionRules.ownership_error(actor, id, loop["skill_book"]) != "": continue
-		if SkillResourceRules._integer(fields.get("use_ratio"), true) == 0: continue
+		if Values.non_negative_int(fields.get("use_ratio"), true) == 0: continue
 		if SkillResolutionRules.available(actor, id, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])["ok"]: available.append({"id": id, "fields": fields})
 	var result := {}
 	var pattern := PositionCapabilityRules.attack_pattern(actor, loop["equipment_items"], loop["attack_patterns"], loop["weapon_ranges"])
@@ -262,7 +263,7 @@ static func approach_point(loop: Dictionary, actor: Dictionary, envelope: Dictio
 				result["reason"] = flood["reason"]
 				return result
 		var mask := blocker_mask(side_word(actor) if radius == move else 0)
-		var pick := _nearest_stoppable(flood["reachable_by_coord"].keys(), target, origin, rng, result["draws"], cell_words, mask, loop["map_size"])
+		var pick := nearest_stoppable(flood["reachable_by_coord"].keys(), target, origin, rng, result["draws"], cell_words, mask, loop["map_size"])
 		if pick.is_empty():
 			return result
 		result["refinements"].append({"radius": radius, "target": target, "pick": pick["cell"], "candidates": pick["candidates"], "crowded_skips": pick["crowded_skips"]})
@@ -271,11 +272,11 @@ static func approach_point(loop: Dictionary, actor: Dictionary, envelope: Dictio
 		radius = maxi(radius - 2, move)
 	result["candidates"] = int(result["refinements"].back()["candidates"])
 	var route: Dictionary = envelope["reachable_by_coord"][target]
-	result.merge({"to": target, "path": route["path"], "cost": route["cost"], "route_cost": absi(target.x - home.x) + absi(target.y - home.y), "reason": "nearest_to_point"}, true)
+	result.merge({"to": target, "path": route["path"], "cost": route["cost"], "route_cost": TacticalGridRules.manhattan(target, home), "reason": "nearest_to_point"}, true)
 	return result
 
 
-static func _nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i) -> Dictionary:
+static func nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i) -> Dictionary:
 	## 0x413900 over one flood, row-major: the stoppable cell nearest (Manhattan) to
 	## `target`; the actor's own cell holds a unit and is skipped like any occupied cell
 	## (mask 0x70000). A strictly nearer cell, or an equal one whose rand() & 1 is set, is
@@ -287,11 +288,11 @@ static func _nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i,
 	for cell in cells:
 		if cell == origin: continue
 		considered += 1
-		var distance := absi(cell.x - target.x) + absi(cell.y - target.y)
+		var distance := TacticalGridRules.manhattan(cell, target)
 		if not best.is_empty():
 			if distance > int(best["distance"]): continue
-			if distance == int(best["distance"]) and AIDecisionRules._draw(2, rng, draws) == 0: continue
-		if adjacent_blockers(cell, mask, cell_words, map_size) >= CROWDED_NEIGHBOURS and AIDecisionRules._draw(100, rng, draws) < CROWDED_SKIP_BELOW:
+			if distance == int(best["distance"]) and AIDecisionRules.recorded_draw(2, rng, draws) == 0: continue
+		if adjacent_blockers(cell, mask, cell_words, map_size) >= CROWDED_NEIGHBOURS and AIDecisionRules.recorded_draw(100, rng, draws) < CROWDED_SKIP_BELOW:
 			skipped += 1
 			continue
 		best = {"cell": cell, "distance": distance}
@@ -387,10 +388,10 @@ static func attack_station(choice: Dictionary, origin: Vector2i, foes_adjacent: 
 	var station: Vector2i = sorted["order"][0]
 	var anchor: Vector2i = choice["anchor"]
 	var result := {"station": station, "order": sorted["order"], "draws": draws, "foes_adjacent": foes_adjacent, "roll": 0}
-	var no_farther := absi(station.x - anchor.x) + absi(station.y - anchor.y) <= absi(origin.x - anchor.x) + absi(origin.y - anchor.y)
+	var no_farther := TacticalGridRules.manhattan(station, anchor) <= TacticalGridRules.manhattan(origin, anchor)
 	if no_farther:
 		if foes_adjacent != 0:
-			result["roll"] = AIDecisionRules._draw(99, rng, draws) + 1
+			result["roll"] = AIDecisionRules.recorded_draw(99, rng, draws) + 1
 			if int(result["roll"]) > (REPOSITION_ABOVE_MELEE if bool(choice["melee"]) else REPOSITION_ABOVE_RANGED) and station != origin:
 				result.merge({"to": station, "reason": "reposition_roll"}, true)
 				return result
@@ -414,7 +415,7 @@ static func station_order(choice: Dictionary, rng: Variant) -> Dictionary:
 		var before := int(far.call(order[i - 1]))
 		var distance := int(far.call(held))
 		if before == distance:
-			if AIDecisionRules._draw(2, rng, draws) & 1:
+			if AIDecisionRules.recorded_draw(2, rng, draws) & 1:
 				order[i] = order[i - 1]
 				order[i - 1] = held
 		elif before < distance:

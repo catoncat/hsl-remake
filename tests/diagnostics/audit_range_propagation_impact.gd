@@ -165,7 +165,7 @@ func _flat(rows: Array, anchor: Vector2i, map_size: Vector2i, keep_anchor: bool)
 	for y in range(rows.size()):
 		for x in range(rows.size()):
 			var cell := anchor + Vector2i(x - half, y - half)
-			if int(rows[y][x]) > 0 and RangePropagationRules._inside(cell, map_size) and (keep_anchor or cell != anchor): result[cell] = true
+			if int(rows[y][x]) > 0 and RangePropagationRules.inside(cell, map_size) and (keep_anchor or cell != anchor): result[cell] = true
 	return result
 
 
@@ -204,7 +204,7 @@ func _any_line(size: int, walls: Dictionary, map_size: Vector2i, mode: int) -> b
 				var old := {}
 				for index in range(size):
 					var cell: Vector2i = target + step * index
-					if not RangePropagationRules._inside(cell, map_size): break
+					if not RangePropagationRules.inside(cell, map_size): break
 					old[cell] = true
 				var new := {}
 				for cell in RangePropagationRules.line_coverage(size, target - step, target, walls, map_size, mode): new[cell] = true

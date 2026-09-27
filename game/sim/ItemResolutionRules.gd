@@ -11,6 +11,7 @@ const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const ResourceRecoveryRules = preload("res://game/sim/ResourceRecoveryRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 ## v3: samples come from the loop's damage stream (DamageRandomStream, [word0, word1]); v2
 ## drew them from a separate Park-Miller item_rng.
 const POLICY := "source_tactical_items_v3"
@@ -19,9 +20,9 @@ const POLICY := "source_tactical_items_v3"
 ## `spend`: the player's Use — a use without effect still spends the item (0x444aba clears the
 ## held code after 0x409e40). AI and script callers keep the default refusal.
 static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: int, definition: Dictionary, catalog: Dictionary, rng_state: Array, sequence: int, spend: bool = false) -> Dictionary:
-	if not DamageRandom.valid(rng_state) or not BattleRewardRules.integer(sequence,1): return {"ok":false,"reason":"invalid_item_sequence_state"}
+	if not DamageRandom.valid(rng_state) or not Values.is_integer_in(sequence, 1, Values.MAX_SIGNED): return {"ok":false,"reason":"invalid_item_sequence_state"}
 	if not actor.get("id") is String or not target.get("id") is String or not actor.get("inventory") is Array or not InventoryRules.valid(actor["inventory"]): return {"ok":false,"reason":"invalid_item_actor"}
-	if actor["id"].is_empty() or target["id"].is_empty() or ResourceRecoveryRules.health_error(actor) != "" or ResourceRecoveryRules.health_error(target) != "" or not StatusEffectRules._unsigned(target.get("stamina"),60): return {"ok":false,"reason":"invalid_item_vitals"}
+	if actor["id"].is_empty() or target["id"].is_empty() or ResourceRecoveryRules.health_error(actor) != "" or ResourceRecoveryRules.health_error(target) != "" or not Values.is_integer_in(target.get("stamina"), 0, 60): return {"ok":false,"reason":"invalid_item_vitals"}
 	if actor["id"] == target["id"] and actor != target: return {"ok":false,"reason":"inconsistent_self_item_snapshot"}
 	if not code.is_valid_int() or int(code)<=0 or not catalog.has(code): return {"ok":false,"reason":"unsupported_item"}
 	if StatusEffectRules.input_error(actor) != "" or StatusEffectRules.paralyzed(actor) or int(actor.get("hp",0)) <= 0 or actor.get("defeated",false) or actor.get("departed",false): return {"ok":false,"reason":"item_owner_unavailable"}
@@ -82,10 +83,10 @@ static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: i
 
 
 static func state_error(loop: Dictionary) -> String:
-	if loop.get("item_use_policy") != POLICY or not DamageRandom.valid(loop.get(DamageRandom.LOOP_KEY)) or not BattleRewardRules.integer(loop.get("item_use_sequence")): return "invalid_item_random_state"
+	if loop.get("item_use_policy") != POLICY or not DamageRandom.valid(loop.get(DamageRandom.LOOP_KEY)) or not Values.is_integer_in(loop.get("item_use_sequence"), 0, Values.MAX_SIGNED): return "invalid_item_random_state"
 	var receipt: Variant = loop.get("last_item_use")
 	if not receipt is Dictionary: return "missing_item_use_receipt"
 	if int(loop["item_use_sequence"]) == 0: return "" if receipt.is_empty() else "inconsistent_item_use_sequence"
 	if receipt.get("sequence") != loop["item_use_sequence"] or not receipt.get("actor_before") is Dictionary or not receipt.get("target_before") is Dictionary: return "invalid_item_use_receipt"
-	if not BattleRewardRules.integer(receipt.get("inventory_index"),0,7) or not receipt.get("item_code") is String: return "invalid_item_use_receipt"
+	if not Values.is_integer_in(receipt.get("inventory_index"), 0, 7) or not receipt.get("item_code") is String: return "invalid_item_use_receipt"
 	return ""

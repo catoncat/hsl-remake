@@ -524,6 +524,17 @@ def cmd_affected(args) -> int:
         if run_parallel("PYTHON_UNIT_TESTS", jobs, args.jobs, lambda name, output, seconds: f"PYTHON_UNIT_FILE_OK {name} seconds={seconds:.1f}") != 0:
             failed.append("python-tests")
 
+    # Markdown changed: the link check runs here too, not only in the docs-only and fast gates
+    # (an affected-mode merge once published a broken KNOWLEDGE_INDEX link).
+    if any(path.endswith(".md") for path in changed):
+        links = subprocess.run([PYTHON, "tools/hsl_docs_check.py"], cwd=ROOT, capture_output=True, text=True)
+        tail = (links.stdout.strip().splitlines() or [""])[-1]
+        print(tail, flush=True)
+        if links.returncode != 0 or "DOC_LINKS_PASS" not in tail:
+            for line in links.stdout.strip().splitlines()[:20]:
+                print(line, flush=True)
+            failed.append("doc-links")
+
     scripts = sorted(path for path in changed if path.startswith("tools/") and path.endswith(".sh") and (ROOT / path).exists())
     for script in scripts:
         if subprocess.run(["bash", "-n", script], cwd=ROOT).returncode != 0:

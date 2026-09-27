@@ -55,13 +55,13 @@ func setup_ohm() -> void:
 			loop=sample["loop"]
 			scene.first_battle_scenario=sample["scenario"]
 		if mode=="double":
-			BattlePlayLoop._unit(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
-			BattlePlayLoop._unit(loop,"actor028_1")["coord"]=Vector2i(15,22)
-			BattlePlayLoop._unit(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
-		BattlePlayLoop._unit(loop,"hu")["hit_bonus_accum"]=1000
-		if mode=="silence":BattlePlayLoop._unit(loop,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(loop,"hu"),"no_magic",3)["changes"],true)
-		if mode=="limited":BattlePlayLoop._unit(loop,"hu")["stamina"]=19
-		if mode=="mixed":BattlePlayLoop._unit(loop,"actor028_2")["hp"]=1
+			BattlePlayLoop.unit_ref(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
+			BattlePlayLoop.unit_ref(loop,"actor028_1")["coord"]=Vector2i(15,22)
+			BattlePlayLoop.unit_ref(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
+		BattlePlayLoop.unit_ref(loop,"hu")["hit_bonus_accum"]=1000
+		if mode=="silence":BattlePlayLoop.unit_ref(loop,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(loop,"hu"),"no_magic",3)["changes"],true)
+		if mode=="limited":BattlePlayLoop.unit_ref(loop,"hu")["stamina"]=19
+		if mode=="mixed":BattlePlayLoop.unit_ref(loop,"actor028_2")["hp"]=1
 		if mode=="clear":
 			# Terminal preconditions only; the last action and source win0 are real.
 			for actor in loop["units"]:
@@ -70,14 +70,14 @@ func setup_ohm() -> void:
 					actor["defeated"]=actor["hp"]==0
 		if mode=="retreat":
 			for id in ["actor028_5","actor028_6"]:
-				BattlePlayLoop._unit(loop,id)["hp"]=0;BattlePlayLoop._unit(loop,id)["defeated"]=true
-			BattlePlayLoop._unit(loop,"actor028_1")["hp"]=1
+				BattlePlayLoop.unit_ref(loop,id)["hp"]=0;BattlePlayLoop.unit_ref(loop,id)["defeated"]=true
+			BattlePlayLoop.unit_ref(loop,"actor028_1")["hp"]=1
 		if mode=="defeat":
-			var hero:=BattlePlayLoop._unit(loop,"leonard")
+			var hero:=BattlePlayLoop.unit_ref(loop,"leonard")
 			hero["growth_profile"]["source"]["speed"]+=290
 			hero.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(hero,loop["equipment_items"]),true)
 			hero["hp"]=1;hero["hit_bonus_accum"]=1000
-			var enemy:=BattlePlayLoop._unit(loop,"actor028_1")
+			var enemy:=BattlePlayLoop.unit_ref(loop,"actor028_1")
 			enemy["coord"]=Vector2i(17,19);enemy["ai_home_coord"]=enemy["coord"]
 			enemy["growth_profile"]["source"].merge({"attack_power":5000,"attack_back":100},true)
 			enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
@@ -85,14 +85,14 @@ func setup_ohm() -> void:
 			for actor in loop["units"]:
 				if actor["actor_id"] in ["061","062"]:
 					actor["hp"]=0;actor["defeated"]=true
-			var last:=BattlePlayLoop._unit(loop,"actor061_1")
+			var last:=BattlePlayLoop.unit_ref(loop,"actor061_1")
 			last["hp"]=1;last["defeated"]=false;last["coord"]=Vector2i(18,22)
-			var enemy:=BattlePlayLoop._unit(loop,"actor028_1")
+			var enemy:=BattlePlayLoop.unit_ref(loop,"actor028_1")
 			enemy["coord"]=Vector2i(18,23);enemy["ai_home_coord"]=enemy["coord"]
 			enemy["growth_profile"]["source"].merge({"attack_power":5000,"speed":280},true)
 			enemy.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(enemy,loop["equipment_items"]),true);enemy["hit_bonus_accum"]=1000
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		loop=BattlePlayLoop._return_to_player(loop,"hu")
+		loop=BattlePlayLoop.return_to_player(loop,"hu")
 		if mode in ["ai_current","ai_paralysis"]:
 			loop=run_ohm_village_tests.ai_fixture(mode=="ai_paralysis")
 			owner_id="leonard"

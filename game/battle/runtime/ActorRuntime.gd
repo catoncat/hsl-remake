@@ -18,6 +18,7 @@ extends Node2D
 ##   audio: provisional (script walks step at relative frames 0／3)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MOVE_SCHEMA := "hsl_actor_runtime_move.v1"
 const SUMMARY_SCHEMA := "hsl_actor_runtime_summary.v1"
 ## Actor cadence in original ticks: the standing loop reloads delay 10 (11 updates per
@@ -257,7 +258,7 @@ func stop_use_magic() -> void:
 ## The key's use_magic frames ({} when it has none).
 static func magic_pose_entry(key: String) -> Dictionary:
 	if _magic_poses.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MAGIC_POSES_PATH))
+		var parsed: Variant = ContentPaths.read_json(MAGIC_POSES_PATH)
 		assert(parsed is Dictionary and (parsed as Dictionary).get("schema") == "hsl_actor_magic_poses.v1", "Missing actor magic poses")
 		_magic_poses = parsed
 	return _magic_poses["poses"].get(key, {})

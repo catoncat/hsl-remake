@@ -1,24 +1,69 @@
-# Level 1 歐姆村 開場預覽（STORY001）— runtime-measured
+# 剧情场景与开场预览：story 模式播放、过场链与略過戰鬥的世界写入
 
-> evidence: runtime-measured · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-26
+> evidence: runtime-measured; resource-derived: STORY／WINFAIL token、EVEF 坐标、地图管理员记录、对白号; provisional: 走位速度、延时、镜头、地图别名的引擎 loader · status: live · tools: capture_story_scene_review.gd, hsltools/levels/story_scene.py, run_story_scene_tests.gd · updated: 2026-09-27
 
-来源：`tools/play.sh --script res://tests/capture_story_scene_review.gd --resolution 640x480 --screen 0 -- --level=1`（`STORY_SCENE_REVIEW_PASS shots=36`，正常重制节奏；headless 回归为 `tests/run_story_scene_tests.gd` 的 `_run_registered_story_sweep` 与全程剧情 explorer）。场景文件 `content/battles/story_001.json` 由 `python3 tools/hsl.py generate story_scene:1` 从 `battle001_seed` 生成；campaign 把 level 53 胜利的 winfail `[1,1]` 路由到它。
+## 结论
 
-## 看到什么
+- 原版每关 STORY 脚本按 token 顺序播放开场或整段过场，story-only 关（无 WINFAIL）播完由 `actSetNextPlayLevelEvent` 交接；token 顺序、cast、对白号与世界写入可从资源读出，走位速度、延时与镜头曲线未读（resource-derived；provisional）。
+- 重制把 `level_kind: story` 场景交给 `BattleOpeningCoordinator` 的 story 模式（不建 PlayLoop），全部注册 story 场景由 `run_story_scene_tests.gd` 的注册扫描逐个播完，除条件成员（「有才產生」咕嚕／克羅蒂）与 -1 物件号外零跳过 token（runtime-measured）。
+- 与原版的差异：走位、跟随偏移、删除时机、效果粒子与混色为重制取值；差异清单 `script-walk-path`（provisional）。
 
-1. `01-village-framed.png`：歐姆村清晨——EVEF 18 名 cast（8 村民、雷歐納德、琥、6 强盗、2 翼战士）按 EVEF 像素落位；地图 32 个站立物件加 26 组「树／房＋影」组合物件的 55 个子物件（首次由运行时消费 `combined_placements`）。
-2. `02-leonard-calls-hu.png`：`SID_雷歐納德` 以 speaker 0 的头像说 708「琥！」；`SID_琥` 以 speaker 2（003 头像）说 705／707；命名玩家 token 通过 `player_installs` 绑定（不是 SID_PLAYERn）。
-3. `03-village-house-alarm.png`：叙述 712（defNoOne，无头像）；村民按 STORY001 的 walk_disp 来回走动，房屋与水井为组合物件。
-4. `04-raiders-march-north.png`：6 名 028 强盗与 2 名 036 翼战士从地图南缘外（EVEF y≥1184，地图高 1120）按脚本各北进 192／128px 进入画面；云影（CLOUD102，`engGLASS`）读为半透明暗影。
-5. `05-raider-chief-725.png`：`SID_ENEMY028` 以职业名 632「盜賊」为 speaker 说 725–729／732。
-6. `06-not-remade-card.png`：first_control_marker 处止于「歐姆村 / 戰鬥部分（level 1）尚未重製」卡片并回到第一战。
+## 证据
 
-## 断言（headless）
+### resource-derived
 
-81 个 STORY001 token 零跳过；30 个对白 token／29 个不同消息按脚本顺序；雷歐納德终点 (512,608)、强盗 1 终点 (480,1024)、翼战士 1 终点 (160,1088)；win 0/1、fail 0/1 status 记录，遗言 742/743 登记；无待处理战役承接；配乐开场为 track 8，开场末 `actPlayLevelMusic` 切到原表 track 13（2026-09-26 起改放原曲，原创曲已删）；全程镜头中心保持在 [320,960]×[240,880]（640×480 视口不越出 1280×1120 地图——聚焦地图外候场的强盗时也被 `clamped_position` 夹住；早先「画面走到地图下方」的猜想是把 CLOUD102 黑剪影误读为地图外区域，negative-evidence）。
+| 项 | 读数 |
+| --- | --- |
+| EVEF 放置坐标 | 按有符号 32 位读（`0xFFFFFFC0` = −64）；地图外候场的 cast 从负坐标或越界处走入（STORY002／003／005／007／009 的开场） |
+| 命名玩家 token | `SID_雷歐納德`／`SID_琥` 等经 `player_installs` 绑定到 001／003…，不是 `SID_PLAYERn`；`obj_Story_Player1..4` 由 `actInsertStoryObject` 安装（STORY006、053） |
+| 地图别名（`obs` 地圖管理員记录为主证据，`.wrd` 逐字节相同为旁证） | 60→58、61／62／64→55、63→58、66–70→55、71→58、32↔33、73→41、75→57、76–79／81／82→58、901→8；无自有 shape 的 story 关（60、61–64、66–71）WRD 为同一张 1224 字节占位表 |
+| 标题图 | WORD901.SHP 实为「狙兵／SNIPER」，卡片标题「菲納斯河畔　伏擊」是重制标签 |
+| 脚本人脸 | STORY063 `actShapeMessage,SHAPE\FACE0054|FACE0008.SHP,306,<id>`：脚本自带人脸与名字资源 306（「???」） |
+| 拼写 | STORY009 的 `actMEssage` 按大小写不敏感归一为对白 token |
+| 船殼 | 巴瀚納海峽 62 个 Enemy101（`SHAPE11\18_DOOR01.SHP`）在原作是 defProcEnemy 进程；预览只画作站立物件 |
+
+### resource-derived：过场链与世界写入
+
+| 起点 | 交接 | 写入 |
+| --- | --- | --- |
+| STORY008（菲納斯河畔） | `[8,gameBigMapLevel]` | 点 9 → bmpmBattle；点 8 → bmpmVisit；点 8 遭遇率 0 |
+| STORY009（廢都） | `[9,65]` | 点 9 → event 0／bmpmTown |
+| STORY065（廢都室内） | `[9,66]` | — |
+| STORY058 → 060 → 53 | `[60,60]`、`[53,53]` | — |
+| 59／79／82 | `[90,998]` → GameClear | STORYOVER 由 `defProcClearBOSS` 加载，见 [original_game_clear_epilogue](../../static_reverse/original_game_clear_epilogue.md) |
+| 57 | `actSetNextPlayLevelGetOverEvent 0` → 76／77／78 | 见 [original_ending_dispatch](../../static_reverse/original_ending_dispatch.md) |
+| 略過戰鬥（WINFAIL 胜利段） | 2→55→56→点 2；3→61；6→62→63；7→64；17→67；19→69；29→70；31→71；41→73；38→80 | 2：点 2 event 501／Visit、遭遇率 20、路线 3 隐藏；5：点 5 event 507、遭遇率 100、席達鎮 exec 19、路线 6／15 隐藏；10：点 10 event 513；12：揭示点 13；901：点 8 event 516／Visit、遭遇率 20，席達鎮删 酒館 20／護甲店 17、加 護甲店二 45、酒館 20 → [26,27]、exec 25 |
+
+### runtime-measured
+
+`tools/play.sh --script res://tests/capture_story_scene_review.gd -- --level=N` 窗口化运行：
+
+| 场景 | 读数 |
+| --- | --- |
+| 1 歐姆村 | 18 名 cast、81 token 零跳过、30 对白 token／29 个消息；32 个站立物件＋26 组组合物件的 55 个子物件；镜头中心保持在 [320,960]×[240,880]（`01-village-framed`…`06-not-remade-card`） |
+| 2／3／5／6／7 | 32／31／31／51／45 事件零跳过；镜头被夹在地图边缘时对白框改用顶部槽位 |
+| 8／9／65 | 完整过场；上表世界写入落入 hand-off 世界状态 |
+| 10 帕尼西亞城 廢墟 | 89 事件；效果读法计数 `rain_emitter 2／background_sound 1／flash 2／frame_once 4／glow 2／frame_loop 5`，读法在 `StoryEffectObjects.gd`，由物件字段驱动 |
+| 12 巴瀚納海峽 | 39 名 actor；62 个船殼作站立物件，不生成 actor |
+| 53 | 受控緹娜同格换身、攀绳 6 帧与 288 px 像素滑动、4 格逃出区标记 |
+| 58／60 | 无 PlayLoop 启动；12／15 名 cast；53／43 事件；18／20 个对白 token |
+| 73／900 | `actSelectInsertEvent` 以选项按钮呈现，所选 winfail 事件链拼入时间线 |
+| 注册扫描 | `STORY_SCENE_TESTS_PASS`：campaign.json 每个 story 场景启动、播完、交接或卡片 |
+
+## 重制接线
+
+- `tools/hsltools/levels/story_scene.py`（`python3 tools/hsl.py generate story_scene:N`）生成 `content/battles/story_NNN.json`；首个 win 段取作 `skip_battle`。
+- `game/battle/runtime/BattleOpeningCoordinator.gd`（story 模式）、`game/battle/runtime/StoryEffectObjects.gd`、`game/battle/scene/BattleSceneStage.gd` `_start_background_sounds`。
+- 世界写入：`game/world/WorldScriptActions.gd`、`game/sim/TownEventRules.gd` `apply_script_town_actions`；结局分派 `game/sim/EndingDispatchRules.gd`。
+
+## 复现
+
+`tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_story_scene_tests.gd`
 
 ## 边界
 
-- 只证明 STORY001 开场在协调器 story 模式下按 token 顺序播放；不证明原版走位速度、延时时长、镜头与配乐（actPlayMusic,8 的 track 8 映射与 actPlayLevelMusic 的 track 13 原创曲均为重制读法，不是原曲重现）。
-- 战斗本体（琥 jobBowMan 83、强盗 jobThief 88、翼战士 jobWingWarrior 92、村民 pmNPCPlayer）等待 source-research 的职业模型（P-024）；预览的 cast 只是演出。
-- 组合物件的图层顺序与 `engGLASS` 的透明度（0.4）为 provisional。`mapobjCloud` 雲／雲影的漂移与回绕照原版读法，见[地图物件漂移](../../static_reverse/original_map_object_drift.md)。
+- 走位速度（160 px/s）、跟随偏移、`actWalkAndDelete` 删除时机、淡黑 0.8 s、雨密度、闪电／光环淡出、火球帧时长均为重制取值（provisional）。
+- 地图别名的引擎 level→map loader 未定位；`SID_ENEMY023,8` 这类实例查找按「第 N 名插入者」绑定（provisional）。
+- 条件成员在队判定、-1 物件号（STORY013 `actWalkDispWait(-1,…)`）语义未读。
+- 「視為勝利」只施加胜利段的城镇／大地图写入，不施加对白、走位、入队与战斗奖励。
+- 敌方 SID 的说话人标签（一般兵／重裝兵）沿用重制标签。

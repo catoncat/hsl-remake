@@ -11,6 +11,7 @@ extends Translation
 ##   strings: resource-derived docs/evidence_packets/static_reverse/original_font_script/glyph_review.json
 ##   strings: remake-invented content/generated/hsl/text/simplified_chars.json#remake_choices
 ##     (職 font bug, 噁 outside the system font, 鍾針魘 unresolved)
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const TABLE_PATH := "res://content/generated/hsl/text/simplified_chars.json"
 const SCHEMA := "hsl_simplified_chars.v1"
@@ -20,7 +21,7 @@ var chars: Dictionary = {}
 
 func _init() -> void:
 	locale = "zh_CN"
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TABLE_PATH))
+	var parsed: Variant = ContentPaths.read_json(TABLE_PATH)
 	assert(typeof(parsed) == TYPE_DICTIONARY and str(parsed.get("schema", "")) == SCHEMA,
 		"SimplifiedDisplayTranslation: %s missing or not %s" % [TABLE_PATH, SCHEMA])
 	chars = parsed["chars"]

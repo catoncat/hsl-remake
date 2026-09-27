@@ -116,7 +116,7 @@ static func live_fixture(owner: String = "enemy026_1") -> Dictionary:
 func live_cases() -> void:
 	for owner in ["enemy021_1", "enemy026_1", "leonard"]:
 		var loop := live_fixture(owner)
-		if owner == "leonard": BattlePlayLoop._unit(loop, owner)["stamina"] = 60
+		if owner == "leonard": BattlePlayLoop.unit_ref(loop, owner)["stamina"] = 60
 		var before := loop.duplicate(true)
 		var used: Array = []
 		var after := BattlePlayLoop.step_ai_turn(loop, func(bound): used.append(bound); return 0)
@@ -133,7 +133,7 @@ func live_cases() -> void:
 		else:
 			check(not action.has("skill_id") and action["ai_decision"]["action_selection"]["kind"] == 0 and action["defender_id"] == "leonard", "no source ability is substituted for ordinary attack")
 	var silenced := live_fixture()
-	var mage := BattlePlayLoop._unit(silenced, "enemy026_1")
+	var mage := BattlePlayLoop.unit_ref(silenced, "enemy026_1")
 	mage["inventory"] = [0,0,0,0,0,0,0,0] # Isolate ordinary fallback; source-stocked cures now take the self-aid route.
 	mage["status_flags"] = 3
 	mage["status_counters"] = {"poison": (7 << 16) | 2, "paralysis": 0, "no_magic": 1}
@@ -141,7 +141,7 @@ func live_cases() -> void:
 	check(not after["last_ai_action"].has("magic_key") and BattlePlayLoop.unit(after, mage["id"])["mp"] == mage["mp"], "silence changes AI action availability before source selection")
 	check(BattlePlayLoop.unit(after, mage["id"])["hp"] == 393 and BattlePlayLoop.unit(after, mage["id"])["status_counters"] == {"poison": (7 << 16) | 1, "paralysis": 0, "no_magic": 0}, "AI ordinary action ticks poison and expires silence exactly once")
 	var broke := live_fixture()
-	BattlePlayLoop._unit(broke, "enemy026_1")["mp"] = 0
+	BattlePlayLoop.unit_ref(broke, "enemy026_1")["mp"] = 0
 	var ordinary := BattlePlayLoop.step_ai_turn(broke, func(_n): return 0)
 	check(not ordinary["last_ai_action"].has("skill_id") and BattlePlayLoop.unit(ordinary, "enemy026_1")["mp"] == 0, "empty MP cannot create a free spell")
 	for corruption in ["strategy", "identity", "resistance", "movement"]:
@@ -149,20 +149,20 @@ func live_cases() -> void:
 		match corruption:
 			"strategy": own(invalid, "ai_profiles")["actors"]["026"]["profile"].erase("ai_att_magic")
 			"identity": own(invalid, "ai_profiles")["actors"]["001"]["sid"] = null
-			"resistance": BattlePlayLoop._unit(invalid, "leonard")["combat_profile"].erase("resist_by_type")
-			"movement": BattlePlayLoop._unit(invalid, "enemy026_1")["move_point"] = -1
+			"resistance": BattlePlayLoop.unit_ref(invalid, "leonard")["combat_profile"].erase("resist_by_type")
+			"movement": BattlePlayLoop.unit_ref(invalid, "enemy026_1")["move_point"] = -1
 		var saved := invalid.duplicate(true)
 		var rejected := BattlePlayLoop.step_ai_turn(invalid, func(_n): check(false, "invalid AI data must reject before first RNG: " + corruption); return 0)
 		check(not rejected["scenario_ok"] and rejected["interaction"] == "scenario_error", "malformed AI input is a named scenario failure: " + corruption)
 		check(rejected["units"] == saved["units"] and rejected["turn_queue"] == saved["turn_queue"] and rejected["last_ai_actions"] == saved["last_ai_actions"] and invalid == saved, "failure cannot move, debit, damage or advance: " + corruption)
 	var distant := live_fixture("enemy021_1")
-	BattlePlayLoop._unit(distant, "leonard")["coord"] = Vector2i(14, 3)
-	BattlePlayLoop._unit(distant, "enemy023_1")["defeated"] = true
+	BattlePlayLoop.unit_ref(distant, "leonard")["coord"] = Vector2i(14, 3)
+	BattlePlayLoop.unit_ref(distant, "enemy023_1")["defeated"] = true
 	# The dispatcher roll (0x440db5, rand(99)+1, read again by the lock 0x441002) and the state 0xa
 	# category roll (0x40c570 at 0x43fe0c: rand(99)+1 at 0x40c58d, drawn whatever the target offers) come first;
 	# after it the pursuit walk's equal-candidate coin (0x413740: 0x458c10 & 1) is the only draw.
 	var walk_draws: Array = []
-	var walked := BattleLoopAI._ai_take_turn(distant, "enemy021_1", func(n): walk_draws.append(n); return 0)
+	var walked := BattleLoopAI.ai_take_turn(distant, "enemy021_1", func(n): walk_draws.append(n); return 0)
 	check(walk_draws.size() > 2 and walk_draws.slice(0, 2) == [99, 99] and walk_draws.slice(2).all(func(n): return n == 2), "single unreachable target draws the dispatcher and category rolls, then only walk coins: %s" % str(walk_draws))
 	check(walked["action"]["kind"] == "move" and walked["action"]["toward"] == "leonard" and not walked["action"]["path"].is_empty(), "unreachable source target produces an actual legal chase path")
 	# A one-row corridor leaves every refinement flood one strictly nearest cell: no coin.
@@ -171,9 +171,9 @@ func live_cases() -> void:
 		for x in range(16):
 			if y != 3: own(corridor, "tiles")[Vector2i(x, y)] = {"blocks_movement": true, "move_cost": 1}
 	var corridor_draws: Array = []
-	var straight := BattleLoopAI._ai_take_turn(corridor, "enemy021_1", func(n): corridor_draws.append(n); return 0)
-	check(corridor_draws == [99, 99] and straight["action"]["kind"] == "move" and straight["action"]["to"] == Vector2i(3 + int(BattlePlayLoop._unit(corridor, "enemy021_1")["move_point"]), 3), "pursuit with one nearest cell at every refinement draws nothing after the dispatcher and category rolls: %s" % str(corridor_draws))
+	var straight := BattleLoopAI.ai_take_turn(corridor, "enemy021_1", func(n): corridor_draws.append(n); return 0)
+	check(corridor_draws == [99, 99] and straight["action"]["kind"] == "move" and straight["action"]["to"] == Vector2i(3 + int(BattlePlayLoop.unit_ref(corridor, "enemy021_1")["move_point"]), 3), "pursuit with one nearest cell at every refinement draws nothing after the dispatcher and category rolls: %s" % str(corridor_draws))
 	var restricted := distant.duplicate(true)
 	own(restricted, "ai_profiles")["actors"]["021"]["profile"]["find_range"] = 1
-	var waited := BattleLoopAI._ai_take_turn(restricted, "enemy021_1", func(_n): check(false, "out-of-search target is rejected before RNG"); return 0)
+	var waited := BattleLoopAI.ai_take_turn(restricted, "enemy021_1", func(_n): check(false, "out-of-search target is rejected before RNG"); return 0)
 	check(waited["action"]["kind"] == "wait" and waited["loop"]["units"] == restricted["units"], "source search radius is honored without default global chase")

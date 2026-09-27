@@ -36,7 +36,7 @@ func setup_priest()->void:
 	if mode!="manual":
 		scene.set_process(false)
 		var loop:=run_support_magic_tests.priest_fixture()
-		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var enemy:=BattlePlayLoop._unit(loop,"enemy021_1")
+		var actor:=BattlePlayLoop.unit_ref(loop,"tina");var ally:=BattlePlayLoop.unit_ref(loop,"companion");var enemy:=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		actor["growth_profile"]["source"]["hit_point"]+=300
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true);actor["hp"]=actor["max_hp"]
 		ally["growth_profile"]["source"]["hit_point"]+=400
@@ -68,7 +68,7 @@ func setup_priest()->void:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			unit["live_speed"]={"tina":200,"companion":300 if mode.begins_with("ai_") else 100,"enemy021_1":50}[unit["id"]]
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		loop=BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina")
+		loop=BattlePlayLoop.return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina")
 		scene.apply_loop(loop, "test")
 		for unit in loop["units"]:
 			var art=scene.actor_node_for_unit(unit["id"])

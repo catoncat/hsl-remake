@@ -290,7 +290,7 @@ func configure_portraits(manifest_path: String) -> void:
 	_portraits = {}
 	_faces = {}
 	_roster_faces = ContentPaths.actor_portraits()
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest_path)) if manifest_path != "" and FileAccess.file_exists(manifest_path) else null
+	var parsed: Variant = ContentPaths.read_json(manifest_path) if manifest_path != "" and FileAccess.file_exists(manifest_path) else null
 	if typeof(parsed) != TYPE_DICTIONARY or typeof((parsed as Dictionary).get("actors")) != TYPE_DICTIONARY:
 		push_error("Dialogue portrait manifest missing or invalid: '" + manifest_path + "'")
 		return

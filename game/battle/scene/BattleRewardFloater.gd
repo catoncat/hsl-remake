@@ -16,6 +16,7 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST_PATH := "res://content/imported/hsl/shared/reward_floats/manifest.json"
 ## defProcShowNumber (kinds 1–6): level 16 for 16 ticks, then one level down every 2 ticks;
 ## deleted at level 0 (tick 46); y − 1 every other tick.
@@ -33,7 +34,7 @@ var caption: Label
 
 static func manifest() -> Dictionary:
 	if _manifest.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+		var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 		assert(parsed is Dictionary and (parsed as Dictionary).get("schema") == "hsl_reward_floats.v1", "Missing reward float art")
 		_manifest = parsed
 	return _manifest

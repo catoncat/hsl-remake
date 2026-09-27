@@ -57,19 +57,19 @@ func run() -> void:
 
 func _give_turn(id: String) -> void:
 	var next: Dictionary = scene.play_loop.duplicate(true)
-	BattlePlayLoop._clear_extra_action(next)
-	next["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(next))
+	BattlePlayLoop.clear_extra_action(next)
+	next["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(next))
 	for index in range(next["turn_queue"]["slots"].size()):
 		if next["turn_queue"]["slots"][index]["id"] == id: next["turn_queue"]["index"] = index; break
-	scene.apply_loop(BattlePlayLoop._return_to_player(next, id), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(next, id), "test")
 	scene.resume_turn_presentation()
 	await create_timer(0.3).timeout
 
 
 func _growth_after_kill() -> void:
 	var loop: Dictionary = scene.play_loop
-	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
-	var foe: Dictionary = BattlePlayLoop._unit(loop, "actor028_2")
+	var tina: Dictionary = BattlePlayLoop.unit_ref(loop, "tina")
+	var foe: Dictionary = BattlePlayLoop.unit_ref(loop, "actor028_2")
 	tina["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
 	tina["hit_bonus_accum"] = 1000
 	foe["hp"] = 1
@@ -100,7 +100,7 @@ func _growth_after_kill() -> void:
 
 
 func _heal_over_full_hp() -> void:
-	var leonard: Dictionary = BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var leonard: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	leonard["hp"] = int(leonard["max_hp"])
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn("tina")
@@ -112,7 +112,7 @@ func _heal_over_full_hp() -> void:
 
 
 func _poison_arrow_cross() -> void:
-	BattlePlayLoop._unit(scene.play_loop, "hu")["stamina"] = 20
+	BattlePlayLoop.unit_ref(scene.play_loop, "hu")["stamina"] = 20
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn("hu")
 	await _choose("special", "special:magicMIND:magicCode03")
@@ -127,7 +127,7 @@ func _poison_arrow_cross() -> void:
 ## reads the selected skill; nothing is cast).
 func _footprint_shape(id: String, channel: String, skill_id: String, offset: Vector2i, label: String) -> void:
 	var saved: Dictionary = scene.play_loop.duplicate(true)
-	BattlePlayLoop._unit(scene.play_loop, id)["stamina"] = 99
+	BattlePlayLoop.unit_ref(scene.play_loop, id)["stamina"] = 99
 	scene.apply_loop(scene.play_loop, "test")
 	await _give_turn(id)
 	scene.menus.choose_command(channel)
@@ -151,7 +151,7 @@ func _footprint_shape(id: String, channel: String, skill_id: String, offset: Vec
 
 func _final_blow_growth() -> void:
 	var loop: Dictionary = scene.play_loop
-	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
+	var tina: Dictionary = BattlePlayLoop.unit_ref(loop, "tina")
 	tina["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(tina["level"])) - 1
 	tina["hit_bonus_accum"] = 1000
 	var foe_id := ""
@@ -162,7 +162,7 @@ func _final_blow_growth() -> void:
 			unit["hp"] = 1
 			unit["coord"] = tina["coord"] + Vector2i.RIGHT
 		else:
-			BattlePlayLoop._set_unit_defeated(loop, str(unit["id"]), true)
+			BattlePlayLoop.set_unit_defeated(loop, str(unit["id"]), true)
 	scene.apply_loop(loop, "test")
 	await _give_turn("tina")
 	scene.menus.choose_command("attack")

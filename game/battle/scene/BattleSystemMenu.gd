@@ -53,6 +53,7 @@ const GameSettings = preload("res://game/settings/GameSettings.gd")
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SLIDER_STEP := 0.1
 const SCROLL_SECONDS := 0.25
 const HINT_SECONDS := 1.6
@@ -134,7 +135,7 @@ func _ready() -> void:
 	size = Vector2(640, 480)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Title manifest missing or invalid: " + MANIFEST_PATH)
 		return

@@ -7,7 +7,7 @@ extends SceneTree
 ## `BattlePlayLoop.copy`, and the wall time of one complete headless round (every AI step
 ## plus the greedy autoplay policy for player turns) with the number of whole-loop copies
 ## it made (BattleLoopConfig.copy_count) and the share of the round they cost. It then
-## times what the round really spends its time on: BattleLoopAI._prepare_ai_turn (the
+## times what the round really spends its time on: BattleLoopAI.prepare_ai_turn (the
 ## read-only preflight of every living AI unit, per phase) and, at the round's first player
 ## menu, one lookahead decision of tests/support/AutoplayBrain.gd (copies, simulations,
 ## milliseconds). Diagnostic only — nothing here is a rule, a gate or evidence about the
@@ -100,7 +100,7 @@ static func _unit_key_sizes(units: Array) -> Array:
 	return out
 
 
-## Runs BattleLoopAI._prepare_ai_turn's phases for every living AI unit on a copy and
+## Runs BattleLoopAI.prepare_ai_turn's phases for every living AI unit on a copy and
 ## sums their wall time per phase (the preflight is read-only; the copy keeps `loop`
 ## pristine for the round that follows).
 static func _time_ai_prepare(loop: Dictionary) -> Dictionary:
@@ -165,7 +165,7 @@ static func _play_one_round(loop: Dictionary) -> Dictionary:
 			continue
 		match str(current.get("interaction", "")):
 			"action_menu":
-				var step := Autoplay._take_player_action(current, rng)
+				var step := Autoplay.take_player_action(current, rng)
 				if str(step["action"]) == "":
 					break
 				current = step["loop"]

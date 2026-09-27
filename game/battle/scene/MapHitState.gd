@@ -14,6 +14,7 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (60 ticks, phase period 7)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_map_strike.md (0x407230 plays no sound)
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const HIT_POSES_PATH := "res://content/imported/hsl/shared/actor_hit_poses/manifest.json"
 const TICKS := 60
 const AMPLITUDE := 3
@@ -68,7 +69,7 @@ static func _end(runtime: Node, actor: Node2D, unit_id: String, base: Vector2) -
 
 static func poses() -> Dictionary:
 	if _poses.is_empty():
-		var source: Variant = JSON.parse_string(FileAccess.get_file_as_string(HIT_POSES_PATH))
+		var source: Variant = ContentPaths.read_json(HIT_POSES_PATH)
 		assert(typeof(source) == TYPE_DICTIONARY and (source as Dictionary).get("schema") == "hsl_actor_hit_poses.v1", "Missing actor hit poses")
 		_poses = (source as Dictionary)["poses"]
 	return _poses

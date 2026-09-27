@@ -55,7 +55,7 @@ const SITE_OF := {
 	"AIPriorityRules.self_recovery": "0x40c138",        # 0x40c110 self-HP threshold 12+rand(18)
 	"AIPriorityRules.low_hp_target": "0x40c061",        # 0x40bf70 dying-foe scan 12+rand(18)
 	"AIDecisionRules.select_action": "0x40c58d",        # 0x40c570 action category
-	"AINavigationRules._nearest_stoppable": "0x41385d", # 0x413740 refinement tie coin (rand(100) crowd skip: 0x413889)
+	"AINavigationRules.nearest_stoppable": "0x41385d", # 0x413740 refinement tie coin (rand(100) crowd skip: 0x413889)
 	"AINavigationRules.attack_station": "0x4136ba",     # 0x413390 station sort coin (rand(99) reposition: 0x440b2c)
 }
 
@@ -79,8 +79,8 @@ class Recorder:
 			var script := str(frame.get("source", "")).get_file().get_basename()
 			var function := str(frame.get("function", ""))
 			if script in ["compare_ai_global_draws", "GlobalRandomStream", "DamageRandomStream"]: continue
-			if script == "CoreCombatRules" and function in ["_rand_range", "native_draw"]: continue
-			if function in ["_draw", "<anonymous lambda>"]: continue
+			if script == "CoreCombatRules" and function in ["rand_range", "native_draw"]: continue
+			if function in ["recorded_draw", "<anonymous lambda>"]: continue
 			return "%s.%s:%d" % [script, function, int(frame.get("line", 0))]
 		return "?"
 
@@ -159,13 +159,13 @@ func _board(state: Dictionary) -> Dictionary:
 		for key in [short, str(unit["id"])]:
 			if speeds.has(key): unit["live_speed"] = int(speeds[key])
 			if coords.has(key): unit["coord"] = Vector2i(int(coords[key][0]), int(coords[key][1]))
-	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
+	loop["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(loop))
 	if state.has("resume_after"):
 		var slots: Array = loop["turn_queue"]["slots"]
 		for i in slots.size():
 			if str(slots[i]["id"]) == str(state["resume_after"]): loop["turn_queue"]["index"] = i + 1
 	if not bool(loop.get("scenario_ok", false)): return {"error": "scenario:%s" % str(loop.get("scenario_error", ""))}
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	return {"loop": BattlePlayLoop.begin_battle(loop)}
 
 
@@ -196,25 +196,25 @@ func _reseated(base: Dictionary, expected: Dictionary, words: Array, damage: Arr
 	var loop := BattlePlayLoop.copy(base)
 	var injection: Array = []
 	for j in range(earlier.size()):
-		var mover := BattlePlayLoop._unit(loop, str(earlier[j]["actor"]))
+		var mover := BattlePlayLoop.unit_ref(loop, str(earlier[j]["actor"]))
 		if not mover.is_empty(): mover["coord"] = Vector2i(int(earlier[j]["to"][0]), int(earlier[j]["to"][1]))
 		var hp: Dictionary = metas[j].get("hp", {})
 		for id in hp:
-			var hurt := BattlePlayLoop._unit(loop, str(id))
+			var hurt := BattlePlayLoop.unit_ref(loop, str(id))
 			if not hurt.is_empty(): hurt["hp"] = int(hurt["hp"]) + int(hp[id])
 	loop["turn"] = int(base.get("turn", 1)) + round_number - 1
 	loop["turn_queue"]["round"] = int(base["turn_queue"].get("round", 1)) + round_number - 1
 	loop[GlobalRandomStream.LOOP_KEY] = words.duplicate()
 	loop[DamageRandomStream.LOOP_KEY] = damage.duplicate()
 	var actor_id := str(expected["actor"])
-	var actor := BattlePlayLoop._unit(loop, actor_id)
+	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	if actor.is_empty(): return {"tokens": [], "log": [], "injection": ["missing_actor"], "decision": "-"}
 	var origin := Vector2i(int(expected["from"][0]), int(expected["from"][1]))
 	if actor["coord"] != origin:
 		injection.append("origin_board%s_oracle%s" % [str(actor["coord"]).replace(" ", ""), str(origin).replace(" ", "")])
 		actor["coord"] = origin
 	var recorder := Recorder.new(words)
-	var step: Dictionary = BattleLoopAI._ai_take_turn(loop, actor_id, Callable(recorder, "draw"))
+	var step: Dictionary = BattleLoopAI.ai_take_turn(loop, actor_id, Callable(recorder, "draw"))
 	var after: Dictionary = step.get("loop", loop)
 	if after.get(GlobalRandomStream.LOOP_KEY) != loop[GlobalRandomStream.LOOP_KEY]: injection.append("draws_outside_source")
 	return {"tokens": _remake_tokens(recorder.log), "log": recorder.log, "injection": injection, "decision": _act_decision(step.get("action", {}))}
@@ -237,7 +237,7 @@ func _remake_tokens(log: Array) -> Array:
 		var name := str(draw["site"]).get_slice(":", 0)
 		var site := str(SITE_OF.get(name, name))
 		var bound := int(draw["n"])
-		if name == "AINavigationRules._nearest_stoppable" and bound == 100: site = "0x413889"
+		if name == "AINavigationRules.nearest_stoppable" and bound == 100: site = "0x413889"
 		if name == "AINavigationRules.attack_station" and bound == 99: site = "0x440b2c"
 		out.append([site, "bit" if bound == 2 and site in COIN_SITES else _n(bound), str(draw["site"])])
 	return out

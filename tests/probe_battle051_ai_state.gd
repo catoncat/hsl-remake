@@ -32,7 +32,7 @@ func _initialize() -> void:
 			var rng := RandomNumberGenerator.new()
 			rng.seed = seed
 			var actor_id := _id(str(case["actor"]))
-			var step: Dictionary = BattleLoopAI._ai_take_turn(loop, actor_id, rng)
+			var step: Dictionary = BattleLoopAI.ai_take_turn(loop, actor_id, rng)
 			var action: Dictionary = step.get("action", {})
 			var key := "%s->%s %s %s" % [str(action.get("from", "")), str(action.get("to", action.get("from", ""))), str(action.get("kind", "")), str(action.get("target_id", action.get("toward", ""))).trim_prefix("actor")]
 			if not bool(step.get("loop", {}).get("scenario_ok", true)): key = "error " + str(step["loop"].get("scenario_error", ""))

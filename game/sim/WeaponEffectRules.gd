@@ -9,6 +9,7 @@ const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const Catalog = preload("res://game/sim/StatusCatalog.gd")
+const Values = preload("res://game/sim/Values.gd")
 ## live +0x18c bits the ITEM loader 0x4477c0 ORs from attack_cancel／attack_weaken／random_status_error／
 ## attack_nomagic／attack_paralysis／attack_poison／attack_decmp (status bits: catalog weapon_bit).
 const CANCEL := 0x10000
@@ -41,10 +42,10 @@ static func effects(actor: Dictionary, catalog: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_weapon_effect_equipment"}
 	var flags := 0
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0:
+		if not slot is Dictionary or Values.non_negative_int(slot.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_weapon_effect_equipment"}
 		var item: Variant = catalog.get(str(int(slot["item_code"])))
-		if not item is Dictionary or SkillResourceRules._integer(item.get("weapon_effect_flags")) < 0 or int(item["weapon_effect_flags"]) & ~(CANCEL | RANDOM | STATUS_WORD | MANA):
+		if not item is Dictionary or Values.non_negative_int(item.get("weapon_effect_flags")) < 0 or int(item["weapon_effect_flags"]) & ~(CANCEL | RANDOM | STATUS_WORD | MANA):
 			return {"ok": false, "reason": "invalid_weapon_effect_source"}
 		flags |= int(item["weapon_effect_flags"])
 	return {"ok": true, "flags": flags}
@@ -57,7 +58,7 @@ static func prepare(attacker: Dictionary, target: Dictionary, book: Dictionary, 
 	if not protection["ok"]: return protection
 	var error := StatusEffectRules.input_error(target)
 	if error != "": return {"ok": false, "reason": error}
-	if int(source["flags"]) & MANA and (SkillResourceRules._integer(target.get("mp")) < 0 or SkillResourceRules._integer(target.get("max_mp")) < SkillResourceRules._integer(target.get("mp"))):
+	if int(source["flags"]) & MANA and (Values.non_negative_int(target.get("mp")) < 0 or Values.non_negative_int(target.get("max_mp")) < Values.non_negative_int(target.get("mp"))):
 		return {"ok": false, "reason": "invalid_weapon_mana_target"}
 	error = CoreTurnQueue.cancellation_input_error(queue)
 	if error != "": return {"ok": false, "reason": error}

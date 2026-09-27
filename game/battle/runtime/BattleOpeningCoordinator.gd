@@ -39,6 +39,7 @@ const OpeningEndCard = preload("res://game/battle/runtime/opening/OpeningEndCard
 const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningStoryObjects.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const SUMMARY_SCHEMA := "hsl_battle_opening_coordinator.v1"
 ## Pacing in original ticks (16 ms). Tests may shorten these before start(); the product
@@ -244,7 +245,7 @@ func _load_script_sounds() -> void:
 	var manifest_path := str((runtime.first_battle_scenario.get("resources", {}) as Dictionary).get("script_sounds", ""))
 	if manifest_path == "" or not FileAccess.file_exists(manifest_path):
 		return
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(manifest_path))
+	var parsed = ContentPaths.read_json(manifest_path)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return
 	_script_sounds = (parsed as Dictionary).get("sounds", {})

@@ -73,7 +73,7 @@ func setup_weapon() -> void:
 		loop["units"].append(later);TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 	if mode in ["phase_cancel","ai_silence","ai_wait"]:afflict(actor,"no_magic",3)
 	if mode=="phase_cancel":
-		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop._unit(loop,"leonard")
+		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["mp"]=actor["max_mp"];TestSuite.own(loop, "skill_book")["actors"]["039"]["double_attack"]=true
 	if mode in ["ai_poison","ai_fallback","ai_silence","ai_wait"]:
 		actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY;actor["player_commandable"]=false;actor["growth_profile"]["allocation"]="fixed_template"
@@ -83,7 +83,7 @@ func setup_weapon() -> void:
 		TestSuite.own(loop, "ai_profiles")["actors"]["039"]["profile"].merge({"find_range":80,"ai_att_magic":100,"ai_check_dying":0,"ai_check_hp":0,"ai_help_otherhp":0,"ai_help_status":0},true)
 		if mode in ["ai_fallback","ai_silence","ai_wait"]:
 			run_large_actor_tests.spell_kit(loop)
-			actor=BattlePlayLoop._unit(loop,"leonard");actor["mp"]=8
+			actor=BattlePlayLoop.unit_ref(loop,"leonard");actor["mp"]=8
 			TestSuite.own(loop, "skill_book")["actors"]["039"]["supported_initial_ids"]=[run_position_equipment_tests.WIND]
 			TestSuite.own(loop, "skill_book")["skills"]["magic:magicAIR:magicCode01"]["fields"]["use_ratio"]="100"
 			if mode=="ai_wait":actor["mp"]=0;actor["no_attack"]=true
@@ -100,7 +100,7 @@ func setup_weapon() -> void:
 		TestSuite.own(loop, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_help_status":100,"ai_help_otherhp":0,"ai_check_dying":0,"ai_check_hp":0,"ai_att_magic":100},true)
 		loop["units"].append(healer)
 	if mode in ["victory","defeat","escape"]:
-		actor=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy039_1")
+		actor=BattlePlayLoop.unit_ref(loop,"leonard");enemy=BattlePlayLoop.unit_ref(loop,"enemy039_1")
 		var view=scene.get_node("BattlePresentation");view._shown_story_events.assign(loop["event_log"])
 		if mode=="victory":enemy["hp"]=1
 		elif mode=="defeat":
@@ -114,7 +114,7 @@ func setup_weapon() -> void:
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	var first:="observer" if mode in ["ai_poison","ai_fallback","ai_silence","ai_wait"] else "leonard"
 	check(BattlePlayLoop.CoreTurnQueue.current(loop["turn_queue"])["id"]==first,"source-derived fixture queue owns first input")
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,first), "test");scene.settlement_controller.checkpoint_path=WEAPON_OUT+mode+".save"
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,first), "test");scene.settlement_controller.checkpoint_path=WEAPON_OUT+mode+".save"
 	for node in scene.actors_root.get_children():scene.actors_root.remove_child(node);node.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(loop,first)["coord"])
 	var view=scene.get_node("BattlePresentation");view.turn_end_cue.finish(scene.play_loop)

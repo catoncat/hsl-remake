@@ -458,7 +458,7 @@ func _level37_token_set() -> void:
 	# writes them: scenario_rules.job_up_targets / job_up_templates.
 	var job_seed := _seed([_section("event", 0, [_command("actTRUE"), _command("actPlayerJobUpProcess", ["SID_GULU", 0]), _command("actSetOverFlag", ["gameoverflagEnemyJobUp"])])], [_command("actInsertEventStatus", [0])])
 	var level37 := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_037.json"), 7)
-	var prepared: Dictionary = BattlePlayLoop._unit(level37, "gulu").duplicate(true)
+	var prepared: Dictionary = BattlePlayLoop.unit_ref(level37, "gulu").duplicate(true)
 	_assert_eq([str(prepared.get("actor_id", "")), bool(prepared.get("install_if_carried", false))], ["008", true], "battle_037 fields the conditional 咕嚕 slot (all slots without a hand-off)")
 	var assembled := {"scenario_rules": {"job_up_targets": {"008": "017"}, "job_up_templates": {"017": target}}, "opening": {"actor_bindings": {"SID_GULU/1": {"unit_id": "gulu"}}}}
 	prepared["hp"] = 3  # wounded before the exchange: 0x4348f0 / 0x407ec0 / 0x448840 write no vitals
@@ -558,7 +558,7 @@ func _lane_k_token_actions() -> void:
 	var scenario: Dictionary = BattleScenario.load_file("res://content/battles/battle_040.json")
 	var base: Dictionary = BattlePlayLoop.create([], "", scenario, 3)
 	_assert_true(bool(base.get("scenario_ok", false)), "lane K fixture: source battle loop is valid")
-	var boss := BattlePlayLoop._unit(base, "actor055_1")
+	var boss := BattlePlayLoop.unit_ref(base, "actor055_1")
 	_assert_eq(boss.get("inventory", [])[0], 252, "source actor 055 carries item 252")
 	boss["hp"] = 100
 	boss["status_counters"]["poison"] = 3
@@ -583,7 +583,7 @@ func _lane_k_token_actions() -> void:
 	no_attack_loop = WinfailScenarioRules.run_event_hooks(no_attack_loop)
 	_assert_true(bool(WinfailConditions.unit(no_attack_loop, "leonard").get("no_attack", false)), "actSetPlayerNoAttack sets the actor marker")
 	_assert_eq(no_attack_loop["winfail_runtime"]["no_attack_changes"].size(), 1, "no-attack change is recorded")
-	no_attack_loop = BattlePlayLoop._return_to_player(no_attack_loop, "leonard")
+	no_attack_loop = BattlePlayLoop.return_to_player(no_attack_loop, "leonard")
 	_assert_eq(BattlePlayLoop.command_available(no_attack_loop, "attack"), false, "no_attack removes the player attack command")
 
 	var serial_seed := _seed([
@@ -635,13 +635,13 @@ func _script_dead_message_words() -> void:
 	_assert_eq(wf["winfail_runtime"]["dead_messages"], {"SID_ENEMY024": "969", "SID_ENEMY023": "374"}, "the fail page record keeps its token → msg1 shape")
 	var sixth := BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_006.json")))
 	_assert_true(bool(sixth.get("scenario_ok", false)), "battle_006 loop is valid")
-	_assert_eq(BattlePlayLoop._unit(sixth, "guard024_1")["dead_message"]["messages"][0]["id"], "957", "the placed 隊長 keeps its object word 957 (WINFAIL006 never addresses it alive)")
-	BattlePlayLoop._set_unit_defeated(sixth, "guard024_1", true)
+	_assert_eq(BattlePlayLoop.unit_ref(sixth, "guard024_1")["dead_message"]["messages"][0]["id"], "957", "the placed 隊長 keeps its object word 957 (WINFAIL006 never addresses it alive)")
+	BattlePlayLoop.set_unit_defeated(sixth, "guard024_1", true)
 	# Event code 1 (section 5) is armed by the level's earlier chain; arm it directly and
 	# drop the phase-one win so the reinforcement event is what fires on the 隊長's fall.
 	sixth["event_statuses"] = [1]
 	sixth["win_statuses"] = []
-	var fired: Dictionary = BattlePlayLoop._resolve_outcome(WinfailScenarioRules.run_event_hooks(sixth))
+	var fired: Dictionary = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(sixth))
 	_assert_true(bool(fired.get("scenario_ok", false)), "WINFAIL006 event 5 installs its reinforcements: " + str(fired.get("scenario_error", "")))
 	var captains: Array = fired["units"].filter(func(row): return str(row["actor_id"]) == "024" and not bool(row.get("defeated", false)))
 	_assert_eq(captains.size(), 1, "one living 隊長 after the event")
@@ -1172,7 +1172,7 @@ func _complete_action(loop: Dictionary) -> Dictionary:
 		"action_menu":
 			return BattlePlayLoop.begin_wait_resolution(loop)
 		"ai_resolving":
-			return BattlePlayLoop._advance_current_actor(loop)
+			return BattlePlayLoop.advance_current_actor(loop)
 	_assert_true(false, "no completable action in %s (%s)" % [str(loop.get("interaction", "")), str(loop.get("scenario_error", ""))])
 	return loop
 
@@ -1241,7 +1241,7 @@ func _one_event_per_scan() -> void:
 	for unit in loop["units"]:
 		var class_id := str(unit.get("class_id", ""))
 		if int(downed.get(class_id, 0)) > 0:
-			BattlePlayLoop._set_unit_defeated(loop, str(unit["id"]), true)
+			BattlePlayLoop.set_unit_defeated(loop, str(unit["id"]), true)
 			downed[class_id] = int(downed[class_id]) - 1
 	_assert_eq(downed, {"Enemy021": 0, "Enemy026": 0}, "three 021 and one 026 are down")
 	_assert_eq(loop.get("event_statuses", []), [0, 1, 2, 3], "both reinforcement events are armed")
@@ -1289,7 +1289,7 @@ func _attack_read_by_completion_scan() -> void:
 			for unit in armed["units"]:
 				if str(unit.get("class_id", "")) == "Enemy021" and not bool(unit.get("defeated", false)):
 					target_id = str(unit["id"])
-					BattlePlayLoop._set_unit_coord(armed, target_id, cell)
+					BattlePlayLoop.set_unit_coord(armed, target_id, cell)
 					unit["max_hp"] = 9999  # survives the strike: no loot settlement to close first
 					unit["hp"] = 9999
 					break
@@ -1343,7 +1343,7 @@ func _wait_rereads_after_poison_tail() -> void:
 	## the HP-low event in the same action, before the queue advances.
 	var loop := _custom_rules(_reach_player(_battle()), [_section_event_cadence("event", 40, [["actCheckPlayerHPLow", "SID_PLAYER0", 1, 50], ["actMessage", "SID_PLAYER0", 1, 777]])])
 	_assert_eq(str(loop.get("selected_unit_id", "")), "leonard", "Leonard holds the action menu")
-	var leonard := BattlePlayLoop._unit(loop, "leonard")
+	var leonard := BattlePlayLoop.unit_ref(loop, "leonard")
 	var max_hp := int(leonard["max_hp"])
 	leonard["hp"] = max_hp * 6 / 10
 	var poisoned := StatusEffectRules.apply(leonard, "poison", 2, max_hp / 5)
@@ -1363,7 +1363,7 @@ func _item_use_rereads_and_decides() -> void:
 	## arrival event, whose chain arms an unconditional win: the battle is decided in
 	## that action, in the same round, without waiting for a strike or a boundary.
 	var loop := _reach_player(_battle())
-	var leonard := BattlePlayLoop._unit(loop, "leonard")
+	var leonard := BattlePlayLoop.unit_ref(loop, "leonard")
 	var cells: Array = BattlePlayLoop.movement_cells(BattlePlayLoop.choose_command(loop, "move"), "leonard")
 	var destination: Vector2i = leonard["coord"]
 	for cell in cells:
@@ -1377,7 +1377,7 @@ func _item_use_rereads_and_decides() -> void:
 		_section_event_cadence("event", 41, [["actCheckPlayerArrivePos", "SID_PLAYER0", 1, px, py, px + 31, py + 31], ["actInsertWinStatus", 0]]),
 		_section_event_cadence("win", 0, [["actTRUE"]]),
 	])
-	leonard = BattlePlayLoop._unit(loop, "leonard")
+	leonard = BattlePlayLoop.unit_ref(loop, "leonard")
 	leonard["hp"] = maxi(1, int(leonard["max_hp"]) / 2)
 	var inventory: Array = leonard["inventory"]
 	if not inventory.has(241):
@@ -1528,7 +1528,7 @@ func census(loop: Dictionary, scenario: Dictionary, arrivals: Variant = null) ->
 		for condition in status.get("conditions", []):
 			if str(condition["name"]) != "actCheckPlayerHPLow":
 				continue
-			for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(condition["args"], 0), WinfailConditions._int_arg(condition["args"], 1)):
+			for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions.arg(condition["args"], 0), WinfailConditions.int_arg(condition["args"], 1)):
 				if undead.has(unit_id) and not _holds_at(cast, unit_id, 1, false, condition):
 					report["hp_low"].append("%s %s misses undead %s at its revive HP 1" % [status["key"], str(condition["args"]), unit_id])
 	var armed: Array = []
@@ -1622,8 +1622,8 @@ func undead_ids(cast: Dictionary, rules: Dictionary) -> Dictionary:
 			ids[str(unit["id"])] = true
 	for status in WinfailCompiler.all_statuses(rules):
 		for action in status.get("actions", []):
-			if str(action["name"]) == "actSetPlayerUndead" and WinfailConditions._int_arg(action["args"], 2) != 0:
-				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(action["args"], 0), WinfailConditions._int_arg(action["args"], 1)):
+			if str(action["name"]) == "actSetPlayerUndead" and WinfailConditions.int_arg(action["args"], 2) != 0:
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions.arg(action["args"], 0), WinfailConditions.int_arg(action["args"], 1)):
 					ids[str(unit_id)] = true
 	return ids
 
@@ -1641,35 +1641,35 @@ func unfireable_reason(cast: Dictionary, status: Dictionary, undead: Dictionary,
 			"actFALSE":
 				return "actFALSE"
 			"actCheckRoundNumber", "actCheckRoundDisp", "actDetectRoundDispDisp":
-				if WinfailConditions._int_arg(args, 0) > ROUND_REACHABLE:
+				if WinfailConditions.int_arg(args, 0) > ROUND_REACHABLE:
 					return "%s %s never comes" % [name, str(args)]
 			"actCheckPlayerAttacked":
-				if WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 1)).is_empty():
-					return "%s: nobody to attack as %s" % [name, WinfailConditions._arg(args, 1)]
-				if WinfailConditions._arg(args, 0) != "-1" and WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0)).is_empty():
-					return "%s: no attacker %s" % [name, WinfailConditions._arg(args, 0)]
+				if WinfailConditions.units_for_token(cast, WinfailConditions.arg(args, 1)).is_empty():
+					return "%s: nobody to attack as %s" % [name, WinfailConditions.arg(args, 1)]
+				if WinfailConditions.arg(args, 0) != "-1" and WinfailConditions.units_for_token(cast, WinfailConditions.arg(args, 0)).is_empty():
+					return "%s: no attacker %s" % [name, WinfailConditions.arg(args, 0)]
 			"actCheckSerialPlayerAttacked":
-				if WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)).is_empty():
-					return "%s: no %s serial %s" % [name, WinfailConditions._arg(args, 0), WinfailConditions._arg(args, 1)]
+				if WinfailConditions.units_for_token(cast, WinfailConditions.arg(args, 0), WinfailConditions.int_arg(args, 1)).is_empty():
+					return "%s: no %s serial %s" % [name, WinfailConditions.arg(args, 0), WinfailConditions.arg(args, 1)]
 			"actCheckPlayerHPLow":
 				var reached := false
-				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)):
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions.arg(args, 0), WinfailConditions.int_arg(args, 1)):
 					var lowest := 1 if undead.has(unit_id) else 0
 					if _holds_at(cast, unit_id, lowest, lowest == 0, condition):
 						reached = true
 				if not reached:
 					return "%s %s: no target reaches the threshold" % [name, str(args)]
 			"actCheckEnemyNumber":
-				var token := WinfailConditions._arg(args, 0)
+				var token := WinfailConditions.arg(args, 0)
 				if WinfailConditions.token_source(cast, token) == "unresolved":
 					return "%s: unresolved %s" % [name, token]
-				if int(cast["winfail_runtime"].get("static_enemy_counts", {}).get(token, 0)) >= WinfailConditions._int_arg(args, 1):
+				if int(cast["winfail_runtime"].get("static_enemy_counts", {}).get(token, 0)) >= WinfailConditions.int_arg(args, 1):
 					return "%s: static objects %s are never destroyed" % [name, token]
 			"actCheckPlayer", "actCheckEnemy":
-				var needed := mini(WinfailConditions._int_arg(args, 0), args.size() - 1)
+				var needed := mini(WinfailConditions.int_arg(args, 0), args.size() - 1)
 				var countable := 0
 				for index in range(1, args.size()):
-					var token := WinfailConditions._arg(args, index)
+					var token := WinfailConditions.arg(args, index)
 					var source := WinfailConditions.token_source(cast, token)
 					if source == "unresolved" or (source == "binding" and WinfailConditions.units_for_token(cast, token).is_empty()):
 						continue
@@ -1690,8 +1690,8 @@ func _holds_at(cast: Dictionary, unit_id: String, hp: int, defeated: bool, condi
 	unit["defeated"] = defeated
 	if str(condition["name"]) == "actCheckPlayerHPLow":
 		# WinfailConditions' own reading, with the threshold routed through hp_low_threshold.
-		_assert_eq(WinfailConditions.condition_holds(probe, "actCheckPlayerHPLow", condition["args"], "round"), hp <= WinfailConditions.hp_low_threshold(int(unit.get("max_hp", 0)), WinfailConditions._int_arg(condition["args"], 2)), "census HPLow agrees with WinfailConditions for %s" % unit_id)
-		return hp <= int(hp_low_threshold.call(int(unit.get("max_hp", 0)), WinfailConditions._int_arg(condition["args"], 2)))
+		_assert_eq(WinfailConditions.condition_holds(probe, "actCheckPlayerHPLow", condition["args"], "round"), hp <= WinfailConditions.hp_low_threshold(int(unit.get("max_hp", 0)), WinfailConditions.int_arg(condition["args"], 2)), "census HPLow agrees with WinfailConditions for %s" % unit_id)
+		return hp <= int(hp_low_threshold.call(int(unit.get("max_hp", 0)), WinfailConditions.int_arg(condition["args"], 2)))
 	return WinfailConditions.condition_holds(probe, str(condition["name"]), condition["args"], "round")
 
 
@@ -1712,8 +1712,8 @@ func armed_by(status: Dictionary, armed: Array = [], fireable: Dictionary = {}) 
 		var name := str(action["name"])
 		var args: Array = action["args"]
 		if bool(action.get("chain_gate", false)):
-			for index in range(1, 1 + mini(WinfailConditions._int_arg(args, 0), args.size() - 1)):
-				var listed := "event_%d" % WinfailConditions._int_arg(args, index)
+			for index in range(1, 1 + mini(WinfailConditions.int_arg(args, 0), args.size() - 1)):
+				var listed := "event_%d" % WinfailConditions.int_arg(args, index)
 				if armed.has(listed) and not bool(fireable.get(listed, false)):
 					return keys
 			continue
@@ -1737,9 +1737,9 @@ func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
 	for status in WinfailCompiler.all_statuses(rules):
 		for action in status.get("actions", []):
 			var args: Array = action["args"]
-			var edit: Dictionary = rules.get("story_object_terrain", {}).get(WinfailConditions._arg(args, 0), {})
+			var edit: Dictionary = rules.get("story_object_terrain", {}).get(WinfailConditions.arg(args, 0), {})
 			if str(action["name"]) == "actInsertStoryObject" and edit.has("clear_flags") and args.size() >= 3:
-				TerrainEditRules.record(board, WinfailConditions._arg(args, 0), [Vector2i(floori(float(args[1]) / cell_size), floori(float(args[2]) / cell_size))], "winnability census")
+				TerrainEditRules.record(board, WinfailConditions.arg(args, 0), [Vector2i(floori(float(args[1]) / cell_size), floori(float(args[2]) / cell_size))], "winnability census")
 	var tiles := TerrainEditRules.tiles(board)
 	var size: Vector2i = cast["map_size"]
 	var reach_cache := {}
@@ -1755,7 +1755,7 @@ func arrival_floods(cast: Dictionary, rules: Dictionary) -> Dictionary:
 				cells[Vector2i(int(cell[0]), int(cell[1]))] = true
 			var walkers: Array = []
 			if name == "actCheckPlayerArrivePos":
-				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions._arg(args, 0), WinfailConditions._int_arg(args, 1)):
+				for unit_id in WinfailConditions.units_for_token(cast, WinfailConditions.arg(args, 0), WinfailConditions.int_arg(args, 1)):
 					var unit := WinfailConditions.unit(cast, unit_id)
 					walkers.append(unit if not unit.has("census_template") else {})
 			if walkers.is_empty() or walkers.has({}):
@@ -1871,12 +1871,12 @@ func _missing_actor_ablations() -> void:
 func _level37_gem_chain(first: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
-	var loop: Dictionary = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(BattlePlayLoop.copy(first)))
+	var loop: Dictionary = BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(BattlePlayLoop.copy(first)))
 	var caster := ""
 	var skill := ""
 	for step in range(200):
 		var id := str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
-		if not bool(BattlePlayLoop._unit(loop, id).get("player_commandable", false)):
+		if not bool(BattlePlayLoop.unit_ref(loop, id).get("player_commandable", false)):
 			loop = BattlePlayLoop.step_ai_turn(loop, rng)
 			continue
 		var ready := BattlePlayLoop.select_player_unit(loop, id)
@@ -1896,7 +1896,7 @@ func _level37_gem_chain(first: Dictionary) -> void:
 	var struck := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(adjacent, "attack"), "guard067_5", rng)
 	_assert_eq(str(struck.get("last_attack_reject", {}).get("reason", "")), "not_enemy", "an ordinary attack cannot select a pmMagicAttack gem")
 	var early := _cast_on_gem(loop, caster, skill, "guard067_5", rng)
-	var after := BattlePlayLoop._unit(early, "guard067_5")
+	var after := BattlePlayLoop.unit_ref(early, "guard067_5")
 	_assert_true(int(after["hp"]) == 1 and not bool(after.get("defeated", false)), "the undead gem revives at 1 HP after a lethal spell")
 	_assert_eq(int(after.get("player_mode", 0)), 0x30000, "a struck gem goes dark (pmPlayerEnemy)")
 	var fired: Array = early["winfail_runtime"]["fired"]
@@ -1917,7 +1917,7 @@ func _level37_gem_chain(first: Dictionary) -> void:
 	var rearmed := true
 	for code in [8, 9, 10, 11, 12]:
 		rearmed = rearmed and (reset["event_statuses"] as Array).has(code)
-	_assert_true(rearmed and not (reset["event_statuses"] as Array).has(6) and int(BattlePlayLoop._unit(reset, "guard067_4").get("player_mode", 0)) == 0x870000, "event 7 relights the gems (pmMagicAttack) and arms events 8–12")
+	_assert_true(rearmed and not (reset["event_statuses"] as Array).has(6) and int(BattlePlayLoop.unit_ref(reset, "guard067_4").get("player_mode", 0)) == 0x870000, "event 7 relights the gems (pmMagicAttack) and arms events 8–12")
 
 
 ## WINFAIL080 events 0／1 (the two treasures) end at `actCheckEventNotExist 1,<other>` while the
@@ -1950,23 +1950,23 @@ func _arrive(loop: Dictionary, unit_id: String, cell: Vector2i) -> Dictionary:
 	var unit := WinfailConditions.unit(loop, unit_id)
 	unit["coord"] = cell
 	unit["grid_coord"] = cell
-	return BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
+	return BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
 
 
 ## `loop` with gem `gem_id` moved beside the caster (a copy).
 func _gem_beside(loop: Dictionary, caster: String, gem_id: String) -> Dictionary:
 	var next: Dictionary = BattlePlayLoop.copy(loop)
-	var gem := BattlePlayLoop._unit(next, gem_id)
+	var gem := BattlePlayLoop.unit_ref(next, gem_id)
 	for delta in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-		if BattlePlayLoop.unit_id_at_coord(next, BattlePlayLoop._unit(next, caster)["coord"] + delta) == "":
-			gem["coord"] = BattlePlayLoop._unit(next, caster)["coord"] + delta
+		if BattlePlayLoop.unit_id_at_coord(next, BattlePlayLoop.unit_ref(next, caster)["coord"] + delta) == "":
+			gem["coord"] = BattlePlayLoop.unit_ref(next, caster)["coord"] + delta
 			break
 	return next
 
 
 func _cast_on_gem(loop: Dictionary, caster: String, skill: String, gem_id: String, rng: RandomNumberGenerator) -> Dictionary:
 	var ready := _gem_beside(loop, caster, gem_id)
-	var cast := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(ready, "magic"), skill), gem_id, rng, BattlePlayLoop._unit(ready, gem_id)["coord"])
+	var cast := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(ready, "magic"), skill), gem_id, rng, BattlePlayLoop.unit_ref(ready, gem_id)["coord"])
 	return BattlePlayLoop.finish_exhausted_action(cast)
 
 

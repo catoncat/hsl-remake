@@ -20,13 +20,13 @@ func _init() -> void:
 
 static func fixture(twice:bool=false)->Dictionary:
 	var loop:=run_mobile_jobs_tests.fixture("004",twice)
-	var actor:=BattlePlayLoop._unit(loop,"thief")
-	var friend:=BattlePlayLoop._unit(loop,"tina")
+	var actor:=BattlePlayLoop.unit_ref(loop,"thief")
+	var friend:=BattlePlayLoop.unit_ref(loop,"tina")
 	friend["coord"]=Vector2i(14,15);friend["grid_coord"]=friend["coord"];friend["ai_home_coord"]=friend["coord"]
 	for status in ["poison","no_magic"]:actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,status,3,7 if status=="poison" else 0)["changes"],true)
 	loop["objective_phase"]="hold"
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,"thief")
+	return BattlePlayLoop.return_to_player(loop,"thief")
 
 static func request(loop:Dictionary,ids:Array,key:String="event_departure")->Dictionary:
 	var next:=loop.duplicate(true)
@@ -37,7 +37,7 @@ static func request(loop:Dictionary,ids:Array,key:String="event_departure")->Dic
 	for id in ids:
 		if BattlePresenceRules.living(BattlePlayLoop.unit(next,id)) and not runtime["departed_unit_ids"].has(id):runtime["departed_unit_ids"].append(id)
 	runtime["departure_requests"].append({"key":key,"name":"actDeleteObject","unit_ids":ids.duplicate(),"firing_index":runtime["fired"].size()-1})
-	return BattlePlayLoop._resolve_outcome(next)
+	return BattlePlayLoop.resolve_outcome(next)
 
 func run()->void:
 	native_queue()
@@ -88,7 +88,7 @@ func current_and_future()->void:
 	var handed:=BattlePlayLoop.begin_wait_resolution(waiting)
 	check(handed["selected_unit_id"]=="tina" and handed["action_end_sequence"]==0 and not handed["attacked_this_action"],"resolving a departure at wait does not spend the new actor")
 	var q:Dictionary=BattlePlayLoop.CoreTurnQueue.cancel_pending(fixture()["turn_queue"],"tina")["queue"]
-	var removed:=BattlePlayLoop.CoreTurnQueue.remove_actors(q,["thief"],BattlePlayLoop._queue_actors(fixture()))
+	var removed:=BattlePlayLoop.CoreTurnQueue.remove_actors(q,["thief"],BattlePlayLoop.queue_actors(fixture()))
 	check(BattlePlayLoop.CoreTurnQueue.current(removed["queue"])["id"]=="enemy026_1" and not removed["queue"]["slots"][0]["enabled"],"current removal respects a previously cancelled successor")
 	var no_one:=request(fixture(),["thief","tina","enemy026_1"])
 	check(no_one["turn_queue"]["slots"].is_empty() and BattlePlayLoop.CoreTurnQueue.current(no_one["turn_queue"])["id"]=="","all departures produce an empty queue, not a rebuilt ghost")
@@ -105,18 +105,18 @@ func spatial_and_targets()->void:
 		check(not released["occupied"].has(point) and BattlePlayLoop.unit_id_at_coord(next,point)=="","all nine body cells release and cannot be selected")
 	check(BattlePlayLoop.attack_cells(next,"enemy039_1").is_empty() and BattlePlayLoop.movement_cells(next,"enemy039_1").is_empty(),"departed body cannot initiate targeting or movement")
 	var before:=next.duplicate(true)
-	check(BattleLoopCombat._resolve_exchange(next,"leonard","enemy039_1",no_rng).is_empty() and next==before,"stale ordinary hit rejects before RNG or vitals mutation")
+	check(BattleLoopCombat.resolve_exchange(next,"leonard","enemy039_1",no_rng).is_empty() and next==before,"stale ordinary hit rejects before RNG or vitals mutation")
 	var mobile:=fixture();var target:=BattlePlayLoop.unit(mobile,"enemy026_1")
-	BattlePlayLoop._unit(mobile,"enemy026_1")["ai_target_id"]="thief";BattlePlayLoop._unit(mobile,"enemy026_1")["ai_call_target_id"]="thief"
+	BattlePlayLoop.unit_ref(mobile,"enemy026_1")["ai_target_id"]="thief";BattlePlayLoop.unit_ref(mobile,"enemy026_1")["ai_call_target_id"]="thief"
 	var fresh:=request(mobile,["thief"])
 	check(BattlePlayLoop.unit(fresh,"enemy026_1")["ai_target_id"]=="" and BattlePlayLoop.unit(fresh,"enemy026_1")["ai_call_target_id"]=="","all calls/locks to departed target clear")
-	var ai:=BattleLoopAI._prepare_ai_turn(fresh,"enemy026_1")
+	var ai:=BattleLoopAI.prepare_ai_turn(fresh,"enemy026_1")
 	check(ai["ok"] and ai["rows"][0]==null and ai["rows"][1]!=null,"new AI candidates exclude old target and retain available alternatives")
 	var gone_friend:=request(mobile,["tina"])
 	check(not BattlePlayLoop.recovery_target_ids(gone_friend).has("tina"),"moved/support item targets cannot include departed friend")
-	var item:=BattleLoopInventory._resolve_item_use(gone_friend,"tina","thief","253",0)
+	var item:=BattleLoopInventory.resolve_item_use(gone_friend,"tina","thief","253",0)
 	check(item.is_empty(),"departed inventory owner cannot use permanent item")
-	var death:=fixture();BattlePlayLoop._set_unit_defeated(death,"enemy026_1",true)
+	var death:=fixture();BattlePlayLoop.set_unit_defeated(death,"enemy026_1",true)
 	check(not BattlePresenceRules.prepare(death,["enemy026_1"],"winfail","dead")["changed"],"death then departure does not reclassify death or issue a new cleanup")
 	check(not BattlePresenceRules.prepare(fixture(),["thief","thief"],"winfail","bad")["ok"],"duplicate batch rejected atomically")
 	check(not BattlePresenceRules.prepare(fixture(),[4],"winfail","bad")["ok"],"non-string identity rejected atomically")
@@ -145,7 +145,7 @@ func rearmed_binding()->void:
 	var restored: Dictionary = BattleCheckpoint.decode(encoded["bytes"], first)["snapshot"]["loop"]
 	# The owner's next attack action on the second instance: its completion scan re-reads the re-armed event.
 	restored["last_attack"] = {"attacker_id": sample["owner_id"], "defender_id": "enemy026_2"}
-	var second := BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(restored, true))
+	var second := BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(restored, true))
 	check(second["departure_sequence"]==2 and BattlePlayLoop.unit(second,"enemy026_2").get("departed",false),"second firing skips the retired opening binding after restoration")
 	check(second["winfail_runtime"]["departure_requests"].size()==2 and second["winfail_runtime"]["departure_requests"][1]["unit_ids"]==["enemy026_2"] and second["winfail_runtime"]["fired"].size()==2,"stable per-firing identity prevents double deletion or an empty replay")
 

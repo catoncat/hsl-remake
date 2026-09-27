@@ -165,8 +165,8 @@ func _ready() -> void:
 	transition_shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	transition_shade.hide()
 	panel.add_child(transition_shade)
-	cue_manifest = JSON.parse_string(FileAccess.get_file_as_string(ContentPaths.INTERFACE_AUDIO))
-	skill = JSON.parse_string(FileAccess.get_file_as_string(ContentPaths.FIRST_SKILL))
+	cue_manifest = ContentPaths.read_json(ContentPaths.INTERFACE_AUDIO)
+	skill = ContentPaths.read_json(ContentPaths.FIRST_SKILL)
 	blade = Sprite2D.new()
 	stage.add_child(blade)
 	for i in range(5):
@@ -208,7 +208,7 @@ func configure(path: String) -> bool:
 	manifest_path = path
 	manifest = {}
 	cast_leads.clear()
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if path != "" and FileAccess.file_exists(path) else null
+	var parsed: Variant = ContentPaths.read_json(path) if path != "" and FileAccess.file_exists(path) else null
 	if typeof(parsed) != TYPE_DICTIONARY or typeof(parsed.get("actors")) != TYPE_DICTIONARY:
 		push_error("Combat cut-in manifest missing or invalid: %s" % path)
 		return false

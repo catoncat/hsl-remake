@@ -21,12 +21,12 @@ static func fresh(initialize: bool = true) -> Dictionary:
 static func fixture() -> Dictionary:
 	var loop := fresh()
 	if not loop["scenario_ok"]: return loop
-	var hu := BattlePlayLoop._unit(loop,"hu")
+	var hu := BattlePlayLoop.unit_ref(loop,"hu")
 	hu["growth_profile"]["source"]["speed"] += 300 # Explicit fast-turn fixture, not the formal level.
 	hu.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(hu,loop["equipment_items"]),true)
 	hu["stamina"] = 40 # Actual formal scene remains ST0; fixture isolates paid special resolution.
 	for pair in [["actor028_1",Vector2i(15,21)],["actor028_2",Vector2i(16,21)]]:
-		var target := BattlePlayLoop._unit(loop,pair[0])
+		var target := BattlePlayLoop.unit_ref(loop,pair[0])
 		target["coord"] = pair[1]
 		target["ai_home_coord"] = pair[1]
 		target["growth_profile"]["source"]["hit_point"] += 800
@@ -45,7 +45,7 @@ static func ai_fixture(paralyzed: bool = false) -> Dictionary:
 	# Explicit control/strategy fixture, not a newly inferred source003 AI default.
 	# Hu keeps his own job, bow and declared special; no ability is copied from a mage.
 	var loop := fixture()
-	var hu := BattlePlayLoop._unit(loop,"hu")
+	var hu := BattlePlayLoop.unit_ref(loop,"hu")
 	hu["player_commandable"] = false
 	hu["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
 	hu["stamina"] = 20
@@ -55,7 +55,7 @@ static func ai_fixture(paralyzed: bool = false) -> Dictionary:
 	strategy["missing_required"] = []
 	strategy["profile"].merge({"find_type":3,"find_range":20,"ai_call_range":6,"ai_fixed":0,"ai_lock":60,
 		"ai_check_dying":0,"ai_check_hp":0,"ai_att_special":100},true)
-	var leader := BattlePlayLoop._unit(loop,"leonard")
+	var leader := BattlePlayLoop.unit_ref(loop,"leonard")
 	leader["growth_profile"]["source"]["speed"] += 500
 	leader.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(leader,loop["equipment_items"]),true)
 	if paralyzed:
@@ -64,16 +64,16 @@ static func ai_fixture(paralyzed: bool = false) -> Dictionary:
 	else:
 		hu.merge(BattlePlayLoop.StatusEffectRules.apply(hu,"no_magic",3)["changes"],true)
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,"leonard")
+	return BattlePlayLoop.return_to_player(loop,"leonard")
 
 static func insertion_fixture(code: String = "061") -> Dictionary:
 	# Explicit event on the real village map. STORY001 itself contains no insert.
 	var loop:=fixture()
 	for id in ["hu","leonard"]:
-		var actor:=BattlePlayLoop._unit(loop,id)
+		var actor:=BattlePlayLoop.unit_ref(loop,id)
 		actor["level"]=12
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
-	var hu:=BattlePlayLoop._unit(loop,"hu")
+	var hu:=BattlePlayLoop.unit_ref(loop,"hu")
 	hu["equipment"].append({"slot":"accessory2","item_code":227})
 	hu["permanent_gains"]["defense"]=5
 	hu["exp"]=BattlePlayLoop.ProgressionRules.exp_to_next(12)-1
@@ -97,7 +97,7 @@ static func insertion_fixture(code: String = "061") -> Dictionary:
 	config["scenario_rules"]["events"]={"event901":{"inserts":[{"object_symbol":symbol,"walk_cell_candidate":[14,21],"insert_xy":[448,768]}]}}
 	loop=WinfailScenarioRules.initialize_script_state(loop,config,seed)
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	loop=BattlePlayLoop._return_to_player(loop,"hu")
+	loop=BattlePlayLoop.return_to_player(loop,"hu")
 	return {"loop":loop,"scenario":config,"code":code}
 
 func run() -> void:
@@ -190,9 +190,9 @@ func transactions() -> void:
 	for variant in ["stamina","paralysis","missing_second_resist","unowned","terminal"]:
 		var invalid := fixture()
 		match variant:
-			"stamina":BattlePlayLoop._unit(invalid,"hu")["stamina"]=19
-			"paralysis":BattlePlayLoop._unit(invalid,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(invalid,"hu"),"paralysis",2)["changes"],true)
-			"missing_second_resist":BattlePlayLoop._unit(invalid,"actor028_2")["combat_profile"]["resist_by_type"].erase("4")
+			"stamina":BattlePlayLoop.unit_ref(invalid,"hu")["stamina"]=19
+			"paralysis":BattlePlayLoop.unit_ref(invalid,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(invalid,"hu"),"paralysis",2)["changes"],true)
+			"missing_second_resist":BattlePlayLoop.unit_ref(invalid,"actor028_2")["combat_profile"]["resist_by_type"].erase("4")
 			"unowned":own(invalid, "skill_book")["actors"]["003"]["supported_initial_ids"]=[]
 			"terminal":invalid["battle_outcome"]=BattleOutcome.DEFEAT_FALLEN
 		var before := invalid.duplicate(true)
@@ -200,7 +200,7 @@ func transactions() -> void:
 		var rejected := cast(invalid,func(_bound):count[0]+=1;return 0)
 		check(count[0]==0 and rejected["units"]==before["units"],"invalid entire special rejects without payment/effect/RNG: "+variant)
 	var silenced := fixture()
-	BattlePlayLoop._unit(silenced,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(silenced,"hu"),"no_magic",2)["changes"],true)
+	BattlePlayLoop.unit_ref(silenced,"hu").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(silenced,"hu"),"no_magic",2)["changes"],true)
 	silenced["moved_this_action"] = true
 	check(cast(silenced,zero).get("last_attack",{}).get("skill_id")==PoisonArrowRules.ID,"silence and moving do not misclassify an earned special as magic")
 	var empty := BattlePlayLoop.change_equipment(loop,"weapon",-1,0)
@@ -238,7 +238,7 @@ func insertion_and_actions() -> void:
 		# hu's next attack action: its completion scan reads the attack again (the event re-armed).
 		var next_attack:=after.duplicate(true)
 		next_attack["last_attack"]={"attacker_id":"hu","defender_id":"actor028_1"}
-		var second:=BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(next_attack,true))
+		var second:=BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(next_attack,true))
 		check(second["units"].size()==20,"rearmed event on second independent action creates a new identity at the next stream cursor")
 		check(BattlePlayLoop.ReinforcementGrowth.state_error(second)=="" and BattlePlayLoop.unit(second,born["id"])["entry_growth"]==born["entry_growth"],"second cast cannot reroll first birth or duplicate permanent stats")
 		var upgraded:=BattlePlayLoop.ProgressionRules.resolve_experience(born,5000,loop["equipment_items"])
@@ -246,12 +246,12 @@ func insertion_and_actions() -> void:
 
 func double_bow() -> void:
 	var loop:=fixture()
-	BattlePlayLoop._unit(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
+	BattlePlayLoop.unit_ref(loop,"hu")["inventory"]=[69,227,0,0,0,0,0,0]
 	loop=BattlePlayLoop.change_equipment(loop,"weapon",0,69)
 	loop=BattlePlayLoop.change_equipment(loop,"accessory2",BattlePlayLoop.unit(loop,"hu")["inventory"].find(227),227)
 	check(BattlePlayLoop.unit(loop,"hu")["weapon_code"]==69 and BattlePlayLoop.attack_count(loop,BattlePlayLoop.unit(loop,"hu"))["count"]==2,"actual bow69 equipment grants two strikes, not two whole actions")
-	BattlePlayLoop._unit(loop,"actor028_1")["coord"]=Vector2i(15,22)
-	BattlePlayLoop._unit(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
+	BattlePlayLoop.unit_ref(loop,"actor028_1")["coord"]=Vector2i(15,22)
+	BattlePlayLoop.unit_ref(loop,"actor028_1")["ai_home_coord"]=Vector2i(15,22)
 	var after:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),"actor028_1",zero)
 	var blows:Array=BattlePlayLoop.CombatSequence.strikes(after["last_combat"]).filter(func(r):return not r.get("is_counter",false))
 	check(blows.size()==2 and blows[0]["defender_hp_after"]>0 and blows[1]["defender_hp_after"]>0,"two nonlethal source bow hits use one attack sequence")

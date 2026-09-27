@@ -31,6 +31,7 @@ const GROUP := "remake_options_page"
 const LISTENERS := "remake_options_listeners"
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const TITLE_MANIFEST := "res://content/imported/hsl/global/title/manifest.json"
 ## Title031 (466×392) pieces: the ornamented corners, the rim between them (the top rim in two
 ## title-free spans), the stone of the bottom rim that fills the inside, and one slot band.
@@ -469,7 +470,7 @@ static func _blit(image: Image, source: Image, from: Rect2i, at: Vector2i, clip:
 
 static func _shape_path(role: String) -> String:
 	if _manifest.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TITLE_MANIFEST))
+		var parsed: Variant = ContentPaths.read_json(TITLE_MANIFEST)
 		if not parsed is Dictionary:
 			push_error("Title manifest missing or invalid: " + TITLE_MANIFEST)
 			return ""

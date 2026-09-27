@@ -1,62 +1,75 @@
-# 战役承接：第一战胜利 → 第二战开场（实际运行回执）
+# 战役承接与正式战斗强制胜利回执：跨关 carry、续战存档、各关结算流转
 
-> evidence: runtime-measured; provisional · status: live · tools: capture_campaign_chain_review.gd, capture_campaign_handoff_review.gd, capture_campaign_resume_review.gd, run_campaign_tests.gd, run_third_battle_runtime_tests.gd · updated: 2026-09-18
+> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-18。`runtime-measured`（Godot 重制版窗口）。跨关承接规则是明示重制策略（`provisional`），原版关卡间的存续行为未证明。
+## 结论
 
-## 复跑
+- 原版关卡之间 HP/MP 是否回满、金币／物品如何结算、跨关存档流程均未读（provisional）。
+- 重制只承接 `player_controlled` 单位的等级／经验／未用点数／四属性／装备／库存／击杀数与 loop 级金币，在 `BattlePlayLoop.create` 之后、`begin_battle` 之前经 `apply_campaign_carry` 施加，派生数值走 `ProgressionRules.refresh_growth_stats`；下一场景由 `CampaignProgress` 交接并写 `user://campaign_progress.json`（runtime-measured）。
+- 各正式战斗在强制胜利夹具下都能从开场走到首次控制、结果页与战役交接；夹具只证明流转，不证明 AI、平衡、节奏或原版等价（runtime-measured）。
+- 与原版的差异归差异清单 `carry-model`、`script-entry-paths`、`winfail-readings`（provisional）。
 
-```sh
-# 无头合同（进入完整门禁）：纯 carry 捕获／应用 + 结果页按钮 + 下一场景消费 hand-off
-tools/godot.sh --headless --script res://tests/run_campaign_tests.gd
-# 可见窗口（先确认内建屏编号）
-tools/play.sh --screen 0 --position 60,80 --resolution 640x480 \
-  --script res://tests/capture_campaign_handoff_review.gd
-```
+## 证据
 
-可见路线在第一战 dev first-control seam 上显式设定 `battle_outcome=victory_escape`、Leonard 等级 2／经验 20、金币 150（夹具，不是自然通关），确认结局台词后出现结果页，点击「下一戰 · 惡夢的終曲」，`reload_current_scene` 后以 `second_battle.json` 重新启动并进入 STORY052 开场。
+### runtime-measured：承接合同
 
-## 回执
-
-`CAMPAIGN_HANDOFF_REVIEW_PASS shots=4`；[review-manifest.json](review-manifest.json) 保存 carry receipt（`applied_unit_ids=["leonard"]`，无错误）与第二战存档槽 `user://battle_002_level52.save`。无头合同 `CAMPAIGN_TESTS_PASS`：等级／经验／未用点数／四属性／装备／库存／击杀数进入新 loop 并经共享成长刷新，HP/MP 回到刷新后的上限，气力按场景初值重置，金币随 loop 承接；其余 15 名单位与场景规则不变；开战后或空 carry 的应用为 no-op；actor 不符的单位被明确跳过。
-
-| 帧 | 观察 |
+| 项 | 读数 |
 | --- | --- |
-| [01-closing-line](01-closing-line.png) | 胜利结局台词（371）先于结果页 |
-| [02-result-next-battle](02-result-next-battle.png) | 结果页下方出现「下一戰 · 惡夢的終曲」；有待领物品时该位置由既有「查看待領物品」占用，两者互斥 |
-| [03-next-battle-opening](03-next-battle-opening.png) | 重新加载后进入王座厅开场，Leonard 带等级／金币进入同一 PlayLoop |
+| 第一战→第二战 | 结局台词 371 先于结果页；结果页「下一戰 · 惡夢的終曲」与「查看待領物品」同位互斥；重载后 Leonard 带等级／金币进入同一 PlayLoop（`01-closing-line.png`、`02-result-next-battle.png`、`03-next-battle-opening.png`；[review-manifest.json](review-manifest.json)：`applied_unit_ids=["leonard"]`） |
+| 承接后 | HP/MP 回刷新后上限，气力按场景初值重置；其余单位与场景规则不变；开战后或空 carry 的应用为 no-op；actor 不符的单位跳过 |
+| 续战存档 | 每次 hand-off 写 `{scenario_path, carry, from_scenario_id}`（`hsl_campaign_progress_save.v1`）；新进程进首关且存档指向更后关卡时，第一帧暂停并弹「偵測到戰役進度」提示（`resume-prompt.png`），「繼續」重载该关（`resumed-story-scene.png`），「從第一戰重新開始」删档；只存战役位置与受控单位 carry，不存战斗中途状态 |
+| 序章链 | 52 胜利经 WINFAIL052 win_0 播 378 → 结果页「繼續 · 沃斯菲塔王座廳」→ story 058 → 060 → 53（`party: separate`，carry 不施加于緹娜）→ 结果页按 winfail `[1,1]` 进 level 1；loop.gold 三次交接后不变（`chain-01`…`chain-11`，[chain-review-manifest.json](chain-review-manifest.json)） |
 
-## 承接策略（`content/battles/campaign.json`）
+### runtime-measured＋resource-derived：各关强制胜利回执
 
-- 只承接 `player_controlled` 单位：`level/exp/pending_stat_points/equipment/weapon_code/inventory/kill_count` 与 `str/dex/mind/con`；loop 级只承接 `gold`。
-- 应用发生在 `BattlePlayLoop.create` 之后、`begin_battle` 之前（`apply_campaign_carry` seam），派生数值走 `ProgressionRules.refresh_growth_stats`，队列按刷新后速度重建。
-- `next_level_event` 来自各战 winfail 脚本（051→52，052→58）；level 58 没有场景，第二战胜利后不出现按钮。
-- 下一场景通过 `CampaignProgress.pending`（进程内一次性静态）交给重新加载的 Runtime；不写跨关存档，第二战使用独立单战存档槽。
+首次控制人数与胜利键来自 `tests/capture_battle_review.gd -- --level=N` 的窗口化运行；编队、宝箱字、事件回合来自该关 seed／WINFAIL。
 
-## 未确认边界
+| level | 场景 | 首次控制（单位／受控） | 胜利键 → 结果 | 独有读数 |
+| --- | --- | --- | --- | --- |
+| 3 盜賊洞窟 | `battle_003.json` | 17／3＋漢克斯 | win → 漢克斯加入 | 漢克斯开场 pmEnemy／undead，WINFAIL003 胜利段转 pmPlayer、清 undead；EVEF record 27 宝箱；→ STORY061 |
+| 7 寧靜之森 | `battle_007.json` | 25／4 | win_0 → `victory_boss` | 第 5 回合 6 名 023＋2 名 024 增援，第 6 回合雪拉 005 以 `player_controlled` 加入；→ story 064 |
+| 10 帕尼西亞城 廢墟 | `battle_010.json` | 6／2 | win_0 → `victory_optional_clear` | win status 在第 5 回合 event 3 才武装；1 宝箱 |
+| 12 巴瀚納海峽 | `battle_012.json` | 39／7 | win_0 → `victory_script` | 45×60 格；62 个 Enemy101 船殼为静态物件；第 8 回合 actSetPlayerFixPos 把 32 名 038 的守备锚点改到四个图外撤退点（半径 1，走过去而非瞬移），第 10 回合 actWalkAndDelete 离场；事件回合 8／10／16／23 |
+| 13 龍之息 | `battle_013.json` | 16／7 | win_0 → `victory_escape` | 到达矩形 (416,288)-(448,288) |
+| 19 利魯瑪山地 | `battle_019.json` | 5／1（雷特） | win_0 → `victory_optional_clear` | event 1／2 增援 041／043／038；宝箱 record 9 [228]、10 [225]、11 [242,244] |
+| 22 尼布魯瀑布 | `battle_022.json` | 15／7 | win_0 → `victory_boss` | 条件槽 008／009 未安装；041／043 增援、051 事件、actGetItem(14,1) |
+| 26 亞雷比斯 | `battle_026.json` | 20／8 | win_0 → `victory_optional_clear` | 26 个 Enemy101 船壳为静态物件；第 14 回合 event_0 插入 7 名 035；win_0 = actCheckEnemyTotalNumber(0)；宝箱 record 52 (2,15) 物品 [68]；038 终点 (16,5) 为阻挡格，取最近可用格 |
+| 28 眾神的宮殿遺址 | `battle_028.json` | 16／7 | win_0 → `victory_script` | win_0 由第 4 回合 round-display／event 链武装；九个非对齐终点取最近合法格 |
+| 29 約瑟河 | `battle_029.json` | — | win_0 → `victory_boss` | next-level／大地图写入走 winfail hand-off |
+| 31 漆黑之森 | `battle_031.json` | 9／3 | event_4 → 结果页 | 续接 actSetNextPlayLevelEvent(31,71)；item 252 |
+| 32 拉格納沼地 | `battle_032.json` | 22／3 | 强制胜利 | 大地图 hand-off 33,34；actCheckNextSerialNumber、actInsertStoryObjectWaitPos；噴人沼氣见 [original_poison_gas](../../static_reverse/original_poison_gas.md) |
+| 33 黃昏之丘　陰 | `battle_033.json` | 15／4 | event_4 玩家计数 → 结果页 | 原脚本走大地图 walk hand-off，review 规范为结果页 |
+| 34 沙羅尼亞近郊 | `battle_034.json` | — | win_0 → `victory_boss` | STORY034 只写 fail／event status，正式战斗以 `initial_status_overrides.win=[0]` 武装 win_0（provisional）；无 next-level，actSetBMWalkToPoint |
+| 36 薩魯司海岸 | `battle_036.json` | 16／7 | event_1 → 结果页 | 克羅蒂 009 条件安装与 no-attack；宝箱 record 24 在图外，记 `skipped_out_of_bounds`；续接 actSetNextPlayLevelEvent(36,gameBigMapLevel) |
+| 38 幽闇墳場 | `battle_038.json` | 42／7 | win_0 → `victory_script` | 逃出区 [7,3]／[7,4]／[7,5]；event_1–7 离场，条件 event_8／9 因成员缺席跳过；win_0 结果前往 80 |
+| 40 聖靈之森 | `battle_040.json` | 17／8 | win_0 → `victory_boss` | 第 14 回合六名脚本增援；3 个运行时安装槽 |
+| 41 悲嘆之湖 | `battle_041.json` | 24／8 | win_0 → `victory_boss` | 胜利进 73 |
+| 43 大地的裂縫 | `battle_043.json` | 25／7 | win_0 → `victory_optional_clear` | actDeletePosObject(816,111,4,defProcStandObject) 为对象请求，不判单位离场；actGetItem(16,1) |
+| 73 兄弟的抉擇 | `battle_073.json` | 无首次控制 | 事件结束 → 大地图 | WINFAIL073 无 win／fail 段；event_0／event_1 两个选择分支都链到无条件 event_2 |
+| 80 禁忌之魂・墳場地下 | `battle_080.json` | 30／7 | win_0 → `victory_script` | 到达两处删站立物件并发物品 112／15；见下行闸门；怨念體 068 以 `engADDCOLOR` 加色绘制，落点 (25,9) provisional |
+| 901 菲納斯河畔 伏擊 | `battle_901.json` | 22／5 | win_0 → `victory_optional_clear` | — |
+| 904 利魯瑪山地 再訪 | `battle_904.json` | 5／1 | win_0 → `victory_optional_clear` | — |
 
-- 原版关卡间的 HP/MP 是否回满、金币／物品是否结算、是否有关间剧情或商店：未证明；当前为重制选择。
-- 第二战胜负／事件对白、增援演出、CLIP001 音效、专属配乐已在后续切片接入（见各自回执）；level 53 之后的 level 1 尚未重制，53 胜利结果页以「第一章　完 · level 1 尚未重製，回到第一戰」结束本章（见 [PROJECT Next steps](../../../PROJECT.md#next-steps)）。
+### static-derived
 
-## 跨启动续战（2026-09-18 追加，runtime-measured）
+| 项 | 锚点 |
+| --- | --- |
+| WINFAIL080 两条宝物链末尾的 `actCheckEventNotExist 1,<另一条>` 是闸门：只有第二个宝物到手才武装 win_0；下方宝物在墙后，墙要 怨念體 068 倒下（event 3）才开 | `0x450840` case 0x72；`tests/run_winfail_rules_tests.gd` 的 `run_winnability_census`（80 关宝箱顺序） |
 
-- `CampaignProgress` 在每次跨关 hand-off（结果页「下一戰／繼續」与 story scene 的 `start_story_handoff`）把 `{scenario_path, carry, from_scenario_id}` 写入 `user://campaign_progress.json`（`hsl_campaign_progress_save.v1`）；`reset_campaign()`／章末「回到第一战」／提示中的「從第一戰重新開始」删除它。
-- 新进程以 `product_opening` 进入 campaign 首关（`first_battle.json`）且存档指向更后的关卡时，开场在第一帧暂停（`SceneTree.paused`），在始终处理的 CanvasLayer 4 上显示「偵測到戰役進度 / 上次進行到：<title>」与两个按钮（`resume-prompt.png`）；「繼續」把存档作为一次性 `pending` 重载进入该关卡并带回 carry（`resumed-story-scene.png` 为 story 058 起始帧），「從第一戰重新開始」删除存档并恢复开场。
-- 采集：`tools/play.sh --screen 0 --script res://tests/capture_campaign_resume_review.gd`（`CAMPAIGN_RESUME_REVIEW_PASS shots=2`）；headless 覆盖在 `tests/run_campaign_tests.gd` 的 `_test_saved_progress`（headless 需 `resume_prompt_in_headless = true` 显式开启，避免 smoke 套件受开发机存档影响）。
-- 边界：只保存战役位置与受控单位 carry，不保存战斗中途状态（单战存档仍是 `BattleCheckpoint` 的独立槽）；原作跨关存档流程未考证，此为重制流程。
+## 重制接线
 
-## 第二战之后的整链回执（2026-09-18，runtime-measured；同日更新为 53 正式战斗，再延到 level 1 预览→大地圖→城镇）
+- `content/battles/campaign.json`：关卡注册、`party: separate`、`next_level_event`（来自各战 winfail）。
+- `game/sim/loop/BattlePlayLoop.gd` `apply_campaign_carry`；`game/sim/ProgressionRules.gd` `refresh_growth_stats`。
+- `game/battle/runtime/CampaignProgress.gd`：一次性 `pending`、`next_destination`、`user://campaign_progress.json`。
+- 正式战斗场景由 `tools/hsltools/levels/battle.py`（`python3 tools/hsl.py generate level_battle:N`）从预览、seed、EVEF 与演员模板组装；WINFAIL 由数据驱动解释器消费。
 
-`tools/play.sh --script res://tests/capture_campaign_chain_review.gd --resolution 640x480 --screen 0`（level 52 dev first-control seam 上把皇帝置为阵亡后由 PlayLoop `_resolve_outcome` 裁决胜负，等级 3／金币 275 作为显式 fixture；53 的逃出胜利把緹娜放到城门格 (30,35) 后选「待機」由 PlayLoop 裁决；story 场景与开场用快节奏，只看衔接）：`CAMPAIGN_CHAIN_REVIEW_PASS shots=13`；[chain-review-manifest.json](chain-review-manifest.json) 保存各步 check 与最终落盘位置。
+## 复现
 
-1. `chain-01-level52-victory-cutscene.png`：皇帝阵亡 → 解释器提交 WINFAIL052 win_0 → 其结果链以脚本演出播放：镜头对准雷歐納德、脚本消息框显示 378「拉爾斯帝國的時代結束了！！」（故事队列不再重复分页）。
-2. `chain-02-level52-result-next.png`：演出结束后结果页出现「繼續 · 沃斯菲塔王座廳」按钮。
-3. `chain-03-level58-opening.png`：点击后重载进 `story_058.json`，`campaign_handoff.carry.loop.gold == 275` 到达 story 场景；58 结束经 `start_story_handoff` 进 `story_060.json`，60 结束进 `third_battle.json`（level 53 正式战斗），carry 三次交接后仍为 275。
-4. `chain-07-level53-opening.png`：53 以 `product_opening` 进入，协调器**战斗模式**从 `actScrollBGToPos(0,0)` 的塔顶月夜开始播放 STORY053（右缘阳台为仅演出的緹娜 029）。
-5. `chain-08-level53-first-control.png`：开场结束、卫兵先手行动播放完毕后，受控单位 `tina`（PLAYERS 002 模板）在攀绳终点格 (20,23) 打开行动菜单（移動／攻擊／魔法／道具／待機／狀態），两名追兵已逼近；`user://campaign_progress.json` 记录 `third_battle.json` 为续战位置，《逃出克萊恩城》在首次控制时播放。campaign 将 53 标 `party: separate`，Leonard 的 carry 未施加于緹娜、原样保留待传递。
+`tools/godot.sh --headless --script res://tests/run_campaign_tests.gd`（承接合同）；各关回执 `tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=N`。
 
-6. `chain-09-level53-victory-line.png`：緹娜站上城门格并待機 → `victory_escape` → 解释器提交 WINFAIL053 win_0 → 704「……」以脚本演出播放（结果页等演出结束）。
-7. `chain-10-level53-result.png`：结果页「緹娜 逃出克萊恩城」与「繼續 · 歐姆村（開場預覽）」按钮（winfail `[1,1]`：第二值 1 为下一关，按 `CampaignProgress.next_destination` 解析）。
-8. `chain-11-level1-preview-end-card.png`：`story_001.json` 播完 STORY001 81 个 token 后的「戰鬥部分（level 1）尚未重製……進入大地圖（歐姆村）」卡；确认后经 `_exit_to_world_map` 带 carry（loop.gold 仍为 275，53 为 separate party 未触碰）与世界状态进入 `world_map_scene.json`，站在歐姆村点 1。此后到戈爾山道弹「level 2 · 戈爾山道 尚未重製」卡、回歐姆村开城镇画面的帧（12–14）与[大地圖回执](../world_map_scene/README.md)／[城镇回执](../town_scene/README.md)相同，不重复收录；`user://campaign_progress.json` 最终为 `world_map_scene.json` ＋ `world.current_point = 1`。
+## 边界
 
-边界：fixture 不是自然打完第二战／第三战（53 胜利由夹具把緹娜放到城门格）；节奏被压缩，不作为各场景的视觉验收；53 的被捕失败／增援由 `tests/run_third_battle_runtime_tests.gd` headless 覆盖，尚无自然打通 53 的实玩回执。各工作树的 Godot 测试共用 `user://`，并发 campaign 测试会清掉落盘文件，此 review 须单独运行；结果页按钮的窗口点击偶发未命中（重跑即过），属采集夹具时序，不是产品缺陷。
+- 原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；承接策略为重制选择（provisional）。
+- 强制胜利夹具不是自然通关；增援落点、阻挡格最近合法落点、条件成员（咕嚕 008、克羅蒂 009）资格与安装时序、船壳计数条件、对象身份与 native scheduler 均为 provisional。
+- 镜头、走位、对白时钟与结果页文案是重制表现，不作原版视觉依据。
+- 各工作树的 Godot 测试共用 `user://`，并发 campaign 测试会清掉落盘文件。

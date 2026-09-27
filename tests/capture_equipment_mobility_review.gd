@@ -45,9 +45,9 @@ func setup_mobility() -> void:
 	var loop := run_position_equipment_tests.mobility_fixture()
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var player := BattlePlayLoop._unit(loop,"leonard")
-	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
-	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	var player := BattlePlayLoop.unit_ref(loop,"leonard")
+	var enemy := BattlePlayLoop.unit_ref(loop,"enemy021_1")
+	var ally := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	player["coord"] = Vector2i(8,8); enemy["coord"] = Vector2i(9,8); ally["coord"] = Vector2i(17,19)
 	player["live_speed"] = 120; ally["live_speed"] = 100; enemy["live_speed"] = 90
 	original_foot = BattlePlayLoop.EquipmentRules.equipped_code(player["equipment"],"foot")
@@ -69,7 +69,7 @@ func setup_mobility() -> void:
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			player = BattlePlayLoop._unit(loop,"leonard")
+			player = BattlePlayLoop.unit_ref(loop,"leonard")
 			landing = loop["escape_zone"][0]
 			var placed := false
 			for y in range(loop["map_size"].y):
@@ -84,7 +84,7 @@ func setup_mobility() -> void:
 			player["move_point"] = 5
 			check(placed,"the actual escape zone has a legal source-cost6 approach")
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = OUTPUT+mode+".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()
@@ -100,16 +100,16 @@ func setup_mobility() -> void:
 
 
 func position_extended_encounter(loop: Dictionary, actor_id: String, foe_id: String) -> bool:
-	var actor := BattlePlayLoop._unit(loop,actor_id)
-	var foe := BattlePlayLoop._unit(loop,foe_id)
+	var actor := BattlePlayLoop.unit_ref(loop,actor_id)
+	var foe := BattlePlayLoop.unit_ref(loop,foe_id)
 	for y in range(maxi(1,actor["coord"].y-6),mini(loop["map_size"].y,actor["coord"].y+7)):
 		for x in range(maxi(1,actor["coord"].x-6),mini(loop["map_size"].x,actor["coord"].x+7)):
 			var cell := Vector2i(x,y)
 			if bool(loop["tiles"].get(cell,{}).get("blocks_movement",false)) or BattlePlayLoop.unit_id_at_coord(loop,cell) not in ["",foe_id]: continue
 			foe["coord"] = cell; actor["move_point"] = 5
-			var before := BattleLoopAI._ai_physical_choice(loop,actor,foe,BattlePlayLoop._movement_envelope(loop,actor_id))
+			var before := BattleLoopAI.ai_physical_choice(loop,actor,foe,BattlePlayLoop.movement_envelope(loop,actor_id))
 			actor["move_point"] = 6
-			var after := BattleLoopAI._ai_physical_choice(loop,actor,foe,BattlePlayLoop._movement_envelope(loop,actor_id))
+			var after := BattleLoopAI.ai_physical_choice(loop,actor,foe,BattlePlayLoop.movement_envelope(loop,actor_id))
 			actor["move_point"] = 5
 			if before.is_empty() and not after.is_empty():
 				landing = after["to"]

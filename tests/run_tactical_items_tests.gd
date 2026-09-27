@@ -21,13 +21,13 @@ static func initial() -> Dictionary:
 
 static func fixture() -> Dictionary:
 	var loop := run_support_magic_tests.stat_fixture()
-	var actor := BattlePlayLoop._unit(loop,"tina")
+	var actor := BattlePlayLoop.unit_ref(loop,"tina")
 	actor["inventory"] = [262,262,263,247,250,248,0,0]
 	actor["equipment"] = actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
 	actor["equipment"].append({"slot":"accessory2","item_code":227})
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	actor["stamina"] = 0
-	BattlePlayLoop._unit(loop,"enemy026_1").merge({"mp":0,"no_attack":true,"inventory":[0,0,0,0,0,0,0,0]},true)
+	BattlePlayLoop.unit_ref(loop,"enemy026_1").merge({"mp":0,"no_attack":true,"inventory":[0,0,0,0,0,0,0,0]},true)
 	return loop
 
 static func cast(loop: Dictionary, id: String, target: String) -> Dictionary:
@@ -83,23 +83,23 @@ func native_items() -> void:
 		check(scanned["ok"] and scanned["index"] + 1 == int(row["native"]),"first matching native cure slot includes silence and keeps source ordering")
 
 func independent_actions() -> void:
-	var loop := fixture();var target := BattlePlayLoop._unit(loop,"tina")
+	var loop := fixture();var target := BattlePlayLoop.unit_ref(loop,"tina")
 	run_support_magic_tests.buff(loop,"tina","attack_up",4,24);run_support_magic_tests.buff(loop,"tina","defense_up",4,30)
 	for key in ["poison","no_magic"]: target.merge(BattlePlayLoop.StatusEffectRules.apply(target,key,3,5 if key == "poison" else 0)["changes"],true)
-	BattlePlayLoop._unit(loop,"companion")["hp"] = 1
+	BattlePlayLoop.unit_ref(loop,"companion")["hp"] = 1
 	var cured := BattlePlayLoop.use_item(loop,"247")
 	check(not BattlePlayLoop.StatusEffectRules.magic_blocked(BattlePlayLoop.unit(cured,"tina")) and BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(cured,"tina")),"self破魔咒 removes silence only")
 	check(StatEnhancementRules.word(BattlePlayLoop.unit(cured,"tina"),"attack_up") == StatEnhancementRules.word(target,"attack_up") and cured["action_end_sequence"] == 0,"first cure does not prematurely expire existing positive states")
 	var healed := cast(cured,run_support_magic_tests.HEAL,"companion")
 	healed = BattlePlayLoop.finish_exhausted_action(healed)
 	check(healed["last_attack"].get("healing",0) > 0 and healed["action_end_sequence"] == 1 and BattlePlayLoop.unit(healed,"tina")["mp"] == target["mp"]-6,"second action can pay actual healing after silence removal and ticks once")
-	var drink := fixture();BattlePlayLoop._unit(drink,"enemy026_1")["coord"] = Vector2i(15,16)
+	var drink := fixture();BattlePlayLoop.unit_ref(drink,"enemy026_1")["coord"] = Vector2i(15,16)
 	drink = BattlePlayLoop.use_item(drink,"250")
 	check(BattlePlayLoop.unit(drink,"tina")["stamina"] == 20 and drink["last_item_use"]["restored_stamina"] == 20,"神威之酒 makes the owned20ST special payable")
 	drink = BattlePlayLoop.attack_target(BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(drink,"special"),MOON),"enemy026_1",func(_n):return 0,BattlePlayLoop.unit(drink,"tina")["coord"])
 	drink = BattlePlayLoop.finish_exhausted_action(drink)
 	check(drink["last_attack"].get("skill_id") == MOON and BattlePlayLoop.unit(drink,"tina")["stamina"] == 0 and drink["action_end_sequence"] == 1,"actual Moon Dance pays once after the first-action drink")
-	var partial := fixture();BattlePlayLoop._unit(partial,"tina")["stamina"] = 59
+	var partial := fixture();BattlePlayLoop.unit_ref(partial,"tina")["stamina"] = 59
 	partial = BattlePlayLoop.use_item(partial,"250")
 	check(partial["last_item_use"]["restored_stamina"] == 1 and BattlePlayLoop.unit(partial,"tina")["stamina"] == 60,"last point caps at60 with correct receipt")
 	var move := fixture();move = BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(move,"move"),Vector2i(15,16))
@@ -112,7 +112,7 @@ func independent_actions() -> void:
 func cure_weaken() -> void:
 	var healthy := fixture()
 	var healthy_attack: int = BattlePlayLoop.unit(healthy,"tina")["combat_profile"]["live_attack_damage"]
-	var weak := fixture();var tina := BattlePlayLoop._unit(weak,"tina")
+	var weak := fixture();var tina := BattlePlayLoop.unit_ref(weak,"tina")
 	tina["inventory"] = [249,251,247,0,0,0,0,0]
 	tina.merge(BattlePlayLoop.StatusEffectRules.apply_weaken(tina,3,10)["changes"],true)
 	tina.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(tina,weak["equipment_items"]),true)
@@ -124,10 +124,10 @@ func cure_weaken() -> void:
 	check(cured["last_item_use"]["cured_weaken"] and cured["last_item_use"]["draws"].is_empty() and no_draw(cured, weak, "damage"),"振奃劑 commits a weaken cure receipt without a random draw")
 	check(not BattlePlayLoop.StatusEffectRules.weakened(after) and not after["status_counters"].has("weaken") and after["inventory"] == [251,247,0,0,0,0,0,0],"the cure clears flag 8 and the +0x38 word and removes one 249")
 	check(after["combat_profile"]["live_attack_damage"] == healthy_attack,"the cure block refresh (0x448840) restores the unweakened derived attack")
-	var none := fixture();BattlePlayLoop._unit(none,"tina")["inventory"] = [249,0,0,0,0,0,0,0]
+	var none := fixture();BattlePlayLoop.unit_ref(none,"tina")["inventory"] = [249,0,0,0,0,0,0,0]
 	var wasted := BattlePlayLoop.use_item(none,"249")
 	check(wasted["item_use_sequence"] == 1 and BattlePlayLoop.unit(wasted,"tina")["inventory"] == [0,0,0,0,0,0,0,0] and not wasted["last_item_use"]["cured_weaken"],"振奃劑 on a healthy target still spends the 249 (0x444aba)")
-	var poisoned := fixture();var both := BattlePlayLoop._unit(poisoned,"tina")
+	var poisoned := fixture();var both := BattlePlayLoop.unit_ref(poisoned,"tina")
 	both["inventory"] = [251,0,0,0,0,0,0,0]
 	both.merge(BattlePlayLoop.StatusEffectRules.apply_weaken(both,2,5)["changes"],true)
 	both.merge(BattlePlayLoop.StatusEffectRules.apply(both,"poison",3,5)["changes"],true)

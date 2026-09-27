@@ -25,7 +25,7 @@ func prepare_route() -> void:
 	scene=load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.startup_mode="dev_first_control"; root.add_child(scene); current_scene=scene; scene.set_process(false)
 	var loop := BattleFixture.loop()
-	var actor := BattlePlayLoop._unit(loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 	var zone: Vector2i=loop["escape_zone"][0]
 	actor["coord"]=zone+Vector2i(-1,0); actor["ai_home_coord"]=actor["coord"]
 	actor["inventory"]=[253,0,0,0,0,0,0,0]
@@ -33,7 +33,7 @@ func prepare_route() -> void:
 	# Previous acquisitions are explicit input. This action adds its own source roll.
 	for field in PermanentCapabilityRules.KEYS: actor["permanent_gains"][field]=1
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
-	var foe := BattlePlayLoop._unit(loop,"enemy021_1"); foe["coord"]=zone+Vector2i(4,0); foe["ai_home_coord"]=foe["coord"]
+	var foe := BattlePlayLoop.unit_ref(loop,"enemy021_1"); foe["coord"]=zone+Vector2i(4,0); foe["ai_home_coord"]=foe["coord"]
 	# The source report withdraws one021. Keep another live enemy so the report
 	# cannot correctly finish the fixture by enemy-clear before our item action.
 	var remaining := foe.duplicate(true); remaining["id"]="enemy021_2"
@@ -44,7 +44,7 @@ func prepare_route() -> void:
 	loop["turn_queue"]["slots"].sort_custom(func(a,b):return a["id"]=="leonard" and b["id"]!="leonard")
 	for unit in loop["units"]:
 		check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","legal carry fixture terrain")
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"leonard"), "test")
 	for art in scene.actors_root.get_children(): scene.actors_root.remove_child(art); art.queue_free()
 	scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(actor["coord"])
 	scene.settlement_controller.checkpoint_path=CARRY_OUT+"first.save"; scene.set_process(true)

@@ -482,7 +482,7 @@ func show_selection(loop: Dictionary, coord: Vector2i, logical_center: Vector2, 
 	var in_range := false
 	var body_rect := Rect2()
 	if loop[LoopKeys.INTERACTION] == Interaction.MOVE_SELECT:
-		var envelope := BattlePlayLoop._movement_envelope(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
+		var envelope := BattlePlayLoop.movement_envelope(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))
 		in_range = envelope.get("reachable_by_coord", {}).has(coord)
 		var route: Dictionary = envelope.get("reachable_by_coord", {}).get(coord, envelope.get("transit_by_coord", {}).get(coord, {}))
 		var actor := BattlePlayLoop.unit(loop, str(loop[LoopKeys.SELECTED_UNIT_ID]))

@@ -1,5 +1,6 @@
 extends Node
 const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## Read-only, sequence-scoped presentation after the complete combat exchange.
 ## Jobs contain receipt snapshots; no HP, EXP, inventory or turn is committed here.
 ## provenance:
@@ -85,9 +86,9 @@ var focus_count := 0
 
 func _ready() -> void:
 	death_blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	source = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/combat/aftermath.json"))
+	source = ContentPaths.read_json("res://content/generated/hsl/combat/aftermath.json")
 	assert(source.get("schema") == "hsl_combat_aftermath.v1", "Missing combat aftermath source data")
-	var poses: Variant = JSON.parse_string(FileAccess.get_file_as_string(HIT_POSES_PATH))
+	var poses: Variant = ContentPaths.read_json(HIT_POSES_PATH)
 	assert(typeof(poses) == TYPE_DICTIONARY and (poses as Dictionary).get("schema") == "hsl_actor_hit_poses.v1", "Missing actor hit poses")
 	hit_poses = (poses as Dictionary)["poses"]
 	ui = CanvasLayer.new()

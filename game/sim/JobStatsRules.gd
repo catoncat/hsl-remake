@@ -10,6 +10,7 @@ extends RefCounted
 ##   rules: runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md (swapped L1 023 = 28 HP)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_job_stats_91_99.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_mobile_jobs.md
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MODEL := "native_job_stats_v1"
 const FORMULAS_PATH := "res://content/generated/hsl/roles/job_formulas.json"
 const FORMULAS_SCHEMA := "hsl_job_formulas.v1"
@@ -26,7 +27,7 @@ static var _cached_jobs: Dictionary = {}
 ## {job code string: formula row}; an unreadable table is empty, so every job is unsupported.
 static func jobs() -> Dictionary:
 	if _cached_jobs.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(FORMULAS_PATH)) if FileAccess.file_exists(FORMULAS_PATH) else null
+		var parsed: Variant = ContentPaths.read_json(FORMULAS_PATH) if FileAccess.file_exists(FORMULAS_PATH) else null
 		if parsed is Dictionary and parsed.get("schema") == FORMULAS_SCHEMA and parsed.get("jobs") is Dictionary:
 			_cached_jobs = parsed["jobs"]
 	return _cached_jobs

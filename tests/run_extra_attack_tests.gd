@@ -66,7 +66,7 @@ func source_cases() -> void:
 func series_cases() -> void:
 	for count in [1, 2]:
 		var loop := fixture(true, count == 2)
-		BattlePlayLoop._unit(loop, "enemy021_1")["combat_profile"]["attack_back"] = 100
+		BattlePlayLoop.unit_ref(loop, "enemy021_1")["combat_profile"]["attack_back"] = 100
 		var before := loop.duplicate(true)
 		var after := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop, "attack"), "enemy021_1", func(_n): return 0)
 		var receipt: Dictionary = after["last_attack"]
@@ -84,10 +84,10 @@ func series_cases() -> void:
 		check(repeated["units"] == after["units"] and repeated["last_combat"] == after["last_combat"], "late repeated targeting cannot replay series or reward")
 	for hp in [1, 30]:
 		var loop := fixture()
-		BattlePlayLoop._unit(loop,"enemy021_1")["hp"] = hp
-		BattlePlayLoop._unit(loop,"enemy021_1")["combat_profile"]["attack_back"] = 100
-		BattlePlayLoop._unit(loop,"leonard")["kill_chain_word"] = 2
-		var receipt := BattleLoopCombat._resolve_exchange(loop,"leonard","enemy021_1",func(_n):return 0)
+		BattlePlayLoop.unit_ref(loop,"enemy021_1")["hp"] = hp
+		BattlePlayLoop.unit_ref(loop,"enemy021_1")["combat_profile"]["attack_back"] = 100
+		BattlePlayLoop.unit_ref(loop,"leonard")["kill_chain_word"] = 2
+		var receipt := BattleLoopCombat.resolve_exchange(loop,"leonard","enemy021_1",func(_n):return 0)
 		var strikes := CombatSequenceRules.strikes(receipt)
 		check(strikes.size() == (1 if hp == 1 else 2) and receipt["counter"].is_empty(), "lethal first/final strike cancels every remaining hit and counter")
 		check(strikes.back()["actual_damage"] == (1 if hp == 1 else 10) and strikes.back()["experience_basis"]["kill_chain_before"] == 2, "final hit uses actual remaining HP and the prior kill chain")
@@ -96,25 +96,25 @@ func series_cases() -> void:
 		var reward_again := BattlePlayLoop.RewardRules.generate(receipt,loop["units"],loop["reward_data"],stream_of(loop, "reward"),loop["rewarded_unit_ids"])
 		check(reward_again["gold"] == 0 and reward_again["deaths"].is_empty(), "saved death ledger prevents rewarding the series twice")
 	var loop := fixture(false,true)
-	BattlePlayLoop._unit(loop,"leonard")["hp"] = 31
-	BattlePlayLoop._unit(loop,"enemy021_1")["combat_profile"]["attack_back"] = 100
-	BattlePlayLoop._unit(loop,"enemy021_1")["kill_chain_word"] = 2
-	var receipt := BattleLoopCombat._resolve_exchange(loop,"leonard","enemy021_1",func(_n):return 0)
+	BattlePlayLoop.unit_ref(loop,"leonard")["hp"] = 31
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["combat_profile"]["attack_back"] = 100
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["kill_chain_word"] = 2
+	var receipt := BattleLoopCombat.resolve_exchange(loop,"leonard","enemy021_1",func(_n):return 0)
 	check(receipt["counter"]["followups"][0]["experience_basis"]["kill_multiplier"] == 200 and receipt["counter"]["kill_chain"] == 3, "first nonlethal counter does not clear the chain before its second lethal hit")
 	check(receipt["experience_settlement"]["reason"] == "actor_defeated" and not receipt.has("experience"), "a later fatal counter suppresses posthumous growth from the earlier strike")
 	check(BattleAftermath.defeated_ids(receipt) == ["leonard"], "death from an additional counter remains visible to terminal aftermath")
 	var grown := fixture()
-	BattlePlayLoop._unit(grown,"leonard")["exp"] = 99
-	var growth_hit := BattleLoopCombat._resolve_exchange(grown,"leonard","enemy021_1",func(_n):return 0)
+	BattlePlayLoop.unit_ref(grown,"leonard")["exp"] = 99
+	var growth_hit := BattleLoopCombat.resolve_exchange(grown,"leonard","enemy021_1",func(_n):return 0)
 	check(growth_hit["followups"][0]["attacker_before"]["level"] == 1 and growth_hit["followups"][0]["attacker_before"]["exp"] == 99 and growth_hit["experience"]["level_after"] == 2, "first-hit contribution cannot level up or change second-hit damage early")
 
 
 func miss_cases() -> void:
 	for mode in ["first", "last", "all"]:
 		var loop := fixture()
-		BattlePlayLoop._unit(loop,"leonard")["combat_profile"]["live_hit_ratio"] = 80
+		BattlePlayLoop.unit_ref(loop,"leonard")["combat_profile"]["live_hit_ratio"] = 80
 		var hundreds := [0]
-		var receipt := BattleLoopCombat._resolve_exchange(loop,"leonard","enemy021_1",func(bound):
+		var receipt := BattleLoopCombat.resolve_exchange(loop,"leonard","enemy021_1",func(bound):
 			if bound == 100:
 				hundreds[0] += 1
 				if (mode == "first" and hundreds[0] == 2) or (mode == "last" and hundreds[0] == 4) or mode == "all": return 99
@@ -150,7 +150,7 @@ static func wings_fixture(wings: bool = true, ai: bool = false) -> Dictionary:
 func wait_cases() -> void:
 	var loop := wings_fixture()
 	check(BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(loop,"leonard")["equipment"],"accessory2") == 227, "White Wings can be equipped through the normal free transaction")
-	var poisoned := BattlePlayLoop._unit(loop,"leonard")
+	var poisoned := BattlePlayLoop.unit_ref(loop,"leonard")
 	poisoned.merge(BattlePlayLoop.StatusEffectRules.apply(poisoned,"poison",3,7)["changes"],true)
 	var before := loop.duplicate(true)
 	var again := BattlePlayLoop.choose_command(loop,"wait")
@@ -186,10 +186,10 @@ func cast(loop: Dictionary, id: String, target: String) -> Dictionary:
 
 func series_and_outcome_cases() -> void:
 	var base: Dictionary = fixture(true,true)
-	BattlePlayLoop._unit(base,"leonard")["equipment"].append({"slot":"accessory2","item_code":227})
-	BattlePlayLoop._unit(base,"enemy021_1")["combat_profile"]["attack_back"] = 100
-	BattlePlayLoop._unit(base,"enemy021_1")["hp"] = 500
-	BattlePlayLoop._unit(base,"enemy021_1")["max_hp"] = 500
+	BattlePlayLoop.unit_ref(base,"leonard")["equipment"].append({"slot":"accessory2","item_code":227})
+	BattlePlayLoop.unit_ref(base,"enemy021_1")["combat_profile"]["attack_back"] = 100
+	BattlePlayLoop.unit_ref(base,"enemy021_1")["hp"] = 500
+	BattlePlayLoop.unit_ref(base,"enemy021_1")["max_hp"] = 500
 	var first := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(base,"attack"),"enemy021_1",zero)
 	var first_receipt: Dictionary = first["last_combat"].duplicate(true)
 	check(BattlePlayLoop.CombatSequence.strikes(first_receipt).size() == 4, "extra action and double_attack retain a complete independent primary/counter series")
@@ -198,23 +198,23 @@ func series_and_outcome_cases() -> void:
 	check(BattlePlayLoop.CombatSequence.strikes(second["last_combat"]).size() == 4 and second["last_combat"]["sequence"] == first_receipt["sequence"] + 1, "second action creates another complete series instead of replaying the first receipt")
 	check(BattlePlayLoop.unit(second,"leonard")["stamina"] > BattlePlayLoop.unit(first,"leonard")["stamina"] and second["last_combat"].has("experience"), "second series supplies its own native stamina and final EXP")
 	var counter_only := wings_fixture(false)
-	BattlePlayLoop._unit(counter_only,"leonard")["coord"] = Vector2i(9,8)
-	BattlePlayLoop._unit(counter_only,"leonard")["hp"] = 500
-	BattlePlayLoop._unit(counter_only,"leonard")["max_hp"] = 500
-	BattlePlayLoop._unit(counter_only,"enemy021_1")["equipment"].append({"slot":"accessory2","item_code":227})
-	BattlePlayLoop._unit(counter_only,"enemy021_1")["combat_profile"]["attack_back"] = 100
+	BattlePlayLoop.unit_ref(counter_only,"leonard")["coord"] = Vector2i(9,8)
+	BattlePlayLoop.unit_ref(counter_only,"leonard")["hp"] = 500
+	BattlePlayLoop.unit_ref(counter_only,"leonard")["max_hp"] = 500
+	BattlePlayLoop.unit_ref(counter_only,"enemy021_1")["equipment"].append({"slot":"accessory2","item_code":227})
+	BattlePlayLoop.unit_ref(counter_only,"enemy021_1")["combat_profile"]["attack_back"] = 100
 	counter_only = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(counter_only,"attack"),"enemy021_1",zero)
 	check(not counter_only["last_combat"]["counter"].is_empty(), "equipped future actor can counter during someone else's action")
 	counter_only = BattlePlayLoop.finish_exhausted_action(counter_only)
 	check(counter_only["selected_unit_id"] == "enemy023_1" and not counter_only["extra_action"]["pending"], "a Wings counterattacker cannot receive an out-of-turn extra action")
 	var kills := wings_fixture()
-	BattlePlayLoop._unit(kills,"leonard")["coord"] = Vector2i(9,8)
-	BattlePlayLoop._unit(kills,"leonard")["inventory"][0] = 228
+	BattlePlayLoop.unit_ref(kills,"leonard")["coord"] = Vector2i(9,8)
+	BattlePlayLoop.unit_ref(kills,"leonard")["inventory"][0] = 228
 	kills = BattlePlayLoop.change_equipment(kills,"accessory1",0,228)
 	var second_foe := BattlePlayLoop.unit(kills,"enemy021_1")
 	second_foe.merge({"id":"enemy021_2","coord":Vector2i(10,9),"hp":1,"inventory":[0,0,0,0,0,0,0,0]},true)
 	kills["units"].append(second_foe)
-	BattlePlayLoop._unit(kills,"enemy021_1").merge({"hp":1,"inventory":[0,0,0,0,0,0,0,0]},true)
+	BattlePlayLoop.unit_ref(kills,"enemy021_1").merge({"hp":1,"inventory":[0,0,0,0,0,0,0,0]},true)
 	kills = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(kills,"attack"),"enemy021_1",zero)
 	check(kills["last_combat"]["experience"]["multiplier"] == 2, "first extra-action strike keeps the separately equipped native EXP modifier")
 	kills = BattlePlayLoop.finish_exhausted_action(kills)
@@ -224,9 +224,9 @@ func series_and_outcome_cases() -> void:
 	check(kills["last_combat"]["experience_basis"]["kill_multiplier"] == 150 and kills["last_combat"]["experience"]["multiplier"] == 2 and BattlePlayLoop.unit(kills,"leonard")["kill_count"] == 2, "second independent kill uses prior-chain150% and the same final EXP modifier exactly once")
 	for ordinal in [1,2]:
 		var kill := wings_fixture()
-		BattlePlayLoop._unit(kill,"leonard")["coord"] = Vector2i(9,8)
-		BattlePlayLoop._unit(kill,"leonard")["exp"] = 99
-		BattlePlayLoop._unit(kill,"enemy021_1")["hp"] = 1
+		BattlePlayLoop.unit_ref(kill,"leonard")["coord"] = Vector2i(9,8)
+		BattlePlayLoop.unit_ref(kill,"leonard")["exp"] = 99
+		BattlePlayLoop.unit_ref(kill,"enemy021_1")["hp"] = 1
 		if ordinal == 2: kill = BattlePlayLoop.choose_command(kill,"wait")
 		var won := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(kill,"attack"),"enemy021_1",zero)
 		check(won["battle_outcome"] == BattleOutcome.VICTORY_ENEMIES_CLEARED and not won["extra_action"]["pending"], "lethal action ends battle without a spare action: " + str(ordinal))
@@ -234,16 +234,16 @@ func series_and_outcome_cases() -> void:
 		check(BattleCheckpoint.encode(won,VIEW)["ok"] and BattlePlayLoop.finish_exhausted_action(won) == won, "terminal save/repeated finish does not grant or settle again")
 		var flee := wings_fixture()
 		if ordinal == 2: flee = BattlePlayLoop.choose_command(flee,"wait")
-		BattlePlayLoop._unit(flee,"leonard")["coord"] = flee["escape_zone"][0]
+		BattlePlayLoop.unit_ref(flee,"leonard")["coord"] = flee["escape_zone"][0]
 		var escaped := BattlePlayLoop.choose_command(flee,"wait")
 		check(escaped["battle_outcome"] == BattleOutcome.VICTORY_ESCAPE and not escaped["extra_action"]["pending"], "escape ends either action instead of looping the current actor")
 		var death := base.duplicate(true)
 		if ordinal == 2: death = BattlePlayLoop.choose_command(death,"wait")
-		BattlePlayLoop._unit(death,"leonard")["hp"] = 1
+		BattlePlayLoop.unit_ref(death,"leonard")["hp"] = 1
 		death = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(death,"attack"),"enemy021_1",zero)
 		check(death["battle_outcome"] == BattleOutcome.DEFEAT_FALLEN and not death["extra_action"]["pending"] and not death["last_combat"].has("experience"), "fatal counter cancels any extra action and posthumous growth")
 	var departing := wings_fixture(true,true)
 	departing = BattlePlayLoop.step_ai_turn(departing,zero)
 	var changed := departing.duplicate(true)
-	BattleLoopScript._commit_departures(changed, ["enemy026_1"], "winfail", "event_3")
+	BattleLoopScript.commit_departures(changed, ["enemy026_1"], "winfail", "event_3")
 	check(not changed["extra_action"]["pending"] and BattlePlayLoop.CoreTurnQueue.current(changed["turn_queue"])["id"] != "enemy026_1", "scripted departure discards only the departing actor's pending repeat")

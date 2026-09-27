@@ -1,8 +1,16 @@
-# Random-position winfail actions
+# 随机位置 winfail 动作：槽位表、洗牌与 107／108／117／121
 
-> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself · status: live · functions: 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-29
+> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself · status: live · functions: 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-27
 
-## Token table
+## 结论
+
+- 原版 `actSetRandomPos` 最多存五组像素点并做一次部分洗牌（每槽一次 `0x458c10() & 1`），107／108 把对象放在槽位＋位移处不抽随机，117 把槽 0 设为某对象位置，121 每个对象在全局流上抽 3 次（static-derived）。
+- 重制 `BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时于全局流 `global_rng` 上跑同一洗牌，并把绑定到槽 k 的单位移到洗牌后的位置；开场表现读同一顺序（static-derived 输入）。
+- 差异：洗牌抽取在全局序列中的位置、`0x45e307` 内部的抽取未对齐（provisional）。
+
+## 证据
+
+### resource-derived
 
 ```c
 #define actCheckRoundDisp			94	// [number]
@@ -17,32 +25,34 @@
 #define actDetectRoundDispDisp		124	// [num]
 ```
 
-The dispatch table assigns the random-position family to cases 0x6a (actInsertObjectRandomPos), 0x6b (actInsertStoryObjectRandomPos), 0x70 (actDeleteRandomPosObject), 0x75 (actSetPlayerPosToRandom0), and 0x79 (actInsertRandomObject); 0x7a is actSetDoublePageMode, 0x7b is actInsertLevelUpStar, and 0x5e/0x7c are the round-display checks. The bounded reading of hsl01.exe 0x450840 shows the random insert actions consume the compiled [code, disp_x, disp_y, pos_id] shape, deletion consumes [id, range, proc_code], player relocation consumes [player_id, serial], and random effects use the effect object's range arguments.
+分派：0x6a（107）、0x6b（108）、0x70（112）、0x75（117）、0x79（121）；0x7a actSetDoublePageMode、0x7b actInsertLevelUpStar、0x5e／0x7c 回合显示检查（见 [original_round_display](original_round_display.md)）。
 
-## What 107／108／117／121 do (lane RNGC, static-derived)
+### static-derived（动作表 `[opcode*4 + 0x4537f4]`）
 
-Read from `hsl01.exe` (the case bodies the action table `[opcode*4 + 0x4537f4]` reaches). The slot table is `0x4c28e0`: entry i is the y word at `+4i` and the x word at `+4i+2`, both pixel coordinates.
+槽位表 `0x4c28e0`：第 i 项 y 字在 `+4i`、x 字在 `+4i+2`，均为像素。
 
-- `actSetPlayerPosToRandom0` 117 (`0x451db7`): `[player id][serial]`. It first zeroes the whole of slot 0 (dword `0x4c28e0 = 0`), then looks the object up with `0x44fad0(player id, serial)`. If there is no such object (−1) slot 0 stays (0, 0). Otherwise slot 0 becomes the object's pixel position: x word = `[obj+4]`, y word = `[obj+8]` (`0x451de4..0x451df7`). No draw.
-- `actInsertObjectRandomPos` 107 (`0x450f2c`): `[code][dx][dy][slot]` → `0x407ec0(x + dx, y + dy, code)`, where x and y are that slot's words. It stores the returned object in `0x4c1d38`. It draws nothing and has no candidate search: the object goes exactly at slot + displacement, and the enemy constructor centres it in that pixel's cell ([actor placement](actor_placement_initialization.md)).
-- `actInsertStoryObjectRandomPos` 108 (`0x451e64`): the same four arguments → `0x45e307(x + dx, y + dy, code, 0)`, the general object constructor (the level loader's normal-object branch `0x46be17` also calls it). No draw in the handler.
-- `actInsertRandomObject` 121 (`0x450f99`): `[code][slot][w][h][delay][count]`, with the anchor being slot `[slot]`'s x and y. Starting from an accumulated delay of 0, it repeats `count` times:
-  - `v = rand(w ? w : 1)` at `0x450fe6`, folded: if `v > n/2` (signed, truncating), then `v = n/2 − v`, so the offsets run from −(n−1−n/2) to n/2. The result is added to x.
-  - The same with `rand(h ? h : 1)` at `0x451012`, added to y.
-  - `0x45e307(x, y, code, 0)`. If an object comes back, it gets `+0xae =` the accumulated delay, `+0xa4 =` the script object's `+0x9c`, and `+0xa8 = +0xaa = 20000`.
-  - `rand(delay)` at `0x451075`, added to the accumulator. This draw happens even when no object came back, and `rand(0)` returns 0 without advancing.
+| token | 入口 | 原版 |
+| --- | --- | --- |
+| `actSetRandomPos` 106 | `0x451d0f` | 最多存五对；然后 `i = 0..n-1`，`0x458c10() & 1` 为真时交换槽 i 与槽 i+2（越界减 5；`0x451d5f..0x451da3`）；全偶时即表序 |
+| `actInsertObjectRandomPos` 107 | `0x450f2c` | `0x407ec0(x + dx, y + dy, code)`，返回对象存 `0x4c1d38`；不抽随机、无候选搜索；敌方构造器把对象居中到该像素所在格 `(v & ~31) + 16`（[actor_placement_initialization](actor_placement_initialization.md)） |
+| `actInsertStoryObjectRandomPos` 108 | `0x451e64` | `0x45e307(x + dx, y + dy, code, 0)`（通用对象构造器，关卡加载普通对象分支 `0x46be17` 也调它）；handler 不抽随机 |
+| `actSetPlayerPosToRandom0` 117 | `0x451db7` | 先把槽 0 整字清零，再 `0x44fad0(player id, serial)`；找不到时槽 0 保持 (0,0)，否则 x 字 = `[obj+4]`、y 字 = `[obj+8]`（`0x451de4..0x451df7`）；不抽随机 |
+| `actInsertRandomObject` 121 | `0x450f99` | `[code][slot][w][h][delay][count]`，锚点为槽 `[slot]`；累计延迟从 0 起重复 count 次：`v = rand(w ? w : 1)`（`0x450fe6`），`v > n/2` 时 `v = n/2 − v`，加到 x；同法 `rand(h ? h : 1)`（`0x451012`）加到 y；`0x45e307(x, y, code, 0)`，返回对象写 `+0xae` = 累计延迟、`+0xa4` = 脚本对象 `+0x9c`、`+0xa8 = +0xaa = 20000`；`rand(delay)`（`0x451075`）加到累计值（无对象返回也抽，`rand(0)` 返回 0 不推进） |
 
-  Every draw goes through `0x458c80` on the global stream `0x458c10` (words `0x4795d4／0x4795d8`), not the damage-stream swap `0x42c780`. So one 121 with non-zero w, h and delay draws 3 × count global values.
+所有抽取经 `0x458c80` 走全局流 `0x458c10`（字 `0x4795d4／0x4795d8`），不是伤害流 `0x42c780`；一次 w、h、delay 均非零的 121 抽 3 × count 个全局值。
 
-## Slot table and random insert (R6-L10)
+## 重制接线
 
-`static-derived` from `hsl01.exe`: the action table `[opcode*4 + 0x4537f4]` sends 106 to `0x451d0f` and 107 to `0x450f2c`.
+- STORY037 开场：`tools/hsltools/levels/story_scene.py` 把五个有生成模板的 `actInsertObjectRandomPos`（宝石 067、守卫 066）按表序解析并按插入序绑定（`<symbol>/insertN`、`SID_ENEMY06x/N`），serial N 即槽 N-1。
+- 洗牌：`BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时跑一次 `0x451d0f` 的遍历，每次抽 `global_rng`（`GlobalRandomStream`）的一个 `0x458c10() & 1`，先于开场出生；产品从时钟播种，无头运行用 `HSL_RNG_SEED`；顺序随 loop 存档（`opening_story_state.random_slot_order`）；绑定到槽 k 的单位移到洗牌后的位置加插入位移（宝石在守卫下方 32 px），连同 AI home。
+- 开场表现 `OpeningStoryObjects._set_random_slots` 读同一顺序；`opening_story_state.object_deletes` 列出开场删除的站立物件（37 的五座雕像、59、77 的），`BattleSceneRuntime.apply_opening_object_deletes` 在每次首次控制入口与存档恢复时隐藏它们。
 
-- `actSetRandomPos` (`0x451d0f`): keeps at most five pairs; each pair is stored at `0x4c28e0 + 4i` as (y at `+0`, x at `+2`). It then walks `i = 0..n-1` and, whenever `0x458c10() & 1`, swaps slot `i` with slot `i+2` (wrapping by subtracting 5). So the slot order is a partial shuffle of the table; the all-even outcome is the table order itself.
-- `actInsertObjectRandomPos` (`0x450f2c`): `[code][dx][dy][slot]` → `0x407ec0(x + dx, y + dy, code)`; the enemy constructor then centres the object in the cell holding that pixel (`(v & ~31) + 16`, [actor placement](actor_placement_initialization.md)).
+## 复现
 
-Remake (STORY037's opening): `hsltools/levels/story_scene.py` resolves the five `actInsertObjectRandomPos` of objects with a generated actor template (the gems 067 and guardians 066) against the table order and binds them by insert order (`<symbol>/insertN` and `SID_ENEMY06x/N`), so serial N is slot N-1 in the generated scenario.
+`tools/godot.sh --headless --script res://tests/run_battle_scene_runtime_tests.gd`
 
-Shuffle (lane R6-L11): `BattleLoopInit._load_opening_story_state` runs the `0x451d0f` walk once per battle when the PlayLoop is created — for `i = 0..n-1`, an odd roll swaps slot `i` with slot `i+2` (minus 5 past the end; `r2 pd` at `0x451d5f..0x451da3`) — and moves every unit bound to slot k to the shuffled entry plus its insert displacement (the gem 32 px below its guardian), with its AI home. Each roll is one raw `0x458c10() & 1` on the loop's global stream `global_rng` (`GlobalRandomStream`, the original's words `0x4795d4`／`0x4795d8`; lane RNG-A 2026-09-25 replaced the remake-invented local Park-Miller stream), drawn before the opening's births; the product seeds that stream from the clock and a headless run from `HSL_RNG_SEED`, so a fixed seed (autoplay, tests) keeps its layout; the order is saved with the loop (`opening_story_state.random_slot_order`). The opening presentation reads the same order (`OpeningStoryObjects._set_random_slots`), so the camera, 白光, statue delete and guardian reveal of slot k happen where the PlayLoop placed its pair. The same state lists the stand objects the opening removes (`object_deletes`: 37's five statues, 59's and 77's); `BattleSceneRuntime.apply_opening_object_deletes` hides them at every first-control entry and checkpoint restore, so the dev harness and a restored battle no longer draw a statue over a guardian. STORY010's tree is left out: a later `actInsertStoryObject` at the same anchor replaces it, and story objects are not re-created without the opening (remaining boundary).
+## 边界
 
-actCheckRoundDisp, actDetectRoundDispDisp, and actInsertLevelUpStar remain outside this slice and remain unsupported for battle 028; lane M owns them.
+- 洗牌抽取在全局序列中的位置：之前的全局抽取尚未与原版一致（provisional）。
+- `0x45e307` 内部是否抽随机本包未读。
+- STORY010 的树不在 `object_deletes` 里：之后同锚点的 `actInsertStoryObject` 取代它，而没有开场时剧情对象不会重建。

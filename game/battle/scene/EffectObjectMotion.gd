@@ -17,6 +17,7 @@ extends RefCounted
 ##     hsl.pak lacks cycles the series' existing members like the untracked player)
 ##   timing: static-derived content/generated/hsl/skills/effect_motion.json
 ##   timing: provisional (±1 frame where the original plane-list order differs from the probe's)
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const PATH := "res://content/generated/hsl/skills/effect_motion.json"
 ## PROCESS.DEF eng* bits the tracks carry (resource-derived names; the effect process ORs
 ## engADDCOLOR into every object's mode at 0x415e52).
@@ -33,7 +34,7 @@ static var _decoded: Dictionary = {}
 
 static func packet() -> Dictionary:
 	if _packet.is_empty():
-		_packet = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+		_packet = ContentPaths.read_json(PATH)
 	return _packet
 
 

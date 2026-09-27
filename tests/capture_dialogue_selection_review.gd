@@ -42,9 +42,9 @@ func run() -> void:
 	await shot("status")
 	await key(KEY_ESCAPE)
 	# Controlled selection setup: grant 20 ST and put one enemy adjacent.
-	player = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+	player = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	player["stamina"] = 20
-	var enemy: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var enemy: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	scene.apply_loop(scene.play_loop, "test")
 	scene.select_actor("leonard") # Refresh derived command availability after the fixture grant.

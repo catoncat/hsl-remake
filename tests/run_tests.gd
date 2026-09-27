@@ -601,7 +601,7 @@ func _player_turn_loop(units: Array = [], terrain_path: String = "", scenario: D
 	# Production initialization now refreshes all jobs, so install this controlled
 	# encounter after initialization rather than relying on it to skip refresh.
 	for source in units:
-		var actor := BattlePlayLoop._unit(loop, source["id"])
+		var actor := BattlePlayLoop.unit_ref(loop, source["id"])
 		for key in ["combat_profile", "hp", "max_hp", "mp", "max_mp", "live_speed"]:
 			if source.has(key): actor[key] = source[key].duplicate(true) if source[key] is Dictionary else source[key]
 		actor["max_hp"] = maxi(int(actor["max_hp"]), int(actor["hp"]))
@@ -635,10 +635,10 @@ func _test_initial_npc_turns() -> void:
 		var path: Array = loop["last_ai_action"].get("path", [])
 		var actor_before := BattlePlayLoop.unit(action_before, actor_id)
 		for index in range(1, path.size()):
-			_assert_eq(BattlePlayLoop._manhattan(path[index-1], path[index]), 1, "opening AI uses adjacent shared-grid path edges")
+			_assert_eq(TacticalGridRules.manhattan(path[index-1], path[index]), 1, "opening AI uses adjacent shared-grid path edges")
 			var occupant_id := BattlePlayLoop.unit_id_at_coord(action_before, path[index])
 			var occupant := BattlePlayLoop.unit(action_before, occupant_id)
-			_assert_true(not action_before["tiles"].get(path[index], {}).get("blocks_movement", false) and (occupant.is_empty() or not BattlePlayLoop._are_enemies(actor_before, occupant)), "opening ground pursuit may pass allies but cannot cross terrain or an enemy")
+			_assert_true(not action_before["tiles"].get(path[index], {}).get("blocks_movement", false) and (occupant.is_empty() or not BattlePlayLoop.are_enemies(actor_before, occupant)), "opening ground pursuit may pass allies but cannot cross terrain or an enemy")
 		if path.size() > 1:
 			var costs := TacticalGridRules.path_costs(path, action_before["units"], action_before["tiles"], actor_id)
 			_assert_true(not costs.is_empty() and costs.back() <= actor_before["move_point"], "opening route respects native clearance and the actor's live budget")
@@ -660,16 +660,16 @@ func _test_initial_npc_turns() -> void:
 	# The curated original first-control frame shows ordinary allies ahead of Leonard: an
 	# opening level-up (0x40e870) makes a 023 level 2 at speed 15, which then leads him.
 	var raised := BattleFixture.loop()
-	BattlePlayLoop._unit(raised, "enemy023_2")["live_speed"] = 15
-	raised["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(raised))
+	BattlePlayLoop.unit_ref(raised, "enemy023_2")["live_speed"] = 15
+	raised["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(raised))
 	var raised_ids: Array = raised["turn_queue"]["slots"].map(func(slot): return slot["id"])
 	_assert_true(raised_ids.find("enemy023_2") < raised_ids.find("leonard") and raised_ids.find("enemy023_1") > raised_ids.find("leonard"), "a speed-15 (level-2) friendly soldier acts before Leonard, a speed-14 one after him")
 	# The recorded original round-1 order (battle_051_ai_moves) follows from the recorded
 	# opening levels: 021_3 L2 (16), 023_2 L3 (16), 024_2 L3 (13), the rest level 1.
 	var recorded := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_051.json"), 1)
 	for pair in [["actor021_3", 16], ["actor023_2", 16], ["actor024_2", 13]]:
-		BattlePlayLoop._unit(recorded, pair[0])["live_speed"] = pair[1]
-	recorded["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(recorded))
+		BattlePlayLoop.unit_ref(recorded, pair[0])["live_speed"] = pair[1]
+	recorded["turn_queue"] = CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(recorded))
 	_assert_eq(recorded["turn_queue"]["slots"].map(func(slot): return slot["id"]), ["actor021_3", "actor023_2", "actor021_1", "actor021_2", "actor021_4", "actor021_5", "leonard", "actor023_1", "actor024_2", "actor024_1", "actor026_1", "actor026_2"], "recorded level-51 opening levels reproduce the original round-1 order")
 	_assert_true(BattlePlayLoop.unit(loop, "enemy021_2")["coord"] != before["enemy021_2"], "Opening NPC turns must change real battle positions")
 	_assert_eq(BattlePlayLoop.unit(loop, "leonard")["coord"], before["leonard"], "Opening NPC resolution preserves Leonard's script destination")
@@ -825,11 +825,11 @@ func _area_wall_battle_003() -> void:
 	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(3, 10)), [Vector2i(2, 10), Vector2i(4, 10), Vector2i(3, 11)], "毒魔箭 on 緹娜's cell (3,10): the P centre and the (3,9) wall left out")
 	_assert_eq(BattlePlayLoop.Combat.skill_cast_footprint(selecting, Vector2i(4, 11)), [Vector2i(4, 10), Vector2i(3, 11), Vector2i(4, 11), Vector2i(5, 11), Vector2i(4, 12)], "毒魔箭 at (4,11) on open ground: the whole cross")
 	# The settled context carries the same terrain only in the player's command cast.
-	check(BattlePlayLoop.Combat._skill_context(selecting).get("range_terrain") == BattlePlayLoop.skill_terrain(selecting), "the player's command cast settles with the player's skill terrain")
-	check(not BattlePlayLoop.Combat._skill_context(loop).has("range_terrain"), "outside the player's skill targeting the settled context carries no terrain")
+	check(BattlePlayLoop.Combat.skill_context(selecting).get("range_terrain") == BattlePlayLoop.skill_terrain(selecting), "the player's command cast settles with the player's skill terrain")
+	check(not BattlePlayLoop.Combat.skill_context(loop).has("range_terrain"), "outside the player's skill targeting the settled context carries no terrain")
 	var ai_casting := selecting.duplicate()
 	ai_casting["interaction"] = "ai_resolving"
-	check(not BattlePlayLoop.Combat._skill_context(ai_casting).has("range_terrain"), "an AI cast (ai_resolving) settles flat")
+	check(not BattlePlayLoop.Combat.skill_context(ai_casting).has("range_terrain"), "an AI cast (ai_resolving) settles flat")
 	# The area modes 2／3 are the P side's: a commandable caster of another side keeps the flat area.
 	var hu_e: Dictionary = BattlePlayLoop.unit(selecting, "hu").merged({"player_mode": RangePropagationRules.E}, true)
 	check(BattlePlayLoop.skill_terrain(selecting).has("area_modes") and not BattlePlayLoop.skill_terrain(selecting, hu_e).has("area_modes") and BattlePlayLoop.skill_terrain(selecting, hu_e).has("cast_mode"), "the area half needs a P-side caster; the mode -1 cast range applies to any")
@@ -842,9 +842,9 @@ func _area_wall_battle_003() -> void:
 ## the settled strike read that one area.
 func _area_matrix_battle_504() -> void:
 	var loop := _loop("battle_504")
-	BattlePlayLoop._unit(loop, "actor036_1")["coord"] = Vector2i(7, 14)
-	BattlePlayLoop._unit(loop, "actor036_2")["coord"] = Vector2i(7, 16)
-	BattlePlayLoop._unit(loop, "actor036_3")["coord"] = Vector2i(6, 14)
+	BattlePlayLoop.unit_ref(loop, "actor036_1")["coord"] = Vector2i(7, 14)
+	BattlePlayLoop.unit_ref(loop, "actor036_2")["coord"] = Vector2i(7, 16)
+	BattlePlayLoop.unit_ref(loop, "actor036_3")["coord"] = Vector2i(6, 14)
 	var casting := BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(_turn(loop, "claudie"), "magic"), QUAKE)
 	check(casting["interaction"] == "attack_select" and casting["selected_skill_id"] == QUAKE, "克勞蒂 selects 地龍震")
 	var fields := BattlePlayLoop.skill_fields(casting, QUAKE)
@@ -866,12 +866,12 @@ func _area_matrix_battle_504() -> void:
 ## (10,16) — on the flat line — is not struck, and the settled cue shows the one cell.
 func _line_wall_battle_504() -> void:
 	var loop := _loop("battle_504")
-	var gulu := BattlePlayLoop._unit(loop, "gulu")
+	var gulu := BattlePlayLoop.unit_ref(loop, "gulu")
 	own(loop, "skill_book")["actors"][str(gulu["actor_id"])]["supported_initial_ids"].append(DRAGON)
 	gulu["coord"] = Vector2i(7, 16)
 	gulu["stamina"] = 80
-	BattlePlayLoop._unit(loop, "actor036_1")["coord"] = Vector2i(8, 16)
-	BattlePlayLoop._unit(loop, "actor036_2")["coord"] = Vector2i(10, 16)
+	BattlePlayLoop.unit_ref(loop, "actor036_1")["coord"] = Vector2i(8, 16)
+	BattlePlayLoop.unit_ref(loop, "actor036_2")["coord"] = Vector2i(10, 16)
 	var tiles: Dictionary = TerrainEditRules.tiles(loop)
 	check(int(tiles[Vector2i(9, 16)]["movement_flags"]) & 0x4000 != 0 and int(tiles[Vector2i(10, 16)]["movement_flags"]) & 0x4000 == 0, "battle_504 (9,16) is a 0x4000 wall, (10,16) open")
 	var casting := BattlePlayLoop.choose_special(BattlePlayLoop.choose_command(_turn(loop, "gulu"), "special"), DRAGON)
@@ -896,7 +896,7 @@ func _line_wall_battle_504() -> void:
 func _autoplay_destination() -> void:
 	for case in [["battle_003", "actor028_1", Vector2i(6, 6), Vector2i(6, 9)], ["battle_003", "actor028_1", Vector2i(1, 10), Vector2i(4, 10)], ["battle_504", "actor036_1", Vector2i(7, 16), Vector2i(8, 14)]]:
 		var loop := _loop(case[0])
-		var foe := BattlePlayLoop._unit(loop, case[1])
+		var foe := BattlePlayLoop.unit_ref(loop, case[1])
 		foe["coord"] = case[2]
 		var turn := _turn(loop, "hu")
 		var hu := BattlePlayLoop.unit(turn, "hu")
@@ -904,11 +904,11 @@ func _autoplay_destination() -> void:
 		var flat_cell: Vector2i = case[3]
 		var label := "%s 胡 %s → foe %s" % [case[0], str(hu["coord"]), str(case[2])]
 		check(BattlePlayLoop.Footprint.contact(foe, BattlePlayLoop.attack_cells(turn, "hu")) == null, "%s: not in reach before the move" % label)
-		var from_flat: Array = Autoplay._weapon_cells_from(turn, hu, pattern, flat_cell)
+		var from_flat: Array = Autoplay.weapon_cells_from(turn, hu, pattern, flat_cell)
 		check(BattlePlayLoop.movement_cells(turn, "hu").has(flat_cell) and BattlePlayLoop.TacticalGridRules.attack_pattern_cells(flat_cell, pattern["offsets"], turn["map_size"]).has(case[2]) and not from_flat.has(case[2]), "%s: the flat record covers the foe from %s, the flood does not" % [label, str(flat_cell)])
-		var destination: Variant = Autoplay._destination(turn, "hu")
+		var destination: Variant = Autoplay.attack_destination(turn, "hu")
 		check(destination is Vector2i and destination != flat_cell and BattlePlayLoop.movement_path(turn, "hu", flat_cell).size() <= BattlePlayLoop.movement_path(turn, "hu", destination).size(), "%s: the driver passes over the cheaper flat cell %s (chose %s)" % [label, str(flat_cell), str(destination)])
-		var step := Autoplay._take_player_action(turn, RandomNumberGenerator.new())
+		var step := Autoplay.take_player_action(turn, RandomNumberGenerator.new())
 		check(step["action"] == "move_then_attack" and BattlePlayLoop.unit(step["loop"], "hu")["coord"] == destination, "%s: lands on %s and strikes (got %s)" % [label, str(destination), str(step["action"])])
 
 
@@ -1028,8 +1028,8 @@ func _test_counters_follow_register_side_rule() -> void:
 		_unit("player_controlled", PM_PLAYER, "p"), _unit("enemy_ai", PM_ENEMY, "e1"), _unit("enemy_ai", PM_ENEMY, "e2"),
 		_unit("enemy_ai", PM_NPC, "n"), _unit("friendly_ai", PM_PLAYER_ENEMY, "v"),
 	]}
-	check(WinfailConditions._alive_enemy_total(battle) == 2, "actCheckEnemyTotalNumber counts the two pmEnemy units, not the pmNPC rider or the villager")
-	check(WinfailConditions._alive_player_side_total(battle) == 1, "actCheckPlayerTotalNumber counts the pmPlayer unit only")
+	check(WinfailConditions.alive_enemy_total(battle) == 2, "actCheckEnemyTotalNumber counts the two pmEnemy units, not the pmNPC rider or the villager")
+	check(WinfailConditions.alive_player_side_total(battle) == 1, "actCheckPlayerTotalNumber counts the pmPlayer unit only")
 
 
 func _test_player_attack_gate_and_skill_side() -> void:
@@ -1069,29 +1069,29 @@ func _test_pm_all_occupant_ranges() -> void:
 	var profiles := {"actors": {"067": {"missing_required": ["find_type", "find_range", "ai_call_range", "ai_fixed"]}}}
 	gem["actor_id"] = "067"
 	var board := {"ai_profiles": profiles, "units": [gem, player, enemy]}
-	check(BattlePlayLoop.AI._idle_without_strategy(board, gem), "an undeclared gem with no hostile unit waits")
+	check(BattlePlayLoop.AI.idle_without_strategy(board, gem), "an undeclared gem with no hostile unit waits")
 	var npc := _unit("enemy_ai", PM_NPC, "n")
 	gem["player_mode"] = PM_PLAYER_ENEMY
 	board["units"].append(npc)
-	check(not BattlePlayLoop.AI._idle_without_strategy(board, gem), "a switched-off gem facing a pmNPC unit is not idle: the missing strategy still fails")
+	check(not BattlePlayLoop.AI.idle_without_strategy(board, gem), "a switched-off gem facing a pmNPC unit is not idle: the missing strategy still fails")
 	profiles["actors"]["067"]["missing_required"] = []
-	check(not BattlePlayLoop.AI._idle_without_strategy({"ai_profiles": profiles, "units": [gem, player]}, gem), "a declared strategy takes the ordinary AI turn")
+	check(not BattlePlayLoop.AI.idle_without_strategy({"ai_profiles": profiles, "units": [gem, player]}, gem), "a declared strategy takes the ordinary AI turn")
 
 
 func _test_set_player_mode_writes_mode_and_role() -> void:
 	var next := {"units": [{"id": "claudie", "actor_id": "009", "battle_actor_role": "enemy_ai", "player_commandable": false, "player_mode": PM_ENEMY, "hp": 30}],
 		"winfail_runtime": {"actor_bindings": {"SID_克羅蒂/1": "claudie"}}}
 	var runtime := {"mode_changes": [], "unsupported_encountered": []}
-	WinfailActions._apply_player_mode(next, runtime, "event_6", ["SID_克羅蒂", "1", "pmPlayerEnemy", "0"])
+	WinfailActions.apply_player_mode(next, runtime, "event_6", ["SID_克羅蒂", "1", "pmPlayerEnemy", "0"])
 	var unit: Dictionary = next["units"][0]
 	check(runtime["mode_changes"].size() == 1 and runtime["mode_changes"][0]["unit_ids"] == ["claudie"], "the bound token resolves to the unit")
 	check(unit["battle_actor_role"] == "friendly_ai" and unit["player_mode"] == PM_PLAYER_ENEMY and not unit["player_commandable"], "WINFAIL036 event 6 pmPlayerEnemy: AI-driven, side pmPlayerEnemy")
 	check(runtime["unsupported_encountered"].is_empty(), "pmPlayerEnemy is a supported mode")
-	WinfailActions._apply_player_mode(next, runtime, "event_7", ["SID_克羅蒂", "1", "pmPlayer", "1"])
+	WinfailActions.apply_player_mode(next, runtime, "event_7", ["SID_克羅蒂", "1", "pmPlayer", "1"])
 	check(unit["battle_actor_role"] == "player_controlled" and unit["player_mode"] == PM_PLAYER and unit["player_commandable"], "pmPlayer returns control and the pmPlayer side")
 	# R6-L10: WINFAIL037 swaps the level-37 gems between pmPlayerEnemy and pmMagicAttack; the
 	# pmALL side is now read by ActorRoleRules.player_range_selectable (0x40f5d0 callers).
-	WinfailActions._apply_player_mode(next, runtime, "event_x", ["SID_克羅蒂", "1", "pmMagicAttack", "0"])
+	WinfailActions.apply_player_mode(next, runtime, "event_x", ["SID_克羅蒂", "1", "pmMagicAttack", "0"])
 	check(runtime["unsupported_encountered"].is_empty() and unit["player_mode"] == 0x870000 and unit["battle_actor_role"] == "friendly_ai" and not unit["player_commandable"], "pmMagicAttack is a supported mode: AI-driven, side pmALL plus 0x800000")
 	check(WinfailActions.PLAYER_MODE_ROLES[PM_NPC] == "enemy_ai", "pmNPC maps to enemy_ai")
 
@@ -1119,8 +1119,8 @@ func _reach_player(loop: Dictionary, label: String, attacks: Array, level: int, 
 		var combat: Dictionary = next.get("last_combat", {})
 		# A caster buffing itself (0x43fce1..0x43fd46: no ally in need, own mask useful) is a support cast, not an exchange.
 		if int(combat.get("sequence", 0)) > before and str(combat.get("attacker_id", "")) != str(combat.get("defender_id", "")):
-			var attacker := BattlePlayLoop._unit(next, str(combat.get("attacker_id", "")))
-			var defender := BattlePlayLoop._unit(next, str(combat.get("defender_id", "")))
+			var attacker := BattlePlayLoop.unit_ref(next, str(combat.get("attacker_id", "")))
+			var defender := BattlePlayLoop.unit_ref(next, str(combat.get("defender_id", "")))
 			attacks.append({"attacker": attacker, "defender": defender, "round": int(next.get("turn", 0))})
 			print("PLAYER_MODE_SIDES_ATTACK level=%d round=%d attacker=%s(%s,0x%x) defender=%s(%s,0x%x)" % [level, int(next.get("turn", 0)),
 				str(attacker.get("id", "")), str(attacker.get("actor_id", "")), ActorRoleRules.side_mask(attacker),
@@ -1283,7 +1283,7 @@ func damage_native_cases() -> void:
 ## the stream with the exchanges.
 static func duel(seed: int) -> Dictionary:
 	var loop := BattleFixture.loop([], "", seed)
-	var player := BattlePlayLoop._unit(loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(loop, "leonard")
 	player["inventory"] = [262, 0, 0, 0, 0, 0, 0, 0]
 	player["equipment"] = player["equipment"].filter(func(slot): return not str(slot["slot"]).begins_with("accessory"))
 	player["equipment"].append({"slot": "accessory2", "item_code": 223})
@@ -1291,7 +1291,7 @@ static func duel(seed: int) -> Dictionary:
 	player["hp"] = int(player["max_hp"]) - 5
 	player["live_speed"] = 100
 	player["coord"] = Vector2i(15, 15)
-	var target := BattlePlayLoop._unit(loop, "enemy021_1")
+	var target := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	target["coord"] = player["coord"] + Vector2i.RIGHT
 	target["combat_profile"]["attack_back"] = 100
 	target["max_hp"] = 400
@@ -1508,7 +1508,7 @@ static func first_ai(trace: Array) -> int:
 ## him, that station is its own cell and both outcomes are the same attack in place.)
 func global_save_load_cases() -> void:
 	var loop := duel(20260925)
-	BattlePlayLoop._unit(loop, "enemy021_1")["coord"] = BattlePlayLoop._unit(loop, "leonard")["coord"] + Vector2i.LEFT
+	BattlePlayLoop.unit_ref(loop, "enemy021_1")["coord"] = BattlePlayLoop.unit_ref(loop, "leonard")["coord"] + Vector2i.LEFT
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	loop = BattlePlayLoop.select_player_unit(loop, "leonard")
 	check(not BattleCheckpoint.state(loop).has(GlobalRandomStream.LOOP_KEY) and BattleCheckpoint.state(loop).has(DamageRandomStream.LOOP_KEY), "the saved half of the loop holds the damage stream and not the global stream")

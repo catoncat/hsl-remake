@@ -41,6 +41,7 @@ const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const SUMMARY_SCHEMA := "hsl_world_map_runtime.v1"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
@@ -417,7 +418,7 @@ static func _load_json(path: String, schema: String) -> Dictionary:
 	if path == "" or not FileAccess.file_exists(path):
 		push_error("Missing town data: %s" % path)
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY or str((parsed as Dictionary).get("schema", "")) != schema:
 		push_error("Town data schema mismatch: %s (expected %s)" % [path, schema])
 		return {}

@@ -47,8 +47,8 @@ func prepare_case() -> void:
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
 	for unit in loop["units"]: unit["hp"] = 500; unit["max_hp"] = 500
-	var owner := BattlePlayLoop._unit(loop,"leonard")
-	var target := BattlePlayLoop._unit(loop,"enemy021_1")
+	var owner := BattlePlayLoop.unit_ref(loop,"leonard")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	if mode == "equip_move":
 		owner["inventory"] = [12,0,0,0,0,0,0,0]
 		target["coord"] = Vector2i(10,8)
@@ -83,10 +83,10 @@ func prepare_case() -> void:
 		loop["turn"] = 6
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
 		if mode == "escape":
-			BattlePlayLoop._unit(loop,"leonard")["coord"] = loop["escape_zone"][0]
-			BattlePlayLoop._unit(loop,"leonard")["exp"] = 23
+			BattlePlayLoop.unit_ref(loop,"leonard")["coord"] = loop["escape_zone"][0]
+			BattlePlayLoop.unit_ref(loop,"leonard")["exp"] = 23
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"leonard"), "test")
 	scene.settlement_controller.checkpoint_path = OUTPUT + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()

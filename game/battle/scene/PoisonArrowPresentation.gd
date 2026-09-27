@@ -22,6 +22,7 @@ var sounds: Array[AudioStreamPlayer] = []
 var caption: Label
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## One original tick on the cut-in's scaled clock: source delays play at the original rate
 ## (instance state following Timing.PLAYBACK_SPEED; a static var in a runtime-loaded
 ## presenter script keeps the script alive past exit).
@@ -39,7 +40,7 @@ func schedule() -> Dictionary:
 	return {"release": SHOOT_TICKS * scaled_tick_seconds, "impact": receiver + IMPACT_TICKS * scaled_tick_seconds, "complete": receiver + RESULT_TICKS * scaled_tick_seconds + Timing.RECOVERY}
 
 func _ready() -> void:
-	data = JSON.parse_string(FileAccess.get_file_as_string(preload("res://game/sim/ContentPaths.gd").POISON_ARROW))
+	data = ContentPaths.read_json(ContentPaths.POISON_ARROW)
 	shade = ColorRect.new()
 	shade.color = Color.BLACK
 	shade.size = Vector2(640,480)

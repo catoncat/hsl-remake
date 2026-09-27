@@ -10,6 +10,7 @@ const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary) -> Dictionary:
@@ -24,15 +25,15 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	if not profile is Dictionary or not target.get("combat_profile") is Dictionary:
 		return {"ok": false, "reason": "missing_status_skill_profile"}
 	for value in [caster.get("level"), caster.get("hit_bonus_accum"), profile.get("mind"), profile.get("live_magic_attack")]:
-		if SkillResourceRules._integer(value) < 0 or int(value) > 100000:
+		if Values.non_negative_int(value) < 0 or int(value) > 100000:
 			return {"ok": false, "reason": "invalid_status_skill_profile"}
 	if SkillTargetRules.function_mask(fields.get("function"), targeting["function_bits"]) != 1: return {"ok": false, "reason": "unsupported_status_skill"}
-	var hit_rate := SkillResourceRules._integer(fields.get("hit_ratio"), true)
+	var hit_rate := Values.non_negative_int(fields.get("hit_ratio"), true)
 	var bounds: PackedStringArray = str(fields.get("damage", "")).split(",")
 	if bounds.size() != 2 or hit_rate < 0 or hit_rate > 100:
 		return {"ok": false, "reason": "invalid_status_skill_definition"}
-	var low := SkillResourceRules._integer(bounds[0].strip_edges(), true)
-	var high := SkillResourceRules._integer(bounds[1].strip_edges(), true)
+	var low := Values.non_negative_int(bounds[0].strip_edges(), true)
+	var high := Values.non_negative_int(bounds[1].strip_edges(), true)
 	if low < 0 or high < low or high > 10000:
 		return {"ok": false, "reason": "invalid_status_skill_definition"}
 	# Same shape StatusApplicationRules.resolve consumes; resistance 0 is the

@@ -9,9 +9,9 @@ const WinfailScenarioRules = preload("res://game/sim/WinfailScenarioRules.gd")
 
 static func build(mode: String) -> Dictionary:
 	var loop := run_mobile_jobs_tests.fixture("006" if mode in ["wing","states"] else "004", true)
-	var leader := BattlePlayLoop._unit(loop,loop["player_unit_id"])
-	var priest := BattlePlayLoop._unit(loop,"tina")
-	var seed := BattlePlayLoop._unit(loop,"enemy026_1")
+	var leader := BattlePlayLoop.unit_ref(loop,loop["player_unit_id"])
+	var priest := BattlePlayLoop.unit_ref(loop,"tina")
+	var seed := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 	var code: String = {"thief":"028","wing":"036","large":"039","blocked":"039"}.get(mode,"026")
 	var template := run_entry_growth_tests.source_actor(code)
 	template.merge({"class_id":"Enemy"+code,"battle_actor_role":BattlePlayLoop.ROLE_ENEMY,"player_commandable":false,
@@ -92,5 +92,5 @@ static func build(mode: String) -> Dictionary:
 	loop["rule_adapter"]="winfail"
 	loop=WinfailScenarioRules.initialize_script_state(loop,config,seed_data)
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	loop=BattlePlayLoop._return_to_player(loop,owner["id"])
+	loop=BattlePlayLoop.return_to_player(loop,owner["id"])
 	return {"loop":loop,"scenario":config,"owner_id":owner["id"],"target_id":target["id"],"code":code,"center":center,"parameters":params}

@@ -135,7 +135,7 @@ func play_birth() -> void:
 		check(CampaignProgress.pending.is_empty() and scene.play_loop["campaign_carry_receipt"]["errors"].is_empty() and not carry.has("initialization_rng") and not carry.has("global_rng") and run_entry_growth_tests.created(scene.play_loop).is_empty(),"fresh battle carries the controlled party but not prior enemies or any random stream of theirs")
 		await save_restore();row["carry_destination"]=scene.play_loop["units"].duplicate(true)
 	elif mode in ["victory","defeat","escape","class_blocked"]:
-		var frozen:Dictionary=scene.play_loop.duplicate(true);BattleLoopScript._maintain_script_pressure(frozen)
+		var frozen:Dictionary=scene.play_loop.duplicate(true);BattleLoopScript.maintain_script_pressure(frozen)
 		check(frozen==scene.play_loop and BattlePlayLoop.step_ai_turn(frozen)==frozen,"terminal rejects later spawn and AI callbacks")
 		reload_current_scene();await create_timer(0.4).timeout;scene=current_scene
 		check(scene.play_loop["scenario_ok"] and run_entry_growth_tests.created(scene.play_loop).is_empty(),"restart constructs a fresh encounter without replayed birth increments")
@@ -149,7 +149,7 @@ func finish_class_recruit(id: String) -> void:
 		await return_to_owner()
 		var actor:=BattlePlayLoop.unit(scene.play_loop,owner_id)
 		var target:=BattlePlayLoop.unit(scene.play_loop,id)
-		var choice:=BattleLoopAI._ai_physical_choice(scene.play_loop,actor,target,BattlePlayLoop._movement_envelope(scene.play_loop,owner_id))
+		var choice:=BattleLoopAI.ai_physical_choice(scene.play_loop,actor,target,BattlePlayLoop.movement_envelope(scene.play_loop,owner_id))
 		if choice.is_empty():
 			await click(scene.action_menu.get_node("WaitCommand"));await settle("")
 			continue

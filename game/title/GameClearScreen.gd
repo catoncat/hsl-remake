@@ -75,7 +75,7 @@ var _phase_tween: Tween
 
 
 func _ready() -> void:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Title manifest missing or invalid: " + MANIFEST_PATH)
 		return

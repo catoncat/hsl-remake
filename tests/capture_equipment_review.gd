@@ -42,7 +42,7 @@ func run() -> void:
 		print("ITEM_RULES_RENDER_REVIEW_", "PASS" if failures.is_empty() else "FAIL")
 		quit(0 if failures.is_empty() else 1)
 		return
-	var actor := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	actor["inventory"] = [241, 3, 241, 246, 0, 0, 0, 0]
 	actor["hp"] = 17
 	scene.apply_loop(scene.play_loop, "test")
@@ -83,7 +83,7 @@ func run() -> void:
 			break
 	check(accessory > 0, "supported accessory fixture exists")
 	if accessory > 0:
-		BattlePlayLoop._unit(scene.play_loop, "leonard")["inventory"] = [accessory, 241, 0, 0, 0, 0, 0, 0]
+		BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["inventory"] = [accessory, 241, 0, 0, 0, 0, 0, 0]
 		await open_equipment()
 		await click(find_item(accessory))
 		await shot("accessory-slot-choice")
@@ -93,7 +93,7 @@ func run() -> void:
 		check(BattlePlayLoop.EquipmentRules.equipped_code(equipment, "accessory2") == accessory and BattlePlayLoop.EquipmentRules.equipped_code(equipment, "accessory1") == 0, "mouse accessory choice affects only the selected slot")
 		observations["accessory_fixture_code"] = accessory
 	# Full-bag fixture must refuse a standalone unequip without losing the item.
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["inventory"] = [241, 241, 241, 241, 241, 241, 241, 2]
+	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["inventory"] = [241, 241, 241, 241, 241, 241, 241, 2]
 	var full: Dictionary = scene.play_loop.duplicate(true)
 	await open_equipment()
 	await click(scene.item_panel.equipment_view.slot_controls["head"])
@@ -116,7 +116,7 @@ func open_equipment() -> void:
 
 func important_item_review() -> void:
 	root.title = "HSL Item Rules Review"
-	var actor := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	actor["inventory"] = [281, 241, 246, 0, 0, 0, 0, 0]
 	scene.play_loop["pending_move"] = true
 	scene.play_loop["pending_move_from"] = actor["coord"] - Vector2i.DOWN
@@ -144,7 +144,7 @@ func important_item_review() -> void:
 
 func discard_action_review() -> void:
 	root.title = "HSL Discard Action Review"
-	var actor := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	actor["inventory"] = [281, 241, 241, 246, 0, 0, 0, 0]
 	actor["hp"] = 17
 	var origin: Vector2i = actor["coord"]

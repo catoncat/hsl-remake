@@ -442,7 +442,7 @@ tools/hsl_capture.sh --no-launch tools/routes/p2_action_menu_move_select_cancel.
 
 `tests/capture_*.gd` 生成当前 Godot 的可见截图/manifest，输出到 `ignored/`。它们是人工视觉审查输入，不是自动 parity 证明。
 
-`tests/capture_second_battle_opening_review.gd` 以 `second_battle.json` 的 `product_opening` 正常节奏播放 STORY052 开场：每句对白、队伍上行、标题与首次控制各截一帧，输出 `ignored/second-battle-opening-review/`；只用合成空格确认对白，不覆盖数值。图证见 [第二战开场回执](../docs/evidence_packets/runtime_observations/second_battle_opening/README.md)。`tests/capture_second_battle_reinforcement_review.gd` 以 `dev_first_control` 进入 level 52，击破 021 至剩一名让解释器触发 WINFAIL052 event1，截取四名 script actor 增援在插入像素显形、走入与到位三帧到 `ignored/second-battle-reinforcement-review/`；图证见 [增援入场回执](../docs/evidence_packets/runtime_observations/second_battle_reinforcement/README.md)。
+`tests/capture_second_battle_opening_review.gd` 以 `second_battle.json` 的 `product_opening` 正常节奏播放 STORY052 开场：每句对白、队伍上行、标题与首次控制各截一帧，输出 `ignored/second-battle-opening-review/`；只用合成空格确认对白，不覆盖数值。图证见 [第二战开场回执](../docs/evidence_packets/runtime_observations/second_battle_opening/README.md)。`tests/capture_second_battle_reinforcement_review.gd` 以 `dev_first_control` 进入 level 52，击破 021 至剩一名让解释器触发 WINFAIL052 event1，截取四名 script actor 增援在插入像素显形、走入与到位三帧到 `ignored/second-battle-reinforcement-review/`；图证见 [增援入场回执](../docs/evidence_packets/runtime_observations/second_battle_opening/README.md)。
 
 `tests/capture_campaign_handoff_review.gd` 在第一战 dev seam 上显式设定胜利结果与 Leonard 等级／金币夹具，确认结局台词后（原版无结果页，脚本置 `hold_finished_battle` 后直接调 `start_next_battle`），记录重新加载进入第二战开场；输出 `ignored/campaign-handoff-review/`，图证见 [承接回执](../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)。
 

@@ -1,23 +1,23 @@
 # OSS export report
 
-Source: private repository `main` = `a172cdd3f8523077095cdb8a7c727bc22d735852` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `a1f1022734e4759615167e3c9024ecfda41d1c46` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1660 files, 50.6 MB**
-- dropped: **19191 files, 698.2 MB**
-- processed (home path / author e-mail / public .gitignore rules): 19 files
+- written: **1601 files, 50.3 MB**
+- dropped: **19018 files, 621.7 MB**
+- processed (home path / author e-mail / public .gitignore rules): 18 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1203 | 19.3 |
-| C | 457 | 31.2 |
+| B | 1205 | 19.3 |
+| C | 396 | 31.0 |
 
 ## Dropped (by reason)
 
 | reason | files | MB |
 | --- | ---: | ---: |
-| A: evidence screenshots / recordings / renders of the original | 792 | 362.4 |
+| A: evidence screenshots / recordings / renders of the original | 619 | 285.9 |
 | A: content/imported decoded media | 16140 | 255.3 |
 | A: content/imported text/source/json | 1519 | 35.1 |
 | A: content/generated tables (EXE / PAK derived) | 422 | 25.2 |
@@ -62,7 +62,6 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/evidence_packets/runtime_observations/battle_006/README.md`
 - `docs/evidence_packets/runtime_observations/battle_053/README.md`
 - `docs/evidence_packets/runtime_observations/combat_aftermath/README.md`
-- `docs/evidence_packets/runtime_observations/dialogue_selection/README.md`
 - `docs/evidence_packets/runtime_observations/effect_motion/README.md`
 - `docs/evidence_packets/runtime_observations/menus_ui/README.md`
 - `docs/evidence_packets/runtime_observations/original_control/README.md`

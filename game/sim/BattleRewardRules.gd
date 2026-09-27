@@ -16,6 +16,7 @@ const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const CombatSequenceRules = preload("res://game/sim/CombatSequenceRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
+const Values = preload("res://game/sim/Values.gd")
 ## Gold the unit's own record +0x98 gained in this battle (0x442720 state 2, 0x442856..0x442875):
 ## kill gold and StealGold takes paid to a recipient that does not pay the party. The template,
 ## EVEF instance and entry growth part stays derived (carried_gold); only the gain is stored.
@@ -24,35 +25,31 @@ const MODULUS := 2147483647
 const EMPTY_BAG := [0, 0, 0, 0, 0, 0, 0, 0]
 
 
-static func integer(value: Variant, minimum: int = 0, maximum: int = 2147483647) -> bool:
-	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and value >= minimum and value <= maximum and value == int(value)
-
-
 static func data_error(data: Dictionary, units: Array) -> String:
 	if data.get("schema") != "hsl_battle_rewards.v1" or not data.get("actors") is Dictionary or not data.get("items") is Dictionary:
 		return "missing_reward_data"
 	for code in data["items"]:
 		var item: Variant = data["items"][code]
-		if not item is Dictionary or not integer(item.get("get_ratio"), 0, 100) or not item.get("important") is bool:
+		if not item is Dictionary or not Values.is_integer_in(item.get("get_ratio"), 0, 100) or not item.get("important") is bool:
 			return "invalid_drop_definition"
 	for unit in units:
 		if not unit is Dictionary or not data["actors"].get(str(unit.get("actor_id", ""))) is Dictionary:
 			return "missing_reward_actor"
 		var source: Dictionary = data["actors"][str(unit["actor_id"])]
-		if not integer(source.get("gold")) or not source.get("carry_items") is Array:
+		if not Values.is_integer_in(source.get("gold"), 0, Values.MAX_SIGNED) or not source.get("carry_items") is Array:
 			return "invalid_reward_actor"
-		if not integer(source.get("status_raw")) or int(source["status_raw"]) != 0:
+		if not Values.is_integer_in(source.get("status_raw"), 0, Values.MAX_SIGNED) or int(source["status_raw"]) != 0:
 			return "unsupported_reward_actor_flags"
 		for code in source["carry_items"]:
-			if not integer(code, -1) or (int(code) > 0 and not data["items"].has(str(int(code)))):
+			if not Values.is_integer_in(code, -1, Values.MAX_SIGNED) or (int(code) > 0 and not data["items"].has(str(int(code)))):
 				return "invalid_carry_item"
-		if unit.has(CARRIED_GAINED) and not integer(unit[CARRIED_GAINED]):
+		if unit.has(CARRIED_GAINED) and not Values.is_integer_in(unit[CARRIED_GAINED], 0, Values.MAX_SIGNED):
 			return "invalid_carried_gold"
 		if unit.has("inventory"):
 			if not unit["inventory"] is Array or not InventoryRules.valid(unit["inventory"]):
 				return "invalid_reward_inventory"
 			for code in unit["inventory"]:
-				if not integer(code) or (int(code) > 0 and not data["items"].has(str(int(code)))):
+				if not Values.is_integer_in(code, 0, Values.MAX_SIGNED) or (int(code) > 0 and not data["items"].has(str(int(code)))):
 					return "unknown_reward_inventory_item"
 	return ""
 
@@ -183,7 +180,7 @@ static func gold_multiplier(unit: Dictionary, equipment: Dictionary) -> int:
 	var slots: Variant = unit.get("equipment", [])
 	if not slots is Array: return 1
 	for slot in slots:
-		if not slot is Dictionary or not integer(slot.get("item_code"), 1): continue
+		if not slot is Dictionary or not Values.is_integer_in(slot.get("item_code"), 1, Values.MAX_SIGNED): continue
 		var item: Variant = equipment.get(str(int(slot["item_code"])))
 		if item is Dictionary and bool(item.get("gold_double", false)): return 2
 	return 1
@@ -356,7 +353,7 @@ static func pending_error(entries: Variant, items: Dictionary) -> String:
 	var ids := {}
 	for entry in entries:
 		if not entry is Dictionary or not entry.get("id") is String or entry["id"] == "" or ids.has(entry["id"]): return "invalid_pending_item_identity"
-		if not integer(entry.get("code"), 1) or not items.has(str(int(entry["code"]))) or not entry.get("source_id") is String or not integer(entry.get("source_slot")):
+		if not Values.is_integer_in(entry.get("code"), 1, Values.MAX_SIGNED) or not items.has(str(int(entry["code"]))) or not entry.get("source_id") is String or not Values.is_integer_in(entry.get("source_slot"), 0, Values.MAX_SIGNED):
 			return "invalid_pending_item_source"
 		ids[entry["id"]] = true
 	return ""

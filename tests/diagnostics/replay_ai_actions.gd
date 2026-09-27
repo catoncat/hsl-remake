@@ -127,8 +127,8 @@ class Feeder:
 			var script := str(frame.get("source", "")).get_file().get_basename()
 			var function := str(frame.get("function", ""))
 			if script in ["replay_ai_actions", "export_enemy_turns"]: continue
-			if script == "CoreCombatRules" and function in ["_rand_range", "native_draw"]: continue
-			if function == "_draw": continue
+			if script == "CoreCombatRules" and function in ["rand_range", "native_draw"]: continue
+			if function == "recorded_draw": continue
 			return "%s.%s" % [script, function] if script in AI_SOURCES else ""
 		return ""
 
@@ -252,7 +252,7 @@ func _replay(prep: Dictionary, opts: Dictionary, rounds: Array, meta: Dictionary
 						skipped.erase("draws")
 						result["uncompared"].append(skipped)
 					continue
-				var actor := BattlePlayLoop._unit(loop, cur_id)
+				var actor := BattlePlayLoop.unit_ref(loop, cur_id)
 				var context: Array = sticky.duplicate()
 				var origin := Vector2i(int(expected["from"][0]), int(expected["from"][1]))
 				if actor.get("coord") != origin:
@@ -313,7 +313,7 @@ func _finish(loop: Dictionary, pending: Dictionary, expected: Dictionary, after:
 	result["rows"].append({"k": k, "round": int(expected["round"]), "actor": str(expected["actor"]), "original": original, "remake": merged, "same": same,
 		"drawn": feeder.drawn.duplicate(), "exhausted": feeder.exhausted.duplicate(), "leftover": feeder.remaining(),
 		"context": pending["context"], "decision": pending["decisions"]})
-	var actor := BattlePlayLoop._unit(loop, str(expected["actor"]))
+	var actor := BattlePlayLoop.unit_ref(loop, str(expected["actor"]))
 	if not actor.is_empty():
 		if expected.get("to") is Array: actor["coord"] = Vector2i(int(expected["to"][0]), int(expected["to"][1]))
 		if after.has("chase"): actor["ai_target_id"] = "" if after["chase"] == null else _id(str(after["chase"]))

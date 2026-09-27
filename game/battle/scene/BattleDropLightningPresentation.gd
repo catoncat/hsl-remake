@@ -16,6 +16,8 @@ const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 const TOKEN := "actInsertStoryObjectWait"
 ## OBJ-010 code 25: obj_Shape_Name MAGIC\AIR14_01.SHP is shape +0x32; +0x32 + frame is AIR14_0(frame+1).
@@ -109,7 +111,7 @@ class Burst extends Node2D:
 	var end_tick := STRIKE_TICK + BattlePoisonGasPresentation.SHAKE_TICKS + 1
 
 	func _ready() -> void:
-		manifest = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
+		manifest = ContentPaths.read_json(MANIFEST)
 		for blend in ["add", "sub", "mix"]:
 			var material := CanvasItemMaterial.new()
 			material.blend_mode = {"add": CanvasItemMaterial.BLEND_MODE_ADD, "sub": CanvasItemMaterial.BLEND_MODE_SUB, "mix": CanvasItemMaterial.BLEND_MODE_MIX}[blend]
@@ -175,12 +177,12 @@ class Burst extends Node2D:
 			struck = true
 			for hit in hits:
 				var number: Node2D = ResultNumberFloater.new()
-				number.position = Vector2(hit["cell"]) * 32.0 + Vector2(16, 16) + NUMBER_OFFSET - position
+				number.position = Vector2(TacticalGridRules.cell_center_pixel(hit["cell"])) + NUMBER_OFFSET - position
 				number.z_index = StoryEffectObjects.EFFECT_Z + 2
 				number.z_as_relative = false
 				add_child(number)
 				number.present("damage", int(hit["damage"]))
-				BattlePoisonGasPresentation._shake(runtime, self, str(hit["unit_id"]))
+				BattlePoisonGasPresentation.shake(runtime, self, str(hit["unit_id"]))
 		if tick >= end_tick:
 			queue_free()
 

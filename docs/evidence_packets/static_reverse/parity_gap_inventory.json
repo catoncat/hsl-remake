@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 107,
-    "sources": 513,
+    "sources": 529,
     "sources_by_kind": {
-      "provenance": 226,
-      "sentence": 114,
+      "provenance": 227,
+      "sentence": 129,
       "scope": 75,
       "matrix": 85,
       "video": 13
@@ -45,8 +45,8 @@
       "飘字与数字": 6
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 52,
-    "resolved_sources": 20
+    "no_visible_effect_sources": 51,
+    "resolved_sources": 14
   },
   "top": [
     "damage-digit-bounce",
@@ -306,7 +306,7 @@
       ],
       "remake": "BattlePlayLoop 阵亡当前者只调一次 CoreTurnQueue.end_turn",
       "remake_code": [
-        "game/sim/loop/BattlePlayLoop.gd:_advance_current_actor",
+        "game/sim/loop/BattlePlayLoop.gd:advance_current_actor",
         "game/sim/CoreTurnQueue.gd"
       ],
       "original_status": "read_complete",
@@ -969,9 +969,7 @@
         "provenance:game/world/TownRuntime.gd|layout|provisional|",
         "provenance:game/world/TownRuntime.gd|layout|remake-invented|",
         "provenance:game/world/TownRuntime.gd|strings|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|negative-evidence|城镇根画面上没有金钱显示（只有商店窗的金钱框）",
-        "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|provisional|由 7 帧归纳出的\"teShapeMessage 在上、tePlayerMessage 在下\"",
-        "sentence:docs/evidence_packets/runtime_observations/original_world_town/README.md#072cc1e6c9"
+        "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|negative-evidence|城镇根画面上没有金钱显示（只有商店窗的金钱框）"
       ]
     },
     {
@@ -1039,8 +1037,11 @@
         "provenance:game/sim/CampaignCarryRules.gd|rules|remake-invented|",
         "provenance:game/sim/ConditionalPartyRules.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合",
         "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型",
-        "sentence:docs/evidence_packets/runtime_observations/story_scene_chapter2_previews/README.md#0b7c4645f5"
+        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d",
+        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#5548a11867",
+        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
       ]
     },
     {
@@ -1225,8 +1226,7 @@
         "provenance:game/battle/scene/BattleScriptPresentation.gd|layout|remake-invented|",
         "provenance:game/sim/ScriptActorCreationRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopScript.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/battle_013/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/battle_028/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|"
       ]
     },
@@ -1252,9 +1252,9 @@
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|",
         "provenance:game/battle/runtime/opening/ScriptWalkPath.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/story_scene_058/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/story_scene_060/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|走位速度、延时、镜头、地图别名的引擎 loader",
         "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|同距平局次序、围死时的最近格度量、按键快进（remake-invented）",
+        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#b3aa4efbaf",
         "sentence:docs/evidence_packets/static_reverse/original_script_walk_path.md#da860f002b"
       ]
     },
@@ -1298,7 +1298,7 @@
         "game/sim/SkillTargetRules.gd",
         "game/sim/RangePropagationRules.gd:area_coverage",
         "game/sim/loop/BattlePlayLoop.gd:player_cast_terrain",
-        "game/sim/loop/BattleLoopCombat.gd:_skill_context"
+        "game/sim/loop/BattleLoopCombat.gd:skill_context"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1336,11 +1336,16 @@
         "provenance:game/world/TownRuntime.gd|rules|provisional|",
         "provenance:game/world/TownRuntime.gd|timing|provisional|",
         "provenance:game/world/WorldScriptActions.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/town_scene/README.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_secret_man.md|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_world_town.md|negative-evidence|独立默认 level 表、路线红白插值、买卖 handler 执行回执",
         "scope:docs/evidence_packets/static_reverse/town_event_semantics.md|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_world_town.md#27b5dd1452",
+        "sentence:docs/evidence_packets/static_reverse/original_world_town.md#643c1d19ff",
+        "sentence:docs/evidence_packets/static_reverse/original_world_town.md#69bfcfd889",
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193",
-        "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#a3bbaaf4ae"
+        "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#a3bbaaf4ae",
+        "sentence:docs/evidence_packets/static_reverse/world_map_data.md#79d6ecfe5d",
+        "sentence:docs/evidence_packets/static_reverse/world_map_data.md#8eb537d377"
       ]
     },
     {
@@ -1433,7 +1438,6 @@
         "matrix:初始属性与职业派生",
         "matrix:玩家槽1与祭司002",
         "matrix:装备移动力与刷新",
-        "sentence:docs/evidence_packets/runtime_observations/story_scene_endgame_previews/README.md#6df6bf4b03",
         "sentence:docs/evidence_packets/static_reverse/original_growth_lifecycle.md#3d5d239d14",
         "sentence:docs/evidence_packets/static_reverse/original_growth_refresh.md#1f3e9c1039",
         "sentence:docs/evidence_packets/static_reverse/original_weapon_effects.md#5bca2d0cb2"
@@ -2257,10 +2261,31 @@
         "provenance:game/sim/WinfailCompiler.gd|rules|provisional|",
         "provenance:game/sim/WinfailConditions.gd|rules|provisional|",
         "provenance:game/sim/WinfailScenarioRules.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/battle_073/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|节奏、镜头、条件极性",
+        "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
+        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
+        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量",
+        "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接",
         "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f"
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb",
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#49015c7643",
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#87910702c4",
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0",
+        "sentence:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md#804d52228f",
+        "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457",
+        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37",
+        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf",
+        "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78",
+        "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f",
+        "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf",
+        "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5",
+        "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a",
+        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
+        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
       ]
     },
     {
@@ -2833,6 +2858,10 @@
         "reason": "单位字典合同，由生成器推导"
       },
       {
+        "source": "provenance:game/sim/Values.gd|rules|remake-invented|",
+        "reason": "规则输入的整数校验"
+      },
+      {
         "source": "provenance:game/sim/loop/BattleLoopAI.gd|rules|remake-invented|",
         "reason": "AI 回执字段（paralysis_skip、candidate_filters），只进日志"
       },
@@ -2869,10 +2898,6 @@
         "reason": "原版工具边界：回憶錄直进战斗关不安装敌军，只影响取证方法"
       },
       {
-        "source": "scope:docs/evidence_packets/runtime_observations/story_scene_053_preview/README.md|provisional|",
-        "reason": "预览回执（53 已是正式战斗，预览只作独立回归）"
-      },
-      {
         "source": "scope:docs/evidence_packets/static_reverse/original_enemy_turn.md|provisional|全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍）",
         "reason": "原版敌人回合裁判（模拟器）自身的取证边界，只影响对照回执，不是重制规则差异"
       },
@@ -2905,10 +2930,6 @@
         "reason": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何"
       },
       {
-        "source": "sentence:docs/evidence_packets/static_reverse/original_story_object_terrain.md#3b7e6437e8",
-        "reason": "说明句：该字段位置已由本包读出，不是缺口"
-      },
-      {
         "source": "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#47534c85f0",
         "reason": "守方对象与帧体同 tick 先后，差异 ±1 tick（16 ms）"
       },
@@ -2939,40 +2960,16 @@
         "reason": "20×expend 换算已由 original_skill_resources.md 证实（本包后继段）"
       },
       {
-        "source": "scope:docs/evidence_packets/static_reverse/original_dialogue_marker.md|negative-evidence|无方框 SHP",
-        "reason": "翻页提示认定为对白框处理器 0x414280 画的 Big5 字形 ▼／□，重制照做（R7-UI 86d52a99）"
+        "source": "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|negative-evidence|无方框 SHP",
+        "reason": "翻页提示认定为对白框处理器 0x414280 画的 Big5 字形 ▼／□，重制照做（original_dialogue_board 翻页提示节）"
       },
       {
         "source": "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧",
         "reason": "升級窗已用用户录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
       },
       {
-        "source": "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#90ab3e8987",
-        "reason": "level 1 歐姆村已是正式战斗，53 胜利经 [1,1] 进 level 1（PROJECT 战役注册）"
-      },
-      {
         "source": "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#3b94795095",
         "reason": "章节标题进出与停留已按 0x452f32 八段子状态播放（R7-TITLE 589524ea，original_tick_counts §2）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/story_scene_058/README.md#12a26dfd1c",
-        "reason": "58 → 60 → 53 → 1 的承接已接通，战役进度随 hand-off 写入（PROJECT 序章链）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/story_scene_060/README.md#78e6c6bec6",
-        "reason": "level 53 已是正式战斗（PROJECT 序章链）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/story_scene_901_preview/README.md#9526c253ae",
-        "reason": "901 已转正式战斗（PROJECT 正式战斗注册）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/town_scene/README.md#d7de99b176",
-        "reason": "level 6 席達鎮已是正式战斗（PROJECT 正式战斗）"
-      },
-      {
-        "source": "sentence:docs/evidence_packets/runtime_observations/world_map_scene/README.md#d74d3e7de4",
-        "reason": "level 1 已是正式战斗，胜利执行城镇事件 9 并回大地图（PROJECT 序章链）"
       },
       {
         "source": "video:1",

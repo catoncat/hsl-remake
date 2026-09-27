@@ -13,6 +13,7 @@ extends Node
 
 const SimplifiedDisplayTranslation = preload("res://game/text/SimplifiedDisplayTranslation.gd")
 const OriginalBitmapFont = preload("res://game/text/OriginalBitmapFont.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## RemakeOptionsPage.LISTENERS (a literal: preloading the page would pull the UI skin into the autoload).
 const OPTION_LISTENERS := "remake_options_listeners"
 const IMAGE_TABLE_PATH := "res://content/generated/hsl/text/simplified_images.json"
@@ -25,7 +26,7 @@ var translation: Translation = null
 ## The texture to show for `path`: its simplified redraw when the image table lists one.
 static func texture_path(path: String) -> String:
 	if _images.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(IMAGE_TABLE_PATH))
+		var parsed: Variant = ContentPaths.read_json(IMAGE_TABLE_PATH)
 		assert(typeof(parsed) == TYPE_DICTIONARY and str(parsed.get("schema", "")) == IMAGE_SCHEMA,
 			"SimplifiedDisplay: %s missing or not %s" % [IMAGE_TABLE_PATH, IMAGE_SCHEMA])
 		_images = parsed["images"]

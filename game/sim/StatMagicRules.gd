@@ -12,6 +12,7 @@ const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd")
 const Progression = preload("res://game/sim/ProgressionRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const KINDS := {0x20: "defense_up", 0x40: "attack_up", 0x100: "resist_up", 0x4000: "dispel"}
 ## 0x40aa80 visits DefUp (0x20) before AttUp (0x40); 0x60 runs both blocks in that order.
 ## AllUp (0x100, 魔障壁): proc1 roll (value discarded, compensation kept), rand(4)+2 turns,
@@ -81,8 +82,8 @@ static func resolve(ready: Dictionary, target: Dictionary, hit_bonus: int, equip
 			var first := _roll(ready, input, rng)
 			input["hit_bonus"] = first["hit_bonus_after"]
 			rolls.append(first)
-			var duration := CoreCombatRules._rand_range(4, rng) + 2
-			var strength := CoreCombatRules._rand_range(14, rng) + StatEnhancementRules.RESIST_MIN
+			var duration := CoreCombatRules.rand_range(4, rng) + 2
+			var strength := CoreCombatRules.rand_range(14, rng) + StatEnhancementRules.RESIST_MIN
 			rolls.append({"value": strength, "hit_check_passed": true, "source": "0x40b24a_rand14_plus7"})
 			result = StatEnhancementRules.apply(actor, kind, duration, strength)
 			durations.append(duration)
@@ -93,7 +94,7 @@ static func resolve(ready: Dictionary, target: Dictionary, hit_bonus: int, equip
 			var first := _roll(ready, input, rng)
 			input["hit_bonus"] = first["hit_bonus_after"]
 			rolls.append(first)
-			var duration := CoreCombatRules._rand_range(4, rng) + 2
+			var duration := CoreCombatRules.rand_range(4, rng) + 2
 			input["proc"] = 3
 			var magnitude := _roll(ready, input, rng)
 			rolls.append(magnitude)
@@ -137,8 +138,8 @@ static func receipt_error(receipt: Dictionary, book: Dictionary, children: bool 
 		var step: Dictionary
 		if kind == "dispel": step = StatEnhancementRules.dispel(proposal["actor"])
 		else:
-			if not rolls is Array or rolls.size() < 2 * (buffs + 1) or not rolls[2 * buffs + 1] is Dictionary or not StatusEffectRules._unsigned(rolls[2 * buffs + 1].get("value"),100000): return "invalid_stat_receipt_rolls"
-			if durations.size() <= buffs or not StatusEffectRules._unsigned(durations[buffs],5) or int(durations[buffs]) < 2: return "invalid_stat_receipt_duration"
+			if not rolls is Array or rolls.size() < 2 * (buffs + 1) or not rolls[2 * buffs + 1] is Dictionary or not Values.is_integer_in(rolls[2 * buffs + 1].get("value"), 0, 100000): return "invalid_stat_receipt_rolls"
+			if durations.size() <= buffs or not Values.is_integer_in(durations[buffs], 0, 5) or int(durations[buffs]) < 2: return "invalid_stat_receipt_duration"
 			step = StatEnhancementRules.apply(proposal["actor"],kind,int(durations[buffs]),int(rolls[2 * buffs + 1]["value"]))
 			buffs += 1
 		proposal["actor"] = step["actor"]
@@ -150,14 +151,14 @@ static func receipt_error(receipt: Dictionary, book: Dictionary, children: bool 
 	for key in ["attack","defense"]:
 		var field := "live_attack_damage" if key == "attack" else "live_defense"
 		var initial: Variant = before["combat_profile"].get(field)
-		if not StatusEffectRules._unsigned(initial,10000000) or receipt["stats_before"].get(key) != initial: return "invalid_stat_receipt_values"
+		if not Values.is_integer_in(initial, 0, 10000000) or receipt["stats_before"].get(key) != initial: return "invalid_stat_receipt_values"
 		var expected := int(initial) - StatEnhancementRules.power(before,key+"_up") + StatEnhancementRules.power(proposal["actor"],key+"_up")
 		if receipt["stats_after"].get(key) != expected: return "inconsistent_stat_receipt_values"
 	if receipt.get("defender_hp_after") != receipt.get("defender_hp_before") or receipt.get("actual_damage") != 0: return "invalid_stat_receipt_damage"
 	var payment: Variant = receipt.get("resource_payment")
 	if not payment is Dictionary or payment.get("resource") != ("mp" if entry["channel"] == "magic" else "stamina"): return "invalid_stat_receipt_payment"
 	for key in ["before","after","amount"]:
-		if not StatusEffectRules._unsigned(payment.get(key),1000000): return "invalid_stat_receipt_payment"
+		if not Values.is_integer_in(payment.get(key), 0, 1000000): return "invalid_stat_receipt_payment"
 	if payment["amount"] < 1 or payment["before"]-payment["after"] != payment["amount"]: return "inconsistent_stat_receipt_payment"
 	if children:
 		var affected: Variant = receipt.get("affected_targets")

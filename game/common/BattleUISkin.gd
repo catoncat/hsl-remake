@@ -49,8 +49,8 @@ const BUTTON_FONT_MIN := 11
 ## (ContentPaths.ACTOR_PANELS: the imported rows plus the authored characters).
 static func data() -> Dictionary:
 	if _panel_data.is_empty():
-		_panel_data = JSON.parse_string(FileAccess.get_file_as_string(PANEL_DATA))
-		var panels: Variant = JSON.parse_string(FileAccess.get_file_as_string(ContentPaths.ACTOR_PANELS)) if FileAccess.file_exists(ContentPaths.ACTOR_PANELS) else null
+		_panel_data = ContentPaths.read_json(PANEL_DATA)
+		var panels: Variant = ContentPaths.read_json(ContentPaths.ACTOR_PANELS) if FileAccess.file_exists(ContentPaths.ACTOR_PANELS) else null
 		if not panels is Dictionary or not (panels as Dictionary).get("actors") is Dictionary:
 			push_error("Actor panel table missing or invalid: " + ContentPaths.ACTOR_PANELS)
 		else:
@@ -177,7 +177,7 @@ static func button(parent: Node, title: String, at: Vector2, dimensions: Vector2
 ## Proper names (ContentPaths.PROTECTED_WORDS, longest first) a wrapped line never splits.
 static func protected_words() -> PackedStringArray:
 	if _protected_words.is_empty():
-		var payload: Variant = JSON.parse_string(FileAccess.get_file_as_string(ContentPaths.PROTECTED_WORDS))
+		var payload: Variant = ContentPaths.read_json(ContentPaths.PROTECTED_WORDS)
 		if not payload is Dictionary:
 			push_error("Protected word table missing or invalid: " + ContentPaths.PROTECTED_WORDS)
 			return _protected_words

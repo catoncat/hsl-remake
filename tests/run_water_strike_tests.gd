@@ -11,15 +11,15 @@ func _init() -> void:
 
 static func fixture(learn: bool = true) -> Dictionary:
 	var loop := run_growth_lifecycle_tests.fixture(3)
-	BattlePlayLoop._unit(loop,"tina")["coord"]=Vector2i(10,16)
-	BattlePlayLoop._unit(loop,"companion")["coord"]=Vector2i(10,15)
-	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
+	BattlePlayLoop.unit_ref(loop,"tina")["coord"]=Vector2i(10,16)
+	BattlePlayLoop.unit_ref(loop,"companion")["coord"]=Vector2i(10,15)
+	var enemy := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	enemy["coord"]=Vector2i(12,16);enemy["ai_home_coord"]=enemy["coord"]
 	var second:=enemy.duplicate(true)
 	second["id"]="enemy021_2";second["coord"]=Vector2i(11,15);second["ai_home_coord"]=second["coord"]
 	loop["units"].append(second)
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	loop=BattlePlayLoop._return_to_player(loop,"tina")
+	loop=BattlePlayLoop.return_to_player(loop,"tina")
 	if learn:loop=BattlePlayLoop.finish_exhausted_action(run_growth_lifecycle_tests.cast(loop,run_growth_lifecycle_tests.HEAL,"companion",zero))
 	return loop
 
@@ -64,7 +64,7 @@ func large_and_equipment():
 	check(BattlePlayLoop.Footprint.cells(giant).size()==9 and after["last_attack"]["affected_targets"].size()==1,"real source039 covering several cross cells takes exactly one target settlement")
 	check(BattlePlayLoop.unit(after,"tina")["mp"]==BattlePlayLoop.unit(before,"tina")["mp"]-8 and BattlePlayLoop.unit(after,"enemy021_1")["hp"]==500-after["last_attack"]["actual_damage"],"large actor neither multiplies damage nor charges one cost per body cell")
 	loop=fixture()
-	var actor:=BattlePlayLoop._unit(loop,"tina")
+	var actor:=BattlePlayLoop.unit_ref(loop,"tina")
 	actor["equipment"]=actor["equipment"].filter(func(s):return s["slot"]!="accessory1")
 	actor["equipment"].append({"slot":"accessory1","item_code":218})
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
@@ -75,7 +75,7 @@ func large_and_equipment():
 	var calls:=[0]
 	after=cast(loop,func(_bound):calls[0]+=1;return 0)
 	check(calls[0]==0 and after["units"]==loop["units"],"unpermitted moved water casting is rejected without draws")
-	actor=BattlePlayLoop._unit(loop,"tina")
+	actor=BattlePlayLoop.unit_ref(loop,"tina")
 	actor["equipment"]=actor["equipment"].filter(func(s):return s["slot"]!="accessory1")
 	actor["equipment"].append({"slot":"accessory1","item_code":232})
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)

@@ -49,27 +49,27 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 		"actTRUE":
 			return true
 		"actCheckRoundNumber":
-			return args.size() >= 1 and int(battle.get("turn", 1)) >= int(_arg(args, 0))
+			return args.size() >= 1 and int(battle.get("turn", 1)) >= int(arg(args, 0))
 		"actCheckRoundDisp":
-			return _arg(args, 0).is_valid_int() and int(battle.get("turn", 1)) >= _int_arg(args, 0)
+			return arg(args, 0).is_valid_int() and int(battle.get("turn", 1)) >= int_arg(args, 0)
 		"actDetectRoundDispDisp":
-			if not _arg(args, 0).is_valid_int():
+			if not arg(args, 0).is_valid_int():
 				return false
 			var runtime: Dictionary = battle.get("winfail_runtime", {})
 			var baseline := int(runtime.get("round_display_baseline", 1))
-			return int(battle.get("turn", 1)) >= baseline + _int_arg(args, 0)
+			return int(battle.get("turn", 1)) >= baseline + int_arg(args, 0)
 		"actCheckEnemyTotalNumber":
-			return args.size() >= 1 and _alive_enemy_total(battle) <= int(_arg(args, 0))
+			return args.size() >= 1 and alive_enemy_total(battle) <= int(arg(args, 0))
 		"actCheckEnemyNumber":
 			# static-derived (0x450840 case 0x24): holds when the registered count of the
 			# code is strictly below num. Static enemy objects drawn without PlayLoop units
 			# (Enemy101 hull pieces) stay registered in the original until destroyed; the
 			# remake cannot destroy them, so their declared count is added unchanged.
 			# An unresolvable token must not satisfy the check through an empty count.
-			if args.size() < 2 or token_source(battle, _arg(args, 0)) == "unresolved":
+			if args.size() < 2 or token_source(battle, arg(args, 0)) == "unresolved":
 				return false
-			var registered := alive_units_for_token(battle, _arg(args, 0)).size() + _static_enemy_count(battle, _arg(args, 0))
-			return registered < int(_arg(args, 1))
+			var registered := alive_units_for_token(battle, arg(args, 0)).size() + _static_enemy_count(battle, arg(args, 0))
+			return registered < int(arg(args, 1))
 		"actCheckPlayer", "actCheckEnemy":
 			# [num][id1][id2]...: none of the listed ids is still on the field.
 			# static-derived: hsl01.exe 0x450840 case 0x23/0x26 counts only ids that
@@ -85,10 +85,10 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			# (docs/evidence_packets/static_reverse/original_check_targets.md §R8).
 			if args.size() < 2:
 				return false
-			var needed := mini(int(_arg(args, 0)), args.size() - 1)
+			var needed := mini(int(arg(args, 0)), args.size() - 1)
 			var dead := 0
 			for index in range(1, args.size()):
-				var token := _arg(args, index)
+				var token := arg(args, index)
 				var source := token_source(battle, token)
 				if source == "unresolved":
 					continue
@@ -104,7 +104,7 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			var position: Array = arrival.get("position", []) if arrival is Dictionary else []
 			if position.size() < 2:
 				return false
-			for unit_id in alive_units_for_token(battle, _arg(args, 0), int(_arg(args, 1))):
+			for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
 				var coord: Variant = unit(battle, unit_id).get("coord", null)
 				if coord is Vector2i and coord.x * cell_size(battle) == int(position[0]) and coord.y * cell_size(battle) == int(position[1]):
 					return true
@@ -112,8 +112,8 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 		"actCheckPlayerArrivePos":
 			if args.size() < 6:
 				return false
-			var cells := WinfailCompiler.zone_cells([int(_arg(args, 2)), int(_arg(args, 3)), int(_arg(args, 4)), int(_arg(args, 5))], cell_size(battle))
-			for unit_id in alive_units_for_token(battle, _arg(args, 0), int(_arg(args, 1))):
+			var cells := WinfailCompiler.zone_cells([int(arg(args, 2)), int(arg(args, 3)), int(arg(args, 4)), int(arg(args, 5))], cell_size(battle))
+			for unit_id in alive_units_for_token(battle, arg(args, 0), int(arg(args, 1))):
 				var coord: Variant = unit(battle, unit_id).get("coord", null)
 				if coord is Vector2i:
 					for cell_value in cells:
@@ -128,15 +128,15 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			if context != "attack" or args.size() < 2:
 				return false
 			var attacker := str((battle.get("last_attack", {}) as Dictionary).get("attacker_id", ""))
-			if attacker == "" or (_arg(args, 0) != "-1" and not units_for_token(battle, _arg(args, 0)).has(attacker)):
+			if attacker == "" or (arg(args, 0) != "-1" and not units_for_token(battle, arg(args, 0)).has(attacker)):
 				return false
-			var attacked_by := units_for_token(battle, _arg(args, 1))
+			var attacked_by := units_for_token(battle, arg(args, 1))
 			return attacked_ids(battle).any(func(id): return attacked_by.has(id))
 		"actCheckSerialPlayerAttacked":
 			# case 0x6e walks the attacked list only (0x4c1ce8 is not read).
-			if context != "attack" or args.size() < 2 or not _arg(args, 1).is_valid_int():
+			if context != "attack" or args.size() < 2 or not arg(args, 1).is_valid_int():
 				return false
-			var serial_units := units_for_token(battle, _arg(args, 0), _int_arg(args, 1))
+			var serial_units := units_for_token(battle, arg(args, 0), int_arg(args, 1))
 			return attacked_ids(battle).any(func(id): return serial_units.has(id))
 		"actCheckNotPlayerAttacker":
 			# case 0x74 fails only when 0x4c1ce8 is set and names the player: a completion
@@ -146,7 +146,7 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			if context != "attack":
 				return true
 			var attacker := str((battle.get("last_attack", {}) as Dictionary).get("attacker_id", ""))
-			return not units_for_token(battle, _arg(args, 0)).has(attacker)
+			return not units_for_token(battle, arg(args, 0)).has(attacker)
 		"actFALSE":
 			return false
 		"actCheckPlayerHPLow":
@@ -158,9 +158,9 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			# which revives at 1 HP instead of dying (WINFAIL030–041／059／075–079). A defeated
 			# unit reads as HP 0 (provisional: the original's lookup no longer finds an
 			# unregistered object; the remake keeps the fallen target satisfying the check).
-			var ratio := int(_arg(args, 2))
-			var serial := _int_arg(args, 1)
-			for unit_id in units_for_token(battle, _arg(args, 0), serial):
+			var ratio := int(arg(args, 2))
+			var serial := int_arg(args, 1)
+			for unit_id in units_for_token(battle, arg(args, 0), serial):
 				var unit := unit(battle, unit_id)
 				var hp := int(unit.get("hp", 0))
 				if bool(unit.get("defeated", false)):
@@ -169,11 +169,11 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 					return true
 			return false
 		"actCheckPlayerTotalNumber":
-			return args.size() >= 1 and _alive_player_side_total(battle) <= int(_arg(args, 0))
+			return args.size() >= 1 and alive_player_side_total(battle) <= int(arg(args, 0))
 		"actCheckAnyPlayerArrivePos":
 			if args.size() < 4:
 				return false
-			var any_cells := WinfailCompiler.zone_cells([int(_arg(args, 0)), int(_arg(args, 1)), int(_arg(args, 2)), int(_arg(args, 3))], cell_size(battle))
+			var any_cells := WinfailCompiler.zone_cells([int(arg(args, 0)), int(arg(args, 1)), int(arg(args, 2)), int(arg(args, 3))], cell_size(battle))
 			for unit_value in battle.get("units", []):
 				if typeof(unit_value) != TYPE_DICTIONARY:
 					continue
@@ -193,13 +193,13 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			# word 0x4c1ad6 is armed to counter + num (u16); the condition holds once the
 			# counter reaches it and clears the deadline. The only condition that writes: it
 			# is read in event scans (_evaluate owns a copy), never by the win／fail readers.
-			if not _arg(args, 0).is_valid_int():
+			if not arg(args, 0).is_valid_int():
 				return false
 			var runtime: Dictionary = battle.get("winfail_runtime", {})
 			var counter := int(runtime.get("handoff_counter", 0)) & 0xffff
 			var deadline := int(runtime.get("serial_deadline", 0)) & 0xffff
 			if deadline == 0:
-				deadline = (_int_arg(args, 0) + counter) & 0xffff
+				deadline = (int_arg(args, 0) + counter) & 0xffff
 			var holds := deadline <= counter
 			runtime["serial_deadline"] = 0 if holds else deadline
 			return holds
@@ -207,9 +207,9 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 			if args.size() < 2:
 				return false
 			var statuses: Array = battle.get("event_statuses", [])
-			var count := mini(int(_arg(args, 0)), args.size() - 1)
+			var count := mini(int(arg(args, 0)), args.size() - 1)
 			for index in range(1, 1 + count):
-				if statuses.find(int(_arg(args, index))) != -1:
+				if statuses.find(int(arg(args, index))) != -1:
 					return false
 			return true
 		_:
@@ -229,10 +229,10 @@ static func condition_tokens(status: Dictionary) -> Array:
 		match str(condition["name"]):
 			"actCheckPlayer", "actCheckEnemy":
 				for index in range(1, args.size()):
-					tokens.append(_arg(args, index))
+					tokens.append(arg(args, index))
 			"actCheckPlayerArrivePos", "actCheckPlayerHPLow", "actCheckEnemyNumber":
 				if args.size() >= 1:
-					tokens.append(_arg(args, 0))
+					tokens.append(arg(args, 0))
 	return tokens
 
 
@@ -320,7 +320,7 @@ static func unit_alive(battle: Dictionary, unit_id: String) -> bool:
 	return departed.find(unit_id) == -1
 
 
-static func _alive_enemy_total(battle: Dictionary) -> int:
+static func alive_enemy_total(battle: Dictionary) -> int:
 	var count := 0
 	for unit_value in battle.get("units", []):
 		if typeof(unit_value) != TYPE_DICTIONARY:
@@ -337,7 +337,7 @@ static func _alive_enemy_total(battle: Dictionary) -> int:
 	return count
 
 
-static func _alive_player_side_total(battle: Dictionary) -> int:
+static func alive_player_side_total(battle: Dictionary) -> int:
 	var count := 0
 	for unit_value in battle.get("units", []):
 		if typeof(unit_value) != TYPE_DICTIONARY:
@@ -370,9 +370,9 @@ static func cell_size(battle: Dictionary) -> int:
 ## ---------------------------------------------------------------------------
 ## Helpers
 
-static func _arg(args: Array, index: int, default: String = "") -> String:
+static func arg(args: Array, index: int, default: String = "") -> String:
 	return WinfailCompiler.arg(args, index, default)
 
 
-static func _int_arg(args: Array, index: int, default: int = 0) -> int:
+static func int_arg(args: Array, index: int, default: int = 0) -> int:
 	return WinfailCompiler.int_arg(args, index, default)

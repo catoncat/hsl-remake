@@ -1,18 +1,16 @@
 # 世界地图／城镇数据链（bigmap.dat、TRACK、TOWNDEF）
 
-> evidence: resource-derived; provisional · status: live · tools: hsltools/data/big_map_flow.py, hsltools/data/world_map.py, hsltools/levels/map_objects.py · updated: 2026-09-18
+> evidence: resource-derived; provisional · status: live · tools: hsltools/data/big_map_flow.py, hsltools/data/world_map.py, hsltools/levels/map_objects.py · updated: 2026-09-27
 
-Checked: 2026-09-18. 本包只记录原包成员的**结构**与字段交叉校验，证据等级为 `resource-derived`；
-凡是数据本身不能证明的字段含义和运行时行为一律标 `provisional`，列在文末。它不声明任何原版
-运行时语义，也不对应任何已实现的玩法。
+## 结论
 
-## 可复跑入口
+- 原版 bigmap.dat 是 45 点／44 线的定长记录，TRACK.TXT 44 条折线首末顶点与点坐标 44/44 相等，唯一不一致是点 16 命運的神殿无线；TOWNDEF.TXT 为 62 条货表与 191 条城镇事件、923 条 te 指令、0 个未知 token；剧本的大地图流转有一组可数据验证的惯例（resource-derived）。
+- 重制 `tools/hsltools/data/world_map.py` 与 `big_map_flow.py` 把这些成员解成 `content/imported/hsl/global/world_map/` 与 `big_map_flow.json`，`WorldMapRules.arrival`／`CampaignProgress.next_destination` 按流转表实现；字段的运行时语义以 [original_world_town](original_world_town.md) 的原指令读法为准（resource-derived 输入）。
+- 差异：点 16 的进入方式、TOWNDEF handler 与状态栏排版等未由本包证明（provisional）。
 
-```sh
-PYTHONPATH=. python3 tools/hsl.py generate world_map            # 从 $HSL_ORIGINAL_DIR 重生成
-PYTHONPATH=. python3 tools/hsl.py check world_map    # 有 PAK：重生成并逐字节比对；无 PAK：只做离线一致性
-PYTHONPATH=. python3 -m unittest tools.test_hsl_world_map
-```
+## 证据
+
+### resource-derived：输出
 
 Tracked 输出（`content/imported/hsl/global/world_map/`）：
 
@@ -23,7 +21,7 @@ Tracked 输出（`content/imported/hsl/global/world_map/`）：
   `write_shp_preview` 解出；JSON 记录源成员 SHA-256、PNG SHA-256、宽高、`frame_count`（TLHS 一成员一图，恒为 1）与
   0x1C/0x20 的 `draw_origin`（与 `hsltools/levels/map_objects.py` 同一读法，带符号 int32）。
 
-## 来源成员
+### resource-derived：来源成员
 
 | 键 | 成员 | 字节 | 用途 |
 | --- | --- | --- | --- |
@@ -38,7 +36,7 @@ Tracked 输出（`content/imported/hsl/global/world_map/`）：
 
 SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 TYPE.H 的 `bmpm*` 值与内置表一致，不一致即失败。
 
-## bigmap.dat 记录布局（resource-derived）
+### resource-derived：bigmap.dat 记录布局
 
 - 偏移 0 起：100 个 40 字节槽（到偏移 4000），每槽 10 个 int32 LE。槽 0 全零；槽 1..45 各一个点，**点 id 等于槽号**。
   字段顺序：`[0] raw_field0`、`[1] flags`、`[2] point id`、`[3] name resource id`、`[4] x`、`[5] y`、`[6..8] 最多 3 个 track id（0 = 空）`、`[9] 恒为 0`。
@@ -51,7 +49,7 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 静态分布（计数，不是语义）：45 点中 bmpmTown 14、bmpmGeneral 23、bmpmBattle 8（5 呼嘯平原、10 帕尼西雅城廢墟、15 深淵之沼、19 利魯瑪山地、28 眾神的宮殿遺址、29 約瑟河、38 幽闇墳場、41 悲嘆之湖），bmpmVisit／bmpmHidden 在文件里均为 0。
 44 条线中 18 条的 `raw_field1` 为 `0x08000000`（bmpmHidden 位）：10–14、20、23–26、29–34、37、43；所有线的 `raw_field0` 均为 0。
 
-## 自检结果
+### resource-derived：自检结果
 
 `world_map.json.self_check` 由工具用数据互相核对，条目原样记录，不做修补：
 
@@ -60,20 +58,20 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 - **唯一不一致**：点 16（命運的神殿，bmpmTown）的三个 track 槽全为 0，没有任何线连到它。TOWNDEF 里有 `teBMSetPointMode,town_命運神殿,gameBMShow`、`teBMClearPointFlag,town_命運神殿,bmpmHidden`、`teSetNextPlayLevelEvent,town_命運神殿,gameBigMapLevel` 等脚本引用；它如何在大地图上进入是未解事项，本包只记录“无线”。
 - 城镇交叉核对：extras.h 12 个 `town_*` 全部指向存在且带 bmpmTown 的点；PAK 中 11 个 `TownBG` 成员（01、04、06、11、14、16、23、25、27、35、42）全部对应某个 `town_*`；`town_曼多力亞 = 9` 没有 `TownBG09`，`background` 写 null。另外点 20（王都 希里烏斯）与 45（克萊恩城）带 bmpmTown 但 extras.h 没有 `town_*` 符号，也没有 TownBG。
 
-## 大地图图形成员（resource-derived，只记录）
+### resource-derived：大地图图形成员
 
-- `assets.point_markers`：`m_pnt001` 17×17 origin (8,8)、`m_pnt002` 18×19 origin (9,9)、`m_pnt003` 18×19 origin (9,10)，三者 0x10 头字段同为 `0x2704`。三种标记与 bmpmTown／General／Battle 或其他状态的对应关系**未证明**，本包不解释。
-- `tracks[].sprite`：44 条线各有一个 `m_trk0NN.SHP`（编号＝bmTrackNN），44/44 解码成功。宽高与折线包围盒同量级（如 bmTrack01 折线包围盒 48×53、图 53×61，origin (51,60)），`draw_origin` 含负值（bmTrack10 为 (0,-1)）；图相对折线／端点的放置规则未证。
-- `assets.status_bar`：`Status_Bar.SHP` 640×51，origin (0,0)，用途按文件名记录，未证。
+- `assets.point_markers`：`m_pnt001` 17×17 origin (8,8)、`m_pnt002` 18×19 origin (9,9)、`m_pnt003` 18×19 origin (9,10)，三者 0x10 头字段同为 `0x2704`。三种标记是同一 shape 的三帧（Battle0／General1／Town2），见 [original_world_town](original_world_town.md)。
+- `tracks[].sprite`：44 条线各有一个 `m_trk0NN.SHP`（编号＝bmTrackNN），44/44 解码成功。宽高与折线包围盒同量级（如 bmTrack01 折线包围盒 48×53、图 53×61，origin (51,60)），`draw_origin` 含负值（bmTrack10 为 (0,-1)）；放置规则（锚点＝level049 EVEF 位置减 draw origin）见 [original_world_town](original_world_town.md)。
+- `assets.status_bar`：`Status_Bar.SHP` 640×51，origin (0,0)，在 camera+(0,412) 显示完成度与累计时间（[original_world_town](original_world_town.md)）。
 
-## TOWNDEF.TXT 结构（resource-derived）
+### resource-derived：TOWNDEF.TXT 结构
 
 去掉 `;` 注释与整行注释后：62 条 `[item]`（code 1..62，`item_id` 多行合并；44 条段头带注释，如「歐姆村」「敵人身上隨機攜帶物品, 等級一」）、191 条 `[town_event]`（code 1..191；段头注释保留为 `comment`，如「歐姆村武器店」「米蘭多酒館老闆」）。
 每条 town_event 含 `show_name`（资源 id＋RESOURCE.TXT 文字，如 30 老闆／32 武器店／875 酒館老闆；14 条没有 show_name）、可选 `item_code`（31 个不同值，全部指向存在的 `[item]`）与 `events[]`。
 `event = teXXX,args...` 一行可串多个 te 指令（如 `teDeleteSelfTE,7,1,14,teAddSelfTE,7,1,15`），工具按 `te[A-Z]` 前缀切分；行尾多余逗号丢弃。共 923 条指令，涉及 46 个定义 token 中的 39 个，**0 个未知 token**；使用次数全表见 `statistics.token_usage`（前三位 teShapeMessage 269、tePlayerMessage 184、teDelay 171）。
 消息 id 只按 TOWNDEF.H 签名注释里标明的“message id”参数位收集（tePlayerMessage[1]、teShapeMessage[2]、teCheckMoney[3]、teCheckJobUp／teCheckJobUp2[1]、teSecretManBuyThing[2]、teSelectInsertEvent 自 2 起的偶数位）：433 个不同 id；teShapeMessage 的名字参数另列 46 个 `shape_name_resource_ids`。参数里出现的符号（`SID_*`、`town_*`、`bmpm*`、`gameBM*`、`gameoverID*`、`gameBigMapLevel`）经 extras.h／TYPE.H 解析写在 `symbols`，全部有值。
 
-## 大地图流转脚本惯例（resource-derived）
+### resource-derived：大地图流转脚本惯例
 
 `tools/hsltools/data/big_map_flow.py` 扫描原 PAK 全部 151 个含流转指令的 `story*.txt`／`winfail*.txt`（352 条 `actSetNextPlayLevelEvent`／`actBM*`／`actSetTownExecEvent`／`actAddTE` 等），写 `content/generated/hsl/static/hsl01/big_map_flow.json`（`hsl_big_map_flow.v1`，`--check` 离线复推导）。symbol 取 `towndef.json` 的 TYPE.H／extras.h 读法（`gameBigMapLevel = 49`、`town_*`）。脚本惯例（不是 EXE handler 的证明）：
 
@@ -87,18 +85,18 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 | 没有 `actSetNextPlayLevelEvent` 的战斗 | WINFAIL001（只 `actSetTownExecEvent,town_歐姆村,9`，`;actBMSetPointEvent,1,501,0` 被注释）、WINFAIL005（只写点 5 Visit 与席達鎮事件 19） | 胜利后默认回大地图、站在同号点（provisional） |
 | 城镇点上的关卡 | 席達鎮 town_event 23 `teSetNextPlayLevelEvent,6,6`、兩棲族部落 151 `13,13`、沙羅尼亞 167 `35,72`、斐達克 178 `42,74` | 城镇点到达先开城镇，关卡由城镇事件触发；Battle／General 点无脚本事件时默认开同号关卡 |
 
-重制按此表实现 `WorldMapRules.arrival`／`CampaignProgress.next_destination`；SR-069 的原指令执行（[原合同](original_world_town.md)）随后印证了 +8 初值＝点号与到达分支（General 已访先 ratio 再 +0..2、Battle 已访 +0..2、Town 仅目的点），并把「同号默认」改述为文件数据。
+## 重制接线
 
-## 未解语义（provisional，不在本包内声明）
+- `tools/hsltools/data/world_map.py`（`python3 tools/hsl.py generate world_map`）写 `world_map.json`／`towndef.json`／`previews/`；`tools/hsltools/data/big_map_flow.py` 写 `big_map_flow.json`。
+- `game/world/WorldMapRules.gd` `arrival` 与 `game/battle/runtime/CampaignProgress.gd` `next_destination` 按上表流转；字段语义（展示阶段、bmpm 位、到达分支、`+8` 初值＝点号）按 [original_world_town](original_world_town.md) 的原指令读法。
 
-| 项 | 观察 | 替换证据 |
-| --- | --- | --- |
-| 点 `raw_field0` | **已解（SR-069）**：展示阶段 0 不显示／1 揭示／2 稳定，与 Hidden 位分开；新游戏另由代码把 17 个点、18 条线 OR 上 Hidden（[原合同](original_world_town.md)） | — |
-| 线 `raw_field1` | **已解（SR-069）**：`+0` 为展示阶段、`+4` 为 bmpm 位；18 条 Hidden 与代码列表一致 | — |
-| `bmpm*` 位的行为 | **已解（SR-069）**：Visit＝已访问；Town／General／Battle 为类型（点事件整组替换）；到达分支见原合同；Hidden 阻止揭示 | 遭遇抽样比较方向、请求后的 Visit 写入未执行 |
-| 点 16 无线 | 命運的神殿没有 track；到达方式（脚本 `teSetBMWalkToPoint`／直接进入）未证 | 大地图 walk handler |
-| 折线行走 | 命中框 ±16 与 16.16 速度 2／tick 已解（SR-069）；路线进入揭示阶段的触发已定位（lane TOWNMAP：行走者 `0x427420` 子状态 0／1 调 `0x426e40`，见[原合同](original_world_town.md)）；每点进入的关卡号＝点记录 `+8`（文件初值＝点号）或脚本指派 | walker tick 与揭示触发的静态分析 |
-| TOWNDEF handler | te 指令行为、商店定价、事件排程未证；本包仅复制 TOWNDEF.H 注释里的参数签名 | 城镇脚本 VM 静态分析 |
-| m_pnt／m_trk／Status_Bar | **已解（SR-069）**：M_PNT001..003 为同一 shape 的三帧（Battle0／General1／Town2）；m_trk 锚点＝level049 EVEF 位置（＝起点）减 draw origin，44 条与本包一致；Status_Bar 在 camera+(0,412) 显示完成度与累计时间 | 状态栏文字排版与计时器来源未执行 |
+## 复现
 
-TownBG／BigMap 预览只证明共用解码器能解出这些 TLHS 成员并给出尺寸；不代表原版绘制顺序、缩放或 UI 叠加。
+`python3 tools/hsl.py check world_map`（有 PAK 时重生成并逐字节比对，无 PAK 时只做离线一致性）
+
+## 边界
+
+- 点 16 命運的神殿没有 track，进入方式（脚本 `teSetBMWalkToPoint` 或直接进入）未读。
+- TOWNDEF 的 te 指令行为、商店定价与事件排程不由本包证明（见 [town_event_semantics](town_event_semantics.md)）；本包只复制 TOWNDEF.H 注释里的参数签名。
+- 遭遇关成三时引擎是否在三个里掷选、没有 `actSetNextPlayLevelEvent` 的战斗的默认回图行为未读（provisional）。
+- TownBG／BigMap 预览只证明共用解码器能解出这些 TLHS 成员并给出尺寸，不代表原版绘制顺序、缩放或 UI 叠加。

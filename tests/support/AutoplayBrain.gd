@@ -257,7 +257,7 @@ const THREAT_REACH_UNBOUNDED := 1 << 30
 ## (_event_handoff_fired), or SIMULATION_STEP_LIMIT steps / a step that made no progress —
 ## `complete` false for those), `mutated` true when the real loop's hash changed (a bug in a
 ## rule or the grounding). A fired script status does not end the round: the loop materialises
-## what the status creates, retreats and waits itself (BattleLoopScript._resolve_outcome) and the
+## what the status creates, retreats and waits itself (BattleLoopScript.resolve_outcome) and the
 ## scene only replays it, so the simulated round runs on through the firing as the real one
 ## does. Cutting the round there left level 6's round 2 (the round-2 dialogue event) with every
 ## candidate valued after the first unit's action alone — identical values for a cast on 隊長
@@ -369,7 +369,7 @@ static func _step_ai_turn(sim: Dictionary, rng: Variant) -> Dictionary:
 
 
 ## The simulated round's draw source: every draw the rules make lands at the middle of its
-## range (the Callable form CoreCombatRules._rand_range and native_draw accept) — a strike whose
+## range (the Callable form CoreCombatRules.rand_range and native_draw accept) — a strike whose
 ## hit rate is above 50 lands, a critical below a 50 chance does not, damage and AI choices take
 ## their middle value. A seeded generator gave one sampled future per plan: level 5 (chapter
 ## hand-off, seed 1, round 3) simulated 038's 27-damage blow on 緹娜 as a miss for every plan, so
@@ -1640,7 +1640,7 @@ static func _strike_options(loop: Dictionary, board: Dictionary, unit: Dictionar
 	var weapon := _expected_strike(unit, foe)
 	for cell in _strike_cells(loop, unit, foe):
 		by_cell[cell] = {"cell": cell, "damage": weapon, "value": weapon, "cast": {}, "threats": _threatening(loop, board, unit, cell).size(), "path": _path_cost(loop, unit, cell)}
-	for row in _skill_options(loop, unit):
+	for row in skill_options(loop, unit):
 		for intent in _cast_intents(loop, board, unit, row["option"], row["descriptor"]):
 			if str(intent["target_id"]) != str(foe["id"]):
 				continue
@@ -2301,7 +2301,7 @@ static func role_weights(loop: Dictionary, board: Dictionary) -> Dictionary:
 			var healing := ItemUseRules.first_healing_slot(unit["inventory"], loop["consumables"])
 			healer = bool(healing.get("ok", false)) and int(healing.get("index", -1)) >= 0
 		var caster := false
-		for row in _skill_options(loop, unit):
+		for row in skill_options(loop, unit):
 			if str(row["descriptor"].get("damage_policy", "")) in SUPPORT_POLICIES:
 				healer = true
 			else:
@@ -2544,7 +2544,7 @@ static func _objective_distance(loop: Dictionary, target: Dictionary) -> float:
 
 ## Every commandable unit's affordable magic / special options (BattlePlayLoop.magic_options /
 ## special_options, quote ok) whose damage policy the forecaster covers: [{unit, option, descriptor}].
-static func _skill_options(loop: Dictionary, unit: Dictionary) -> Array:
+static func skill_options(loop: Dictionary, unit: Dictionary) -> Array:
 	var out: Array = []
 	var options: Array = BattlePlayLoop.magic_options(loop, str(unit["id"]))
 	options.append_array(BattlePlayLoop.special_options(loop, str(unit["id"])))
@@ -2564,7 +2564,7 @@ static func _skill_options(loop: Dictionary, unit: Dictionary) -> Array:
 static func _skill_intents(loop: Dictionary, board: Dictionary) -> Array:
 	var best := {}
 	for unit in board["commandables"]:
-		for row in _skill_options(loop, unit):
+		for row in skill_options(loop, unit):
 			for intent in _cast_intents(loop, board, unit, row["option"], row["descriptor"]):
 				var key := "%s|%s|%s" % [str(intent["caster_id"]), str(intent["skill_id"]), str(intent["target_id"])]
 				if not best.has(key) or _intent_before(intent, best[key]):
@@ -2681,7 +2681,7 @@ static func _forecast_draws() -> Callable:
 ## The planned skill's best cast at `target_id` for `unit` now (re-evaluated at grounding time),
 ## from `cell` when that cast is still possible (the attack-cell assignment's cell); {} when none.
 static func _planned_cast(loop: Dictionary, board: Dictionary, unit: Dictionary, skill_id: String, target_id: String, cell: Variant = null) -> Dictionary:
-	for row in _skill_options(loop, unit):
+	for row in skill_options(loop, unit):
 		if str(row["option"]["id"]) != skill_id:
 			continue
 		var best := {}
@@ -2714,7 +2714,7 @@ static func _reachable(loop: Dictionary, unit: Dictionary) -> Array:
 ## until a command is issued, and every command returns a new dictionary): the planner's
 ## candidate × unit × foe reach queries otherwise recompute the same envelope thousands of
 ## times on a 39-actor field (level 12: 170 s a battle before, see the brain comparison).
-## One entry per unit ("envelope:<id>", BattlePlayLoop._movement_envelope): its reachable
+## One entry per unit ("envelope:<id>", BattlePlayLoop.movement_envelope): its reachable
 ## cells and every path size are read from that one flood — Loop.movement_cells and
 ## Loop.movement_path each flood the same envelope, so a per-cell path query cost a whole
 ## flood (S13: 386 floods of one level-44 decision's hold_line search).
@@ -2727,7 +2727,7 @@ static var _tactics: bool = false
 static func _movement_envelope(loop: Dictionary, unit_id: String) -> Dictionary:
 	var key := "envelope:" + unit_id
 	if not _envelope_cache.has(key):
-		_envelope_cache[key] = BattlePlayLoop._movement_envelope(loop, unit_id)
+		_envelope_cache[key] = BattlePlayLoop.movement_envelope(loop, unit_id)
 	return _envelope_cache[key]
 
 

@@ -74,6 +74,7 @@ const SUPPORTED_TOKENS := [
 const RECORDED_ONLY_TOKENS := ["teCheckJobUpDeny", "teCheckMoney2", "teSetBMWalkerPlayerID"]
 const JobUpRules = preload("res://game/sim/JobUpRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## Job caps per PLAYERS template row (roles/profiles.json actors[id].profile.caps),
 ## the same rows the native cap loader 0x448370 writes for 0x434770's comparison.
 const ROLE_PROFILES_PATH := "res://content/generated/hsl/roles/profiles.json"
@@ -206,7 +207,7 @@ static func load_initial_trees(path: String) -> Dictionary:
 static func _load_json(path: String, schema: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {"error": "missing_file", "path": path}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var parsed: Variant = ContentPaths.read_json(path)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {"error": "invalid_json", "path": path}
 	var data: Dictionary = parsed

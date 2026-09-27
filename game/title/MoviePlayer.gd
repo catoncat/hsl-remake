@@ -22,6 +22,7 @@ extends CanvasLayer
 signal finished(reason: String)
 
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST_PATH := "res://content/imported/hsl/movie/manifest.json"
 const MOVIE_DIR := "res://content/imported/hsl/movie/"
 const SCREEN_SIZE := Vector2(640, 480)
@@ -47,7 +48,7 @@ var _first_tick := false
 static func load_manifest() -> Dictionary:
 	if not FileAccess.file_exists(MANIFEST_PATH):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 
 

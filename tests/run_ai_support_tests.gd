@@ -39,17 +39,17 @@ func run() -> void:
 static func fixture(skill_id: String = HEAL) -> Dictionary:
 	var loop := run_magic_experience_tests.fixture()
 	loop["map_size"] = Vector2i(24, 24)
-	var caster := BattlePlayLoop._unit(loop, "leonard")
+	var caster := BattlePlayLoop.unit_ref(loop, "leonard")
 	# Source stationary casting is tested separately. This suite exercises mobile
 	# aid with an explicitly equipped source ring, preserving spell ownership.
 	caster["equipment"] = caster["equipment"].filter(func(s):return s["slot"] != "accessory2")
 	caster["equipment"].append({"slot":"accessory2","item_code":232})
 	caster.merge({"player_commandable": false, "battle_actor_role": BattlePlayLoop.ROLE_FRIENDLY, "move_point": 3}, true)
 	caster["hp"] = caster["max_hp"]
-	BattlePlayLoop._unit(loop, "enemy023_1").merge({"coord": Vector2i(14, 8), "hp": 4}, true)
-	var second := BattlePlayLoop._unit(loop, "enemy021_2")
+	BattlePlayLoop.unit_ref(loop, "enemy023_1").merge({"coord": Vector2i(14, 8), "hp": 4}, true)
+	var second := BattlePlayLoop.unit_ref(loop, "enemy021_2")
 	second.merge({"coord": Vector2i(14, 9), "hp": 4, "battle_actor_role": BattlePlayLoop.ROLE_FRIENDLY}, true)
-	BattlePlayLoop._unit(loop, "enemy021_1")["coord"] = Vector2i(17, 10)
+	BattlePlayLoop.unit_ref(loop, "enemy021_1")["coord"] = Vector2i(17, 10)
 	TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"] = [skill_id]
 	TestSuite.own(loop, "skill_book")["skills"][skill_id]["fields"]["use_ratio"] = "100"
 	var profile: Dictionary = TestSuite.own(loop, "ai_profiles")["actors"]["001"]["profile"]
@@ -110,9 +110,9 @@ func ally_actions() -> void:
 		check(loop == before, "support planning/AI step preserves caller state")
 	var area := fixture(CURE)
 	for id in ["enemy023_1", "enemy021_2"]:
-		var unit := BattlePlayLoop._unit(area,id)
+		var unit := BattlePlayLoop.unit_ref(area,id)
 		unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit,"poison",2,10)["changes"],true)
-	BattlePlayLoop._unit(area,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(area,"enemy023_1"),"no_magic",2)["changes"],true)
+	BattlePlayLoop.unit_ref(area,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(area,"enemy023_1"),"no_magic",2)["changes"],true)
 	var cured := BattlePlayLoop.step_ai_turn(area, zero)
 	check(cured["last_ai_action"].get("skill_id") == CURE, "AI chooses area cure for a poisoned ally")
 	if cured["last_ai_action"].get("skill_id") == CURE:
@@ -123,7 +123,7 @@ func ally_actions() -> void:
 		for hit in receipt["affected_targets"]: base += int(hit["experience_basis"]["points"])
 		check(receipt["experience"]["gained"] == base and base > 0, "two cure contributions combine into the correct caster's final award")
 		var exp_before: int = BattlePlayLoop.unit(cured,"leonard")["exp"]
-		var other: Dictionary = BattlePlayLoop._unit(cured,"enemy023_1")
+		var other: Dictionary = BattlePlayLoop.unit_ref(cured,"enemy023_1")
 		other["growth_profile"] = BattlePlayLoop.unit(cured,"leonard")["growth_profile"].duplicate(true)
 		other["mp"] = 100
 		other["max_mp"] = 100
@@ -140,10 +140,10 @@ func ally_actions() -> void:
 ## special heal category and 0x40df70 walks it through 0x40dd80.
 func special_channel_actions() -> void:
 	var loop := fixture(GATHER)
-	var caster := BattlePlayLoop._unit(loop, "leonard")
+	var caster := BattlePlayLoop.unit_ref(loop, "leonard")
 	caster["stamina"] = 60
 	TestSuite.own(loop, "ai_profiles")["actors"]["001"]["profile"].merge({"ai_att_special": 100, "ai_att_magic": 0}, true)
-	BattlePlayLoop._unit(loop, "enemy023_1")["coord"] = Vector2i(12, 8)
+	BattlePlayLoop.unit_ref(loop, "enemy023_1")["coord"] = Vector2i(12, 8)
 	var before := loop.duplicate(true)
 	var after := BattlePlayLoop.step_ai_turn(loop, zero)
 	check(after["scenario_ok"], "AI special heal preflight " + str(after.get("scenario_error", "")))
@@ -160,14 +160,14 @@ func special_channel_actions() -> void:
 	check(loop == before, "special support planning preserves caller state")
 	# Self heal: 0x43fa29 offers the same two channels to 0x40c570 before the self bucket walk.
 	var alone := fixture(GATHER)
-	var wounded := BattlePlayLoop._unit(alone, "leonard")
+	var wounded := BattlePlayLoop.unit_ref(alone, "leonard")
 	wounded.merge({"stamina": 60, "hp": 1}, true)
 	TestSuite.own(alone, "ai_profiles")["actors"]["001"]["profile"].merge({"ai_att_special": 100, "ai_att_magic": 0, "ai_help_otherhp": 0, "ai_help_status": 0}, true)
 	var healed := BattlePlayLoop.step_ai_turn(alone, zero)
 	check(healed["scenario_ok"] and healed["last_ai_action"].get("skill_id") == GATHER and healed["last_ai_action"]["ai_decision"]["priority"]["kind"] == "self_skill" and BattlePlayLoop.unit(healed, "leonard")["hp"] > 1 and BattlePlayLoop.unit(healed, "leonard")["stamina"] == 20, "AI self-heals with the special channel when 0x40c570 selects it")
 	# Self-cure adapter: the SPECIAL cure bucket (萬息秘孔術) follows the empty MAGIC one before the item fallback.
 	var sick := fixture(PURGE)
-	var poisoned := BattlePlayLoop._unit(sick, "leonard")
+	var poisoned := BattlePlayLoop.unit_ref(sick, "leonard")
 	poisoned["stamina"] = 60
 	poisoned.merge(BattlePlayLoop.StatusEffectRules.apply(poisoned, "poison", 2, 10)["changes"], true)
 	TestSuite.own(sick, "ai_profiles")["actors"]["001"]["profile"].merge({"ai_check_hp": 0, "ai_help_otherhp": 0, "ai_help_status": 0}, true)
@@ -176,18 +176,18 @@ func special_channel_actions() -> void:
 	# Special self-buffs are range0Cell/range0Cell: 0x40c480 counts them (0x40e180) but no ally is ever inside;
 	# only the caster itself is planned (0x43fce1..0x43fd46 falls back to self when the ally scan finds nobody).
 	var walled := fixture(WIND_WALL)
-	BattlePlayLoop._unit(walled, "leonard")["stamina"] = 60
+	BattlePlayLoop.unit_ref(walled, "leonard")["stamina"] = 60
 	TestSuite.own(walled, "ai_profiles")["actors"]["001"]["profile"].merge({"ai_help_attack": 100, "ai_help_otherhp": 0, "ai_help_status": 0}, true)
-	var plan := BattleLoopAI._prepare_ai_turn(walled, "leonard")
+	var plan := BattleLoopAI.prepare_ai_turn(walled, "leonard")
 	check(plan["ok"] and plan["ally_support"]["buff_masks"] == [0x20] and plan["ally_support"]["buff"].keys() == ["leonard"], "a self-only special buff joins the 0x40c480 scan masks and plans only the caster, no allied intent")
 
 
 func item_assistance() -> void:
 	for mode in ["item_only","magic_first","item_first","empty_mp","silenced","declined","adjacent"]:
 		var loop := fixture()
-		var owner := BattlePlayLoop._unit(loop,"leonard")
+		var owner := BattlePlayLoop.unit_ref(loop,"leonard")
 		owner["inventory"][0] = 241
-		BattlePlayLoop._unit(loop,"enemy023_1")["coord"] = Vector2i(9,8) if mode == "adjacent" else Vector2i(12,8)
+		BattlePlayLoop.unit_ref(loop,"enemy023_1")["coord"] = Vector2i(9,8) if mode == "adjacent" else Vector2i(12,8)
 		match mode:
 			"item_only": TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"] = []
 			"item_first": TestSuite.own(loop, "ai_profiles")["actors"]["001"]["profile"]["ai_att_magic"] = 0
@@ -209,91 +209,91 @@ func item_assistance() -> void:
 			check(BattlePlayLoop.unit(after,"leonard")["mp"] == owner["mp"] and BattlePlayLoop.unit(after,"leonard")["exp"] == owner["exp"] and not action.has("experience"),"item assistance does not impersonate magic cost or contribution")
 		check(after["selected_unit_id"] == "enemy023_1" and after["turn_queue"]["index"] == 1 and loop == before,"one complete ally assistance action preserves caller and hands off once")
 	var stale := fixture()
-	BattlePlayLoop._unit(stale,"leonard")["inventory"][0] = 241
+	BattlePlayLoop.unit_ref(stale,"leonard")["inventory"][0] = 241
 	TestSuite.own(stale, "skill_book")["actors"]["001"]["supported_initial_ids"] = []
-	BattlePlayLoop._unit(stale,"enemy023_1")["coord"] = Vector2i(12,8)
-	var prepared := BattleLoopAI._prepare_ai_turn(stale,"leonard")
+	BattlePlayLoop.unit_ref(stale,"enemy023_1")["coord"] = Vector2i(12,8)
+	var prepared := BattleLoopAI.prepare_ai_turn(stale,"leonard")
 	var intent: Dictionary = prepared["ally_support"]["items"]["enemy023_1"]
 	var blocked := stale.duplicate(true)
 	TestSuite.own(blocked, "tiles")[intent["destination"]] = {"blocks_movement":true}
 	var old := blocked.duplicate(true)
-	check(BattleLoopAI._execute_ai_support_item(blocked,"leonard",intent).is_empty() and blocked == old,"changed movement legality refuses before item/HP/coordinate commit")
-	BattlePlayLoop._unit(stale,"leonard")["inventory"][0] = 0
+	check(BattleLoopAI.execute_ai_support_item(blocked,"leonard",intent).is_empty() and blocked == old,"changed movement legality refuses before item/HP/coordinate commit")
+	BattlePlayLoop.unit_ref(stale,"leonard")["inventory"][0] = 0
 	old = stale.duplicate(true)
-	check(BattleLoopAI._execute_ai_support_item(stale,"leonard",intent).is_empty() and stale == old,"stale medicine intent cannot heal or move without the original item")
+	check(BattleLoopAI.execute_ai_support_item(stale,"leonard",intent).is_empty() and stale == old,"stale medicine intent cannot heal or move without the original item")
 
 
 func selection_and_rejection() -> void:
 	var declared := fixture()
 	declared["skill_book"] = BattleFixture.loop()["skill_book"]
-	var real_healer := BattlePlayLoop._unit(declared,"leonard")
+	var real_healer := BattlePlayLoop.unit_ref(declared,"leonard")
 	real_healer["actor_id"] = "027"
 	real_healer.erase("growth_profile")
-	var source_plan := BattleLoopAI._prepare_ai_turn(declared,"leonard")
+	var source_plan := BattleLoopAI.prepare_ai_turn(declared,"leonard")
 	check(source_plan["ok"] and source_plan["ally_support"]["heal"].has("enemy023_1"), "source027 water ownership enables allied plans with the explicit movement ring and no synthetic spell grants")
 	if source_plan["ok"] and source_plan["ally_support"]["heal"].has("enemy023_1"):
 		check(source_plan["ally_support"]["heal"]["enemy023_1"]["skills"].all(func(skill): return skill["skill_id"] == HEAL), "unmodified source healer is not granted higher water spells")
 	var blocked := fixture()
 	for y in range(24): TestSuite.own(blocked, "tiles")[Vector2i(11,y)] = {"blocks_movement":true}
-	BattlePlayLoop._unit(blocked,"enemy021_2")["coord"] = Vector2i(8,12)
+	BattlePlayLoop.unit_ref(blocked,"enemy021_2")["coord"] = Vector2i(8,12)
 	var moved := BattlePlayLoop.step_ai_turn(blocked,zero)
 	check(moved["last_ai_action"].get("defender_id") == "enemy021_2", "an unreachable first sick ally does not hide a later legal patient")
 	if moved["last_ai_action"].has("path"):
 		check(moved["last_ai_action"]["path"].all(func(cell): return cell.x < 11), "support route never crosses the blocked wall")
 	var longer := fixture(HEAL)
-	BattlePlayLoop._unit(longer,"enemy023_1")["coord"] = Vector2i(16,8)
+	BattlePlayLoop.unit_ref(longer,"enemy023_1")["coord"] = Vector2i(16,8)
 	TestSuite.own(longer, "skill_book")["actors"]["001"]["supported_initial_ids"].append(LIFE)
-	var ranges := BattleLoopAI._prepare_ai_turn(longer,"leonard")
+	var ranges := BattleLoopAI.prepare_ai_turn(longer,"leonard")
 	check(ranges["ally_support"]["heal"]["enemy023_1"]["skills"].all(func(skill): return skill["skill_id"] == LIFE), "short heal cannot borrow the long spell's casting position")
 	check(BattlePlayLoop.step_ai_turn(longer,zero)["last_ai_action"].get("skill_id") == LIFE, "each skill retains its own range and legal casting positions")
 	var no_foe := fixture()
 	TestSuite.own(no_foe, "ai_profiles")["actors"]["001"]["profile"]["find_range"] = 1
 	check(BattlePlayLoop.step_ai_turn(no_foe,zero)["last_ai_action"].get("skill_id") == HEAL, "ally support remains available without an acquired hostile target")
 	var dead := fixture()
-	BattlePlayLoop._unit(dead,"enemy023_1").merge({"hp":0,"defeated":true},true)
-	BattlePlayLoop._unit(dead,"enemy021_2")["coord"] = Vector2i(11,8)
+	BattlePlayLoop.unit_ref(dead,"enemy023_1").merge({"hp":0,"defeated":true},true)
+	BattlePlayLoop.unit_ref(dead,"enemy021_2")["coord"] = Vector2i(11,8)
 	check(BattlePlayLoop.step_ai_turn(dead,zero)["last_ai_action"].get("defender_id") == "enemy021_2", "live adapter excludes dead patients before native scan and continues to a living ally")
 	var stale := fixture()
-	var prepared := BattleLoopAI._prepare_ai_turn(stale,"leonard")
+	var prepared := BattleLoopAI.prepare_ai_turn(stale,"leonard")
 	var chosen := AISupportPlanning.choose(prepared["ally_support"],BattlePlayLoop.unit(stale,"leonard"),prepared["profile"],stale["units"],zero)
 	check(chosen["kind"] == "ally_skill", "stale-target fixture starts with an accepted support intent")
 	if chosen["kind"] == "ally_skill":
-		BattlePlayLoop._unit(stale,chosen["intent"]["target_id"])["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
+		BattlePlayLoop.unit_ref(stale,chosen["intent"]["target_id"])["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
 		var old := stale.duplicate(true)
-		check(BattleLoopAI._execute_ai_skill_choice(stale,"leonard",chosen["intent"],no_rng).is_empty() and stale == old, "commit revalidates a changed alliance before payment, motion or EXP")
+		check(BattleLoopAI.execute_ai_skill_choice(stale,"leonard",chosen["intent"],no_rng).is_empty() and stale == old, "commit revalidates a changed alliance before payment, motion or EXP")
 	var foe_support := fixture()
-	BattlePlayLoop._unit(foe_support,"leonard")["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
-	BattlePlayLoop._unit(foe_support,"enemy021_1").merge({"hp":4,"coord":Vector2i(12,8)},true)
+	BattlePlayLoop.unit_ref(foe_support,"leonard")["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
+	BattlePlayLoop.unit_ref(foe_support,"enemy021_1").merge({"hp":4,"coord":Vector2i(12,8)},true)
 	var assisted := BattlePlayLoop.step_ai_turn(foe_support,zero)
 	check(assisted["last_ai_action"].get("defender_id") == "enemy021_1" and BattlePlayLoop.unit(assisted,"enemy023_1")["hp"] == 4, "enemy healers assist only their own side")
 	for mode in ["mp", "silence", "healthy", "rate", "aid_rate", "distance"]:
 		var unavailable := fixture()
-		var caster := BattlePlayLoop._unit(unavailable,"leonard")
+		var caster := BattlePlayLoop.unit_ref(unavailable,"leonard")
 		match mode:
 			"mp": caster["mp"] = 0
 			"silence": caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster,"no_magic",2)["changes"],true)
 			"healthy":
-				BattlePlayLoop._unit(unavailable,"enemy023_1")["hp"] = 100
-				BattlePlayLoop._unit(unavailable,"enemy021_2")["hp"] = 100
+				BattlePlayLoop.unit_ref(unavailable,"enemy023_1")["hp"] = 100
+				BattlePlayLoop.unit_ref(unavailable,"enemy021_2")["hp"] = 100
 			"rate": TestSuite.own(unavailable, "skill_book")["skills"][HEAL]["fields"]["use_ratio"] = "0"
 			"aid_rate": TestSuite.own(unavailable, "ai_profiles")["actors"]["001"]["profile"]["ai_help_otherhp"] = 0
 			"distance":
-				BattlePlayLoop._unit(unavailable,"enemy023_1")["coord"] = Vector2i(17,8)
-				BattlePlayLoop._unit(unavailable,"enemy021_2")["coord"] = Vector2i(17,9)
+				BattlePlayLoop.unit_ref(unavailable,"enemy023_1")["coord"] = Vector2i(17,8)
+				BattlePlayLoop.unit_ref(unavailable,"enemy021_2")["coord"] = Vector2i(17,9)
 		var after := BattlePlayLoop.step_ai_turn(unavailable, zero)
 		check(after["scenario_ok"] and not after["last_ai_action"].has("skill_id"), "unavailable ally spell leaves ordinary action usable: " + mode)
 		check(BattlePlayLoop.unit(after,"leonard")["mp"] == caster["mp"] and BattlePlayLoop.unit(after,"leonard")["exp"] == caster["exp"], "no failed support cost or fabricated EXP: " + mode)
 	var status_only := fixture(CURE)
-	BattlePlayLoop._unit(status_only,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(status_only,"enemy023_1"),"no_magic",2)["changes"],true)
-	BattlePlayLoop._unit(status_only,"enemy021_2").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(status_only,"enemy021_2"),"poison",2,10)["changes"],true)
-	var planned := BattleLoopAI._prepare_ai_turn(status_only,"leonard")
+	BattlePlayLoop.unit_ref(status_only,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(status_only,"enemy023_1"),"no_magic",2)["changes"],true)
+	BattlePlayLoop.unit_ref(status_only,"enemy021_2").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(status_only,"enemy021_2"),"poison",2,10)["changes"],true)
+	var planned := BattleLoopAI.prepare_ai_turn(status_only,"leonard")
 	check(planned["ok"] and not planned["ally_support"]["status"].has("enemy023_1") and planned["ally_support"]["status"].has("enemy021_2"), "clean/unsupported status is not counted as useful cure coverage")
 	for mode in ["profile", "status", "experience"]:
 		var invalid := fixture(CURE)
-		BattlePlayLoop._unit(invalid,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(invalid,"enemy023_1"),"poison",2,10)["changes"],true)
+		BattlePlayLoop.unit_ref(invalid,"enemy023_1").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(invalid,"enemy023_1"),"poison",2,10)["changes"],true)
 		if mode == "profile": TestSuite.own(invalid, "ai_profiles")["actors"]["001"]["profile"]["ai_help_status"] = -1
-		elif mode == "status": BattlePlayLoop._unit(invalid,"enemy023_1")["status_flags"] = 0
-		else: BattlePlayLoop._unit(invalid,"enemy023_1")["level"] = -1
+		elif mode == "status": BattlePlayLoop.unit_ref(invalid,"enemy023_1")["status_flags"] = 0
+		else: BattlePlayLoop.unit_ref(invalid,"enemy023_1")["level"] = -1
 		var before := invalid.duplicate(true)
 		var after := BattlePlayLoop.step_ai_turn(invalid,no_rng)
 		check(not after["scenario_ok"] and after["units"] == before["units"] and after["turn_queue"] == before["turn_queue"], "bad ally preflight rejects atomically before randomness: " + mode)
@@ -316,10 +316,10 @@ func useful_bucket_acceptance() -> void:
 	for channel in ["magic", "special"]:
 		var id := CURE if channel == "magic" else PURGE
 		var loop := fixture(id)
-		BattlePlayLoop._unit(loop, "leonard")["stamina"] = 60
+		BattlePlayLoop.unit_ref(loop, "leonard")["stamina"] = 60
 		TestSuite.own(loop, "skill_book")["skills"][id]["fields"]["use_ratio"] = "0"
 		TestSuite.own(loop, "ai_profiles")["actors"]["001"]["profile"].merge({"ai_att_special": 100, "ai_att_magic": 100, "ai_help_otherhp": 0}, true)
-		var sick := BattlePlayLoop._unit(loop, "enemy023_1")
+		var sick := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 		sick["coord"] = Vector2i(12, 8)
 		sick.merge(BattlePlayLoop.StatusEffectRules.apply(sick, "poison", 2, 10)["changes"], true)
 		var after := BattlePlayLoop.step_ai_turn(loop, zero)
@@ -418,7 +418,7 @@ static func opportunity_fixture(owner: String = "enemy021_1") -> Dictionary:
 
 static func recovery_fixture() -> Dictionary:
 	var loop := opportunity_fixture()
-	var actor := BattlePlayLoop._unit(loop, "enemy021_1")
+	var actor := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	actor["hp"] = 4
 	actor["inventory"] = [healing_code(loop), healing_code(loop), 0, 0, 0, 0, 0, 0]
 	return loop
@@ -440,9 +440,9 @@ func healing_cases() -> void:
 	check(before == saved and not action.has("damage") and BattlePlayLoop.unit(after, "priority-wounded")["hp"] == 8, "healing cannot also attack or mutate input")
 	check(BattlePlayLoop.step_ai_turn(after, func(_n): check(false, "completed AI cannot act again"); return 0) == after, "duplicate AI step is inert after player handoff")
 	var player := before.duplicate(true)
-	BattlePlayLoop._unit(player, actor["id"])["player_commandable"] = true
-	BattlePlayLoop._unit(player, actor["id"])["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-	player = BattlePlayLoop._return_to_player(player, actor["id"])
+	BattlePlayLoop.unit_ref(player, actor["id"])["player_commandable"] = true
+	BattlePlayLoop.unit_ref(player, actor["id"])["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
+	player = BattlePlayLoop.return_to_player(player, actor["id"])
 	var used := BattlePlayLoop.use_item(player, str(healing_code(player)), actor["id"], 0)
 	var player_effect:Dictionary = used["last_item_use"].duplicate(true)
 	var ai_effect:Dictionary = after["last_item_use"].duplicate(true)
@@ -451,13 +451,13 @@ func healing_cases() -> void:
 		for key in ["actor_before","target_before"]: receipt.erase(key)
 	check(player_effect == ai_effect and BattlePlayLoop.unit(used, actor["id"])["inventory"] == healed["inventory"], "player and AI share the complete effect, inventory, RNG and sequence receipt despite distinct caller snapshots")
 	var poisoned := before.duplicate(true)
-	BattlePlayLoop._unit(poisoned, actor["id"])["status_flags"] = 3
-	BattlePlayLoop._unit(poisoned, actor["id"])["status_counters"] = {"poison": (5 << 16) | 2, "paralysis": 0, "no_magic": 1}
+	BattlePlayLoop.unit_ref(poisoned, actor["id"])["status_flags"] = 3
+	BattlePlayLoop.unit_ref(poisoned, actor["id"])["status_counters"] = {"poison": (5 << 16) | 2, "paralysis": 0, "no_magic": 1}
 	var settled := BattlePlayLoop.step_ai_turn(poisoned, func(_n): return 0)
 	check(settled["last_ai_action"]["kind"] == "use_item" and BattlePlayLoop.unit(settled, actor["id"])["hp"] == healed["hp"] - 5 and BattlePlayLoop.unit(settled, actor["id"])["status_counters"] == {"poison": (5 << 16) | 1, "paralysis": 0, "no_magic": 0}, "self medicine is allowed under silence and ticks poison/status once")
 	for health in [395, 400]:
 		var healthy := before.duplicate(true)
-		BattlePlayLoop._unit(healthy, actor["id"])["hp"] = health
+		BattlePlayLoop.unit_ref(healthy, actor["id"])["hp"] = health
 		var attacked := BattlePlayLoop.step_ai_turn(healthy, func(_n): return 0)
 		# The strike kills priority-wounded; 0x442720 state 4 hands its rolled drops to this non-player
 		# killer through 0x44f600 (0x4428cd), so only the slots the hand-over filled may differ.

@@ -39,7 +39,7 @@ func _initialize() -> void:
 	loop = BattlePlayLoop.initialize_roster_growth(loop)
 	print("TRACE51 seed=%d" % seed)
 	_print_roster(loop)
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	loop = BattlePlayLoop.begin_battle(loop)
 	var turn_index := 0
 	while step < MAX_STEPS:
@@ -87,7 +87,7 @@ func _print_ai(before: Dictionary, after: Dictionary) -> void:
 	if after.get("last_ai_actions", []).size() == before.get("last_ai_actions", []).size():
 		return
 	var actor_id := str(action.get("actor_id", ""))
-	var start: Vector2i = BattlePlayLoop._unit(before, actor_id).get("coord", Vector2i(-1, -1))
+	var start: Vector2i = BattlePlayLoop.unit_ref(before, actor_id).get("coord", Vector2i(-1, -1))
 	var decision: Dictionary = action.get("ai_decision", {})
 	var selection: Dictionary = decision.get("target_selection", {})
 	var damage := ""
@@ -120,7 +120,7 @@ func _settle_rewards(loop: Dictionary) -> Dictionary:
 
 func _player_turn(loop: Dictionary, commands: Array) -> Dictionary:
 	var next := loop
-	var leonard := BattlePlayLoop._unit(next, "leonard")
+	var leonard := BattlePlayLoop.unit_ref(next, "leonard")
 	print("TRACE51 round=%s player leonard@%s plan=%s" % [str(next.get("turn", "")), leonard["coord"], ",".join(commands)])
 	for command in commands:
 		var parts := str(command).split(":")
@@ -129,7 +129,7 @@ func _player_turn(loop: Dictionary, commands: Array) -> Dictionary:
 			var xy := parts[1].split("/")
 			next = BattlePlayLoop.choose_command(next, "move")
 			var moved := BattlePlayLoop.move_unit_to(next, Vector2i(int(xy[0]), int(xy[1])))
-			if BattlePlayLoop._unit(moved, "leonard")["coord"] != Vector2i(int(xy[0]), int(xy[1])):
+			if BattlePlayLoop.unit_ref(moved, "leonard")["coord"] != Vector2i(int(xy[0]), int(xy[1])):
 				print("TRACE51   move rejected %s cells=%s" % [parts[1], str(BattlePlayLoop.movement_cells(next, "leonard"))])
 				next = BattlePlayLoop.cancel_interaction(next)
 			else:

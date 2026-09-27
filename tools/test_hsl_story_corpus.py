@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
+import re
 import unittest
 from pathlib import Path
 
@@ -129,7 +130,8 @@ class TrackedCorpusTests(unittest.TestCase):
         self.assertEqual(self.index["claim_limits"], corpus.CLAIM_LIMIT_IDS)
         self.assertEqual(self.index["claim_limits_packet"], corpus.CLAIM_LIMITS_PACKET)
         packet = (ROOT / corpus.CLAIM_LIMITS_PACKET).read_text(encoding="utf-8")
-        table = packet.split("## Claim limits", 1)[1].split("\n## ", 1)[0]
+        heading = re.search(r"^#{2,3} .*claim limits.*$", packet, re.M | re.I)
+        table = packet[heading.end():].split("\n## ", 1)[0].split("\n### ", 1)[0]
         rows = [line.split("|")[1].strip().strip("`") for line in table.splitlines() if line.startswith("| `")]
         self.assertEqual(rows, corpus.CLAIM_LIMIT_IDS)
 

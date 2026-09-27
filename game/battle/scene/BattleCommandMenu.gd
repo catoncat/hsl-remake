@@ -30,6 +30,7 @@ const COMMANDS := {
 const FRAME_PATH := "res://content/imported/hsl/shared/command_menu/manifest.json"
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const RADIAL_ORDER := ["move", "attack", "item", "wait", "status", "magic", "special", "use", "equip", "drop", "give"]
 ## Source frame sequences advance once per original tick (seven calls per hover frame).
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
@@ -49,7 +50,7 @@ var _opening_fraction := 0.0
 
 
 func _ready() -> void:
-	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(FRAME_PATH))
+	var data: Dictionary = ContentPaths.read_json(FRAME_PATH)
 	for id in data["commands"]:
 		frames[id] = []
 		looped[id] = bool(data["commands"][id]["looped"])

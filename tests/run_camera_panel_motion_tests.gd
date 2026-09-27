@@ -225,7 +225,7 @@ func _test_panel_open_curve() -> void:
 ## draw transform slides; the opening ends by itself and a close stops it at once.
 func _test_status_panel_motion() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd").unit_ref(loop, "leonard").duplicate(true)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	root.add_child(panel)
 	await process_frame
@@ -263,7 +263,7 @@ func _test_status_panel_motion() -> void:
 ## place steps 9→2 and vanishes, with or without a renderer.
 func _test_panel_shade_fade() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd").unit_ref(loop, "leonard").duplicate(true)
 	var host := Control.new()
 	root.add_child(host)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()

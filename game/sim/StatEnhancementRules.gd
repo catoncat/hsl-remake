@@ -8,6 +8,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_stat_magic.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const FLAGS := {"attack_up": 0x10, "defense_up": 0x20, "resist_up": 0x40}
 const LABELS := {"attack_up": "攻擊", "defense_up": "防禦", "resist_up": "抗性"}
 const RESIST_MIN := 7
@@ -16,10 +17,10 @@ const RESIST_MAX := 20
 static func input_error(actor: Dictionary) -> String:
 	var words: Variant = actor.get("status_counters")
 	if not words is Dictionary: return "missing_stat_enhancement_state"
-	var flags := SkillResourceRules._integer(actor.get("status_flags"))
+	var flags := Values.non_negative_int(actor.get("status_flags"))
 	if flags < 0: return "invalid_stat_enhancement_flags"
 	for key in FLAGS:
-		var value := SkillResourceRules._integer(words.get(key, 0))
+		var value := Values.non_negative_int(words.get(key, 0))
 		if value < 0 or value > 0xffffffff: return "invalid_" + key + "_counter"
 		if ((flags & FLAGS[key]) != 0) != (value != 0): return "inconsistent_" + key + "_state"
 		if value != 0:

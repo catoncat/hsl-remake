@@ -17,6 +17,8 @@ const OtherMagicRules = preload("res://game/sim/OtherMagicRules.gd")
 const SpecialStatusRules = preload("res://game/sim/SpecialStatusRules.gd")
 const SpecialUtilityRules = preload("res://game/sim/SpecialUtilityRules.gd")
 const PositionCapabilityRules = preload("res://game/sim/PositionCapabilityRules.gd")
+const Values = preload("res://game/sim/Values.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 ## Stateless preparation and resolution shared by player and AI. Cost/target
 ## evidence remains independent from whole-engine initialization and global RNG.
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
@@ -120,11 +122,11 @@ static func descriptor_error(skill_id: String, fields: Dictionary, book: Diction
 	var limits: PackedStringArray = fields["damage"].split(",")
 	if limits.size() != 2:
 		return "invalid_skill_damage"
-	var low := SkillResourceRules._integer(limits[0].strip_edges(), true)
-	var high := SkillResourceRules._integer(limits[1].strip_edges(), true)
+	var low := Values.non_negative_int(limits[0].strip_edges(), true)
+	var high := Values.non_negative_int(limits[1].strip_edges(), true)
 	if low < 0 or high < low or high == SkillResourceRules.MAX_SIGNED:
 		return "invalid_skill_damage"
-	var hit := SkillResourceRules._integer(fields.get("hit_ratio"), true)
+	var hit := Values.non_negative_int(fields.get("hit_ratio"), true)
 	if hit < 0 or hit > 100:
 		return "invalid_skill_hit_ratio"
 	var check: Callable = _effect_of(entry)["descriptor_error"]
@@ -188,7 +190,7 @@ static func _special_damage_descriptor_error(entry: Dictionary, fields: Dictiona
 	# Identity is the type/code pair already checked by descriptor_error; the live
 	# source fields may legitimately differ from the book copy (fixtures, refreshes).
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
 	return ""
 
@@ -196,7 +198,7 @@ static func _special_damage_descriptor_error(entry: Dictionary, fields: Dictiona
 ## 弱體箭 / 獸神怒號 (Attack+Weaken) and 影纏 (Paralysis): channel1 status branches of 0x40aa80.
 static func _special_status_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
 	return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) in [4, 0x1000, 0x1001] else "unsupported_skill_function"
 
@@ -204,7 +206,7 @@ static func _special_status_descriptor_error(entry: Dictionary, fields: Dictiona
 ## 萬息集氣法 (Heal) / 萬息降靈法 (HealMP) / 萬息臨界法 (Heal+HealMP) / 萬息秘孔術 (four cures): channel1 support.
 static func _special_support_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
 	return "" if SupportMagicRules.accepted(SkillTargetRules.function_mask(fields["function"], targeting["function_bits"])) else "unsupported_skill_formula"
 
@@ -212,7 +214,7 @@ static func _special_support_descriptor_error(entry: Dictionary, fields: Diction
 ## 千羽風靈壁 (DefUp) / 激怒 (AttUp) / 精神統一 (DefUp+AttUp): channel1 buffs on the shared stat applicator.
 static func _special_stat_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
 	return "" if StatMagic.accepted(SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]), "special") else "unsupported_skill_formula"
 
@@ -220,7 +222,7 @@ static func _special_stat_descriptor_error(entry: Dictionary, fields: Dictionary
 ## 天鳴覺醒 (ActiveAgain) / 獅子吼 (CancelActive) / 吸血劍 (Attack+StealHP): channel1 queue and drain effects.
 static func _special_utility_descriptor_error(entry: Dictionary, fields: Dictionary, targeting: Dictionary, _skill_id: String = "") -> String:
 	if entry["channel"] != "special" or entry.get("damage_bounds") != "native_triangular": return "skill_identity_mismatch"
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return "invalid_special_power_ratio"
 	return "" if SkillTargetRules.function_mask(fields["function"], targeting["function_bits"]) in SpecialUtilityRules.ACCEPTED else "unsupported_skill_function"
 
@@ -241,7 +243,7 @@ static func available(actor: Dictionary, skill_id: String, fields: Dictionary, b
 	var error := descriptor_error(skill_id, fields, book, targeting)
 	if error == "": error = ownership_error(actor, skill_id, book)
 	if error != "": return {"ok": false, "reason": error}
-	if actor.get("battle_actor_role") not in SkillTargetRules.ROLES or not SkillTargetRules._living(actor) or SkillResourceRules._integer(actor.get("hp")) <= 0:
+	if actor.get("battle_actor_role") not in SkillTargetRules.ROLES or not BattlePresenceRules.living(actor) or Values.non_negative_int(actor.get("hp")) <= 0:
 		return {"ok": false, "reason": "caster_unavailable"}
 	error = Status.input_error(actor)
 	if error != "": return {"ok": false, "reason": error}
@@ -258,7 +260,7 @@ static func prepare(caster: Dictionary, target: Dictionary, skill_id: String, fi
 	if position_error != "": return {"ok": false, "reason": position_error}
 	var error := SkillTargetRules.target_error(caster, target, origin, fields, targeting, map_size, context.get("range_terrain", {}))
 	if error != "": return {"ok": false, "reason": error}
-	if SkillResourceRules._integer(target.get("hp")) <= 0:
+	if Values.non_negative_int(target.get("hp")) <= 0:
 		return {"ok": false, "reason": "invalid_skill_target_hp"}
 	var descriptor: Dictionary = book["skills"][skill_id]
 	var effect := _effect_of(descriptor)
@@ -481,7 +483,7 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	var cast_cells := SkillTargetRules.cells(origin, fields, targeting, map_size, terrain)
 	var cast_center: Variant = SkillTargetRules.Footprint.contact(center, cast_cells) if center_coord == null else center_coord
 	if not cast_center is Vector2i or not cast_cells.has(cast_center): return {"ok": false, "reason": "out_of_range"}
-	if not SkillTargetRules._living(center): return {"ok": false, "reason": "target_unavailable"}
+	if not BattlePresenceRules.living(center): return {"ok": false, "reason": "target_unavailable"}
 	if center.get("battle_actor_role") not in SkillTargetRules.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
 	if not SkillTargetRules.side_matches(caster, center, fields, targeting): return {"ok": false, "reason": "not_ally" if SkillTargetRules.is_support(fields, targeting) else "not_enemy"}
 	var footprint := SkillTargetRules.cast_footprint(origin, cast_center, fields, targeting, map_size, terrain)
@@ -497,7 +499,7 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	for unit in units:
 		if not unit is Dictionary or not unit.get("coord") is Vector2i:
 			return {"ok": false, "reason": "invalid_skill_roster"}
-		if not SkillTargetRules.Footprint.overlaps(unit, footprint) or not SkillTargetRules._living(unit): continue
+		if not SkillTargetRules.Footprint.overlaps(unit, footprint) or not BattlePresenceRules.living(unit): continue
 		if unit.get("battle_actor_role") not in SkillTargetRules.ROLES:
 			return {"ok": false, "reason": "unsupported_target_role"}
 		if not SkillTargetRules.area_side_matches(caster, unit, fields, targeting): continue

@@ -9,6 +9,7 @@ extends RefCounted
 ##   rules: resource-derived content/generated/hsl/chapter01/attack_ranges.json
 ##   rules: provisional (equal-cost path ties, occupancy adaptation)
 const OBSTACLE_MASK := 0x74000
+const CELL_PIXELS := 32
 const DIRECTIONS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 const Traversal = preload("res://game/sim/ActorTraversalRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
@@ -223,7 +224,7 @@ static func path_costs(path: Array, units: Array, tiles: Dictionary, actor_id: S
 	if not context["ok"]: return []
 	var costs: Array = [0]
 	for index in range(1, path.size()):
-		if _manhattan(path[index - 1], path[index]) != 1 or Traversal.transition_error(path[index - 1], path[index], context, tiles) != "": return []
+		if manhattan(path[index - 1], path[index]) != 1 or Traversal.transition_error(path[index - 1], path[index], context, tiles) != "": return []
 		costs.append(int(costs.back()) + Traversal.step_cost(path[index - 1], path[index], path[maxi(0, index - 2)], context, tiles))
 	return costs
 
@@ -235,7 +236,7 @@ static func attack_range(origin: Vector2i, min_range: int, max_range: int, map_s
 	for y in range(map_size.y):
 		for x in range(map_size.x):
 			var coord := Vector2i(x, y)
-			var distance := _manhattan(origin, coord)
+			var distance := manhattan(origin, coord)
 			if distance >= lower and distance <= upper:
 				coords.append(coord)
 	return coords
@@ -275,5 +276,15 @@ static func _move_target_blockers(occupant: Dictionary, coord: Vector2i, tiles: 
 	return blockers
 
 
-static func _manhattan(a: Vector2i, b: Vector2i) -> int:
+## A map cell is CELL_PIXELS square in map pixels (the original's coord * 32).
+static func cell_pixel(coord: Vector2i) -> Vector2i:
+	return coord * CELL_PIXELS
+
+
+## The cell's centre in map pixels (coord * 32 + 16).
+static func cell_center_pixel(coord: Vector2i) -> Vector2i:
+	return coord * CELL_PIXELS + Vector2i(CELL_PIXELS / 2, CELL_PIXELS / 2)
+
+
+static func manhattan(a: Vector2i, b: Vector2i) -> int:
 	return absi(a.x - b.x) + absi(a.y - b.y)

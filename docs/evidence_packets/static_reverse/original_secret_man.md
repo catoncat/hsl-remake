@@ -1,12 +1,18 @@
 # 原作酒館神秘男子（teSecretManBuyThing）
 
-> evidence: static-derived; provisional · status: live · functions: 0x4072b0, 0x40e690, 0x42c7e0, 0x42e070, 0x42e640, 0x44e0e0, 0x44ef70, 0x44f100, 0x454db0, 0x454e20, 0x458c80, 0x460058 · tools: hsltools/data/secret_man_goods.py, run_town_event_rules_tests.gd · updated: 2026-09-19
+> evidence: static-derived; provisional · status: live · functions: 0x4072b0, 0x40e690, 0x42c7e0, 0x42e070, 0x42e640, 0x44e0e0, 0x44ef70, 0x44f100, 0x454db0, 0x454e20, 0x458c80, 0x460058 · tools: hsltools/data/secret_man_goods.py, run_town_event_rules_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-19
+## 结论
 
-**static-derived**（r2ghidra 反编译＋ r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无有界执行、无 Wine）。回答 [城镇事件读法表](town_event_semantics.md) 未解语义里「神秘商人：表索引推进与 BuyThing 买卖价格」两项；默认出现率仍 provisional。
+- 原版 `teSecretManBuyThing`（城镇 VM case 0x27）按计数器 `0x4c1bd4` 选货表 `0x4793b0` 的一行：金币不足弹失败消息并跳失败事件，足够则扣价、按位置 `rand(n)` 抽一件入包、计数器 <8 时 +1（static-derived，r2ghidra／r2 阅读，未执行）。
+- 重制 `TownEventRules.teSecretManBuyThing` 从 `secret_man_goods.json` 取行、同样扣价入包并推进 `secret_man_index`（static-derived 输入）。
+- 差异：抽样用重制 RNG，分布相同、序列不同；默认出现率 provisional（差异清单 `town-event-timing`）。
 
-## 数据链
+## 证据
+
+EXE sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。
+
+### static-derived＋resource-derived：数据链
 
 - 城镇 VM `0x454e20` case 0x27 = te token 39 `teSecretManBuyThing [shape][name][fail msg][fail event]`（TOWNDEF 只在 121「酒館神秘男子選一」使用：`-1,1607,1282,122`）。
 - 货表 `.data 0x4793b0`：9 行 × 0x22 字节，每行 int32 价格 + 15 个 int16 物品 code；`tools/hsltools/data/secret_man_goods.py` 从 SHA 锁定的 EXE 读出并写入 [`secret_man_goods.json`](../../../content/generated/hsl/static/hsl01/secret_man_goods.json)（`--check` 在无 EXE 时做离线交叉核对：价格严格递增且等于宣传词 1608–1616 的 `$N`，全部 code 在 ITEM.TXT）。
@@ -24,7 +30,7 @@ Checked: 2026-09-19
 | 7 | 60000 | 119→1615 | 300、298、297、296、91、295、142、170、193、232、291–294、301 |
 | 8 | 99999 | 120→1616 | 16、30、50、70、93、111、144、143、146、169、194、233、227、236、301 透明天晶 |
 
-## handler 行为（case 0x27）
+### static-derived：handler（case 0x27）
 
 1. `price = table[counter].price`；`gold (0x4c1bcc) < price` → 若 `[shape] != -1` 载入脸图（`0x460058`），弹出 `[fail msg]` 消息框（`0x4072b0`），并把脚本指针改到 `[fail event]`（`0x44e0e0`，为 0 时留在原链继续）。TOWNDEF 121 的失败消息是 1282「抱歉, 您的金錢不足！」，失败事件 122（1623「OH NO！…」＋ teDeleteSecretMan）。
 2. 否则 `gold -= price`；统计该行非零槽数 n（现有数据全部 15），`k = rand(n)`（`0x458c80`，越界钳到 n-1／0），取 `items[k]`——按**位置**取值，因此第 0 行的 209 詛咒戒指占 2/15。
@@ -38,17 +44,12 @@ Checked: 2026-09-19
 - `WorldMapRules.initial_state` 起始 `secret_man_index = 0`，随世界状态存档。
 - `TownRuntime` 的 `get_item` 叙述行已是「獲得 <名> × 1」，与原 1621 一致；无脸消息按叙述行显示、不再记 `portrait_missing`。
 
+## 复现
+
+`python3 tools/hsl.py check secret_man_goods`（有 EXE 时逐字节比对，否则离线交叉核对）
+
 ## 边界
 
-- 静态阅读；未执行 VM，不证明消息框排版与关闭输入。
+- 未执行 VM，不证明消息框排版与关闭输入。
 - 原 `rand(n)` 是全局 RNG，重制抽样分布相同但序列不同。
 - `teAppearSecretMan` 的默认出现率（`DEFAULT_SECRET_APPEAR_RATIO`）仍 provisional，不在本包范围。
-
-## 复跑
-
-```sh
-python3 tools/hsl.py check secret_man_goods            # 有 EXE 时逐字节比对，否则离线交叉核对
-PYTHONPATH=tools python3 -m hsltools.data.secret_man_goods --exe "$HSL_ORIGINAL_DIR/hsl01.exe"   # 重建
-tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
-r2 -q -e scr.color=0 -c "s 0x4552a0; pd 60" "$HSL_ORIGINAL_DIR/hsl01.exe"   # case 0x27 区段
-```

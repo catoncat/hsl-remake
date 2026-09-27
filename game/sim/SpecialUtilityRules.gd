@@ -11,6 +11,7 @@ const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const ACTIVE_AGAIN := 0x10000
 const CANCEL_ACTIVE := 0x80000
 const STEAL_HP := 0x100000
@@ -31,7 +32,7 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	var resistance := 0
 	var element: String = ELEMENTS.get(fields.get("type"), "")
 	if element != "":
-		resistance = SkillResourceRules._integer(target.get("combat_profile", {}).get("resist_by_type", {}).get(element))
+		resistance = Values.non_negative_int(target.get("combat_profile", {}).get("resist_by_type", {}).get(element))
 		if resistance < 0 or resistance > 80: return {"ok": false, "reason": "missing_skill_resistance"}
 	base["input"]["resistance"] = resistance
 	base["input"]["proc"] = 0
@@ -49,11 +50,11 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 		# otherwise it drains the party gold (0x4c1bcc) directly. Both come from the caller's
 		# reward context.
 		var mode: Variant = caster.get("growth_profile", {}).get("source", {}).get("mode")
-		if not SkillResourceRules._integer(mode) >= 0: return {"ok": false, "reason": "missing_growth_source"}
+		if not Values.non_negative_int(mode) >= 0: return {"ok": false, "reason": "missing_growth_source"}
 		var data: Variant = context.get("reward_data")
-		if not data is Dictionary or not data.get("actors", {}).get(str(target.get("actor_id", ""))) is Dictionary or SkillResourceRules._integer(data["actors"][str(target["actor_id"])].get("gold")) < 0:
+		if not data is Dictionary or not data.get("actors", {}).get(str(target.get("actor_id", ""))) is Dictionary or Values.non_negative_int(data["actors"][str(target["actor_id"])].get("gold")) < 0:
 			return {"ok": false, "reason": "missing_reward_context"}
-		if SkillResourceRules._integer(context.get("gold")) < 0: return {"ok": false, "reason": "missing_reward_context"}
+		if Values.non_negative_int(context.get("gold")) < 0: return {"ok": false, "reason": "missing_reward_context"}
 		base["player_side"] = (int(mode) & 0x10000) != 0
 		base["target_gold"] = BattleRewardRules.carried_gold(target, int(data["actors"][str(target["actor_id"])]["gold"]))
 		base["party_gold"] = int(context["gold"])
@@ -72,20 +73,20 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 				ratios.append(0)
 				continue
 			var item: Variant = data["items"].get(str(int(code)))
-			if not item is Dictionary or SkillResourceRules._integer(item.get("get_ratio")) < 0: return {"ok": false, "reason": "unknown_reward_inventory_item"}
+			if not item is Dictionary or Values.non_negative_int(item.get("get_ratio")) < 0: return {"ok": false, "reason": "unknown_reward_inventory_item"}
 			ratios.append(int(item["get_ratio"]))
 		base["steal_ratios"] = ratios
 		# caster +0x196: 0x448840 sets it to the PLAYERS steal_ratio word (12 when 0) and 0x448420 adds
 		# every equipped item +0x40 (add_steal_ratio); ProgressionRules.refresh keeps it as combat_profile.steal_ratio.
 		var steal_ratio: Variant = caster.get("combat_profile", {}).get("steal_ratio")
-		if SkillResourceRules._integer(steal_ratio) < 0: return {"ok": false, "reason": "missing_steal_ratio"}
+		if Values.non_negative_int(steal_ratio) < 0: return {"ok": false, "reason": "missing_steal_ratio"}
 		base["caster_steal_ratio"] = int(steal_ratio)
 		# Only the slots before the first empty one can be stolen; a target whose first slot is empty
 		# has nothing the native walk would reach.
 		base["useful"] = int(target["inventory"][0]) != 0
 	else:
-		var maximum := SkillResourceRules._integer(caster.get("max_hp"))
-		if maximum <= 0 or maximum > 1000000 or SkillResourceRules._integer(caster.get("hp")) > maximum: return {"ok": false, "reason": "invalid_steal_hp_caster"}
+		var maximum := Values.non_negative_int(caster.get("max_hp"))
+		if maximum <= 0 or maximum > 1000000 or Values.non_negative_int(caster.get("hp")) > maximum: return {"ok": false, "reason": "invalid_steal_hp_caster"}
 		base["useful"] = true
 	return base
 
@@ -122,28 +123,28 @@ static func resolve(prepared: Dictionary, caster: Dictionary, target: Dictionary
 		# 0x40b4b3..0x40b568: rand(|high-low|) + low + 1 + rand(dex/3 + level), capped per side;
 		# EXP is amount/2 + rand(amount/2) added directly, not converted through the contribution.
 		var spread := absi(int(input["high"]) - int(input["low"]))
-		var amount := CoreCombatRules._rand_range(spread, rng) + int(input["low"]) + 1 + CoreCombatRules._rand_range(int(input["dex"]) / 3 + int(input["level"]), rng)
+		var amount := CoreCombatRules.rand_range(spread, rng) + int(input["low"]) + 1 + CoreCombatRules.rand_range(int(input["dex"]) / 3 + int(input["level"]), rng)
 		amount = mini(amount, int(prepared["target_gold"]) if bool(prepared["player_side"]) else int(prepared["party_gold"]))
 		gold_effects.append({"kind": "steal_gold", "amount": amount, "from": "target_carry" if bool(prepared["player_side"]) else "party", "unit_id": str(target["id"])})
-		direct_experience = CoreCombatRules._rand_range(amount / 2, rng) + amount / 2
+		direct_experience = CoreCombatRules.rand_range(amount / 2, rng) + amount / 2
 	var item_effects: Array = []
 	if hit and mask == STEAL_ITEM:
 		for slot in range(InventoryRules.CAPACITY):
 			var code := int(target["inventory"][slot])
 			if code == 0: break
-			var draw := CoreCombatRules._rand_range(100, rng) + 1
+			var draw := CoreCombatRules.rand_range(100, rng) + 1
 			if draw >= int(prepared["steal_ratios"][slot]) + 10 + int(prepared["caster_steal_ratio"]): continue
 			var removed := InventoryRules.remove(target["inventory"], slot, code)
 			changes["inventory"] = removed["inventory"]
 			item_effects.append({"kind": "steal_item", "code": code, "source_slot": slot, "unit_id": str(target["id"]), "steal_roll": draw})
 			# 0x40b641..0x40b68b: the proc0 value joins the tail contribution; rand(level)+1 converts at once (0x40b674).
 			contribution += int(rolled["value"])
-			immediate.append(CoreCombatRules._rand_range(int(input["level"]), rng) + 1)
+			immediate.append(CoreCombatRules.rand_range(int(input["level"]), rng) + 1)
 			break
 	if hit and mask in [ACTIVE_AGAIN, CANCEL_ACTIVE]:
 		turn_effects.append({"kind": "reactivate" if mask == ACTIVE_AGAIN else "cancel_pending", "unit_id": str(target["id"])})
 		# 0x40b6fa / 0x40b770: rand(caster level)+1 converted at once when the queue helper succeeded.
-		immediate.append(CoreCombatRules._rand_range(int(input["level"]), rng) + 1)
+		immediate.append(CoreCombatRules.rand_range(int(input["level"]), rng) + 1)
 	return {"hit": hit, "roll": rolled, "damage": damage, "target_changes": changes, "caster_changes": caster_changes,
 		"turn_effects": turn_effects, "gold_effects": gold_effects, "item_effects": item_effects, "direct_experience": direct_experience,
 		"native_contribution": contribution, "immediate_contributions": immediate, "hit_bonus_after": int(rolled["hit_bonus_after"])}

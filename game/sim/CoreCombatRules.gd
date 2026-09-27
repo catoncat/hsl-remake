@@ -16,6 +16,7 @@ const HIT_ADDR := "0x409a60"
 const DAMAGE_ADDR := "0x409be0"
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const EQUIP_ADDR := "0x448420"
 const RESOLVE_ADDR := "0x4423c0"
 const REFRESH_ADDR := "0x448840"
@@ -31,7 +32,7 @@ static func receipt_vitals(unit: Dictionary) -> Dictionary:
 
 ## Deterministic RNG stand-in for headless tests / previews.
 ## Pass a Callable(n)->int returning [0, n) to mirror fcn.0042c780.
-static func _rand_range(n: int, rng: Variant = null) -> int:
+static func rand_range(n: int, rng: Variant = null) -> int:
 	if n <= 0:
 		return 0
 	if rng is Callable:
@@ -47,7 +48,7 @@ static func _rand_range(n: int, rng: Variant = null) -> int:
 ## -1 requests the original raw draw used by the rare damage-floor branch.
 ## The null source is only the deterministic preview; live calls supply an RNG.
 static func native_draw(n: int, rng: Variant) -> int:
-	if n > 0: return _rand_range(n, rng)
+	if n > 0: return rand_range(n, rng)
 	var raw := 0
 	if rng is Callable: raw = int(rng.call(n))
 	elif rng is RandomNumberGenerator and n < 0: raw = int(rng.randi())
@@ -58,18 +59,18 @@ static func input_error(unit: Dictionary) -> String:
 	var profile: Variant = unit.get("combat_profile")
 	if not profile is Dictionary: return "missing_physical_profile"
 	for key in ["live_attack_damage", "live_defense", "live_hit_ratio", "avoid_hit_ratio", "attack_back", "attack_damagex2", "str", "dex"]:
-		var value := SkillResourceRules._integer(profile.get(key))
+		var value := Values.non_negative_int(profile.get(key))
 		if value < 0 or value > 1000000: return "invalid_physical_" + key
 	var element: Variant = profile.get("weapon_magic_attack_type")
 	if typeof(element) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(element)) or element != int(element) or int(element) < -1 or int(element) > 5:
 		return "invalid_physical_weapon_element"
 	for key in ["weapon_damage_variance_lo", "weapon_damage_variance_hi"]:
-		var value := SkillResourceRules._integer(profile.get(key))
+		var value := Values.non_negative_int(profile.get(key))
 		if value < 0 or value > 10000: return "invalid_physical_" + key
 	var resists: Variant = profile.get("resist_by_type")
 	if not resists is Dictionary: return "missing_physical_resists"
 	for index in range(5):
-		if SkillResourceRules._integer(resists.get(str(index))) < 0 or int(resists[str(index)]) > 80: return "invalid_physical_resist"
+		if Values.non_negative_int(resists.get(str(index))) < 0 or int(resists[str(index)]) > 80: return "invalid_physical_resist"
 	return ""
 
 
@@ -191,12 +192,12 @@ static func preview_damage(attacker_profile: Dictionary, defender_profile: Dicti
 	var effective := 0
 	var path := "normal"
 	if base <= 0:
-		effective = _rand_range(5, rng) + 3
+		effective = rand_range(5, rng) + 3
 		path = "base_non_positive_floor"
 		if str_term < 0:
 			str_term = 0
 	elif base < 10:
-		effective = _rand_range(base + 4, rng) + _banded_weak_bonus(base)
+		effective = rand_range(base + 4, rng) + _banded_weak_bonus(base)
 		path = "base_weak_band"
 		if str_term < 0:
 			str_term = 0
@@ -280,7 +281,7 @@ static func resolve_attack(attacker: Dictionary, defender: Dictionary, rng: Vari
 	var sampled_damage := int(damage_detail["damage"])
 	if is_counter:
 		sampled_damage = maxi(1, sampled_damage * 80 / 100)
-	var roll := _rand_range(100, source)
+	var roll := rand_range(100, source)
 	var hit := roll < rate
 	var impact := critical_impact(sampled_damage, hit, int(atk["attack_damagex2"]), source)
 	var damage := int(impact["damage"]) if hit else 0
@@ -324,7 +325,7 @@ static func damage_floor(rng: Variant) -> int:
 ## Counter gate used by resolve phase 0 (0x4423c0).
 static func attack_back_triggered(defender_profile: Dictionary, rng: Variant = null) -> Dictionary:
 	var chance := int(defender_profile.get("attack_back", 0))
-	var roll := _rand_range(100, rng) + 1
+	var roll := rand_range(100, rng) + 1
 	return {
 		"schema": "hsl_core_attack_back_gate.v1",
 		"chance": chance,

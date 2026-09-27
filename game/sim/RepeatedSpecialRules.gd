@@ -9,6 +9,7 @@ const SpecialDamageRules = preload("res://game/sim/SpecialDamageRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 
 
 static func definition_error(entry: Dictionary, fields: Dictionary) -> String:
@@ -33,7 +34,7 @@ static func prepare(caster: Dictionary, primary: Dictionary, units: Array, field
 	# 0x4104d0 scans coverage row-major, returning each object pointer once.
 	for cell in area:
 		var unit := SkillTargetRules.Footprint.unit_at(units, cell)
-		if unit.is_empty() or ids.has(unit["id"]) or not SkillTargetRules._living(unit): continue
+		if unit.is_empty() or ids.has(unit["id"]) or not BattlePresenceRules.living(unit): continue
 		if unit.get("battle_actor_role") not in SkillTargetRules.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
 		if not SkillTargetRules.area_side_matches(caster, unit, fields, targeting): continue
 		for error in [ExperienceRules.actor_error(unit), StatusEffectRules.input_error(unit), CoreCombatRules.input_error(unit)]:

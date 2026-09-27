@@ -32,15 +32,15 @@ func fixture() -> Node:
 	scene.set_process(false)
 	TestSuite.stop_audio(scene.get_node("BattleMusic"))
 	scene.get_node("BattlePresentation").cutin.set_process(false)
-	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	player["live_speed"] = 100
 	player["stamina"] = 60
-	var next := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var next := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	next["growth_profile"]["source"]["speed"] += 99 - int(next["live_speed"])
 	next.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(next,scene.play_loop["equipment_items"]),true)
 	next["player_commandable"] = true
 	next["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
-	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var enemy := BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.UP
 	enemy["hp"] = 1
 	enemy["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0] # This suite isolates death/EXP/gold; loot has its own live tests.
@@ -147,7 +147,7 @@ func lethal_case(command: String, fps: int) -> void:
 	tail.experience_presented.connect(func(growth): rewards.append(growth))
 	var level_ups: Array = []
 	tail.level_up_presented.connect(func(growth): level_ups.append(growth))
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["exp"] = 99
 	scene._process(0)
 	check(scene.actor_node_for_unit("leonard").highlight_kind() == "actor" and scene.actor_node_for_unit("enemy021_1").highlight_kind() == "", "the unit choosing its command carries the actor highlight")
 	scene.menus.choose_command(command)
@@ -229,10 +229,10 @@ func lethal_case(command: String, fps: int) -> void:
 
 func counter_defeat() -> void:
 	var scene := fixture()
-	var player := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	player["hp"] = 1
 	player["combat_profile"]["live_attack_damage"] = 1
-	var enemy := BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var enemy := BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["hp"] = 100
 	enemy["max_hp"] = 100
 	enemy["growth_profile"]["source"]["defense"] += 1000 - int(enemy["combat_profile"]["live_defense"])
@@ -273,7 +273,7 @@ func multi_target() -> void:
 	# receipt, including a secondary victim. This is not a native spell claim.
 	var scene := fixture()
 	var view = scene.get_node("BattlePresentation")
-	var secondary := BattlePlayLoop._unit(scene.play_loop, "enemy021_2")
+	var secondary := BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_2")
 	secondary["coord"] = BattlePlayLoop.unit(scene.play_loop, "leonard")["coord"] + Vector2i.RIGHT
 	attack(scene)
 	var receipt: Dictionary = scene.play_loop["last_combat"]
@@ -282,8 +282,8 @@ func multi_target() -> void:
 	var second := first.duplicate(true)
 	second["defender_id"] = secondary["id"]
 	receipt["affected_targets"] = [first, second]
-	BattlePlayLoop._set_unit_hp(scene.play_loop, secondary["id"], 0)
-	BattlePlayLoop._set_unit_defeated(scene.play_loop, secondary["id"], true)
+	BattlePlayLoop.set_unit_hp(scene.play_loop, secondary["id"], 0)
+	BattlePlayLoop.set_unit_defeated(scene.play_loop, secondary["id"], true)
 	scene.apply_loop(scene.play_loop, "test")
 	check(scene.actor_node_for_unit(secondary["id"]).visible, "secondary lethal target is retained before the first refresh")
 	finish_cutin(scene)
@@ -352,7 +352,7 @@ func terminal_victory_level_up(skip: bool) -> void:
 		if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and unit["id"] != "enemy021_1":
 			unit["hp"] = 0
 			unit["defeated"] = true
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["exp"] = 99
 	attack(scene)
 	var view = scene.get_node("BattlePresentation")
 	var label := " (skip seam)" if skip else ""
@@ -402,8 +402,8 @@ func kill_loot_level_up_order() -> void:
 	var scene := fixture()
 	var view = scene.get_node("BattlePresentation")
 	var aftermath = view.aftermath
-	BattlePlayLoop._unit(scene.play_loop, "leonard")["exp"] = 99
-	BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # an important drop always drops
+	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")["inventory"] = [281, 0, 0, 0, 0, 0, 0, 0] # an important drop always drops
 	var level_ups: Array = []
 	aftermath.level_up_presented.connect(func(growth): level_ups.append(growth))
 	attack(scene)
@@ -447,7 +447,7 @@ func installed_dead_message() -> void:
 	var scripted := {"speaker": "", "speaker_id": "377", "messages": [{"id": "375"}]}
 	for word in [villager["dead_message"], cleared["dead_message"], scripted]:
 		var scene := fixture()
-		BattlePlayLoop._unit(scene.play_loop, "enemy021_1")["dead_message"] = (word as Dictionary).duplicate(true)
+		BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")["dead_message"] = (word as Dictionary).duplicate(true)
 		scene.apply_loop(scene.play_loop, "test")
 		var view = scene.get_node("BattlePresentation")
 		var tail = view.aftermath
@@ -477,12 +477,12 @@ func installed_dead_message() -> void:
 ## the clip's `released`, where 0x402fd1 calls 0x4071e0 with the Cast_Star burst — not before.
 func map_magic_lead_pose() -> void:
 	var scene := fixture()
-	var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
-	var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var caster := BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
+	var target := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	target["coord"] = caster["coord"] + Vector2i.RIGHT
 	caster["mp"] = 100
 	var id := "magic:magicFIRE:magicCode01"
-	var receipt := BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+	var receipt := BattleLoopCombat.resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 	check(not receipt.is_empty(), "the lead-pose fixture resolves a map spell")
 	caster["actor_id"] = "025"
 	scene.apply_loop(scene.play_loop, "test")
@@ -510,13 +510,13 @@ func map_magic_lead_pose() -> void:
 func map_magic() -> void:
 	for key in ["fire", "wind"]:
 		var scene := fixture()
-		var caster := BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
-		var target := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+		var caster := BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
+		var target := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 		target["hp"] = 1
 		target["coord"] = caster["coord"] + Vector2i.RIGHT
 		caster["mp"] = 100
 		var id: String = "magic:magicAIR:magicCode01" if key == "wind" else "magic:magicFIRE:magicCode01"
-		var receipt := BattleLoopCombat._resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+		var receipt := BattleLoopCombat.resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
 		check(not receipt.is_empty() and receipt["defender_hp_after"] == 0 and receipt.get("experience",{}).get("allocation")=="automatic" and receipt["experience"]["gained"]>0, "source AI magic commits its own automatic EXP, not player points: " + key)
 		var settled: Dictionary = scene.play_loop.duplicate(true)
 		scene.apply_loop(scene.play_loop, "test")
@@ -595,7 +595,7 @@ func _close(scene: Node) -> void:
 
 ## Levels the member up once in place (as a settled EXP award would) and mirrors the loop.
 func _level_up(scene: Node, id: String) -> void:
-	var unit: Dictionary = BattlePlayLoop._unit(scene.play_loop, id)
+	var unit: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, id)
 	unit["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(int(unit["level"])) - 1
 	unit.merge(BattlePlayLoop.ProgressionRules.resolve_experience(unit, 1, scene.play_loop["equipment_items"]), true)
 	scene.apply_loop(scene.play_loop, "test")
@@ -670,9 +670,9 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 	if final_blow:
 		for unit in loop["units"]:
 			if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and unit["id"] != "actor028_2" and BattlePlayLoop.Presence.living(unit):
-				BattlePlayLoop._set_unit_defeated(loop, unit["id"], true)
-	var tina: Dictionary = BattlePlayLoop._unit(loop, "tina")
-	var foe: Dictionary = BattlePlayLoop._unit(loop, "actor028_2")
+				BattlePlayLoop.set_unit_defeated(loop, unit["id"], true)
+	var tina: Dictionary = BattlePlayLoop.unit_ref(loop, "tina")
+	var foe: Dictionary = BattlePlayLoop.unit_ref(loop, "actor028_2")
 	for step in [Vector2i.RIGHT, Vector2i.LEFT, Vector2i.UP, Vector2i.DOWN]:
 		if foe["coord"] == tina["coord"] + step: break
 		var at: Vector2i = tina["coord"] + step
@@ -694,12 +694,12 @@ func _test_enemy_turn_counter_level_up(final_blow: bool = false) -> void:
 		fought = loop.duplicate(true)
 		var rng := RandomNumberGenerator.new()
 		rng.seed = seed
-		strike = BattleLoopCombat._resolve_exchange(fought, "actor028_2", "tina", rng)
+		strike = BattleLoopCombat.resolve_exchange(fought, "actor028_2", "tina", rng)
 		if not strike.get("counter", {}).is_empty() and int(BattlePlayLoop.unit(fought, "actor028_2")["hp"]) == 0: break
 	loop = fought
 	if final_blow:
 		# The foe's action completes in its own death sequence (0x407510 → win scan).
-		loop = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop, true))
+		loop = BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop, true))
 		check(BattleOutcome.won(loop), "the counter on the last foe wins inside the enemy step")
 	check(not strike.is_empty() and not strike.get("counter", {}).is_empty(), "the foe's strike draws 緹娜's counter")
 	check(int(BattlePlayLoop.unit(loop, "tina")["level"]) > level_before and int(BattlePlayLoop.unit(loop, "actor028_2")["hp"]) == 0, "the counter kills the foe and levels 緹娜")
@@ -767,8 +767,8 @@ func _test_terminal_victory_offers_before_story(skip: bool) -> void:
 	var loop: Dictionary = scene.play_loop.duplicate(true)
 	for unit in loop["units"]:
 		if unit["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY and BattlePlayLoop.Presence.living(unit):
-			BattlePlayLoop._set_unit_defeated(loop, unit["id"], true)
-	loop = BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
+			BattlePlayLoop.set_unit_defeated(loop, unit["id"], true)
+	loop = BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop))
 	check(BattleOutcome.won(loop) and scene.ScriptPresentation.timeline(scene, "win_0").get("playable_event_count", 0) > 0, "level 3's clear wins through win_0's closing cutscene" + label)
 	scene.apply_loop(loop, "test")
 	scene.mirror_interaction()
@@ -809,7 +809,7 @@ func _test_terminal_victory_offers_before_story(skip: bool) -> void:
 	var next = await _start()
 	next.set_process(false)
 	# The carried member (CampaignCarryRules keeps pending_stat_points) is not the first actor.
-	BattlePlayLoop._unit(next.play_loop, "tina")["pending_stat_points"] = carried
+	BattlePlayLoop.unit_ref(next.play_loop, "tina")["pending_stat_points"] = carried
 	next.apply_loop(next.play_loop, "test")
 	next._process(0.0)
 	check(next.selected_unit_id == "hu" and _offered_to(next) == "tina", "carried points open the member's window at the next battle's first control")
@@ -823,8 +823,8 @@ func _test_terminal_defeat_offers_nothing() -> void:
 	scene.set_process(false)
 	_level_up(scene, "hu")
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	BattlePlayLoop._set_unit_defeated(loop, "leonard", true)
-	loop = BattlePlayLoop._resolve_outcome(loop)
+	BattlePlayLoop.set_unit_defeated(loop, "leonard", true)
+	loop = BattlePlayLoop.resolve_outcome(loop)
 	check(BattleOutcome.lost(loop), "雷歐納德's fall loses level 3")
 	scene.apply_loop(loop, "test")
 	scene.mirror_interaction()

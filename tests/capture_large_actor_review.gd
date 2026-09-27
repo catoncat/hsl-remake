@@ -84,7 +84,7 @@ func setup_large()->void:
 	if mode in ["support","cure_item","skip_resume"]:
 		run_large_actor_tests.spell_kit(loop)
 		TestSuite.own(loop, "skill_book")["actors"]["039"]["move_magic_use"]=true
-		actor=BattlePlayLoop._unit(loop,"leonard");actor["hp"]=actor["max_hp"]
+		actor=BattlePlayLoop.unit_ref(loop,"leonard");actor["hp"]=actor["max_hp"]
 	if mode in ["support","cure_item"]:
 		var patient:=enemy.duplicate(true)
 		patient.merge({"id":"patient039","battle_actor_role":BattlePlayLoop.ROLE_PLAYER,"player_commandable":true,"hp":4,"live_speed":80},true)
@@ -93,7 +93,7 @@ func setup_large()->void:
 		if mode=="support":afflict(actor,"poison",3,7)
 		else:actor["mp"]=0;afflict(actor,"no_magic",2)
 	if mode in ["empty_area","ai_resource"]:
-		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop._unit(loop,"leonard")
+		run_large_actor_tests.spell_kit(loop);actor=BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["coord"]=Vector2i(9,14);enemy["coord"]=Vector2i(13,14)
 		TestSuite.own(loop, "skill_book")["skills"][BIND_LARGE]["fields"].merge({"status_hit_ratio":"100","use_ratio":"100"},true)
 		if mode=="empty_area":
@@ -117,7 +117,7 @@ func setup_large()->void:
 		actor["hp"]=20;actor["mp"]=0;afflict(actor,"paralysis",2);afflict(actor,"poison",3,7);afflict(actor,"no_magic",2)
 		actor["status_counters"]["paralysis"]=1 # Supplied remaining time, not an invalid newly sampled one-turn application.
 	if mode in ["victory","defeat","escape"]:
-		actor=BattlePlayLoop._unit(loop,"leonard");enemy=BattlePlayLoop._unit(loop,"enemy039_1")
+		actor=BattlePlayLoop.unit_ref(loop,"leonard");enemy=BattlePlayLoop.unit_ref(loop,"enemy039_1")
 		var view=scene.get_node("BattlePresentation");view._shown_story_events.assign(loop["event_log"])
 		if mode=="victory":enemy["hp"]=1
 		elif mode=="defeat":
@@ -129,7 +129,7 @@ func setup_large()->void:
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
 	var starter:="observer" if mode in ["skip_resume","ai_resource","ai_retarget"] else "leonard"
 	check(BattlePlayLoop.CoreTurnQueue.current(loop["turn_queue"])["id"]==starter,"fixture starts at its actual queue owner")
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,starter), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,starter), "test")
 	scene.settlement_controller.checkpoint_path=LARGE_OUT+mode+".save"
 	for node in scene.actors_root.get_children():scene.actors_root.remove_child(node);node.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(loop,starter)["coord"])
@@ -196,7 +196,7 @@ func play_large()->void:
 			await hover(scene.grid_cell_center_to_logical_position(blocked));await shot("whole-body-blocked")
 			var before:Dictionary=scene.play_loop.duplicate(true);await point(scene.grid_cell_center_to_logical_position(blocked));check(scene.play_loop==before,"friendly outer-cell blocker rejects the whole-body landing without spending movement")
 			await escape();await create_timer(0.3).timeout;await move_to(landing)
-			check(observed["last_path"].size()>BattlePlayLoop._manhattan(observed["last_path"][0],landing)+1,"actual whole-body route detours around a friendly occupied ring")
+			check(observed["last_path"].size()>BattlePlayLoop.TacticalGridRules.manhattan(observed["last_path"][0],landing)+1,"actual whole-body route detours around a friendly occupied ring")
 			await save_restore();await escape();await create_timer(0.15).timeout
 			check(BattlePlayLoop.unit(scene.play_loop,"leonard")["coord"]==Vector2i(8,21),"actual cancellation reclaims every original body cell")
 			check(scene.interaction_state=="move_select" and scene.move_overlay.visible,"cancel restores the source move-selection phase")

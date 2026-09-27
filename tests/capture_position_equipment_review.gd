@@ -49,9 +49,9 @@ func setup_position() -> void:
 	chosen_role = "001" if sword else "026"
 	var loop := run_position_equipment_tests.fixture(chosen_role)
 	loop["tiles"] = scene.play_loop["tiles"];loop["map_size"] = scene.play_loop["map_size"]
-	var actor := BattlePlayLoop._unit(loop,"leonard")
-	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
-	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
+	var enemy := BattlePlayLoop.unit_ref(loop,"enemy021_1")
+	var ally := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	actor["growth_profile"]["source"]["hit_point"] += 300
 	actor["growth_profile"]["source"]["speed"] += 120
 	if mode in ["double_growth","silence_special","detour"]:
@@ -113,7 +113,7 @@ func setup_position() -> void:
 	if mode in ["victory","defeat","escape"]:
 		var view = scene.get_node("BattlePresentation")
 		view._shown_story_events.assign(loop["event_log"])
-		actor = BattlePlayLoop._unit(loop,"leonard");enemy = BattlePlayLoop._unit(loop,"enemy021_1")
+		actor = BattlePlayLoop.unit_ref(loop,"leonard");enemy = BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		if mode == "victory": actor["exp"]=99;enemy["hp"]=1
 		elif mode == "defeat":
 			actor["hp"]=1;enemy["no_attack"]=false;enemy["hit_bonus_accum"]=1000
@@ -136,7 +136,7 @@ func setup_position() -> void:
 		unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 		check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false),"authored encounter stands on source walkable terrain: %s %s" % [unit["id"],unit["coord"]])
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = POSITION_OUT+mode+".save"
 	for node in scene.actors_root.get_children():scene.actors_root.remove_child(node);node.queue_free()
 	scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"])
@@ -233,7 +233,7 @@ func play_position() -> void:
 			var found := false
 			for cell in BattlePlayLoop.movement_cells(scene.play_loop):
 				var path := BattlePlayLoop.movement_path(scene.play_loop,"leonard",cell)
-				if path.size()>BattlePlayLoop._manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):landing=cell;found=true;break
+				if path.size()>BattlePlayLoop.TacticalGridRules.manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)):landing=cell;found=true;break
 			check(found,"combined movement equipment exposes a real source-map detour")
 			await move_to(landing);await click(scene.action_menu.get_node("WaitCommand"));await settle("enemy023_1")
 	await save_restore()

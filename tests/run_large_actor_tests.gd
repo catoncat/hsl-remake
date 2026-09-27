@@ -41,7 +41,7 @@ static func fixture(control_large: bool = true) -> Dictionary:
 	base["units"]=[player,friend,foe];base["tiles"]={};base["map_size"]=Vector2i(20,20);base["reinforcement_templates"]=[]
 	for a in base["units"]:a["grid_coord"]=a["coord"];a["ai_home_coord"]=a["coord"]
 	base["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(base["units"])
-	return BattlePlayLoop._return_to_player(base,"leonard")
+	return BattlePlayLoop.return_to_player(base,"leonard")
 
 func run() -> void:
 	create_timer(180).timeout.connect(func():push_error("LARGE_ACTOR_TEST_TIMEOUT");quit(2))
@@ -102,7 +102,7 @@ func native_cases() -> void:
 			check(actor["max_hp"]==native["values"]["max_hp"] and actor["move_point"]==native["values"]["move_point"] and actor["combat_profile"]["live_attack_damage"]==native["values"]["attack"],"source039 initialization/level/equipment refresh agrees with actual original return")
 
 func spatial_transactions() -> void:
-	var loop:=fixture();var actor:=BattlePlayLoop._unit(loop,"leonard");var origin:Vector2i=actor["coord"]
+	var loop:=fixture();var actor:=BattlePlayLoop.unit_ref(loop,"leonard");var origin:Vector2i=actor["coord"]
 	check(BattlePlayLoop.weapon_pattern(loop,actor)["index"]==18,"source large weapon adds seventeen to normal range")
 	var gear:=run_position_equipment_tests.equip(loop,"accessory1",233)
 	check(BattlePlayLoop.weapon_pattern(gear,BattlePlayLoop.unit(gear,"leonard"))["index"]==19,"large range extension uses the next original full mask")
@@ -116,43 +116,43 @@ func spatial_transactions() -> void:
 		var restored:=BattleCheckpoint.decode(saved["bytes"], moved);check(restored["ok"] and restored["snapshot"]["loop"]==moved,"restored body/phase has no duplicated actor or re-applied gear")
 	var cancelled:=BattlePlayLoop.cancel_pending_move(moved)
 	check(BattlePlayLoop.unit(cancelled,"leonard")["coord"]==origin and not cancelled["moved_this_action"],"cancel restores every occupied cell from the original anchor")
-	var block:=moved.duplicate(true);BattlePlayLoop._unit(block,"enemy023_1")["coord"]=origin+Vector2i.RIGHT
+	var block:=moved.duplicate(true);BattlePlayLoop.unit_ref(block,"enemy023_1")["coord"]=origin+Vector2i.RIGHT
 	check(BattlePlayLoop.cancel_pending_move(block)==block,"new occupant in the original ring rejects stale cancel atomically")
-	var invalid:=loop.duplicate(true);BattlePlayLoop._unit(invalid,"enemy023_1")["coord"]=origin+Vector2i.RIGHT
+	var invalid:=loop.duplicate(true);BattlePlayLoop.unit_ref(invalid,"enemy023_1")["coord"]=origin+Vector2i.RIGHT
 	check(not BattleCheckpoint.encode(invalid,run_position_equipment_tests.VIEW)["ok"],"save refuses overlap inside a large body")
-	var small:=fixture(false);var target:=BattlePlayLoop._unit(small,"enemy039_1");target["no_attack"]=false;target["combat_profile"]["attack_back"]=100
+	var small:=fixture(false);var target:=BattlePlayLoop.unit_ref(small,"enemy039_1");target["no_attack"]=false;target["combat_profile"]["attack_back"]=100
 	var before_hp:int=target["hp"]
 	var hit:=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(small,"attack"),Vector2i(7,6),zero)
 	check(hit["last_attack"].get("defender_id")==target["id"] and hit["last_attack"].get("cast_center")==Vector2i(7,6),"small actor attacks the clicked body edge while target center lies outside its range")
 	check(BattlePlayLoop.unit(hit,target["id"])["hp"]<before_hp and not hit["last_attack"]["counter"].is_empty(),"one edge hit and native large counter settle exactly one exchange")
-	var lethal:=fixture(false);BattlePlayLoop._unit(lethal,"enemy039_1")["hp"]=1
+	var lethal:=fixture(false);BattlePlayLoop.unit_ref(lethal,"enemy039_1")["hp"]=1
 	var killed:=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(lethal,"attack"),Vector2i(7,6),zero)
 	check(BattlePlayLoop.unit(killed,"enemy039_1")["defeated"],"body-edge killing blow reaches shared death settlement")
 	for p in FootprintRules.cells(BattlePlayLoop.unit(killed,"enemy039_1")):check(BattlePlayLoop.unit_id_at_coord(killed,p)=="","death releases all nine cells together")
 	check(killed["rewarded_unit_ids"].count("enemy039_1")==1,"one large death never multiplies reward/EXP by body cells")
 
 func skill_and_items() -> void:
-	var loop:=fixture(false);var caster:=BattlePlayLoop._unit(loop,"leonard")
+	var loop:=fixture(false);var caster:=BattlePlayLoop.unit_ref(loop,"leonard")
 	TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"]=[BIND,run_position_equipment_tests.WIND,run_position_equipment_tests.HEAL,run_position_equipment_tests.CURE]
 	caster["growth_profile"]["source"]["has_magic"]=true;caster["growth_profile"]["source"]["magic_point"]=100
 	caster.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(caster,loop["equipment_items"]),true);caster["mp"]=caster["max_mp"]
 	TestSuite.own(loop, "skill_book")["skills"][BIND]["fields"]["status_hit_ratio"]="100"
-	var target:=BattlePlayLoop._unit(loop,"enemy039_1");var mp_before:int=caster["mp"]
+	var target:=BattlePlayLoop.unit_ref(loop,"enemy039_1");var mp_before:int=caster["mp"]
 	var spell:=BattlePlayLoop.attack_coord(run_position_equipment_tests.selected(loop,BIND),Vector2i(8,5),zero)
 	check(spell["last_attack"]["affected_targets"].size()==1 and BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(spell,target["id"])),"overlapping multiple body cells only applies the range status once")
 	check(BattlePlayLoop.unit(spell,"leonard")["mp"]==mp_before-16 and spell["last_attack"]["native_contribution"]==20,"one payment, one duration contribution and one EXP conversion")
 	var empty:=BattlePlayLoop.attack_coord(run_position_equipment_tests.selected(loop,BIND),Vector2i(6,5),zero)
 	check(empty["last_attack"].get("affected_targets",[]).size()==1 and empty["last_attack"].get("cast_center")==Vector2i(6,5),"actual empty center may affect the outer footprint without recentering the spell")
-	var allyloop:=fixture(false);var giant:=BattlePlayLoop._unit(allyloop,"enemy039_1")
+	var allyloop:=fixture(false);var giant:=BattlePlayLoop.unit_ref(allyloop,"enemy039_1")
 	giant["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY;giant["no_attack"]=false;giant.merge(BattlePlayLoop.StatusEffectRules.apply(giant,"paralysis",2)["changes"],true)
 	var use:=BattlePlayLoop.use_item(allyloop,"248",giant["id"],BattlePlayLoop.unit(allyloop,"leonard")["inventory"].find(248))
 	check(use.get("last_item_use",{}).get("cured_paralysis",false) and not BattlePlayLoop.StatusEffectRules.paralyzed(BattlePlayLoop.unit(use,giant["id"])),"adjacent body-edge item assistance reaches the one large target")
-	var guarded:=fixture();BattlePlayLoop._unit(guarded,"leonard").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(guarded,"leonard"),"paralysis",2)["changes"],true)
-	guarded=BattlePlayLoop._return_to_player(guarded,"leonard");var before:=guarded.duplicate(true);var skip:=BattlePlayLoop.step_ai_turn(guarded,no_rng)
+	var guarded:=fixture();BattlePlayLoop.unit_ref(guarded,"leonard").merge(BattlePlayLoop.StatusEffectRules.apply(BattlePlayLoop.unit(guarded,"leonard"),"paralysis",2)["changes"],true)
+	guarded=BattlePlayLoop.return_to_player(guarded,"leonard");var before:=guarded.duplicate(true);var skip:=BattlePlayLoop.step_ai_turn(guarded,no_rng)
 	check(skip["last_ai_action"]["kind"]=="paralysis_skip" and BattlePlayLoop.unit(skip,"leonard")["coord"]==BattlePlayLoop.unit(before,"leonard")["coord"],"large paralysis skip preserves anchor/occupancy and advances only one action")
 
 static func spell_kit(loop: Dictionary) -> void:
-	var actor:=BattlePlayLoop._unit(loop,"leonard")
+	var actor:=BattlePlayLoop.unit_ref(loop,"leonard")
 	TestSuite.own(loop, "skill_book")["actors"][actor["actor_id"]]["supported_initial_ids"]=[BIND,run_position_equipment_tests.WIND,run_position_equipment_tests.HEAL,run_position_equipment_tests.CURE]
 	actor["growth_profile"]["source"]["has_magic"]=true
 	actor["growth_profile"]["source"]["magic_point"]=100

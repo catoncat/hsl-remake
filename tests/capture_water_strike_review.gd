@@ -33,18 +33,18 @@ func setup_water() -> void:
 		var loop:=run_water_strike_tests.fixture()
 		loop["scenario_id"]="water_strike_trial";loop["scenario_path"]=WATER_TRIAL;loop["scenario_title"]="水剎・十字範圍演練"
 		loop["consumables"]=scene.play_loop["consumables"].duplicate(true)
-		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion")
+		var actor:=BattlePlayLoop.unit_ref(loop,"tina");var ally:=BattlePlayLoop.unit_ref(loop,"companion")
 		actor["hit_bonus_accum"]=1000
-		if mode=="mixed":BattlePlayLoop._unit(loop,"enemy021_2")["hp"]=1
+		if mode=="mixed":BattlePlayLoop.unit_ref(loop,"enemy021_2")["hp"]=1
 		if mode=="limited":actor["mp"]=7
 		if mode=="mobile":
 			for unit in loop["units"]:unit["coord"]+=Vector2i(3,0)
 		if mode=="silence":actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
 		if mode=="victory":
-			for id in ["enemy021_1","enemy021_2"]:BattlePlayLoop._unit(loop,id)["hp"]=1
+			for id in ["enemy021_1","enemy021_2"]:BattlePlayLoop.unit_ref(loop,id)["hp"]=1
 		if mode=="escape":
 			actor["coord"]=Vector2i(13,10);ally["coord"]=Vector2i(13,11)
-			BattlePlayLoop._unit(loop,"enemy021_1")["coord"]=Vector2i(16,10);BattlePlayLoop._unit(loop,"enemy021_2")["coord"]=Vector2i(15,9)
+			BattlePlayLoop.unit_ref(loop,"enemy021_1")["coord"]=Vector2i(16,10);BattlePlayLoop.unit_ref(loop,"enemy021_2")["coord"]=Vector2i(15,9)
 		if mode in ["ai","defeat"]:
 			var source:=BattlePlayLoop.create([],"",BattlePlayLoop.BattleScenario.load_file("res://content/battles/battle_052.json"))
 			var boss:Dictionary=BattlePlayLoop.unit(source,"emperor025").duplicate(true)
@@ -62,7 +62,7 @@ func setup_water() -> void:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","legal original-terrain water setup")
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		loop=BattlePlayLoop._return_to_player(loop,"tina")
+		loop=BattlePlayLoop.return_to_player(loop,"tina")
 		scene.apply_loop(loop, "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)

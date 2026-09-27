@@ -39,9 +39,9 @@ func setup_casting() -> void:
 	await setup_role()
 	scene.set_process(false)
 	var loop: Dictionary = scene.play_loop
-	var actor := BattlePlayLoop._unit(loop,"leonard")
-	var enemy := BattlePlayLoop._unit(loop,"enemy021_1")
-	var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
+	var enemy := BattlePlayLoop.unit_ref(loop,"enemy021_1")
+	var ally := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	original_armor = BattlePlayLoop.EquipmentRules.equipped_code(actor["equipment"],"armor")
 	actor["growth_profile"]["source"]["hit_point"] += 180
 	actor["growth_profile"]["source"]["speed"] += 120
@@ -87,7 +87,7 @@ func setup_casting() -> void:
 		for entry in [["armor",145],["accessory1",218]]: actor["equipment"].append({"slot":entry[0],"item_code":entry[1],"name":loop["equipment_items"][str(entry[1])]["name"]})
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 		actor["mp"] = 0; actor["hp"] = actor["max_hp"]; actor["live_speed"] = 160; actor["no_attack"] = true
-		BattlePlayLoop._unit(loop,"resource-initial")["live_speed"] = 200
+		BattlePlayLoop.unit_ref(loop,"resource-initial")["live_speed"] = 200
 		if mode == "ai_silence":
 			actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",2)["changes"],true)
 			actor["status_counters"]["no_magic"] = 1 # Supplied remaining duration, not a one-turn new application.
@@ -100,7 +100,7 @@ func setup_casting() -> void:
 		unit["grid_coord"] = unit["coord"]; unit["ai_home_coord"] = unit["coord"]
 		check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false),"casting fixture stands on original walkable terrain")
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"resource-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = CASTING_OUT+mode+".save"
 	for node in scene.actors_root.get_children(): scene.actors_root.remove_child(node);node.queue_free()
 	scene.unit_grid_coords.clear(); scene.resume_turn_presentation(); scene.center_camera_on_grid(actor["coord"])
@@ -204,7 +204,7 @@ func play_casting() -> void:
 			var found := false
 			for cell in BattlePlayLoop.movement_cells(scene.play_loop):
 				var path := BattlePlayLoop.movement_path(scene.play_loop,"leonard",cell)
-				if path.size()>BattlePlayLoop._manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)): landing=cell;found=true;break
+				if path.size()>BattlePlayLoop.TacticalGridRules.manhattan(path[0],cell)+1 and Rect2(24,24,592,414).has_point(scene.grid_cell_center_to_logical_position(cell)): landing=cell;found=true;break
 			check(found,"source map supports an affordable equipment-enabled detour")
 			await move_to(landing);await click(scene.action_menu.get_node("WaitCommand"));await settle("enemy023_1")
 		else:

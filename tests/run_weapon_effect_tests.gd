@@ -24,12 +24,12 @@ static func set_gear(actor: Dictionary, catalog: Dictionary, slot: String, code:
 
 static func fixture(code: int = 35, twice: bool = false, counter: bool = false) -> Dictionary:
 	var loop := run_large_actor_tests.fixture()
-	var actor := BattlePlayLoop._unit(loop,"leonard")
+	var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 	set_gear(actor,loop["equipment_items"],"weapon",code)
 	if twice: set_gear(actor,loop["equipment_items"],"accessory2",227)
 	actor["hp"]=actor["max_hp"];actor["hit_bonus_accum"]=1000
 	actor["inventory"]=[29,35,37,229,227,246,248,0]
-	var target := BattlePlayLoop._unit(loop,"enemy021_1")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	target.merge({"coord":Vector2i(8,6),"hp":5000,"max_hp":5000,"no_attack":not counter,"live_speed":5,"hit_bonus_accum":1000},true)
 	target["combat_profile"]["attack_back"]=100
 	# Real queue slots: attacker first, observer second, target last. The observer
@@ -38,7 +38,7 @@ static func fixture(code: int = 35, twice: bool = false, counter: bool = false) 
 		{"id":"leonard","live_speed":300,"action_ready":true},
 		{"id":"enemy023_1","live_speed":200,"action_ready":true},
 		{"id":"enemy021_1","live_speed":5,"action_ready":true}])
-	return BattlePlayLoop._return_to_player(loop,"leonard")
+	return BattlePlayLoop.return_to_player(loop,"leonard")
 
 
 func run() -> void:
@@ -55,7 +55,7 @@ func native_replay() -> void:
 	var original:=fixture()
 	for row in packet["effects"]:
 		var c:Dictionary=row["input"];var loop:=original.duplicate(true)
-		var actor:=BattlePlayLoop._unit(loop,"leonard");var target:=BattlePlayLoop._unit(loop,"enemy021_1")
+		var actor:=BattlePlayLoop.unit_ref(loop,"leonard");var target:=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		actor["id"]="0";target["id"]="1"
 		own(loop, "equipment_items")["35"]["weapon_effect_flags"]=int(c["effects"])
 		own(loop, "equipment_items")["229"]["status_effect_flags"]=int(c["immunity"])
@@ -81,7 +81,7 @@ func native_replay() -> void:
 		var result:=BattlePlayLoop.CoreTurnQueue.cancel_pending(queue,"1")
 		check(result["ok"] and result["index"]==int(row["native"]["cancelled_index"]),"native first future eligible slot only, including past/disabled/duplicate pointers")
 	for row in packet["gear"]:
-		var loop:=original.duplicate(true);var actor:=BattlePlayLoop._unit(loop,"leonard")
+		var loop:=original.duplicate(true);var actor:=BattlePlayLoop.unit_ref(loop,"leonard")
 		actor["equipment"]=[]
 		for code in row["input"]["codes"]:actor["equipment"].append({"item_code":int(code)})
 		var source:=WeaponEffectRules.effects(actor,loop["equipment_items"])
@@ -108,20 +108,20 @@ func series_transactions() -> void:
 	second=BattlePlayLoop.finish_exhausted_action(second)
 	check(second["extra_action"]["pending"]==false and int(BattlePlayLoop.unit(second,"enemy021_1")["status_counters"]["poison"])&0xffff==2,"fresh independent second action may apply its own one-turn poison increment")
 	var miss:=fixture()
-	var actor:=BattlePlayLoop._unit(miss,"leonard");var victim:=BattlePlayLoop._unit(miss,"enemy021_1")
+	var actor:=BattlePlayLoop.unit_ref(miss,"leonard");var victim:=BattlePlayLoop.unit_ref(miss,"enemy021_1")
 	actor["hit_bonus_accum"]=0;actor["combat_profile"]["live_hit_ratio"]=0;victim["combat_profile"]["avoid_hit_ratio"]=100
-	var missed:=BattleLoopCombat._apply_strike(miss,"leonard","enemy021_1",high,false,0)
+	var missed:=BattleLoopCombat.apply_strike(miss,"leonard","enemy021_1",high,false,0)
 	check(not missed["hit"] and not missed.has("weapon_effects") and victim["status_counters"]["poison"]==0,"final miss consumes no poison chance despite active weapon")
 	var partial:=fixture()
-	var first:=BattleLoopCombat._apply_strike(partial,"leonard","enemy021_1",zero,false,1)
+	var first:=BattleLoopCombat.apply_strike(partial,"leonard","enemy021_1",zero,false,1)
 	check(first["hit"] and not first.has("weapon_effects"),"intermediate hit only converts its own damage EXP")
-	BattlePlayLoop._unit(partial,"leonard")["hit_bonus_accum"]=0
-	BattlePlayLoop._unit(partial,"leonard")["combat_profile"]["live_hit_ratio"]=0
-	BattlePlayLoop._unit(partial,"enemy021_1")["combat_profile"]["avoid_hit_ratio"]=100
-	var last:=BattleLoopCombat._apply_strike(partial,"leonard","enemy021_1",high,false,0)
+	BattlePlayLoop.unit_ref(partial,"leonard")["hit_bonus_accum"]=0
+	BattlePlayLoop.unit_ref(partial,"leonard")["combat_profile"]["live_hit_ratio"]=0
+	BattlePlayLoop.unit_ref(partial,"enemy021_1")["combat_profile"]["avoid_hit_ratio"]=100
+	var last:=BattleLoopCombat.apply_strike(partial,"leonard","enemy021_1",high,false,0)
 	check(not last["hit"] and not last.has("weapon_effects") and not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(partial,"enemy021_1")),"last miss does not backfill poison from the previous hit")
 	var lethal:=fixture();own(lethal, "skill_book")["actors"]["039"]["double_attack"]=true
-	BattlePlayLoop._unit(lethal,"enemy021_1")["hp"]=1
+	BattlePlayLoop.unit_ref(lethal,"enemy021_1")["hp"]=1
 	var kill:=BattlePlayLoop.attack_coord(BattlePlayLoop.choose_command(lethal,"attack"),Vector2i(8,6),zero)
 	check(kill["last_attack"]["followups"].is_empty() and kill["last_attack"]["weapon_effects"]["poison"]["applied"],"early lethal strike reaches original effect draws once and truncates followups")
 	check(BattlePlayLoop.unit(kill,"enemy021_1")["status_flags"]==0 and WeaponEffectRules.feedback(kill["last_attack"]["weapon_effects"],false)=="","dead actor cleanup suppresses impossible persistent affliction feedback")
@@ -137,10 +137,10 @@ func status_word() -> void:
 	check(int(catalog["209"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and catalog["209"]["supported"] and int(catalog["71"]["weapon_effect_flags"]) == WeaponEffectRules.RANDOM and not catalog["71"]["supported"],"random_status_error maps to 0x40000; 71 stays unsupported for its range6CellShoot range only")
 	check(int(catalog["51"]["weapon_effect_flags"]) == WeaponEffectRules.WEAKEN and int(catalog["66"]["weapon_effect_flags"]) == WeaponEffectRules.NO_MAGIC and int(catalog["220"]["status_effect_flags"]) == 0x2000000,"attack_weaken 0x20000 / attack_nomagic 0x80000 / avoid_weaken 0x2000000 follow the ITEM loader")
 	var ring := base.duplicate(true)
-	var actor := BattlePlayLoop._unit(ring,"leonard")
+	var actor := BattlePlayLoop.unit_ref(ring,"leonard")
 	set_gear(actor,catalog,"weapon",0)
 	set_gear(actor,catalog,"accessory1",209)
-	var target := BattlePlayLoop._unit(ring,"enemy021_1")
+	var target := BattlePlayLoop.unit_ref(ring,"enemy021_1")
 	var healthy_attack: int = target["combat_profile"]["live_attack_damage"]
 	var healthy_max: int = target["max_hp"]
 	var prepared := WeaponEffectRules.prepare(actor,target,ring["skill_book"],catalog,ring["turn_queue"])
@@ -171,28 +171,28 @@ func status_word() -> void:
 	check(draw_index == 5 and poisoned["receipt"]["poison"]["applied"] and int(poisoned["receipt"]["poison"]["sampled_power"]) == 16,"the random poison branch is the existing 0x4091b0 helper (16..32)")
 	# random replaces the equipment word: a poison weapon plus the ring only runs the picked branch.
 	var mixed := ring.duplicate(true)
-	set_gear(BattlePlayLoop._unit(mixed,"leonard"),catalog,"weapon",35)
-	var mixed_prepared := WeaponEffectRules.prepare(BattlePlayLoop._unit(mixed,"leonard"),BattlePlayLoop._unit(mixed,"enemy021_1"),mixed["skill_book"],catalog,mixed["turn_queue"])
+	set_gear(BattlePlayLoop.unit_ref(mixed,"leonard"),catalog,"weapon",35)
+	var mixed_prepared := WeaponEffectRules.prepare(BattlePlayLoop.unit_ref(mixed,"leonard"),BattlePlayLoop.unit_ref(mixed,"enemy021_1"),mixed["skill_book"],catalog,mixed["turn_queue"])
 	replay = [{"bound":100,"value":0},{"bound":100,"value":0},{"bound":2,"value":0},{"bound":3,"value":1},{"bound":3,"value":1}];draw_index = 0
 	var replaced := WeaponEffectRules.resolve(mixed_prepared,native_draw,0,BattlePlayLoop.unit(mixed,"enemy021_1"))
 	check(int(mixed_prepared["flags"]) == (WeaponEffectRules.RANDOM | WeaponEffectRules.POISON) and draw_index == 5 and replaced["receipt"]["weaken"]["applied"] and replaced["receipt"]["poison"].is_empty(),"random_status_error overwrites the OR word (0x409310 uVar3), so attack_poison does not roll")
 	# direct attack_weaken (51) rolls the weaken branch without the random pick.
 	var thrust := base.duplicate(true)
-	set_gear(BattlePlayLoop._unit(thrust,"leonard"),catalog,"weapon",51)
-	var thrust_prepared := WeaponEffectRules.prepare(BattlePlayLoop._unit(thrust,"leonard"),BattlePlayLoop._unit(thrust,"enemy021_1"),thrust["skill_book"],catalog,thrust["turn_queue"])
+	set_gear(BattlePlayLoop.unit_ref(thrust,"leonard"),catalog,"weapon",51)
+	var thrust_prepared := WeaponEffectRules.prepare(BattlePlayLoop.unit_ref(thrust,"leonard"),BattlePlayLoop.unit_ref(thrust,"enemy021_1"),thrust["skill_book"],catalog,thrust["turn_queue"])
 	replay = [{"bound":100,"value":24},{"bound":2,"value":0},{"bound":3,"value":2},{"bound":3,"value":0}];draw_index = 0
 	var direct := WeaponEffectRules.resolve(thrust_prepared,native_draw,0,BattlePlayLoop.unit(thrust,"enemy021_1"))
 	check(int(thrust_prepared["flags"]) == WeaponEffectRules.WEAKEN and draw_index == 4 and direct["receipt"]["weaken"]["applied"] and int(direct["receipt"]["weaken"]["sampled_power"]) == 3 and not direct["receipt"].has("random_status"),"51 attack_weaken rolls the weaken branch directly (power 5 − 2 + 0)")
 	# immunity: 220 avoid_weaken skips the weaken roll; 229 keep_status_good (0x80) skips every branch.
 	var guarded := ring.duplicate(true)
-	var guard := BattlePlayLoop._unit(guarded,"enemy021_1")
+	var guard := BattlePlayLoop.unit_ref(guarded,"enemy021_1")
 	guard["equipment"].append({"slot":"accessory1","item_code":220})
-	var guarded_prepared := WeaponEffectRules.prepare(BattlePlayLoop._unit(guarded,"leonard"),guard,guarded["skill_book"],catalog,guarded["turn_queue"])
+	var guarded_prepared := WeaponEffectRules.prepare(BattlePlayLoop.unit_ref(guarded,"leonard"),guard,guarded["skill_book"],catalog,guarded["turn_queue"])
 	replay = [{"bound":100,"value":0}];draw_index = 0
 	var shrugged := WeaponEffectRules.resolve(guarded_prepared,native_draw)
 	check(draw_index == 1 and shrugged["receipt"]["weaken"]["immune"] and WeaponEffectRules.feedback(shrugged["receipt"]) == "衰弱免疫","avoid_weaken (0x2000000) answers the 0x40e2f0 test before any weaken roll")
 	guard["equipment"][guard["equipment"].size() - 1] = {"slot":"accessory1","item_code":229}
-	guarded_prepared = WeaponEffectRules.prepare(BattlePlayLoop._unit(guarded,"leonard"),guard,guarded["skill_book"],catalog,guarded["turn_queue"])
+	guarded_prepared = WeaponEffectRules.prepare(BattlePlayLoop.unit_ref(guarded,"leonard"),guard,guarded["skill_book"],catalog,guarded["turn_queue"])
 	for value in [0, 30, 60, 80]:
 		replay = [{"bound":100,"value":value}];draw_index = 0
 		var kept := WeaponEffectRules.resolve(guarded_prepared,native_draw)
@@ -212,7 +212,7 @@ func status_word() -> void:
 
 func queue_lifecycle() -> void:
 	var loop:=fixture(29,false,true)
-	var target:=BattlePlayLoop._unit(loop,"enemy021_1")
+	var target:=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	set_gear(target,loop["equipment_items"],"accessory1",224)
 	set_gear(target,loop["equipment_items"],"accessory2",227)
 	target["hp"]=5000;target["max_hp"]=5000
@@ -231,7 +231,7 @@ func queue_lifecycle() -> void:
 	check(BattlePlayLoop.unit(wrapped,"enemy021_1")["status_counters"]==victim_before["status_counters"] and BattlePlayLoop.unit(wrapped,"enemy021_1")["mp"]==victim_before["mp"],"cancelled victim gets no poison tick, recovery, status decrement or extra action")
 	check(wrapped["turn_queue"]["slots"].all(func(s):return s["enabled"]),"ordinary next-round rebuild restores cancelled eligibility")
 	var current:=fixture(40,true,true)
-	var foe:=BattlePlayLoop._unit(current,"enemy021_1")
+	var foe:=BattlePlayLoop.unit_ref(current,"enemy021_1")
 	# Counter fixture grants an existing same-source cancellation flag only; source
 	# gear eligibility is checked separately, actor roles never rewrite native flags.
 	own(current, "equipment_items")[str(int(foe["weapon_code"]))]["weapon_effect_flags"]=WeaponEffectRules.CANCEL
@@ -242,7 +242,7 @@ func queue_lifecycle() -> void:
 
 
 func gear_and_support() -> void:
-	var loop:=fixture();var actor:=BattlePlayLoop._unit(loop,"leonard")
+	var loop:=fixture();var actor:=BattlePlayLoop.unit_ref(loop,"leonard")
 	for code in [29,35,37]:
 		var changed:=run_position_equipment_tests.equip(loop,"weapon",code)
 		check(BattlePlayLoop.unit(changed,"leonard")["weapon_code"]==code,"live job94 can select native effect weapon "+str(code))
@@ -251,7 +251,7 @@ func gear_and_support() -> void:
 		var grown:=BattlePlayLoop.ProgressionRules.resolve_experience(BattlePlayLoop.unit(changed,"leonard"),200,changed["equipment_items"])
 		check(WeaponEffectRules.effects(grown,changed["equipment_items"])["flags"]==flags,"level refresh retains only current source weapon capability")
 	var protected:=run_position_equipment_tests.equip(loop,"accessory1",229)
-	var target:=BattlePlayLoop._unit(protected,"enemy021_1")
+	var target:=BattlePlayLoop.unit_ref(protected,"enemy021_1")
 	target["equipment"].append({"slot":"accessory1","item_code":229})
 	var proposal:=WeaponEffectRules.prepare(BattlePlayLoop.unit(protected,"leonard"),target,protected["skill_book"],protected["equipment_items"],protected["turn_queue"])
 	var immune:=WeaponEffectRules.resolve(proposal,no_rng)
@@ -259,34 +259,34 @@ func gear_and_support() -> void:
 	proposal["flags"]=WeaponEffectRules.CANCEL | WeaponEffectRules.POISON
 	var cancellation:=WeaponEffectRules.resolve(proposal,zero)
 	check(cancellation["receipt"]["cancel"]["cancelled"] and cancellation["receipt"]["poison"]["immune"],"universal status protection does not prevent cancel action")
-	var existing:=fixture();var victim:=BattlePlayLoop._unit(existing,"leonard")
+	var existing:=fixture();var victim:=BattlePlayLoop.unit_ref(existing,"leonard")
 	victim.merge(BattlePlayLoop.StatusEffectRules.apply(victim,"poison",2,30)["changes"],true)
 	var guard:=run_position_equipment_tests.equip(existing,"accessory1",229)
 	check(BattlePlayLoop.unit(guard,"leonard")["status_counters"]==victim["status_counters"],"equipping protection never cures existing poison")
 	var cure:=BattlePlayLoop.use_item(guard,"246","leonard",BattlePlayLoop.unit(guard,"leonard")["inventory"].find(246))
 	check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(cure,"leonard")),"same item cure removes weapon-compatible packed poison under protection")
 	var ordinary:=run_position_equipment_tests.fixture("001")
-	BattlePlayLoop._unit(ordinary,"leonard")["inventory"]=[144,229,0,0,0,0,0,0]
+	BattlePlayLoop.unit_ref(ordinary,"leonard")["inventory"]=[144,229,0,0,0,0,0,0]
 	var armor:=run_position_equipment_tests.equip(ordinary,"armor",144)
 	check(armor!=ordinary and BattlePlayLoop.StatusApplicationRules.modifiers(BattlePlayLoop.unit(armor,"leonard"),armor["skill_book"],armor["equipment_items"])["effects"]&0x80,"source sword job can equip universal-protection armor")
 	var magic:=fixture()
 	run_large_actor_tests.spell_kit(magic)
-	var defended:=BattlePlayLoop._unit(magic,"enemy021_1")
+	var defended:=BattlePlayLoop.unit_ref(magic,"enemy021_1")
 	defended["equipment"].append({"slot":"accessory1","item_code":229})
-	var owner:=BattlePlayLoop._unit(magic,"leonard")
+	var owner:=BattlePlayLoop.unit_ref(magic,"leonard")
 	for id in magic["skill_book"]["skills"]:
 		var entry:Dictionary=magic["skill_book"]["skills"][id]
 		if entry["damage_policy"]!="native_magic_status":continue
 		if not magic["skill_book"]["actors"]["039"]["supported_initial_ids"].has(id):own(magic, "skill_book")["actors"]["039"]["supported_initial_ids"].append(id)
 		owner["mp"]=owner["max_mp"]
-		var hit:=BattleLoopCombat._resolve_skill(magic,"leonard","enemy021_1",id,BattlePlayLoop.skill_fields(magic,id),owner["coord"],zero)
+		var hit:=BattleLoopCombat.resolve_skill(magic,"leonard","enemy021_1",id,BattlePlayLoop.skill_fields(magic,id),owner["coord"],zero)
 		check(not hit.is_empty() and defended["status_flags"]==0,"universal gear protects current status magic without bypassing its paid transaction: "+id)
 
 
 func phase_cancellation() -> void:
 	for code in [29,35]:
 		var loop:=fixture(code,true);run_large_actor_tests.spell_kit(loop)
-		var actor:=BattlePlayLoop._unit(loop,"leonard")
+		var actor:=BattlePlayLoop.unit_ref(loop,"leonard")
 		actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
 		var before:=loop.duplicate(true)
 		var moved:=BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(loop,"move"),Vector2i(5,6))

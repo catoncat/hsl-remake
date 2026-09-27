@@ -98,7 +98,7 @@ func setup_traversal() -> void:
 		transit["coord"] = Vector2i(10,8); transit["battle_actor_role"] = BattlePlayLoop.ROLE_ENEMY
 	if mode in ["victory","escape"]:
 		scene.get_node("BattlePresentation")._shown_story_events.assign(loop["event_log"])
-		player = BattlePlayLoop._unit(loop,"leonard"); enemy = BattlePlayLoop._unit(loop,"enemy021_1"); transit = BattlePlayLoop._unit(loop,transit_id)
+		player = BattlePlayLoop.unit_ref(loop,"leonard"); enemy = BattlePlayLoop.unit_ref(loop,"enemy021_1"); transit = BattlePlayLoop.unit_ref(loop,transit_id)
 		if mode == "victory": player["hit_bonus_accum"] = 1000; player["exp"] = 99; enemy["hp"] = 1
 		else:
 			landing = loop["escape_zone"][0]
@@ -119,7 +119,7 @@ func setup_traversal() -> void:
 		unit["grid_coord"] = unit["coord"]; unit["ai_home_coord"] = unit["coord"]
 		check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false),"each fixture participant begins on source walkable ground")
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"traversal-initial" if mode.begins_with("ai_") else "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"traversal-initial" if mode.begins_with("ai_") else "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = TRAVERSAL_OUT+mode+".save"
 	for child in scene.actors_root.get_children(): scene.actors_root.remove_child(child); child.queue_free()
 	scene.unit_grid_coords.clear(); scene.resume_turn_presentation()
@@ -162,7 +162,7 @@ func play_traversal() -> void:
 		await hover(scene.grid_cell_center_to_logical_position(landing))
 		check(view.movement_preview.visible and view.selection_cursor.eligible and view.selection_cursor.caption.text.contains(" / "),"legal hover exposes the same route and cost used by confirmation")
 		if mode == "flying": check(view.selection_cursor.caption.text.begins_with("飛行"),"flight movement is distinguishable in actual selection feedback")
-		supplied_route = BattlePlayLoop._movement_envelope(scene.play_loop,"leonard")["reachable_by_coord"].get(landing,{})
+		supplied_route = BattlePlayLoop.movement_envelope(scene.play_loop,"leonard")["reachable_by_coord"].get(landing,{})
 		await shot("path")
 		await escape()
 		await create_timer(0.25).timeout

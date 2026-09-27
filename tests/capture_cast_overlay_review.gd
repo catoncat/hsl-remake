@@ -50,16 +50,16 @@ func run_case(spec: Dictionary) -> void:
 	scene.get_node("BattleMusic").stop()
 	await settle(scene)
 	var caster_id: String = spec["caster"]
-	var caster: Dictionary = BattlePlayLoop._unit(scene.play_loop, caster_id)
+	var caster: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, caster_id)
 	caster["mp"] = int(caster["max_mp"])
 	caster["stamina"] = 60
 	# Fixture: the target (an enemy, or the named ally for a support spell) stands next to the
 	# caster, sturdy enough to survive.
 	var enemy_id: String = spec["target"]
 	for unit in scene.play_loop[LoopKeys.UNITS]:
-		if enemy_id == "" and not bool(unit.get("defeated", false)) and BattlePlayLoop._are_enemies(caster, unit) and BattlePlayLoop.Footprint.radius(unit) == 0:
+		if enemy_id == "" and not bool(unit.get("defeated", false)) and BattlePlayLoop.are_enemies(caster, unit) and BattlePlayLoop.Footprint.radius(unit) == 0:
 			enemy_id = str(unit["id"])
-	var enemy: Dictionary = BattlePlayLoop._unit(scene.play_loop, enemy_id)
+	var enemy: Dictionary = BattlePlayLoop.unit_ref(scene.play_loop, enemy_id)
 	enemy["coord"] = caster["coord"] + Vector2i(1, 0)
 	enemy["max_hp"] = 400
 	enemy["hp"] = 400 if spec["target"] == "" else 200

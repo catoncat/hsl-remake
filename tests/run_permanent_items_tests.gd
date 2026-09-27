@@ -28,7 +28,7 @@ static func fixture() -> Dictionary:
 	var config := initial()
 	for key in ["scenario_path","scenario_title","consumables"]:
 		loop[key] = config[key].duplicate(true) if config[key] is Dictionary else config[key]
-	BattlePlayLoop._unit(loop,"tina")["inventory"] = [253,253,254,255,256,257,257,247]
+	BattlePlayLoop.unit_ref(loop,"tina")["inventory"] = [253,253,254,255,256,257,257,247]
 	return loop
 
 static func totals(actor: Dictionary) -> Dictionary:
@@ -90,7 +90,7 @@ func native_cases() -> void:
 			check(actor["growth_profile"]==source and actor["hp"]==1 and actor["mp"]==0 and actor["stamina"]==20 and actor["exp"]==37,"refresh never edits the source template or grants resources/EXP")
 
 func resistance_caps() -> void:
-	var loop := fixture(); var actor := BattlePlayLoop._unit(loop,"tina")
+	var loop := fixture(); var actor := BattlePlayLoop.unit_ref(loop,"tina")
 	actor["permanent_gains"]["resist_0"] = 79 - PermanentCapabilityRules.base_value(actor,"resist_0")
 	actor.merge(ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	var used := BattlePlayLoop.use_item(loop,"257")
@@ -98,7 +98,7 @@ func resistance_caps() -> void:
 	check(totals(after)["resist_0"]==80 and after["combat_profile"]["resist_by_type"]["0"]==80,"intrinsic and visible resistance separately reach80")
 	var capped := BattlePlayLoop.use_item(used,"257"); var held := BattlePlayLoop.unit(capped,"tina")
 	check(capped["item_use_sequence"]==used["item_use_sequence"]+1 and capped["last_item_use"]["draws"].size()==1 and int(capped["last_item_use"]["permanent_effects"][0]["amount"])==0 and totals(held)["resist_0"]==80 and held["inventory"].count(257)==after["inventory"].count(257)-1,"raw cap still spends the item and draws once for a 0 gain (0x444aba; original_permanent_items.json cap rows)")
-	var visible := fixture(); actor=BattlePlayLoop._unit(visible,"tina")
+	var visible := fixture(); actor=BattlePlayLoop.unit_ref(visible,"tina")
 	var original := int(actor["combat_profile"]["resist_by_type"]["0"])
 	actor["permanent_gains"]["resist_0"] = 75 - original
 	actor["equipment"].append({"slot":"accessory1","item_code":207}) # Source Earth ring contributes five resistance points.
@@ -111,8 +111,8 @@ func resistance_caps() -> void:
 
 func magic_and_protection() -> void:
 	var loop := fixture()
-	var caster := BattlePlayLoop._unit(loop,"tina")
-	var target := BattlePlayLoop._unit(loop,"enemy026_1")
+	var caster := BattlePlayLoop.unit_ref(loop,"tina")
+	var target := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 	var wind := "magic:magicAIR:magicCode01"
 	own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"].append(wind)
 	caster["inventory"] = [255,0,0,0,0,0,0,0]
@@ -122,7 +122,7 @@ func magic_and_protection() -> void:
 	var increased := BattlePlayLoop.SkillResolutionRules.resolve(after,target,wind,BattlePlayLoop.skill_fields(gained,wind),gained["skill_book"],gained["skill_target_data"],gained["equipment_items"],after["coord"],gained["map_size"],func(_bound):return 0)
 	check(baseline["ok"] and increased["ok"] and increased["receipt"]["actual_damage"]>=baseline["receipt"]["actual_damage"] and increased["receipt"]["resource_payment"]==baseline["receipt"]["resource_payment"],"actual acquired magic power reaches existing wind math without changing MP cost")
 	for pair in [[257,"0","magic:magicEARTH:magicCode05"],[260,"2","magic:magicAIR:magicCode05"],[261,"4","magic:magicMIND:magicCode02"]]:
-		loop = fixture();caster = BattlePlayLoop._unit(loop,"tina");target = BattlePlayLoop._unit(loop,"enemy026_1")
+		loop = fixture();caster = BattlePlayLoop.unit_ref(loop,"tina");target = BattlePlayLoop.unit_ref(loop,"enemy026_1")
 		var key: String = "resist_"+pair[1]
 		caster["permanent_gains"][key] = 79-PermanentCapabilityRules.base_value(caster,key)
 		caster["inventory"] = [pair[0],0,0,0,0,0,0,0]
@@ -133,7 +133,7 @@ func magic_and_protection() -> void:
 		check(ready["ok"] and ready["roll_input"]["resistance"]==80 and ready["immunities"]==old["immunities"] and ready["roll_input"]["status_hit_ratio"]==old["roll_input"]["status_hit_ratio"],"permanent resistance enters numeric roll without inventing an immunity or status hit rate")
 
 func states_growth_and_combat() -> void:
-	var loop := fixture(); var actor := BattlePlayLoop._unit(loop,"tina")
+	var loop := fixture(); var actor := BattlePlayLoop.unit_ref(loop,"tina")
 	actor["exp"] = 99
 	actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"poison",3,7)["changes"],true)
 	actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor,"no_magic",3)["changes"],true)
@@ -146,7 +146,7 @@ func states_growth_and_combat() -> void:
 	check(upgraded["level"]==actor["level"]+1 and upgraded["permanent_gains"]==actor["permanent_gains"] and upgraded["growth_profile"]==actor["growth_profile"],"final EXP refresh preserves acquired offsets and immutable source")
 	var allocated := ProgressionRules.apply_allocation(upgraded,{"str":1},applied["equipment_items"])
 	check(allocated["combat_profile"]["str"]==upgraded["combat_profile"]["str"]+1 and allocated["permanent_gains"]==upgraded["permanent_gains"],"manual growth points and permanent item sources remain separate")
-	var caster := BattlePlayLoop._unit(applied,"enemy026_1")
+	var caster := BattlePlayLoop.unit_ref(applied,"enemy026_1")
 	caster["mp"] = caster["max_mp"]
 	own(applied, "skill_book")["actors"]["026"]["supported_initial_ids"] = [run_support_magic_tests.DISPEL]
 	var dispelled := BattlePlayLoop.SkillResolutionRules.resolve_cast(caster,actor,applied["units"],run_support_magic_tests.DISPEL,BattlePlayLoop.skill_fields(applied,run_support_magic_tests.DISPEL),applied["skill_book"],applied["skill_target_data"],applied["equipment_items"],caster["coord"],applied["map_size"],zero)
@@ -155,16 +155,16 @@ func states_growth_and_combat() -> void:
 		var target := actor.duplicate(true);target.merge(dispelled["target_changes"],true)
 		check(target["permanent_gains"]==actor["permanent_gains"] and target["status_counters"]["poison"]==original["poison"] and target["status_counters"]["no_magic"]==3,"dispel leaves permanent gain, poison and silence untouched")
 		check(target["combat_profile"]["live_attack_damage"]==actor["combat_profile"]["live_attack_damage"]-24,"dispel removes only temporary attack")
-	var blocked := fixture(); var stunned:=BattlePlayLoop._unit(blocked,"tina")
+	var blocked := fixture(); var stunned:=BattlePlayLoop.unit_ref(blocked,"tina")
 	stunned.merge(BattlePlayLoop.StatusEffectRules.apply(stunned,"paralysis",2)["changes"],true)
 	check(BattlePlayLoop.use_item(blocked,"253")==blocked,"paralyzed owner cannot spend a permanent consumable")
-	var recipient:=BattlePlayLoop._unit(blocked,"companion");recipient["inventory"]=[253,0,0,0,0,0,0,0]
+	var recipient:=BattlePlayLoop.unit_ref(blocked,"companion");recipient["inventory"]=[253,0,0,0,0,0,0,0]
 	var aid:=BattlePlayLoop.ItemResolutionRules.prepare(recipient,stunned,"253",0,blocked["consumables"]["253"],blocked["equipment_items"],DamageRandomStream.seeded(1),1)
 	check(aid["ok"] and aid["target_changes"]["status_counters"]["paralysis"]==2,"living paralyzed recipient may receive an ally's item without cure or owner action")
-	var battle:=fixture();var foe:=BattlePlayLoop._unit(battle,"enemy026_1")
+	var battle:=fixture();var foe:=BattlePlayLoop.unit_ref(battle,"enemy026_1")
 	foe["coord"]=Vector2i(15,16);foe["no_attack"]=false;foe["hit_bonus_accum"]=1000;foe["growth_profile"]["source"]["attack_back"]=100
 	foe.merge(ProgressionRules.refresh_growth_stats(foe,battle["equipment_items"]),true)
-	BattlePlayLoop._unit(battle,"tina")["hit_bonus_accum"]=1000
+	BattlePlayLoop.unit_ref(battle,"tina")["hit_bonus_accum"]=1000
 	own(battle, "skill_book")["actors"]["002"]["double_attack"]=true;own(battle, "skill_book")["actors"]["026"]["double_attack"]=true
 	battle=BattlePlayLoop.use_item(battle,"254")
 	var gain: Dictionary=BattlePlayLoop.unit(battle,"tina")["permanent_gains"].duplicate(true)
@@ -177,8 +177,8 @@ func carry_cases() -> void:
 	var first := BattleFixture.loop()
 	# Supplied inventory only; acquired values come from nine production commits.
 	for code in range(253,262):
-		BattlePlayLoop._unit(first,"leonard")["inventory"] = [code,0,0,0,0,0,0,0]
-		check(not BattleLoopInventory._resolve_item_use(first,"leonard","leonard",str(code),0).is_empty(),"actual owned permanent source commits: "+str(code))
+		BattlePlayLoop.unit_ref(first,"leonard")["inventory"] = [code,0,0,0,0,0,0,0]
+		check(not BattleLoopInventory.resolve_item_use(first,"leonard","leonard",str(code),0).is_empty(),"actual owned permanent source commits: "+str(code))
 	var owner := BattlePlayLoop.unit(first,"leonard")
 	check(owner["permanent_gains"].values().all(func(v):return int(v)>0),"all nine acquired offsets are nonzero")
 	var campaign := CampaignProgress.load_campaign()

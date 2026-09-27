@@ -196,7 +196,7 @@ func _run_level_10_round5_event(scene: Node) -> void:
 		if str(loop.get("interaction", "")) == "action_menu":
 			loop = BattlePlayLoop.choose_command(loop, "wait")
 		elif str(loop.get("interaction", "")) == "ai_resolving":
-			loop = BattlePlayLoop._advance_current_actor(loop)
+			loop = BattlePlayLoop.advance_current_actor(loop)
 		else:
 			break
 		guard += 1
@@ -205,7 +205,7 @@ func _run_level_10_round5_event(scene: Node) -> void:
 	if str(loop.get("interaction", "")) == "action_menu":
 		loop = BattlePlayLoop.choose_command(loop, "wait")
 	elif str(loop.get("interaction", "")) == "ai_resolving":
-		loop = BattlePlayLoop._advance_current_actor(loop)
+		loop = BattlePlayLoop.advance_current_actor(loop)
 	_assert_true(int(loop.get("turn", 0)) >= 5, "level 10: waiting reaches round 5 (turn %d, interaction %s)" % [int(loop.get("turn", 0)), str(loop.get("interaction", ""))])
 	var fired_keys: Array = loop.get("winfail_runtime", {}).get("fired", []).map(func(entry): return str(entry.get("key", "")))
 	_assert_true(fired_keys.has("event_3"), "level 10: event_3 fires after round 5's first completed action: %s" % str(fired_keys))

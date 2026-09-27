@@ -52,10 +52,10 @@ func route(owner: String) -> void:
 	for child in scene.actors_root.get_children():
 		scene.actors_root.remove_child(child)
 		child.queue_free()
-	if owner == "leonard": BattlePlayLoop._unit(fixture, owner)["stamina"] = 60
+	if owner == "leonard": BattlePlayLoop.unit_ref(fixture, owner)["stamina"] = 60
 	else: TestSuite.own(fixture, "ai_profiles")["actors"]["026"]["profile"]["ai_att_magic"] = 100
 	fixture["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(fixture["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(fixture, first["id"]), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(fixture, first["id"]), "test")
 	scene.interaction_state = scene.play_loop["interaction"]
 	scene.menus.rebuild_action_menu_buttons()
 	scene.center_camera_on_grid(Vector2i(9, 8))

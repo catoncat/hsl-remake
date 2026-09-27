@@ -1,24 +1,21 @@
 # Steam 經典版（幻世錄 1.06）：取得、清单、两套数据包与原曲
 
-> evidence: resource-derived; static-derived: Steam hsl.exe 选包开关与 hsl01.exe 曲目调用点; negative-evidence: 本机原作目录与 hsl.pak 没有 music 文件; provisional: 两套数据包的先后与差异含义 · status: record-only · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x4561d0 · tools: hsl_steam_classic.py · updated: 2026-09-26
+> evidence: resource-derived; static-derived: Steam hsl.exe 选包开关与 hsl01.exe 曲目调用点; negative-evidence: 本机原作目录与 hsl.pak 没有 music 文件; provisional: 两套数据包的先后与差异含义 · status: record-only · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x4561d0 · tools: hsl_steam_classic.py · updated: 2026-09-27
 
-**范围。** Steam《幻世錄 重製版》（app 4030150，UserJoy，2026-09-10 发售，2026-09-26 购得），包里完整收录 1998 年经典版，目录名 `GAME-PAK/`。本包记录怎样取得和核对这份目录、里面有什么、它和本机原作（`$HSL_ORIGINAL_DIR`）差在哪里，以及原曲 `music\NN.wav` 目前已知的用法。它不改变复刻的数据依据：复刻继续以本机原作为准，而本机的 `hsl.pak` 正是 Steam 里的 `hsl-cn.pak`（见下文）。
+## 结论
 
-**位置与边界。** 目录放在仓库外：`~/hsl-steam/fancy-realm/GAME-PAK`（环境变量 `HSL_STEAM_CLASSIC`，代码里用 `hsltools.paths.STEAM_CLASSIC_ROOT`）。游戏文件不进仓库，也不要拿它覆盖 `$WINEPREFIX`（现有静态工具按 `hsl01.exe` 的 SHA 锁定）。Steam 账号只由用户本人登录（第一次扫码，之后记住登录），代理不经手账号和密码。
+- Steam《幻世錄 重製版》（app 4030150，UserJoy，2026-09-10 发售）的 `GAME-PAK/` 完整收录 1998 年经典版 1.06：191 个文件，含两套数据包（默认的台版 `hsl.pak` 与 `-langcn` 的 `hsl-cn.pak`）与 18 首原曲 `music\NN.wav`；本机 `hsl.pak` 与 `hsl-cn.pak` 5600 个成员中 5599 个逐字节相同（resource-derived；static-derived 选包开关）。
+- 重制继续以本机原作（＝cn 包）为数据依据，雷特／嚎属性、第 87 条职业名、第 26／44 关胜负脚本都来自这一份；原曲只从这份目录取得（本机与三个包都没有 music 成员，negative-evidence）。
+- 两套数据包的先后与差异含义未定（provisional）。
 
-```bash
-python3 tools/hsl_steam_classic.py fetch            # 打印 DepotDownloader 命令，由用户本人执行
-python3 tools/hsl_steam_classic.py verify           # 逐文件 sha1 对照固定清单 → STEAM_CLASSIC_VERIFY … ok=191 bad=0 missing=0
-python3 tools/hsl_steam_classic.py pakdiff --text   # 本机 hsl.pak 对 Steam 两个包逐成员比较，--text 附文本行差异（Big5）
-python3 tools/hsl_steam_classic.py music            # 列出 music\*.wav 的格式与时长
-```
+## 证据
 
-## 取得（resource-derived）
+### resource-derived：取得
 
 - Steam 只有一个 Windows depot 4030151，完整下载 4.3 GB、安装后 9.6 GB。固定清单是 manifest `8466173651794257887`（2026-09-23），逐文件列表见 [`steam_classic_files.json`](steam_classic_files.json)（schema `hsl_steam_classic_files.v1`：路径相对 `GAME-PAK/`，附大小和 sha1；0 字节的 `Magpie/portable` 在 Steam 清单里哈希全为 0，列表记为 `null`，`verify` 按空文件的 sha1 核对）。
-- 本机没有 Steam。下载工具是 DepotDownloader v3.4.0 的 macOS arm64 版，放在 `~/hsl-steam/bin/`。用 `-filelist`（内容 `regex:^GAME-PAK/`）只下经典版：2026-09-26 实测约 7 MB/s，191 个文件共 819,601,484 字节，用时 43 秒。重制版本体（约 8.9 GB）没有下载。
+- 下载工具 DepotDownloader v3.4.0（macOS arm64），`-filelist`（`regex:^GAME-PAK/`）只下经典版：191 个文件共 819,601,484 字节。
 
-## 清单（resource-derived）
+### resource-derived：清单
 
 | 项 | 大小（字节） | 说明 |
 | --- | ---: | --- |
@@ -32,7 +29,7 @@ python3 tools/hsl_steam_classic.py music            # 列出 music\*.wav 的格�
 
 两个包里的文字都是 Big5 繁体中文，"cn"只是 Steam 程序里的参数名，不代表简体。
 
-## 两套数据包：Steam 程序怎样选（static-derived，Steam `hsl.exe` 地址）
+### static-derived：Steam 程序怎样选包（Steam `hsl.exe` 地址）
 
 下面三个地址属于 **Steam `hsl.exe`**，不是 `hsl01.exe`，所以没有写进本包头部的 functions 字段：
 
@@ -42,7 +39,7 @@ python3 tools/hsl_steam_classic.py music            # 列出 music\*.wav 的格�
 
 Steam 客户端实际给玩家带哪个参数（例如是否按商店语言带 `-langcn`），目前没有验证。
 
-## 与本机原作逐成员比较（resource-derived）
+### resource-derived：与本机原作逐成员比较
 
 | 比较 | 成员数 | 相同 | 内容不同 | 仅左侧 | 仅右侧 |
 | --- | --- | ---: | ---: | --- | --- |
@@ -81,9 +78,7 @@ cn 包多出的 `data\a.txt` 是一份 UTF-8 的统计输出，看起来是移�
 | `shape01\word*.shp`（46 个） | 关卡标题字图：001–003、005–007、010、012、013、015、017–019、021、022、024、026、028–034、036–041、043–045、051–053、059、075–080、900–902 |
 | `shape\*.shp`（31 个） | `mark0012`，`over001`、`over002`，`title021`、`title024`–`026`、`title032`、`title033`、`title039`、`title041`–`047`、`title051`–`057`、`title061`–`063`，`window10`、`window21`、`window30`、`window41` |
 
-复刻至今导入的都是左侧（本机＝cn 包）的值。例如雷特、嚎的属性，第 87 条职业名，第 26／44 关的胜负脚本，都来自本机这一份。
-
-## 原曲（resource-derived＋static-derived）
+### resource-derived＋static-derived：原曲
 
 18 首原曲加一个 `null.wav`，格式都是 22050 Hz、立体声、16 位 PCM，合计 26.6 分钟：
 
@@ -107,9 +102,19 @@ negative-evidence：本机原作目录里没有 `music\` 文件夹，本机 `hsl
 - `defProcTownBOSS`（过程表第 57 项，`0x4561d0`）在 `0x4564e1` 播 5 号，也就是城镇画面的音乐。
 - `defProcClearBOSS`（第 74 项，`0x42b6b0`，见 [通关尾声](../static_reverse/original_game_clear_epilogue.md)）依次压入 7、4、2 号（`0x42b6da`／`0x42b8a0`／`0x42b960`）。
 
-还没弄清的部分：标题画面放哪首；每首循环、停止和切换的规则；三种 `actPlay*Music` 在全部脚本里的出现位置和语义；GameClear 各段与 7／4／2 的对应；城镇 5 号结束后恢复哪首。这些会在接入原曲时另写一个静态证据包，在那之前以本节为准。如需把原曲转码进仓库，照 `movie_import` 的先例做：原始文件留在仓库外，只把转码结果放进 `content/imported/`。
+曲目调度的完整读法见 [original_music](../static_reverse/original_music.md)。
 
-## 开放问题（未验证）
+## 重制接线
+
+- 目录放在仓库外 `~/hsl-steam/fancy-realm/GAME-PAK`（环境变量 `HSL_STEAM_CLASSIC`，代码里 `hsltools.paths.STEAM_CLASSIC_ROOT`）；游戏文件不进仓库，也不覆盖 `$WINEPREFIX`（静态工具按 `hsl01.exe` 的 SHA 锁定）。
+- `tools/hsl_steam_classic.py`：`fetch` 打印 DepotDownloader 命令（Steam 登录由账号持有人执行）、`verify` 逐文件 sha1、`pakdiff --text` 逐成员比较、`music` 列格式与时长。
+- 复刻导入的都是本机（＝cn 包）的值；原曲转码照 `movie_import` 先例：原始文件留在仓库外，只把转码结果放进 `content/imported/`。
+
+## 复现
+
+`python3 tools/hsl_steam_classic.py verify`（→ `STEAM_CLASSIC_VERIFY … ok=191 bad=0 missing=0`）
+
+## 边界
 
 1. **两个包哪个更新**（provisional）。倾向 cn 包（＝本机）更新，理由有五条：
    - 只有 cn 包带 V1.0–V1.06 的更新说明。
@@ -123,4 +128,4 @@ negative-evidence：本机原作目录里没有 `music\` 文件夹，本机 `hsl
 3. `actDEMO` 在台版 52 关启用后的实际效果。
 4. 未解码的二进制差异具体改了什么：字库、5xx 遭遇战地形、level900、四个 obs、标题字图、窗口图。
 5. Steam `hsl.exe` 1.06 与本机 `hsl01.exe` 的代码差异：没有比较，现有静态结论只对 `hsl01.exe` 成立。
-6. 雷特、嚎两套属性值哪套是某个版本的"正式"数值：复刻用的是本机值，是否要改待定（产品决定）。
+6. 雷特、嚎两套属性值哪套是某个版本的"正式"数值：复刻用本机值。

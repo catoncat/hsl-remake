@@ -26,12 +26,12 @@ func run() -> void:
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
 	scene.get_node("BattleMusic").stop()
-	var actor := BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	actor["hp"] = actor["max_hp"]
 	actor["live_speed"] = 100
 	actor["status_flags"] = 3
 	actor["status_counters"] = {"poison": (7 << 16) | 2, "paralysis": 0, "no_magic": 2}
-	var ally := BattlePlayLoop._unit(scene.play_loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
 	ally["coord"] = actor["coord"] + Vector2i.RIGHT
 	ally["live_speed"] = 99
 	ally["player_commandable"] = true

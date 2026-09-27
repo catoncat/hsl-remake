@@ -293,7 +293,7 @@ static func _act_set_next_play_level_event(c: Dictionary, _name: String, args: A
 
 
 static func _act_set_player_mode(c: Dictionary, _name: String, args: Array) -> void:
-	_apply_player_mode(c["next"], c["runtime"], c["key"], args)
+	apply_player_mode(c["next"], c["runtime"], c["key"], args)
 
 
 static func _act_player_job_up_process(c: Dictionary, _name: String, args: Array) -> void:
@@ -589,7 +589,7 @@ static func apply_story_player_state(next: Dictionary, seed: Dictionary) -> void
 					continue
 				var args := WinfailCompiler.string_args(command.get("args", []))
 				if name == "actSetPlayerMode":
-					_apply_player_mode(next, runtime, "story_%d_mode" % int(section.get("index", 0)), args)
+					apply_player_mode(next, runtime, "story_%d_mode" % int(section.get("index", 0)), args)
 				else:
 					_apply_player_undead(next, runtime, "story_%d_undead" % int(section.get("index", 0)), args)
 
@@ -665,7 +665,7 @@ static func _apply_player_walk_shape(next: Dictionary, runtime: Dictionary, key:
 		WinfailConditions.unit(next, str(unit_id))["walk_shape_serial"] = serial
 
 
-static func _apply_player_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
+static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
 	if args.size() < 4 or not _arg(args, 1).is_valid_int() or not _arg(args, 3).is_valid_int():
 		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerMode", "args": args.duplicate(), "reason": "invalid_arguments"})
 		return

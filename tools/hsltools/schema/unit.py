@@ -45,7 +45,7 @@ EVIDENCE_TIERS = ('resource-derived', 'static-derived', 'runtime-measured', 'use
 # required only when it is here and every tracked unit carries it; the ones marked
 # optional are read with a default where present.
 RULE_KEYS: dict[str, str] = {
-    'id': 'BattlePlayLoop._unit / CoreTurnQueue.rebuild slot identity',
+    'id': 'BattlePlayLoop.unit_ref / CoreTurnQueue.rebuild slot identity',
     'actor_id': 'ActorInitializationRules.prepare (skill book, ai profile, progression, inventory rows)',
     'battle_actor_role': 'ActorRoleRules / ActorTraversalRules (role-implied side) / BattleRewardRules eligibility',
     'player_commandable': 'BattlePlayLoop menus and hand-off, WinfailScenarioRules, TreasureRules',

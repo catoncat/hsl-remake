@@ -539,7 +539,7 @@ func _test_job_up_reconfigures_actor_frames() -> void:
 	var before: Dictionary = RuntimeReadback.runtime_contract_summary(scene)
 	_assert_eq(int(before.get("shared_actor_walk_manifest_actor_count", 0)), 11, "runtime loads the shared up-title walk manifest (010–017/019/020 + 052)")
 	_assert_eq(before.get("actor_frame_actor_ids", {}).get("leonard", ""), "001", "before the job-up Leonard shows his base 001 frames")
-	var unit: Dictionary = Loop._unit(scene.play_loop, "leonard")  # live reference, as the winfail interpreter mutates it
+	var unit: Dictionary = Loop.unit_ref(scene.play_loop, "leonard")  # live reference, as the winfail interpreter mutates it
 	var applied := JobUpRules.merge_source_template(unit, JobUpRules.load_source_template("017"), JobUpRules.NATIVE_JOB_UP_FLAG)
 	_assert_true(bool(applied.get("ok", false)), "the 017 template merges onto a live unit (%s)" % str(applied.get("reason", "")))
 	unit.merge(applied["actor"], true)
@@ -740,7 +740,7 @@ func _test_status_inspection_no_turn_cost() -> void:
 			_dispatch_key(scene, KEY_ESCAPE)
 			_assert_eq(scene.play_loop, before, "ally inspection must preserve pending movement and turn state")
 			break
-	var controllable_ally: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor023_1")
+	var controllable_ally: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor023_1")
 	controllable_ally["player_commandable"] = true
 	controllable_ally["battle_actor_role"] = scene.BattlePlayLoop.ROLE_PLAYER
 	before = scene.play_loop.duplicate(true)
@@ -873,8 +873,8 @@ func _test_pending_combat_blocks_early_input() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	var actor: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var foe: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor021_1")
+	var actor: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var foe: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor021_1")
 	foe["coord"] = actor["coord"] + Vector2i.RIGHT
 	foe["hp"] = 100
 	foe["max_hp"] = 100
@@ -1009,7 +1009,7 @@ func _test_special_skill() -> void:
 	scene.start_dev_first_control_harness()
 	await process_frame # the presentation takes its map config on the first battle frame
 	var loop: Dictionary = scene.play_loop.duplicate(true)
-	var player: Dictionary = scene.BattlePlayLoop._unit(loop, "leonard")
+	var player: Dictionary = scene.BattlePlayLoop.unit_ref(loop, "leonard")
 	player["stamina"] = 20
 	var target_id := ""
 	for unit in loop["units"]:
@@ -1068,10 +1068,10 @@ func _test_special_skill() -> void:
 ## and rand(0) can only give 0) — so the native samples below keep their expected values.
 func _pin_cast_stream(scene, loop: Dictionary, caster_id: String, pick: Callable, value: int) -> void:
 	var probe := loop.duplicate(true)
-	var chosen: Dictionary = BattleLoopAI._try_skill_turn(probe, caster_id, [scene.BattlePlayLoop._unit(probe, "leonard")], pick)
+	var chosen: Dictionary = BattleLoopAI.try_skill_turn(probe, caster_id, [scene.BattlePlayLoop.unit_ref(probe, "leonard")], pick)
 	var bounds: Array = []
 	var replay := loop.duplicate(true)
-	BattleLoopCombat._resolve_skill(replay, caster_id, "leonard", chosen["skill_id"], scene.BattlePlayLoop.skill_fields(replay, chosen["skill_id"]), chosen["to"], func(n):
+	BattleLoopCombat.resolve_skill(replay, caster_id, "leonard", chosen["skill_id"], scene.BattlePlayLoop.skill_fields(replay, chosen["skill_id"]), chosen["to"], func(n):
 		bounds.append(n)
 		return value, null)
 	for seed in range(1, 4000000):
@@ -1120,7 +1120,7 @@ func _test_mage_magic() -> void:
 	var wind_pick := func(n): return 1 if n == 32 else 0
 	var fire_pick := func(n): return 0 if n == 32 else 1
 	_pin_cast_stream(scene, loop, mage["id"], wind_pick, 0)
-	var strike: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
+	var strike: Dictionary = BattleLoopAI.try_skill_turn(loop, mage["id"], [victim], wind_pick)
 	_assert_eq(strike.get("magic_key"), "wind", "mage must use source wind spell at range three")
 	_assert_true(scene.BattlePlayLoop.strike_range_cells(loop, strike).has(victim["coord"]), "ranged caster's chosen position keeps the selected target in the actual spell mask")
 	_assert_eq(mage["mp"], 22, "spell must spend source cost eight MP from template baseline")
@@ -1142,11 +1142,11 @@ func _test_mage_magic() -> void:
 	_assert_true(not cutin.busy(), "magic must release input after animation")
 	mage["mp"] = 0
 	var unchanged: Dictionary = loop.duplicate(true)
-	_assert_true(BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], func(_n): return 0).is_empty(), "empty MP must return to normal AI")
+	_assert_true(BattleLoopAI.try_skill_turn(loop, mage["id"], [victim], func(_n): return 0).is_empty(), "empty MP must return to normal AI")
 	_assert_eq(loop, unchanged, "unaffordable spell must not move or damage")
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], fire_pick, 1)
-	var fire: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
+	var fire: Dictionary = BattleLoopAI.try_skill_turn(loop, mage["id"], [victim], fire_pick)
 	_assert_eq(fire.get("magic_key"), "fire", "mage must also use source fire spell")
 	_assert_eq(mage["mp"], 0, "last cast must consume remaining MP exactly")
 	victim["combat_profile"]["live_defense"] = 1000
@@ -1154,11 +1154,11 @@ func _test_mage_magic() -> void:
 	victim["hp"] = 100
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], wind_pick, 0)
-	var warded: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], wind_pick)
+	var warded: Dictionary = BattleLoopAI.try_skill_turn(loop, mage["id"], [victim], wind_pick)
 	_assert_eq(warded["damage"], 3, "native wind resistance applies after caster scaling, independent of physical armor")
 	mage["mp"] = 8
 	_pin_cast_stream(scene, loop, mage["id"], fire_pick, 1)
-	var unwarded: Dictionary = BattleLoopAI._try_skill_turn(loop, mage["id"], [victim], fire_pick)
+	var unwarded: Dictionary = BattleLoopAI.try_skill_turn(loop, mage["id"], [victim], fire_pick)
 	_assert_eq(unwarded["damage"], 20, "native fire uses caster scaling and fire resistance, not wind resistance or armor")
 	await create_timer(1.5).timeout
 	scene.queue_free()
@@ -1296,7 +1296,7 @@ func _test_growth_allocation_interaction() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	scene.set_process(false)
-	var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var player: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	player["exp"] = 99
 	player.merge(scene.BattlePlayLoop.ProgressionRules.resolve_experience(player, 1, scene.play_loop["equipment_items"]), true)
 	scene.menus.choose_command("move")
@@ -1390,8 +1390,8 @@ func _test_attack_target_preview() -> void:
 	root.add_child(scene)
 	await process_frame
 	scene.start_dev_first_control_harness()
-	var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var target: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor021_1")
+	var player: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var target: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor021_1")
 	target["coord"] = player["coord"] + Vector2i.RIGHT
 	player["hit_bonus_accum"] = 9
 	scene.apply_loop(scene.play_loop, "test")
@@ -1414,7 +1414,7 @@ func _test_attack_target_preview() -> void:
 	var resolved: Dictionary = scene.BattlePlayLoop.CoreCombatRules.resolve_attack(player, target, func(_n): return 0)
 	_assert_eq(resolved["hit_rate"], 100, "actual strike must share preview accuracy")
 	scene.cancel_current_interaction()
-	scene.BattlePlayLoop._unit(scene.play_loop, "leonard")["stamina"] = 20
+	scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["stamina"] = 20
 	scene.menus.choose_command("special")
 	scene.magic_panel.choices["special:magicOTHER:magicCode01"].pressed.emit()
 	scene._process(0)
@@ -1460,9 +1460,9 @@ func _test_move_select_identity_bar() -> void:
 	await process_frame
 	scene.start_dev_first_control_harness()
 	var Loop = scene.BattlePlayLoop
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "actor021_1")
-	var friend: Dictionary = Loop._unit(scene.play_loop, "actor023_1")
+	var player: Dictionary = Loop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = Loop.unit_ref(scene.play_loop, "actor021_1")
+	var friend: Dictionary = Loop.unit_ref(scene.play_loop, "actor023_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	friend["coord"] = player["coord"] + Vector2i.LEFT
 	scene.apply_loop(scene.play_loop, "test")
@@ -1474,7 +1474,7 @@ func _test_move_select_identity_bar() -> void:
 	# The original byte is indexed by the PLAYERS template row (obj+0xa2), shared by every
 	# unit of that row (runtime-measured 2026-09-26: one 021 dies, all five 021 read known).
 	var killed: Dictionary = scene.play_loop.duplicate(true) # off the scene: the hover checks below need 021 still unknown
-	Loop._set_unit_defeated(killed, "actor021_3", true)
+	Loop.set_unit_defeated(killed, "actor021_3", true)
 	_assert_true(killed[scene.LoopKeys.KNOWN_UNIT_IDS].has("actor021_3") and not killed[scene.LoopKeys.KNOWN_UNIT_IDS].has("actor021_4"), "death marks the dead unit's own id; the known set stays per unit id")
 	_assert_true(Loop.unit_known(killed, "actor021_4") and Loop.unit_known(killed, "actor021_5"), "killing one 021 makes every other 021 read known (known byte per template row)")
 	_assert_true(not Loop.unit_known(killed, "actor026_1"), "another row (026) stays unknown")
@@ -1524,22 +1524,22 @@ func _test_move_select_identity_bar() -> void:
 func _test_stamina_builds_from_zero() -> void:
 	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
-	var player: Dictionary = Loop._unit(loop, "leonard")
+	var player: Dictionary = Loop.unit_ref(loop, "leonard")
 	_assert_eq(player["stamina"], 0, "opening must not grant a free special charge")
 	_assert_true(not Loop.can_use_special(loop, "leonard"), "zero stamina must disable special")
-	var enemy: Dictionary = Loop._unit(loop, "enemy021_1")
+	var enemy: Dictionary = Loop.unit_ref(loop, "enemy021_1")
 	enemy["hp"] = 500
 	enemy["max_hp"] = 500
 	player["hp"] = 500
 	player["max_hp"] = 500
-	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_eq(player["stamina"], 3, "a nonlethal light strike earns original attacker gain")
-	BattleLoopCombat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
+	BattleLoopCombat.apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
 	_assert_eq(player["stamina"], 9, "receiving a light strike earns twice the base gain")
-	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
-	BattleLoopCombat._apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
+	BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat.apply_strike(loop, "enemy021_1", "leonard", func(_n): return 0)
 	_assert_true(not Loop.can_use_special(loop, "leonard"), "18 earned ST remains below the original20 cost")
-	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_true(Loop.can_use_special(loop, "leonard"), "earned charge should enable special")
 
 
@@ -1548,21 +1548,21 @@ func _test_stamina_builds_from_zero() -> void:
 func _test_undead_survives_lethal_strike() -> void:
 	var Loop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 	var loop: Dictionary = BattleFixture.loop()
-	var enemy: Dictionary = Loop._unit(loop, "enemy021_1")
+	var enemy: Dictionary = Loop.unit_ref(loop, "enemy021_1")
 	enemy["hp"] = 1
 	enemy["undead"] = true
-	var kills_before := int(Loop._unit(loop, "leonard")["kill_count"])
-	var strike: Dictionary = BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	var kills_before := int(Loop.unit_ref(loop, "leonard")["kill_count"])
+	var strike: Dictionary = BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
 	_assert_true(int(strike.get("damage", 0)) > 0, "the fixture strike must hit a 1-HP target")
-	_assert_eq(int(Loop._unit(loop, "enemy021_1")["hp"]), 1, "an undead unit at HP <= 0 stands back up with 1 HP (0x43ee88 mov [rec+0xd8], 1)")
-	_assert_eq(bool(Loop._unit(loop, "enemy021_1")["defeated"]), false, "the undead unit is not defeated")
+	_assert_eq(int(Loop.unit_ref(loop, "enemy021_1")["hp"]), 1, "an undead unit at HP <= 0 stands back up with 1 HP (0x43ee88 mov [rec+0xd8], 1)")
+	_assert_eq(bool(Loop.unit_ref(loop, "enemy021_1")["defeated"]), false, "the undead unit is not defeated")
 	_assert_eq(bool(strike.get("undead_revived", false)), true, "the strike receipt records the revive")
 	_assert_eq(int(strike["defender_hp_after"]), 1, "the receipt's visible HP after is the revived value")
-	_assert_eq(int(Loop._unit(loop, "leonard")["kill_count"]), kills_before + 1, "the lethal result is settled as a kill before the revive (provisional order)")
-	enemy = Loop._unit(loop, "enemy021_1")
+	_assert_eq(int(Loop.unit_ref(loop, "leonard")["kill_count"]), kills_before + 1, "the lethal result is settled as a kill before the revive (provisional order)")
+	enemy = Loop.unit_ref(loop, "enemy021_1")
 	enemy["undead"] = false
-	BattleLoopCombat._apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
-	_assert_eq(bool(Loop._unit(loop, "enemy021_1")["defeated"]), true, "with the marker cleared the same hit defeats the unit")
+	BattleLoopCombat.apply_strike(loop, "leonard", "enemy021_1", func(_n): return 0)
+	_assert_eq(bool(Loop.unit_ref(loop, "enemy021_1")["defeated"]), true, "with the marker cleared the same hit defeats the unit")
 
 
 func _seek_ordinary(cutin: Node, event: String, offset: float = 0.001) -> void:
@@ -1596,7 +1596,7 @@ func _test_priest_trial_scene() -> void:
 	var selected:=str(scene.play_loop.get("selected_unit_id",""))
 	if selected=="":selected="tina"
 	_assert_true(budget==int(Loop.unit(scene.play_loop,selected)["move_point"]),"view reads selected actor's exact movement budget")
-	Loop._unit(scene.play_loop,selected)["move_point"]=0
+	Loop.unit_ref(scene.play_loop,selected)["move_point"]=0
 	_assert_true(RuntimeReadback.move_point_for_selected_unit(scene)==0,"zero movement does not fall back to Leonard's budget")
 	for sound in scene.find_children("*","AudioStreamPlayer",true,false):sound.stop();sound.stream=null
 	scene.queue_free();await process_frame;await create_timer(0.1).timeout

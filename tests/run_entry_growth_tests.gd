@@ -55,7 +55,7 @@ static func fixture(code: String="026", parameters: Array=[20,3], player_level: 
 static func request(loop: Dictionary, code: String, parameters: Array) -> void:
 	var insertion:Dictionary={"class_id":"Enemy"+code,"object_symbol":"obj_new","adjust_level":parameters.duplicate(),"wait_round":2}
 	WinfailActions.apply_actions(loop,{"key":"event_growth","actions":[{"name":"actInsertObject","args":["obj_new","0","0"]},{"name":"actSetPrevInsertObjectWaitRound","args":["2"]}],"inserts":[insertion]},"test")
-	BattleLoopScript._consume_script_waits(loop)
+	BattleLoopScript.consume_script_waits(loop)
 
 static func created(loop: Dictionary) -> Array:
 	return loop["units"].filter(func(actor):return actor.has("entry_growth"))
@@ -136,7 +136,7 @@ func adjust_level_zero_story_and_runtime() -> void:
 	check(not gate.has("script_insert") and halves(gate["entry_growth"]["input"]["parameters"]) == [0, 0] and int(gate["evef_instance"]["overrides"]["level_adjust_range"]) == 0, "the EVEF gate guard takes its 0,0 halves from EVEF words 16／17, not from a STORY token")
 	# The same token folded into a runtime insert request (WINFAIL053 event0／event1 shape).
 	var runtime := fixture("023", [0, 0])
-	BattleLoopScript._maintain_script_pressure(runtime)
+	BattleLoopScript.maintain_script_pressure(runtime)
 	check(runtime["scenario_ok"] and created(runtime).size() == 1, "runtime 023 insert under 0,0 births: " + str(runtime.get("scenario_error", "")))
 	if runtime["scenario_ok"] and created(runtime).size() == 1:
 		var recruit: Dictionary = created(runtime)[0]
@@ -208,7 +208,7 @@ func level6_two_phase_adjustment() -> void:
 		check(restored["ok"] and restored["snapshot"]["loop"] == live, "restore keeps every level 6 unit's two-phase levels")
 	for field in ["gains", "missing", "chain", "receipt"]:
 		var broken := live.duplicate(true)
-		var target := BattlePlayLoop._unit(broken, "guard023_1")
+		var target := BattlePlayLoop.unit_ref(broken, "guard023_1")
 		match field:
 			"gains": target["entry_readjust"]["result"]["source_gains"]["hit_point"] += 1
 			"missing": target.erase("entry_readjust")
@@ -263,13 +263,13 @@ func spawn_and_restore() -> void:
 	for code in ["021","026","028","036","039"]:
 		var loop:=fixture(code)
 		var prior:=loop.duplicate(true)
-		BattleLoopScript._maintain_script_pressure(loop)
+		BattleLoopScript.maintain_script_pressure(loop)
 		check(loop["scenario_ok"] and created(loop).size()==1,"one valid adjusted recruit: "+code+" "+str(loop.get("scenario_error")))
 		if not loop["scenario_ok"] or created(loop).is_empty():continue
 		var actor:Dictionary=created(loop)[0]
 		check(actor["level"]>=actor["entry_growth"]["result"]["source_level"] and actor["hp"]==actor["max_hp"] and actor["mp"]==actor["max_mp"],"native birth completes before first action")
 		check(actor["ai_wait_remaining"]==2 and actor["permanent_gains"]==prior["reinforcement_templates"][0]["permanent_gains"],"script waiting and permanent layer remain independent")
-		var before:=loop.duplicate(true);BattleLoopScript._maintain_script_pressure(loop)
+		var before:=loop.duplicate(true);BattleLoopScript.maintain_script_pressure(loop)
 		check(loop==before,"repeated pressure creates no duplicate actor or global draw")
 		var saved:=BattleCheckpoint.encode(loop,VIEW)
 		check(saved["ok"],"birth receipt and RNG chain can be saved: "+str(saved.get("reason")))
@@ -277,7 +277,7 @@ func spawn_and_restore() -> void:
 			var restored:=BattleCheckpoint.decode(saved["bytes"], loop)
 			check(restored["ok"] and restored["snapshot"]["loop"]==loop,"F9-equivalent restore preserves exact birth and order")
 		for field in ["result","missing","stats","kill","profile"]:
-			var broken:=loop.duplicate(true);var target:=BattlePlayLoop._unit(broken,actor["id"])
+			var broken:=loop.duplicate(true);var target:=BattlePlayLoop.unit_ref(broken,actor["id"])
 			match field:
 				"result":target["entry_growth"]["result"]["source_gains"]["speed"]+=1
 				"missing":target.erase("entry_growth")
@@ -288,27 +288,27 @@ func spawn_and_restore() -> void:
 	var blocked:=fixture("039")
 	blocked["reinforcement_spawn_cells"]=[blocked["units"][0]["coord"]]
 	var seed:Array=stream_of(blocked, "global").duplicate()
-	BattleLoopScript._maintain_script_pressure(blocked)
+	BattleLoopScript.maintain_script_pressure(blocked)
 	check(created(blocked).is_empty() and stream_of(blocked, "global")==seed,"blocked footprint does not spend creation RNG")
 	blocked["reinforcement_spawn_cells"]=[Vector2i(8,8)]
-	BattleLoopScript._maintain_script_pressure(blocked)
+	BattleLoopScript.maintain_script_pressure(blocked)
 	check(created(blocked).size()==1,"opening a complete footprint lets the pending insertion initialize once")
 	var invalid:=fixture()
 	request(invalid,"026",[-1,0])
 	var before:Dictionary=invalid.duplicate(true)
-	BattleLoopScript._maintain_script_pressure(invalid)
+	BattleLoopScript.maintain_script_pressure(invalid)
 	check(not invalid["scenario_ok"] and invalid["units"]==before["units"] and no_draw(invalid, before, "global"),"later invalid insertion rolls back this entire spawn batch")
 	var unadjusted:=fixture("026",[0,0])
 	var zero_start:Array=stream_of(unadjusted, "global").duplicate()
-	BattleLoopScript._maintain_script_pressure(unadjusted)
+	BattleLoopScript.maintain_script_pressure(unadjusted)
 	# The birth 0x407cc0 still rolls the pmEnemy carry (0x407c86, global stream) before the
 	# suppressed adjustment 0x40e870: the stream moves by exactly those carry draws and no more.
 	var carry_only:Array=BattleRewardRules.carry(unadjusted["reward_data"]["actors"]["026"]["carry_items"], zero_start)["state"]
 	check(created(unadjusted)[0]["entry_growth"]["draws"].is_empty() and stream_of(unadjusted, "global")==carry_only,"explicit source zero suppresses randomized adjustment and preserves inferred level; only the birth carry roll draws")
 
 func layering_and_rewards() -> void:
-	var loop:=fixture("026",[20,0],20);BattleLoopScript._maintain_script_pressure(loop)
-	var id:String=created(loop)[0]["id"];var actor:=BattlePlayLoop._unit(loop,id)
+	var loop:=fixture("026",[20,0],20);BattleLoopScript.maintain_script_pressure(loop)
+	var id:String=created(loop)[0]["id"];var actor:=BattlePlayLoop.unit_ref(loop,id)
 	var birth:Dictionary=actor["entry_growth"].duplicate(true)
 	var source:Dictionary=actor["growth_profile"]["source"].duplicate(true)
 	var original_attack:int=actor["combat_profile"]["live_attack_damage"]
@@ -328,12 +328,12 @@ func layering_and_rewards() -> void:
 	actor.merge(after["changes"],true);after=BattlePlayLoop.StatusEffectRules.after_action(actor);actor.merge(after["changes"],true)
 	actor=BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"])
 	check(actor["combat_profile"]["live_attack_damage"]==original_attack+7,"enhancement expiration restores remaining permanent/birth contributions")
-	BattlePlayLoop._unit(loop,id).merge(actor,true)
-	var owner:=BattlePlayLoop._unit(loop,loop["player_unit_id"])
+	BattlePlayLoop.unit_ref(loop,id).merge(actor,true)
+	var owner:=BattlePlayLoop.unit_ref(loop,loop["player_unit_id"])
 	owner["coord"]=created(loop)[0]["coord"]+Vector2i(-1,0);owner["hit_bonus_accum"]=1000
 	owner["combat_profile"]["live_attack_damage"]=50000
-	BattlePlayLoop._unit(loop,id)["no_attack"]=true
-	loop=BattlePlayLoop._return_to_player(loop,owner["id"])
+	BattlePlayLoop.unit_ref(loop,id)["no_attack"]=true
+	loop=BattlePlayLoop.return_to_player(loop,owner["id"])
 	loop=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(loop,"attack"),id,zero)
 	check(BattlePlayLoop.unit(loop,id)["defeated"] and loop["last_combat"]["rewards"]["gold"]==birth["result"]["gold"],"actual kill uses adjusted instance gold")
 	check(loop["last_attack"].get("experience_basis",{}).get("kill_exp")==birth["result"]["kill_exp"],"actual final EXP contribution uses adjusted target kill EXP")
@@ -355,7 +355,7 @@ func phase_and_campaign() -> void:
 	var pending:Dictionary=_attacked_insert_requested(scenario_fixture.build("victory")["loop"])
 	var held:Dictionary=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(pending,"attack"),"enemy026_1",zero)
 	check(created(held).is_empty() and no_draw(held, pending, "global") and not BattleOutcome.decided(held),"blocked pending reinforcements do not become an empty-roster victory or consume birth RNG")
-	var loop:=fixture();BattleLoopScript._maintain_script_pressure(loop)
+	var loop:=fixture();BattleLoopScript.maintain_script_pressure(loop)
 	var original:=loop.duplicate(true)
 	loop=BattlePlayLoop.choose_command(loop,"move")
 	loop=BattlePlayLoop.cancel_interaction(loop)
@@ -367,7 +367,7 @@ func phase_and_campaign() -> void:
 	check(next["campaign_carry_receipt"]["errors"].is_empty() and stream_of(next, "global")==GlobalRandomStream.seeded(1) and created(next).is_empty(),"cross-battle carries party growth but neither the old enemy instances nor the global stream (the next battle keeps its own start)")
 	for outcome in [BattleOutcome.VICTORY_ENEMIES_CLEARED,BattleOutcome.DEFEAT_FALLEN,BattleOutcome.VICTORY_ESCAPE]:
 		var terminal:=loop.duplicate(true);terminal["battle_outcome"]=outcome;terminal["interaction"]="battle_result"
-		var before:=terminal.duplicate(true);BattleLoopScript._maintain_script_pressure(terminal)
+		var before:=terminal.duplicate(true);BattleLoopScript.maintain_script_pressure(terminal)
 		check(before==terminal and BattlePlayLoop.step_ai_turn(terminal)==terminal,"terminal forbids new initialization or subsequent AI: "+BattleOutcome.describe(outcome))
 
 func pending_class_victory() -> void:
@@ -389,11 +389,11 @@ func pending_class_victory() -> void:
 			continue
 		check(not BattleOutcome.decided(held) and held["winfail_runtime"]["resolved"].is_empty(),"matching class-count victory must wait for the blocked new roster")
 		var current:=held.duplicate(true)
-		BattleLoopScript._maintain_script_pressure(held)
+		BattleLoopScript.maintain_script_pressure(held)
 		check(held==current,"polling blocked matching-class victory cannot mutate the event or random stream")
 		held["reinforcement_spawn_cells"]=[Vector2i(16,16)]
-		BattleLoopScript._maintain_script_pressure(held)
-		held=BattlePlayLoop._resolve_outcome(held)
+		BattleLoopScript.maintain_script_pressure(held)
+		held=BattlePlayLoop.resolve_outcome(held)
 		check(created(held).size()==1 and not BattleOutcome.decided(held),"unblocked same-class recruit is considered before class victory")
 		for ending in ["escape","defeat"]:
 			var ended:=current.duplicate(true)
@@ -402,7 +402,7 @@ func pending_class_victory() -> void:
 				ended["winfail_script_rules"]["statuses"]["win"][0]["conditions"]=[{"name":"actCheckPlayerArrivePos","args":["SID_PLAYER0","1",str(actor["coord"].x*32),str(actor["coord"].y*32),str(actor["coord"].x*32+31),str(actor["coord"].y*32+31)],"supported":true}]
 			else:
 				ended["winfail_script_rules"]["statuses"]["fail"][0]["conditions"]=[{"name":"actCheckPlayer","args":["1","SID_PLAYER0"],"supported":true}]
-				BattlePlayLoop._set_unit_defeated(ended,ended["player_unit_id"],true)
+				BattlePlayLoop.set_unit_defeated(ended,ended["player_unit_id"],true)
 			check(WinfailScenarioRules.victory_state(ended)==(BattleOutcome.VICTORY_ESCAPE if ending=="escape" else WinfailScenarioRules.DEFEAT_OUTCOME),"pending class cannot suppress independent "+ending)
 
 ## The attacked insertion (EntryGrowthFixture event 901) requested by an earlier attack
@@ -411,6 +411,6 @@ func pending_class_victory() -> void:
 func _attacked_insert_requested(loop:Dictionary)->Dictionary:
 	loop["reinforcement_spawn_cells"]=[BattlePlayLoop.unit(loop,loop["player_unit_id"])["coord"]]
 	loop["last_attack"]={"attacker_id":loop["player_unit_id"],"defender_id":"enemy026_1"}
-	var next:Dictionary=BattlePlayLoop._resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop,true))
+	var next:Dictionary=BattlePlayLoop.resolve_outcome(BattlePlayLoop.BattleScenarioRuleAdapter.run_event_hooks(loop,true))
 	check(next["winfail_runtime"]["fired"].any(func(entry): return entry["key"]=="event_901") and not BattlePlayLoop.BattleScenarioRuleAdapter.reinforcement_deficits(next).is_empty(),"the attacked insertion is requested and owed behind its blocked spawn cell")
 	return next

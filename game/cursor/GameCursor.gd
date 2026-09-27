@@ -40,6 +40,7 @@ extends Node
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## RemakeOptionsPage.LISTENERS (a literal: preloading the page would pull the UI skin into the autoload).
 const OPTION_LISTENERS := "remake_options_listeners"
 const MANIFEST_PATH := "res://content/imported/hsl/shared/game_cursor/manifest.json"
@@ -73,7 +74,7 @@ var hidden := false
 
 
 func _ready() -> void:
-	var manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var manifest: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	assert(typeof(manifest) == TYPE_DICTIONARY and str(manifest.get("schema", "")) == MANIFEST_SCHEMA,
 		"GameCursor: %s missing or not %s" % [MANIFEST_PATH, MANIFEST_SCHEMA])
 	frame_ticks = int(manifest["frame_ticks"])

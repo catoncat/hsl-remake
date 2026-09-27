@@ -13,6 +13,7 @@ const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const SkillTargetRules = preload("res://game/sim/SkillTargetRules.gd")
 const Catalog = preload("res://game/sim/StatusCatalog.gd")
+const Values = preload("res://game/sim/Values.gd")
 const HEAL := 2
 const HEAL_MP := 0x8000
 ## Cure bit -> status key (catalog cure_magic_bit) in the 0x40aa80 visit order after the buff/dispel
@@ -52,8 +53,8 @@ static func cures_something(unit: Dictionary, mask: int) -> bool:
 static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, book: Dictionary, targeting: Dictionary, equipment: Dictionary, channel: String = "magic") -> Dictionary:
 	var error := StatusEffectRules.input_error(target)
 	if error != "": return {"ok": false, "reason": error}
-	var maximum := SkillResourceRules._integer(target.get("max_hp"))
-	if maximum <= 0 or maximum > 1000000 or SkillResourceRules._integer(target.get("hp")) > maximum:
+	var maximum := Values.non_negative_int(target.get("max_hp"))
+	if maximum <= 0 or maximum > 1000000 or Values.non_negative_int(target.get("hp")) > maximum:
 		return {"ok": false, "reason": "invalid_support_hp"}
 	var mask := SkillTargetRules.function_mask(fields.get("function"), targeting["function_bits"])
 	if not accepted(mask): return {"ok": false, "reason": "unsupported_support_skill"}
@@ -66,8 +67,8 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	var prepared := {"ok": true, "function_mask": mask, "channel": channel}
 	if (mask & HEAL) != 0: useful = useful or int(target["hp"]) < maximum
 	if (mask & HEAL_MP) != 0:
-		var max_mp := SkillResourceRules._integer(target.get("max_mp"))
-		if max_mp < 0 or max_mp > 1000000 or SkillResourceRules._integer(target.get("mp")) < 0 or int(target["mp"]) > max_mp:
+		var max_mp := Values.non_negative_int(target.get("max_mp"))
+		if max_mp < 0 or max_mp > 1000000 or Values.non_negative_int(target.get("mp")) < 0 or int(target["mp"]) > max_mp:
 			return {"ok": false, "reason": "invalid_support_mp"}
 		useful = useful or int(target["mp"]) < max_mp
 	prepared["useful"] = useful
@@ -79,7 +80,7 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	var profile: Variant = caster.get("combat_profile")
 	if not profile is Dictionary: return {"ok": false, "reason": "missing_support_profile"}
 	for value in [caster.get("level"), caster.get("hit_bonus_accum"), profile.get("mind"), profile.get("live_magic_attack")]:
-		if SkillResourceRules._integer(value) < 0 or int(value) > 100000: return {"ok": false, "reason": "invalid_support_profile"}
+		if Values.non_negative_int(value) < 0 or int(value) > 100000: return {"ok": false, "reason": "invalid_support_profile"}
 	var bounds: PackedStringArray = str(fields["damage"]).split(",")
 	if int(bounds[1]) > 10000: return {"ok": false, "reason": "invalid_support_damage"}
 	prepared["roll_input"] = {"proc": 1, "low": int(bounds[0]), "high": int(bounds[1]), "hit_ratio": int(fields["hit_ratio"]),
@@ -145,6 +146,6 @@ static func resolve(prepared: Dictionary, target: Dictionary, hit_bonus: int, rn
 		changes["mp"] = int(target["mp"]) + restored_mp
 		# 0x40b482..0x40b4aa: rand(caster level)+1 replaces the running contribution, 0x40a5d0 (0x40b49e)
 		# converts it at once, then the running contribution is restored for the tail conversion.
-		if restored_mp != 0: immediate.append(CoreCombatRules._rand_range(int(prepared["roll_input"]["level"]), rng) + 1)
+		if restored_mp != 0: immediate.append(CoreCombatRules.rand_range(int(prepared["roll_input"]["level"]), rng) + 1)
 	return {"target_changes": changes, "healing": healing, "restored_mp": restored_mp, "effects": effects,
 		"native_contribution": contribution, "immediate_contributions": immediate, "hit_bonus_after": hit_bonus}

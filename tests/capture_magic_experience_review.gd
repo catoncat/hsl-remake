@@ -51,20 +51,20 @@ func prepare_case() -> void:
 	var loop := run_magic_experience_tests.fixture()
 	loop["tiles"] = scene.play_loop["tiles"]
 	loop["map_size"] = scene.play_loop["map_size"]
-	var owner := BattlePlayLoop._unit(loop, "leonard")
+	var owner := BattlePlayLoop.unit_ref(loop, "leonard")
 	owner["exp"] = 0 if mode in ["wind", "empty_mp", "silence"] else 99
 	owner["kill_chain_word"] = 1 if mode == "fire_kill" else 0
 	for id in [run_magic_experience_tests.WIND, run_magic_experience_tests.FIRE]: BattlePlayLoop.skill_fields(loop, id)["hit_ratio"] = "100"
 	for unit in loop["units"]: unit["inventory"] = [0, 0, 0, 0, 0, 0, 0, 0]
 	if mode in ["fire_kill", "final_kill"]:
-		BattlePlayLoop._unit(loop, "enemy021_1")["hp"] = 1
-		BattlePlayLoop._unit(loop, "enemy021_1")["inventory"][0] = 281
+		BattlePlayLoop.unit_ref(loop, "enemy021_1")["hp"] = 1
+		BattlePlayLoop.unit_ref(loop, "enemy021_1")["inventory"][0] = 281
 	if mode == "mixed_area":
 		BattlePlayLoop.skill_fields(loop, run_magic_experience_tests.FIRE)["effect_range"] = "range1Cell"
-		BattlePlayLoop._unit(loop, "enemy021_2")["hp"] = 1
+		BattlePlayLoop.unit_ref(loop, "enemy021_2")["hp"] = 1
 	if mode == "cure_xp":
-		for unit in [owner, BattlePlayLoop._unit(loop, "enemy023_1")]: unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit, "poison", 2, 10)["changes"], true)
-		var target := BattlePlayLoop._unit(loop, "enemy023_1")
+		for unit in [owner, BattlePlayLoop.unit_ref(loop, "enemy023_1")]: unit.merge(BattlePlayLoop.StatusEffectRules.apply(unit, "poison", 2, 10)["changes"], true)
+		var target := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 		target.merge(BattlePlayLoop.StatusEffectRules.apply(target, "no_magic", 2)["changes"], true)
 	if mode == "empty_mp": owner["mp"] = 0
 	if mode == "silence": owner.merge(BattlePlayLoop.StatusEffectRules.apply(owner, "no_magic", 2)["changes"], true)
@@ -74,7 +74,7 @@ func prepare_case() -> void:
 		var view = scene.get_node("BattlePresentation")
 		view._shown_story_events.assign(loop["event_log"])
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop, "leonard"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop, "leonard"), "test")
 	scene.settlement_controller.checkpoint_path = DEST + mode + ".save"
 	for actor in scene.actors_root.get_children(): scene.actors_root.remove_child(actor); actor.queue_free()
 	scene.unit_grid_coords.clear()

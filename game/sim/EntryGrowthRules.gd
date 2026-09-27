@@ -12,6 +12,7 @@ const KEYS := ["str", "dex", "mind", "con"]
 const SOURCE_KEYS := ["hit_point", "magic_point", "speed", "attack_power", "magic_attack_power"]
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const MAX_PARAMETER := 1000 # Supported bounded domain, not the original16-bit limit.
 
 static func inferred_level(attributes: Dictionary) -> int:
@@ -27,7 +28,7 @@ static func average(levels: Array) -> int:
 static func parameters_error(values: Variant) -> String:
 	if not values is Array or values.size() != 2: return "missing_entry_adjustment_parameters"
 	for value in values:
-		if SkillResourceRules._integer(value) < 0 or SkillResourceRules._integer(value) > MAX_PARAMETER: return "invalid_entry_adjustment_parameter"
+		if Values.non_negative_int(value) < 0 or Values.non_negative_int(value) > MAX_PARAMETER: return "invalid_entry_adjustment_parameter"
 	return ""
 
 static func allocate(attributes: Dictionary, level: int, exp: int, first_threshold: int, caps: Dictionary, job: int, requested: int) -> Dictionary:
@@ -63,15 +64,15 @@ static func propose(input: Dictionary, rng: Callable) -> Dictionary:
 	if error != "": return {"ok":false,"reason":error}
 	if not input.get("party_levels") is Array or input["party_levels"].size() > 20: return {"ok":false,"reason":"invalid_entry_party"}
 	for level in input["party_levels"]:
-		if SkillResourceRules._integer(level) < 0 or SkillResourceRules._integer(level) > 1000: return {"ok":false,"reason":"invalid_entry_party_level"}
+		if Values.non_negative_int(level) < 0 or Values.non_negative_int(level) > 1000: return {"ok":false,"reason":"invalid_entry_party_level"}
 	for key in ["level", "exp", "stamina", "gold", "kill_exp", "job", "object_kind"]:
-		if SkillResourceRules._integer(input.get(key)) < 0 or SkillResourceRules._integer(input.get(key)) > 1000000: return {"ok":false,"reason":"invalid_entry_"+key}
+		if Values.non_negative_int(input.get(key)) < 0 or Values.non_negative_int(input.get(key)) > 1000000: return {"ok":false,"reason":"invalid_entry_"+key}
 	if int(input["level"]) < 1 or int(input["level"]) > 1000 or not JobStatsRules.has_job(int(input["job"])): return {"ok":false,"reason":"unsupported_entry_job"}
 	# An attribute may start above its job cap: PLAYERS 101 (the level-12／26 hull pieces) births
 	# with str 120／con 200 over caps 107／99, kept as is in the original's round-1 record
 	# (opening snapshot); `allocate` only raises attributes below their caps.
 	for key in KEYS:
-		if not input.get("attributes") is Dictionary or not input.get("caps") is Dictionary or SkillResourceRules._integer(input["attributes"].get(key)) < 1 or SkillResourceRules._integer(input["caps"].get(key)) < 1: return {"ok":false,"reason":"invalid_entry_attributes"}
+		if not input.get("attributes") is Dictionary or not input.get("caps") is Dictionary or Values.non_negative_int(input["attributes"].get(key)) < 1 or Values.non_negative_int(input["caps"].get(key)) < 1: return {"ok":false,"reason":"invalid_entry_attributes"}
 	var attrs: Dictionary = input["attributes"].duplicate(true)
 	var level := inferred_level(attrs)
 	var source_level := level
@@ -134,11 +135,11 @@ static func input_error(actor: Dictionary) -> String:
 	var profile:Variant=actor.get("growth_profile")
 	var attributes:Variant=actor.get("combat_profile")
 	if not profile is Dictionary or not attributes is Dictionary: return "invalid_entry_growth_actor"
-	if SkillResourceRules._integer(profile.get("job_code")) != int(last["input"]["job"]) or profile.get("caps") != last["input"]["caps"]: return "entry_growth_profession_mismatch"
+	if Values.non_negative_int(profile.get("job_code")) != int(last["input"]["job"]) or profile.get("caps") != last["input"]["caps"]: return "entry_growth_profession_mismatch"
 	if actor.get("kill_exp") != last["result"]["kill_exp"]: return "entry_growth_reward_mismatch"
 	if int(actor.get("level",0)) < int(last["result"]["level"]): return "entry_growth_level_rollback"
 	for key in KEYS:
-		if SkillResourceRules._integer(attributes.get(key)) < int(last["result"]["attributes"][key]): return "entry_growth_attribute_rollback"
+		if Values.non_negative_int(attributes.get(key)) < int(last["result"]["attributes"][key]): return "entry_growth_attribute_rollback"
 	return ""
 
 ## One adjustment record replays from its own draws to its own result.
@@ -149,7 +150,7 @@ static func _record_error(actor: Dictionary, record: Variant) -> String:
 	var replay := propose(record["input"],func(bound):
 		if cursor[0] >= record["draws"].size(): mismatch[0]=true; return 0
 		var draw: Variant = record["draws"][cursor[0]]; cursor[0]+=1
-		if not draw is Dictionary or draw.get("bound") != bound or SkillResourceRules._integer(draw.get("value")) < 0 or SkillResourceRules._integer(draw.get("value")) >= bound: mismatch[0]=true; return 0
+		if not draw is Dictionary or draw.get("bound") != bound or Values.non_negative_int(draw.get("value")) < 0 or Values.non_negative_int(draw.get("value")) >= bound: mismatch[0]=true; return 0
 		return int(draw["value"]))
 	if not replay["ok"] or mismatch[0] or cursor[0] != record["draws"].size() or replay["result"] != record["result"]: return "inconsistent_entry_growth_record"
 	if actor.get("actor_id") != record.get("actor_id"): return "entry_growth_actor_mismatch"

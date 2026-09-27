@@ -22,7 +22,7 @@ func _initialize() -> void: call_deferred("run")
 
 static func fixture() -> Dictionary:
 	var loop := run_mobile_jobs_tests.fixture("004", true)
-	var foe := BattlePlayLoop._unit(loop, "enemy026_1")
+	var foe := BattlePlayLoop.unit_ref(loop, "enemy026_1")
 	var second := foe.duplicate(true)
 	second.merge({"id":"enemy026_2", "coord":Vector2i(15,18), "ai_home_coord":Vector2i(15,18)}, true)
 	loop["units"].append(second)
@@ -34,7 +34,7 @@ static func fixture() -> Dictionary:
 static func assign(loop: Dictionary, serial: int, value: int, token: String = "SID_ENEMY026") -> Dictionary:
 	var next := loop.duplicate(true)
 	WinfailActions.apply_actions(next, {"key":"event_wait", "actions":[{"name":"actSetWaitRound", "args":[token,str(serial),str(value)]}]}, "test")
-	BattleLoopScript._consume_script_waits(next)
+	BattleLoopScript.consume_script_waits(next)
 	return next
 
 func run() -> void:
@@ -55,8 +55,8 @@ func native_setters() -> void:
 		var initial := fixture()
 		var actor_order: Array = ["enemy026_1", "enemy026_2", "tina"]
 		# The original synthetic third actor uses code23. Bind that code explicitly.
-		BattlePlayLoop._unit(initial,"tina")["actor_id"] = "023"
-		for id in actor_order: BattlePlayLoop._unit(initial,id)["ai_wait_remaining"] = int(c["old"])
+		BattlePlayLoop.unit_ref(initial,"tina")["actor_id"] = "023"
+		for id in actor_order: BattlePlayLoop.unit_ref(initial,id)["ai_wait_remaining"] = int(c["old"])
 		var before := initial.duplicate(true)
 		var next := assign(initial,int(c["serial"]),int(c["value"]),"SID_ENEMY%03d" % int(c["code"]))
 		check(initial == before and next["scenario_ok"], "source setter is an immutable outer transaction")
@@ -101,22 +101,22 @@ func insertion_order() -> void:
 		{"name":"actSetWaitRound","args":["SID_ENEMY026","3","7"]},
 		{"name":"actSetPrevInsertObjectWaitRound","args":["1"]}]
 	WinfailActions.apply_actions(loop,{"key":"event_insert","actions":actions,"inserts":[{"class_id":"Enemy026","object_symbol":"obj_guard","wait_round":1}]},"test")
-	BattleLoopScript._consume_script_waits(loop)
+	BattleLoopScript.consume_script_waits(loop)
 	check(loop["scenario_ok"] and loop["winfail_runtime"]["inserts"][0]["wait_round"] == 1, "previous/explicit/previous writes keep original action order")
 	check(loop["winfail_runtime"]["wait_requests"][1]["insert_index"] == 0, "code/serial query can address an inserted actor awaiting materialization")
 	loop["rule_adapter"] = "winfail"
 	loop["winfail_runtime"]["initial_class_unit_ids"] = {"Enemy026":["enemy026_1","enemy026_2"]}
 	loop["reinforcement_templates"] = [BattlePlayLoop.unit(loop,"enemy026_1")]
 	loop["reinforcement_spawn_cells"] = [Vector2i(17,16)]
-	BattleLoopScript._maintain_script_pressure(loop)
+	BattleLoopScript.maintain_script_pressure(loop)
 	var id := str(loop["winfail_runtime"]["inserts"][0].get("unit_id",""))
 	check(id != "" and BattlePlayLoop.unit(loop,id)["ai_wait_remaining"] == 1, "only the new recruit receives its final wait assignment")
 	if id == "": return
-	BattlePlayLoop._unit(loop,id)["ai_wait_remaining"] = 0
-	BattleLoopScript._maintain_script_pressure(loop)
+	BattlePlayLoop.unit_ref(loop,id)["ai_wait_remaining"] = 0
+	BattleLoopScript.maintain_script_pressure(loop)
 	check(BattlePlayLoop.unit(loop,id)["ai_wait_remaining"] == 0 and loop["units"].size() == 5, "recruit pressure cannot repeat a consumed initialization")
 	WinfailActions.apply_actions(loop,{"key":"event_previous","actions":[{"name":"actSetPrevInsertObjectWaitRound","args":["3"]}]},"test")
-	BattleLoopScript._consume_script_waits(loop)
+	BattleLoopScript.consume_script_waits(loop)
 	check(BattlePlayLoop.unit(loop,id)["ai_wait_remaining"] == 3, "previous insertion setter also addresses a previously materialized recruit")
 
 func wake_and_actions() -> void:
@@ -140,7 +140,7 @@ func wake_and_actions() -> void:
 			actor["status_flags"] |= 16; actor["status_counters"]["attack_up"] = 10 << 16 | 2
 			actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 		if mode == "near": loop["units"][1]["coord"] = Vector2i(5,5)
-		if mode == "dead_target": BattlePlayLoop._set_unit_defeated(loop,loop["units"][1]["id"],true)
+		if mode == "dead_target": BattlePlayLoop.set_unit_defeated(loop,loop["units"][1]["id"],true)
 		if mode == "twice": run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"accessory2",227)
 		var next := BattlePlayLoop.step_ai_turn(loop,zero)
 		check(next["scenario_ok"], "wait/wake branch valid: " + mode + " " + str(next.get("scenario_error")))

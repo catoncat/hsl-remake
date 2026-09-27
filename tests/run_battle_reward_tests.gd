@@ -25,17 +25,17 @@ func check(ok: bool, message: String) -> void:
 
 static func fixture(full: bool = false) -> Dictionary:
 	var loop := BattleFixture.loop()
-	var player := BattlePlayLoop._unit(loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(loop, "leonard")
 	player["live_speed"] = 100
 	player["coord"] = Vector2i(15, 15)
 	player["exp"] = 99
 	player["inventory"] = [241, 241, 241, 246, 241, 241, 241, 241] if full else [241, 241, 241, 246, 0, 0, 0, 0]
-	var next := BattlePlayLoop._unit(loop, "enemy023_1")
+	var next := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	next["live_speed"] = 99
 	next["player_commandable"] = true
 	next["battle_actor_role"] = BattlePlayLoop.ROLE_PLAYER
 	next["coord"] = Vector2i(10, 10)
-	var target := BattlePlayLoop._unit(loop, "enemy021_1")
+	var target := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	target["coord"] = player["coord"] + Vector2i.RIGHT
 	target["hp"] = 1
 	target["inventory"] = [281, 282, 0, 0, 0, 0, 0, 0] # Two guaranteed important drops.
@@ -109,7 +109,7 @@ func settlement_cases() -> void:
 	check(dead["inventory"] == EMPTY and dead["status_flags"] == 0 and dead["status_counters"] == {"poison": 0, "paralysis": 0, "no_magic": 0} and dead["ai_call_target_id"] == "", "lethal settlement clears carried stock and unusable status/call state")
 	check(not BattlePlayLoop.unit_coords(loop).has(dead["id"]), "defeated actor no longer occupies a tactical cell")
 	var immutable := loop.duplicate(true)
-	BattleLoopRewards._commit_rewards(loop, loop["last_combat"])
+	BattleLoopRewards.commit_rewards(loop, loop["last_combat"])
 	check(loop == immutable, "duplicate sequence does not reroll, regrant or clear claims")
 	check(BattlePlayLoop.begin_wait_resolution(loop) == loop and BattlePlayLoop.finish_exhausted_action(loop) == loop and BattlePlayLoop.choose_command(loop, "move") == loop, "unclaimed loot blocks successor action mutation")
 	var id: String = loop["settlement"]["pending"][0]["id"]
@@ -141,7 +141,7 @@ func settlement_cases() -> void:
 
 func area_cases() -> void:
 	var loop := fixture()
-	var player := BattlePlayLoop._unit(loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(loop, "leonard")
 	player["mp"] = 100
 	player["max_mp"] = 100
 	var skill := "magic:magicMIND:magicCode02"
@@ -149,7 +149,7 @@ func area_cases() -> void:
 	# new production spell grant or a claim that native Seal is an area spell.
 	TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"].append(skill)
 	TestSuite.own(loop, "skill_book")["skills"][skill]["fields"]["effect_range"] = "range1Cell"
-	var secondary := BattlePlayLoop._unit(loop, "enemy021_2")
+	var secondary := BattlePlayLoop.unit_ref(loop, "enemy021_2")
 	secondary["coord"] = Vector2i(17, 15)
 	secondary["hp"] = 2
 	secondary["inventory"] = [283, 0, 0, 0, 0, 0, 0, 0]
@@ -173,9 +173,9 @@ func area_cases() -> void:
 
 func counter_and_end_cases() -> void:
 	var loop := fixture()
-	var player := BattlePlayLoop._unit(loop, "leonard")
+	var player := BattlePlayLoop.unit_ref(loop, "leonard")
 	player["combat_profile"]["attack_back"] = 100
-	var strike := BattleLoopCombat._resolve_exchange(loop, "enemy021_1", "leonard", func(_n): return 0)
+	var strike := BattleLoopCombat.resolve_exchange(loop, "enemy021_1", "leonard", func(_n): return 0)
 	check(not strike.get("counter", {}).is_empty() and BattlePlayLoop.unit(loop, "enemy021_1")["defeated"], "controlled defender kills incoming attacker on its one counter")
 	check(loop["gold"] == 100 and BattlePlayLoop.loot_waiting(loop), "counter kill grants the same party reward once")
 	var final := fixture()
@@ -184,13 +184,13 @@ func counter_and_end_cases() -> void:
 	final = attack(final)
 	check(final["battle_outcome"] == BattleOutcome.VICTORY_ENEMIES_CLEARED and BattlePlayLoop.loot_waiting(final), "last enemy victory retains the pending reward modal")
 	final = BattlePlayLoop.finish_rewards(final, 1, 0, false, true)
-	check(BattlePlayLoop._resolve_outcome(final) == final, "repeated terminal evaluation cannot reopen already deferred loot")
+	check(BattlePlayLoop.resolve_outcome(final) == final, "repeated terminal evaluation cannot reopen already deferred loot")
 	check(BattlePlayLoop.loot_waiting(BattlePlayLoop.reopen_rewards(final)), "result screen can reopen deferred loot instead of stranding it at victory")
 	var failure := fixture()
-	BattlePlayLoop._unit(failure, "leonard")["hp"] = 1
-	BattlePlayLoop._unit(failure, "leonard")["combat_profile"]["live_defense"] = 0
-	BattleLoopCombat._resolve_exchange(failure, "enemy021_1", "leonard", func(_n): return 0)
-	failure = BattlePlayLoop._resolve_outcome(failure)
+	BattlePlayLoop.unit_ref(failure, "leonard")["hp"] = 1
+	BattlePlayLoop.unit_ref(failure, "leonard")["combat_profile"]["live_defense"] = 0
+	BattleLoopCombat.resolve_exchange(failure, "enemy021_1", "leonard", func(_n): return 0)
+	failure = BattlePlayLoop.resolve_outcome(failure)
 	check(failure["battle_outcome"] == BattleOutcome.DEFEAT_FALLEN and failure["gold"] == 0, "player defeat has no fabricated player rewards")
 	var miss := fixture()
 	miss = BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(miss, "attack"), "enemy021_1", func(n): return n - 1)
@@ -199,11 +199,11 @@ func counter_and_end_cases() -> void:
 
 ## Enemy A (enemy021_1) kills controlled B (enemy023_1, actor 023) with its own strike.
 static func enemy_kill(loop: Dictionary) -> Dictionary:
-	var victim := BattlePlayLoop._unit(loop, "enemy023_1")
+	var victim := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	victim["coord"] = BattlePlayLoop.unit(loop, "enemy021_1")["coord"] + Vector2i.DOWN
 	victim["hp"] = 1
 	victim["combat_profile"]["live_defense"] = 0
-	return BattleLoopCombat._resolve_exchange(loop, "enemy021_1", "enemy023_1", func(_n): return 0)
+	return BattleLoopCombat.resolve_exchange(loop, "enemy021_1", "enemy023_1", func(_n): return 0)
 
 
 func carried_gold_cases() -> void:
@@ -219,20 +219,20 @@ func carried_gold_cases() -> void:
 	loop = attack(loop)
 	check(loop["gold"] == gold_of.call(loop, "021") + victim_gold and loop["settlement"]["kills"][0]["gold"] == gold_of.call(loop, "021") + victim_gold, "killing A pays the template gold + B's kill gold: " + str(loop["gold"]))
 	var instance := fixture()
-	BattlePlayLoop._unit(instance, "enemy021_1")["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 17, "overrides": {"gold": 250}}
+	BattlePlayLoop.unit_ref(instance, "enemy021_1")["evef_instance"] = {"evidence_tier": "resource-derived", "record_index": 17, "overrides": {"gold": 250}}
 	enemy_kill(instance)
 	instance = attack(instance)
 	check(instance["gold"] == 250 + victim_gold, "killing A pays the EVEF instance gold + B's kill gold: " + str(instance["gold"]))
 	# A controlled initiator killed by the counter pays nobody (0x444641 adds no 0x40e390; the
 	# player death sequence 0x443660 pays gold 0).
 	var countered := fixture()
-	var initiator := BattlePlayLoop._unit(countered, "enemy023_1")
+	var initiator := BattlePlayLoop.unit_ref(countered, "enemy023_1")
 	initiator["coord"] = BattlePlayLoop.unit(countered, "enemy021_1")["coord"] + Vector2i.DOWN
 	initiator["hp"] = 1
 	initiator["combat_profile"]["live_defense"] = 0
-	BattlePlayLoop._unit(countered, "enemy021_1")["hp"] = 1000
-	BattlePlayLoop._unit(countered, "enemy021_1")["combat_profile"]["attack_back"] = 100
-	var counter_strike := BattleLoopCombat._resolve_exchange(countered, "enemy023_1", "enemy021_1", func(_n): return 0)
+	BattlePlayLoop.unit_ref(countered, "enemy021_1")["hp"] = 1000
+	BattlePlayLoop.unit_ref(countered, "enemy021_1")["combat_profile"]["attack_back"] = 100
+	var counter_strike := BattleLoopCombat.resolve_exchange(countered, "enemy023_1", "enemy021_1", func(_n): return 0)
 	check(not counter_strike.get("counter", {}).is_empty() and BattlePlayLoop.unit(countered, "enemy023_1")["defeated"], "enemy counter kills the controlled initiator")
 	check(not BattlePlayLoop.unit(countered, "enemy021_1").has(BattleRewardRules.CARRIED_GAINED) and not counter_strike["rewards"].has("carried") and countered["gold"] == 0, "a controlled initiator killed by the counter adds nothing to the counterer's +0x98")
 	# An NPC (pmNPC 0x40000) whose counter kills an enemy initiator keeps the kill gold (death
@@ -240,14 +240,14 @@ func carried_gold_cases() -> void:
 	# (0x442827..0x44284a).
 	for mode in [0x40000, 0x10000]:
 		var npc_loop := fixture()
-		var npc := BattlePlayLoop._unit(npc_loop, "enemy023_1")
+		var npc := BattlePlayLoop.unit_ref(npc_loop, "enemy023_1")
 		npc["player_commandable"] = false
 		npc["battle_actor_role"] = "friendly_ai"
 		npc["player_mode"] = mode
 		npc["coord"] = BattlePlayLoop.unit(npc_loop, "enemy021_1")["coord"] + Vector2i.DOWN
 		npc["hp"] = 1000
 		npc["combat_profile"]["attack_back"] = 100
-		var npc_strike := BattleLoopCombat._resolve_exchange(npc_loop, "enemy021_1", "enemy023_1", func(_n): return 0)
+		var npc_strike := BattleLoopCombat.resolve_exchange(npc_loop, "enemy021_1", "enemy023_1", func(_n): return 0)
 		var expected: int = gold_of.call(npc_loop, "021") if mode == 0x40000 else 0
 		var party: int = gold_of.call(npc_loop, "021") - expected
 		check(BattlePlayLoop.unit(npc_loop, "enemy021_1")["defeated"] and int(BattlePlayLoop.unit(npc_loop, "enemy023_1").get(BattleRewardRules.CARRIED_GAINED, 0)) == expected and npc_loop["gold"] == party, "counter kill by a friendly AI with mode 0x%x adds %d to its +0x98 and %d to the party: %s" % [mode, expected, party, str(npc_strike.get("rewards", {}))])
@@ -259,8 +259,8 @@ func carried_gold_cases() -> void:
 	check(encoded["ok"] and BattleCheckpoint.decode(encoded["bytes"], saved)["snapshot"]["loop"] == saved, "the checkpoint keeps A's gained carried gold exactly")
 	for bad in [-1, 1.5, "100", 2147483648]:
 		var tampered := BattlePlayLoop.copy(saved)
-		BattlePlayLoop._unit(tampered, "enemy021_1")[BattleRewardRules.CARRIED_GAINED] = bad
-		check(BattlePlayLoop._reward_input_error(tampered) == "invalid_carried_gold" and not BattleCheckpoint.encode(tampered, meta)["ok"], "a carried gold of %s is refused" % str(bad))
+		BattlePlayLoop.unit_ref(tampered, "enemy021_1")[BattleRewardRules.CARRIED_GAINED] = bad
+		check(BattlePlayLoop.reward_input_error(tampered) == "invalid_carried_gold" and not BattleCheckpoint.encode(tampered, meta)["ok"], "a carried gold of %s is refused" % str(bad))
 
 
 ## An undead attacker the counter kills revives in its own process and, as the current actor, ends
@@ -271,9 +271,9 @@ func undead_counter_cases() -> void:
 	for undead in [false, true]:
 		# Enemy initiator, controlled counterer.
 		var loop := fixture()
-		BattlePlayLoop._unit(loop, "leonard")["combat_profile"]["attack_back"] = 100
-		BattlePlayLoop._unit(loop, "enemy021_1")["undead"] = undead
-		var strike := BattleLoopCombat._resolve_exchange(loop, "enemy021_1", "leonard", func(_n): return 0)
+		BattlePlayLoop.unit_ref(loop, "leonard")["combat_profile"]["attack_back"] = 100
+		BattlePlayLoop.unit_ref(loop, "enemy021_1")["undead"] = undead
+		var strike := BattleLoopCombat.resolve_exchange(loop, "enemy021_1", "leonard", func(_n): return 0)
 		var counter: Dictionary = strike.get("counter", {})
 		check(not counter.is_empty() and bool(counter.get("undead_revived", false)) == undead, "the counter lands its lethal strike on the initiator (undead=%s)" % str(undead))
 		if counter.is_empty(): continue
@@ -287,13 +287,13 @@ func undead_counter_cases() -> void:
 		check(loop["gold"] == 0 and not BattlePlayLoop.loot_waiting(loop) and strike["rewards"]["kills"].is_empty() and not strike["rewards"].has("carried"), "no kill gold, drops or carried gold for the revived initiator: " + str(strike["rewards"]))
 	# Controlled undead initiator whose primary strike earns EXP, killed by the enemy's counter.
 	var own := fixture()
-	var initiator := BattlePlayLoop._unit(own, "leonard")
+	var initiator := BattlePlayLoop.unit_ref(own, "leonard")
 	initiator["undead"] = true
 	initiator["hp"] = 1
 	initiator["combat_profile"]["live_defense"] = 0
-	BattlePlayLoop._unit(own, "enemy021_1")["hp"] = 1000
-	BattlePlayLoop._unit(own, "enemy021_1")["combat_profile"]["attack_back"] = 100
-	var own_strike := BattleLoopCombat._resolve_exchange(own, "leonard", "enemy021_1", func(_n): return 0)
+	BattlePlayLoop.unit_ref(own, "enemy021_1")["hp"] = 1000
+	BattlePlayLoop.unit_ref(own, "enemy021_1")["combat_profile"]["attack_back"] = 100
+	var own_strike := BattleLoopCombat.resolve_exchange(own, "leonard", "enemy021_1", func(_n): return 0)
 	var basis := 0
 	for hit in BattlePlayLoop.CombatSequence.participant_outcomes(own_strike): basis += int(hit["experience_basis"]["points"])
 	check(basis > 0 and bool(own_strike.get("counter", {}).get("undead_revived", false)) and int(BattlePlayLoop.unit(own, "leonard")["hp"]) == 1, "the controlled undead initiator's strike has an EXP basis and the counter revives it at 1 HP")
@@ -301,7 +301,7 @@ func undead_counter_cases() -> void:
 
 
 static func friendly(loop: Dictionary, mode: int) -> Dictionary:
-	var ally := BattlePlayLoop._unit(loop, "enemy023_1")
+	var ally := BattlePlayLoop.unit_ref(loop, "enemy023_1")
 	ally["player_commandable"] = false
 	ally["battle_actor_role"] = "friendly_ai"
 	ally["player_mode"] = mode
@@ -316,7 +316,7 @@ func party_recipient_cases() -> void:
 	for mode in [0x10000, 0x50000, 0x870000]:
 		var loop := fixture()
 		friendly(loop, mode)
-		var strike := BattleLoopCombat._resolve_exchange(loop, "enemy023_1", "enemy021_1", func(_n): return 0)
+		var strike := BattleLoopCombat.resolve_exchange(loop, "enemy023_1", "enemy021_1", func(_n): return 0)
 		var kill_gold: int = gold_of.call(loop, "021")
 		var party := kill_gold if mode == 0x10000 else 0
 		check(kill_gold > 0 and BattlePlayLoop.unit(loop, "enemy021_1")["defeated"] and loop["gold"] == party and int(BattlePlayLoop.unit(loop, "enemy023_1").get(BattleRewardRules.CARRIED_GAINED, 0)) == kill_gold - party, "a friendly AI with mode 0x%x killing an enemy pays %d to the party, the rest to its +0x98: %s" % [mode, party, str(strike.get("rewards", {}))])
@@ -339,17 +339,17 @@ func party_recipient_cases() -> void:
 		loop["gold"] = 50
 		friendly(loop, int(row[0]))
 		var strike := {"attacker_id": "enemy023_1"}
-		BattleLoopRewards._apply_gold_effects(loop, strike, [{"kind": "steal_gold", "amount": 30, "from": row[1], "unit_id": "enemy021_1"}])
+		BattleLoopRewards.apply_gold_effects(loop, strike, [{"kind": "steal_gold", "amount": 30, "from": row[1], "unit_id": "enemy021_1"}])
 		check(loop["gold"] == row[2] and int(BattlePlayLoop.unit(loop, "enemy023_1").get(BattleRewardRules.CARRIED_GAINED, 0)) == row[3] and int(strike["gold_effects"][0]["paid"]) == 30 and (strike["gold_effects"][0].get("carried_by", "") == "enemy023_1") == (int(row[3]) > 0), "StealGold by mode 0x%x from %s leaves the party at %d and the caster's +0x98 gain at %d: %s" % [row[0], row[1], row[2], row[3], str(strike["gold_effects"])])
 	var steal_cap := fixture()
 	steal_cap["gold"] = BattleRewardRules.PARTY_GOLD_CAP - 10
-	BattleLoopRewards._apply_gold_effects(steal_cap, {"attacker_id": "leonard"}, [{"kind": "steal_gold", "amount": 30, "from": "target_carry", "unit_id": "enemy021_1"}])
+	BattleLoopRewards.apply_gold_effects(steal_cap, {"attacker_id": "leonard"}, [{"kind": "steal_gold", "amount": 30, "from": "target_carry", "unit_id": "enemy021_1"}])
 	check(steal_cap["gold"] == BattleRewardRules.PARTY_GOLD_CAP, "a StealGold take paid to the party is capped the same way")
 
 
 static func wear_gold_cup(loop: Dictionary, id: String, slots: Array = ["accessory1"]) -> void:
 	for slot in slots:
-		BattlePlayLoop._unit(loop, id)["equipment"].append({"slot": slot, "item_code": 230, "name": "黃金的聖杯"})
+		BattlePlayLoop.unit_ref(loop, id)["equipment"].append({"slot": slot, "item_code": 230, "name": "黃金的聖杯"})
 
 
 ## 0x442720 state 2 (0x442819..0x442825): before either branch, 0x40e2d0(recipient) tests the live
@@ -371,8 +371,8 @@ func gold_double_cases() -> void:
 	# The counterer is the recipient of a counter kill (0x43f150 → 0x442720 with the counterer).
 	var countered := fixture()
 	wear_gold_cup(countered, "leonard")
-	BattlePlayLoop._unit(countered, "leonard")["combat_profile"]["attack_back"] = 100
-	var counter_strike := BattleLoopCombat._resolve_exchange(countered, "enemy021_1", "leonard", func(_n): return 0)
+	BattlePlayLoop.unit_ref(countered, "leonard")["combat_profile"]["attack_back"] = 100
+	var counter_strike := BattleLoopCombat.resolve_exchange(countered, "enemy021_1", "leonard", func(_n): return 0)
 	check(BattlePlayLoop.unit(countered, "enemy021_1")["defeated"] and countered["gold"] == 2 * gold_of.call(countered, "021"), "a counter kill by Leonard wearing it pays the party double: " + str(counter_strike.get("rewards", {})))
 	# An enemy killer wearing it doubles what its own +0x98 gains.
 	var enemy := fixture()
@@ -384,7 +384,7 @@ func gold_double_cases() -> void:
 	var ally := fixture()
 	friendly(ally, 0x10000)
 	wear_gold_cup(ally, "enemy023_1")
-	BattleLoopCombat._resolve_exchange(ally, "enemy023_1", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat.resolve_exchange(ally, "enemy023_1", "enemy021_1", func(_n): return 0)
 	check(ally["gold"] == 2 * gold_of.call(ally, "021") and not BattlePlayLoop.unit(ally, "enemy023_1").has(BattleRewardRules.CARRIED_GAINED), "a 0x10000 friendly AI wearing it pays the party double")
 	# Doubled before the cap (0x442825 precedes 0x44283e).
 	var capped := fixture()
@@ -399,7 +399,7 @@ func gold_double_cases() -> void:
 		if int(row[1]) != 0: friendly(loop, int(row[1]))
 		wear_gold_cup(loop, row[0])
 		var steal := {"attacker_id": row[0]}
-		BattleLoopRewards._apply_gold_effects(loop, steal, [{"kind": "steal_gold", "amount": 30, "from": row[2], "unit_id": "enemy021_1"}])
+		BattleLoopRewards.apply_gold_effects(loop, steal, [{"kind": "steal_gold", "amount": 30, "from": row[2], "unit_id": "enemy021_1"}])
 		var applied: Dictionary = steal["gold_effects"][0]
 		check(loop["gold"] == row[3] and int(BattlePlayLoop.unit(loop, row[0]).get(BattleRewardRules.CARRIED_GAINED, 0)) == row[4] and int(applied["paid"]) == 60 and int(applied["amount"]) == 30 and int(applied.get("gold_multiplier", 1)) == 2, "StealGold of 30 by %s wearing it (from %s) pays 60: party %d, +0x98 gain %d: %s" % [row[0], row[2], row[3], row[4], str(applied)])
 	# The $ float shows the paid (doubled) take (0x44288a pushes the doubled esi).
@@ -422,8 +422,8 @@ func gold_double_cases() -> void:
 func ai_handoff_cases() -> void:
 	# Enemy A kills controlled B, whose bag holds two 281s and a 282 (important: always rolled).
 	var loop := fixture()
-	BattlePlayLoop._unit(loop, "enemy021_1")["inventory"] = [241, 0, 0, 0, 0, 0, 0, 0]
-	BattlePlayLoop._unit(loop, "enemy023_1")["inventory"] = [281, 282, 281, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(loop, "enemy021_1")["inventory"] = [241, 0, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(loop, "enemy023_1")["inventory"] = [281, 282, 281, 0, 0, 0, 0, 0]
 	var strike := enemy_kill(loop)
 	var sequence := int(strike["sequence"])
 	check(BattlePlayLoop.unit(loop, "enemy023_1")["defeated"] and BattlePlayLoop.unit(loop, "enemy021_1")["inventory"] == [241, 281, 282, 0, 0, 0, 0, 0], "enemy A takes one of each code from B's bag into its first empty slots: " + str(BattlePlayLoop.unit(loop, "enemy021_1")["inventory"]))
@@ -435,44 +435,44 @@ func ai_handoff_cases() -> void:
 	check(dropped.filter(func(code): return code != 241) == [281, 282], "killing A puts the taken items in the party's window: " + str(dropped))
 	# A full bag gives up its first non-important item and retries once.
 	var full := fixture()
-	BattlePlayLoop._unit(full, "enemy021_1")["inventory"] = [281, 241, 246, 241, 241, 241, 241, 241]
-	BattlePlayLoop._unit(full, "enemy023_1")["inventory"] = [282, 0, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(full, "enemy021_1")["inventory"] = [281, 241, 246, 241, 241, 241, 241, 241]
+	BattlePlayLoop.unit_ref(full, "enemy023_1")["inventory"] = [282, 0, 0, 0, 0, 0, 0, 0]
 	var full_strike := enemy_kill(full)
 	check(BattlePlayLoop.unit(full, "enemy021_1")["inventory"] == [281, 246, 241, 241, 241, 241, 241, 282] and full_strike["rewards"].get("taken", []) == [{"code": 282, "slot": 7, "sources": ["%d:enemy023_1:0" % int(full_strike["sequence"])], "discarded": 241, "unit_id": "enemy021_1"}], "a full bag drops its first non-important item (241 behind the important 281) and the rest close up: " + str(full_strike["rewards"].get("taken", [])))
 	# An all-important full bag cannot make room: the first failure stops the walk, the collection is emptied.
 	var locked := fixture()
 	var locked_bag := [281, 282, 283, 284, 285, 281, 282, 283]
-	BattlePlayLoop._unit(locked, "enemy021_1")["inventory"] = locked_bag.duplicate()
-	BattlePlayLoop._unit(locked, "enemy023_1")["inventory"] = [284, 285, 0, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(locked, "enemy021_1")["inventory"] = locked_bag.duplicate()
+	BattlePlayLoop.unit_ref(locked, "enemy023_1")["inventory"] = [284, 285, 0, 0, 0, 0, 0, 0]
 	var locked_strike := enemy_kill(locked)
 	check(BattlePlayLoop.unit(locked, "enemy021_1")["inventory"] == locked_bag and locked_strike["rewards"].get("taken", []).map(func(row): return int(row["slot"])) == [-1, -1] and BattlePlayLoop.unit(locked, "enemy023_1")["inventory"] == EMPTY and not BattlePlayLoop.loot_waiting(locked), "an all-important full bag keeps its items and the taken ones are lost: " + str(locked_strike["rewards"].get("taken", [])))
 	# The dead controlled initiator's bag goes to the enemy whose counter killed it (0x44469e).
 	var countered := fixture()
-	var initiator := BattlePlayLoop._unit(countered, "enemy023_1")
+	var initiator := BattlePlayLoop.unit_ref(countered, "enemy023_1")
 	initiator["coord"] = BattlePlayLoop.unit(countered, "enemy021_1")["coord"] + Vector2i.DOWN
 	initiator["hp"] = 1
 	initiator["combat_profile"]["live_defense"] = 0
 	initiator["inventory"] = [283, 0, 0, 0, 0, 0, 0, 0]
-	BattlePlayLoop._unit(countered, "enemy021_1")["hp"] = 1000
-	BattlePlayLoop._unit(countered, "enemy021_1")["combat_profile"]["attack_back"] = 100
-	BattlePlayLoop._unit(countered, "enemy021_1")["inventory"] = EMPTY.duplicate()
-	BattleLoopCombat._resolve_exchange(countered, "enemy023_1", "enemy021_1", func(_n): return 0)
+	BattlePlayLoop.unit_ref(countered, "enemy021_1")["hp"] = 1000
+	BattlePlayLoop.unit_ref(countered, "enemy021_1")["combat_profile"]["attack_back"] = 100
+	BattlePlayLoop.unit_ref(countered, "enemy021_1")["inventory"] = EMPTY.duplicate()
+	BattleLoopCombat.resolve_exchange(countered, "enemy023_1", "enemy021_1", func(_n): return 0)
 	check(BattlePlayLoop.unit(countered, "enemy023_1")["defeated"] and BattlePlayLoop.unit(countered, "enemy021_1")["inventory"] == [283, 0, 0, 0, 0, 0, 0, 0] and not BattlePlayLoop.loot_waiting(countered), "the counterer takes the dead controlled initiator's item: " + str(BattlePlayLoop.unit(countered, "enemy021_1")["inventory"]))
 	# A friendly AI on 0x10000 pays the party its gold, but the drops still go to its own bag.
 	var ally := fixture()
 	friendly(ally, 0x10000)
-	BattlePlayLoop._unit(ally, "enemy023_1")["inventory"] = EMPTY.duplicate()
-	var ally_strike := BattleLoopCombat._resolve_exchange(ally, "enemy023_1", "enemy021_1", func(_n): return 0)
+	BattlePlayLoop.unit_ref(ally, "enemy023_1")["inventory"] = EMPTY.duplicate()
+	var ally_strike := BattleLoopCombat.resolve_exchange(ally, "enemy023_1", "enemy021_1", func(_n): return 0)
 	check(BattlePlayLoop.unit(ally, "enemy021_1")["defeated"] and BattlePlayLoop.unit(ally, "enemy023_1")["inventory"] == [281, 282, 0, 0, 0, 0, 0, 0] and not BattlePlayLoop.loot_waiting(ally) and ally["gold"] == int(ally["reward_data"]["actors"]["021"]["gold"]), "a 0x10000 friendly AI's kill pays the party but its drops go to its own bag: " + str(ally_strike["rewards"]))
 	# 金之手 by an AI caster: 0x44f2d0 puts the take in the caster's own collection (state 4 → its bag);
 	# a controlled caster keeps the get-item window.
 	for caster in ["enemy023_1", "leonard"]:
 		var steal := fixture()
 		friendly(steal, 0x10000)
-		BattlePlayLoop._unit(steal, "enemy023_1")["inventory"] = EMPTY.duplicate()
+		BattlePlayLoop.unit_ref(steal, "enemy023_1")["inventory"] = EMPTY.duplicate()
 		var receipt := {"sequence": BattleRewardRules.combat_sequence(steal["settlement"]) + 1, "attacker_id": caster, "defender_id": "enemy021_1", "defender_hp_before": 1, "defender_hp_after": 1, "hit": true,
 			"stolen_items": [{"kind": "steal_item", "code": 281, "source_slot": 0, "unit_id": "enemy021_1", "steal_roll": 7}]}
-		BattleLoopRewards._commit_rewards(steal, receipt)
+		BattleLoopRewards.commit_rewards(steal, receipt)
 		if caster == "enemy023_1":
 			check(BattlePlayLoop.unit(steal, "enemy023_1")["inventory"] == [281, 0, 0, 0, 0, 0, 0, 0] and not BattlePlayLoop.loot_waiting(steal) and receipt["rewards"].get("taken", []).size() == 1, "an AI caster's 金之手 take goes into its own bag: " + str(receipt["rewards"]))
 		else:
@@ -488,25 +488,25 @@ func undead_victim_cases() -> void:
 	var meta := {"camera": Vector2(320, 240), "shown_story_events": [], "story_complete": false, "growth_notified_level": 1}
 	# Exchange: Leonard's lethal strike on an undead enemy, twice.
 	var loop := fixture()
-	BattlePlayLoop._unit(loop, "enemy021_1")["undead"] = true
+	BattlePlayLoop.unit_ref(loop, "enemy021_1")["undead"] = true
 	var kill_gold: int = gold_of.call(loop, "021")
-	var first := BattleLoopCombat._resolve_exchange(loop, "leonard", "enemy021_1", func(_n): return 0)
+	var first := BattleLoopCombat.resolve_exchange(loop, "leonard", "enemy021_1", func(_n): return 0)
 	check(bool(first.get("undead_revived", false)) and int(BattlePlayLoop.unit(loop, "enemy021_1")["hp"]) == 1 and not BattlePlayLoop.unit(loop, "enemy021_1")["defeated"], "the undead enemy gets up at 1 HP after Leonard's lethal strike")
 	check(loop["gold"] == kill_gold and first["rewards"]["kills"] == [{"attacker_id": "leonard", "defender_id": "enemy021_1", "gold": kill_gold}], "the lethal strike on the undead enemy pays its kill gold: " + str(first["rewards"]))
 	check(not BattlePlayLoop.loot_waiting(loop) and BattlePlayLoop.unit(loop, "enemy021_1")["inventory"] == [281, 282, 0, 0, 0, 0, 0, 0] and not loop["rewarded_unit_ids"].has("enemy021_1"), "no drops are rolled, its bag stays and it is not in the death ledger")
-	BattleLoopCombat._resolve_exchange(loop, "leonard", "enemy021_1", func(_n): return 0)
+	BattleLoopCombat.resolve_exchange(loop, "leonard", "enemy021_1", func(_n): return 0)
 	check(loop["gold"] == 2 * kill_gold and int(BattlePlayLoop.unit(loop, "enemy021_1")["hp"]) == 1, "the next lethal strike on it pays the kill gold again (0x40e390 only reads +0x98): " + str(loop["gold"]))
 	check(BattleCheckpoint.encode(loop, meta)["ok"], "the checkpoint accepts the battle after the undead enemy got up")
 	# Spell: an area cast kills an undead and an ordinary enemy together.
 	var cast := fixture()
-	var player := BattlePlayLoop._unit(cast, "leonard")
+	var player := BattlePlayLoop.unit_ref(cast, "leonard")
 	player["mp"] = 100
 	player["max_mp"] = 100
 	var skill := "magic:magicMIND:magicCode02"
 	TestSuite.own(cast, "skill_book")["actors"]["001"]["supported_initial_ids"].append(skill)
 	TestSuite.own(cast, "skill_book")["skills"][skill]["fields"]["effect_range"] = "range1Cell"
-	BattlePlayLoop._unit(cast, "enemy021_1")["undead"] = true
-	var secondary := BattlePlayLoop._unit(cast, "enemy021_2")
+	BattlePlayLoop.unit_ref(cast, "enemy021_1")["undead"] = true
+	var secondary := BattlePlayLoop.unit_ref(cast, "enemy021_2")
 	secondary["coord"] = Vector2i(17, 15)
 	secondary["hp"] = 2
 	secondary["inventory"] = [283, 0, 0, 0, 0, 0, 0, 0]
@@ -520,10 +520,10 @@ func undead_victim_cases() -> void:
 	check(encoded["ok"], "the checkpoint accepts the cast (the revived unit is no longer a death-ledger entry): " + str(encoded.get("reason", "")))
 	# An enemy's lethal strike on an undead controlled unit: its +0x98 gains the kill gold, no bag is handed over.
 	var enemy := fixture()
-	var victim := BattlePlayLoop._unit(enemy, "enemy023_1")
+	var victim := BattlePlayLoop.unit_ref(enemy, "enemy023_1")
 	victim["undead"] = true
 	victim["inventory"] = [283, 0, 0, 0, 0, 0, 0, 0]
-	BattlePlayLoop._unit(enemy, "enemy021_1")["inventory"] = EMPTY.duplicate()
+	BattlePlayLoop.unit_ref(enemy, "enemy021_1")["inventory"] = EMPTY.duplicate()
 	var victim_gold: int = BattleRewardRules.carried_gold(victim, gold_of.call(enemy, "023"))
 	var strike := enemy_kill(enemy)
 	check(int(BattlePlayLoop.unit(enemy, "enemy023_1")["hp"]) == 1 and int(BattlePlayLoop.unit(enemy, "enemy021_1").get(BattleRewardRules.CARRIED_GAINED, 0)) == victim_gold and BattlePlayLoop.unit(enemy, "enemy021_1")["inventory"] == EMPTY and BattlePlayLoop.unit(enemy, "enemy023_1")["inventory"] == [283, 0, 0, 0, 0, 0, 0, 0] and not strike["rewards"].has("taken"), "an enemy's lethal strike on an undead unit adds its kill gold to the enemy's +0x98 and takes no item: " + str(strike["rewards"]))

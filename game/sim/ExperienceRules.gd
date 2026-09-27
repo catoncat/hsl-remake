@@ -7,13 +7,14 @@ extends RefCounted
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const KILL_MARK := 0x10000
 const MAX_VALUE := 1000000
 
 
 static func actor_error(actor: Dictionary) -> String:
 	for key in ["exp", "level", "kill_exp", "kill_count", "kill_chain_word", "pending_stat_points"]:
-		var value := SkillResourceRules._integer(actor.get(key))
+		var value := Values.non_negative_int(actor.get(key))
 		if value < 0 or value > MAX_VALUE or (key == "level" and (value == 0 or value > 1000)):
 			return "invalid_experience_" + key
 	if int(actor["kill_chain_word"]) > 0x1ffff: return "invalid_experience_kill_chain_word"
@@ -22,7 +23,7 @@ static func actor_error(actor: Dictionary) -> String:
 
 ## The experience gate an action or equipment change checks before it may award EXP.
 ## `enhancement_checked`: the caller has just found `enhancement_profile_error` empty for
-## this actor and equipment table (`BattlePlayLoop._skill_input_error`, after
+## this actor and equipment table (`BattlePlayLoop.skill_input_error`, after
 ## `_resource_input_error`), so it is not run again.
 static func input_error(loop: Dictionary, actor: Dictionary, enhancement_checked: bool = false) -> String:
 	if not enhancement_checked:
@@ -43,7 +44,7 @@ static func multiplier(actor: Dictionary, equipment: Dictionary) -> Dictionary:
 	if not actor.get("equipment") is Array: return {"ok": false, "reason": "missing_experience_equipment"}
 	var double_exp := false
 	for slot in actor["equipment"]:
-		if not slot is Dictionary or SkillResourceRules._integer(slot.get("item_code")) <= 0:
+		if not slot is Dictionary or Values.non_negative_int(slot.get("item_code")) <= 0:
 			return {"ok": false, "reason": "invalid_experience_equipment"}
 		var item: Variant = equipment.get(str(int(slot["item_code"])))
 		if not item is Dictionary or not item.get("experience_double") is bool:
@@ -114,6 +115,6 @@ static func _draw(bound: int, rng: Variant, draws: Array) -> int:
 	if bound == 0:
 		if rng is Callable: rng.call(0)
 	else:
-		value = CoreCombatRules._rand_range(bound, rng)
+		value = CoreCombatRules.rand_range(bound, rng)
 	draws.append({"bound": bound, "value": value})
 	return value

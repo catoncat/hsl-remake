@@ -10,6 +10,7 @@ const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const Catalog = preload("res://game/sim/StatusCatalog.gd")
+const Values = preload("res://game/sim/Values.gd")
 ## 0x40aa80 immunity queries (catalog immunity_bit), in the 0x40aa80 visit order.
 static var IMMUNITY: Dictionary = Catalog.by_key("immunity_bit", Catalog.MAGIC_ORDER)
 ## Status key -> function bit in native visit order (catalog magic_bit, MAGIC_ORDER).
@@ -21,7 +22,7 @@ const ACCEPTED_MASKS := [1, 4, 5, 8, 17, 0x1000, 0x1001, 0x101d]
 
 static func modifiers(unit: Dictionary, book: Dictionary, equipment: Dictionary) -> Dictionary:
 	var source: Variant = book.get("actors", {}).get(str(unit.get("actor_id", "")))
-	if not source is Dictionary or not StatusEffectRules._unsigned(source.get("status_capability_flags")) or not unit.get("equipment") is Array:
+	if not source is Dictionary or not Values.is_integer_in(source.get("status_capability_flags"), 0, Values.MAX_UNSIGNED) or not unit.get("equipment") is Array:
 		return {"ok": false, "reason": "missing_status_capabilities"}
 	var equipped := equipment_modifiers(unit, equipment)
 	if not equipped["ok"]: return equipped
@@ -40,10 +41,10 @@ static func equipment_modifiers(unit: Dictionary, equipment: Dictionary) -> Dict
 	var effects := 0
 	var magic_hit := 0
 	for entry in unit["equipment"]:
-		if not entry is Dictionary or not StatusEffectRules._unsigned(entry.get("item_code")) or int(entry["item_code"]) == 0:
+		if not entry is Dictionary or not Values.is_integer_in(entry.get("item_code"), 0, Values.MAX_UNSIGNED) or int(entry["item_code"]) == 0:
 			return {"ok": false, "reason": "invalid_status_equipment"}
 		var item: Variant = equipment.get(str(int(entry["item_code"])))
-		if not item is Dictionary or not StatusEffectRules._unsigned(item.get("status_effect_flags")) or SkillResourceRules._integer(item.get("magic_hit_bonus")) < 0:
+		if not item is Dictionary or not Values.is_integer_in(item.get("status_effect_flags"), 0, Values.MAX_UNSIGNED) or Values.non_negative_int(item.get("magic_hit_bonus")) < 0:
 			return {"ok": false, "reason": "missing_status_equipment_effects"}
 		effects |= int(item["status_effect_flags"])
 		magic_hit += int(item["magic_hit_bonus"])
@@ -62,25 +63,25 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	if not profile is Dictionary or not target_profile is Dictionary:
 		return {"ok": false, "reason": "missing_status_skill_profile"}
 	for value in [caster.get("level"), caster.get("hit_bonus_accum"), profile.get("mind"), profile.get("live_magic_attack")]:
-		if SkillResourceRules._integer(value) < 0 or int(value) > 100000:
+		if Values.non_negative_int(value) < 0 or int(value) > 100000:
 			return {"ok": false, "reason": "invalid_status_skill_profile"}
 	var element: String = {"magicEARTH": "0", "magicWATER": "1", "magicAIR": "2", "magicFIRE": "3", "magicMIND": "4"}.get(fields.get("type"), "")
 	var resists: Variant = target_profile.get("resist_by_type")
 	# 0x40aa1e switch has no magicOTHER case: channel1 magicOTHER abilities skip resistance.
 	var resistance := 0
 	if not (channel == "special" and fields.get("type") == "magicOTHER"):
-		if element == "" or not resists is Dictionary or SkillResourceRules._integer(resists.get(element)) < 0 or int(resists[element]) > 80:
+		if element == "" or not resists is Dictionary or Values.non_negative_int(resists.get(element)) < 0 or int(resists[element]) > 80:
 			return {"ok": false, "reason": "missing_skill_resistance"}
 		resistance = int(resists[element])
 	var mask := SkillTargetRules.function_mask(fields.get("function"), targeting["function_bits"])
 	# Special channel1 status checks read hit_ratio (0x40a7ec); SPECIAL.TXT has no status_hit_ratio.
-	var status_rate := 0 if mask == 1 or channel == "special" else SkillResourceRules._integer(fields.get("status_hit_ratio"), true)
-	var hit_rate := SkillResourceRules._integer(fields.get("hit_ratio"), true)
+	var status_rate := 0 if mask == 1 or channel == "special" else Values.non_negative_int(fields.get("status_hit_ratio"), true)
+	var hit_rate := Values.non_negative_int(fields.get("hit_ratio"), true)
 	var bounds: PackedStringArray = str(fields.get("damage", "")).split(",")
 	if bounds.size() != 2 or status_rate < 0 or status_rate > 100 or hit_rate < 0 or hit_rate > 100:
 		return {"ok": false, "reason": "invalid_status_skill_definition"}
-	var low := SkillResourceRules._integer(bounds[0].strip_edges(), true)
-	var high := SkillResourceRules._integer(bounds[1].strip_edges(), true)
+	var low := Values.non_negative_int(bounds[0].strip_edges(), true)
+	var high := Values.non_negative_int(bounds[1].strip_edges(), true)
 	if low < 0 or high < low or high > 10000:
 		return {"ok": false, "reason": "invalid_status_skill_definition"}
 	if mask not in ACCEPTED_MASKS: return {"ok": false, "reason": "unsupported_status_skill"}
@@ -134,7 +135,7 @@ static func resolve(prepared: Dictionary, target: Dictionary, rng: Variant, roll
 		if int(tested["value"]) == 0:
 			effects.append({"status": key, "applied": false, "reason": "miss"})
 			continue
-		var turns := 2 + CoreCombatRules._rand_range(2, rng)
+		var turns := 2 + CoreCombatRules.rand_range(2, rng)
 		var power := 0
 		if Catalog.ENTRIES[key]["power"]:
 			input["proc"] = 0

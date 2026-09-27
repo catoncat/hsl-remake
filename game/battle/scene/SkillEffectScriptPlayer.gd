@@ -112,10 +112,10 @@ var series_members: Dictionary = {}
 
 
 func _ready() -> void:
-	manifest = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
-	scripts = JSON.parse_string(FileAccess.get_file_as_string(SCRIPTS_PATH))["rows"]
-	scripts.merge(JSON.parse_string(FileAccess.get_file_as_string(AUTHORED_SCRIPTS_PATH))["rows"])
-	casting = JSON.parse_string(FileAccess.get_file_as_string(CASTING_PATH))["casting"]["frames"]
+	manifest = ContentPaths.read_json(MANIFEST_PATH)
+	scripts = ContentPaths.read_json(SCRIPTS_PATH)["rows"]
+	scripts.merge(ContentPaths.read_json(AUTHORED_SCRIPTS_PATH)["rows"])
+	casting = ContentPaths.read_json(CASTING_PATH)["casting"]["frames"]
 	for _index in range(SOUND_VOICES):
 		var player := AudioStreamPlayer.new()
 		add_child(player)

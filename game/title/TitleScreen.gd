@@ -52,6 +52,7 @@ const CampaignProgress = preload("res://game/battle/runtime/CampaignProgress.gd"
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const FIRST_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
@@ -109,7 +110,7 @@ var intro_player: CanvasLayer
 
 
 func _ready() -> void:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST_PATH))
+	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Title manifest missing or invalid: " + MANIFEST_PATH)
 		return

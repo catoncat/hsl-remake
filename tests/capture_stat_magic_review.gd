@@ -34,9 +34,9 @@ func setup_stat() -> void:
 	if mode != "manual":
 		scene.set_process(false)
 		var loop := run_support_magic_tests.stat_fixture()
-		var actor := BattlePlayLoop._unit(loop,"tina")
-		var ally := BattlePlayLoop._unit(loop,"companion")
-		var foe := BattlePlayLoop._unit(loop,"enemy026_1")
+		var actor := BattlePlayLoop.unit_ref(loop,"tina")
+		var ally := BattlePlayLoop.unit_ref(loop,"companion")
+		var foe := BattlePlayLoop.unit_ref(loop,"enemy026_1")
 		foe["no_attack"] = true; foe["mp"] = 0; foe["inventory"] = [0,0,0,0,0,0,0,0]
 		if mode in ["dispel","ai_dispel"]:
 			run_support_magic_tests.buff(loop,foe["id"],"attack_up",3,24)
@@ -89,7 +89,7 @@ func setup_stat() -> void:
 			unit["grid_coord"] = unit["coord"]; unit["ai_home_coord"] = unit["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"]) == "","fixture is on legal source terrain")
 		loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
+		scene.apply_loop(BattlePlayLoop.return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
 		for art in scene.actors_root.get_children(): scene.actors_root.remove_child(art); art.queue_free()
 		scene.unit_grid_coords.clear(); scene.resume_turn_presentation()
 		scene.center_camera_on_grid(actor["coord"]); scene.set_process(true)

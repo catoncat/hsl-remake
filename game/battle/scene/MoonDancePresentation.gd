@@ -14,6 +14,7 @@ const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ## s_action lead, 1.5 s visible on the cut-in's scaled clock; the source lead is unread in ticks.
 const INTRO_VISIBLE_SECONDS := 1.5
 ## Scaled-clock values follow Timing.PLAYBACK_SPEED (instance state: a static var in a
@@ -31,8 +32,8 @@ var hit_sound: AudioStreamPlayer
 
 
 func _ready() -> void:
-	data = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/skills/moon_dance.json"))
-	assets = JSON.parse_string(FileAccess.get_file_as_string(preload("res://game/sim/ContentPaths.gd").MOON_DANCE))
+	data = ContentPaths.read_json("res://content/generated/hsl/skills/moon_dance.json")
+	assets = ContentPaths.read_json(ContentPaths.MOON_DANCE)
 	var additive := CanvasItemMaterial.new()
 	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	for index in range(8):

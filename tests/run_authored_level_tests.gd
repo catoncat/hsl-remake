@@ -123,7 +123,7 @@ func _authored_job_case(loop: Dictionary) -> void:
 	for key in JobStatsRules.ATTRIBUTES:
 		authored_caps[key] = int(row.get("caps", {}).get(key, -1))
 	check(JobStatsRules.has_job(AUTHORED_JOB) and JobStatsRules.caps(AUTHORED_JOB) == authored_caps, "the runtime job table carries 101 with the authored caps: " + str(JobStatsRules.caps(AUTHORED_JOB)))
-	var reia := BattlePlayLoop._unit(loop, "reia")
+	var reia := BattlePlayLoop.unit_ref(loop, "reia")
 	if reia.is_empty() or row.is_empty():
 		return
 	var variables := {"level": int(reia["level"]), "hp_level": int(reia["level"])}
@@ -298,8 +298,8 @@ func _opening_case(runtime: Node) -> void:
 ## through the script player like an original one.
 func _special_case(runtime: Node) -> void:
 	var loop: Dictionary = runtime.play_loop.duplicate(true)
-	var reia := BattlePlayLoop._unit(loop, "reia")
-	var wolf := BattlePlayLoop._unit(loop, "wolf_1")
+	var reia := BattlePlayLoop.unit_ref(loop, "reia")
+	var wolf := BattlePlayLoop.unit_ref(loop, "wolf_1")
 	check(str(reia.get("actor_id", "")) == "102" and int(reia.get("level", 0)) >= 3, "蕾雅 enters at least at her authored level 3 (entry growth applies as in any level): " + str(reia.get("level")))
 	reia["live_speed"] = 300
 	reia["stamina"] = 60
@@ -317,7 +317,7 @@ func _special_case(runtime: Node) -> void:
 	var fields: Dictionary = entry.get("fields", {})
 	check(["range", "effect_range", "expend", "damage", "hit_ratio", "attackpow_ratio", "function"].all(func(key): return str(fields.get(key, "")) == str(authored.get(key, "?"))), "the book row's fields are the authored table's numbers: " + str(fields))
 	check(BattlePlayLoop.can_use_special(loop, "reia"), "the special command is available")
-	var candidates: Array = AutoplayBrain._skill_options(loop, BattlePlayLoop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
+	var candidates: Array = AutoplayBrain.skill_options(loop, BattlePlayLoop.unit_ref(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
 	check(candidates.has(AUTHORED_SPECIAL_ID), "the autoplay commander (HSL_AUTOPLAY_BRAIN) can legally pick 龍炎斬: " + str(candidates))
 	var started := BattlePlayLoop.choose_command(loop, "special")
 	check(str(started.get("interaction", "")) == "special_select", "two specials open the special list: " + str(started.get("interaction")))
@@ -348,8 +348,8 @@ func _special_case(runtime: Node) -> void:
 ## grown into targeting.json by the generator) and the effCode script plays on the map.
 func _magic_case(runtime: Node) -> void:
 	var loop: Dictionary = runtime.play_loop.duplicate(true)
-	var reia := BattlePlayLoop._unit(loop, "reia")
-	var wolf := BattlePlayLoop._unit(loop, "wolf_1")
+	var reia := BattlePlayLoop.unit_ref(loop, "reia")
+	var wolf := BattlePlayLoop.unit_ref(loop, "wolf_1")
 	var authored := _authored_skill_row(AUTHORED_MAGIC_ID)
 	check(int(reia.get("max_mp", 0)) > 0 and bool(reia["growth_profile"]["source"].get("has_magic", false)), "declaring 龍息 gives 蕾雅 MP from job 101's formula: " + str(reia.get("max_mp")))
 	reia["live_speed"] = 300
@@ -360,7 +360,7 @@ func _magic_case(runtime: Node) -> void:
 	var options := BattlePlayLoop.magic_options(loop, "reia")
 	check(options.size() == 1 and str(options[0]["id"]) == AUTHORED_MAGIC_ID and bool(options[0]["quote"]["ok"]) and str(options[0]["name"]) == str(authored.get("name_text", "")), "蕾雅's only magic is the authored 龍息 and she can pay for it: " + str(options.map(func(option): return [option["id"], option["quote"]])))
 	check(loop["skill_target_data"]["ranges"].has(str(authored.get("range", ""))), "the generated targeting table carries the range the authored row names: " + str(authored.get("range")))
-	var candidates: Array = AutoplayBrain._skill_options(loop, BattlePlayLoop._unit(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
+	var candidates: Array = AutoplayBrain.skill_options(loop, BattlePlayLoop.unit_ref(loop, "reia")).map(func(entry): return str(entry["option"]["id"]))
 	check(candidates.has(AUTHORED_MAGIC_ID), "the autoplay commander (HSL_AUTOPLAY_BRAIN) can legally pick 龍息: " + str(candidates))
 	var started := BattlePlayLoop.choose_command(loop, "magic")
 	started = BattlePlayLoop.choose_magic(started, AUTHORED_MAGIC_ID)

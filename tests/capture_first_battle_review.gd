@@ -31,7 +31,7 @@ func run() -> void:
 	scene._process(0)
 	await shot("map-clean")
 	var player: Dictionary = scene.BattlePlayLoop.unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "enemy021_1")
+	var enemy: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "enemy021_1")
 	enemy["coord"] = player["coord"] + Vector2i.RIGHT
 	enemy["hp"] = 1
 	scene.apply_loop(scene.play_loop, "test")
@@ -86,7 +86,7 @@ func run() -> void:
 	await shot("status-mage")
 	scene.status_panel.hide()
 	# A controlled native-derived level-up fixture, committed through the real panel/PlayLoop path.
-	var live: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+	var live: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 	live["exp"] = 99
 	live.merge(scene.BattlePlayLoop.ProgressionRules.resolve_experience(live, 1, scene.play_loop["equipment_items"]), true)
 	scene.menus.open_growth("leonard")

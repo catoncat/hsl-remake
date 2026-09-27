@@ -9,6 +9,7 @@ const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, book: Dictionary, equipment: Dictionary) -> Dictionary:
@@ -16,7 +17,7 @@ static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, 
 	if error != "": return {"ok": false, "reason": error}
 	var base := SpecialDamageRules.prepare(caster, target, fields, book, equipment)
 	if not base["ok"]: return base
-	var resistance := SkillResourceRules._integer(target.get("combat_profile", {}).get("resist_by_type", {}).get("4"))
+	var resistance := Values.non_negative_int(target.get("combat_profile", {}).get("resist_by_type", {}).get("4"))
 	if resistance < 0 or resistance > 80: return {"ok": false, "reason": "missing_skill_resistance"}
 	var mods := StatusApplicationRules.modifiers(target, book, equipment)
 	if not mods["ok"]: return mods

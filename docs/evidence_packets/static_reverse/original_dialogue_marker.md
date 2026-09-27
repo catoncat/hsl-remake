@@ -1,22 +1,5 @@
 # 原作对白框翻页提示：▼／□ 字形与闪烁
 
-> evidence: static-derived; negative-evidence: 无方框 SHP; runtime-measured: 2026-09-24 用户录屏 307.9–309.9 s · status: live · functions: 0x414280, 0x4145b4, 0x4146e0, 0x41475b, 0x414794, 0x460884 · tools: run_presentation_contract_tests.gd · updated: 2026-09-25
+> evidence: static-derived · status: superseded: original_dialogue_board.md · updated: 2026-09-27
 
-Checked: 2026-09-25
-
-**static-derived**（r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无 Wine、无有界执行）＋ **runtime-measured**（用户原版录屏 `录屏2026-09-24 中午12.03.22.mov`，逐帧）。回答[差异清单](parity_gap_inventory.md) `dialogue-continue-marker`：翻页提示不是图片资源，是对白框处理器画的两个 Big5 字形。
-
-## 结论
-
-对白框处理器是 proc 表第 13 项 `0x414280`（[检查目标包](original_check_targets.md)已认出）。
-
-- **位置**：初始化 `0x4145b4` 起把框的左上写进 `+4`／`+8`：x ＝ 镜头 x ＋ 144（`0x41461b`），y ＝ 镜头 y ＋ 320，旗标 `0x4000` 时 ＋ 20（`0x4145f6–0x414618`）。`+0x70`／`+0x74` 是框形状的宽高（`0x414463` 取形状尺寸后写入，BOARD02 为 489×145）。提示字的格位 ＝ (`+4` ＋ `+0x70` − 30, `+8` ＋ `+0x74` − 30)（`0x414794–0x4147bf`），底槽即屏幕 (603, 435)。
-- **字形**：`[+0xa0]`（按 `#` 切出的下一页正文指针，`0x4148ba–0x4148e0`）非空时画 `0x476c58` 的 Big5 `A1 BF`「▼」，为空（最后一页）时画 `0x476c54` 的 `A1 BC`「□」。两个分支都经文字例程 `0x460884`（模式 `0x1800000`）先在 (+1,+1) 用 `0x8430` 画一遍、再在原位用 `0xffff` 画一遍——与其他文字相同的阴影画法。hsl.pak 的 4519 个 SHP 里也没有 20×20 的空心方框（遍历 16–24 px 尺寸的全部形状，只有魔法帧、数字与状态图标；negative-evidence）。
-- **闪烁**：子状态 1 擦出正文（`+0x9c` 每 tick ＋ `[0x477c1c]`＝3，到 0x70 止），到头时 `0x4146e0` 进子状态 2 并置 `+0x98 = 0x000a000a`、`+0x94 = 1`；子状态 2 每 tick `word +0x98` 减一，归零时重载高字 10 并翻转 `+0x94`（`0x41475b–0x414782`），`+0x94` 为 1 才画字（`0x414788`）。即正文擦完后先亮 10 tick、再灭 10 tick，循环；确认键（`0x4c6390 & 0x600010` 或 `0x4c6398 & 0x10002`）进子状态 3。
-- **录屏实测**（307.9–309.9 s，最后一页）：框右下角的白色 1 px 空心方框，白边 20×20、左上 (605,438)，框内上／左一条灰线、框外右／下一条灰线——正是「□」字形叠在 (+1,+1) 阴影上。亮 0.17–0.20 s、灭 0.17–0.20 s，周期约 0.35 s（录屏 tick 19.4 ms × 10 ＝ 0.194 s，与静态 10 tick 相符）。录屏里没有「▼」的样本。
-
-## 重制
-
-`BattleDialogue`：`continue_label` 只在还有下一页时显示 `▼`（系统字，白字＋`TEXT_SHADOW` 阴影，格位 `MARKER_CELL` ＝ 板左上 (144,0) ＋ (489−30, 145−30)）；最后一页显示 `end_marker`——按录屏墨迹画的 20×20 白框＋(+1,+1) 阴影框，墨迹在格位 ＋(2,3)，底槽落在 (605,438)。两者都在本页擦出结束后按 `MARKER_BLINK_TICKS = 10` 亮／灭（`marker_shown`，16 ms tick）。原「1 / 2 ▼」页码与「▼」常亮文字去掉。检查：`run_presentation_contract_tests.dialogue_contracts`（闪烁节拍、擦出期间不显示、▼／□ 分工、□ 在 (605,438)；消融：提示常亮 → 3 条失败）。
-
-**provisional**：▼ 用系统字，原版位图字形未导入；□ 墨迹偏移 (2,3) 按录屏量；擦出何时结束沿用重制的逐行擦出节奏（原 `+0x9c` 38 tick 擦出未照搬）；顶槽旗标 `0x4000`（y ＋ 20）的置位者与重制做法见[对白框包](original_dialogue_board.md)。
+结论已并入 [original_dialogue_board.md](original_dialogue_board.md)。

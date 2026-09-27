@@ -7,6 +7,7 @@ extends RefCounted
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 static func first_healing_slot(slots: Array, items: Dictionary) -> Dictionary:
@@ -27,16 +28,16 @@ static func first_healing_slot(slots: Array, items: Dictionary) -> Dictionary:
 static func definition_error(item: Dictionary) -> String:
 	var permanent_error := PermanentCapabilityRules.definition_error(item)
 	if permanent_error != "": return permanent_error
-	if not StatusEffectRules._unsigned(item.get("heal_hp"), 0x7fffffff) or not StatusEffectRules._unsigned(item.get("cure_poison"), 1) or not StatusEffectRules._unsigned(item.get("cure_paralysis"), 1):
+	if not Values.is_integer_in(item.get("heal_hp"), 0, 0x7fffffff) or not Values.is_integer_in(item.get("cure_poison"), 0, 1) or not Values.is_integer_in(item.get("cure_paralysis"), 0, 1):
 		return "invalid_item_effect"
-	if not StatusEffectRules._unsigned(item.get("heal_mp", 0), 0x7fffffff): return "invalid_item_effect"
-	if not StatusEffectRules._unsigned(item.get("restore_stamina", 0), 60) or not StatusEffectRules._unsigned(item.get("cure_no_magic", 0), 1) or not StatusEffectRules._unsigned(item.get("cure_weaken", 0), 1): return "invalid_item_effect"
+	if not Values.is_integer_in(item.get("heal_mp", 0), 0, 0x7fffffff): return "invalid_item_effect"
+	if not Values.is_integer_in(item.get("restore_stamina", 0), 0, 60) or not Values.is_integer_in(item.get("cure_no_magic", 0), 0, 1) or not Values.is_integer_in(item.get("cure_weaken", 0), 0, 1): return "invalid_item_effect"
 	var local := false
 	for key in ["local_attack", "local_defense"]:
 		var bounds: Variant = item.get(key, [])
 		if not bounds is Array: return "invalid_item_effect"
 		if bounds.is_empty(): continue
-		if bounds.size() != 2 or not StatusEffectRules._unsigned(bounds[0], 100) or not StatusEffectRules._unsigned(bounds[1], 100) or int(bounds[0]) < 5 or int(bounds[0]) > int(bounds[1]) or int(bounds[1]) > (96 if key == "local_attack" else 100): return "invalid_item_effect"
+		if bounds.size() != 2 or not Values.is_integer_in(bounds[0], 0, 100) or not Values.is_integer_in(bounds[1], 0, 100) or int(bounds[0]) < 5 or int(bounds[0]) > int(bounds[1]) or int(bounds[1]) > (96 if key == "local_attack" else 100): return "invalid_item_effect"
 		local = true
 	return "" if not item.get("permanent",{}).is_empty() or local or int(item["heal_hp"]) > 0 or int(item.get("heal_mp", 0)) > 0 or int(item.get("restore_stamina", 0)) > 0 or int(item.get("cure_no_magic", 0)) == 1 or int(item.get("cure_weaken", 0)) == 1 or int(item["cure_poison"]) == 1 or int(item["cure_paralysis"]) == 1 else "unsupported_item_effect"
 
@@ -78,12 +79,12 @@ static func prepare(target: Dictionary, item: Dictionary, spend: bool = false) -
 	error = StatusEffectRules.input_error(target)
 	if error != "":
 		return {"ok": false, "reason": error}
-	if not StatusEffectRules._unsigned(target.get("hp"), 0x7fffffff) or not StatusEffectRules._unsigned(target.get("max_hp"), 0x7fffffff) or int(target["hp"]) <= 0 or bool(target.get("defeated", false)) or bool(target.get("departed", false)):
+	if not Values.is_integer_in(target.get("hp"), 0, 0x7fffffff) or not Values.is_integer_in(target.get("max_hp"), 0, 0x7fffffff) or int(target["hp"]) <= 0 or bool(target.get("defeated", false)) or bool(target.get("departed", false)):
 		return {"ok": false, "reason": "item_target_unavailable"}
 	var restored := mini(int(item["heal_hp"]), maxi(0, int(target["max_hp"]) - int(target["hp"])))
 	var mana := 0
 	if int(item.get("heal_mp", 0)) > 0:
-		if not StatusEffectRules._unsigned(target.get("mp"),0x7fffffff) or not StatusEffectRules._unsigned(target.get("max_mp"),0x7fffffff) or int(target["mp"])>int(target["max_mp"]):
+		if not Values.is_integer_in(target.get("mp"), 0, 0x7fffffff) or not Values.is_integer_in(target.get("max_mp"), 0, 0x7fffffff) or int(target["mp"])>int(target["max_mp"]):
 			return {"ok":false,"reason":"invalid_item_target_mp"}
 		mana=mini(int(item["heal_mp"]),int(target["max_mp"])-int(target["mp"]))
 	var cured := int(item["cure_poison"]) == 1 and StatusEffectRules.poisoned(target)
@@ -94,7 +95,7 @@ static func prepare(target: Dictionary, item: Dictionary, spend: bool = false) -
 	var weaken_cured := int(item.get("cure_weaken", 0)) == 1 and StatusEffectRules.weakened(target)
 	var stamina := 0
 	if int(item.get("restore_stamina", 0)) > 0:
-		if not StatusEffectRules._unsigned(target.get("stamina"),60): return {"ok":false,"reason":"invalid_item_target_stamina"}
+		if not Values.is_integer_in(target.get("stamina"), 0, 60): return {"ok":false,"reason":"invalid_item_target_stamina"}
 		stamina = mini(int(item["restore_stamina"]),60-int(target["stamina"]))
 	var enhancements: Array = []
 	var permanent := PermanentCapabilityRules.prepare(target,item,spend)

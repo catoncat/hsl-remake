@@ -170,7 +170,7 @@ static func stat_fixture() -> Dictionary:
 		actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"]), true)
 		actor["hp"] = actor["max_hp"]
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop, "tina")
+	return BattlePlayLoop.return_to_player(loop, "tina")
 
 static func gear(loop: Dictionary, code: int, slot: String) -> Dictionary:
 	return BattlePlayLoop.change_equipment(loop, slot, BattlePlayLoop.unit(loop,"tina")["inventory"].find(code) if code else -1, code)
@@ -188,7 +188,7 @@ static func set_words(actor: Dictionary, words: Dictionary) -> void:
 		if value: actor["status_flags"] |= {"poison":1,"no_magic":2,"paralysis":4,"attack_up":16,"defense_up":32}[key]
 
 static func buff(loop: Dictionary, id: String, kind: String, duration: int = 3, power: int = 20) -> void:
-	var actor := BattlePlayLoop._unit(loop,id)
+	var actor := BattlePlayLoop.unit_ref(loop,id)
 	actor.merge(StatEnhancementRules.apply(actor,kind,duration,power)["actor"],true)
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 
@@ -322,7 +322,7 @@ func ownership_and_actions() -> void:
 	var walk:=BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(removed,"move"),Vector2i(14,16))
 	check(not BattlePlayLoop.command_available(walk,"magic"),"second-action unequip revokes movement casting immediately")
 	for condition in ["mp","no_magic","paralysis"]:
-		var invalid:=stat_fixture();var caster:=BattlePlayLoop._unit(invalid,"tina")
+		var invalid:=stat_fixture();var caster:=BattlePlayLoop.unit_ref(invalid,"tina")
 		if condition=="mp":caster["mp"]=0
 		else:caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster,condition,2)["changes"],true)
 		var ready:=BattlePlayLoop.SkillResolutionRules.available(caster,ATT,invalid["skill_book"]["skills"][ATT]["fields"],invalid["skill_book"],invalid["skill_target_data"],invalid["equipment_items"])
@@ -342,8 +342,8 @@ func high_tier_area_buffs() -> void:
 		var loop := stat_fixture()
 		for holder in row[3]: check(loop["skill_book"]["actors"][holder]["supported_initial_ids"].has(id), "source holder declares the area buff: " + holder + " " + id)
 		own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"].append(id)
-		BattlePlayLoop._unit(loop, "tina")["mp"] = 200
-		BattlePlayLoop._unit(loop, "tina")["max_mp"] = 200
+		BattlePlayLoop.unit_ref(loop, "tina")["mp"] = 200
+		BattlePlayLoop.unit_ref(loop, "tina")["max_mp"] = 200
 		var menu := BattlePlayLoop.choose_command(loop, "magic")
 		check(BattlePlayLoop.magic_options(menu, "tina").any(func(option): return option["id"] == id and option["quote"]["ok"]), "the area buff is listed and affordable in the magic menu: " + id)
 		var picked := BattlePlayLoop.choose_magic(menu, id)
@@ -368,8 +368,8 @@ func resist_barrier() -> void:
 	var loop := stat_fixture()
 	check(loop["skill_book"]["actors"].values().all(func(actor): return not actor["supported_initial_ids"].has(BARRIER)), "no PLAYERS row declares 魔障壁; only 賢者 87@48 learns it")
 	own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"].append(BARRIER)
-	BattlePlayLoop._unit(loop, "tina")["mp"] = 200
-	BattlePlayLoop._unit(loop, "tina")["max_mp"] = 200
+	BattlePlayLoop.unit_ref(loop, "tina")["mp"] = 200
+	BattlePlayLoop.unit_ref(loop, "tina")["max_mp"] = 200
 	var before := BattlePlayLoop.unit(loop, "companion").duplicate(true)
 	check(BattlePlayLoop.magic_options(BattlePlayLoop.choose_command(loop, "magic"), "tina").any(func(option): return option["id"] == BARRIER and option["quote"]["ok"]), "魔障壁 is listed and affordable in the magic menu")
 	var casted := cast(loop, BARRIER, "companion", zero)
@@ -383,7 +383,7 @@ func resist_barrier() -> void:
 		check(int(ally["combat_profile"]["resist_by_type"][key]) == mini(80, int(before["combat_profile"]["resist_by_type"][key]) + 7), "resistance %s rises by the barrier strength (cap 80)" % key)
 	check(ally["combat_profile"]["live_attack_damage"] == before["combat_profile"]["live_attack_damage"] and ally["combat_profile"]["live_defense"] == before["combat_profile"]["live_defense"] and ally["hp"] == before["hp"], "attack, defense and vitals are untouched")
 	check(StatMagicRules.receipt_error(receipt, casted["skill_book"]) == "" and BattleCheckpoint.encode(casted, VIEW)["ok"], "the barrier receipt replays through the checkpoint validator and saves")
-	var again := cast(BattlePlayLoop._return_to_player(casted.duplicate(true), "tina"), BARRIER, "companion", zero)
+	var again := cast(BattlePlayLoop.return_to_player(casted.duplicate(true), "tina"), BARRIER, "companion", zero)
 	var stacked := BattlePlayLoop.unit(again, "companion")
 	check(StatEnhancementRules.word(stacked, "resist_up") == ((14 << 16) | 4) and int(stacked["combat_profile"]["resist_by_type"]["0"]) == mini(80, int(before["combat_profile"]["resist_by_type"]["0"]) + 14), "a second cast adds strength and turns instead of averaging")
 	var capped := StatEnhancementRules.apply(stacked, "resist_up", 5, 20)
@@ -391,7 +391,7 @@ func resist_barrier() -> void:
 	var dispelled := StatEnhancementRules.dispel(stacked)
 	check(dispelled["effects"].is_empty() and StatEnhancementRules.word(dispelled["actor"], "resist_up") == StatEnhancementRules.word(stacked, "resist_up"), "退魔 clears only attack／defense words, never the barrier")
 	var enemy_barrier := again.duplicate(true)
-	var foe := BattlePlayLoop._unit(enemy_barrier, "enemy026_1")
+	var foe := BattlePlayLoop.unit_ref(enemy_barrier, "enemy026_1")
 	foe.merge(StatEnhancementRules.apply(foe, "resist_up", 3, 10)["actor"], true)
 	var dispel_quote := StatMagicRules.prepare(BattlePlayLoop.unit(enemy_barrier, "tina"), foe, enemy_barrier["skill_book"]["skills"][DISPEL]["fields"], enemy_barrier["skill_book"], enemy_barrier["skill_target_data"], enemy_barrier["equipment_items"])
 	check(dispel_quote["ok"] and not dispel_quote["useful"], "a barrier-only enemy is not a useful 退魔 target")
@@ -405,7 +405,7 @@ func resist_barrier() -> void:
 	check(AISupportRules.buff_useful([0x100], 0) and not AISupportRules.buff_useful([0x100], 0x40) and AISupportRules.buff_useful([0x100], 0x30), "the AI buff scan (0x40dcf0) maps AllUp to live flag 0x40")
 
 func aid_and_fallback() -> void:
-	var loop:=stat_fixture();var actor:=BattlePlayLoop._unit(loop,"tina")
+	var loop:=stat_fixture();var actor:=BattlePlayLoop.unit_ref(loop,"tina")
 	actor["player_commandable"]=false;actor["battle_actor_role"]=BattlePlayLoop.ROLE_FRIENDLY
 	actor["inventory"]=[0,0,0,0,0,0,0,0];actor["equipment"].append({"slot":"accessory2","item_code":227})
 	own(loop, "skill_book")["actors"]["002"]["supported_initial_ids"]=[ATT,DEF]
@@ -420,7 +420,7 @@ func aid_and_fallback() -> void:
 	var ally:=BattlePlayLoop.unit(second,"companion")
 	check((int(ally["status_flags"])&0x30)==0x30 and second["action_end_sequence"]==1,"both buff states committed through one AI action pair")
 	for condition in ["mp","no_magic","paralysis","full"]:
-		var blocked:=loop.duplicate(true);var caster:=BattlePlayLoop._unit(blocked,"tina")
+		var blocked:=loop.duplicate(true);var caster:=BattlePlayLoop.unit_ref(blocked,"tina")
 		if condition=="mp":caster["mp"]=0
 		elif condition=="full":buff(blocked,"companion","attack_up");buff(blocked,"companion","defense_up")
 		else:caster.merge(BattlePlayLoop.StatusEffectRules.apply(caster,condition,2)["changes"],true)
@@ -432,7 +432,7 @@ func aid_and_fallback() -> void:
 		check(done["scenario_ok"] and not done["last_ai_action"].has("skill_id"),"AI no-resource/status/already-enhanced fallback: "+condition+str(done.get("scenario_error","")))
 		if condition=="paralysis":check(done["last_ai_action"]["kind"]=="paralysis_skip" and not done["extra_action"]["pending"],"paralysis skips one queue slot, not two fabricated actions")
 	var dispel:=stat_fixture();buff(dispel,"enemy026_1","attack_up");buff(dispel,"enemy026_1","defense_up")
-	var victim:=BattlePlayLoop._unit(dispel,"enemy026_1")
+	var victim:=BattlePlayLoop.unit_ref(dispel,"enemy026_1")
 	for key in ["poison","no_magic","paralysis"]:victim.merge(BattlePlayLoop.StatusEffectRules.apply(victim,key,3,7 if key=="poison" else 0)["changes"],true)
 	var gone:=cast(dispel,DISPEL,"enemy026_1",zero)
 	check(gone["last_attack"].get("skill_id")==DISPEL and int(BattlePlayLoop.unit(gone,"enemy026_1")["status_flags"])==7,"dispel clears exactly two buffs and retains three afflictions")
@@ -441,7 +441,7 @@ func aid_and_fallback() -> void:
 
 func dispel_decisions_and_combat() -> void:
 	var loop := stat_fixture()
-	var actor := BattlePlayLoop._unit(loop,"tina")
+	var actor := BattlePlayLoop.unit_ref(loop,"tina")
 	actor["player_commandable"] = false; actor["battle_actor_role"] = BattlePlayLoop.ROLE_FRIENDLY
 	actor["no_attack"] = true; actor["inventory"] = [0,0,0,0,0,0,0,0]
 	actor["equipment"].append({"slot":"accessory2","item_code":227})
@@ -456,8 +456,8 @@ func dispel_decisions_and_combat() -> void:
 	var second := BattlePlayLoop.step_ai_turn(first,zero)
 	check(second["scenario_ok"] and not second["last_ai_action"].has("skill_id") and BattlePlayLoop.unit(second,"tina")["mp"] == actor["mp"] - 18,"second AI action rejects the now-useless dispel without another debit")
 	var baseline := stat_fixture()
-	BattlePlayLoop._unit(baseline,"enemy026_1")["coord"] = Vector2i(15,16)
-	BattlePlayLoop._unit(baseline,"enemy026_1")["no_attack"] = true
+	BattlePlayLoop.unit_ref(baseline,"enemy026_1")["coord"] = Vector2i(15,16)
+	BattlePlayLoop.unit_ref(baseline,"enemy026_1")["no_attack"] = true
 	var stronger := baseline.duplicate(true); buff(stronger,"tina","attack_up",3,24)
 	var guarded := baseline.duplicate(true); buff(guarded,"enemy026_1","defense_up",3,30)
 	var ordinary := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(baseline,"attack"),"enemy026_1",zero)
@@ -491,7 +491,7 @@ static func priest_fixture() -> Dictionary:
 		actor["player_commandable"]=actor["id"]!="enemy021_1"
 		actor["battle_actor_role"]=BattlePlayLoop.ROLE_PLAYER if actor["player_commandable"] else BattlePlayLoop.ROLE_ENEMY
 	loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,"tina")
+	return BattlePlayLoop.return_to_player(loop,"tina")
 
 static func equip(loop:Dictionary,slot:String,code:int)->Dictionary:
 	var actor:=BattlePlayLoop.unit(loop,"tina")
@@ -534,7 +534,7 @@ func native_stats()->void:
 				check(int(actor["combat_profile"]["resist_by_type"][element])==int(v["resist_by_type"][element]),"native priest resistance matches: "+element)
 
 func actions_and_growth()->void:
-	var loop:=priest_fixture();var actor:=BattlePlayLoop._unit(loop,"tina")
+	var loop:=priest_fixture();var actor:=BattlePlayLoop.unit_ref(loop,"tina")
 	actor["exp"]=99
 	var before:=loop.duplicate(true)
 	var payment:Dictionary=BattlePlayLoop.magic_options(loop,"tina")[0]["quote"]
@@ -548,7 +548,7 @@ func actions_and_growth()->void:
 	var allocated:=BattlePlayLoop.ProgressionRules.apply_allocation(grown,{"mind":1},loop["equipment_items"])
 	check(allocated["combat_profile"]["mind"]==grown["combat_profile"]["mind"]+1 and allocated["mp"]==grown["mp"],"priest growth uses its job while preserving spent MP")
 	var mobile:=equip(equip(priest_fixture(),"accessory1",232),"accessory2",227)
-	BattlePlayLoop._unit(mobile,"tina")["mp"]=int(BattlePlayLoop.magic_options(mobile,"tina")[0]["quote"]["amount"])
+	BattlePlayLoop.unit_ref(mobile,"tina")["mp"]=int(BattlePlayLoop.magic_options(mobile,"tina")[0]["quote"]["amount"])
 	var move:=BattlePlayLoop.move_unit_to(BattlePlayLoop.choose_command(mobile,"move"),Vector2i(11,16))
 	check(move["pending_move"] and BattlePlayLoop.command_available(move,"magic"),"current movement ring permits a moved priest heal")
 	var first:=BattlePlayLoop.attack_target(healing(move),"companion",zero)
@@ -565,8 +565,8 @@ func actions_and_growth()->void:
 	var tampered:=back.duplicate(true);tampered["player_unit_id"]="companion"
 	check(BattleCheckpoint.configuration(tampered)!=BattleCheckpoint.configuration(back),"primary actor is part of save compatibility")
 	var melee:=equip(priest_fixture(),"weapon",87)
-	BattlePlayLoop._unit(melee,"tina")["hit_bonus_accum"]=1000
-	BattlePlayLoop._unit(melee,"enemy021_1")["hp"]=1
+	BattlePlayLoop.unit_ref(melee,"tina")["hit_bonus_accum"]=1000
+	BattlePlayLoop.unit_ref(melee,"enemy021_1")["hp"]=1
 	var killed:=BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(melee,"attack"),"enemy021_1",zero)
 	check(killed["battle_outcome"]==BattleOutcome.VICTORY_ENEMIES_CLEARED and killed["rewarded_unit_ids"].count("enemy021_1")==1,"long staff reaches its source range and lethal outcome once")
 	check(BattlePlayLoop.attack_target(killed,"enemy021_1",no_rng)==killed,"terminal priest cannot repeat the accepted kill")
@@ -590,7 +590,7 @@ func mana_items()->void:
 	var drunk:=BattlePlayLoop.use_item(full,"244","tina",1)
 	check(drunk["item_use_sequence"]==full["item_use_sequence"]+1 and drunk["last_item_use"]["restored_mp"]==0 and drunk["last_item_use"]["heal_numbers"]["mp"]==0 and BattlePlayLoop.unit(drunk,"tina")["inventory"].count(244)==BattlePlayLoop.unit(full,"tina")["inventory"].count(244)-1,"full-MP use still spends one 244 and floats 0 MP (0x409e40, 0x444aba, 0x444ac9)")
 	loop= equip(loop,"accessory2",227)
-	BattlePlayLoop._unit(loop,"tina")["mp"]=0
+	BattlePlayLoop.unit_ref(loop,"tina")["mp"]=0
 	var used:=BattlePlayLoop.use_item(loop,"244","tina",BattlePlayLoop.unit(loop,"tina")["inventory"].find(244))
 	check(used["last_item_use"]["restored_mp"]==19 and used["last_item_use"]["restored_hp"]==0 and used["extra_action"]["pending"],"mana potion commits one use and leaves an independent second action")
 	var spent:=BattlePlayLoop.attack_target(healing(used),"companion",zero)
@@ -610,7 +610,7 @@ const BIND := "magic:magicEARTH:magicCode05"
 
 static func fixture_paralysis(role: String = "026", ai: bool = false) -> Dictionary:
 	var loop := run_position_equipment_tests.fixture(role, ai)
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	actor["inventory"] = [211,248,232,227,31,12,241,0]
 	actor["growth_profile"]["source"]["hit_point"] += 200
 	actor["growth_profile"]["source"]["magic_point"] += 100
@@ -620,7 +620,7 @@ static func fixture_paralysis(role: String = "026", ai: bool = false) -> Diction
 	actor["hp"] = actor["max_hp"]; actor["mp"] = actor["max_mp"]
 	own(loop, "skill_book")["actors"][role]["supported_initial_ids"] = [BIND, run_position_equipment_tests.WIND, run_position_equipment_tests.HEAL, run_position_equipment_tests.CURE]
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return loop if ai else BattlePlayLoop._return_to_player(loop,"leonard")
+	return loop if ai else BattlePlayLoop.return_to_player(loop,"leonard")
 
 static func afflict(actor: Dictionary, turns: int = 2) -> void:
 	actor.merge(StatusEffectRules.apply(actor,"paralysis",2)["changes"],true)
@@ -641,7 +641,7 @@ func native_cases_paralysis() -> void:
 	for row in packet["applications"]:
 		var c: Dictionary = row["input"]
 		var loop := base.duplicate(true)
-		var actor := BattlePlayLoop._unit(loop,"leonard");var target := BattlePlayLoop._unit(loop,"enemy021_1")
+		var actor := BattlePlayLoop.unit_ref(loop,"leonard");var target := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		actor["level"] = int(c["level"]);actor["hit_bonus_accum"] = int(c["hit_bonus"])
 		actor["combat_profile"].merge({"mind":int(c["mind"]),"live_magic_attack":int(c["magic_attack"])},true)
 		actor["equipment"] = [{"slot":"accessory1","item_code":215}]
@@ -684,11 +684,11 @@ func native_cases_paralysis() -> void:
 func entry_and_restore() -> void:
 	for ai in [false,true]:
 		for wings in [false,true]:
-			var loop := fixture_paralysis("026",ai);var actor := BattlePlayLoop._unit(loop,"leonard")
+			var loop := fixture_paralysis("026",ai);var actor := BattlePlayLoop.unit_ref(loop,"leonard")
 			actor["equipment"] = actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
 			if wings:actor["equipment"].append({"slot":"accessory1","item_code":227})
 			afflict(actor);actor.merge(StatusEffectRules.apply(actor,"poison",3,7)["changes"],true)
-			if not ai:loop=BattlePlayLoop._return_to_player(loop,"leonard")
+			if not ai:loop=BattlePlayLoop.return_to_player(loop,"leonard")
 			var original := loop.duplicate(true)
 			check(loop["interaction"] == "ai_resolving" and not BattlePlayLoop.command_available(loop,"wait"),"paralyzed player and AI share automatic fresh-entry path")
 			var saved := BattleCheckpoint.encode(loop,run_position_equipment_tests.VIEW)
@@ -704,35 +704,35 @@ func entry_and_restore() -> void:
 				check(restored["ok"] and BattlePlayLoop.step_ai_turn(restored["snapshot"]["loop"],no_rng) == result,"restoring before entry produces one identical skip, not a repeated old action")
 	var all := fixture_paralysis()
 	for actor in all["units"]:afflict(actor,1)
-	all=BattlePlayLoop._return_to_player(all,"leonard")
+	all=BattlePlayLoop.return_to_player(all,"leonard")
 	for _i in range(3):all=BattlePlayLoop.step_ai_turn(all,no_rng)
 	check(all["selected_unit_id"] == "leonard" and all["turn"] == 2 and all["action_end_sequence"] == 3,"entire immobilized roster advances once and returns normal control after expiry")
 	check(all["units"].all(func(a):return not StatusEffectRules.paralyzed(a)) and BattlePlayLoop.command_available(all,"move"),"expiry restores the next normal action instead of granting a late extra turn")
-	var skipped := fixture_paralysis();var actor := BattlePlayLoop._unit(skipped,"leonard")
+	var skipped := fixture_paralysis();var actor := BattlePlayLoop.unit_ref(skipped,"leonard")
 	afflict(actor,1);actor["equipment"].append({"slot":"armor-extra-invalid","item_code":227})
-	var bad := BattlePlayLoop.step_ai_turn(BattlePlayLoop._return_to_player(skipped,"leonard"),no_rng)
+	var bad := BattlePlayLoop.step_ai_turn(BattlePlayLoop.return_to_player(skipped,"leonard"),no_rng)
 	check(not bad["scenario_ok"] and bad["units"] == skipped["units"] and bad["action_end_sequence"] == 0,"invalid equipment/entry state cannot partially tick or advance")
 
 func spell_and_equipment() -> void:
-	var loop := fixture_paralysis();var actor := BattlePlayLoop._unit(loop,"leonard");var first := BattlePlayLoop._unit(loop,"enemy021_1")
+	var loop := fixture_paralysis();var actor := BattlePlayLoop.unit_ref(loop,"leonard");var first := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	actor["exp"] = 99;first["coord"] = Vector2i(11,8)
 	first["equipment"] = [{"slot":"accessory1","item_code":211}]
 	var second := first.duplicate(true);second.merge({"id":"bound-second","coord":Vector2i(10,9),"equipment":[]},true)
 	loop["units"].append(second)
 	var mp_before: int = actor["mp"]
-	var receipt := BattleLoopCombat._resolve_skill(loop,"leonard",first["id"],BIND,BattlePlayLoop.skill_fields(loop,BIND),actor["coord"],zero,Vector2i(10,8))
+	var receipt := BattleLoopCombat.resolve_skill(loop,"leonard",first["id"],BIND,BattlePlayLoop.skill_fields(loop,BIND),actor["coord"],zero,Vector2i(10,8))
 	check(not receipt.is_empty() and receipt["affected_targets"].size() == 2,"source cross effect accepts an empty center and real multiple targets")
 	if receipt.is_empty():return
 	check(not StatusEffectRules.paralyzed(first) and StatusEffectRules.paralyzed(second) and actor["mp"] == mp_before-16,"mixed immunity is per target and the action pays once")
 	check(actor["level"] == 2 and receipt.has("experience") and receipt["damage"] == 0,"paralysis contribution enters final EXP and role growth without fictitious damage")
-	var attacker := fixture_paralysis("001");var unit := BattlePlayLoop._unit(attacker,"leonard");var victim := BattlePlayLoop._unit(attacker,"enemy021_1")
-	attacker=run_position_equipment_tests.equip(attacker,"weapon",12);unit=BattlePlayLoop._unit(attacker,"leonard");victim=BattlePlayLoop._unit(attacker,"enemy021_1")
+	var attacker := fixture_paralysis("001");var unit := BattlePlayLoop.unit_ref(attacker,"leonard");var victim := BattlePlayLoop.unit_ref(attacker,"enemy021_1")
+	attacker=run_position_equipment_tests.equip(attacker,"weapon",12);unit=BattlePlayLoop.unit_ref(attacker,"leonard");victim=BattlePlayLoop.unit_ref(attacker,"enemy021_1")
 	unit["hit_bonus_accum"]=1000;victim["coord"]=Vector2i(9,8);victim["no_attack"]=false;victim["combat_profile"]["attack_back"]=100;afflict(victim)
-	var exchange := BattleLoopCombat._resolve_exchange(attacker,"leonard",victim["id"],zero)
+	var exchange := BattleLoopCombat.resolve_exchange(attacker,"leonard",victim["id"],zero)
 	check(exchange["counter"].is_empty() and BattlePlayLoop.CombatSequence.participant_strikes(exchange).size()==2 and StatusEffectRules.paralyzed(victim),"paralyzed defender cannot counter a double series and damage does not fabricate a cure")
 	for role in ["001","024","026"]:
 		var equipped := run_position_equipment_tests.equip(fixture_paralysis(role),"accessory1",211)
-		var owner := BattlePlayLoop._unit(equipped,"leonard")
+		var owner := BattlePlayLoop.unit_ref(equipped,"leonard")
 		check(StatusApplicationRules.modifiers(owner,equipped["skill_book"],equipped["equipment_items"])["effects"] & 0x4000000,"source ring protects current eligible job")
 		afflict(owner)
 		var refreshed := BattlePlayLoop.ProgressionRules.refresh_growth_stats(owner,equipped["equipment_items"])
@@ -743,7 +743,7 @@ func spell_and_equipment() -> void:
 
 func aid_and_replanning() -> void:
 	var support := run_position_equipment_tests.equip(fixture_paralysis(),"accessory2",227)
-	var bound := BattlePlayLoop._unit(support,"enemy023_1")
+	var bound := BattlePlayLoop.unit_ref(support,"enemy023_1")
 	bound["coord"] = Vector2i(10,8);bound["hp"] = 4;afflict(bound)
 	bound.merge(StatusEffectRules.apply(bound,"poison",3,7)["changes"],true)
 	bound.merge(StatusEffectRules.apply(bound,"no_magic",2)["changes"],true)
@@ -760,28 +760,28 @@ func aid_and_replanning() -> void:
 	var disabled := BattlePlayLoop.unit(support,"leonard");afflict(disabled)
 	var unavailable := BattlePlayLoop.SkillResolutionRules.available(disabled,BIND,BattlePlayLoop.skill_fields(support,BIND),support["skill_book"],support["skill_target_data"],support["equipment_items"])
 	check(not unavailable["ok"] and unavailable["reason"]=="caster_paralyzed","ownership and resources cannot bypass caster paralysis")
-	var loop := fixture_paralysis();var ally := BattlePlayLoop._unit(loop,"enemy023_1")
+	var loop := fixture_paralysis();var ally := BattlePlayLoop.unit_ref(loop,"enemy023_1")
 	ally["coord"] = Vector2i(10,8);afflict(ally);ally.merge(StatusEffectRules.apply(ally,"no_magic",2)["changes"],true)
 	loop=run_position_equipment_tests.moved(loop,Vector2i(9,8))
 	var use := BattlePlayLoop.use_item(loop,"248","enemy023_1",BattlePlayLoop.unit(loop,"leonard")["inventory"].find(248))
 	check(use["last_item_use"].get("cured_paralysis",false) and not StatusEffectRules.paralyzed(BattlePlayLoop.unit(use,"enemy023_1")) and StatusEffectRules.magic_blocked(BattlePlayLoop.unit(use,"enemy023_1")),"actual move-then-item releases only paralysis before ally acts")
 	check(use["selected_unit_id"]=="enemy023_1" and not BattlePlayLoop.unit(use,"leonard")["inventory"].has(248),"cure item debits once and restores next actor control")
-	var ai := fixture_paralysis("026",true);var medic := BattlePlayLoop._unit(ai,"leonard");var patient := BattlePlayLoop._unit(ai,"enemy023_1")
+	var ai := fixture_paralysis("026",true);var medic := BattlePlayLoop.unit_ref(ai,"leonard");var patient := BattlePlayLoop.unit_ref(ai,"enemy023_1")
 	medic["inventory"]=[248,0,0,0,0,0,0,0];medic["mp"]=0;patient["coord"]=Vector2i(12,8);afflict(patient)
-	BattlePlayLoop._unit(ai,"enemy021_1")["coord"] = Vector2i(17,18) # Preserve a reachable aid route, not an occupied corridor.
+	BattlePlayLoop.unit_ref(ai,"enemy021_1")["coord"] = Vector2i(17,18) # Preserve a reachable aid route, not an occupied corridor.
 	own(ai, "ai_profiles")["actors"]["026"]["profile"].merge({"ai_help_otherhp":0,"ai_help_status":100,"ai_check_dying":0,"ai_help_selfhp":0},true)
-	var prep := BattleLoopAI._prepare_ai_turn(ai,"leonard")
+	var prep := BattleLoopAI.prepare_ai_turn(ai,"leonard")
 	check(prep["ok"] and prep["ally_support"]["status_items"].has(patient["id"]),"AI with no mana plans actual cure-item aid: "+str(prep.get("reason","")))
 	if not prep["ok"] or not prep["ally_support"]["status_items"].has(patient["id"]):return
 	var plan: Dictionary = prep["ally_support"]["status_items"][patient["id"]]
 	for changed in ["blocked","dead","cured","spent","paralyzed"]:
 		var bad := ai.duplicate(true)
 		if changed=="blocked":own(bad, "tiles")[plan["destination"]]={"blocks_movement":true}
-		elif changed=="dead":BattlePlayLoop._unit(bad,patient["id"]).merge({"hp":0,"defeated":true},true)
-		elif changed=="cured":BattlePlayLoop._unit(bad,patient["id"]).merge(StatusEffectRules.cure_paralysis(BattlePlayLoop.unit(bad,patient["id"])),true)
-		elif changed=="spent":BattlePlayLoop._unit(bad,"leonard")["inventory"][0]=0
-		else:afflict(BattlePlayLoop._unit(bad,"leonard"))
+		elif changed=="dead":BattlePlayLoop.unit_ref(bad,patient["id"]).merge({"hp":0,"defeated":true},true)
+		elif changed=="cured":BattlePlayLoop.unit_ref(bad,patient["id"]).merge(StatusEffectRules.cure_paralysis(BattlePlayLoop.unit(bad,patient["id"])),true)
+		elif changed=="spent":BattlePlayLoop.unit_ref(bad,"leonard")["inventory"][0]=0
+		else:afflict(BattlePlayLoop.unit_ref(bad,"leonard"))
 		var original := bad.duplicate(true)
-		check(BattleLoopAI._execute_ai_support_item(bad,"leonard",plan).is_empty() and bad==original,"stale aid rejects before position/inventory/effect mutation: "+changed)
+		check(BattleLoopAI.execute_ai_support_item(bad,"leonard",plan).is_empty() and bad==original,"stale aid rejects before position/inventory/effect mutation: "+changed)
 	var done := BattlePlayLoop.step_ai_turn(ai,zero)
 	check(done["scenario_ok"] and done["last_ai_action"]["kind"] == "move_then_item" and not StatusEffectRules.paralyzed(BattlePlayLoop.unit(done,patient["id"])) and done["selected_unit_id"]==patient["id"],"AI follows path, cures, then returns actual patient control")

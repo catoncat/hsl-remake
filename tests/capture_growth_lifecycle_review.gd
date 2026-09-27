@@ -49,7 +49,7 @@ func setup_growth() -> void:
 	if mode not in ["public","initial","initial_dev"]:
 		scene.set_process(false)
 		var loop:=run_growth_lifecycle_tests.fixture(4 if mode=="below" else 5)
-		var own:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var foe:=BattlePlayLoop._unit(loop,"enemy021_1")
+		var own:=BattlePlayLoop.unit_ref(loop,"tina");var ally:=BattlePlayLoop.unit_ref(loop,"companion");var foe:=BattlePlayLoop.unit_ref(loop,"enemy021_1")
 		loop["scenario_id"]="growth_lifecycle_trial";loop["scenario_path"]=TRIAL;loop["scenario_title"]="成長與學技演練"
 		loop["consumables"]=scene.play_loop["consumables"].duplicate(true)
 		foe["coord"]=Vector2i(11,16);foe["ai_home_coord"]=foe["coord"]
@@ -108,7 +108,7 @@ func setup_growth() -> void:
 			actor["grid_coord"]=actor["coord"];actor["ai_home_coord"]=actor["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(actor,loop["units"],loop["tiles"],loop["map_size"])=="","legal source-map training setup")
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		loop=BattlePlayLoop._return_to_player(loop,"companion" if mode=="ai_learn" else owner_id)
+		loop=BattlePlayLoop.return_to_player(loop,"companion" if mode=="ai_learn" else owner_id)
 		scene.apply_loop(loop, "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(BattlePlayLoop.unit(loop,owner_id)["coord"])

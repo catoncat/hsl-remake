@@ -13,6 +13,7 @@ const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const MobilityRules = preload("res://game/sim/MobilityRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 ## `stamina_pin` >= 0 is a development fixture's skill_rules.initial_stamina; -1 keeps the
@@ -33,13 +34,13 @@ static func prepare(template: Dictionary, book: Dictionary, ai: Dictionary, prog
 	var instance_error := instance_input_error(actor)
 	if instance_error != "": return {"ok": false, "reason": instance_error}
 	var navigation: Dictionary = AINavigationRules.instance_profile(actor, ai.get("actors", {}).get(code, {}).get("profile", {}))
-	if SkillResourceRules._integer(navigation.get("wait_round")) < 0: return {"ok": false, "reason": "missing_ai_wait_source"}
+	if Values.non_negative_int(navigation.get("wait_round")) < 0: return {"ok": false, "reason": "missing_ai_wait_source"}
 	AINavigationRules.initialize(actor, navigation)
 	actor["hit_bonus_accum"] = int(actor.get("hit_bonus_accum", 0))
 	if not progression.has(code): return {"ok": false, "reason": "missing_actor_progression"}
 	# 0x44cb10 copies the whole PLAYERS template record, stamina word +0xe8 included: 0x44cb41
 	# for a first registration, 0x44cb88 for an NPC (001 20, 006 8, every other row 0).
-	var stamina := stamina_pin if stamina_pin >= 0 else SkillResourceRules._integer(progression[code].get("stamina"))
+	var stamina := stamina_pin if stamina_pin >= 0 else Values.non_negative_int(progression[code].get("stamina"))
 	if stamina < 0 or stamina > 60: return {"ok": false, "reason": "missing_actor_template_stamina"}
 	actor.merge(progression[code], true)
 	actor["pending_stat_points"] = 0
@@ -66,15 +67,15 @@ static func instance_input_error(actor: Dictionary) -> String:
 	if not actor.has("evef_instance"): return ""
 	var instance: Variant = actor["evef_instance"]
 	if not instance is Dictionary: return "invalid_evef_instance"
-	if instance.has("items") and (not instance["items"] is Array or instance["items"].size() > 8 or instance["items"].any(func(code): return SkillResourceRules._integer(code) <= 0)):
+	if instance.has("items") and (not instance["items"] is Array or instance["items"].size() > 8 or instance["items"].any(func(code): return Values.non_negative_int(code) <= 0)):
 		return "invalid_evef_instance_items"
 	var overrides: Variant = instance.get("overrides", {})
 	if not overrides is Dictionary: return "invalid_evef_instance_overrides"
 	for key in overrides:
 		var value: Variant = overrides[key]
 		if key == "fixed_point":
-			if not value is Array or value.size() != 2 or SkillResourceRules._integer(value[0]) < 0 or SkillResourceRules._integer(value[1]) < 0: return "invalid_evef_fixed_point"
-		elif SkillResourceRules._integer(value) < 0: return "invalid_evef_instance_override_" + str(key)
+			if not value is Array or value.size() != 2 or Values.non_negative_int(value[0]) < 0 or Values.non_negative_int(value[1]) < 0: return "invalid_evef_fixed_point"
+		elif Values.non_negative_int(value) < 0: return "invalid_evef_instance_override_" + str(key)
 	return ""
 
 

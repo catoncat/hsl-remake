@@ -38,8 +38,8 @@ func run() -> void:
 	scene.get_node("BattleMusic").stop() # Isolate game action cues, not microphone/system audio.
 	view = scene.get_node("BattlePresentation")
 	view.cutin.set_process(false)
-	var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var caster: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "enemy026_1")
+	var player: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var caster: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
 	caster["coord"] = player["coord"] + Vector2i(-3, -1)
 	scene.apply_loop(scene.play_loop, "test")
 	scene._process(0)
@@ -197,7 +197,7 @@ func show_panel() -> void:
 		await escape_panel()
 		await escape_panel()
 	else:
-		var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
+		var player: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
 		player["exp"] = 99
 		player.merge(scene.BattlePlayLoop.ProgressionRules.resolve_experience(player, 1, scene.play_loop["equipment_items"]), true)
 		scene.menus.open_growth("leonard")

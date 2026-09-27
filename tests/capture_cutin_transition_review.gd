@@ -29,8 +29,8 @@ func run() -> void:
 	presentation = scene.get_node("BattlePresentation")
 	await hold(0.3)
 	var Loop = scene.BattlePlayLoop
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "actor021_1")
+	var player: Dictionary = Loop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = Loop.unit_ref(scene.play_loop, "actor021_1")
 	enemy["coord"] = player["coord"] + Vector2i(1, 0)
 	player["hit_bonus_accum"] = 9
 	# Fixture only: both sides survive the exchange so the counter's shot closes it.

@@ -30,7 +30,7 @@ func setup_items() -> void:
 		# Keep the public training identity on restart/save; this is setup only.
 		var config := run_tactical_items_tests.initial()
 		for key in ["scenario_path","scenario_title","consumables"]:loop[key]=config[key].duplicate(true) if config[key] is Dictionary else config[key]
-		var actor:=BattlePlayLoop._unit(loop,"tina");var ally:=BattlePlayLoop._unit(loop,"companion");var foe:=BattlePlayLoop._unit(loop,"enemy026_1")
+		var actor:=BattlePlayLoop.unit_ref(loop,"tina");var ally:=BattlePlayLoop.unit_ref(loop,"companion");var foe:=BattlePlayLoop.unit_ref(loop,"enemy026_1")
 		actor["equipment"]=actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
 		actor["inventory"]=[262,262,263,247,250,227,244,0]
 		if mode=="invalid":
@@ -83,7 +83,7 @@ func setup_items() -> void:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","declared route uses legal source terrain")
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
+		scene.apply_loop(BattlePlayLoop.return_to_player(loop,"companion" if mode.begins_with("ai_") else "tina"), "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)

@@ -2,13 +2,14 @@ extends RefCounted
 ## Immutable generated source data, separate from the mutable equipped codes.
 ## provenance:
 ##   rules: resource-derived content/generated/hsl/equipment/items.json
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const PATH := preload("res://game/sim/ContentPaths.gd").EQUIPMENT_ITEMS
 static var _items: Dictionary = {}
 
 
 static func items() -> Dictionary:
 	if _items.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+		var parsed: Variant = ContentPaths.read_json(PATH)
 		if not parsed is Dictionary or parsed.get("schema", "") != "hsl_equipment_items.v1" or not parsed.get("items") is Dictionary:
 			push_error("Missing or invalid generated equipment catalog")
 			return {}

@@ -12,7 +12,7 @@ extends RefCounted
 const Presence = preload("res://game/sim/BattlePresenceRules.gd")
 
 
-## Called once per settled action (BattleLoopScript._resolve_outcome): every piece started
+## Called once per settled action (BattleLoopScript.resolve_outcome): every piece started
 ## the action at the pool, so the pool moves by the sum of the pieces' changes.
 static func sync(loop: Dictionary) -> void:
 	var groups: Dictionary = {}

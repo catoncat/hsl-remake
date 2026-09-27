@@ -223,7 +223,7 @@ func _board(parent: Node, file: String) -> TextureRect:
 
 func panel_alignment_contracts() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
-	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd")._unit(loop, "leonard").duplicate(true)
+	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd").unit_ref(loop, "leonard").duplicate(true)
 	var panel = preload("res://game/battle/scene/BattleStatusPanel.gd").new()
 	root.add_child(panel)
 	await process_frame

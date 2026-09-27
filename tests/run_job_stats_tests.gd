@@ -22,7 +22,7 @@ static func fixture(code: String = "001", commandable: bool = true) -> Dictionar
 	loop["units"] = [source,ally,enemy]
 	loop["tiles"] = {}; loop["map_size"] = Vector2i(24,24); loop["reinforcement_templates"] = []
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,"leonard") if commandable else ai_start(loop)
+	return BattlePlayLoop.return_to_player(loop,"leonard") if commandable else ai_start(loop)
 
 
 static func ai_start(loop: Dictionary) -> Dictionary:
@@ -75,7 +75,7 @@ func run() -> void:
 			check(BattlePlayLoop.ProgressionRules.exp_to_next(actor["level"]) == expected["exp_threshold"], "shared threshold follows original refreshed level")
 	for code in ["001","024","026"]:
 		var battle := fixture(code)
-		var actor := BattlePlayLoop._unit(battle,"leonard")
+		var actor := BattlePlayLoop.unit_ref(battle,"leonard")
 		actor["exp"] = 99; actor["hp"] = 1; actor["mp"] = 0
 		var queue: Dictionary = battle["turn_queue"].duplicate(true)
 		var grew := BattlePlayLoop.ProgressionRules.resolve_experience(actor,1,battle["equipment_items"])
@@ -92,9 +92,9 @@ func run() -> void:
 			removed = BattlePlayLoop.change_equipment(removed,"accessory1",BattlePlayLoop.unit(removed,"leonard")["inventory"].find(old_code),old_code)
 		check(BattlePlayLoop.unit(removed,"leonard")["combat_profile"] == before["combat_profile"] and BattlePlayLoop.unit(removed,"leonard")["traversal"] == before["traversal"], "remove/refresh restores derived values without changing source traversal")
 		var invalid := allocated.duplicate(true)
-		BattlePlayLoop._unit(invalid,"leonard")["growth_profile"]["source"].erase("mode")
+		BattlePlayLoop.unit_ref(invalid,"leonard")["growth_profile"]["source"].erase("mode")
 		check(BattlePlayLoop.change_equipment(invalid,"accessory1",1,223) == invalid, "missing source mode rejects exchange atomically")
-		BattlePlayLoop._unit(invalid,"leonard")["growth_profile"]["job_code"] = 90.5
+		BattlePlayLoop.unit_ref(invalid,"leonard")["growth_profile"]["job_code"] = 90.5
 		check(BattlePlayLoop.ProgressionRules.refresh_input_error(BattlePlayLoop.unit(invalid,"leonard"),invalid["equipment_items"]) != "", "fractional job identity cannot truncate into a supported class")
 	for actor in loop["units"]:
 		if actor["actor_id"] == "001": continue

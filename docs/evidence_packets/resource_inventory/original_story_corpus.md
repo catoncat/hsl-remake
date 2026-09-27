@@ -1,8 +1,18 @@
 # Original story corpus (all narrative scripts, resource-derived)
 
-> evidence: resource-derived; provisional · status: record-only · tools: hsl_chapter_dialogue.py, hsl_resource_scanner.py, hsltools/data/story_corpus.py, test_hsl_story_corpus.py · updated: 2026-09-21
+> evidence: resource-derived; provisional · status: record-only · tools: hsl_chapter_dialogue.py, hsl_resource_scanner.py, hsltools/data/story_corpus.py, test_hsl_story_corpus.py · updated: 2026-09-27
 
-**Claim boundary.** `resource-derived` text and script structure only. `tools/hsltools/data/story_corpus.py` reads every
+## 结论
+
+- 原版 `hsl.pak` 的 284 个叙事脚本（152 STORY、130 winfail、STORYOVER、TOWNDEF）共 2793 次消息引用、1792 个不同消息 id，全部能在 RESOURCE.TXT `[name]` 表里解析；STORY 编号、流转边与 opcode 覆盖都可逐项数出（resource-derived）。
+- 重制 `tools/hsltools/data/story_corpus.py` 把它们写成 `content/imported/hsl/story_corpus/`，与 16 份逐关对白证据逐字对比 0 差异（resource-derived）。
+- 本包只恢复文本与动作顺序，不恢复时序、条件真值、镜头／走位目标或 handler 副作用；`???` 说话人标签是重制选择（provisional）。
+
+## 证据
+
+### resource-derived：范围
+
+`resource-derived` text and script structure only. `tools/hsltools/data/story_corpus.py` reads every
 narrative script of `hsl.pak` and the `[name]` section of `DATA\\RESOURCE.TXT`, and writes the message text and
 the source order of the script actions. It restores **text and action order** — not timing, not the truth value of
 `actCheck*` / `teCheck*` branch conditions, not camera / walk targets, not handler side effects. A file name or
@@ -17,40 +27,7 @@ Machine-readable output: `content/imported/hsl/story_corpus/index.json` (schema 
 `content/imported/hsl/story_corpus/scripts/<FAMILY><nnn>.json` (schema `hsl_story_corpus_script.v1`; 284 files,
 about 4.5 MB in total). Every record carries the source member, `byte_length`, `sha256` and `evidence_tier`.
 
-```bash
-/opt/homebrew/bin/python3 tools/hsl.py generate story_corpus           # rebuild from $HSL_ORIGINAL_DIR/hsl.pak
-/opt/homebrew/bin/python3 tools/hsl.py check story_corpus   # rebuild in memory and compare byte-for-byte (offline consistency without the PAK)
-/opt/homebrew/bin/python3 -m unittest tools.test_hsl_story_corpus
-```
-
-## Claim limits
-
-`tools/hsltools/data/story_corpus.py` used to embed the four boundary sentences below as the constant `CLAIM_LIMITS`
-and copy them into `index.json` → `claim_limits`. The text now lives only here; the code keeps the short id list
-`CLAIM_LIMIT_IDS` (same order) and `index.json` records the ids plus this packet's path (`claim_limits_packet`).
-**An id is a reference, not semantics**: the tier of each row is the evidence column.
-
-| id | evidence | Boundary (original text) |
-| --- | --- | --- |
-| `text_and_action_order_only` | resource-derived | Only message text (RESOURCE.TXT [name]) and the source order of script actions are restored. |
-| `tokens_not_engine_semantics` | resource-derived | Action timing, actCheck*/teCheck* branch conditions, camera targets and handler side effects are recorded as tokens only; no engine semantics are inferred. |
-| `speaker_name_from_speaker_ids_tables` | resource-derived; provisional | speaker_name is filled only where tools/hsl_chapter_dialogue.SPEAKER_IDS has a level table (or a te/actShapeMessage names the resource id explicitly); other speakers keep their SID_ token. Labels for ??? actors in those tables are remake choices, provisional. |
-| `numbers_are_resource_naming` | resource-derived | File names and numbers are resource naming; whether a STORY number is a level the engine can reach is not proven here. |
-
-## Parsing chain (no second parser)
-
-| Step | Reused module |
-| --- | --- |
-| PAK member access | `tools/hsl_resource_scanner.py` (`find_decoded_paks_packages` / `find_paks_record_by_name` / `read_paks_record_bytes`) |
-| STORY / WINFAIL / STORYOVER structure | `hsltools.sources.scripts.parse_text_metadata` → `hsltools.levels.seed._compact_script` (the same `sections[].actions[].chain[]` shape as the tracked battle seeds) |
-| message ids | `hsltools.levels.message_text` (`MESSAGE_ACTIONS`, `ALTERNATE_MESSAGE_ACTIONS`, case-insensitive spelling such as `actMEssage`); the per-message walk is cross-checked against `seed_message_ids` on every script |
-| message text | `hsltools.sources.tables.parse_table` (cp950, colour controls removed, `#` → line break) |
-| speaker slots | `DATA\\EXTRAS.H` `SID_*` defines via `parse_text_metadata` (9 named party slots 0–8); per-level speaker names via `SPEAKER_IDS` |
-| TOWNDEF | `tools/hsl_world_map.parse_towndef` with its `MESSAGE_ARG_POSITIONS` / `teSelectInsertEvent` / shape-name positions |
-| level flow | `tools/hsl_big_map_flow.symbols` / `resolve` (`gameBigMapLevel` = 49 from the tracked `towndef.json`) |
-| opcode coverage | `tools/hsl_opening_timeline_compile.ACTION_KIND` + `canonical_action_name` (imported, not copied) |
-
-## Counts (index.json summary)
+### resource-derived：计数（index.json summary）
 
 | Family | Files | Sections (events) | Message references | Distinct message ids | Ids without text |
 | --- | --- | --- | --- | --- | --- |
@@ -69,16 +46,16 @@ symbols whose definitions live outside this corpus.
 
 Level flow: 159 `actSetNextPlayLevelEvent` / `teSetNextPlayLevelEvent` edges (116 return to the big map with
 `gameBigMapLevel`): the 153 `act` edges (114 to the big map) equal the counts of `big_map_flow.json`, plus 6 `te` edges from TOWNDEF. They are listed per script in `index.json`; the derived conventions stay in
-[`world_map_data.md`](../static_reverse/world_map_data.md#大地图流转脚本惯例resource-derived).
+[`world_map_data.md`](../static_reverse/world_map_data.md#resource-derived大地图流转脚本惯例).
 
-### STORY numbering
+### resource-derived：STORY 编号
 
 Present: 1–45 (35 files), 51–82 (31), 97–99 (3), 501–578 (78), 900–904 (5).
 Gaps inside those blocks: **4, 11, 14, 16, 20, 23, 25, 27, 35, 42, 46–50, 54, 83–96**.
 STORY files without a matching winfail (story-only by the seed convention): 8, 9, 55–58, 60–72, 74, 81, 82.
 Every winfail has a STORY.
 
-### Opcode coverage against the opening compiler
+### resource-derived：对照开场编译器的 opcode 覆盖
 
 All 152 STORY scripts and STORYOVER use only tokens that `ACTION_KIND` maps. The 18 tokens that stay unmapped
 occur in winfail scripts only and are all condition tokens of the winfail interpreter (`actCheckPlayer` 129 scripts,
@@ -89,7 +66,7 @@ occur in winfail scripts only and are all condition tokens of the winfail interp
 `actCheckSerialPlayerAttacked`, `actFALSE` 1 each). `te*` tokens of TOWNDEF are the town interpreter's and are
 not measured against `ACTION_KIND`. A mapped kind names the source intent only, not a proven handler.
 
-## Agreement with the tracked per-level evidence
+### resource-derived：与逐关对白证据一致
 
 `--check` and `tools/test_hsl_story_corpus.py` compare the corpus with every tracked
 `content/imported/hsl/chapter01/message_text_evidence.json` (level 51) and
@@ -100,7 +77,40 @@ evidence lists in `script_message_sources` present in the level's STORY / WINFAI
 ids that are speaker-name lookups rather than script messages (for example 0, 305) are outside the corpus and are not
 compared.
 
-## Not established by this packet
+## 重制接线
+
+### 重制：claim limits
+
+`tools/hsltools/data/story_corpus.py` used to embed the four boundary sentences below as the constant `CLAIM_LIMITS`
+and copy them into `index.json` → `claim_limits`. The text now lives only here; the code keeps the short id list
+`CLAIM_LIMIT_IDS` (same order) and `index.json` records the ids plus this packet's path (`claim_limits_packet`).
+**An id is a reference, not semantics**: the tier of each row is the evidence column.
+
+| id | evidence | Boundary (original text) |
+| --- | --- | --- |
+| `text_and_action_order_only` | resource-derived | Only message text (RESOURCE.TXT [name]) and the source order of script actions are restored. |
+| `tokens_not_engine_semantics` | resource-derived | Action timing, actCheck*/teCheck* branch conditions, camera targets and handler side effects are recorded as tokens only; no engine semantics are inferred. |
+| `speaker_name_from_speaker_ids_tables` | resource-derived; provisional | speaker_name is filled only where tools/hsl_chapter_dialogue.SPEAKER_IDS has a level table (or a te/actShapeMessage names the resource id explicitly); other speakers keep their SID_ token. Labels for ??? actors in those tables are remake choices, provisional. |
+| `numbers_are_resource_naming` | resource-derived | File names and numbers are resource naming; whether a STORY number is a level the engine can reach is not proven here. |
+
+### 重制：解析链（不另写解析器）
+
+| Step | Reused module |
+| --- | --- |
+| PAK member access | `tools/hsl_resource_scanner.py` (`find_decoded_paks_packages` / `find_paks_record_by_name` / `read_paks_record_bytes`) |
+| STORY / WINFAIL / STORYOVER structure | `hsltools.sources.scripts.parse_text_metadata` → `hsltools.levels.seed._compact_script` (the same `sections[].actions[].chain[]` shape as the tracked battle seeds) |
+| message ids | `hsltools.levels.message_text` (`MESSAGE_ACTIONS`, `ALTERNATE_MESSAGE_ACTIONS`, case-insensitive spelling such as `actMEssage`); the per-message walk is cross-checked against `seed_message_ids` on every script |
+| message text | `hsltools.sources.tables.parse_table` (cp950, colour controls removed, `#` → line break) |
+| speaker slots | `DATA\\EXTRAS.H` `SID_*` defines via `parse_text_metadata` (9 named party slots 0–8); per-level speaker names via `SPEAKER_IDS` |
+| TOWNDEF | `tools/hsl_world_map.parse_towndef` with its `MESSAGE_ARG_POSITIONS` / `teSelectInsertEvent` / shape-name positions |
+| level flow | `tools/hsl_big_map_flow.symbols` / `resolve` (`gameBigMapLevel` = 49 from the tracked `towndef.json`) |
+| opcode coverage | `tools/hsl_opening_timeline_compile.ACTION_KIND` + `canonical_action_name` (imported, not copied) |
+
+## 复现
+
+`python3 tools/hsl.py check story_corpus`（内存重建逐字节比对；无 PAK 时做离线一致性）
+
+## 边界
 
 - Message box layout, playback timing, portrait binding, blocking behaviour and `actDelay` time scale.
 - Which branch of `actMessageIfExist` / `teSelectInsertEvent` plays, and when `actCheck*` / `teCheck*` conditions hold.

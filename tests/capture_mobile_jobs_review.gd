@@ -33,7 +33,7 @@ func setup_mobile() -> void:
 	if mode!="manual":
 		scene.set_process(false)
 		var loop:=run_mobile_jobs_tests.fixture("006" if owner_id=="wing" else "004",false,mode in ["counter","defeat"])
-		var actor:=BattlePlayLoop._unit(loop,owner_id); var foe:=BattlePlayLoop._unit(loop,"enemy026_1"); var friend:=BattlePlayLoop._unit(loop,"tina")
+		var actor:=BattlePlayLoop.unit_ref(loop,owner_id); var foe:=BattlePlayLoop.unit_ref(loop,"enemy026_1"); var friend:=BattlePlayLoop.unit_ref(loop,"tina")
 		actor["equipment"]=actor["equipment"].filter(func(s):return not s["slot"].begins_with("accessory"))
 		if owner_id=="thief": run_mobile_jobs_tests.run_weapon_effect_tests.set_gear(actor,loop["equipment_items"],"weapon",102)
 		actor["inventory"]=[108,227,232,253,244,247,262,0] if owner_id=="thief" else [227,232,253,244,247,262,0,0]
@@ -92,7 +92,7 @@ func setup_mobile() -> void:
 			unit["grid_coord"]=unit["coord"];unit["ai_home_coord"]=unit["coord"]
 			check(BattlePlayLoop.TraversalRules.placement_error(unit,loop["units"],loop["tiles"],loop["map_size"])=="","legal source-map setup")
 		loop["turn_queue"]=BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-		scene.apply_loop(BattlePlayLoop._return_to_player(loop,"tina" if mode=="ai_wing" else owner_id), "test")
+		scene.apply_loop(BattlePlayLoop.return_to_player(loop,"tina" if mode=="ai_wing" else owner_id), "test")
 		for art in scene.actors_root.get_children():scene.actors_root.remove_child(art);art.queue_free()
 		scene.unit_grid_coords.clear();scene.resume_turn_presentation();scene.center_camera_on_grid(actor["coord"]);scene.set_process(true)
 	initial_state=scene.play_loop.duplicate(true)

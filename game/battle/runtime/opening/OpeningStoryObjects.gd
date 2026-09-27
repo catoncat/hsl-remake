@@ -32,6 +32,7 @@ const ScriptWalkPath = preload("res://game/battle/runtime/opening/ScriptWalkPath
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 ## obj_Story_Show_Pos (process 0x4504d0) steps its I_rect31..38 frame every 6 ticks (words
 ## 0x479358／0x47935a), where the range-cell drawers step every 8.
@@ -84,7 +85,7 @@ func _load_shape_sets() -> void:
 	var manifest_path := str((runtime.first_battle_scenario.get("resources", {}) as Dictionary).get("actor_shape_sets", ""))
 	if manifest_path == "" or not FileAccess.file_exists(manifest_path):
 		return
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(manifest_path))
+	var parsed = ContentPaths.read_json(manifest_path)
 	if typeof(parsed) == TYPE_DICTIONARY:
 		_shape_sets = (parsed as Dictionary).get("sets", {})
 

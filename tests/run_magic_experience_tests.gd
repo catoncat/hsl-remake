@@ -53,7 +53,7 @@ static func fixture() -> Dictionary:
 	loop["tiles"] = {}
 	loop["reinforcement_templates"] = []
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop, "leonard")
+	return BattlePlayLoop.return_to_player(loop, "leonard")
 
 
 static func selected(loop: Dictionary, id: String) -> Dictionary:
@@ -110,7 +110,7 @@ func damage_cases() -> void:
 	for id in [WIND, FIRE]:
 		for health in [1, 100]:
 			var loop := fixture()
-			BattlePlayLoop._unit(loop, "enemy021_1")["hp"] = health
+			BattlePlayLoop.unit_ref(loop, "enemy021_1")["hp"] = health
 			var before := selected(loop, id)
 			var saved := before.duplicate(true)
 			var after := BattlePlayLoop.attack_target(before, "enemy021_1", zero)
@@ -126,8 +126,8 @@ func damage_cases() -> void:
 			check(BattlePlayLoop.finish_exhausted_action(finished) == finished, "no second handoff or XP payout")
 	var loop := fixture()
 	BattlePlayLoop.skill_fields(loop, FIRE)["effect_range"] = "range1Cell" # Synthetic geometry, not the original fire range.
-	BattlePlayLoop._unit(loop, "leonard")["exp"] = 99
-	BattlePlayLoop._unit(loop, "enemy021_2")["hp"] = 1
+	BattlePlayLoop.unit_ref(loop, "leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(loop, "enemy021_2")["hp"] = 1
 	var before := selected(loop, FIRE)
 	var calls: Array = []
 	var after := BattlePlayLoop.attack_target(before, "enemy021_1", func(bound): calls.append(bound); return 0)
@@ -150,10 +150,10 @@ func damage_cases() -> void:
 func support_cases() -> void:
 	for id in [HEAL, CURE]:
 		var loop := fixture()
-		var actor := BattlePlayLoop._unit(loop, "leonard")
+		var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 		actor["exp"] = 99
 		if id == CURE:
-			for target in [actor, BattlePlayLoop._unit(loop, "enemy023_1")]: target.merge(BattlePlayLoop.StatusEffectRules.apply(target, "poison", 2, 10)["changes"], true)
+			for target in [actor, BattlePlayLoop.unit_ref(loop, "enemy023_1")]: target.merge(BattlePlayLoop.StatusEffectRules.apply(target, "poison", 2, 10)["changes"], true)
 		var after := BattlePlayLoop.attack_target(selected(loop, id), "enemy023_1", zero)
 		var hit: Dictionary = after["last_attack"]
 		var total := 0
@@ -173,10 +173,10 @@ func support_cases() -> void:
 
 func chain_and_growth_cases() -> void:
 	var loop := fixture()
-	var actor := BattlePlayLoop._unit(loop, "leonard")
+	var actor := BattlePlayLoop.unit_ref(loop, "leonard")
 	actor["kill_chain_word"] = 1
-	BattlePlayLoop._unit(loop, "enemy021_1")["hp"] = 1
-	BattlePlayLoop._unit(loop, "enemy021_2")["hp"] = 1
+	BattlePlayLoop.unit_ref(loop, "enemy021_1")["hp"] = 1
+	BattlePlayLoop.unit_ref(loop, "enemy021_2")["hp"] = 1
 	BattlePlayLoop.skill_fields(loop, FIRE)["effect_range"] = "range1Cell"
 	var after := BattlePlayLoop.attack_target(selected(loop, FIRE), "enemy021_1", zero)
 	var rows: Array = after["last_attack"]["affected_targets"]
@@ -184,11 +184,11 @@ func chain_and_growth_cases() -> void:
 	check(BattlePlayLoop.unit(after, "leonard")["kill_count"] == 2 and (int(BattlePlayLoop.unit(after, "leonard")["kill_chain_word"]) & 0xffff) == 2, "area kills count individually while chain increments once")
 	check(BattlePlayLoop.unit(BattlePlayLoop.finish_exhausted_action(after), "leonard")["kill_chain_word"] == 2, "own action completion preserves earned low-word chain")
 	var waiting := fixture()
-	BattlePlayLoop._unit(waiting, "leonard")["kill_chain_word"] = 4
+	BattlePlayLoop.unit_ref(waiting, "leonard")["kill_chain_word"] = 4
 	check(BattlePlayLoop.unit(BattlePlayLoop.begin_wait_resolution(waiting), "leonard")["kill_chain_word"] == 0, "wait with no kill resets chain without EXP")
 	var normal := fixture()
 	var doubled := normal.duplicate(true)
-	var owner := BattlePlayLoop._unit(doubled, "leonard")
+	var owner := BattlePlayLoop.unit_ref(doubled, "leonard")
 	owner["inventory"][0] = 228
 	doubled = BattlePlayLoop.change_equipment(doubled, "accessory1", 0, 228)
 	check(BattlePlayLoop.InventoryRules.find_item(BattlePlayLoop.unit(doubled, "leonard")["inventory"], 228) == -1 and ExperienceRules.multiplier(BattlePlayLoop.unit(doubled, "leonard"), doubled["equipment_items"])["value"] == 2, "source lucky ribbon equips through the real inventory transaction")
@@ -198,12 +198,12 @@ func chain_and_growth_cases() -> void:
 	var second := BattlePlayLoop.attack_target(selected(doubled, FIRE), "enemy021_1", zero)
 	check(second["last_attack"]["experience"]["gained"] == first["last_attack"]["experience"]["gained"] * 2, "equipment doubles the final native award, not damage or individual random draws")
 	var capped := fixture()
-	owner = BattlePlayLoop._unit(capped, "leonard")
+	owner = BattlePlayLoop.unit_ref(capped, "leonard")
 	for key in BattlePlayLoop.ProgressionRules.GROWTH_CHOICES: owner["growth_profile"]["caps"][key] = owner["combat_profile"][key]
 	var blocked := BattlePlayLoop.attack_target(selected(capped, FIRE), "enemy021_1", zero)
 	check(blocked["last_attack"]["experience_settlement"]["reason"] == "growth_capacity_exhausted" and BattlePlayLoop.unit(blocked, "leonard")["exp"] == owner["exp"], "native zero-capacity gate discards EXP but keeps the real spell")
 	var small := fixture()
-	owner = BattlePlayLoop._unit(small, "leonard")
+	owner = BattlePlayLoop.unit_ref(small, "leonard")
 	owner["exp"] = 99
 	for key in BattlePlayLoop.ProgressionRules.GROWTH_CHOICES: owner["growth_profile"]["caps"][key] = owner["combat_profile"][key] + (3 if key == "str" else 0)
 	var grown := BattlePlayLoop.ProgressionRules.resolve_experience(owner, 300, small["equipment_items"])
@@ -220,7 +220,7 @@ func presentation_cases() -> void:
 	scene.set_process(false)
 	TestSuite.stop_audio(scene.get_node("BattleMusic"))
 	var loop := fixture()
-	BattlePlayLoop._unit(loop, "leonard")["exp"] = 99
+	BattlePlayLoop.unit_ref(loop, "leonard")["exp"] = 99
 	var presentation = scene.get_node("BattlePresentation")
 	# The casting-target strip (magic／support preview) masks an enemy the player has not
 	# fought, like every other 0x434d10 display; the cast itself makes the target known.

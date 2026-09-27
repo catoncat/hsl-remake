@@ -28,9 +28,9 @@ func run() -> void:
 	presentation = scene.get_node("BattlePresentation")
 	await hold(0.6)
 	var Loop = scene.BattlePlayLoop
-	var player: Dictionary = Loop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = Loop._unit(scene.play_loop, "actor021_1")
-	var friend: Dictionary = Loop._unit(scene.play_loop, "actor023_1")
+	var player: Dictionary = Loop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = Loop.unit_ref(scene.play_loop, "actor021_1")
+	var friend: Dictionary = Loop.unit_ref(scene.play_loop, "actor023_1")
 	enemy["coord"] = player["coord"] + Vector2i(1, 0)
 	friend["coord"] = player["coord"] + Vector2i(1, 1)
 	player["hit_bonus_accum"] = 9

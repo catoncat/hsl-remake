@@ -2,14 +2,23 @@ extends RefCounted
 ## Mechanics-playable battle loop: the single owner of the mutable battle state (one loop
 ## dictionary — units, queue, interaction, receipts). This file is the contract facade and
 ## the player's command flow: selection／menus, movement, attack targeting, the action
-## budget (`_settle_action`), the one queue-advance seam (`_advance_current_actor`) and the
-## unit lookups every module shares (`_unit`, `_set_unit_*`, `_are_enemies`…). The other
+## budget (`settle_action`), the one queue-advance seam (`advance_current_actor`) and the
+## unit lookups every module shares (`unit_ref`, `set_unit_*`, `are_enemies`…). The other
 ## responsibilities are static modules operating on the same dictionary (none owns state),
 ## forwarded from here so the 91 callers see one surface: BattleLoopInit (create),
 ## BattleLoopRewards (settlement／loot／experience), BattleLoopScript (outcome and script
 ## transactions), BattleLoopAI (AI turns), BattleLoopCombat (exchange／skill commit),
 ## BattleLoopInventory (use／give／equip). Original fidelity remains required; the opening
 ## timeline is owned by BattleSceneRuntime, this loop owns post-control play.
+## Internal interface for the BattleLoop* modules (public names, not for scene code; scene
+## and panels read through `unit` (a copy) and the command functions):
+##   unit_ref (the live unit dictionary), set_unit_coord, set_unit_hp, set_unit_defeated,
+##   are_enemies, is_current_actor, mark_known, queue_actors, advance_current_actor,
+##   return_to_player, finish_ai_or_continue, settle_action, clear_extra_action,
+##   player_action_valid, skill_input_error, magic_position_error, extra_action_input_error,
+##   traversal_context, menu_for_unit, product_command_menu, movement_envelope,
+##   resolve_outcome, reward_input_error, resource_input_error.
+## Underscore functions are used in this file only.
 ## provenance:
 ##   rules: static-derived content/generated/hsl/static/hsl01/core_logic.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
@@ -155,11 +164,11 @@ static func begin_battle(loop: Dictionary) -> Dictionary:
 	if not bool(next.get("scenario_ok", false)) or BattleOutcome.decided(next):
 		return next
 	var current: Dictionary = CoreTurnQueue.current(next["turn_queue"])
-	var actor: Dictionary = _unit(next, str(current.get("id", "")))
+	var actor: Dictionary = unit_ref(next, str(current.get("id", "")))
 	if actor.is_empty():
 		return next
 	if bool(actor.get("player_commandable", false)):
-		return _return_to_player(next, str(actor["id"]))
+		return return_to_player(next, str(actor["id"]))
 	next["interaction"] = "ai_resolving"
 	next["selected_unit_id"] = ""
 	return next
@@ -172,20 +181,20 @@ static func select_player_unit(loop: Dictionary, unit_id: String) -> Dictionary:
 	if BattleOutcome.decided(loop) or not bool(loop.get("scenario_ok", false)):
 		return copy(loop)
 	var next := copy(loop)
-	var unit: Dictionary = _unit(next, unit_id)
+	var unit: Dictionary = unit_ref(next, unit_id)
 	if unit.is_empty() or not bool(unit.get("player_commandable", false)):
 		return next
-	if not _is_current_actor(next, unit_id):
+	if not is_current_actor(next, unit_id):
 		return next
 	next["selected_unit_id"] = unit_id
 	next["interaction"] = "action_menu"
-	next["command_menu"] = _menu_for_unit(next, unit_id)
+	next["command_menu"] = menu_for_unit(next, unit_id)
 	return next
 
 
 static func choose_command(loop: Dictionary, command: String) -> Dictionary:
 	var next := copy(loop)
-	if not _player_action_valid(loop, "action_menu", true):
+	if not player_action_valid(loop, "action_menu", true):
 		return next
 	if command not in IMPLEMENTED_COMMANDS:
 		next["last_command_reject"] = {
@@ -198,33 +207,33 @@ static func choose_command(loop: Dictionary, command: String) -> Dictionary:
 	next["last_command_reject"] = {}
 	match command:
 		"move":
-			return _settle_action(next, "select_move")
+			return settle_action(next, "select_move")
 		"special":
 			# 特殊技 always opens the skill page, also for a single skill and when 氣力 pays
 			# none of it (recording 46.5–54.75 s): the page describes the rows and the player
 			# leaves it by cancelling; choose_special starts the target selection.
-			next = _settle_action(next, "select_special")
+			next = settle_action(next, "select_special")
 			next["selected_skill_id"] = ""
 			next["interaction"] = "special_select"
 			return next
 		"attack", "magic":
-			return _settle_action(next, "select_" + command)
+			return settle_action(next, "select_" + command)
 		"wait":
-			return _settle_action(next, "wait")
+			return settle_action(next, "wait")
 		"status", "item":
-			return _settle_action(next, command)
+			return settle_action(next, command)
 	return next
 
 
 static func command_available(loop: Dictionary, command: String) -> bool:
-	if command not in IMPLEMENTED_COMMANDS or not _player_action_valid(loop, "action_menu", true):
+	if command not in IMPLEMENTED_COMMANDS or not player_action_valid(loop, "action_menu", true):
 		return false
 	if not ActionBudgetRules.command_available(command, bool(loop["moved_this_action"]), bool(loop["attacked_this_action"])):
 		return false
 	if command == "magic":
-		return _magic_position_error(loop, _unit(loop, str(loop["selected_unit_id"]))) == "" and not magic_options(loop, str(loop["selected_unit_id"])).is_empty()
+		return magic_position_error(loop, unit_ref(loop, str(loop["selected_unit_id"]))) == "" and not magic_options(loop, str(loop["selected_unit_id"])).is_empty()
 	if command == "attack":
-		var actor := _unit(loop, str(loop["selected_unit_id"]))
+		var actor := unit_ref(loop, str(loop["selected_unit_id"]))
 		if bool(actor.get("no_attack", false)): return false
 		var pattern := weapon_pattern(loop, actor)
 		return pattern.get("ok", false) and not pattern.get("offsets", []).is_empty()
@@ -236,22 +245,22 @@ static func skill_fields(loop: Dictionary, skill_id: String) -> Dictionary:
 
 
 static func magic_options(loop: Dictionary, unit_id: String) -> Array:
-	var actor := _unit(loop, unit_id)
+	var actor := unit_ref(loop, unit_id)
 	var result: Array = []
 	for id in loop["skill_book"]["skills"]:
 		var entry: Dictionary = loop["skill_book"]["skills"][id]
 		if entry["channel"] != "magic" or SkillResolutionRules.ownership_error(actor, id, loop["skill_book"]) != "": continue
 		var quote := SkillResolutionRules.available(actor, id, skill_fields(loop, id), loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])
-		var position_error := _magic_position_error(loop, actor)
+		var position_error := magic_position_error(loop, actor)
 		if position_error != "": quote = {"ok": false, "reason": position_error}
 		result.append({"id": id, "name": entry["name"], "quote": quote, "fields": skill_fields(loop, id)})
 	return result
 
 
 static func choose_magic(loop: Dictionary, skill_id: String) -> Dictionary:
-	if not _player_action_valid(loop, "magic_select"): return copy(loop)
-	var actor := _unit(loop, str(loop["selected_unit_id"]))
-	if _magic_position_error(loop, actor) != "": return copy(loop)
+	if not player_action_valid(loop, "magic_select"): return copy(loop)
+	var actor := unit_ref(loop, str(loop["selected_unit_id"]))
+	if magic_position_error(loop, actor) != "": return copy(loop)
 	var entry: Dictionary = loop["skill_book"]["skills"].get(skill_id, {})
 	if entry.get("channel") != "magic": return copy(loop)
 	var quote := SkillResolutionRules.available(actor, skill_id, skill_fields(loop, skill_id), loop["skill_book"], loop["skill_target_data"], loop["equipment_items"])
@@ -264,7 +273,7 @@ static func choose_magic(loop: Dictionary, skill_id: String) -> Dictionary:
 
 
 static func special_options(loop: Dictionary, unit_id: String) -> Array:
-	var actor := _unit(loop, unit_id)
+	var actor := unit_ref(loop, unit_id)
 	var options: Array = []
 	for id in loop["skill_book"]["skills"]:
 		var entry: Dictionary = loop["skill_book"]["skills"][id]
@@ -275,7 +284,7 @@ static func special_options(loop: Dictionary, unit_id: String) -> Array:
 
 
 static func choose_special(loop: Dictionary, skill_id: String) -> Dictionary:
-	if not _player_action_valid(loop, "special_select"): return copy(loop)
+	if not player_action_valid(loop, "special_select"): return copy(loop)
 	for option in special_options(loop, str(loop["selected_unit_id"])):
 		if option["id"] != skill_id or not option["quote"]["ok"]: continue
 		var next := copy(loop)
@@ -284,7 +293,7 @@ static func choose_special(loop: Dictionary, skill_id: String) -> Dictionary:
 	return copy(loop)
 
 
-static func _player_action_valid(loop: Dictionary, phase: String, allow_completed: bool = false) -> bool:
+static func player_action_valid(loop: Dictionary, phase: String, allow_completed: bool = false) -> bool:
 	if loot_waiting(loop): return false
 	if not bool(loop.get("scenario_ok", false)) or BattleOutcome.decided(loop) or loop.get("interaction") != phase:
 		return false
@@ -293,10 +302,10 @@ static func _player_action_valid(loop: Dictionary, phase: String, allow_complete
 	if not allow_completed and bool(loop.get("attacked_this_action", false)):
 		return false
 	var id := str(loop.get("selected_unit_id", ""))
-	var actor := _unit(loop, id)
-	if _extra_action_input_error(loop) != "" or not ExtraActionRules.equipment(actor, loop["equipment_items"])["ok"]: return false
-	if _resource_input_error(loop, actor) != "": return false
-	return id != "" and _is_current_actor(loop, id) and bool(actor.get("player_commandable", false)) and int(actor.get("hp", 0)) > 0 and not bool(actor.get("defeated", false)) and StatusEffectRules.input_error(actor) == "" and not StatusEffectRules.paralyzed(actor)
+	var actor := unit_ref(loop, id)
+	if extra_action_input_error(loop) != "" or not ExtraActionRules.equipment(actor, loop["equipment_items"])["ok"]: return false
+	if resource_input_error(loop, actor) != "": return false
+	return id != "" and is_current_actor(loop, id) and bool(actor.get("player_commandable", false)) and int(actor.get("hp", 0)) > 0 and not bool(actor.get("defeated", false)) and StatusEffectRules.input_error(actor) == "" and not StatusEffectRules.paralyzed(actor)
 
 
 static func cancel_interaction(loop: Dictionary) -> Dictionary:
@@ -306,21 +315,21 @@ static func cancel_interaction(loop: Dictionary) -> Dictionary:
 		return copy(loop)
 	var next := copy(loop)
 	var state := str(next.get("interaction", ""))
-	if not _player_action_valid(loop, state):
+	if not player_action_valid(loop, state):
 		return next
 	if state in ["move_select", "attack_select", "magic_select", "special_select"]:
-		return _settle_action(next, "cancel_selection")
+		return settle_action(next, "cancel_selection")
 	elif bool(next.get("pending_move", false)):
 		return cancel_pending_move(next)
 	return next
 
 
 static func movement_cells(loop: Dictionary, unit_id: String = "") -> Array:
-	return _movement_envelope(loop, unit_id).get("reachable_coords", [])
+	return movement_envelope(loop, unit_id).get("reachable_coords", [])
 
 
 static func movement_path(loop: Dictionary, unit_id: String, target: Vector2i) -> Array:
-	return _movement_envelope(loop, unit_id).get("reachable_by_coord", {}).get(target, {}).get("path", [])
+	return movement_envelope(loop, unit_id).get("reachable_by_coord", {}).get(target, {}).get("path", [])
 
 
 ## Memo of `TraversalRules.tile_tables(TerrainEdits.tiles(loop), loop["map_size"])`: the map
@@ -332,7 +341,7 @@ static var _tile_tables := {"tiles": null, "map_size": Vector2i.ZERO, "tables": 
 
 
 ## `TraversalRules.prepare(unit, units, TerrainEdits.tiles(loop))` over the memoised tile tables.
-static func _traversal_context(loop: Dictionary, unit: Dictionary, units: Array) -> Dictionary:
+static func traversal_context(loop: Dictionary, unit: Dictionary, units: Array) -> Dictionary:
 	var tiles: Dictionary = TerrainEdits.tiles(loop)
 	var map_size: Vector2i = loop.get("map_size", Vector2i(24, 24))
 	if not is_same(_tile_tables["tiles"], tiles) or _tile_tables["map_size"] != map_size:
@@ -341,9 +350,9 @@ static func _traversal_context(loop: Dictionary, unit: Dictionary, units: Array)
 
 
 ## `traversal`: the unit's accepted TraversalRules context when the caller holds one.
-static func _movement_envelope(loop: Dictionary, unit_id: String, traversal: Dictionary = {}) -> Dictionary:
+static func movement_envelope(loop: Dictionary, unit_id: String, traversal: Dictionary = {}) -> Dictionary:
 	var id := unit_id if unit_id != "" else str(loop.get("selected_unit_id", ""))
-	var unit: Dictionary = _unit(loop, id)
+	var unit: Dictionary = unit_ref(loop, id)
 	if not Presence.living(unit):
 		return {}
 	var units: Array = _alive_units(loop)
@@ -356,14 +365,14 @@ static func _movement_envelope(loop: Dictionary, unit_id: String, traversal: Dic
 		TerrainEdits.tiles(loop),
 		loop.get("map_size", Vector2i(24, 24)),
 		int(unit["move_point"]),
-		traversal if not traversal.is_empty() else _traversal_context(loop, unit, units)
+		traversal if not traversal.is_empty() else traversal_context(loop, unit, units)
 	)
 	return envelope
 
 
 static func attack_cells(loop: Dictionary, unit_id: String = "") -> Array:
 	var id := unit_id if unit_id != "" else str(loop.get("selected_unit_id", ""))
-	var unit: Dictionary = _unit(loop, id)
+	var unit: Dictionary = unit_ref(loop, id)
 	if not Presence.living(unit):
 		return []
 	var origin: Vector2i = unit.get("coord", Vector2i.ZERO)
@@ -393,21 +402,21 @@ static func weapon_cells(loop: Dictionary, unit: Dictionary, pattern: Dictionary
 ## follows the original 0x40f8b0 mode -1 flood and the effect area the 0x4100e0 flood or line
 ## at mode 2 offensive／3 support — walls stop both, the area leaves out the mode's excluded
 ## side. Selection, the hover footprint (BattleLoopCombat.skill_cast_footprint), the hover
-## target line and the settled cast (BattleLoopCombat._skill_context) all read this one set.
+## target line and the settled cast (BattleLoopCombat.skill_context) all read this one set.
 ## The caster is `caster`, else the selected unit. The area half needs a P-side caster: the
 ## command path passes the constants 2／3, which only exist for the player's side; any other
 ## caster keeps the flat area (the cast range, mode -1, excludes no side and always applies).
 static func skill_terrain(loop: Dictionary, caster: Dictionary = {}) -> Dictionary:
-	var unit := caster if not caster.is_empty() else _unit(loop, str(loop.get("selected_unit_id", "")))
+	var unit := caster if not caster.is_empty() else unit_ref(loop, str(loop.get("selected_unit_id", "")))
 	return RangePropagationRules.player_skill_terrain(loop, not unit.is_empty() and RangePropagationRules.side_word(unit) & RangePropagationRules.P != 0)
 
 
 ## `skill_terrain` while the player's command cast is in progress — the selected unit's
-## magic／special in attack_select — else {}. BattleLoopCombat._skill_context adds it to the
+## magic／special in attack_select — else {}. BattleLoopCombat.skill_context adds it to the
 ## settled cast so a player cast settles over the propagated area; an AI cast (ai_resolving)
 ## keeps the flat projection its planner reads until the AI side is wired.
 static func player_cast_terrain(loop: Dictionary) -> Dictionary:
-	if str(loop.get("interaction", "")) != "attack_select" or loop.get("selected_attack") not in ["magic", "special"] or _unit(loop, str(loop.get("selected_unit_id", ""))).is_empty(): return {}
+	if str(loop.get("interaction", "")) != "attack_select" or loop.get("selected_attack") not in ["magic", "special"] or unit_ref(loop, str(loop.get("selected_unit_id", ""))).is_empty(): return {}
 	return skill_terrain(loop)
 
 
@@ -415,14 +424,14 @@ static func weapon_pattern(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	return PositionCapabilities.attack_pattern(actor, loop["equipment_items"], loop["attack_patterns"], loop["weapon_ranges"])
 
 
-static func _magic_position_error(loop: Dictionary, actor: Dictionary) -> String:
+static func magic_position_error(loop: Dictionary, actor: Dictionary) -> String:
 	var moved: bool = actor.get("id") == loop.get("selected_unit_id") and bool(loop.get("moved_this_action", false))
 	return PositionCapabilities.cast_error(actor, loop["skill_book"], loop["equipment_items"], "magic", moved)
 
 
 static func strike_range_cells(loop: Dictionary, strike: Dictionary) -> Array:
 	## Read-only geometry for a settled exchange, independent of the NEXT actor's menu.
-	var attacker := _unit(loop, str(strike["attacker_id"]))
+	var attacker := unit_ref(loop, str(strike["attacker_id"]))
 	var origin: Vector2i = attacker["coord"]
 	if strike.has("magic_key"):
 		return SkillTargetRules.cells(origin, skill_fields(loop, str(strike.get("skill_id", ""))), loop["skill_target_data"], loop["map_size"], skill_terrain(loop))
@@ -440,7 +449,7 @@ static func strike_range_cells(loop: Dictionary, strike: Dictionary) -> Array:
 
 
 static func move_unit_to(loop: Dictionary, target: Vector2i) -> Dictionary:
-	if not _player_action_valid(loop, "move_select"):
+	if not player_action_valid(loop, "move_select"):
 		return copy(loop)
 	var next := copy(loop)
 	var unit_id := str(next.get("selected_unit_id", ""))
@@ -451,26 +460,26 @@ static func move_unit_to(loop: Dictionary, target: Vector2i) -> Dictionary:
 	var cells: Array = movement_cells(next, unit_id)
 	if not cells.has(target):
 		return next
-	var unit: Dictionary = _unit(next, unit_id)
+	var unit: Dictionary = unit_ref(next, unit_id)
 	next["pending_move_from"] = unit.get("coord", Vector2i.ZERO)
-	_set_unit_coord(next, unit_id, target)
-	return _settle_action(next, "move")
+	set_unit_coord(next, unit_id, target)
+	return settle_action(next, "move")
 
 
 static func cancel_pending_move(loop: Dictionary) -> Dictionary:
-	if not _player_action_valid(loop, "action_menu"):
+	if not player_action_valid(loop, "action_menu"):
 		return copy(loop)
 	var next := copy(loop)
 	var unit_id := str(next.get("selected_unit_id", ""))
 	if unit_id == "" or not bool(next.get("pending_move", false)):
 		return next
-	var actor := _unit(next, unit_id)
+	var actor := unit_ref(next, unit_id)
 	var destination: Vector2i = next["pending_move_from"]
 	var clearance := TraversalRules.prepare(actor, next["units"], TerrainEdits.tiles(next))
 	if not clearance["ok"] or TraversalRules.stop_error(destination, clearance) != "": return copy(loop)
 	if Footprint.radius(actor) == 1 and TraversalRules.transition_error(destination, destination, clearance, TerrainEdits.tiles(next)) != "": return copy(loop)
-	_set_unit_coord(next, unit_id, destination)
-	return _settle_action(next, "cancel_move")
+	set_unit_coord(next, unit_id, destination)
+	return settle_action(next, "cancel_move")
 
 
 static func unit_id_at_coord(loop: Dictionary, coord: Vector2i) -> String:
@@ -478,7 +487,7 @@ static func unit_id_at_coord(loop: Dictionary, coord: Vector2i) -> String:
 
 
 static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant = null, center_coord: Variant = null) -> Dictionary:
-	if loot_waiting(loop) or BattleLoopRewards._reward_input_error(loop) != "": return copy(loop)
+	if loot_waiting(loop) or BattleLoopRewards.reward_input_error(loop) != "": return copy(loop)
 	if BattleOutcome.decided(loop) or not bool(loop.get("scenario_ok", false)):
 		return copy(loop)
 	var next := copy(loop)
@@ -489,14 +498,14 @@ static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant
 	if bool(next.get("attacked_this_action", false)):
 		next["last_attack_reject"] = {"reason": "already_attacked"}
 		return next
-	var attacker: Dictionary = _unit(next, attacker_id)
-	var defender: Dictionary = _unit(next, target_unit_id)
+	var attacker: Dictionary = unit_ref(next, attacker_id)
+	var defender: Dictionary = unit_ref(next, target_unit_id)
 	if not attacker.is_empty() and StatusEffectRules.input_error(attacker) != "":
 		return copy(loop)
 	if attacker.is_empty() or defender.is_empty():
 		next["last_attack_reject"] = {"reason": "missing_unit", "target_unit_id": target_unit_id}
 		return next
-	if not _is_current_actor(next, attacker_id) or not bool(attacker.get("player_commandable", false)) or bool(attacker.get("no_attack", false)) or bool(attacker.get("defeated", false)) or int(attacker.get("hp", 0)) <= 0 or StatusEffectRules.paralyzed(attacker):
+	if not is_current_actor(next, attacker_id) or not bool(attacker.get("player_commandable", false)) or bool(attacker.get("no_attack", false)) or bool(attacker.get("defeated", false)) or int(attacker.get("hp", 0)) <= 0 or StatusEffectRules.paralyzed(attacker):
 		next["last_attack_reject"] = {"reason": "invalid_current_attacker"}
 		return next
 	if not Presence.living(defender):
@@ -513,7 +522,7 @@ static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant
 	var self_centered := special and SkillTargetRules.self_centered(skill_fields(next, skill_id))
 	if self_centered and center_coord == null: center_coord = attacker["coord"]
 	if magic:
-		var position_error := _magic_position_error(next, attacker)
+		var position_error := magic_position_error(next, attacker)
 		if position_error != "":
 			next["last_attack_reject"] = {"reason": position_error}
 			return next
@@ -522,7 +531,7 @@ static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant
 			next["last_attack_reject"] = {"reason": ready["reason"]}
 			return next
 	if special:
-		var ready := SkillResolutionRules.prepare_cast(attacker, defender, next["units"], skill_id, skill_fields(next, skill_id), next["skill_book"], next["skill_target_data"], next["equipment_items"], attacker["coord"], next["map_size"], center_coord, Combat._skill_context(next))
+		var ready := SkillResolutionRules.prepare_cast(attacker, defender, next["units"], skill_id, skill_fields(next, skill_id), next["skill_book"], next["skill_target_data"], next["equipment_items"], attacker["coord"], next["map_size"], center_coord, Combat.skill_context(next))
 		if not ready["ok"]:
 			next["last_attack_reject"] = {"reason": ready["reason"]}
 			return next
@@ -540,18 +549,18 @@ static func attack_target(loop: Dictionary, target_unit_id: String, rng: Variant
 		}
 		return next
 
-	_mark_known(next, target_unit_id)
-	var strike := Combat._resolve_skill(next, attacker_id, target_unit_id, skill_id, skill_fields(next, skill_id), attacker["coord"], rng, def_coord) if special or magic else Combat._resolve_exchange(next, attacker_id, target_unit_id, rng)
+	mark_known(next, target_unit_id)
+	var strike := Combat.resolve_skill(next, attacker_id, target_unit_id, skill_id, skill_fields(next, skill_id), attacker["coord"], rng, def_coord) if special or magic else Combat.resolve_exchange(next, attacker_id, target_unit_id, rng)
 	if strike.is_empty():
 		return copy(loop)
 	strike["cast_center"] = def_coord
 	next["last_attack_reject"] = {}
 	next["last_attack"] = strike
 	# The remake's 0x4c1ce8 attacker global: the attack cases of this action's completion
-	# scan read it (_advance_current_actor); there is no scan after the strike itself.
+	# scan read it (advance_current_actor); there is no scan after the strike itself.
 	next["action_attacker_id"] = attacker_id
-	next = _settle_action(next, "magic" if magic else ("special" if special else "attack"))
-	return BattleLoopScript._resolve_outcome(next)
+	next = settle_action(next, "magic" if magic else ("special" if special else "attack"))
+	return BattleLoopScript.resolve_outcome(next)
 
 
 static func attack_coord(loop: Dictionary, coord: Vector2i, rng: Variant = null) -> Dictionary:
@@ -565,7 +574,7 @@ static func attack_coord(loop: Dictionary, coord: Vector2i, rng: Variant = null)
 
 
 static func magic_target_id_at_coord(loop: Dictionary, coord: Vector2i) -> String:
-	var actor := _unit(loop, str(loop.get("selected_unit_id", "")))
+	var actor := unit_ref(loop, str(loop.get("selected_unit_id", "")))
 	var id := str(loop.get("selected_skill_id", ""))
 	if actor.is_empty() or loop.get("selected_attack") not in ["magic", "special"] or not loop["skill_book"]["skills"].has(id): return ""
 	var fields := skill_fields(loop, id)
@@ -574,7 +583,7 @@ static func magic_target_id_at_coord(loop: Dictionary, coord: Vector2i) -> Strin
 	var footprint := SkillTargetRules.effect_cells(coord, fields, loop["skill_target_data"], loop["map_size"], actor["coord"], terrain)
 	var fallback := ""
 	for target in loop["units"]:
-		if not SkillTargetRules._living(target) or not Footprint.overlaps(target, footprint) or not SkillTargetRules.side_matches(actor, target, fields, loop["skill_target_data"]): continue
+		if not Presence.living(target) or not Footprint.overlaps(target, footprint) or not SkillTargetRules.side_matches(actor, target, fields, loop["skill_target_data"]): continue
 		if Footprint.contains(target,coord): return str(target["id"])
 		if fallback == "": fallback = str(target["id"])
 	return fallback
@@ -596,13 +605,13 @@ static func action_exhausted(loop: Dictionary) -> bool:
 	# even without prior movement and even on a miss. Presentation still waits.
 	var operation := "special" if loop.get("last_attack", {}).has("skill_name") else "attack"
 	var id := str(loop.get("selected_unit_id", ""))
-	return bool(loop.get("scenario_ok", false)) and id != "" and _is_current_actor(loop, id) and loop.get("give_session", {}).is_empty() and str(loop.get("interaction", "")) == "action_menu" and not BattleOutcome.decided(loop) and bool(loop.get("attacked_this_action", false)) and ActionBudgetRules.ends_action(operation)
+	return bool(loop.get("scenario_ok", false)) and id != "" and is_current_actor(loop, id) and loop.get("give_session", {}).is_empty() and str(loop.get("interaction", "")) == "action_menu" and not BattleOutcome.decided(loop) and bool(loop.get("attacked_this_action", false)) and ActionBudgetRules.ends_action(operation)
 
 
 static func finish_exhausted_action(loop: Dictionary) -> Dictionary:
 	# Runtime invokes this only after all combat, movement and modal presentation.
 	# Calling it again on the settled successor cannot spend that actor's action.
-	return _settle_action(copy(loop), "offense_presented") if action_exhausted(loop) else copy(loop)
+	return settle_action(copy(loop), "offense_presented") if action_exhausted(loop) else copy(loop)
 
 
 static func begin_wait_resolution(loop: Dictionary) -> Dictionary:
@@ -616,12 +625,12 @@ static func begin_wait_resolution(loop: Dictionary) -> Dictionary:
 	var next := copy(loop)
 	var finishing_id := str(CoreTurnQueue.current(next["turn_queue"]).get("id", ""))
 	var unit_id := str(next.get("selected_unit_id", ""))
-	if unit_id == "" or not _is_current_actor(next, unit_id) or next.get("interaction") != "action_menu":
+	if unit_id == "" or not is_current_actor(next, unit_id) or next.get("interaction") != "action_menu":
 		return next
-	if StatusEffectRules.input_error(_unit(next, unit_id)) != "":
+	if StatusEffectRules.input_error(unit_ref(next, unit_id)) != "":
 		return next
-	if _extra_action_input_error(next) != "" or not ExtraActionRules.equipment(_unit(next,unit_id), next["equipment_items"])["ok"]: return next
-	if _resource_input_error(next, _unit(next,unit_id)) != "": return next
+	if extra_action_input_error(next) != "" or not ExtraActionRules.equipment(unit_ref(next,unit_id), next["equipment_items"])["ok"]: return next
+	if resource_input_error(next, unit_ref(next,unit_id)) != "": return next
 	next["pending_move"] = false
 	next["moved_this_action"] = false
 	next["attacked_this_action"] = false
@@ -629,22 +638,22 @@ static func begin_wait_resolution(loop: Dictionary) -> Dictionary:
 	next["last_ai_actions"] = []
 	next["last_ai_action"] = {}
 	next["interaction"] = "ai_resolving"
-	next = BattleLoopScript._resolve_outcome(next)
+	next = BattleLoopScript.resolve_outcome(next)
 	if BattleOutcome.decided(next):
 		return next
-	return next if not _is_current_actor(next, finishing_id) else _advance_current_actor(next)
+	return next if not is_current_actor(next, finishing_id) else advance_current_actor(next)
 
 
-static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false) -> Dictionary:
+static func advance_current_actor(loop: Dictionary, skipped_entry: bool = false) -> Dictionary:
 	if BattleOutcome.decided(loop): return loop
 	# Sole queue-advance seam for player completion, AI completion and skipped
 	# unavailable slots. Caller validates/settles the action before entering here.
-	var actor := _unit(loop, str(CoreTurnQueue.current(loop["turn_queue"]).get("id", "")))
-	if _extra_action_input_error(loop) != "":
-		loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": _extra_action_input_error(loop)}, true)
+	var actor := unit_ref(loop, str(CoreTurnQueue.current(loop["turn_queue"]).get("id", "")))
+	if extra_action_input_error(loop) != "":
+		loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": extra_action_input_error(loop)}, true)
 		return loop
 	if Presence.living(actor):
-		var resource_error := _resource_input_error(loop, actor)
+		var resource_error := resource_input_error(loop, actor)
 		if resource_error != "":
 			loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": resource_error}, true)
 			return loop
@@ -674,7 +683,7 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 			return loop
 		# Original fresh paralysis entry jumps downstream of the repeated-action
 		# query. Consume this queue slot once, not two artificial Wait commands.
-		if skipped_entry: _clear_extra_action(loop)
+		if skipped_entry: clear_extra_action(loop)
 		var completion := ExtraActionRules.complete(loop["extra_action"], actor["id"], effect["enabled"] and not skipped_entry)
 		loop["extra_action"] = completion["state"]
 		if completion["repeat"]:
@@ -683,12 +692,12 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 			# That re-entry is phase 0, which clears the attacker global 0x4c1ce8
 			# (player 0x443a36, AI 0x43f559): no scan ever reads the first half's attack.
 			loop.merge({"moved_this_action": false, "attacked_this_action": false, "pending_move": false, "selected_attack": "attack", "action_attacker_id": ""}, true)
-			if actor["player_commandable"]: return _return_to_player(loop, actor["id"])
+			if actor["player_commandable"]: return return_to_player(loop, actor["id"])
 			loop["selected_unit_id"] = ""
 			loop["interaction"] = "ai_resolving"
 			return loop
 	else:
-		_clear_extra_action(loop)
+		clear_extra_action(loop)
 		# static-derived (original_round_display.md «Attack context»): an actor that dies
 		# in its own attack (a counter) is retired by its death sequence, which calls
 		# 0x407510 — the completion scan, attacker global still set — without the status
@@ -699,11 +708,11 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 			# actor) before the death sequence's own 0x407510 scans and steps again — the
 			# next actor loses this round's action (at a wrap: the new round's first).
 			var successor_id := _step_past_dead_actor(loop)
-			loop = BattleLoopScript._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, true))
+			loop = BattleLoopScript.resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, true))
 			if BattleOutcome.decided(loop):
 				loop["interaction"] = "battle_result"
 				return loop
-			if not bool(loop.get("scenario_ok", false)) or not _is_current_actor(loop, successor_id):
+			if not bool(loop.get("scenario_ok", false)) or not is_current_actor(loop, successor_id):
 				return loop
 	if Presence.living(actor):
 		var capabilities: Dictionary = ResourceRecoveryRules.effects(actor, loop["equipment_items"])["effects"]
@@ -735,15 +744,15 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 		# this same scan, so an attack action is scanned once, after its tail.
 		var actor_id := str(actor["id"])
 		var attacked := _takes_attack_scan(loop, actor_id)
-		loop = BattleLoopScript._resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, attacked))
+		loop = BattleLoopScript.resolve_outcome(BattleScenarioRuleAdapter.run_event_hooks(loop, attacked))
 		if BattleOutcome.decided(loop):
 			loop["interaction"] = "battle_result"
 			return loop
-		if not bool(loop.get("scenario_ok", false)) or not _is_current_actor(loop, actor_id):
+		if not bool(loop.get("scenario_ok", false)) or not is_current_actor(loop, actor_id):
 			# Script consumption retired this actor's slot and already continued.
 			return loop
-	loop["turn_queue"] = CoreTurnQueue.end_turn(loop["turn_queue"], _queue_actors(loop))
-	return _finish_ai_or_continue(loop)
+	loop["turn_queue"] = CoreTurnQueue.end_turn(loop["turn_queue"], queue_actors(loop))
+	return finish_ai_or_continue(loop)
 
 
 ## The 0x407720 step for a current actor that died in its own action: the queue moves to
@@ -751,9 +760,9 @@ static func _advance_current_actor(loop: Dictionary, skipped_entry: bool = false
 ## before the completion scan reads it (0x4074a0 increments 0x4c1bbc). Returns its id.
 static func _step_past_dead_actor(loop: Dictionary) -> String:
 	for _i in range(loop["turn_queue"]["slots"].size() + 1):
-		loop["turn_queue"] = CoreTurnQueue.advance(loop["turn_queue"], _queue_actors(loop))
+		loop["turn_queue"] = CoreTurnQueue.advance(loop["turn_queue"], queue_actors(loop))
 		var id := str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
-		if id == "" or Presence.living(_unit(loop, id)): break
+		if id == "" or Presence.living(unit_ref(loop, id)): break
 	var round_number := int(loop["turn_queue"].get("round", 0)) + 1
 	if round_number > int(loop.get("turn", 1)): loop["turn"] = round_number
 	return str(CoreTurnQueue.current(loop["turn_queue"]).get("id", ""))
@@ -770,36 +779,36 @@ static func _takes_attack_scan(loop: Dictionary, actor_id: String) -> bool:
 
 
 ## Writes `loop` in place: every caller hands over a loop it owns (the queue-advance seam
-## `_advance_current_actor`, which has already written it, and the outcome resolver).
-static func _finish_ai_or_continue(loop: Dictionary) -> Dictionary:
+## `advance_current_actor`, which has already written it, and the outcome resolver).
+static func finish_ai_or_continue(loop: Dictionary) -> Dictionary:
 	var next := loop
 	var round_number := int(next.get("turn_queue", {}).get("round", 0)) + 1
 	if round_number > int(next.get("turn", 1)):
 		# The wrap only bumps the counter; statuses are next scanned after the new
-		# round's first completed action (_advance_current_actor).
+		# round's first completed action (advance_current_actor).
 		next["turn"] = round_number
-	next = BattleLoopScript._resolve_outcome(next)
+	next = BattleLoopScript.resolve_outcome(next)
 	if BattleOutcome.decided(next):
 		next["interaction"] = "battle_result"
 		return next
-	BattleLoopScript._maintain_script_pressure(next)
+	BattleLoopScript.maintain_script_pressure(next)
 	var cur: Dictionary = CoreTurnQueue.current(next.get("turn_queue", {}))
 	var cur_id := str(cur.get("id", ""))
 	if cur_id == "":
 		next["interaction"] = "idle"
 		return next
-	var actor: Dictionary = _unit(next, cur_id)
+	var actor: Dictionary = unit_ref(next, cur_id)
 	if not Presence.living(actor):
-		return _advance_current_actor(next)
+		return advance_current_actor(next)
 	if bool(actor.get("player_commandable", false)):
-		return _return_to_player(next, cur_id)
+		return return_to_player(next, cur_id)
 	next["interaction"] = "ai_resolving"
 	return next
 
 
-static func _return_to_player(loop: Dictionary, unit_id: String) -> Dictionary:
+static func return_to_player(loop: Dictionary, unit_id: String) -> Dictionary:
 	var next := copy(loop)
-	var entry := ActionEntryRules.prepare(_unit(next, unit_id))
+	var entry := ActionEntryRules.prepare(unit_ref(next, unit_id))
 	if not entry["ok"]:
 		next.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": entry["reason"]}, true)
 		return next
@@ -813,7 +822,7 @@ static func _return_to_player(loop: Dictionary, unit_id: String) -> Dictionary:
 		next["interaction"] = "ai_resolving"
 		next["command_menu"] = {"commands": []}
 		return next
-	next["command_menu"] = _menu_for_unit(next, unit_id)
+	next["command_menu"] = menu_for_unit(next, unit_id)
 	return next
 
 
@@ -832,7 +841,7 @@ static func unit_coords(loop: Dictionary) -> Dictionary:
 static func unit(loop: Dictionary, unit_id: String) -> Dictionary:
 	## Read-only public lookup for scene presentation and input gates.
 	## BattlePlayLoop is the single mutable battle-state owner.
-	var value := _unit(loop, unit_id)
+	var value := unit_ref(loop, unit_id)
 	return value.duplicate(true) if not value.is_empty() else {}
 
 
@@ -850,7 +859,7 @@ static func unit(loop: Dictionary, unit_id: String) -> Dictionary:
 ## the actor_id, so the storage and checkpoint v3 key are unchanged. `known_ids` reads an
 ## earlier snapshot of the set instead (an exchange receipt's `strip_known_ids`).
 static func unit_known(loop: Dictionary, unit_id: String, known_ids: Variant = null) -> bool:
-	var target := _unit(loop, unit_id)
+	var target := unit_ref(loop, unit_id)
 	if target.is_empty():
 		return false
 	if ActorRoleRules.side_mask(target) == ActorRoleRules.SIDE_PLAYER:
@@ -862,23 +871,23 @@ static func unit_known(loop: Dictionary, unit_id: String, known_ids: Variant = n
 	if actor_id == "":
 		return false
 	for known_id in known:
-		if str(_unit(loop, str(known_id)).get("actor_id", "")) == actor_id:
+		if str(unit_ref(loop, str(known_id)).get("actor_id", "")) == actor_id:
 			return true
 	return false
 
 
-static func _mark_known(loop: Dictionary, unit_id: String) -> void:
-	if unit_id == "" or _unit(loop, unit_id).is_empty():
+static func mark_known(loop: Dictionary, unit_id: String) -> void:
+	if unit_id == "" or unit_ref(loop, unit_id).is_empty():
 		return
 	var known: Array = loop["known_unit_ids"]
 	if not known.has(unit_id):
 		known.append(unit_id)
 
 
-static func _menu_for_unit(loop: Dictionary, unit_id: String) -> Dictionary:
-	var actor := _unit(loop, unit_id)
-	var menu := _product_command_menu(
-		CoreTurnQueue.build_command_menu(not special_options(loop, unit_id).is_empty(), _magic_position_error(loop, actor) == "" and not magic_options(loop, unit_id).is_empty()),
+static func menu_for_unit(loop: Dictionary, unit_id: String) -> Dictionary:
+	var actor := unit_ref(loop, unit_id)
+	var menu := product_command_menu(
+		CoreTurnQueue.build_command_menu(not special_options(loop, unit_id).is_empty(), magic_position_error(loop, actor) == "" and not magic_options(loop, unit_id).is_empty()),
 		bool(loop.get("moved_this_action", false)),
 		bool(loop.get("attacked_this_action", false))
 	)
@@ -892,7 +901,7 @@ static func _menu_for_unit(loop: Dictionary, unit_id: String) -> Dictionary:
 	return menu
 
 
-static func _product_command_menu(source_menu: Dictionary, moved: bool, attacked: bool) -> Dictionary:
+static func product_command_menu(source_menu: Dictionary, moved: bool, attacked: bool) -> Dictionary:
 	var menu := source_menu.duplicate(true)
 	var commands: Array = []
 	for cmd_value in menu.get("commands", []):
@@ -918,7 +927,7 @@ static func _command_ids(loop: Dictionary) -> Array:
 	return ids
 
 
-static func _queue_actors(loop: Dictionary) -> Array:
+static func queue_actors(loop: Dictionary) -> Array:
 	return CoreTurnQueue.queue_actors(loop.get("units", []), Presence.living)
 
 
@@ -933,7 +942,7 @@ static func _alive_units(loop: Dictionary) -> Array:
 	return out
 
 
-static func _unit(loop: Dictionary, unit_id: String) -> Dictionary:
+static func unit_ref(loop: Dictionary, unit_id: String) -> Dictionary:
 	for unit_value in loop.get("units", []):
 		if typeof(unit_value) != TYPE_DICTIONARY:
 			continue
@@ -943,7 +952,7 @@ static func _unit(loop: Dictionary, unit_id: String) -> Dictionary:
 	return {}
 
 
-static func _set_unit_coord(loop: Dictionary, unit_id: String, coord: Vector2i) -> void:
+static func set_unit_coord(loop: Dictionary, unit_id: String, coord: Vector2i) -> void:
 	var units: Array = loop.get("units", [])
 	for i in range(units.size()):
 		if typeof(units[i]) != TYPE_DICTIONARY:
@@ -957,7 +966,7 @@ static func _set_unit_coord(loop: Dictionary, unit_id: String, coord: Vector2i) 
 			return
 
 
-static func _set_unit_hp(loop: Dictionary, unit_id: String, hp: int) -> void:
+static func set_unit_hp(loop: Dictionary, unit_id: String, hp: int) -> void:
 	var units: Array = loop.get("units", [])
 	for i in range(units.size()):
 		if typeof(units[i]) != TYPE_DICTIONARY:
@@ -970,7 +979,7 @@ static func _set_unit_hp(loop: Dictionary, unit_id: String, hp: int) -> void:
 			return
 
 
-static func _set_unit_defeated(loop: Dictionary, unit_id: String, defeated: bool) -> void:
+static func set_unit_defeated(loop: Dictionary, unit_id: String, defeated: bool) -> void:
 	var units: Array = loop.get("units", [])
 	for i in range(units.size()):
 		if typeof(units[i]) != TYPE_DICTIONARY:
@@ -979,9 +988,9 @@ static func _set_unit_defeated(loop: Dictionary, unit_id: String, defeated: bool
 		if str(unit.get("id", "")) == unit_id:
 			unit["defeated"] = defeated
 			if defeated:
-				_mark_known(loop, unit_id)
+				mark_known(loop, unit_id)
 				var had_buff := (int(unit["status_flags"]) & 0x70) != 0
-				if loop["extra_action"]["owner_id"] == unit_id: _clear_extra_action(loop)
+				if loop["extra_action"]["owner_id"] == unit_id: clear_extra_action(loop)
 				unit["hp"] = 0
 				unit["status_flags"] = 0
 				unit["status_counters"] = StatusEffectRules.cleared_counters()
@@ -994,32 +1003,28 @@ static func _set_unit_defeated(loop: Dictionary, unit_id: String, defeated: bool
 				if unit.has("stamina"): unit["stamina"] = 0
 			units[i] = unit
 			loop["units"] = units
-			if defeated: AI._prune_ai_calls(loop)
+			if defeated: AI.prune_ai_calls(loop)
 			return
 
 
-static func _is_current_actor(loop: Dictionary, unit_id: String) -> bool:
+static func is_current_actor(loop: Dictionary, unit_id: String) -> bool:
 	var cur: Dictionary = CoreTurnQueue.current(loop.get("turn_queue", {}))
 	# Queue identity also gates the common outcome/cleanup entry. An actor at
 	# zero HP may still own that entry until defeat resolves; live action entry
 	# separately rejects death. A retired actor has no remaining queue identity.
-	return unit_id != "" and str(cur.get("id", "")) == unit_id and not _unit(loop, unit_id).get("departed", false)
+	return unit_id != "" and str(cur.get("id", "")) == unit_id and not unit_ref(loop, unit_id).get("departed", false)
 
 
-static func _are_enemies(a: Dictionary, b: Dictionary) -> bool:
+static func are_enemies(a: Dictionary, b: Dictionary) -> bool:
 	# Side bits of the installed player_mode (pmPlayerEnemy villagers are hostile to no
 	# camp, pmNPC units to both); units without one keep their role-implied side.
 	return ActorRoleRules.hostile(a, b)
 
 
-static func _manhattan(a: Vector2i, b: Vector2i) -> int:
-	return absi(a.x - b.x) + absi(a.y - b.y)
-
-
-static func _skill_input_error(loop: Dictionary, actor: Dictionary) -> String:
-	var resource_error := _resource_input_error(loop, actor)
+static func skill_input_error(loop: Dictionary, actor: Dictionary) -> String:
+	var resource_error := resource_input_error(loop, actor)
 	if resource_error != "": return resource_error
-	var extra_error := _extra_action_input_error(loop)
+	var extra_error := extra_action_input_error(loop)
 	if extra_error != "": return extra_error
 	var extra_effect := ExtraActionRules.equipment(actor, loop["equipment_items"])
 	if not extra_effect["ok"]: return extra_effect["reason"]
@@ -1058,7 +1063,7 @@ static func can_use_special(loop: Dictionary, unit_id: String) -> bool:
 	return not bool(loop.get("attacked_this_action", false)) and special_options(loop, unit_id).any(func(option): return option["quote"]["ok"])
 
 
-static func _settle_action(loop: Dictionary, operation: String, give_used: bool = false) -> Dictionary:
+static func settle_action(loop: Dictionary, operation: String, give_used: bool = false) -> Dictionary:
 	var result := ActionBudgetRules.outcome(operation, give_used)
 	if result["kind"] == "invalid":
 		return loop
@@ -1067,24 +1072,24 @@ static func _settle_action(loop: Dictionary, operation: String, give_used: bool 
 		return begin_wait_resolution(loop)
 	var id := str(loop.get("selected_unit_id", ""))
 	if id != "":
-		loop["command_menu"] = _menu_for_unit(loop, id)
+		loop["command_menu"] = menu_for_unit(loop, id)
 	return loop
 
 
-static func _extra_action_input_error(loop: Dictionary) -> String:
+static func extra_action_input_error(loop: Dictionary) -> String:
 	var error := ExtraActionRules.state_error(loop.get("extra_action"), str(CoreTurnQueue.current(loop.get("turn_queue", {})).get("id", "")), BattleOutcome.decided(loop))
 	if error != "": return error
 	if loop["extra_action"]["pending"]:
-		var actor := _unit(loop, loop["extra_action"]["owner_id"])
+		var actor := unit_ref(loop, loop["extra_action"]["owner_id"])
 		if not Presence.living(actor): return "unavailable_extra_action_owner"
 	return ""
 
 
-static func _clear_extra_action(loop: Dictionary) -> void:
+static func clear_extra_action(loop: Dictionary) -> void:
 	loop["extra_action"] = ExtraActionRules.empty(int(loop["extra_action"]["sequence"]))
 
 
-static func _resource_input_error(loop: Dictionary, actor: Dictionary) -> String:
+static func resource_input_error(loop: Dictionary, actor: Dictionary) -> String:
 	var stat_error := ProgressionRules.enhancement_profile_error(actor, loop["equipment_items"])
 	if stat_error != "": return stat_error
 	var error := TurnEndRules.state_error(loop)
@@ -1128,12 +1133,12 @@ static func allocate_growth(loop: Dictionary, unit_id: String, allocation: Dicti
 ## Internal seams of the extracted modules that Checkpoint, GrowthCampaignProgress and
 ## BattleSceneRuntime reach through this facade. Tests reach the other module seams on the
 ## module itself (`const LoopAI = preload(BattleLoopAI)` …).
-static func _reward_input_error(loop: Dictionary) -> String:
-	return BattleLoopRewards._reward_input_error(loop)
+static func reward_input_error(loop: Dictionary) -> String:
+	return BattleLoopRewards.reward_input_error(loop)
 
 
-static func _resolve_outcome(next: Dictionary) -> Dictionary:
-	return BattleLoopScript._resolve_outcome(next)
+static func resolve_outcome(next: Dictionary) -> Dictionary:
+	return BattleLoopScript.resolve_outcome(next)
 
 
 ## AI turn driving (BattleLoopAI): the stepped AI entry.

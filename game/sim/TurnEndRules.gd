@@ -9,6 +9,7 @@ const ResourceRecoveryRules = preload("res://game/sim/ResourceRecoveryRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const Values = preload("res://game/sim/Values.gd")
 ## v5: the recovery draws come from the loop's damage stream ([word0, word1]); v4 drew them
 ## from a separate Park-Miller recovery_rng.
 const POLICY := "source_resource_tail_v5"
@@ -24,7 +25,7 @@ static func compact(actor: Dictionary) -> Dictionary:
 static func prepare(actor: Dictionary, capabilities: Dictionary, random_state: Array, sequence: int) -> Dictionary:
 	if not actor.get("id") is String or actor["id"] == "" or not actor.get("coord") is Vector2i:
 		return {"ok": false, "reason": "invalid_turn_end_actor"}
-	if not BattleRewardRules.integer(sequence, 1): return {"ok": false, "reason": "invalid_turn_end_sequence"}
+	if not Values.is_integer_in(sequence, 1, Values.MAX_SIGNED): return {"ok": false, "reason": "invalid_turn_end_sequence"}
 	var error := ResourceRecoveryRules.health_error(actor)
 	if error != "": return {"ok": false, "reason": error}
 	var status := StatusEffectRules.after_action(actor)
@@ -57,7 +58,7 @@ static func prepare(actor: Dictionary, capabilities: Dictionary, random_state: A
 static func state_error(loop: Dictionary) -> String:
 	if loop.get("turn_end_policy") != POLICY: return "invalid_turn_end_policy"
 	if not DamageRandomStream.valid(loop.get(DamageRandomStream.LOOP_KEY)): return "invalid_recovery_rng"
-	if not BattleRewardRules.integer(loop.get("action_end_sequence")): return "invalid_turn_end_sequence"
+	if not Values.is_integer_in(loop.get("action_end_sequence"), 0, Values.MAX_SIGNED): return "invalid_turn_end_sequence"
 	var receipt: Variant = loop.get("last_action_end")
 	if not receipt is Dictionary: return "missing_turn_end_receipt"
 	if loop["action_end_sequence"] == 0: return "" if receipt.is_empty() else "inconsistent_turn_end_receipt"

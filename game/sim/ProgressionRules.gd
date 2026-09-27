@@ -20,6 +20,7 @@ const EntryGrowthRules = preload("res://game/sim/EntryGrowthRules.gd")
 const Learning = preload("res://game/sim/LearningRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 const GROWTH_CHOICES := {
 	"str": {"name": "力量", "effect": "基礎力量 +1；確認後按職業公式刷新派生數值"},
 	"dex": {"name": "反應", "effect": "基礎反應 +1；確認後按職業公式刷新派生數值"},
@@ -132,37 +133,33 @@ static func refresh_input_error(unit: Dictionary, equipment_items: Dictionary) -
 	if not growth.get("source") is Dictionary or not growth.get("caps") is Dictionary:
 		return "missing_growth_source"
 	var source: Dictionary = growth["source"]
-	if not _is_integer(source.get("mode")) or source["mode"] < 0 or source["mode"] > 0x7fffffff:
+	if not Values.is_integer(source.get("mode")) or source["mode"] < 0 or source["mode"] > 0x7fffffff:
 		return "invalid_growth_source_mode"
 	for key in ["attack_power", "magic_attack_power", "defense", "speed", "hit_point", "magic_point", "avoid_hit_ratio", "attack_back", "attack_damagex2"]:
-		if not _is_integer(source.get(key)):
+		if not Values.is_integer(source.get(key)):
 			return "invalid_growth_source_" + key
 	if not source.get("has_magic") is bool or not source.get("base_resist_by_type") is Dictionary:
 		return "invalid_growth_source_resists_or_magic"
 	for index in range(5):
-		if not _is_integer(source["base_resist_by_type"].get(str(index))):
+		if not Values.is_integer(source["base_resist_by_type"].get(str(index))):
 			return "missing_growth_source_resist"
 	var permanent_error := Permanent.input_error(unit)
 	if permanent_error != "": return permanent_error
 	if not unit.get("combat_profile") is Dictionary:
 		return "missing_growth_attributes"
 	for key in GROWTH_CHOICES:
-		if not _is_integer(unit["combat_profile"].get(key)) or int(unit["combat_profile"][key]) <= 0 or not _is_integer(growth["caps"].get(key)):
+		if not Values.is_integer(unit["combat_profile"].get(key)) or int(unit["combat_profile"][key]) <= 0 or not Values.is_integer(growth["caps"].get(key)):
 			return "invalid_growth_attribute_" + key
 	# PLAYERS steal_ratio word (+0x194); 0 means the 0x448840 default 12. Summed by the job-up merge like the other source words.
-	if not _is_integer(unit["combat_profile"].get("base_steal_ratio")) or int(unit["combat_profile"]["base_steal_ratio"]) < 0:
+	if not Values.is_integer(unit["combat_profile"].get("base_steal_ratio")) or int(unit["combat_profile"]["base_steal_ratio"]) < 0:
 		return "invalid_growth_attribute_base_steal_ratio"
 	for key in ["hp", "mp", "level"]:
-		if not _is_integer(unit.get(key)) or int(unit[key]) < (1 if key == "level" else 0):
+		if not Values.is_integer(unit.get(key)) or int(unit[key]) < (1 if key == "level" else 0):
 			return "invalid_growth_vital_" + key
 	if not unit.get("equipment") is Array or equipment_items.is_empty():
 		return "missing_equipment_input"
 	var effects := EquipmentRules.effect_delta(unit["equipment"], equipment_items)
 	return "" if effects["ok"] else str(effects["reason"])
-
-
-static func _is_integer(value: Variant) -> bool:
-	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and value == int(value)
 
 
 ## True when `enhancement_profile_error` compares the unit against a growth refresh (an
@@ -179,7 +176,7 @@ static func enhancement_profile_error(unit: Dictionary, equipment_items: Diction
 	if not enhancement_reads_growth(unit): return ""
 	var error := refresh_input_error(unit, equipment_items)
 	if error != "": return error
-	var refreshed := _refreshed_growth_stats(unit, equipment_items)
+	var refreshed := refreshed_growth_stats(unit, equipment_items)
 	for key in ["live_attack_damage", "live_defense"]:
 		if unit["combat_profile"].get(key) != refreshed["combat_profile"][key]: return "inconsistent_enhanced_" + key
 	if (int(unit.get("status_flags", 0)) & 0x40) != 0 and unit["combat_profile"].get("resist_by_type") != refreshed["combat_profile"]["resist_by_type"]: return "inconsistent_enhanced_resist_by_type"
@@ -195,12 +192,12 @@ static func refresh_growth_stats(unit: Dictionary, equipment_items: Dictionary) 
 	if error != "":
 		push_error("Cannot refresh growth: " + error)
 		return unit.duplicate(true)
-	return _refreshed_growth_stats(unit, equipment_items)
+	return refreshed_growth_stats(unit, equipment_items)
 
 
 ## `refresh_growth_stats` for a unit whose `refresh_input_error` the caller has just found
 ## empty (`enhancement_profile_error`, the hot per-action check, would otherwise run it twice).
-static func _refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionary) -> Dictionary:
+static func refreshed_growth_stats(unit: Dictionary, equipment_items: Dictionary) -> Dictionary:
 	var next := unit.duplicate(true)
 	var effective := EntryGrowthRules.effective_profile(next, Permanent.effective_profile(next))
 	# Campaign JSON represents numbers as floats. Normalize only after the full

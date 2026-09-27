@@ -28,9 +28,9 @@ func run() -> void:
 	presentation = scene.get_node("BattlePresentation")
 	# Let the first-control handoff settle before the fixture moves units next to the player.
 	await hold(1.0)
-	var player: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "leonard")
-	var enemy: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor021_1")
-	var friend: Dictionary = scene.BattlePlayLoop._unit(scene.play_loop, "actor023_1")
+	var player: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "leonard")
+	var enemy: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor021_1")
+	var friend: Dictionary = scene.BattlePlayLoop.unit_ref(scene.play_loop, "actor023_1")
 	enemy["coord"] = player["coord"] + Vector2i(1, 0)
 	friend["coord"] = player["coord"] + Vector2i(-2, 0)
 	player["hit_bonus_accum"] = 9

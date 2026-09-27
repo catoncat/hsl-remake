@@ -15,15 +15,15 @@ func _init() -> void:
 static func fixture() -> Dictionary:
 	var loop := run_support_magic_tests.priest_fixture()
 	loop["tiles"] = {}
-	var caster := BattlePlayLoop._unit(loop, "tina")
+	var caster := BattlePlayLoop.unit_ref(loop, "tina")
 	caster["stamina"] = 60
 	caster["hp"] = caster["max_hp"]
 	caster["inventory"] = [227,228,232,233,244,241,248,0]
-	var foe := BattlePlayLoop._unit(loop, "enemy021_1")
+	var foe := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	foe["coord"] = Vector2i(11,16);foe["grid_coord"] = foe["coord"];foe["ai_home_coord"] = foe["coord"]
 	foe["hp"] = 100;foe["max_hp"] = 100;foe["no_attack"] = false
 	foe["inventory"] = [0,0,0,0,0,0,0,0]
-	return BattlePlayLoop._return_to_player(loop,"tina")
+	return BattlePlayLoop.return_to_player(loop,"tina")
 
 static func selection(loop: Dictionary) -> Dictionary:
 	var next := BattlePlayLoop.choose_command(loop, "special")
@@ -63,9 +63,9 @@ func native_cases() -> void:
 	check(BattlePlayLoop.special_options(BattleFixture.loop(),"leonard").all(func(o):return o["id"]!=RepeatedSpecialRules.ID),"default Leonard retains his own declared special")
 
 func multi_target_transaction() -> void:
-	var loop := fixture();var caster := BattlePlayLoop._unit(loop,"tina")
+	var loop := fixture();var caster := BattlePlayLoop.unit_ref(loop,"tina")
 	caster["exp"] = 99;caster["kill_chain_word"] = 3
-	var foe := BattlePlayLoop._unit(loop,"enemy021_1");foe["hp"] = 1
+	var foe := BattlePlayLoop.unit_ref(loop,"enemy021_1");foe["hp"] = 1
 	var second := foe.duplicate(true);second["id"] = "moon_second";second["coord"] = Vector2i(9,15);second["grid_coord"] = second["coord"];second["ai_home_coord"] = second["coord"];second["hp"] = 25
 	loop["units"].append(second)
 	var third := foe.duplicate(true);third["id"] = "moon_third";third["coord"] = Vector2i(9,17);third["grid_coord"] = third["coord"];third["ai_home_coord"] = third["coord"];third["hp"] = 100
@@ -101,7 +101,7 @@ func interaction_boundaries() -> void:
 	own(loop, "equipment_items")["82"]["weapon_effect_flags"] = 0x210000 # Synthetic ordinary-only flags, never a source staff grant.
 	own(loop, "skill_book")["actors"]["002"]["double_attack"] = true
 	own(loop, "skill_book")["actors"]["021"]["double_attack"] = true
-	var defender := BattlePlayLoop._unit(loop,"enemy021_1")
+	var defender := BattlePlayLoop.unit_ref(loop,"enemy021_1")
 	defender["combat_profile"]["attack_back"] = 100
 	for kind in ["poison","paralysis","no_magic"]:
 		defender.merge(BattlePlayLoop.StatusEffectRules.apply(defender,kind,2,2 if kind=="poison" else 0)["changes"],true)
@@ -112,8 +112,8 @@ func interaction_boundaries() -> void:
 	check(result["last_attack"]["special_segments"].all(func(p):return not p.has("weapon_aftereffects")),"special receipts contain no ordinary-series aftereffect")
 	for change in ["dead","resources"]:
 		var pending := selection(fixture())
-		if change=="dead": BattlePlayLoop._set_unit_defeated(pending,"enemy021_1",true)
-		else: BattlePlayLoop._unit(pending,"tina")["stamina"]=19
+		if change=="dead": BattlePlayLoop.set_unit_defeated(pending,"enemy021_1",true)
+		else: BattlePlayLoop.unit_ref(pending,"tina")["stamina"]=19
 		var rejected := BattlePlayLoop.attack_coord(pending,BattlePlayLoop.unit(pending,"tina")["coord"],no_rng)
 		check(rejected["units"]==pending["units"] and rejected["turn_queue"]==pending["turn_queue"],"confirmation rechecks current state without stale preview effects: "+change)
 	var scenario := BattlePlayLoop.BattleScenario.load_file("res://content/battles/moon_dance_trial.json")

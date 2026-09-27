@@ -125,7 +125,7 @@ static func _defeat_living_enemies(loop: Dictionary, rules) -> int:
 	var count := 0
 	for actor in loop.get("units", []):
 		if actor["battle_actor_role"] == rules.ROLE_ENEMY and rules.Presence.living(actor):
-			rules._set_unit_defeated(loop, actor["id"], true)
+			rules.set_unit_defeated(loop, actor["id"], true)
 			count += 1
 	return count
 
@@ -176,7 +176,7 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		var armed: Dictionary = rules.copy(scene.play_loop)
 		armed["win_statuses"] = _ints(fixture["arm_win_statuses"])
 		armed["event_statuses"] = []
-		armed = rules._resolve_outcome(armed)
+		armed = rules.resolve_outcome(armed)
 		scene.apply_loop(armed, "test")
 		scene.set_process(true)
 	elif fixture.has("advance_turn") and win_unarmed:
@@ -187,7 +187,7 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		# until the round's event has armed a win status, before the artificial clear.
 		for _scan in range(8):
 			var fired_before: int = (scripted.get("winfail_runtime", {}).get("fired", []) as Array).size()
-			scripted = rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scripted))
+			scripted = rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scripted))
 			if not (scripted.get("win_statuses", []) as Array).is_empty() or BattleOutcome.decided(scripted):
 				break
 			if (scripted.get("winfail_runtime", {}).get("fired", []) as Array).size() == fired_before:
@@ -200,11 +200,11 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		var living := _defeat_living_enemies(scene.play_loop, rules)
 		if living == 0:
 			scene.set_process(true)
-			scene.apply_loop(rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+			scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 			if BattleOutcome.decided(scene.play_loop):
 				break
 			continue
-		scene.apply_loop(rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+		scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 		scene.set_process(true)
 		var settled := 0
 		for _frame in range(RESULT_FRAMES):
@@ -230,8 +230,8 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		var player_id := str(scene.first_battle_scenario.get("player_unit_id", ""))
 		if not zone.is_empty() and player_id != "":
 			scene.set_process(false)
-			rules._unit(scene.play_loop, player_id)["coord"] = Vector2i(int(zone[0][0]), int(zone[0][1]))
-			scene.apply_loop(rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+			rules.unit_ref(scene.play_loop, player_id)["coord"] = Vector2i(int(zone[0][0]), int(zone[0][1]))
+			scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 			scene.set_process(true)
 			for _frame in range(RESULT_FRAMES):
 				if presentation.battle_finished:
@@ -297,10 +297,10 @@ static func _force_status(tree: SceneTree, scene: Node, label: String, assert_cb
 			# Preserve the logical victory while leaving the presentation mirror at its
 			# valid pre-arrival footprint (a large actor's source endpoint may not be a valid stop).
 			restore_unit = unit_id
-			restore_coord = rules._unit(loop, unit_id).get("coord", Vector2i.ZERO)
-			rules._set_unit_coord(loop, unit_id, destination)
+			restore_coord = rules.unit_ref(loop, unit_id).get("coord", Vector2i.ZERO)
+			rules.set_unit_coord(loop, unit_id, destination)
 		else:
-			rules._unit(loop, unit_id)["coord"] = destination
+			rules.unit_ref(loop, unit_id)["coord"] = destination
 	if fixture.has("turn"):
 		loop["turn"] = int(fixture["turn"])
 	if fixture.has("event_statuses"):
@@ -310,11 +310,11 @@ static func _force_status(tree: SceneTree, scene: Node, label: String, assert_cb
 	if bool(fixture.get("run_hooks", true)):
 		loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 		loop["fail_statuses"] = []
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	if fixture.has("expect_win_status"):
 		assert_cb.call((loop.get("win_statuses", []) as Array).has(int(fixture["expect_win_status"])), "%s: the source chain arms win_%d" % [label, int(fixture["expect_win_status"])])
 		loop["fail_statuses"] = []
-		loop = rules._resolve_outcome(loop)
+		loop = rules.resolve_outcome(loop)
 	if bool(fixture.get("expect_victory_resolved", false)):
 		assert_cb.call(BattleOutcome.won(loop), "%s resolves its arrival victory" % label)
 	if fixture.has("commit_outcome"):
@@ -324,7 +324,7 @@ static func _force_status(tree: SceneTree, scene: Node, label: String, assert_cb
 		loop["battle_outcome"] = (fixture["commit_outcome"] as Dictionary).duplicate()
 		loop["interaction"] = "battle_result"
 	if restore_unit != "":
-		rules._set_unit_coord(loop, restore_unit, restore_coord)
+		rules.set_unit_coord(loop, restore_unit, restore_coord)
 	scene.apply_loop(loop, "test")
 	scene.set_process(true)
 	var finish := str(fixture.get("finish", "result"))
@@ -386,14 +386,14 @@ static func _force_rounds(tree: SceneTree, scene: Node, label: String, assert_cb
 		loop["fail_statuses"] = []
 		loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 		loop["fail_statuses"] = []
-		loop = rules._resolve_outcome(loop)
+		loop = rules.resolve_outcome(loop)
 		loop["fail_statuses"] = []
 		assert_cb.call(int(loop.get("turn", 0)) >= target_round or BattleOutcome.decided(loop), "%s reaches scripted round %d before force-win" % [label, target_round])
 	if bool(fixture.get("expect_undecided_after_rounds", false)):
 		assert_cb.call(not BattleOutcome.decided(loop), "%s: reaching the source rounds does not decide the battle" % label)
 	for _phase in range(int(fixture.get("clear_phases", 0))):
 		var converted := _defeat_living_enemies(loop, rules)
-		loop = rules._resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
+		loop = rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
 		loop["fail_statuses"] = []
 		if BattleOutcome.decided(loop) or converted == 0:
 			break
@@ -419,7 +419,7 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 			if str(loop.get("interaction", "")) == "action_menu":
 				loop = rules.choose_command(loop, "wait")
 			elif str(loop.get("interaction", "")) == "ai_resolving":
-				loop = rules._advance_current_actor(loop)
+				loop = rules.advance_current_actor(loop)
 			else:
 				break
 			guard += 1
@@ -428,14 +428,14 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 		if str(loop.get("interaction", "")) == "action_menu":
 			loop = rules.choose_command(loop, "wait")
 		elif str(loop.get("interaction", "")) == "ai_resolving":
-			loop = rules._advance_current_actor(loop)
+			loop = rules.advance_current_actor(loop)
 		assert_cb.call(int(loop.get("turn", 0)) >= target_round, "%s reaches scripted round %d before forced victory" % [label, target_round])
 	for expected_value in fixture.get("expect_units", []):
 		var expected: Dictionary = expected_value
 		var unit: Dictionary = rules.unit(loop, str(expected["id"]))
 		assert_cb.call(str(unit.get("actor_id", "")) == str(expected["actor_id"]) and str(unit.get("battle_actor_role", "")) == str(expected["role"]), "%s installs %s (%s, %s) before forced victory" % [label, str(expected["id"]), str(expected["actor_id"]), str(expected["role"])])
 	_defeat_living_enemies(loop, rules)
-	loop = rules._resolve_outcome(loop)
+	loop = rules.resolve_outcome(loop)
 	var settlement: Dictionary = loop.get("settlement", {})
 	if not settlement.is_empty() and not bool(settlement.get("closed", true)):
 		loop = rules.finish_rewards(loop, int(settlement.get("sequence", 0)), int(settlement.get("revision", 0)), false, true)
@@ -462,7 +462,7 @@ static func _force_choice_branch(tree: SceneTree, scene: Node, label: String, as
 		loop["turn"] = target_round
 		loop = rules.BattleScenarioRuleAdapter.run_event_hooks(loop)
 		loop["fail_statuses"] = []
-		loop = rules._resolve_outcome(loop)
+		loop = rules.resolve_outcome(loop)
 		loop["fail_statuses"] = []
 		scene.apply_loop(loop, "test")
 		scene.set_process(true)

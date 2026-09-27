@@ -20,25 +20,25 @@ static func ready_event(loop: Dictionary) -> Dictionary:
 	# raiders have already fallen. The real script, generation and RNG still run.
 	for actor in next["units"]:
 		if actor["actor_id"] == "028" and actor["id"] != "actor028_1":
-			BattlePlayLoop._set_unit_defeated(next, actor["id"], true)
+			BattlePlayLoop.set_unit_defeated(next, actor["id"], true)
 	return next
 
 
 static func attack_fixture() -> Dictionary:
 	var loop := initial()
-	for id in ["actor028_3", "actor028_4", "actor028_5"]: BattlePlayLoop._set_unit_defeated(loop, id, true)
-	var hu := BattlePlayLoop._unit(loop, "hu")
+	for id in ["actor028_3", "actor028_4", "actor028_5"]: BattlePlayLoop.set_unit_defeated(loop, id, true)
+	var hu := BattlePlayLoop.unit_ref(loop, "hu")
 	hu["growth_profile"]["source"]["speed"] += 200
 	hu["equipment"].append({"slot": "accessory2", "item_code": 227})
 	hu.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(hu, loop["equipment_items"]), true)
 	hu["hit_bonus_accum"] = 1000
-	var victim := BattlePlayLoop._unit(loop, "actor028_2")
+	var victim := BattlePlayLoop.unit_ref(loop, "actor028_2")
 	victim["hp"] = 1
 	for offset in BattlePlayLoop.weapon_pattern(loop, hu)["offsets"]:
 		victim["coord"] = hu["coord"] + Vector2i(int(offset[0]), int(offset[1]))
 		if BattlePlayLoop.TraversalRules.placement_error(victim, loop["units"], loop["tiles"], loop["map_size"]) == "": break
 	victim["ai_home_coord"] = victim["coord"]
-	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(loop))
+	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(loop))
 	return BattlePlayLoop.begin_battle(loop)
 
 
@@ -46,11 +46,11 @@ static func owned_turn(loop: Dictionary, id: String) -> Dictionary:
 	var next := loop.duplicate(true)
 	# Numerical ability fixtures explicitly enter another actor's fresh turn;
 	# retaining Hu's pending second-action lease would be an illegal owner swap.
-	BattlePlayLoop._clear_extra_action(next)
-	next["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop._queue_actors(next))
+	BattlePlayLoop.clear_extra_action(next)
+	next["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(BattlePlayLoop.queue_actors(next))
 	for index in range(next["turn_queue"]["slots"].size()):
 		if next["turn_queue"]["slots"][index]["id"] == id: next["turn_queue"]["index"] = index;break
-	return BattlePlayLoop._return_to_player(next, id)
+	return BattlePlayLoop.return_to_player(next, id)
 
 func run() -> void:
 	var loop := initial()
@@ -60,7 +60,7 @@ func run() -> void:
 	check(loop["winfail_script_rules"]["unsupported_tokens"].is_empty(), "source actMEssage spelling uses the canonical opcode instead of being dropped")
 	var before := ready_event(loop)
 	var fired := WinfailScenarioRules.run_event_hooks(before)
-	fired = BattlePlayLoop._resolve_outcome(fired)
+	fired = BattlePlayLoop.resolve_outcome(fired)
 	check(fired["scenario_ok"], "event generation succeeds: " + str(fired.get("scenario_error", "")))
 	check(not BattlePlayLoop.unit(fired, "tina").is_empty(), "actual event installs registered Player2 in the sole battle roster")
 	check(fired["units"].filter(func(a): return a["actor_id"] == "023").size() == 4, "all four original pursuit inserts materialize")
@@ -95,7 +95,7 @@ func birth_and_persistence(initial_state: Dictionary, fired: Dictionary) -> void
 		var restored := BattleCheckpoint.decode(saved["bytes"], quiet)
 		check(restored["ok"] and restored["snapshot"]["loop"] == quiet, "F9 restores actors, birth draws, actual stage and receipts byte-equivalently")
 		# The scan's handoff also bumps the counter word 0x4c1ad4 (original_poison_gas.md); nothing else may change.
-		var rescanned: Dictionary = BattlePlayLoop._resolve_outcome(WinfailScenarioRules.run_event_hooks(restored["snapshot"]["loop"]))
+		var rescanned: Dictionary = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(restored["snapshot"]["loop"]))
 		rescanned["winfail_runtime"]["handoff_counter"] = int(quiet["winfail_runtime"]["handoff_counter"])
 		check(rescanned == quiet, "post-restore event check cannot recreate, reroll, replay the grant or move units again")
 	for variant in ["program", "duplicate", "birth"]:
@@ -103,14 +103,14 @@ func birth_and_persistence(initial_state: Dictionary, fired: Dictionary) -> void
 		match variant:
 			"program": bad["script_actor_transactions"][0]["actions"][0]["name"] = "actWait"
 			"duplicate": bad["script_actor_transactions"][0]["created_ids"].append("tina")
-			"birth": BattlePlayLoop._unit(bad, "tina")["script_creation"]["player_growth"]["level"] += 1
+			"birth": BattlePlayLoop.unit_ref(bad, "tina")["script_creation"]["player_growth"]["level"] += 1
 		check(not BattleCheckpoint.encode(bad, view)["ok"], "F9 rejects a contradictory script actor ledger: " + variant)
 	var carry: Dictionary = JSON.parse_string(JSON.stringify(BattlePlayLoop.CampaignCarryRules.capture(quiet)))
 	check(carry["units"].has("tina") and carry["units"]["tina"]["actor_id"] == "002" and TestSuite.carries_no_stream(carry), "actual campaign JSON includes the joined priest and no global stream")
 	var replay := fired.duplicate(true)
-	BattlePlayLoop._unit(replay, "tina")["hp"] = 1
+	BattlePlayLoop.unit_ref(replay, "tina")["hp"] = 1
 	var existing := replay.duplicate(true)
-	var outcome := BattlePlayLoop.ScriptActors._install(replay, replay["script_actor_source"]["templates"]["obj_Story_Player2"], "obj_Story_Player2", 1, 0, {})
+	var outcome := BattlePlayLoop.ScriptActors.install_actor(replay, replay["script_actor_source"]["templates"]["obj_Story_Player2"], "obj_Story_Player2", 1, 0, {})
 	check(outcome["ok"] and not outcome["created"] and replay == existing, "repeat installation of the existing slot never resets health, equipment, progress or RNG")
 
 
@@ -130,7 +130,7 @@ func actual_action_transition() -> void:
 	var later := BattlePlayLoop.choose_command(owned_turn(second, "tina"), "wait")
 	check(later["script_actor_transactions"] == second["script_actor_transactions"] and later["units"].size() == 12, "a later completion cannot sample the completed arrival again")
 	var resumed := owned_turn(second, "tina")
-	var target := BattlePlayLoop._unit(resumed, "leonard")
+	var target := BattlePlayLoop.unit_ref(resumed, "leonard")
 	target["hp"] = maxi(1, int(target["hp"]) - 8)
 	var before_heal := resumed.duplicate(true)
 	var heal := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(resumed, "magic"), "magic:magicWATER:magicCode06"), "leonard", func(_n): return 0)
@@ -138,7 +138,7 @@ func actual_action_transition() -> void:
 	check(BattlePlayLoop.unit(heal, "tina")["mp"] == BattlePlayLoop.unit(before_heal, "tina")["mp"] - 6, "joined ability pays its actual cost once")
 	for condition in ["no_magic", "paralysis", "empty_mp"]:
 		var state := owned_turn(second, "tina")
-		var actor := BattlePlayLoop._unit(state, "tina")
+		var actor := BattlePlayLoop.unit_ref(state, "tina")
 		if condition == "empty_mp": actor["mp"] = 0
 		else: actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, condition, 2)["changes"], true)
 		var unchanged := state.duplicate(true)
@@ -146,7 +146,7 @@ func actual_action_transition() -> void:
 		var denied := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(state, "magic"), "magic:magicWATER:magicCode06"), "leonard", func(_n): draws[0] += 1;return 0)
 		check(draws[0] == 0 and denied["units"] == unchanged["units"] and TestSuite.no_draw(denied, unchanged, "global"), "joined priest rejects stale/resource/status-invalid casting atomically: " + condition)
 	var current := owned_turn(second, "tina")
-	var unit := BattlePlayLoop._unit(current, "tina")
+	var unit := BattlePlayLoop.unit_ref(current, "tina")
 	unit["permanent_gains"]["attack_power"] = 3
 	unit.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(unit, current["equipment_items"]), true)
 	var birth: Dictionary = unit["script_creation"].duplicate(true)

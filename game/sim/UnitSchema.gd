@@ -12,6 +12,7 @@ extends RefCounted
 ##   rules: remake-invented
 ##     (unit dictionary contract derived from remake data by tools/hsltools/schema/unit.py —
 ##     content/schema/unit.schema.json)
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const PATH := "res://content/schema/unit.schema.json"
 ## Evidence tier of a unit ledger nobody wrote a tier for: content authored for the
@@ -25,7 +26,7 @@ static var _cached_schema: Dictionary = {}
 
 static func schema() -> Dictionary:
 	if _cached_schema.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH)) if FileAccess.file_exists(PATH) else null
+		var parsed: Variant = ContentPaths.read_json(PATH) if FileAccess.file_exists(PATH) else null
 		_cached_schema = parsed if parsed is Dictionary else {}
 	return _cached_schema
 

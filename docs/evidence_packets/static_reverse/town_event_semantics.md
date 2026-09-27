@@ -1,40 +1,24 @@
 # 城镇事件（TOWNDEF te token）读法表
 
-> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-20
+> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-27
 
-Checked: 2026-09-18. 本包对应 `game/sim/TownEventRules.gd`（无状态 te 解释器）与
-`content/world/town_initial_trees.json`（provisional 初始菜单树，`tools/hsltools/data/town_initial_trees.py` 生成）。
-它区分两类内容：**resource-derived 结构**（token 名、参数顺序、事件表、脚本引用）与 **provisional 读法**
-（每个 token 在解释器里被赋予的行为）。本包不声明任何原版运行时语义；测试绿只证明当前合同。
+## 结论
+
+- 原版 TOWNDEF 的 te token 名、参数顺序、事件表与脚本引用可从资源读出；带地址的条目（teCheckMoney、teCheckItemExecEvent、teCheckTEExist、teCheckJobUp 失败链、teAppearSecretMan、teSecretManBuyThing、消息与延时的时钟、初始菜单树）已由 `0x454e20` 等静态阅读确认（resource-derived；static-derived）。
+- 重制 `game/sim/TownEventRules.gd`（无状态 te 解释器）与 `content/world/town_initial_trees.json` 按此实现，执行记录的 `provisional` 字段引用本表 `town_event_semantics:<te token>`。
+- 其余 token 的行为、帧栈与子菜单重开是重制读法（provisional，差异清单 `town-event-timing`）。
+
+## 证据
+
+### resource-derived：结构
 
 结构来源见[世界地图数据链](world_map_data.md)：`towndef.json`（`hsl_towndef.v1`，191 条 town_event、62 条 item、
 923 条 te 指令、46 个 TOWNDEF.H 定义 token）。解释器读写的世界状态是 `hsl_world_state.v1`（由世界地图运行时创建，
 本模块只改 `towns` 与大地图旗标／事件／模式表；`current_point`／`visited_points` 不在此改写）。
 
-## 可复跑入口
+### static-derived：消息与延时的时钟（r2ghidra 反编译 `0x454e20`，未执行）
 
-```sh
-PYTHONPATH=. python3 tools/hsl.py check town_initial_trees          # 有 PAK：重生成比对；无 PAK：离线一致性
-tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
-```
-
-## 执行模型（全部 provisional）
-
-替换证据：hsl01.exe 城镇脚本 VM（te dispatcher）的静态分析，或原作单镇菜单的有界单步采样。不支持的结论：原版是否有帧栈、
-菜单是否在子项后重开、条件失败是否退回菜单、离开城镇的时机——以下每行只描述解释器当前行为。
-
-| 项 | 读法 | 依据／替换证据 |
-| --- | --- | --- |
-| run／frame | `begin_event` 建立帧栈逐 token 执行；`resume(run, choice)` 处理 pending | 重制模型；替换证据为 EXE 城镇脚本 VM |
-| teExecEvent | 跳转：替换当前帧 | TOWNDEF 19 处全部为事件末 token，跳转与调用不可区分 |
-| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；`mode` 参数原样透传未读 |
-| teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项结束后重开菜单，`exit` 或 teMenuMoveOut 后越过该 token | 13 处；重开行为为重制读法 |
-| teMenuMoveOut | 标记最近的打开菜单在当前链结束时关闭 | 仅事件 96 使用 |
-| 条件失败 | 只中止当前帧（回到父菜单） | 重制读法 |
-| teSetNextPlayLevelEvent | 记录 `next_level_event` 并结束 run（离开城镇） | 6 处全部为末 token |
-| 尾帧消除 | 插入帧前弹出已执行完且非菜单的帧 | 使 命運神殿 儀式 71→61→71 数据环不增长栈 |
-
-**消息与延时的时钟（static-derived，lane TOWNMAP 读 r2ghidra 反编译 `0x454e20`，未执行）。** VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主循环＝一 tick，见 `OriginalTick`）：
+VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主循环＝一 tick，见 `OriginalTick`）：
 
 | token | 原实现 | 重制 |
 | --- | --- | --- |
@@ -44,7 +28,7 @@ tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
 | tePlaySound 28 | `0x42c180(wav, 0)`：音效开关 `0x4c1af4` 开且 `0x477c20` 非零时即播，不等待，同一次调用继续 | 只记录：三个 WAV（WALK0016／OPEN0001／MOVE0001）未导入，导入属 `tools/hsltools/assets/town_assets.py` |
 | teDeletePlayerMessage 6／teDeleteShapeMessage 8 | 把对应消息标志清零 | 只记录（每句已等确认关板） |
 
-## token 读法表
+### resource-derived 结构与解释器读法：token 表
 
 「结构」列为 TOWNDEF.H 签名注释（resource-derived）；「读法」列为解释器行为（provisional，除非注明为纯记录）：替换证据是各 te handler
 的静态分析（`PYTHONPATH=tools python3 -m hsltools.checks.function_catalog query` 定位候选）或原作有界采样；在此之前不能据「读法」列声明原版对金币、物品、旗标或菜单的实际改写。
@@ -61,11 +45,11 @@ tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
 | teGetItem | `[item id][number]` | 合并到 `party.items` | `get_item` |
 | teSetExecEvent／teSetTownExecEvent | `[town id][event]` | 两者同义写 `exec_event` | `set_exec_event` |
 | teSetTownExitExecEvent | `[id][event]` | 写 `exit_exec_event` | `set_exit_exec_event` |
-| teCheckMoney | `[gold][shape][name][msg id]` | **static-derived（SR-069：0x4555a5／0x455627）**：足够立即扣除并继续；不足不扣、播 shape_message 后结束本事件（VM 返回 1） | `spend_gold`／`check_failed` |
-| teCheckPlayerExist／teCheckItemExist | `[player id]`／`[id]` | **static-derived（SR-069：0x454e20）**：此版 VM 只前进 opcode、不检查也不读参数——实现为 no-op（TOWNDEF 中 0 次使用） | —（记录 `noop`） |
-| teCheckItemExecEvent | `[item id][event][delete]` | **static-derived（SR-069：0x454cd0）**：查队员八槽，有则 delete≠0 扣 1、event≠0 跳转（event 0 继续）；无：继续 | `remove_item` |
-| teCheckTEExist | `[town id][parent][child][event id]` | **static-derived（SR-069：0x455db7／0x4546c0）**：child 在 parent 下：event≠0 跳转、event 0 结束本事件；不在：继续 | — |
-| teCheckJobUp／teCheckJobUp2 | `[player id][fail msg][fail event]` | 失败分支（SR-069）：播 fail 消息，fail event＝-1 结束事件、有效 event 跳转；成功链已重制为 PLAYERS 目标行合并（0x434770／0x4348f0，见下文迁出表与[原作城镇转职](original_town_job_up.md)） | `job_up`／`player_message` |
+| teCheckMoney | `[gold][shape][name][msg id]` | **static-derived（0x4555a5／0x455627）**：足够立即扣除并继续；不足不扣、播 shape_message 后结束本事件（VM 返回 1） | `spend_gold`／`check_failed` |
+| teCheckPlayerExist／teCheckItemExist | `[player id]`／`[id]` | **static-derived（0x454e20）**：此版 VM 只前进 opcode、不检查也不读参数——实现为 no-op（TOWNDEF 中 0 次使用） | —（记录 `noop`） |
+| teCheckItemExecEvent | `[item id][event][delete]` | **static-derived（0x454cd0）**：查队员八槽，有则 delete≠0 扣 1、event≠0 跳转（event 0 继续）；无：继续 | `remove_item` |
+| teCheckTEExist | `[town id][parent][child][event id]` | **static-derived（0x455db7／0x4546c0）**：child 在 parent 下：event≠0 跳转、event 0 结束本事件；不在：继续 | — |
+| teCheckJobUp／teCheckJobUp2 | `[player id][fail msg][fail event]` | 失败分支（static-derived）：播 fail 消息，fail event＝-1 结束事件、有效 event 跳转；成功链已重制为 PLAYERS 目标行合并（0x434770／0x4348f0，见下文迁出表与[原作城镇转职](original_town_job_up.md)） | `job_up`／`player_message` |
 | teCheckJobUpDeny／teCheckMoney2 | 无签名，0 次使用 | 纯记录 | `recorded_only` |
 | teBMSetPointFlag／teBMClearPointFlag／teBMSetTrackFlag／teBMClearTrackFlag | `[id][flag]` | 增删旗标名（`point_flags`／`track_flags`，字符串键） | `bm_flag_change` |
 | teBMSetShowTrackPoint | `[id]` | 追加到 `show_track_points` | `bm_show_track_point` |
@@ -74,7 +58,7 @@ tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
 | teBMSetPointEncounterRatio（仅 act 版） | `[id][ratio]` | 写 `encounter_ratios` | `bm_encounter_ratio` |
 | teSetBMWalkToPoint | `[from][to]` | 写 `state.pending_walk {from,to}`；世界地图运行时在离城／进图时执行：有已显示路线则沿路线旅行（薛維斯港 138 送船 11→12、戈黎塔尼港 183 25→26），否则直接到达；`current_point` 仍归运行时 | `bm_walk_to_point` |
 | teAddOverScore | `[id][score]` | 累加 `over_score[id]` | `over_score` |
-| teAppearSecretMan | `[town id][tavern event][mode]` | 机制 **static-derived（SR-069：0x454db0）**：缓存 0 未决／-1 失败／正数已选；未决时严格 `rand(100)+1 < ratio` 才把 0x479398 表 `[123,113,114,115,116,117,118,119,120]` 的当前索引事件加为 tavern 子项并缓存，相等失败缓存 -1 不再掷，mode≠0 强制。**provisional**：默认 ratio（本包取数据里唯一出现的 8）、表索引（从 0 起＝123）、缓存何时重置（本包随 teDeleteSecretMan 清除） | `secret_man{appear\|absent\|cached}` |
+| teAppearSecretMan | `[town id][tavern event][mode]` | 机制 **static-derived（0x454db0）**：缓存 0 未决／-1 失败／正数已选；未决时严格 `rand(100)+1 < ratio` 才把 0x479398 表 `[123,113,114,115,116,117,118,119,120]` 的当前索引事件加为 tavern 子项并缓存，相等失败缓存 -1 不再掷，mode≠0 强制。**provisional**：默认 ratio（本包取数据里唯一出现的 8）、表索引（从 0 起＝123）、缓存何时重置（本包随 teDeleteSecretMan 清除） | `secret_man{appear\|absent\|cached}` |
 | teDeleteSecretMan／teSetSecretAppearRatio | —／`[ratio]` | 从 tavern 子项移除已缓存的神秘男子并清 `secret_man`／写当前城镇 `secret_appear_ratio`（0 视为未设） | `secret_man{delete\|ratio}` |
 | teSecretManBuyThing | `[shape][name][fail msg][fail event]` | **static-derived**（[原作酒館神秘男子](original_secret_man.md)：0x454e20 case 0x27）：`secret_man_goods[secret_man_index]` 行——金币不足 → 无脸 `[fail msg]` 再跳 `[fail event]`（0 继续）；足够 → 扣价、按位置 `rand(n)` 取该行一件物品（teGetItem 同路入包）、计数器 +1（上限 8） | `shape_message`＋`check_failed`／`spend_gold`＋`get_item`＋`secret_man{purchase}` |
 | 未定义 token | — | 记录 `unknown_token`，链继续 | `recorded_only` |
@@ -82,9 +66,9 @@ tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd
 脚本侧 `apply_script_town_actions` 接受 winfail／STORY 的 `act*` 同名 token（`actAddTE`、`actDeleteTE`、`actSetTownExecEvent`、
 `actSetTownExitExecEvent`、`actBM*`、`actSetBMWalkToPoint`），参数形状与 te 版相同，走同一套状态改写；`actSetBMWalkerPlayerID` 只记录。
 
-## 初始菜单树（static-derived：SR-069 复核）
+### static-derived：初始菜单树
 
-TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立（SR-069，[原世界／城镇合同](original_world_town.md)），执行结果与本表一致。生成规则保留为推导记录：`content/world/town_initial_trees.json` 按以下规则生成，每条 entry 带 `source`：
+TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立（[original_world_town](original_world_town.md)），执行结果与本表一致。生成规则保留为推导记录：`content/world/town_initial_trees.json` 按以下规则生成，每条 entry 带 `source`：
 
 1. 段头注释里的城镇名归类（如「歐姆村武器店」）；酒館类子项按注释前缀嵌套（「米蘭多酒館老闆」→ 7）。注释不是引擎数据 → provisional。
 2. 排除运行时才出现的节点：TOWNDEF 的 teAddSelfTE／teAddTE 与 PAK 全部 STORY／winfail 的 actAddTE 所加的 children（num=0 时为节点本身）、
@@ -96,9 +80,27 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 结果：歐姆村 `{0:[1,2,3]}`、米蘭多 `{0:[4,5,6,7], 7:[8,12,13,14]}`、席達鎮 `{0:[16,17,18,20], 20:[21,22,23]}`，其余 9 镇为空树；
 `unassigned` 记录无城镇归属的 13 条（酒館神秘男子 113–122、克里夫二 137、152、191）。替换证据：EXE 初始 TE 表或原作各镇首次菜单的有界采样。
 
-## 解释器读法字符串（自 `TownEventRules.PROVISIONAL_READINGS` 迁出）
+## 重制接线
 
-收口冲刺 P3b 把解释器过去内嵌的英文读法原文迁到这里；代码只保留 token 表 `TownEventRules.PACKET_READING_TOKENS`，每条执行记录的 `provisional` 字段存引用 `town_event_semantics:<te token>`（act* 双胞胎按其 te 名查表）。evidence 列取自原句开头的层级词：`static-derived` 只覆盖句中给出地址的部分，句内标 provisional 的部分与不带地址的整句都是重制读法。与上表冲突处（teCheckJobUp／teCheckJobUp2：上表写于转职重制之前）以本表为准，转职链的地址证据见[原作城镇转职](original_town_job_up.md)。
+### 重制：执行模型（provisional）
+
+替换证据：hsl01.exe 城镇脚本 VM（te dispatcher）的静态分析，或原作单镇菜单的有界单步采样。不支持的结论：原版是否有帧栈、
+菜单是否在子项后重开、条件失败是否退回菜单、离开城镇的时机——以下每行只描述解释器当前行为。
+
+| 项 | 读法 | 依据／替换证据 |
+| --- | --- | --- |
+| run／frame | `begin_event` 建立帧栈逐 token 执行；`resume(run, choice)` 处理 pending | 重制模型；替换证据为 EXE 城镇脚本 VM |
+| teExecEvent | 跳转：替换当前帧 | TOWNDEF 19 处全部为事件末 token，跳转与调用不可区分 |
+| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；`mode` 参数原样透传未读 |
+| teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项结束后重开菜单，`exit` 或 teMenuMoveOut 后越过该 token | 13 处；重开行为为重制读法 |
+| teMenuMoveOut | 标记最近的打开菜单在当前链结束时关闭 | 仅事件 96 使用 |
+| 条件失败 | 只中止当前帧（回到父菜单） | 重制读法 |
+| teSetNextPlayLevelEvent | 记录 `next_level_event` 并结束 run（离开城镇） | 6 处全部为末 token |
+| 尾帧消除 | 插入帧前弹出已执行完且非菜单的帧 | 使 命運神殿 儀式 71→61→71 数据环不增长栈 |
+
+### 重制：解释器读法字符串
+
+解释器读法原文集中在这里；代码只保留 token 表 `TownEventRules.PACKET_READING_TOKENS`，每条执行记录的 `provisional` 字段存引用 `town_event_semantics:<te token>`（act* 双胞胎按其 te 名查表）。evidence 列取自原句开头的层级词：`static-derived` 只覆盖句中给出地址的部分，句内标 provisional 的部分与不带地址的整句都是重制读法。与上表冲突处（teCheckJobUp／teCheckJobUp2）以本表为准，转职链的地址证据见[原作城镇转职](original_town_job_up.md)。
 
 | te token | evidence | 读法（原文） |
 | --- | --- | --- |
@@ -128,14 +130,17 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | teSetSecretAppearRatio | provisional | stored on the town where the running event lives |
 | teDeleteSecretMan | provisional | removes the cached secret man from the tavern's children and clears the running town's secret_man |
 
-## 未解语义（不在本包声明）
+## 复现
+
+`tools/godot.sh --headless --script res://tests/run_town_event_rules_tests.gd`；初始树 `python3 tools/hsl.py check town_initial_trees`
+
+## 边界
 
 | 项 | 观察 | 替换证据 |
 | --- | --- | --- |
 | 命運神殿 儀式环 | 71→61…68→（teCheckJobUp 失败）→71 在数据里没有退出分支；tePlayerSelectInsertEvent 的 `mode`（1／2）可能提供取消 | 转职 handler 与 select 菜单静态分析 |
-| 神秘商人 | 机制已由 SR-069 给出（上表）；表索引推进（购买计数器 0x4c1bd4）与 BuyThing 价格／货物已由[原作酒館神秘男子](original_secret_man.md)静态确认；默认 ratio 与缓存重置点未证 | secret man 设定入口 |
-| 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；「所选成员首个空格入包」仍是重制交互改写（[城镇回执](../runtime_observations/town_scene/README.md)） | 手持槽放置流程的有界执行 |
+| 神秘商人 | 机制、表索引推进与 BuyThing 价格／货物已静态确认（上表、[original_secret_man](original_secret_man.md)）；默认 ratio 与缓存重置点未证 | secret man 设定入口 |
+| 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；「所选成员首个空格入包」仍是重制交互改写（[城镇回执](../runtime_observations/original_world_town/README.md)） | 手持槽放置流程的有界执行 |
 | teBMSetPointEventNotVisit 与 visited | 与 teBMSetPointEvent 的差别只在名字 | 大地图 handler |
 | 子菜单重开／退出 | 每个子项后是否回到菜单、如何退出 | 菜单 handler 或原作单步采样 |
-| 初始树 | SR-069 执行 `0x454ae0→0x454a20` 两次得到与 `town_initial_trees.json` 相同的结果（1 根 [1,2,3]；4 根 [4,5,6,7]、7→[8,12,13,14]；6 根 [16,17,18,20]、20→[21,22,23]；其余九城为空）——初始树本身升为 static-derived，本包的注释归类规则只是当初的推导路径 | —（已闭合） |
-| 消息节奏 | **已读（lane TOWNMAP）**：见上「消息与延时的时钟」——消息都等关板、teDelay N＝N+1 tick；剩 if_wait 位 `0x2000` 在消息对象里的作用与 tePlaySound 的三个 WAV 导入 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |
+| 消息 if_wait 位 | 消息都等关板、teDelay N＝N+1 tick 已读；if_wait 位 `0x2000` 在消息对象里的作用与 tePlaySound 三个 WAV 的导入未做 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |

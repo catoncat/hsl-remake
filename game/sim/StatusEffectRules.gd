@@ -8,6 +8,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ## Which statuses exist, their flags, counters, expiry and cures: StatusCatalog (one row each).
 const Catalog = preload("res://game/sim/StatusCatalog.gd")
+const Values = preload("res://game/sim/Values.gd")
 const POISON: int = Catalog.ENTRIES[Catalog.POISON_KEY]["flag"]
 const NO_MAGIC: int = Catalog.ENTRIES[Catalog.NO_MAGIC_KEY]["flag"]
 const PARALYSIS: int = Catalog.ENTRIES[Catalog.PARALYSIS_KEY]["flag"]
@@ -40,16 +41,12 @@ static func _flags(keys: Array) -> Dictionary:
 	return result
 
 
-static func _unsigned(value: Variant, maximum: int = 0xffffffff) -> bool:
-	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and value >= 0 and value <= maximum and value == int(value)
-
-
 static func input_error(unit: Dictionary) -> String:
-	if not _unsigned(unit.get("status_flags")) or not unit.get("status_counters") is Dictionary:
+	if not Values.is_integer_in(unit.get("status_flags"), 0, Values.MAX_UNSIGNED) or not unit.get("status_counters") is Dictionary:
 		return "missing_status_state"
 	for key in COUNTERS:
 		var word: Variant = unit["status_counters"].get(key)
-		if not _unsigned(word):
+		if not Values.is_integer_in(word, 0, Values.MAX_UNSIGNED):
 			return "invalid_status_counter"
 		# The live subset accepts coherent afflictions. Native inconsistent/negative
 		# counter states are documented separately, not silently normalized here.
@@ -66,7 +63,7 @@ static func input_error(unit: Dictionary) -> String:
 
 static func weaken_input_error(unit: Dictionary) -> String:
 	var word: Variant = unit["status_counters"].get(WEAKEN_KEY, 0)
-	if not _unsigned(word): return "invalid_status_counter"
+	if not Values.is_integer_in(word, 0, Values.MAX_UNSIGNED): return "invalid_status_counter"
 	if ((int(unit["status_flags"]) & WEAKEN) != 0) != (int(word) != 0): return "inconsistent_status_state"
 	if int(word) != 0 and ((int(word) & 0xffff) not in range(1, 10) or (int(word) >> 16) < 2 or (int(word) >> 16) > 15):
 		return "unsupported_weaken_word"
@@ -93,7 +90,7 @@ static func apply_weaken(unit: Dictionary, turns: int, power: int) -> Dictionary
 	if error != "": return {"ok": false, "reason": error}
 	if turns not in range(2, 4) or power < 2 or power > 15:
 		return {"ok": false, "reason": "invalid_status_application"}
-	if not _unsigned(unit.get("hp"), 0x7fffffff) or int(unit["hp"]) == 0 or bool(unit.get("defeated", false)):
+	if not Values.is_integer_in(unit.get("hp"), 0, 0x7fffffff) or int(unit["hp"]) == 0 or bool(unit.get("defeated", false)):
 		return {"ok": false, "reason": "status_actor_unavailable"}
 	return _merge_application(unit, WEAKEN_KEY, turns, power)
 
@@ -137,7 +134,7 @@ static func apply(unit: Dictionary, key: String, turns: int, power: int = 0) -> 
 	if error != "": return {"ok": false, "reason": error}
 	if key not in COUNTERS or turns not in range(2, 4) or power < 0 or power > 65535 or (not Catalog.ENTRIES[key]["power"] and power != 0):
 		return {"ok": false, "reason": "invalid_status_application"}
-	if not _unsigned(unit.get("hp"), 0x7fffffff) or int(unit["hp"]) == 0 or bool(unit.get("defeated", false)):
+	if not Values.is_integer_in(unit.get("hp"), 0, 0x7fffffff) or int(unit["hp"]) == 0 or bool(unit.get("defeated", false)):
 		return {"ok": false, "reason": "status_actor_unavailable"}
 	return _merge_application(unit, key, turns, power)
 
@@ -196,7 +193,7 @@ static func after_action(unit: Dictionary) -> Dictionary:
 	var error := input_error(unit)
 	if error != "":
 		return {"ok": false, "reason": error}
-	if not _unsigned(unit.get("hp"), 0x7fffffff) or int(unit["hp"]) <= 0 or bool(unit.get("defeated", false)):
+	if not Values.is_integer_in(unit.get("hp"), 0, 0x7fffffff) or int(unit["hp"]) <= 0 or bool(unit.get("defeated", false)):
 		return {"ok": false, "reason": "status_actor_unavailable"}
 	var hp := int(unit["hp"])
 	var flags := int(unit["status_flags"])

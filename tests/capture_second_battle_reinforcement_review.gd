@@ -40,9 +40,9 @@ func run() -> void:
 	# boundary commit the script actor transaction, then watch the cutscene walk them in.
 	var alive: Array = scene.play_loop["units"].filter(func(unit): return str(unit.get("class_id", "")) == "Enemy021" and int(unit.get("hp", 0)) > 0)
 	for index in range(alive.size() - 1):
-		scene.BattlePlayLoop._set_unit_defeated(scene.play_loop, str(alive[index]["id"]), true)
+		scene.BattlePlayLoop.set_unit_defeated(scene.play_loop, str(alive[index]["id"]), true)
 	scene.play_loop["turn"] = 2
-	scene.apply_loop(scene.BattlePlayLoop._resolve_outcome(scene.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
+	scene.apply_loop(scene.BattlePlayLoop.resolve_outcome(scene.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
 	var recruits: Array = scene.play_loop["units"].filter(func(unit): return str(unit["id"]).begins_with("Enemy021_script_"))
 	check(recruits.size() == 4, "event1 creates four script actor recruits (%d)" % recruits.size())
 	var cells := [Vector2i(7, 38), Vector2i(12, 38), Vector2i(4, 30), Vector2i(14, 30)]

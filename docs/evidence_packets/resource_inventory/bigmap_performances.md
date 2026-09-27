@@ -1,8 +1,8 @@
-# 原版大地图上的剧情演出盘点（lane M4）
+# 原版大地图上的剧情演出盘点
 
-> evidence: resource-derived; negative-evidence: 无 STORY／WINFAIL 关卡以大地图为底图; provisional: 原版画面构图待 runtime 实录 · status: record-only · tools: hsltools/checks/source_map_binding.py, hsltools/data/big_map_flow.py · updated: 2026-09-23
+> evidence: resource-derived; negative-evidence: 无 STORY／WINFAIL 关卡以大地图为底图; provisional: 原版画面构图待 runtime 实录 · status: record-only · tools: hsltools/checks/source_map_binding.py, hsltools/data/big_map_flow.py · updated: 2026-09-27
 
-起因：实玩反馈——大地图上会有对话发生，重制是否已有这些内容（复述）。本包只盘点**原版数据里**在大地图（level 49）上发生的对白／走位／演出，并逐条对照重制现在的处理。原版画面长什么样（城镇窗、对白板、状态栏的构图）见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md)（runtime-measured，lane R5-L6）。
+本包只盘点**原版数据里**在大地图（level 49）上发生的对白／走位／演出，并逐条对照重制现在的处理。原版画面构图（城镇窗、对白板、状态栏）见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md)（runtime-measured）。
 
 ## 结论
 
@@ -17,7 +17,7 @@
 
 ## 依据（resource-derived）
 
-- **没有别的关卡以大地图为底图**：各关 `OBJ-NNN.OBS` 中 `defProcIconBG` 地图管理员记录的 `obj_Shape_Name` 决定该关底图，[原地图绑定](../static_reverse/original_map_binding.md)已核对全部 154 个。153 个指向 `SHAPEnn\LEVELnn.SHP`，唯一例外 level 49 是 `SHAPE\ICONRECT.SHP` 控制器；没有任何一关指向 `SHAPE99\BIGMAP.SHP`。本 lane 用 `tools/hsltools/sources/pak.py` 重扫全部 `obj-*.obs`，结果相同。无图剧情关（60–64、66–71 等）借用的是 LEVEL55／58 营地和王座厅，不是大地图。level 66（STORY065 之后五人对白）就是 LEVEL55 夜营，不在大地图上（`hsltools/levels/seed.py` 的 `MAP_ALIASES[66]`）。
+- **没有别的关卡以大地图为底图**：各关 `OBJ-NNN.OBS` 中 `defProcIconBG` 地图管理员记录的 `obj_Shape_Name` 决定该关底图，[原地图绑定](../static_reverse/original_map_binding.md)已核对全部 154 个。153 个指向 `SHAPEnn\LEVELnn.SHP`，唯一例外 level 49 是 `SHAPE\ICONRECT.SHP` 控制器；没有任何一关指向 `SHAPE99\BIGMAP.SHP`。用 `tools/hsltools/sources/pak.py` 重扫全部 `obj-*.obs`，结果相同。无图剧情关（60–64、66–71 等）借用的是 LEVEL55／58 营地和王座厅，不是大地图。level 66（STORY065 之后五人对白）就是 LEVEL55 夜营，不在大地图上（`hsltools/levels/seed.py` 的 `MAP_ALIASES[66]`）。
 - **对白板和城镇窗属于大地图关**：`obj-049.OBS` 除点、路线外的 48 个对象里有下面这些。`TownBG` 不在这张对象表里，由城镇过程动态载入，这是推测，要看实录。
 
 | 对象 | 形状 | 过程 | 大小 |
@@ -87,7 +87,7 @@ TOWNDEF 共 191 条事件，180 条带 teShapeMessage 或 tePlayerMessage，合�
 | C6 | 船行 | TOWNDEF 138（薛維斯港船长选一） | 队伍走 11→12 巴瀚納海峽；布置 152 | 已有 |
 | C7 | 船行 | TOWNDEF 183（戈黎塔尼港船员选一） | 揭示后走 25→26 | 已有 |
 | C8 | **行走者换人** | WINFAIL032 胜利、STORY071 | `actSetBMWalkerPlayerID SID_琥`：大地图小人改成琥（雷歐納德离队段落） | **缺失**：`TownEventRules.RECORDED_ONLY_TOKENS` 只记录，`WorldMapRuntime._spawn_marker` 固定画 001 |
-| C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示时长为重制值（见 [world_map_scene](../runtime_observations/world_map_scene/README.md)） |
+| C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示时长为重制值（见 [world_map_scene](../static_reverse/original_world_town.md)） |
 
 ## 不支持的结论
 
@@ -95,7 +95,7 @@ TOWNDEF 共 191 条事件，180 条带 teShapeMessage 或 tePlayerMessage，合�
 - `obj-049.OBS` 的对象清单只证明这些窗口属于大地图关，不证明它们同时出现，也不证明坐标。
 - “重制可达”只说明触发关卡已注册，不说明整条战役路线已自然走通。
 
-## 若要补齐缺口（方案，本 lane 不实现）
+## 缺口的接线方案（未实现）
 
-- **C8 行走者换人**：把 `actSetBMWalkerPlayerID` 的 SID 写进 world state，比如 `walker_actor_id`；`_spawn_marker` 用它代替固定 001。`actor_id` 用 EXTRAS 的 SID→001..009 映射。改动约 20 行加一条 world_map 测试，工作量小，属规则接线，应交给负责 `game/world` 的 lane。什么时候换回雷歐納德，要查后续脚本有没有再次调用 `actSetBMWalkerPlayerID SID_雷歐納德`：盘点里只有两处都是 SID_琥，**换回的时机未知**，需要原版证据。
-- **构图**：按 runtime 实录重排 `TownRuntime` 的菜单、对白板和 TownBG 位置，交 P9。
+- **C8 行走者换人**：把 `actSetBMWalkerPlayerID` 的 SID 写进 world state，比如 `walker_actor_id`；`_spawn_marker` 用它代替固定 001。`actor_id` 用 EXTRAS 的 SID→001..009 映射。改动约 20 行，属 `game/world` 的规则接线。什么时候换回雷歐納德，要查后续脚本有没有再次调用 `actSetBMWalkerPlayerID SID_雷歐納德`：盘点里只有两处都是 SID_琥，**换回的时机未知**，需要原版证据。
+- **构图**：按 runtime 实录重排 `TownRuntime` 的菜单、对白板和 TownBG 位置。

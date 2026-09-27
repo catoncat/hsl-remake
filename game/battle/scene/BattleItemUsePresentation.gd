@@ -31,6 +31,8 @@ const Footprint = preload("res://game/sim/FootprintRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 
 ## 0x409e98: 0x408b20 gets (x, y − 0x34); 0x409eb6 lifts it 16 more for a large target (0x446ad0).
@@ -126,7 +128,7 @@ func begin(receipt: Dictionary, loop: Dictionary, map_config: RefCounted, world_
 	_loop = loop
 	runtime = view.get_parent()
 	target_point = world_position
-	var user := _unit(loop, str(effect.get("actor_id", "")))
+	var user := BattlePlayLoop.unit(loop, str(effect.get("actor_id", "")))
 	var target_id := str(effect.get("target_id", ""))
 	var cue: Node2D = view.attack_cue
 	if not bool(user.get("player_commandable", false)) and not user.is_empty() and map_config != null and runtime.has_method("unit_grid_coord"):
@@ -215,7 +217,7 @@ func _start_effect(loop: Dictionary) -> void:
 	stage = "effect"
 	elapsed = 0.0
 	var target_id := str(effect.get("target_id", ""))
-	var target := _unit(loop, target_id)
+	var target := BattlePlayLoop.unit(loop, target_id)
 	var node: Node = runtime.actor_node_for_unit(target_id) if runtime.has_method("actor_node_for_unit") else null
 	if node != null: target_point = node.position
 	effect_point = target_point + EFFECT_OFFSET
@@ -277,7 +279,7 @@ static func _spark_path(velocity: Vector2) -> PackedVector2Array:
 func _start_numbers(tick: int) -> void:
 	stage = "numbers"
 	numbers_tick = tick
-	var target := _unit(_current_loop(), str(effect.get("target_id", "")))
+	var target := BattlePlayLoop.unit(_current_loop(), str(effect.get("target_id", "")))
 	# 0x43b3f0: the target's small HP bar and the MP bar 16 px under it.
 	var world_height := 1e9
 	if view._map_config != null: world_height = float(view._map_config.world_size.y)
@@ -370,7 +372,7 @@ func _draw_effects() -> void:
 func _frame(member: String) -> Dictionary:
 	if not _frames.has(member):
 		if not _frames.has("__manifest"):
-			_frames["__manifest"] = JSON.parse_string(FileAccess.get_file_as_string(MANIFEST))
+			_frames["__manifest"] = ContentPaths.read_json(MANIFEST)
 		var entry: Dictionary = _frames["__manifest"]["frames"].get(member, {})
 		_frames[member] = {} if entry.is_empty() else {"texture": load(str(entry["res_path"])), "origin": Vector2(float(entry["draw_origin"][0]), float(entry["draw_origin"][1]))}
 	return _frames[member]
@@ -380,9 +382,3 @@ func _frame(member: String) -> Dictionary:
 func _current_loop() -> Dictionary:
 	var live: Variant = runtime.get("play_loop") if runtime != null else null
 	return live if live is Dictionary and not (live as Dictionary).is_empty() else _loop
-
-
-static func _unit(loop: Dictionary, unit_id: String) -> Dictionary:
-	for unit in loop.get(LoopKeys.UNITS, []):
-		if str(unit.get("id", "")) == unit_id: return unit
-	return {}

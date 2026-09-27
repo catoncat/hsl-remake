@@ -11,6 +11,7 @@ extends RefCounted
 ##     (headless: the ending actor centred as by 0x43bf30; the camera is read at commit, not at the hand-off scan)
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
+const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 ## 640×480 screen; 0x43bf30 centres an object at (x − 320, y − 192), clamped to the map.
 const SCREEN := Vector2i(640, 480)
 const HALF := Vector2i(320, 240)
@@ -35,7 +36,7 @@ static func strike(loop: Dictionary, focus: Vector2i, shape_count: int, cell_siz
 	var frame := GlobalRandomStream.loop_draw(loop, shape_count)
 	var hits: Array = []
 	for entry in CELLS:
-		var cell := Vector2i(floori(float(pixel.x + 32 * int(entry[0])) / cell_size), floori(float(pixel.y + 32 * int(entry[1])) / cell_size))
+		var cell := Vector2i(floori(float(pixel.x + TacticalGridRules.CELL_PIXELS * int(entry[0])) / cell_size), floori(float(pixel.y + TacticalGridRules.CELL_PIXELS * int(entry[1])) / cell_size))
 		var unit: Dictionary = Footprint.unit_at(loop.get("units", []), cell)   # 0x407800
 		if unit.is_empty():
 			continue

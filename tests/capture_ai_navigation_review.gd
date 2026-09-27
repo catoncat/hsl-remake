@@ -97,7 +97,7 @@ func prepare_case() -> void:
 		unit["ai_home_coord"] = unit["coord"]
 		check(not loop["tiles"].get(unit["coord"],{}).get("blocks_movement",false), "fixture participant stands on actual walkable WRD")
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	scene.apply_loop(BattlePlayLoop._return_to_player(loop,"navigation-initial"), "test")
+	scene.apply_loop(BattlePlayLoop.return_to_player(loop,"navigation-initial"), "test")
 	for child in scene.actors_root.get_children(): scene.actors_root.remove_child(child); child.queue_free()
 	scene.unit_grid_coords.clear()
 	scene.resume_turn_presentation()

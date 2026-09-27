@@ -13,18 +13,19 @@ const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const SkillResourceRules = preload("res://game/sim/SkillResourceRules.gd")
 const StatusApplicationRules = preload("res://game/sim/StatusApplicationRules.gd")
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
+const Values = preload("res://game/sim/Values.gd")
 
 
 static func prepare(caster: Dictionary, target: Dictionary, fields: Dictionary, book: Dictionary, equipment: Dictionary) -> Dictionary:
 	var profile: Variant = caster.get("combat_profile")
 	if not profile is Dictionary: return {"ok": false, "reason": "missing_special_profile"}
 	for key in ["dex", "mind", "con"]:
-		var value := SkillResourceRules._integer(profile.get(key))
+		var value := Values.non_negative_int(profile.get(key))
 		if value < 0 or value > 10000: return {"ok": false, "reason": "invalid_special_" + key}
 	for key in ["level", "hit_bonus_accum"]:
-		var value := SkillResourceRules._integer(caster.get(key))
+		var value := Values.non_negative_int(caster.get(key))
 		if value < 0 or value > 100000: return {"ok": false, "reason": "invalid_special_" + key}
-	var scale := SkillResourceRules._integer(fields.get("attackpow_ratio"), true)
+	var scale := Values.non_negative_int(fields.get("attackpow_ratio"), true)
 	if scale < 0 or scale > 1000: return {"ok": false, "reason": "invalid_special_power_ratio"}
 	var modifiers := StatusApplicationRules.modifiers(target, book, equipment)
 	if not modifiers["ok"]: return modifiers
@@ -49,7 +50,7 @@ static func element_resistance(target: Dictionary, fields: Dictionary) -> Dictio
 	if element in NO_RESIST_ELEMENTS: return {"ok": true, "element": element, "resistance": 0}
 	var profile: Variant = target.get("combat_profile")
 	var resists: Variant = profile.get("resist_by_type") if profile is Dictionary else null
-	if not resists is Dictionary or SkillResourceRules._integer(resists.get(element)) < 0 or int(resists[element]) > 80:
+	if not resists is Dictionary or Values.non_negative_int(resists.get(element)) < 0 or int(resists[element]) > 80:
 		return {"ok": false, "reason": "missing_skill_resistance"}
 	return {"ok": true, "element": element, "resistance": int(resists[element])}
 

@@ -132,7 +132,7 @@ func source_and_save_cases() -> void:
 		var cancelled := BattlePlayLoop.cancel_pending_move(loaded["snapshot"]["loop"])
 		check(BattlePlayLoop.unit(cancelled,"leonard")["coord"] == Vector2i(3,5), "restored pending movement remains cancellable")
 	var corrupt := moved.duplicate(true)
-	BattlePlayLoop._unit(corrupt, "leonard")["traversal"]["flying"] = true
+	BattlePlayLoop.unit_ref(corrupt, "leonard")["traversal"]["flying"] = true
 	check(not BattleCheckpoint.encode(corrupt, view)["ok"] and BattlePlayLoop.movement_cells(corrupt).is_empty(), "forged flying capability is refused instead of silently changing a loaded route")
 	var bad := fixture(true)
 	bad["units"][0]["traversal"].erase("no_block")

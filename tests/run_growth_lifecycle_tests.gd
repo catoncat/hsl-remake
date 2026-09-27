@@ -29,9 +29,9 @@ func _initialize() -> void: call_deferred("run")
 
 static func fixture(level: int = 5, extra: bool = true) -> Dictionary:
 	var loop := run_support_magic_tests.priest_fixture()
-	var actor := BattlePlayLoop._unit(loop, "tina")
-	var ally := BattlePlayLoop._unit(loop, "companion")
-	var enemy := BattlePlayLoop._unit(loop, "enemy021_1")
+	var actor := BattlePlayLoop.unit_ref(loop, "tina")
+	var ally := BattlePlayLoop.unit_ref(loop, "companion")
+	var enemy := BattlePlayLoop.unit_ref(loop, "enemy021_1")
 	actor["level"] = level; actor["exp"] = BattlePlayLoop.ProgressionRules.exp_to_next(level)-1
 	actor["growth_profile"]["source"].merge({"hit_point":400,"magic_point":200,"speed":200}, true)
 	actor["inventory"] = [232,227,244,247,241,253,0,0]
@@ -48,7 +48,7 @@ static func fixture(level: int = 5, extra: bool = true) -> Dictionary:
 		if unit != ally: unit["hp"] = unit["max_hp"]
 		unit["mp"] = unit["max_mp"]
 	loop["turn_queue"] = BattlePlayLoop.CoreTurnQueue.rebuild(loop["units"])
-	return BattlePlayLoop._return_to_player(loop,"tina")
+	return BattlePlayLoop.return_to_player(loop,"tina")
 
 
 static func cast(loop: Dictionary, id: String = HEAL, target: String = "companion", rng: Variant = null) -> Dictionary:
@@ -78,7 +78,7 @@ func separate_party_stream() -> void:
 	var previous_pending := CampaignProgress.pending.duplicate(true)
 	var previous_entry := CampaignProgress.last_entry.duplicate(true)
 	var origin := BattlePlayLoop.initialize_roster_growth(BattleFixture.loop())
-	BattlePlayLoop._unit(origin,"leonard")["permanent_gains"]["attack_power"] = 7
+	BattlePlayLoop.unit_ref(origin,"leonard")["permanent_gains"]["attack_power"] = 7
 	origin["gold"] = 777
 	var carried := BattlePlayLoop.CampaignCarryRules.capture(origin)
 	var entry := {"schema":CampaignProgress.SCHEMA,"scenario_path":"res://content/battles/battle_053.json","carry":carried}
@@ -170,7 +170,7 @@ func actual_acquisition() -> void:
 	check(BattlePlayLoop.SkillResolutionRules.ownership_error(BattlePlayLoop.unit(learned,"tina"),CURE,learned["skill_book"])=="","new level grants exact cure spell before the next independent action")
 	check(learned["last_attack"]["experience"]["learning"].has("習得 驅毒"),"new skill has a committed aftermath label")
 	learned=BattlePlayLoop.finish_exhausted_action(learned)
-	var party:=BattlePlayLoop._unit(learned,"companion")
+	var party:=BattlePlayLoop.unit_ref(learned,"companion")
 	party.merge(BattlePlayLoop.StatusEffectRules.apply(party,"poison",3,8)["changes"],true)
 	var healed:=BattlePlayLoop.finish_exhausted_action(cast(learned,CURE,"companion",zero))
 	check(not BattlePlayLoop.StatusEffectRules.poisoned(BattlePlayLoop.unit(healed,"companion")),"newly learned cure is used in the second action: "+str({"phase":learned["interaction"],"selected":learned["selected_unit_id"] ,"extra":learned["extra_action"],"reject":healed.get("last_attack_reject"),"options":BattlePlayLoop.magic_options(learned,"tina")}))
@@ -180,10 +180,10 @@ func actual_acquisition() -> void:
 		check(encoded["ok"],"learned state and receipt can be saved: "+str(encoded.get("reason")))
 		if encoded["ok"]:check(BattleCheckpoint.decode(encoded["bytes"], item)["snapshot"]["loop"]==item,"restoring does not grant again or draw randomness")
 	var broken:=learned.duplicate(true)
-	BattlePlayLoop._unit(broken,"tina")["learned_skills"][0]["level"]=1
+	BattlePlayLoop.unit_ref(broken,"tina")["learned_skills"][0]["level"]=1
 	check(not BattleCheckpoint.encode(broken,VIEW)["ok"],"unearned/edited acquisition is rejected")
 	var rng_before:Array=TestSuite.stream_of(learned, "global").duplicate()
-	var stats:=BattlePlayLoop._unit(learned,"tina")
+	var stats:=BattlePlayLoop.unit_ref(learned,"tina")
 	var records:Array=stats["learned_skills"].duplicate(true)
 	stats["permanent_gains"]["magic_attack_power"]=8
 	stats.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(stats,learned["equipment_items"]),true)
@@ -191,16 +191,16 @@ func actual_acquisition() -> void:
 	var no_points:=BattlePlayLoop.allocate_growth(learned,"tina",{})
 	check(no_points==learned,"cancelled empty point draft cannot learn a special")
 	for status in ["no_magic","paralysis"]:
-		var blocked:=learned.duplicate(true);var source:=BattlePlayLoop._unit(blocked,"tina")
+		var blocked:=learned.duplicate(true);var source:=BattlePlayLoop.unit_ref(blocked,"tina")
 		source.merge(BattlePlayLoop.StatusEffectRules.apply(source,status,2)["changes"],true)
 		var result:=BattlePlayLoop.SkillResolutionRules.available(source,CURE,BattlePlayLoop.skill_fields(blocked,CURE),blocked["skill_book"],blocked["skill_target_data"],blocked["equipment_items"])
 		check(not result["ok"] and source["learned_skills"]==records,"status restricts actual use without deleting learned ability")
-	var npc:=fixture();var caster:=BattlePlayLoop._unit(npc,"tina")
+	var npc:=fixture();var caster:=BattlePlayLoop.unit_ref(npc,"tina")
 	caster["growth_profile"]["allocation"]="automatic"
 	var auto:=cast(npc,HEAL,"companion",zero)
 	check(BattlePlayLoop.unit(auto,"tina")["level"]==6 and BattlePlayLoop.unit(auto,"tina")["pending_stat_points"]==0 and not LearningRules.owns(BattlePlayLoop.unit(auto,"tina"),CURE),"NPC crosses the same experience threshold through quota assignment without player learning")
 	var entered:=run_entry_growth_tests.fixture("026",[20,3],16)
-	BattleLoopScript._maintain_script_pressure(entered)
+	BattleLoopScript.maintain_script_pressure(entered)
 	var recruit:Dictionary=run_entry_growth_tests.created(entered)[0]
 	recruit["growth_profile"]["allocation"]="automatic"
 	var birth:Dictionary=recruit["entry_growth"].duplicate(true)
@@ -213,7 +213,7 @@ func job_up_learning() -> void:
 	# table (0x4373f0 / 0x437a40 dispatch on actor+0x18); records learned under the
 	# previous job stay under that job. The same member without the job-up is the control.
 	var loop := fixture(25)
-	var tina := BattlePlayLoop._unit(loop, "tina")
+	var tina := BattlePlayLoop.unit_ref(loop, "tina")
 	var merged := JobUpRules.merge_source_template(tina, JobUpRules.load_source_template("011"), JobUpRules.NATIVE_JOB_UP_FLAG)
 	check(merged["ok"] and int(merged["actor"]["growth_profile"]["job_code"]) == 86, "011 template turns 祭司 into 神官長 86")
 	tina.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(merged["actor"], loop["equipment_items"]), true)
@@ -230,7 +230,7 @@ func job_up_learning() -> void:
 	check(control["level"] == 26 and not LearningRules.owns(control, FLAME_WAVE) and LearningRules.owns(control, "magic:magicMIND:magicCode03"), "祭司 at the same level keeps the job85 table: 咒靈縛剎 yes, 赤炎波動 no")
 	for upgraded in [false, true]:
 		var battle := run_job_stats_tests.fixture("001")
-		var leonard := BattlePlayLoop._unit(battle, "leonard")
+		var leonard := BattlePlayLoop.unit_ref(battle, "leonard")
 		for key in LearningRules.ATTRIBUTES: leonard["combat_profile"][key] = {"str": 26, "dex": 20, "mind": 20, "con": 24}[key]
 		leonard.merge(LearningRules.acquire(leonard, battle["skill_book"], "special")["actor"], true)
 		check(LearningRules.owns(leonard, THUNDER_BLADE) and int(leonard["learned_skills"][0]["job"]) == 80, "劍士 tier1 special learned before the job-up")
