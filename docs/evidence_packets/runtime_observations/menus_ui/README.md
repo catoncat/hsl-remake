@@ -26,7 +26,7 @@
 | 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 原版值悬停不亮起；OPT-GUIDE＝提示 时悬停项亮起；方向键选中项亮起（重制键盘路径）；火花字形未认定，不画 |
 | 離開遊戲 | 标题 handler `0x423f00`：每项先经 state 3 `0x424004` 按住计时，码 2 `0x4240b2` 经 `0x42cb60`（置 `0xa0000000`）与 `0x42dc90(2)` 淡出后退出 | static-derived | 立即退出 | 同 開始新故事 亮起停 0.75 s、0.55 s 淡黑后退出（时长沿用，provisional） |
 | 戰場記錄 无记录 | 码 1 `0x42404c`：`0x42ebe0(0)` 失败时 `0x4072b0` 弹消息 11「讀取存檔失敗」或 12「無存檔記錄」（按 `0x4c43b8`） | static-derived | 底部提示字「沒有戰場記錄」1.6 s | 无可恢复进度时 BOARD02 (75,320) 消息「無存檔記錄」，出入时长沿用存档完成提示（provisional）；重制无"读取失败"路径，不出消息 11 |
-| 点击声 | 13.59 s 有一个短起点（峰值 −43.6 dB）；最高 NCC Walk0011 0.34、Accept01 0.31，都不够认定 | negative-evidence | 无声 | 无声（未认定前不加） |
+| 点击声 | 13.59 s 有一个短起点（峰值 −43.6 dB），NCC 不够认定；静态：defProcMainMenuString `0x4242d6` 点击放 RESOURCE 398 ACCEPT01（[original_title_ornaments](../original_title_ornaments/README.md)） | static-derived | 无声 | 放 ACCEPT01 |
 
 早先模型描述的"停约 10 s 再淡黑约 2 s"与录屏量值不符：亮起到全黑一共 1.30 s。
 

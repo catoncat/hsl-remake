@@ -1,14 +1,24 @@
-# 原版标题画面的宝珠与书：上下浮动，不跟随选项
+# 原版标题画面的宝珠与书：上下浮动，不跟随选项；点击标题项放 ACCEPT01
 
-> evidence: runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向做正弦式浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关; provisional: 采样只有 4–5 帧／秒，周期与振幅是拟合值 · status: live · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-27
+> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398; runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x423cd0, 0x423f00, 0x4241a0, 0x424360, 0x458c80, 0x45e9bc · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
-- 原版：宝珠（左）与书（右）水平不动，竖直做周期 1.646 s、振幅约 5 px 的正弦式浮动；停在第 1／2／3 项平均位置差 ≤0.3 px，不跟随选项；两件相位差在三组采样间不一致（runtime-measured）。
-- 重制：`game/title/TitleScreen.gd` 按拟合周期与振幅浮动，两件起始相位在进入标题时随机取，不做同步或反相（provisional）。
-- 差异：采样 4–5 帧／秒，周期、振幅与正弦形都是拟合值；逐帧计数器未读（provisional）。
+- 原版：宝珠（Item1）与书（Item2）由 defProcMainMenu `0x423cd0` 建在菜单位置（环左上）＋(33,112)／(207,107)；defProcMainMenuItem `0x424360` 每 tick 令 y＝生成 y＋trunc(6·sin(角·2π/256))、x 不变，字节角每 tick +3，初角各自 rand()%255；点击标题项（三行字与宝珠、书同走 `0x4241a0`）放 ACCEPT01（RESOURCE 398）（static-derived）。实录周期 1.646 s、振幅 5.1–5.2 px、相位差各组不一，与读法一致（runtime-measured）。
+- 重制：`game/title/TitleScreen.gd` 按同一生成位置、正弦表截断、每 tick 步进与各自随机初角逐 tick 浮动；点击标题项放 ACCEPT01（static-derived）。
+- 差异：原版菜单自下方 300 px 滑入、悬停火花对象 788、点宝珠开設定選項、点书开读取回憶錄，重制都没有，见「边界」（static-derived）。
 
 ## 证据
+
+**static-derived（hsl01.exe SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，r2 静态读）**
+
+- 对象：OBJ-000.OBS 的 Item1（码 7，TITLE027，defProcMainMenuItem）、Item2（码 8，TITLE028，同过程）；PROCESS.DEF 45 → 表 `0x477c2c` → `0x424360`。三行字 String1–3（码 1／3／4，TITLE024–026，Data9＝0／1／2）是 defProcMainMenuString 9 → `0x4241a0`。
+- 生成：defProcMainMenu `0x423cd0` 首帧把自己 y 加 300，在 (X＋33, Y＋300＋112) 建码 7（`0x423e06`）、(X＋207, Y＋300＋107) 建码 8（`0x423e32`），再在 state 0 以 `0x45e882` 步长 40 滑回 Y 并经 `0x45efce` 带动子对象。菜单停位即环左上 (197,161)（两尊雕像 X−80／X＋208、Y＋66 与版面实测 (117,227)／(405,227) 相符）；减 SHP 绘制原点 (14,14)／(18,21) 得宝珠左上 (216,259)、书左上 (386,247)。
+- 每 tick（`0x424360`）：首帧（`0x20000000`）`+0x34`＝`0x458c80(0xff)`＝rand()%255、`+0x36`＝3，记下生成位置；之后若位置被外部移动（菜单滑入）把差加到生成位置；`0x45e9bc(角, 0x60000, 3, &dx, &dy)` 取余弦表 `0x4a35fc`／正弦表 `0x4a39fc`（256 项 16.16）乘半径 6、取绝对值截断再补符号，返回角＋3（字节回绕）；x＝生成 x（dx 不用）、y＝生成 y＋dy；最后调 `0x4241a0` 处理悬停与点击。
+- 周期：256/3＝85.3 tick；按 19.4 ms 宿主 tick 为 1.655 s，与实录拟合 1.646 s 相差 0.5%；偏移取整后在 −6…+6 px，实录拟合振幅 5.1–5.2 px。
+- 初相：两件各自在首帧取 rand()%255，彼此无关；实录三组相位差 48°／194°／193° 与此一致。
+- 点击声：`0x4241a0` 收到点击（`0x40000`）且碰到的是处于待输入的主菜单（`+0x80 & 0x10000`，state 2）时，`0x4242d6` 放 RESOURCE 398（ACCEPT01，`0x4477b0`→`0x459990`→`0x42c180`），把自己的码 `+0xac` 与按住计时 `+0xa8` 交给主菜单，并建对象 789 Menu_Star2；悬停（`0x2000000`）建对象 788 Menu_Star（global.obs，MAGIC\EAR24_22.SHP，effProcFlyUpShape）即悬停火花。
+- 码分派（`0x424037`，字节表 `0x42418c`）：0 開始新故事、1 戰場記錄、2 離開遊戲、10（宝珠 Data9）→ `0x423b90` 建对象 792 Option（TITLE039 設定選項）、11（书 Data9）→ `0x423bd0(…,0)` 读取回憶錄列表。
 
 **runtime-measured（2026-09-24 原版 v1.06，Wine＋cnc-ddraw 640×480）**
 
@@ -35,14 +45,14 @@
 
 ## 重制接线
 
-`game/title/TitleScreen.gd` 的宝珠／书浮动；provenance 头写 `runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md`。周期与振幅是 provisional，替换点是原版浮动计数器的读数。标题其余读法见 [menus_ui](../menus_ui/README.md)。
+`game/title/TitleScreen.gd`：`ORNAMENT_SPAWN_OFFSETS`＋`ornament_spawn_top_left` 是生成位置，`ornament_offset` 按 `OriginalTick` 的整 tick 数算角与截断偏移，`ornament_phases` 存两件初角；`play_click_sound` 在点击标题项（及重制键盘确认）时放 interface_audio 的 confirm（ACCEPT01，398）。provenance 头写 `static-derived` 本包。标题其余读法见 [menus_ui](../menus_ui/README.md)。
 
 ## 复现
 
-不可再生：原版侧唯一记录。
+实录不可再生：原版侧唯一记录。静态部分：`r2 -q -e scr.color=0 -c 'pd 140 @ 0x423cd0; pd 60 @ 0x424360; pd 120 @ 0x4241a0; pd 30 @ 0x45e9bc; px 12 @ 0x42418c' hsl01.exe`；对象与过程号用 PakReader 读 OBJ-000.OBS、global.obs、PROCESS.DEF。
 
 ## 边界
 
-- 采样率只有 4–5 帧／秒，不是逐帧；逐帧时序要用 `hsl_win32_memread.exe --repeat` 找浮动计数器（ScreenCaptureKit 录原版窗口只得到最初约 0.9 s，见 [tools/README](../../../../tools/README.md)）。
-- 书的范围由目测裁切图得到（颜色和旁边的雕像接近，无法用阈值分割），误差约 ±2 px。
-- 没有看鼠标不在任何选项上的情况，也没有看从一项换到另一项时是否有过渡动画。
+- 实录采样率只有 4–5 帧／秒；书的范围由目测裁切图得到，误差约 ±2 px。静态读法与实录的周期、振幅、相位关系一致，未另做逐帧读数。
+- 重制未做：菜单首帧自下方 300 px 滑入（`0x423cd0`／state 0 `0x45e882`）；悬停火花 788 与点击火花 789 的 effProcFlyUpShape 运动；点宝珠开設定選項（码 10）、点书开读取回憶錄（码 11）——重制点宝珠与书没有反应。
+- 点击声只在主菜单处于待输入态时放；重制键盘确认也放同一声，属重制键盘路径。

@@ -10,12 +10,12 @@
 
 ## 总数
 
-共 **93** 条差异（其中 0 条本轮有 lane 进行中），来自 531 个来源条目：provenance 207、sentence 151、scope 75、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 53 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **93** 条差异（其中 0 条本轮有 lane 进行中），来自 529 个来源条目：provenance 207、sentence 150、scope 74、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 53 个全部归类。另有 54 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 18 |
-| 读了一部分 | 52 |
+| 已读完只差照做 | 19 |
+| 读了一部分 | 51 |
 | 未读 | 6 |
 | 原版无对应代码 | 17 |
 
@@ -94,7 +94,7 @@
 | `opening-end-card` | 预览关结束卡「略過戰鬥（視為勝利）」／「回到大地圖」与「第一章　完」卡是重制流程 | 原版没有预览关<br>[story_scene_chapter2_previews/README.md](../../../docs/evidence_packets/runtime_observations/story_scene_chapter2_previews/README.md) | OpeningEndCard 与 CampaignProgress 的章末<br>[OpeningEndCard.gd](../../../game/battle/runtime/opening/OpeningEndCard.gd)、[CampaignProgress.gd](../../../game/common/CampaignProgress.gd) | 原版无对应代码 | 少见 | S | provenance 4 |
 | `remake-options-page` | 設定選項窗下多一条「重製選項」入口与二级页：原版／舒適／自定三个预设与逐项选项（说明随取值切换），默认全部照原版；任何画面按 Tab 直接开关同一页（开着时整棵树暂停，游戏不收输入、不推进） | 原版 設定選項（Title039）只有 場景效果／預備動作／音效音量／音樂音量 四行，没有二级页；原版 Tab 未绑定<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | RemakeOptionsPage＋GameOptions（注册表 content/authored/options/remake_options.json，设置存 GameSettings preset／presentation）；Tab 入口是自动加载 RemakeOptionsHotkey（最高游戏层之上、SceneTree 暂停）；页关闭且值变了通知 remake_options_listeners 组；各选项接读点后的差异记在对应条目（已接：OPT-TREASURE→BattleSceneRuntime reveal_all_chests，关页即重画；OPT-PACE 快／極快 的演出时钟倍率 CombatPresentationTiming.PACE_CUTIN／PACE_MAP）<br>[RemakeOptionsPage.gd](../../../game/settings/RemakeOptionsPage.gd)、[RemakeOptionsHotkey.gd](../../../game/settings/RemakeOptionsHotkey.gd)、[GameOptions.gd](../../../game/settings/GameOptions.gd)、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_open_remake_options` | 原版无对应代码 | 少见 | S | provenance 8 |
 | `status-save-buttons-confirm` | 状态页里的存档／读档按钮（只在 OPT-GUIDE=提示 时出现）与 F5／F9 立即执行、用顶部横幅提示，不走系统卷轴那样的確定／取消<br>待定：倾向：状态页按钮也走確定／取消，F5／F9 保留即时（未做） | 原版战斗内没有这些按钮；系统卷轴写记录项都走 Title061 確定／取消<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | BattleSettlementController 即时保存并显示横幅<br>[BattleSettlementController.gd](../../../game/battle/scene/BattleSettlementController.gd)、[BattleStatusPanel.gd](../../../game/battle/scene/BattleStatusPanel.gd) | 原版无对应代码 | 少见 | S | provenance 2、video 1 |
-| `title-flow-extras` | 标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式；OPT-GUIDE=提示 时悬停项亮起（原版悬停只有火花） | 原版在进入 level 51 时播放开场动画；原跳过行为未定位<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_movies_playback/README.md](../../../docs/evidence_packets/runtime_observations/original_movies_playback/README.md) | TitleScreen／MoviePlayer；原版值悬停不亮起、離開遊戲亮起停留淡黑后退出、戰場記錄无记录弹消息 12「無存檔記錄」（MENUEXTRAS）<br>[TitleScreen.gd](../../../game/title/TitleScreen.gd)、[MoviePlayer.gd](../../../game/title/MoviePlayer.gd) | 原版无对应代码 | 少见 | S | provenance 4、sentence 2 |
+| `title-flow-extras` | 标题流程的重制安排：「戰場記錄」恢复检查点或战役位置、开场动画放在标题与首战之间、任意键跳过、画面放大方式；OPT-GUIDE=提示 时悬停项亮起（原版悬停只有火花） | 原版在进入 level 51 时播放开场动画；原跳过行为未定位<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_movies_playback/README.md](../../../docs/evidence_packets/runtime_observations/original_movies_playback/README.md) | TitleScreen／MoviePlayer；原版值悬停不亮起、離開遊戲亮起停留淡黑后退出、戰場記錄无记录弹消息 12「無存檔記錄」（MENUEXTRAS）<br>[TitleScreen.gd](../../../game/title/TitleScreen.gd)、[MoviePlayer.gd](../../../game/title/MoviePlayer.gd) | 原版无对应代码 | 少见 | S | provenance 5、sentence 2 |
 
 ### 战斗规则（12）
 
@@ -190,7 +190,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `dark-screen-fade` | 剧情压黑每级按黑层 alpha n／16 画，与原版每分量 ⌊c·(16−n)／16⌋ 同一线性比例，只差原版 5／6 位分量截断的末位；节拍照原版（每 3 tick 一级、16 级、不等待） | 对象 700 过程 0x43e2d0：[0x4c1ca8] 每 3 tick ±1（0..16），actDarkScreen／actDeleteDarkScreen 都不等待；合成器操作 4（0x4699fd）以纯黑形状 [0x4bbb4e] 为源，查 0x460fb0 的 17 张表，每个 565 分量＝⌊c·(16−n)／16⌋<br>[original_tick_counts.md](../../../docs/evidence_packets/static_reverse/original_tick_counts.md) | OpeningCinematics._step_dark_screen 每 3 tick 一级，黑层 alpha＝级数／16（8 位混合）<br>[OpeningCinematics.gd](../../../game/battle/runtime/opening/OpeningCinematics.gd) `_step_dark_screen` | 已读完只差照做 | 部分关卡 | S | provenance 1 |
 | `game-over-screen` | GAME OVER 画面按 0x42aea0／0x42afc0 逐 tick 复刻（字物件 (320,240) 自 1/32 放大、16 级淡入、前 20 tick 不收输入、160 tick 自动回标题）；背景淡入借胜利录像的转场时长（0.2 s 黑、0.5 s 淡入），淡出 0.6 s 为读法；画面无录像 | defProcGameOverBOSS 0x42aea0：首帧 GAMEOVER.WAV、60 计数、字物件 0x42afc0、phase 2 计数 160、phase 3 按键或归零经 0x42cb90 回标题，无重试；画面无录像<br>[original_battle_end_flow.md](../../../docs/evidence_packets/static_reverse/original_battle_end_flow.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | GameOverScreen：逐 OriginalTick 走 0x42aea0 四阶段与字物件（GROWTHWIN2），任意键或 160 tick 淡出回标题；战斗收尾对白板关闭后先停 0.2 s 再 0.2 s 淡黑（BattleSceneRuntime._advance_battle_end）；OPT-RETRY=可重新挑戰本戰 时恢复 RESULTPAGE 之前的重试：原版时序走到等待后画面下方出「重新挑戰本戰／回到標題」两行、不自动离开，重新挑战用进入本战时的交接（CampaignProgress.last_entry，戰場記錄读档改为从本战开头）重进（OPTIONS-S3，读点 GameOverScreen._ready）<br>[GameOverScreen.gd](../../../game/title/GameOverScreen.gd) `_process` | 已读完只差照做 | 少见 | S | provenance 4 |
-| `title-ornaments` | 标题饰物浮动的周期与振幅是按 4–5 帧／秒样本拟合的；确认点击无声（原版点击声未认定） | 标题饰物实录采样稀疏；点击声 NCC 不足以认定<br>[original_title_ornaments/README.md](../../../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | TitleScreen 拟合周期、随机初相<br>[TitleScreen.gd](../../../game/title/TitleScreen.gd) `ornament_offset` | 读了一部分 | 少见 | S | provenance 2、sentence 1、scope 2 |
+| `title-ornaments` | 宝珠／书浮动与点击声已照原版；菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄未做 | defProcMainMenuItem 0x424360 逐 tick trunc(6·sin) 浮动、初角 rand()%255；点击放 ACCEPT01；码 10／11 开設定選項／回憶錄<br>[original_title_ornaments/README.md](../../../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md) | TitleScreen 按原版生成位置与角步进逐 tick 浮动，点击放 ACCEPT01；无滑入、火花与宝珠／书点击<br>[TitleScreen.gd](../../../game/title/TitleScreen.gd) `ornament_offset` | 已读完只差照做 | 少见 | S | provenance 1、scope 1 |
 | `game-clear-layout` | 通关谢幕的版式、各段时长、滚动速度与跳过是重制读法，运行时制作群字串没有重制 | defProcClearBOSS 脚本已读；谢幕画面无原版录像<br>[original_game_clear_epilogue.md](../../../docs/evidence_packets/static_reverse/original_game_clear_epilogue.md) | GameClearScreen 的读法<br>[GameClearScreen.gd](../../../game/title/GameClearScreen.gd) | 未读 | 少见 | M | provenance 3 |
 
 ### 飘字与数字（4）

@@ -68,11 +68,12 @@ func _boot() -> Node:
 	return scene
 
 
-## The original gem and book (original_title_ornaments, runtime-measured): vertical travel only,
-## 2 px above to 8 px below the item-1 reference position whatever is selected, the two on
-## independent phases. Samples one bob period.
+## The original gem and book (original_title_ornaments, static-derived): spawned at the ring
+## top-left + (33,112)／(207,107) minus their draw origins (0x423e06／0x423e32), vertical travel
+## only, trunc(6·sin) about the spawn y (0x424406 → 0x45e9bc) whatever is selected, each with its
+## own start angle rand() % 255 (0x424389). Samples one swing (256/3 ticks).
 func _check_ornaments(scene: Node, context: String) -> void:
-	var anchors := {"gem_position": Vector2(216, 257), "hand_position": Vector2(386, 243)}
+	var anchors := {"gem_position": Vector2(216, 259), "hand_position": Vector2(386, 247)}
 	var low := {"gem_position": INF, "hand_position": INF}
 	var high := {"gem_position": -INF, "hand_position": -INF}
 	var start: float = scene.ornament_clock
@@ -85,9 +86,9 @@ func _check_ornaments(scene: Node, context: String) -> void:
 			high[key] = maxf(high[key], at.y - anchors[key].y)
 		await process_frame
 	for key in anchors:
-		_assert_true(low[key] >= -2.01 and low[key] <= -1.5 and high[key] <= 8.01 and high[key] >= 7.5, "%s: %s bobs from 2 px above to 8 px below item 1 (got %.2f…%.2f)" % [context, key, low[key], high[key]])
-	var phases: Vector2 = scene.summary()["ornament_phases"]
-	_assert_true(phases.x >= 0.0 and phases.x < TAU and phases.y >= 0.0 and phases.y < TAU, "%s: gem and book keep their own start phases %s" % [context, phases])
+		_assert_true(low[key] >= -6.0 and low[key] <= -4.0 and high[key] <= 6.0 and high[key] >= 4.0, "%s: %s bobs at most 6 px about its spawn y (got %.0f…%.0f)" % [context, key, low[key], high[key]])
+	var phases: Vector2i = scene.summary()["ornament_phases"]
+	_assert_true(phases.x >= 0 and phases.x < 255 and phases.y >= 0 and phases.y < 255, "%s: gem and book keep their own start angles %s" % [context, phases])
 
 
 func _run_layout_and_menu() -> void:

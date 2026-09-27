@@ -813,17 +813,17 @@
     },
     {
       "id": "title-ornaments",
-      "difference": "标题饰物浮动的周期与振幅是按 4–5 帧／秒样本拟合的；确认点击无声（原版点击声未认定）",
-      "original": "标题饰物实录采样稀疏；点击声 NCC 不足以认定",
+      "difference": "宝珠／书浮动与点击声已照原版；菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄未做",
+      "original": "defProcMainMenuItem 0x424360 逐 tick trunc(6·sin) 浮动、初角 rand()%255；点击放 ACCEPT01；码 10／11 开設定選項／回憶錄",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_title_ornaments/README.md",
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
-      "remake": "TitleScreen 拟合周期、随机初相",
+      "remake": "TitleScreen 按原版生成位置与角步进逐 tick 浮动，点击放 ACCEPT01；无滑入、火花与宝珠／书点击",
       "remake_code": [
         "game/title/TitleScreen.gd:ornament_offset"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "rare",
       "effort": "S",
       "category": "标题与过场"
@@ -2527,7 +2527,7 @@
       "item": "title-flow-extras"
     },
     "provenance:game/title/TitleScreen.gd|timing|provisional|": {
-      "item": "title-ornaments"
+      "item": "title-flow-extras"
     },
     "provenance:game/world/PartyEquipmentScreen.gd|strings|remake-invented|": {
       "item": "party-equipment-screen"
@@ -2613,9 +2613,6 @@
     },
     "scope:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md|provisional|rows marked B": {
       "item": "timing-estimates"
-    },
-    "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|采样只有 4–5 帧／秒，周期与振幅是拟合值": {
-      "item": "title-ornaments"
     },
     "scope:docs/evidence_packets/runtime_observations/original_world_town/README.md|negative-evidence|城镇根画面上没有金钱显示（只有商店窗的金钱框）": {
       "item": "town-layout-extras"
@@ -3328,10 +3325,6 @@
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#f854695a12": {
       "item": "timing-estimates",
       "text": "处置后 remake-invented timing 剩 8 格有意保留（C 或产品取舍），B 类未读的保留现值标 provisional（provisional）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md#7f6d6880bb": {
-      "item": "title-ornaments",
-      "text": "逐帧计数器未读（provisional）。"
     },
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#449ea52b57": {
       "item": "closeup-object-timing",

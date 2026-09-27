@@ -11,12 +11,12 @@ extends Node2D
 ##   離開遊戲   -> quit after the same lit hold and fade (handler 0x423f00: every item waits out
 ##                 the hold timer, state 3 0x424004; code 2 0x4240b2 fades via 0x42cb60／0x42dc90(2))
 ## The gem (Title027) and the book (Title028) stay beside item 1 whatever is selected and bob
-## vertically on their own sine clocks (runtime-measured on the original,
+## vertically on their own angle counters: defProcMainMenuItem 0x424360 (static-derived,
 ## docs/evidence_packets/runtime_observations/original_title_ornaments/README.md). The original
 ## lights no item on hover (the recording shows only a sparkle; the sparkle shape is not
 ## identified and not drawn); OPT-GUIDE＝提示 shows the red lit shape on the hovered item. An
 ## arrow key lights the keyboard-selected item (remake keyboard path).
-## Confirming an item lights it (the red Title024-026 shape with its white flare), holds
+## Clicking an item plays ACCEPT01 (RESOURCE 398, defProcMainMenuString 0x4242d6). Confirming an item lights it (the red Title024-026 shape with its white flare), holds
 ## CONFIRM_HOLD_SECONDS, then fades to black over FADE_TO_BLACK_SECONDS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
 ## docs/evidence_packets/runtime_observations/menus_ui/README.md). 戰場記錄 with nothing to resume
@@ -34,8 +34,8 @@ extends Node2D
 ##     (V1.06 ink box (3,459)–(41,467), 8 px advance; no-record board at (75,320))
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#01
 ##     (background／logo／ring／statue corners and first-item gem＋book measured on 01/frame_001)
-##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
-##     (gem and book stay beside item 1 whatever is selected; vertical travel −2…+8 px)
+##   layout: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (gem／book spawn at ring＋(33,112)／(207,107), 0x423e06／0x423e32; y＝spawn＋trunc(6·sin), 0x424406)
 ##   layout: remake-invented (lit shape on the keyboard-selected item; hover lit under OPT-GUIDE＝提示,
 ##     content/authored/options/remake_options.json)
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
@@ -44,18 +44,20 @@ extends Node2D
 ##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (無存檔記錄 message 12 via 0x4072b0)
 ##     (戰場記錄 code 1 0x42404c: message 12「無存檔記錄」, 11「讀取存檔失敗」)
-##   timing: runtime-measured docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
-##     (gem／book bob period ≈1.65 s, amplitude ≈5 px, no fixed phase relation)
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (angle +3 of 256 per tick; start angle rand()%255 per object, 0x424389)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade)
 ##   timing: provisional
-##     (period and amplitude are fits to 4–5 fps samples; random start phases; the same hold／fade for 戰場記錄
-##     and 離開遊戲; the message board reuses the save notice's in／hold／out)
+##     (the same hold／fade for 戰場記錄 and 離開遊戲; the message board reuses the save notice's in／hold／out)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
+##   audio: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
+##     (item click plays ACCEPT01 RESOURCE 398, 0x4242d6)
 
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
@@ -84,13 +86,18 @@ const MESSAGE_TEXT_Y := 44.0
 const MESSAGE_IN_SECONDS := 0.25
 const MESSAGE_HOLD_SECONDS := 0.95
 const MESSAGE_OUT_SECONDS := 0.15
-## Gem／book bob (runtime-measured, original_title_ornaments): sine period and amplitude are
-## fits to 4–5 fps samples (provisional). Each swings from 2 px above to 8 px below its
-## manifest position: the reference frame 01/frame_001 caught the gem near the top of its
-## swing and the book near the measurement template's position.
-const ORNAMENT_BOB_PERIOD := 1.646
-const ORNAMENT_BOB_AMPLITUDE := 5.0
-const ORNAMENT_BOB_REST_OFFSET := 3.0
+## Gem／book bob (static-derived, original_title_ornaments): defProcMainMenu 0x423cd0 spawns
+## Item1 (gem) and Item2 (book) at the menu position (the ring's top-left) plus these offsets;
+## each tick defProcMainMenuItem 0x424360 sets y = spawn y + trunc(6 · sin(angle·2π/256)) via
+## 0x45e9bc (16.16 sine table 0x4a39fc, radius 0x60000) and advances the byte angle by 3; x
+## never changes. The start angle is rand() % 255, drawn separately for each object (0x424389).
+const ORNAMENT_SPAWN_OFFSETS := {"cursor_gem": Vector2(33, 112), "cursor_hand": Vector2(207, 107)}
+const ORNAMENT_RADIUS := 6
+const ORNAMENT_ANGLE_STEP := 3
+const ORNAMENT_ANGLE_START_MODULO := 255
+## One full swing: 256 / 3 ticks.
+const ORNAMENT_BOB_PERIOD := 256.0 / ORNAMENT_ANGLE_STEP * OriginalTick.TICK_SECONDS
+const INTERFACE_AUDIO_PATH := "res://content/imported/hsl/shared/interface_audio/manifest.json"
 
 var manifest: Dictionary = {}
 var items: Array = []
@@ -109,10 +116,11 @@ var _message: Control
 var _message_text: Label
 var _message_tween: Tween
 var _music: AudioStreamPlayer
-## Seconds of ornament bob; the gem and the book each start at their own random phase (the
-## original's phase difference changed between samples — neither in step nor opposed).
+var _click_audio: AudioStreamPlayer
+## Seconds since the title opened (whole original ticks advance the ornament angles); the gem
+## and the book keep their own start angles (0..254), so their phase relation varies per visit.
 var ornament_clock := 0.0
-var ornament_phases := Vector2.ZERO
+var ornament_phases := Vector2i.ZERO
 ## An arrow key moved the selection: the selected item shows its lit shape until the mouse
 ## hovers one.
 var _keyboard_lit := false
@@ -132,7 +140,7 @@ func _ready() -> void:
 	items = manifest.get("items", [])
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
-	ornament_phases = Vector2(rng.randf() * TAU, rng.randf() * TAU)
+	ornament_phases = Vector2i(rng.randi() % ORNAMENT_ANGLE_START_MODULO, rng.randi() % ORNAMENT_ANGLE_START_MODULO)
 	_build_scene()
 	_place_ornaments()
 	_refresh_lit()
@@ -224,17 +232,28 @@ func _process(delta: float) -> void:
 
 
 ## The original gem and book never move sideways and do not follow the selection: both bob
-## about their item-1 positions (original_title_ornaments: mean positions differ ≤0.3 px
-## between hovering items 1, 2 and 3).
+## about their spawn positions beside item 1.
 func _place_ornaments() -> void:
 	if _gem == null or _hand == null:
 		return
-	_gem.position = _layout_top_left("cursor_gem") + Vector2(0, ornament_offset(ornament_phases.x))
-	_hand.position = _layout_top_left("cursor_hand") + Vector2(0, ornament_offset(ornament_phases.y))
+	_gem.position = ornament_spawn_top_left("cursor_gem") + Vector2(0, ornament_offset(ornament_phases.x))
+	_hand.position = ornament_spawn_top_left("cursor_hand") + Vector2(0, ornament_offset(ornament_phases.y))
 
 
-func ornament_offset(phase: float) -> float:
-	return ORNAMENT_BOB_REST_OFFSET + ORNAMENT_BOB_AMPLITUDE * sin(TAU * ornament_clock / ORNAMENT_BOB_PERIOD + phase)
+## Top-left of the ornament's shape at its spawn position (object position minus draw origin).
+func ornament_spawn_top_left(role: String) -> Vector2:
+	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(role, {})
+	var origin: Array = entry.get("draw_origin", [0, 0])
+	return _layout_top_left("ring") + ORNAMENT_SPAWN_OFFSETS[role] - Vector2(float(origin[0]), float(origin[1]))
+
+
+## 0x45e9bc: |sin table entry| × radius in 16.16, truncated toward zero, sign restored.
+func ornament_offset(start_angle: int) -> int:
+	var tick := int(floor(ornament_clock / OriginalTick.TICK_SECONDS))
+	var angle := (start_angle + ORNAMENT_ANGLE_STEP * tick) % 256
+	var entry := int(round(sin(TAU * angle / 256.0) * 65536.0))
+	var magnitude := (absi(entry) * ORNAMENT_RADIUS) >> 16
+	return -magnitude if entry < 0 else magnitude
 
 
 func _refresh_lit() -> void:
@@ -397,6 +416,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif key == KEY_DOWN or key == KEY_S:
 			select(selected + 1)
 		elif key == KEY_ENTER or key == KEY_KP_ENTER or key == KEY_SPACE or key == KEY_Z:
+			play_click_sound()
 			confirm()
 		elif key == KEY_ESCAPE:
 			select(items.size() - 1)
@@ -404,7 +424,23 @@ func _unhandled_input(event: InputEvent) -> void:
 		hover_at(get_global_mouse_position())
 	elif event is InputEventMouseButton and event.pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 		if hover_at(get_global_mouse_position()) >= 0:
+			play_click_sound()
 			confirm()
+
+
+## defProcMainMenuString 0x4242d6: a click on an item plays ACCEPT01 (RESOURCE 398).
+func play_click_sound() -> void:
+	if _click_audio == null:
+		var audio: Variant = ContentPaths.read_json(INTERFACE_AUDIO_PATH)
+		var entry: Dictionary = (audio.get("sounds", {}) as Dictionary).get("confirm", {}) if typeof(audio) == TYPE_DICTIONARY else {}
+		if int(entry.get("resource_id", 0)) != 398:
+			return
+		_click_audio = AudioStreamPlayer.new()
+		_click_audio.name = "ClickSound"
+		_click_audio.volume_db = -6.0 # the battle runtime's interface-sound level
+		_click_audio.stream = load(str(entry.get("res_path", "")))
+		add_child(_click_audio)
+	_click_audio.play()
 
 
 func summary() -> Dictionary:
