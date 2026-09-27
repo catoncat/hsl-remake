@@ -6,7 +6,7 @@
 
 - 原版脚本删除（`0x450410`）与行走删除（`0x450450`）按 code／serial 找已注册对象并置删除状态；删除阶段先置 16 逻辑 tick 再递减，最后一 tick 才依次清地图占用、行动队列、模板记录头与对象链接；HP／库存等记录字节不变，不走伤害、经验或死亡奖励（static-derived）。
 - 重制 `game/sim/BattlePresenceRules.gd` 由唯一 PlayLoop 提交 `departed`、来源序号与队列移除，所有行动与 AI 共用同一在场查询；`BattleScriptPresentation`／`BattleDepartureView` 播放离场，快照保存已消费游标（static-derived）。
-- 差异：16 tick 无秒数，淡出 0.24 秒为重制取值；障碍替代目的地搜索与逐 tick 交错未恢复（provisional）。
+- 差异：删除阶段的 16 tick 是 engMIX 层级 16→1 的逐 tick 淡出，重制按设计 tick 阶梯演出（[original_script_entry](original_script_entry.md)）；逐 tick 交错未恢复（provisional）。
 
 ## 证据
 
@@ -43,8 +43,7 @@
 
 ## 边界
 
-- `0x44fbd0` 的障碍替代位置搜索未执行。
+- `0x44fbd0` 的障碍替代位置搜索本包未执行，静态读法见 [original_script_entry](original_script_entry.md)。
 - 对象后续全部移动阶段、全局时钟与内存槽复用不在等价声明内。
-- 原 16 tick 不提供秒数；0.24 秒淡出为重制取值。
 - 在场变化先提交、演出后读取是重制原子事务，不推导原 VM 逐 tick 交错相同。
 - 跨战回血与阵容承接是重制策略。

@@ -313,7 +313,7 @@ docs/evidence_packets/runtime_observations/first_battle_visuals/
 每个证据包标题下方一行机器可读字段块（`> evidence: … · status: … · functions: … · tools: … · updated: …`，规范见 [evidence_packets/README.md](evidence_packets/README.md#packet-header)）是唯一来源；下表由 `PYTHONPATH=tools python3 -m hsltools.evidence.index --write` 生成，`--check` 在门禁里比对。按地址找包：搜 `0x4…`；按复跑入口找包：搜工具名。
 
 <!-- evidence-index:start -->
-_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (213 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
+_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (214 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
 
 ### resource_inventory (7)
 
@@ -411,7 +411,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [水剎：从实际学习到范围施放的窗口验收](evidence_packets/runtime_observations/water_strike/README.md) | resource-derived | superseded → ../../static_reverse/original_water_strike.md | — | — |
 | [大地圖（世界地图）场景 — runtime-measured](evidence_packets/runtime_observations/world_map_scene/README.md) | static-derived | superseded → ../../static_reverse/original_world_town.md | — | — |
 
-### static_reverse (127)
+### static_reverse (128)
 
 | Packet | Evidence | Status | Functions | Tools |
 | --- | --- | --- | --- | --- |
@@ -508,6 +508,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [Original Save Format (戰場記錄 HSLBAT.SAV / 回憶錄 HSLnn.SAV) and the 回憶錄 generator](evidence_packets/static_reverse/original_save_format.md) | static-derived; runtime-measured: sample round trip, native codec equality, the PLAYERS template dump, the Wine loads of the generated 回憶錄 and the native second-tier 回憶錄 the generator reproduces table for table; provisional: replayed story flow, fixture levels / attributes | record-only | `0x407ec0`, `0x42c700`, `0x42cc10`, `0x42ccc0`, `0x42ce10`, `0x42da60`, `0x42e040`, `0x42e070`, `0x42e640`, `0x42ec10`, `0x42f7a4`, `0x434680`, `0x4348f0`, `0x448420`, `0x448840`, `0x44cb10`, `0x450710`, `0x4545c0`, `0x454740`, `0x4547a0`, `0x454870`, `0x4548b0`, `0x45a7b0`, `0x45b016`, `0x45b089` | `hsl_original_control.py`, `hsl_win32_memread.c`, `hsltools/data/_original_save_codec.py`, `hsltools/data/original_save.py`, `hsltools/data/original_save_members.py` |
 | [剧情脚本的镜头：居中缓动、走路跟随与 actScrollBG 步进](evidence_packets/static_reverse/original_script_camera_scroll.md) | static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） | live | `0x42dc50`, `0x43bf30`, `0x43c140`, `0x44fcf0`, `0x44fd90`, `0x4501f0`, `0x450450`, `0x450840`, `0x453b90`, `0x45e80d` | `hsltools/data/story_corpus.py`, `run_camera_panel_motion_tests.gd` |
 | [脚本离场、角色在场资格与演出游标](evidence_packets/static_reverse/original_script_departure.md) | static-derived | live | `0x407720`, `0x411b90`, `0x44cb90`, `0x44fad0`, `0x44fbd0`, `0x450410`, `0x450450`, `0x453b90`, `0x45e3ed` | `hsltools/probes/departure.py`, `run_departure_tests.gd` |
+| [脚本安装的入场、落点替代与离场收尾](evidence_packets/static_reverse/original_script_entry.md) | static-derived; provisional: 洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、抽数与出生抽数的先后 | live | `0x407ec0`, `0x40d800`, `0x40ed50`, `0x40f200`, `0x40f440`, `0x40f520`, `0x413740`, `0x413900`, `0x44fbd0`, `0x450450`, `0x453b90`, `0x45e307` | `run_all.gd` |
 | [脚本等待、守备唤醒与指定对象同步](evidence_packets/static_reverse/original_script_wait.md) | static-derived | live | `0x450840` | `hsltools/probes/script_wait.py`, `run_script_wait_tests.gd` |
 | [剧情走位：逐格路径、Wait 与并行](evidence_packets/static_reverse/original_script_walk_path.md) | static-derived; provisional: 同距平局次序、围死时的最近格度量、按键快进（remake-invented） | live | `0x40eb40`, `0x40ed50`, `0x40f350`, `0x40f440`, `0x410a50`, `0x411080`, `0x4111d0`, `0x450840`, `0x453b90` | `run_story_object_terrain_tests.gd` |
 | [原作酒館神秘男子（teSecretManBuyThing）](evidence_packets/static_reverse/original_secret_man.md) | static-derived; provisional | live | `0x4072b0`, `0x40e690`, `0x42c7e0`, `0x42e070`, `0x42e640`, `0x44e0e0`, `0x44ef70`, `0x44f100`, `0x454db0`, `0x454e20`, `0x458c80`, `0x460058` | `hsltools/data/secret_man_goods.py`, `run_town_event_rules_tests.gd` |

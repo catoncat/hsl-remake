@@ -5,7 +5,9 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_campaign_actors.md
 ##     (a reserve member's re-install keeps its live record, 0x407ec0)
-##   rules: remake-invented (atomic whole-event install, nearest legal landing when blocked)
+##   rules: remake-invented (atomic whole-event install; the landing is checked once, at the final cell)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_script_entry.md
+##     (blocked landing 0x44fbd0: flood 12, nearest Manhattan, row-major, rand&1 ties)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (birth: carry 0x407c86 on the global stream, then level adjustment 0x40e92c)
@@ -24,10 +26,14 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
+const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
+## 0x44fbd0 -> 0x40f440(copy, 12, mode): the blocked-landing flood radius.
+const LANDING_FLOOD_RADIUS := 12
 const MOVE_ABSOLUTE := ["actWalk", "actWalkWait"]
 const MOVE_RELATIVE := ["actWalkDisp", "actWalkDispWait"]
 const MOVE_TO_ACTOR := ["actWalkToPlayerDisp", "actWalkToPlayerDispWait"]
 const DEPART := ["actWalkAndDelete", "actWalkAndDeleteWait", "actDeleteObject"]
+const RANDOM_INSERTS := ["actInsertObjectRandomPos", "actInsertStoryObjectRandomPos"]
 
 
 static func source_error(templates: Variant) -> String:
@@ -114,7 +120,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		var insert_request: Dictionary = {}
 		# Random-position inserts (actInsertObjectRandomPos / actInsertStoryObjectRandomPos)
 		# carry their resolved pixel in the interpreter's insert request; args[1..2] are offsets.
-		var random_insert := name in ["actInsertObjectRandomPos", "actInsertStoryObjectRandomPos"]
+		var random_insert := name in RANDOM_INSERTS
 		if name == "actInsertObject" or random_insert:
 			if args.size() < 3: return {"ok": false, "reason": "unsupported_script_actor_symbol"}
 			if not templates.has(args[0]):
@@ -214,33 +220,35 @@ static func _motion_row(loop: Dictionary, runtime: Dictionary, status: Dictionar
 	return {"ok": true}
 
 
-## Commits every touched, not departed actor to its nearest legal landing cell and ends
+## Commits every touched, not departed actor to its 0x44fbd0 landing cell and ends
 ## its last visual move there. Returns {"ok": true} or the failed landing.
 static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dictionary, positions: Dictionary, touched: Array, departed: Array) -> Dictionary:
-	# Temporary insertion pixels and cinematic overlaps are not occupancy. Blocked
-	# final source cells use a recorded nearest legal landing (a remake policy).
+	# Temporary insertion pixels and cinematic overlaps are not occupancy. A blocked
+	# final source cell takes 0x44fbd0's replacement (nearest_landing).
 	var occupants: Array = loop["units"].filter(func(a): return not touched.has(a["id"]) and not runtime["departed_unit_ids"].has(a["id"]))
 	for id in touched:
 		if departed.has(id): continue
 		var actor := WinfailConditions.unit(loop, id)
 		var requested: Vector2i = positions[id] / TacticalGridRules.CELL_PIXELS
-		var landing := nearest_landing(actor, requested, occupants, loop)
+		var last := {}
+		for index in range(receipt["actions"].size() - 1, -1, -1):
+			var row: Dictionary = receipt["actions"][index]
+			if row.get("motion", {}).get("unit_id") == id or row.get("install", {}).get("unit_id") == id:
+				last = row
+				break
+		# The random-position insert (0x450f55) constructs without 0x44fbd0; actInsertObject
+		# (0x450ee2) and every walk destination pass through it.
+		var landing := {"ok": true, "coord": requested, "draws": []} if last.has("install") and str(last["name"]) in RANDOM_INSERTS else nearest_landing(actor, requested, occupants, loop)
 		if not landing["ok"]: return landing
 		actor["coord"] = landing["coord"]
 		actor["grid_coord"] = actor["coord"]
 		if receipt["created_ids"].has(id): actor["ai_home_coord"] = actor["coord"]
 		occupants.append(actor)
-		receipt["placements"].append({"unit_id": id, "requested": requested, "coord": actor["coord"], "adjusted": requested != actor["coord"]})
+		receipt["placements"].append({"unit_id": id, "requested": requested, "coord": actor["coord"], "adjusted": requested != actor["coord"], "draws": landing["draws"]})
 		# The last visual move ends at the committed cell. Earlier cinematic paths
 		# remain source pixels and do not write back to gameplay state.
-		for index in range(receipt["actions"].size() - 1, -1, -1):
-			var row: Dictionary = receipt["actions"][index]
-			if row.get("motion", {}).get("unit_id") == id:
-				row["motion"]["to"] = TacticalGridRules.cell_pixel(actor["coord"])
-				break
-			if row.get("install", {}).get("unit_id") == id:
-				row["install"]["position"] = TacticalGridRules.cell_pixel(actor["coord"])
-				break
+		if last.has("motion"): last["motion"]["to"] = TacticalGridRules.cell_pixel(actor["coord"])
+		elif last.has("install"): last["install"]["position"] = TacticalGridRules.cell_pixel(actor["coord"])
 	return {"ok": true}
 
 
@@ -328,17 +336,40 @@ static func _bindings(loop: Dictionary, departed: Array) -> Dictionary:
 	return result
 
 
+## 0x44fbd0(obj, &x, &y), called on every install (0x450ee2) and walk destination: the
+## requested cell is kept unless its word carries a unit or the hard block (& 0x74000) or it
+## is a 0xff cell for a walker. Then a copy of the actor stands on it, floods 12 (0x40f440,
+## mode 1 walking with terrain and height only, no unit blocks; mode 6 flying), the
+## centre is cleared (0x40f520(0)) and 0x413900 takes the flooded unoccupied cell nearest
+## (Manhattan) in row-major order, an equal one replacing the held one on rand() & 1, a
+## cell with three hard-blocked neighbours skipped when rand(100) < 80 (side 0,
+## 0x413740). No candidate keeps the requested cell.
 static func nearest_landing(actor: Dictionary, requested: Vector2i, occupants: Array, loop: Dictionary) -> Dictionary:
-	var candidate := actor.duplicate(true)
 	var size: Vector2i = loop["map_size"]
+	var tiles: Dictionary = TerrainEditRules.tiles(loop)
 	var origin := Vector2i(clampi(requested.x, 0, size.x - 1), clampi(requested.y, 0, size.y - 1))
-	for distance in range(size.x + size.y):
-		for y in range(maxi(0, origin.y - distance), mini(size.y, origin.y + distance + 1)):
-			for x in range(maxi(0, origin.x - distance), mini(size.x, origin.x + distance + 1)):
-				if TacticalGridRules.manhattan(Vector2i(x, y), origin) != distance: continue
-				candidate["coord"] = Vector2i(x, y)
-				if ActorTraversalRules.placement_error(candidate, occupants, TerrainEditRules.tiles(loop), size) == "": return {"ok": true, "coord": candidate["coord"]}
-	return {"ok": false, "reason": "no_legal_script_landing"}
+	var candidate := actor.duplicate(true)
+	candidate["coord"] = origin
+	var taken: Dictionary = AINavigationRules.SkillTargetRules.Footprint.occupants(occupants)
+	var tile: Dictionary = tiles.get(origin, {})
+	var flying := bool(actor.get("traversal", {}).get("flying", false))
+	var blocked: bool = taken.has(origin) or (int(tile.get("movement_flags", 0)) & AINavigationRules.HARD_BLOCK_FLAG) != 0 or (not flying and ActorTraversalRules.elevation(tile) == 255)
+	if not blocked: return {"ok": true, "coord": origin, "draws": []}
+	var flood := TacticalGridRules.movement_reachability_envelope(candidate, [], tiles, size, LANDING_FLOOD_RADIUS)
+	if not flood["ok"]: return {"ok": false, "reason": flood["reason"]}
+	var large := int(actor.get("traversal", {}).get("size_type", 0)) != 0
+	var cells: Array = []
+	for cell in (flood["reachable_by_coord"].keys() + flood["transit_by_coord"].keys()):
+		if taken.has(cell): continue
+		# A 3x3 body also keeps the remake's footprint legality (0x413740 reads the centre only).
+		if large:
+			candidate["coord"] = cell
+			if ActorTraversalRules.placement_error(candidate, occupants, tiles, size) != "": continue
+		cells.append(cell)
+	var rng: Variant = GlobalRandomStream.loop_source(loop) if GlobalRandomStream.valid(loop.get(GlobalRandomStream.LOOP_KEY)) else null
+	var draws: Array = []
+	var pick: Dictionary = AINavigationRules.nearest_stoppable(cells, origin, origin, rng, draws, AINavigationRules.neighbour_words(loop), AINavigationRules.blocker_mask(0), size)
+	return {"ok": true, "coord": pick.get("cell", origin), "draws": draws}
 
 
 static func state_error(loop: Dictionary) -> String:

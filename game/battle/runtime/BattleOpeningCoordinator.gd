@@ -840,8 +840,11 @@ func _settle_pending_deletes() -> void:
 			remaining.append(unit_id)
 			continue
 		if actor != null:
-			var departure = runtime.get_node_or_null("DepartureView") if cutscene_mode and not story_mode else null
-			if departure == null or not departure.begin(unit_id): actor.visible = false
+			# Both VMs' walk-and-delete enter state 0x36 (0x450450), whose end is the 16-level
+			# engMIX fade (original_script_entry.md); story walks fade the same way.
+			var departure = runtime.get_node_or_null("DepartureView")
+			if departure != null and story_mode and actor is Node2D: departure.fade(unit_id, actor)
+			elif departure == null or not cutscene_mode or not departure.begin(unit_id): actor.visible = false
 		story_records.append({"kind": "actor_deleted", "unit_id": unit_id})
 	_pending_deletes = remaining
 

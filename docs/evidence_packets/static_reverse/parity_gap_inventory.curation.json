@@ -969,16 +969,17 @@
     },
     {
       "id": "script-entry-paths",
-      "difference": "脚本安装的援军直接出现在落格（原版入场路径没复原），堵格时改落最近空格；离场演员停在最后一格",
-      "original": "原完整 constructor／入场 frame sequence 未恢复；落点替代结构 0x44fbd0 已读、度量 provisional",
+      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数排在出生抽数之后",
+      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币；离场末格 engMIX 16 级逐 tick 淡出后注销",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_script_departure.md",
-        "docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md"
+        "docs/evidence_packets/static_reverse/original_script_entry.md",
+        "docs/evidence_packets/static_reverse/original_script_departure.md"
       ],
-      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules",
+      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView",
       "remake_code": [
         "game/battle/scene/BattleScriptActorPresentation.gd",
-        "game/sim/ScriptActorCreationRules.gd"
+        "game/sim/ScriptActorCreationRules.gd",
+        "game/battle/scene/BattleDepartureView.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1754,6 +1755,10 @@
     }
   ],
   "sources": {
+    "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#9e4d6087d9": {
+      "item": "script-entry-paths",
+      "text": "未读：`actInsertStoryObject*` 分支是否经 `0x44fbd0`；"
+    },
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#9bfa3e0a50": {
       "item": "camera-return-pan",
       "text": "滑回行动者期间原版边缘滚动 `0x43e4a0` 是否同时生效未读；"
@@ -2254,7 +2259,7 @@
     "provenance:game/battle/scene/BattleSceneStage.gd|layout|provisional|": {
       "item": "stage-placement"
     },
-    "provenance:game/battle/scene/BattleScriptActorPresentation.gd|layout|remake-invented|": {
+    "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、抽数与出生抽数的先后": {
       "item": "script-entry-paths"
     },
     "provenance:game/battle/scene/BattleScriptCoordinator.gd|rules|provisional|": {
@@ -3030,9 +3035,6 @@
     },
     "provenance:game/battle/runtime/ActorRuntime.gd|audio|provisional|": {
       "item": "script-walk-speed"
-    },
-    "provenance:game/battle/scene/BattleDepartureView.gd|timing|remake-invented|": {
-      "item": "script-removal-death"
     },
     "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md": {
       "item": "level-specific-placement"

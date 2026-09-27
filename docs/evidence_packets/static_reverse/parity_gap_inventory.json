@@ -6,13 +6,13 @@
     "items": 95,
     "sources": 526,
     "sources_by_kind": {
-      "provenance": 211,
-      "sentence": 143,
-      "scope": 74,
+      "provenance": 209,
+      "sentence": 144,
+      "scope": 75,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 56,
+    "layout_timing_modules": 54,
     "items_by_original_status": {
       "read_complete": 14,
       "read_partial": 57,
@@ -1079,16 +1079,17 @@
     },
     {
       "id": "script-entry-paths",
-      "difference": "脚本安装的援军直接出现在落格（原版入场路径没复原），堵格时改落最近空格；离场演员停在最后一格",
-      "original": "原完整 constructor／入场 frame sequence 未恢复；落点替代结构 0x44fbd0 已读、度量 provisional",
+      "difference": "落点只在事件末对最终格检查一次（原版每个安装／行走 token 当时检查）；替代抽数排在出生抽数之后",
+      "original": "安装无入场态，直接出现在 0x44fbd0 修过的格；替代＝洪泛 12＋行主序曼哈顿最近＋等距硬币；离场末格 engMIX 16 级逐 tick 淡出后注销",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_script_departure.md",
-        "docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md"
+        "docs/evidence_packets/static_reverse/original_script_entry.md",
+        "docs/evidence_packets/static_reverse/original_script_departure.md"
       ],
-      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules",
+      "remake": "BattleScriptActorPresentation／ScriptActorCreationRules／BattleDepartureView",
       "remake_code": [
         "game/battle/scene/BattleScriptActorPresentation.gd",
-        "game/sim/ScriptActorCreationRules.gd"
+        "game/sim/ScriptActorCreationRules.gd",
+        "game/battle/scene/BattleDepartureView.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1099,12 +1100,13 @@
         "matrix:增援压力",
         "matrix:开场 token order",
         "matrix:敌我完整入场",
-        "provenance:game/battle/scene/BattleScriptActorPresentation.gd|layout|remake-invented|",
         "provenance:game/battle/scene/BattleScriptPresentation.gd|layout|remake-invented|",
         "provenance:game/sim/ScriptActorCreationRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopScript.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|"
+        "scope:docs/evidence_packets/runtime_observations/first_scene_opening_choreography_packet.md|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_script_entry.md|provisional|洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、抽数与出生抽数的先后",
+        "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#9e4d6087d9"
       ]
     },
     {
@@ -2239,7 +2241,6 @@
       "effort": "S",
       "category": "地图人物演出",
       "sources": [
-        "provenance:game/battle/scene/BattleDepartureView.gd|timing|remake-invented|",
         "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#d011b4de2f"
       ]
     },
