@@ -3,24 +3,24 @@
   "updated": "2026-09-27",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 105,
-    "sources": 535,
+    "items": 104,
+    "sources": 537,
     "sources_by_kind": {
       "provenance": 220,
-      "sentence": 143,
+      "sentence": 145,
       "scope": 74,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 61,
     "items_by_original_status": {
-      "read_complete": 16,
+      "read_complete": 15,
       "read_partial": 60,
       "unread": 12,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 25,
+      "every_battle": 24,
       "some_levels": 36,
       "rare": 39,
       "invisible": 5
@@ -42,14 +42,13 @@
       "镜头": 2,
       "面板与界面": 13,
       "音频": 3,
-      "飘字与数字": 6
+      "飘字与数字": 5
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 51,
+    "no_visible_effect_sources": 52,
     "resolved_sources": 14
   },
   "top": [
-    "damage-digit-bounce",
     "dialogue-timing",
     "hit-pose-other",
     "map-strike-effects",
@@ -68,31 +67,10 @@
     "growth-window-timing",
     "highlight-colours",
     "magic-impact-bar",
-    "map-death-blend"
+    "map-death-blend",
+    "move-path-overlay"
   ],
   "items": [
-    {
-      "id": "damage-digit-bounce",
-      "difference": "特写、地图一击、风火水法术、道具与回合末的数字已换原版字形（lane DIGITS：红 NUM100 逐位弹跳不上浮、绿 NUM200、蓝 NUM300、MISS＝NUM513，出现点与寿命照 0x4084e0）；剩特写片段按自己的时钟收尾——脚本一击结果停 40 tick 即收，两位红字（54 tick）的淡出尾被截，普通一击同理",
-      "original": "defProcShowNumber kind 0／2／3／5 已读全（0x408580）；aniShowHitResult 的 MP 数字与 HP 数字同点、hold 0x28（0x4046b0）；普通一击命中后 40 tick 于 (320,200) 出红字（0x40424c→0x404290）；录像 475.17 s 法术红字「19」逐位 2× 白闪、不上浮",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
-      ],
-      "remake": "ResultNumberFloater（kind 0 经 DamageNumberFloater）接入 BattleCombatCutin.result_number、MagicImpactPresentation、BattlePresentation、BattleTurnEndCue；片段结束即隐藏",
-      "remake_code": [
-        "game/battle/scene/ResultNumberFloater.gd",
-        "game/battle/scene/BattleCombatCutin.gd:show_result",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "飘字与数字",
-      "sources": [
-        "video:9"
-      ]
-    },
     {
       "id": "dialogue-timing",
       "difference": "对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下",
@@ -2551,6 +2529,7 @@
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#f0c8e6287a",
+        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201"
       ]
     },
@@ -2690,7 +2669,7 @@
     },
     "9": {
       "title": "飘字美术",
-      "summary": "KILL／EXP／$／LEVEL UP 美术字（R6-P3）、地图数字逐位弹跳与升级星光（R7-POSE）、数字旁附加词照原版去掉（UI6）、特写／法术／道具／回合末数字换原版字形与出现点（DIGITS）已做；剩没有数字的说明字、特写片段截掉数字淡出尾"
+      "summary": "KILL／EXP／$／LEVEL UP 美术字（R6-P3）、地图数字逐位弹跳与升级星光（R7-POSE）、数字旁附加词照原版去掉（UI6）、特写／法术／道具／回合末数字换原版字形与出现点（DIGITS）已做；特写片段等数字删除后才收（CUTINTAIL）；剩没有数字的说明字"
     },
     "10": {
       "title": "标题和标题卡",
@@ -2906,6 +2885,10 @@
       {
         "source": "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#9993ed8f9f",
         "reason": "行动后的菜单集合由公共行动恢复包决定，本包只管集合与几何"
+      },
+      {
+        "source": "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#47af19c725",
+        "reason": "±1 tick 的同帧处理先后，16 ms 以内"
       },
       {
         "source": "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#47534c85f0",

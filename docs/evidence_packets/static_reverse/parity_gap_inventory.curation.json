@@ -35,7 +35,7 @@
     },
     "9": {
       "title": "飘字美术",
-      "summary": "KILL／EXP／$／LEVEL UP 美术字（R6-P3）、地图数字逐位弹跳与升级星光（R7-POSE）、数字旁附加词照原版去掉（UI6）、特写／法术／道具／回合末数字换原版字形与出现点（DIGITS）已做；剩没有数字的说明字、特写片段截掉数字淡出尾"
+      "summary": "KILL／EXP／$／LEVEL UP 美术字（R6-P3）、地图数字逐位弹跳与升级星光（R7-POSE）、数字旁附加词照原版去掉（UI6）、特写／法术／道具／回合末数字换原版字形与出现点（DIGITS）已做；特写片段等数字删除后才收（CUTINTAIL）；剩没有数字的说明字"
     },
     "10": {
       "title": "标题和标题卡",
@@ -451,25 +451,6 @@
       "visibility": "rare",
       "effort": "S",
       "category": "光标与字体"
-    },
-    {
-      "id": "damage-digit-bounce",
-      "difference": "特写、地图一击、风火水法术、道具与回合末的数字已换原版字形（lane DIGITS：红 NUM100 逐位弹跳不上浮、绿 NUM200、蓝 NUM300、MISS＝NUM513，出现点与寿命照 0x4084e0）；剩特写片段按自己的时钟收尾——脚本一击结果停 40 tick 即收，两位红字（54 tick）的淡出尾被截，普通一击同理",
-      "original": "defProcShowNumber kind 0／2／3／5 已读全（0x408580）；aniShowHitResult 的 MP 数字与 HP 数字同点、hold 0x28（0x4046b0）；普通一击命中后 40 tick 于 (320,200) 出红字（0x40424c→0x404290）；录像 475.17 s 法术红字「19」逐位 2× 白闪、不上浮",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
-      ],
-      "remake": "ResultNumberFloater（kind 0 经 DamageNumberFloater）接入 BattleCombatCutin.result_number、MagicImpactPresentation、BattlePresentation、BattleTurnEndCue；片段结束即隐藏",
-      "remake_code": [
-        "game/battle/scene/ResultNumberFloater.gd",
-        "game/battle/scene/BattleCombatCutin.gd:show_result",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "飘字与数字"
     },
     {
       "id": "floater-extra-words",
@@ -3198,7 +3179,6 @@
     },
     "video:9": {
       "item": [
-        "damage-digit-bounce",
         "floater-extra-words"
       ]
     },
@@ -3773,6 +3753,14 @@
     "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d": {
       "item": "special-object-motion",
       "text": "对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340": {
+      "item": "closeup-object-timing",
+      "text": "绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#47af19c725": {
+      "no_visible_effect": "±1 tick 的同帧处理先后，16 ms 以内",
+      "text": "数字对象与守方对象同 tick 先后未读（±1 tick）。"
     }
   }
 }

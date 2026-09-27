@@ -55,6 +55,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##     program_sounds timing provisional; SOUND_VOICES)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MANIFEST_PATH := ContentPaths.SKILL_EFFECTS
 const SCRIPTS_PATH := "res://content/generated/hsl/skills/special_effect_scripts.json"
@@ -72,7 +73,9 @@ const TARGET_CENTRE := Vector2(320, 160)
 const GLOBAL_ORIGIN := Vector2(320, 240)
 ## A row whose attack script is empty still shows the caster's cast panels for this lead.
 const EMPTY_ATTACK_LEAD_TICKS := 30
-## Ticks the result text stays readable after aniShowHitResult before the clip completes.
+## Ticks the result stays up after aniShowHitResult at the least (a remake floor that keeps a
+## caption-only receipt readable); the clip itself runs until the result numbers are deleted
+## (clip_complete_tick).
 const RESULT_HOLD_TICKS := 40
 ## Flight time of an off-stage object when no aniProcessHitMiss follows in its phase.
 const FLIGHT_TICKS := 30
@@ -577,7 +580,8 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 		host.defender_sprite.hide()
 	else:
 		var double_page := int(timeline["double_page_tick"]) >= 0 and script_tick >= float(timeline["double_page_tick"])
-		var hurt: bool = hit and bool(clip["impact_emitted"]) and script_tick < float(timeline["result_tick"]) + RESULT_HOLD_TICKS
+		# 0x4038a0 has no return to neutral: the hurt pose holds until the shot ends.
+		var hurt: bool = hit and bool(clip["impact_emitted"])
 		var hurt_frame: int = int(host.manifest["actors"].get(clip["defender"], {}).get("hurt_frame", 0))
 		_stand(host, host.defender_sprite, clip["defender"], hurt_frame if hurt else 0, clip["defender_unit"])
 		host.defender_sprite.position = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
@@ -594,10 +598,27 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	host.result.visible = shown
 	if shown:
 		host.show_result(clip["strike"], script_tick - float(timeline["result_tick"]))
-	if script_tick >= float(timeline["complete_tick"]):
+	if script_tick >= float(clip_complete_tick(timeline, host.result_spawns(clip["strike"]))):
 		clear()
 		return true
 	return false
+
+
+## The tick the special shot ends: the compiled timeline's end, and not before the numbers
+## aniShowHitResult spawned are deleted. 0x404643 (opcode 30, [esp+0x14] = 1) spawns the last
+## number with the defender object as waiter and leaves its phase at 0x62 (0x403ecc) until that
+## number releases it (+0x28 < 9, 0x408580) — for a red kind-0 number 27 ＋ 10×digits ticks —
+## and the number lives on to 34 ＋ 10×digits (two digits: 47 and 54) while the shot closes. The
+## remake has no closing transition on this path, so it keeps the shot up until the last
+## number's deletion (ResultNumberFloater.life_of) instead of cutting the fade at
+## RESULT_HOLD_TICKS.
+## `spawns` are the shot's result numbers (BattleCombatCutin.result_spawns).
+static func clip_complete_tick(timeline: Dictionary, spawns: Array) -> int:
+	var complete := int(timeline["complete_tick"])
+	for entry in spawns:
+		var digits := 1 if str(entry["kind"]) == "miss" else str(absi(int(entry["value"]))).length()
+		complete = maxi(complete, int(timeline["result_tick"]) + ResultNumberFloater.life_of(str(entry["kind"]), digits, int(entry.get("hold", 0))))
+	return complete
 
 
 ## A MAGIC script on the tactical map (MAGIC.TXT eff_proc_Local): no backdrop or close-up

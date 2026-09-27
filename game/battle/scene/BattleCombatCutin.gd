@@ -83,6 +83,11 @@ var flash_sprite: Sprite2D
 var result: Label
 ## The result numbers of the current shot (ResultNumberFloater children, clocked by the clip).
 var result_number: Node2D
+## The previous shot's numbers still alive when the next shot takes over: obj_ShowNumber is its
+## own object (0x4084e0), so a continuation (phase 101 sub 0 → 2 at once, no transition) leaves
+## a red number's last ticks — released at 27 ＋ 10×digits, deleted at 34 ＋ 10×digits — drawn
+## over the next shot until 0x408580 deletes it.
+var result_tail: Node2D
 var _result_key: Array = []
 var skill: Dictionary
 var blade: Sprite2D
@@ -155,6 +160,9 @@ func _ready() -> void:
 	result_number.name = "ResultNumber"
 	result_number.hide()
 	panel.add_child(result_number)
+	result_tail = Node2D.new()
+	result_tail.name = "ResultTail"
+	panel.add_child(result_tail)
 	opening_ball = Sprite2D.new()
 	opening_ball.hide()
 	opening_ball.position = Vector2(320, 240)
@@ -399,8 +407,13 @@ func _complete_clip() -> void:
 	clips.pop_front()
 	elapsed = 0.0
 	panel.visible = busy()
-	# The next shot spawns its own numbers.
+	# The next shot spawns its own numbers; this shot's live ones finish their own clock.
 	_result_key = []
+	for number in result_number.get_children():
+		if busy() and number.visible:
+			number.reparent(result_tail, false)
+		else:
+			number.free()
 
 
 func _process(delta: float) -> void:
@@ -416,6 +429,9 @@ func _process(delta: float) -> void:
 	result_number.hide()
 	scenery.modulate = Color.WHITE
 	panel.visible = busy()
+	for number in result_tail.get_children():
+		if not busy() or not number.advance(delta):
+			number.free()
 	if not busy():
 		return
 	elapsed += delta * Timing.PLAYBACK_SPEED

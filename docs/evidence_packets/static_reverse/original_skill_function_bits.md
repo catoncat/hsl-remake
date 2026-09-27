@@ -1,12 +1,13 @@
 # 技能功能位：衰弱、净化、回魔、再行动／取消／吸取、AI 绝技桶与结果数字
 
-> evidence: static-derived; provisional · status: live · functions: 0x406fe0, 0x4074a0, 0x407550, 0x4075a0, 0x409a60, 0x409be0, 0x40a5d0, 0x40a7b0, 0x40aa80, 0x40b910, 0x40c480, 0x40c570, 0x40c620, 0x40c770, 0x40d340, 0x40d4e0, 0x40dc50, 0x40dc70, 0x40dcf0, 0x40dd80, 0x40df70, 0x40e0e0, 0x40e100, 0x40e180, 0x40e2f0, 0x40e6c0, 0x42c780, 0x4348f0, 0x436e80, 0x448420, 0x448840, 0x44f2d0, 0x44f580 · tools: hsltools/assets/skill_effects.py, hsltools/data/skill_book.py, hsltools/probes/steal_ratio.py, run_ai_support_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
+> evidence: static-derived; provisional · status: live · functions: 0x406fe0, 0x4074a0, 0x407550, 0x4075a0, 0x409a60, 0x409be0, 0x40a5d0, 0x40a7b0, 0x40aa80, 0x40b910, 0x40c480, 0x40c570, 0x40c620, 0x40c770, 0x40d340, 0x40d4e0, 0x40dc50, 0x40dc70, 0x40dcf0, 0x40dd80, 0x40df70, 0x40e0e0, 0x40e100, 0x40e180, 0x40e2f0, 0x40e6c0, 0x42c780, 0x4348f0, 0x436e80, 0x448420, 0x448840, 0x44f2d0, 0x44f580 · tools: hsltools/assets/skill_effects.py, hsltools/data/skill_book.py, hsltools/probes/steal_ratio.py, run_ai_support_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`0x40aa80` 按 function mask 固定顺序逐位结算，每位调同一数值 helper `0x40a7b0`；衰弱（0x1000）减基础四属性并刷新，净化（0x200／0x400／0x800／0x2000）清对应状态字，HealMP、ActiveAgain、CancelActive、StealGold、StealItem、StealHP 各有即时 EXP 换算；绝技通道（channel 1）命中只读 hit_ratio、magicOTHER 不乘抗性（static-derived；偷窃加成字另有 93 组原生回执）。
 - AI 的 SPECIAL 与 MAGIC 用同一分桶器 `0x40c620`，SPECIAL 选行 `0x40dd80` 与 MAGIC `0x40c770` 的接受语义不同（MAGIC 桶 5／7 对有用目标无条件接受）；进攻绝技与魔法共用同一对 (first, fallback) 桶（static-derived）。
 - 结果数字：`aniShowHitResult` 读 HP／MP 变化生成 kind 0 红（伤害）、2 绿（回复）、3 蓝（MP）、5 MISS；功能绝技 HP／MP 皆 0 时按本次 EXP 之和为非零则不显示、为零则 MISS；数字无正负号（static-derived；字形 resource-derived）。
+- 收片段条件：opcode 30 把最后生成的数字设为守方对象的 waiter、phase 停在 0x62，数字 `+0x28 < 9` 时才放行（红字 27＋10×位数 tick），数字自身活到 34＋10×位数（两位 47／54）；50／60 行绝技守方脚本以 aniShowHitResult 结尾，脚本随放行结束，数字尾巴在收尾期间走完。普通一击同样由数字放行守方 phase 3；续击无过渡，上一镜数字在下一镜上走完（static-derived）。
 - 重制：`StatusEffectRules`、`SupportMagicRules`、`StatMagicRules`、`SpecialUtilityRules`、`SpecialStatusRules`、`AISkillDecisionRules`／`AISkillPlanning`／`AISupportPlanning`，结果数字 `ResultNumberFloater`，绝技脚本 `SkillEffectScriptPlayer`（static-derived；脚本时钟与对象运动 provisional）。
 - 差异：天鳴覺醒／獅子吼对无可再激活／取消槽的目标重制拒绝施放（原版照付 ST）；`0x40d4e0` 单次共用抽取重制在各通道内各抽一次；MAGIC 桶 5 对已有增益的目标重制预过滤跳过（provisional）。
 
@@ -65,6 +66,8 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 
 结果数字：绝技守方脚本解释器 `0x403954`（`cmp eax,0x23; ja` → 字节表 `0x404f48` → 指针表 `0x404ee8`）；命中 opcode `0x4047c7` 对每个目标清 `*0x4c6f74`／`*0x4c6f78`，调 `0x40b8f0`（＝`0x40aa80` channel 1），返回的 EXP 加进 `*0x4c13f0`（`0x40484d..0x404861`，只在攻方开场 `0x40438c` 清零）与 `*0x4c2c7c`，再记 HP 差与 MP 差（`0x404867..0x40489f`）；channel 1 下 `0x40aa80` 自己不生成数字。opcode 30 `aniShowHitResult`（`0x403ebd`）／35 NoWait（`0x403eb3`）汇合到 `0x404643`：HP 变化 >0 → `0x4084e0(x, y, v, 0, kind 0)`；<0 → kind 2；MP≠0 在同一点生成 kind 3、hold 0x28（`0x4046b0..0x4046d6`）；都为 0 且 `*0x4c13f0 == 0` → kind 5，非零则跳 `0x404772` 不显示。`0x4084e0` 生成对象 0xb1（`obj_ShowNumber`，`SHAPE\NUM100.SHP` 65 帧，planeMenu2），`0x45b6de` 写十进制到 +0x34；Heal 分支 `0x40ac10..0x40ac24` 直接 `0x4084e0(target.x, target.y-0x34, 实际回复, 0, 2, 0)`。`defProcShowNumber = 0x408580`：kind 0 NUM100..109 红（弹跳缩放）、1 NUM400..409 紫＋NUM511「EXP」、2 NUM200..209 绿、3 NUM300..309 蓝、4 NUM500..509 黄＋NUM512「$」、5 NUM513「MISS」、6 NUM514「LEVEL UP」（另放 `0x408b20(...,3)` 与声音 0x191）。偷到的东西在结算显示：`0x4416bc` 调 `0x442720`，case 0 EXP、case 2 `*0x4c2c84` 的「$」（StealGold 在 `0x40b556..0x40b574` 加进）、case 4 待领池开 [獲得物品窗](original_getitem_window.md)。
 
+收片段：`0x403eb3`（opcode 35）置 `[esp+0x14]=0`、`0x403ebd`（opcode 30）置 1，`0x403ecc` 把守方 `+0x8c` 写成 0x62；Wait 路径 `0x404699`／`0x404671`／`0x404784`／`0x4046f0` 把本对象 `edi` 作 waiter 压给 `0x4084e0`，生成成功跳 `0x404980` 不加 phase（HP＋MP 同时变化时 HP 数字无 waiter、hold 0x28 的 MP 数字作 waiter）；NoWait 路径与 `*0x4c13f0 ≠ 0` 的空结果走 `0x404772`／`0x4046de` 立即 `inc word [edi+0x8c]`。数字放行与寿命见 [original_tick_counts](original_tick_counts.md) §6（kind 0：放行 27＋10×位数、删除 34＋10×位数）。资源：60 行 SPECIAL 守方脚本中 50 行以 aniShowHitResult 收尾、1 行（多段）用 NoWait、9 行不显示结果。
+
 **resource-derived**
 
 | 条目 | 内容 |
@@ -89,10 +92,10 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 | AI | — | `AISkillDecisionRules.buckets`／`select_index(rates, rng, channel, bucket)`（MAGIC 桶 5／7 `useful_accepts`）；`AISkillPlanning.choose`（special 与 magic 同走 `area_order(ai_magic_multi_first)`，`choose_any` 站位失败退另一桶）；`AISupportPlanning.choose`（增益分支一次 `rand(2)`）；`AISelfPreservation`；`AISupportRules.buff_useful` 含绝技增益掩码 |
 | 偷窃加成字 | — | `equipment.initial_physical_fields` 写 `combat_profile.base_steal_ratio`／`steal_ratio`；`EquipmentRules.effect_delta` 求和；`JobUpRules.merge_source_template` 加模板原字 |
 | 目标 | — | `SkillTargetRules.is_support` 用 mode3 掩码 `0x18f62` |
-| 结果数字 | — | `game/battle/scene/ResultNumberFloater.gd`（kind 0／2／3／5；kind 2／3／5 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除、每 2 tick 上 1 px；首位 x − 7×(位数−1)、间距 14）；出现点：普通特写 (320,200) 命中后 40 tick（`0x40424c`→`0x404290`），脚本 (320,180)，地图法术 (x, y−0x34)，道具 (x, y−0x30)，回合末 (x, y−48)；`BattleCombatCutin.shows_miss`／`show_result`；`BattleAftermath` 的「$」浮字加 `gold_effects`；结果行只剩无原字形的说明（增益、净化、未回復、武器效果，provisional） |
+| 结果数字 | — | `game/battle/scene/ResultNumberFloater.gd`（kind 0／2／3／5；kind 2／3／5 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除、每 2 tick 上 1 px；首位 x − 7×(位数−1)、间距 14）；出现点：普通特写 (320,200) 命中后 40 tick（`0x40424c`→`0x404290`），脚本 (320,180)，地图法术 (x, y−0x34)，道具 (x, y−0x30)，回合末 (x, y−48)；`BattleCombatCutin.shows_miss`／`show_result`；绝技片段收尾 `SkillEffectScriptPlayer.clip_complete_tick`＝编译时间线结束与结果数字删除（`ResultNumberFloater.life_of`）的较晚者，受击帧保持到片段结束；普通续击时上一镜存活数字挪进 `BattleCombatCutin.result_tail` 走完寿命；`BattleAftermath` 的「$」浮字加 `gold_effects`；结果行只剩无原字形的说明（增益、净化、未回復、武器效果，provisional） |
 | 绝技脚本 | — | `game/battle/scene/SkillEffectScriptPlayer.gd` 实现 24 个 opcode，`compile(attack, defense, hit, seed, manifest)` 编 tick 时间线；`BattleCombatCutin._process_skill` 按 `presentation` 分流（script 58 行；毒魔箭、月花圓舞 走专属模块）；`game/sim/loop/BattleLoopRewards.gd` 把 `stolen_items` 并入待领池（`0x44f2d0`），StealGold 见 `0x40b4e8` |
 
-脚本播放 provisional（manifest `policy`／`replacement_evidence`）：时钟 60 tick/s；Random 系列 delay 读作每实例 `rand(0..delay)`、FixDelay 读作 `base + i×delay`、range 为 ±range/2；Angle／RoundRandom／Tornado 的几何按参数名推读；守方底图压暗 0.45、双页攻方 (160,320)／守方 (480,320)、结果文字保留 40 tick；混合模式默认加色。
+脚本播放 provisional（manifest `policy`／`replacement_evidence`）：时钟 60 tick/s；Random 系列 delay 读作每实例 `rand(0..delay)`、FixDelay 读作 `base + i×delay`、range 为 ±range/2；Angle／RoundRandom／Tornado 的几何按参数名推读；守方底图压暗 0.45、双页攻方 (160,320)／守方 (480,320)、结果至少保留 40 tick（无数字的说明行的重制下限），有数字时保留到数字删除；混合模式默认加色。
 
 ## 复现
 
@@ -103,6 +106,7 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 - 除偷窃加成字外全部为反编译阅读，幅度、持续、贡献与原全局 RNG 顺序的等价未声明；衰弱施法者的 `0x40a7b0`／`0x409a60` 数值未做原执行。
 - 对象寿命与舞台外对象的飞行按 `shape_number × (shape_delay+1)` 推读，`defProcObjectMove` 与 `obj_Data7` 运动程序未读。
 - `aniDelay` 计数器（`0x4022aa`）的调用频率未量。
+- phase 0x63（放行后）的处理未逐条读，按"放行即续读脚本"推定；绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；数字对象与守方对象同 tick 先后未读（±1 tick）。
 - `*0x4c13f0` 在多目标施放中跨目标累积，重制按每目标 `experience_basis` 判定；功能绝技命中未生效时守方是否切受击帧未核。
 - `0x4c6f74` 由哪些结算路径写入未全核。
 - 自救净化的通道顺序（先 MAGIC 桶再 SPECIAL 桶再物品）是重制选择；AI 净化只以中毒触发。
