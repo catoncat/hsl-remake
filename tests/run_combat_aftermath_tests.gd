@@ -187,7 +187,7 @@ func lethal_case(command: String, fps: int) -> void:
 	# 0x43f0cd: each of the 16 ticks the vertical zoom grows 0.25 and the level drops 1 — halfway
 	# the actor stands 3× tall from its foot anchor, half faded, drawn additively.
 	check(sprite_path(actor).ends_with("/021-P.png"), "the stretch draws the hit pose")
-	check(is_equal_approx(tail.FADE_SECONDS, 16 * 0.016) and absf(actor.scale.y - 3.0) < 0.3 and actor.scale.x == 1.0 and absf(actor.modulate.a - 0.5) < 0.1 and actor.material is CanvasItemMaterial and (actor.material as CanvasItemMaterial).blend_mode == CanvasItemMaterial.BLEND_MODE_ADD, "the death disposal stretches the actor upward while it fades, additively (scale %s alpha %.2f)" % [str(actor.scale), actor.modulate.a])
+	check(is_equal_approx(tail.FADE_SECONDS, 16 * 0.016) and absf(actor.scale.y - 3.0) < 0.3 and actor.scale.x == 1.0 and absf(actor.modulate.a - 0.5) < 0.1 and actor.material == preload("res://game/battle/scene/AdditiveLevelBlend.gd").material(), "the death disposal stretches the actor upward while it fades, additively (scale %s alpha %.2f)" % [str(actor.scale), actor.modulate.a])
 	confirm(scene)
 	check(scene.play_loop == settled, "confirmation during fade cannot consume the successor")
 	scene._process(tail.FADE_SECONDS)

@@ -3,24 +3,24 @@
   "updated": "2026-09-27",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 102,
-    "sources": 537,
+    "items": 100,
+    "sources": 532,
     "sources_by_kind": {
-      "provenance": 223,
-      "sentence": 142,
-      "scope": 74,
+      "provenance": 220,
+      "sentence": 141,
+      "scope": 73,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 61,
+    "layout_timing_modules": 60,
     "items_by_original_status": {
       "read_complete": 14,
-      "read_partial": 60,
+      "read_partial": 58,
       "unread": 11,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 22,
+      "every_battle": 20,
       "some_levels": 37,
       "rare": 38,
       "invisible": 5
@@ -31,7 +31,7 @@
       "剧情走位": 4,
       "原版调度与随机流": 3,
       "地图与物件": 7,
-      "地图人物演出": 10,
+      "地图人物演出": 9,
       "城镇与大地图": 6,
       "存档与流程": 1,
       "对白": 2,
@@ -42,11 +42,11 @@
       "镜头": 2,
       "面板与界面": 11,
       "音频": 3,
-      "飘字与数字": 5
+      "飘字与数字": 4
     },
     "in_progress": 0,
     "no_visible_effect_sources": 54,
-    "resolved_sources": 16
+    "resolved_sources": 17
   },
   "top": [
     "dialogue-timing",
@@ -58,17 +58,17 @@
     "drop-lightning-presentation",
     "npc-level-policy",
     "turn-queue-semantics",
-    "additive-level-blend",
     "bitmap-font",
     "cast-lead-compositing",
     "effect-origin",
     "footprint-preview-style",
     "growth-window-timing",
     "magic-impact-bar",
-    "map-death-blend",
     "move-path-overlay",
     "panel-captions",
-    "status-page-extras"
+    "status-page-extras",
+    "wait-cue",
+    "ui-layout-readings"
   ],
   "items": [
     {
@@ -278,30 +278,6 @@
       ]
     },
     {
-      "id": "additive-level-blend",
-      "difference": "加色对象按层级淡出的像素混合（升级星光、伤害数字 NUM510 闪光）按「加色 × 层级/16」近似，原 RGB565 例程未逐条读；绿／蓝／MISS 数字的层级淡出同样按 alpha＝层级/16",
-      "original": "星光对象 [esi] |= 0x4000000、完成后 |= 0x20000000 并 +0x28 16→0；闪光模式 0x2c000000（0x46b6b1 加法种类＋层级）",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md"
-      ],
-      "remake": "LevelUpStars／DamageNumberFloater 用 BLEND_MODE_ADD 且 alpha＝层级/16；ResultNumberFloater 的 kind 2／3／5 用 modulate.a＝层级/16",
-      "remake_code": [
-        "game/battle/scene/LevelUpStars.gd",
-        "game/battle/scene/DamageNumberFloater.gd",
-        "game/battle/scene/ResultNumberFloater.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "飘字与数字",
-      "sources": [
-        "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|provisional|",
-        "provenance:game/battle/scene/DamageNumberFloater.gd|timing|provisional|",
-        "provenance:game/battle/scene/LevelUpStars.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法"
-      ]
-    },
-    {
       "id": "bitmap-font",
       "difference": "界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值；技能页名字墨迹对 Wine 帧偏移 0／0、宽 71＝原版）。AI 施法名字幕也换 FONT.24（lane UIFIX：0x43e110／0x43e1c0 的字体是 [0x4c1ae0]，对录像 14 源帧 9987 逐像素一致）。剩：重制各处字号归到原版两面（≤16→FONT.15、≥17→FONT.24）是重制定的，个别界面的字行位置未逐一对原版",
       "original": "位图字库已解码（简体字形在繁体码位）：全角 24×24／16×15、半角 12×24／8×15（FONT.15 半角下移 2 px），前进＝格宽、无额外字距（0x42f230／0x42f308／0x4608e4）；AI 施法名字幕 0x43e110／0x43e1c0 用 [0x4c1ae0]＝FONT.24",
@@ -436,29 +412,6 @@
       "sources": [
         "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
         "provenance:game/battle/scene/MagicImpactPresentation.gd|timing|remake-invented|"
-      ]
-    },
-    {
-      "id": "map-death-blend",
-      "difference": "阵亡灵魂的混合按叠加处理（原混合未读实），灵魂时长保留静态 16 tick（录屏 0.27–0.32 s）",
-      "original": "0x2c000000 绘制模式的像素例程未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_death_disposal.md",
-        "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
-      ],
-      "remake": "BattleAftermath 加色、alpha = level／16",
-      "remake_code": [
-        "game/battle/scene/BattleAftermath.gd:_begin_disposal"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "地图人物演出",
-      "sources": [
-        "matrix:地图死亡与经验交接",
-        "provenance:game/battle/scene/BattleAftermath.gd|timing|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_death_disposal.md|provisional|the 0x2c000000 draw mode's blend",
-        "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#7c2600ebd2"
       ]
     },
     {
@@ -1010,7 +963,7 @@
         "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|remake-invented|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法",
+        "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点",
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#3a79262110",
         "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#9fcbff8d85"
       ]
@@ -2871,6 +2824,10 @@
       {
         "source": "matrix:Status / Item",
         "reason": "交換照原版：给出方持物窗点物入手→相邻格地图选人→目标持物窗点槽放入→回给出方持物窗（GIVEPICK，original_give_exchange.md 状态表 110／112／113／114／116）"
+      },
+      {
+        "source": "matrix:地图死亡与经验交接",
+        "reason": "阵亡灵魂按原版种类 9 饱和加法＋层级表混合（BLEND，map_pose_floaters §4、original_death_disposal）"
       },
       {
         "source": "matrix:战斗气力与装备修饰",

@@ -717,23 +717,6 @@
       "category": "地图人物演出"
     },
     {
-      "id": "map-death-blend",
-      "difference": "阵亡灵魂的混合按叠加处理（原混合未读实），灵魂时长保留静态 16 tick（录屏 0.27–0.32 s）",
-      "original": "0x2c000000 绘制模式的像素例程未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_death_disposal.md",
-        "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
-      ],
-      "remake": "BattleAftermath 加色、alpha = level／16",
-      "remake_code": [
-        "game/battle/scene/BattleAftermath.gd:_begin_disposal"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "地图人物演出"
-    },
-    {
       "id": "script-removal-death",
       "difference": "脚本删除单位时原版是否播阵亡演出未读，重制不播",
       "original": "原版脚本删除路径未读（未证明原版也不播）",
@@ -1763,24 +1746,6 @@
       "category": "光标与字体"
     },
     {
-      "id": "additive-level-blend",
-      "difference": "加色对象按层级淡出的像素混合（升级星光、伤害数字 NUM510 闪光）按「加色 × 层级/16」近似，原 RGB565 例程未逐条读；绿／蓝／MISS 数字的层级淡出同样按 alpha＝层级/16",
-      "original": "星光对象 [esi] |= 0x4000000、完成后 |= 0x20000000 并 +0x28 16→0；闪光模式 0x2c000000（0x46b6b1 加法种类＋层级）",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/map_pose_floaters/README.md"
-      ],
-      "remake": "LevelUpStars／DamageNumberFloater 用 BLEND_MODE_ADD 且 alpha＝层级/16；ResultNumberFloater 的 kind 2／3／5 用 modulate.a＝层级/16",
-      "remake_code": [
-        "game/battle/scene/LevelUpStars.gd",
-        "game/battle/scene/DamageNumberFloater.gd",
-        "game/battle/scene/ResultNumberFloater.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "飘字与数字"
-    },
-    {
       "id": "poison-gas-presentation",
       "difference": "噴人沼氣（拉格納沼地 LEVEL032 的 WINFAIL event 9）喷毒的规则与演出已照原版（镜头滚到喷点、中心 ±38 px 3 团 SMOKE001 烟上飘、淡入 16 tick 再每 3–7 tick 淡一级、中毒者左右抖 60 tick、停 90／40 tick 后剧本往下走）；烟的 4 次随机抽取（保持、偏移、速度）由 PoisonGasRules 在同一次结算里抽全局流写进回执（原版在下一 tick 抽，其间可能插进别的对象的抽取），加法层级按 Godot 加色合成×透明度画",
       "original": "过程 0x43c7c0 各状态、0x407230 抖动（行动者过程 0x43f288）、烟对象 defProcFireSmoke 0x43c260（运动、层级、寿命、4 次全局流抽取）已读",
@@ -1979,7 +1944,7 @@
       "item": "floater-extra-words"
     },
     "matrix:地图死亡与经验交接": {
-      "item": "map-death-blend"
+      "resolved": "阵亡灵魂按原版种类 9 饱和加法＋层级表混合（BLEND，map_pose_floaters §4、original_death_disposal）"
     },
     "matrix:增援压力": {
       "item": "script-entry-paths"
@@ -2244,10 +2209,7 @@
       "item": "rng-streams"
     },
     "provenance:game/battle/scene/BattleAftermath.gd|timing|provisional|": {
-      "item": [
-        "map-death-blend",
-        "counter-gold-split"
-      ]
+      "item": "counter-gold-split"
     },
     "provenance:game/battle/scene/BattleAiMovePreview.gd|timing|provisional|": {
       "item": "ai-move-preview-timing"
@@ -2823,9 +2785,6 @@
     "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型": {
       "item": "carry-model"
     },
-    "scope:docs/evidence_packets/static_reverse/original_death_disposal.md|provisional|the 0x2c000000 draw mode's blend": {
-      "item": "map-death-blend"
-    },
     "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|rows marked provisional": {
       "item": "effect-sound-timing"
     },
@@ -2989,10 +2948,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_cast_overlays.md#8caf94691b": {
       "item": "cast-overlay-rules",
       "text": "原版 P（选单窗何时关未读）"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#7c2600ebd2": {
-      "item": "map-death-blend",
-      "text": "该组合的像素例程未读。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_death_disposal.md#d011b4de2f": {
       "item": "script-removal-death",
@@ -3198,20 +3153,8 @@
     "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍": {
       "item": "highlight-colours"
     },
-    "provenance:game/battle/scene/DamageNumberFloater.gd|timing|provisional|": {
-      "item": "additive-level-blend"
-    },
-    "provenance:game/battle/scene/LevelUpStars.gd|timing|provisional|": {
-      "item": "additive-level-blend"
-    },
     "provenance:game/battle/scene/LevelUpStars.gd|timing|remake-invented|": {
       "no_visible_effect": "星光的随机落点／速度／停留取表现 RNG（原全局 0x458c10 流），分布与原版同一区间"
-    },
-    "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法": {
-      "item": [
-        "cast-strip-missing",
-        "additive-level-blend"
-      ]
     },
     "sentence:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md#1151c8fef7": {
       "item": "cast-lead-phase",
@@ -3709,9 +3652,6 @@
     "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；AI 引导与玩家选格的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高": {
       "item": "ai-item-use-presentation"
     },
-    "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|provisional|": {
-      "item": "additive-level-blend"
-    },
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {
       "no_visible_effect": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
     },
@@ -3726,6 +3666,9 @@
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#d0f8d68007": {
       "item": "timing-estimates",
       "text": "差异：对象 700 渐暗、`mapobjFlash`、击中闪光寿命、施法 phase 102 子状态 4 等计数未读，保留 provisional；"
+    },
+    "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无 m_shape 引导者的姿势起点": {
+      "item": "cast-strip-missing"
     }
   }
 }

@@ -7,10 +7,11 @@ extends Node2D
 ##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
 ##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-##   timing: provisional (the flag-0x4000000 additive draw read as additive at alpha level／16, as the death stretch)
+##     (engADDCOLOR level draw: AdditiveLevelBlend, kind 8 0x462154 with the level tables 0x4bfbf0)
 ##   timing: remake-invented
 ##     (the draws come from a presentation RNG seeded by the exchange and the recipient, not the original global
 ##     0x458c10 stream)
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 ## 0x408b20 case 3 → 0x415c10(x, y − 0x30 + 0x30, 0x95, 0x40, 0x18, 0, 6, 0x24, 0).
@@ -30,11 +31,7 @@ const LEVELS := 16
 var stars: Array[Dictionary] = []
 var sprites: Array[Sprite2D] = []
 var ticks := 0.0
-var blend := CanvasItemMaterial.new()
-
-
-func _init() -> void:
-	blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+var blend: ShaderMaterial = AdditiveLevelBlend.material()
 
 
 ## Draws the 36 stars' parameters from `seed` (0x415c10's loop order: x, y, then the next delay;
@@ -101,7 +98,7 @@ func advance(delta: float) -> bool:
 		sprite.visible = age >= 0 and star_level > 0
 		if sprite.visible:
 			sprite.position = Vector2(star["offset"]) - Vector2(0, rise_at(age, float(star["speed"])))
-			sprite.modulate.a = float(star_level) / float(LEVELS)
+			sprite.modulate.a = AdditiveLevelBlend.alpha(star_level)
 	if not alive:
 		hide()
 	return alive

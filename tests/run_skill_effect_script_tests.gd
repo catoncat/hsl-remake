@@ -3,6 +3,7 @@ extends "res://tests/support/TestSuite.gd"
 ## timelines, without a scene. Green here proves the interpreter's contract over the tracked
 ## scripts and manifest, not the original clock or geometry (both provisional; see
 ## skill_effects/manifest.json policy).
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
 const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
@@ -1255,7 +1256,7 @@ func _test_star_shower() -> void:
 	var texture_ok := true
 	for index in range(36):
 		var sprite: Sprite2D = stars.get_child(index)
-		texture_ok = texture_ok and sprite.texture.resource_path.ends_with("level_up_star_%d.png" % int(stars.stars[index]["frame"])) and sprite.material.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD
+		texture_ok = texture_ok and sprite.texture.resource_path.ends_with("level_up_star_%d.png" % int(stars.stars[index]["frame"])) and sprite.material == AdditiveLevelBlend.material()
 	_assert_true(texture_ok, "each star holds one random AIR06_03..06 frame, drawn additively")
 	_assert_eq([LevelUpStars.level(0, 8), LevelUpStars.level(9, 8), LevelUpStars.level(10, 8), LevelUpStars.level(24, 8), LevelUpStars.level(25, 8)], [16, 16, 15, 1, 0], "full level for hold + 1 ticks after the first, then −1 a tick (0x422c9a)")
 	_assert_eq([LevelUpStars.rise_at(0, 1.5), LevelUpStars.rise_at(1, 1.5), LevelUpStars.rise_at(3, 1.5)], [0.0, 1.0, 4.0], "straight up by floor(speed × age) (0x45ebdc keeps the fraction)")
@@ -1308,7 +1309,7 @@ func _test_damage_digit_node() -> void:
 	number.set_process(false)
 	number.advance(OriginalTick.seconds(1.5))
 	_assert_true(number.glyphs[0].visible and not number.glyphs[1].visible and number.glyphs[0].scale == Vector2(2, 2), "tick 1 shows the leftmost digit at 2× — the recording's 203.25 s 「2」 of 「22」")
-	_assert_true(number.flash.visible and number.flash.scale == Vector2(4, 4) and number.flash.material.blend_mode == CanvasItemMaterial.BLEND_MODE_ADD, "behind it the 4× additive NUM510 flash")
+	_assert_true(number.flash.visible and number.flash.scale == Vector2(4, 4) and number.flash.material == AdditiveLevelBlend.material(), "behind it the 4× additive NUM510 flash")
 	number.advance(OriginalTick.seconds(9.0))
 	_assert_true(number.glyphs[1].visible and number.glyphs[1].scale == Vector2(2, 2) and number.glyphs[0].scale == Vector2(1.5, 1.5), "tick 10 completes 「57」")
 	var positions := []

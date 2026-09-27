@@ -11,8 +11,8 @@ extends Node2D
 ##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
 ##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
-##   timing: provisional
-##     (the 0x2c000000 flash read as additive at alpha level／16, the level-blend modes as alpha level／16)
+##     (0x2c000000 flash: AdditiveLevelBlend, kind 9; digit fade: kind 4 0x4699fd as alpha level／16)
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const DIGIT_PITCH := 14
@@ -32,11 +32,7 @@ var done := false
 var followers: Array[CanvasItem] = []
 var glyphs: Array[Sprite2D] = []
 var flash: Sprite2D
-var flash_blend := CanvasItemMaterial.new()
-
-
-func _init() -> void:
-	flash_blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+var flash_blend: ShaderMaterial = AdditiveLevelBlend.material()
 
 
 ## Shows `amount` (its decimal digits) and restarts the object's clock.
@@ -164,4 +160,4 @@ func _draw_state(state: Dictionary) -> void:
 	if flash.visible:
 		flash.position = glyphs[flash_digit - 1].position
 		flash.scale = Vector2.ONE * FLASH_SCALE
-		flash.modulate.a = float(state["flash_level"]) / float(LEVELS)
+		flash.modulate.a = AdditiveLevelBlend.alpha(int(state["flash_level"]))

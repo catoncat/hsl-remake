@@ -22,9 +22,9 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
+##     (draw mode 0x2c000000: AdditiveLevelBlend, kind 9 0x462e8b)
 ##   timing: provisional
-##     (draw mode 0x2c000000 read as additive, alpha = level／16; one $ float per action with its recipient — the
-##     original keeps a second total 0x4c2978 for the counter)
+##     (one $ float per action with its recipient — the original keeps a second total 0x4c2978 for the counter)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/shared/actor_audio.json
 ##   audio: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
@@ -39,6 +39,7 @@ signal level_up_presented(growth: Dictionary)
 signal disposal_started(unit: Dictionary)
 
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
@@ -50,10 +51,9 @@ const BattleCameraController = preload("res://game/common/BattleCameraController
 const DEATH_TICKS := 16
 const DEATH_STRETCH_PER_TICK := 0.25
 const FADE_SECONDS := OriginalTick.TICK_SECONDS * DEATH_TICKS
-## 0x2c000000 carries the additive draw bits (0x04000000／0x08000000 — the 0x46b6b1 table's
-## saturating-add kinds) with the level: read as an additive blend at alpha level／16 (provisional:
-## this mode's pixel routine is not read).
-var death_blend := CanvasItemMaterial.new()
+## 0x2c000000 = add 0x04000000 ＋ zoom 0x08000000 ＋ level 0x20000000: 0x46b6b1[6] = kind 9
+## (0x462e8b, the zoomed saturating add), src scaled by the level table first (AdditiveLevelBlend).
+var death_blend: ShaderMaterial = AdditiveLevelBlend.material()
 ## The fallen actor's SHAPEDEF hit pose (NNN-P), drawn from its death entry through the last
 ## words and the stretch: 0x446c40(actor, facing, 6, 2) — state 6 is the record's offset-0 `hit`
 ## shape, one frame (static-derived; content/imported/hsl/shared/actor_hit_poses).
@@ -87,7 +87,6 @@ var focus_count := 0
 
 
 func _ready() -> void:
-	death_blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	source = ContentPaths.read_json("res://content/generated/hsl/combat/aftermath.json")
 	assert(source.get("schema") == "hsl_combat_aftermath.v1", "Missing combat aftermath source data")
 	var poses: Variant = ContentPaths.read_json(HIT_POSES_PATH)
@@ -303,7 +302,7 @@ func advance(delta: float, runtime: Node) -> void:
 		for child in actor.get_children():
 			if child is CanvasItem: child.use_parent_material = true
 		actor.scale = Vector2(1.0, 1.0 + DEATH_STRETCH_PER_TICK * ticks)
-		actor.modulate.a = clampf(1.0 - ticks / float(DEATH_TICKS), 0.0, 1.0)
+		actor.modulate.a = AdditiveLevelBlend.alpha(DEATH_TICKS - int(ticks))
 		if elapsed >= FADE_SECONDS:
 			_dispose(actor)
 			_next()

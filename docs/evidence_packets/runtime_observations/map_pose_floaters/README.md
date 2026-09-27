@@ -1,13 +1,15 @@
 # 地图人物的施法姿势、升级星光与红色伤害数字：原版读法与重制
 
-> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510; provisional: 无 m_shape 引导者的姿势起点、加色层级混合的 alpha 读法 · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x408580, 0x408b20, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
+> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 原录像 15 frame_003／006 灵魂区逐像素差、2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510、显示表 0x46b6b1 → 像素种类表 0x46211c（种类 8 0x462154／9 0x462e8b 饱和加法、4 0x4699fd 层级交叉淡化）、层级表 0x460e9c／0x461247、饱和掩码 0x461025; provisional: 无 m_shape 引导者的姿势起点 · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x408580, 0x408b20, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版 `0x4071e0` 让地图人物放 SHAPEDEF `use_magic` 帧：正放、停 40 tick、倒放，n 张共 8n＋40 tick；法术引导末、用道具、升级时调用，绝技不做（static-derived，录屏 026 施法 1.53 s 相符：runtime-measured）。
 - 原版升级撒 36 颗 `obj_LevelUp_Star` 加色星光，围着受益者上升淡出；红色伤害数字逐位 2× 揭出、白闪、不上浮，寿命 10×位数＋34 tick（static-derived；runtime-measured）。
 - 重制 `ActorRuntime.play_use_magic`、`LevelUpStars`、`DamageNumberFloater`／`ResultNumberFloater` 按这些读法实现（static-derived）。
-- 差异：无 m_shape 引导者的姿势起点、加色层级混合 alpha 为 provisional（差异清单 `cast-strip-missing`、`additive-level-blend`）；星光与姿势用表现 RNG（remake-invented）；效果开始是否等姿势未读（`cast-lead-phase`）。
+- 原版加色层级混合：源像素每通道先按层级表取 ⌊c×层级/16⌋（RGB565 各 5／6／5 位），再与底色逐通道饱和相加；数字的层级淡出（模式 0x20000000）是 ⌊src×层级/16⌋＋⌊dst×(16−层级)/16⌋（static-derived，§4）。
+- 重制 `AdditiveLevelBlend` 一个共用着色器按同一公式画升级星光、NUM510 闪光、阵亡灵魂与用药闪光（static-derived）。
+- 差异：无 m_shape 引导者的姿势起点为 provisional（差异清单 `cast-strip-missing`）；星光与姿势用表现 RNG（remake-invented）；效果开始是否等姿势未读（`cast-lead-phase`）。
 
 ## 证据
 
@@ -54,11 +56,30 @@
 
 **录像对照**（runtime-measured）：地图法术红字「19」的墨框中心比量表顶高约 57 px，道具绿字「29」高约 52.5 px——量表顶取 y＋5 时两者分别合 (y−0x34) 与 (y−0x30)（字形原点在字高一半）；两位逐位 2× 放大、白闪，第二位约晚 0.217 s（按本机 19.4 ms/tick ≈ 11 tick，静态 10），不上浮，可见约 0.98 s（≈ 51 tick，静态 54，末几级近乎不可见）。绿字回复（道具）约 16 tick 后开始淡出，每 2 tick 上 1 px，与 kind 2 一致。录像里没有蓝色 MP 数字。
 
+### 4. 加色层级混合：`0x46b6b1` → 像素种类表 `0x46211c`
+
+**分派**（static-derived）：显示表消费者 `0x46b6da..0x46b764` 对每条记录：模式位 25–26 非零时取 `0x46b6b1[(mode >> 25) & 7]`（字表 0, 10, 8, 12, 0, 11, 9, 13），否则取 `0x46b691[(mode & 0x78000000) >> 27]`（0, 1, 2, 3, 4, 5, 0, 6）；模式 `0x8000000`（缩放）走 `0x461982`，其余走 `0x46170c`／`0x4617d7`，把「种类｜模式高位」与层级 `+0x24` 写进扫描段（`+0x14`／`+0x18`）。行绘制 `0x46b462` 按种类跳 `0x46211c[kind]`：4 `0x4699fd`、5 `0x468add`、6 `0x4684b6`、8 `0x462154`、9 `0x462e8b`……（种类 0 直接拷贝）。
+
+| 模式 | 种类 | 像素例程（RGB565） | 用处 |
+|---|---|---|---|
+| `0x4000000` engADDCOLOR | 8 `0x462154` | `dst = sat(src + dst)` | 星光保持段、效果对象 |
+| `0x24000000` engADDCOLOR_MIX | 8，走 `0x462240` 的层级分支 `0x4623e1` | `dst = sat(T[L][src] + dst)` | 星光淡出段 |
+| `0x2c000000` | 9 `0x462e8b`（缩放），层级分支 `0x462fd7` | 同上，按缩放取源 | NUM510 闪光、阵亡灵魂、解状态闪光 |
+| `0x20000000` | 4 `0x4699fd` | `dst = T[L][src] + T[16−L][dst]`（字节加带进位，`0x469b49`） | 数字层级淡出 |
+| `0x60000000`（范围格） | 6 `0x4684b6` | `dst = ((dst & 0xf7de) + (colour & 0xf7de)) >> 1` | 见 [range_cells](../../static_reverse/original_range_cells.md) |
+
+**层级表**：`0x461247` 把 17 张 0x1000 字节表的指针写进 `0x4bfbf0[0..16]`；`0x460e9c(L, 16, 表)` 逐项填：低 0x800 字节按 `src & 0x7ff`（G 低 3 位＋B）存 `⌊b×L/16⌋ | (⌊g×L/16⌋ & 7) << 5`，高 0x800 字节按 `src >> 5`（R＋G）存 `⌊r×L/16⌋ << 3 | ⌊g×L/16⌋ >> 3`——即每通道整数截断 `⌊c×L/16⌋`（r、b 5 位，g 6 位）。
+
+**饱和**：`ax = src + dst; adc ax, 0`，`cx = src ^ dst ^ ax` 得各通道进位（位 5＝B 溢出、位 11＝G 溢出、位 0＝R 溢出经 adc 回卷），`or ax, 0x4bbbec[cx & 0xfff]`；`0x461025` 填的掩码表把溢出通道或成满值（R `0xf800`、G `0x7e0`、B `0x1f`）。进位在或掩码前已给相邻通道低位 +1。
+
+**原作帧读数**（runtime-measured）：原录像 15 联系表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/15_post_attack_settlement_floats/contact_sheet.jpg`） 第 2 格（frame_003，灵魂拉伸中）对第 3 格（frame_006，同机位、死者已删）逐像素相减，灵魂柱 25×38 格（缩略 0.5×）内 417 格变亮、11 格变暗（JPEG 噪声量级），无整片变暗——与饱和加法一致，与按 alpha 覆盖（深色盔甲处会压暗底色）不一致。
+
 ## 重制接线
 
 - `ActorRuntime.play_use_magic()` 按 §1 公式逐 tick 放（`magic_pose_frame`），走路、死亡 hit 姿势、脚本换形都立即结束它。挂钩：地图法术 `BattlePresentation._sync_cast_pose` 每次 refresh 看正在播的法术片段——施法者有导入的 m_shape 引导时等片段 `released`（引导结束，对应 `0x402fd1`）；没有引导的施法者（026 等）在片段开始就姿势，与重制的 Cast_Star 环同时（**provisional**：环是重制替身，原版 `0x403128` 的等待 `+0x90` 计数未读；录屏支持同时出现）。用道具 `show_item_use` 让 receipt 的 `actor_id` 姿势；升级 `BattleAftermath._present_level_up`。
 - `LevelUpStars`：36 颗 AIR06_03..06 加色精灵；参数由交锋序号＋受益者 id 种子的表现 RNG 抽（原全局 `0x458c10` 流不复现，remake-invented）。`BattleAftermath._present_level_up` 同一刻：受益者 `play_use_magic()`、LEVEL UP 美术字、星光（进 `trailing`，跟地图移动）、升级音。
 - `game/battle/scene/DamageNumberFloater.gd`（`state_at` 逐 tick 重放 §3 计数器；NUM100..109、NUM510 由 `hsl generate reward_floats` 导入），经 `ResultNumberFloater`（kind 0／2／3／5 一个入口：hold、寿命、上浮、字形布局）用于特写（普通一击 (320,200)、命中后 40 tick；脚本一击 (320,180)；`BattleCombatCutin.result_number`）、地图一击与地图法术（`MagicImpactPresentation`，目标 (x, y−0x34)）、法术状态结果、道具（(x, y−0x30)）与回合末（(x, y−48)）。`CombatPresentationTiming.damage_number_seconds` 为 34＋10×位数。MISS 是 NUM513 字形（kind 5）；原版无字形的说明词（中毒、解毒、增益等）是白色 Label，放在数字上方。provenance layout：`0x408746..0x408888` 首位 x − 7 × (位数 − 1)、间隔 14 px，缩放 0x20000 最新位、0x18000 上一位、0x40000 闪光；timing：`0x4085ef` 初值、hold 1 tick、每 10 tick 进一位、收尾 0x10012、每 tick 层级 −1、寿命 10 × 位数 + 34 tick。
+- `game/battle/scene/AdditiveLevelBlend.gd`：§4 的共用着色器（blend_add；源色量化到 565 后取 `⌊c×L/16⌋`，L＝绘制 modulate alpha×16），`LevelUpStars` 星光、`DamageNumberFloater` NUM510 闪光、`BattleAftermath` 阵亡灵魂、`BattleItemUsePresentation` 用药闪光与星点共用一个材质；数字层级淡出（种类 4）仍按 alpha＝L/16 普通混合，与 §4 公式只差截断。
 - provenance 写法：`static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md`。
 
 ## 复现
@@ -71,4 +92,6 @@
 - 无 m_shape 引导的施法者：原版 `0x403128` 前等待的 `+0x90` 计数未读；录屏支持姿势与 Cast_Star 同时，重制在片段开始姿势（provisional）。原版施法音 `0x193` 在引导**结束**、与姿势同刻放，重制在引导开始放（`SkillEffectScriptPlayer`）。
 - 录屏 026 的火球在姿势结束（471.60 s）才开始，重制的效果在 1.1 s Cast_Star 环后开始、与 88 tick 姿势有 ≈0.3 s 重叠；效果开始是否等姿势，由施法对象子状态 5 之后的逐 tick 读决定（未读）。
 - 脚本 `actInsertLevelUpStar`（WINFAIL，记 `level_up_star_requests`）的星光未接到 `LevelUpStars`。
-- 星光与姿势用表现 RNG，原全局随机流不复现；加色层级混合的像素例程未逐条读。
+- 星光与姿势用表现 RNG，原全局随机流不复现。
+- 种类 4 数字淡出的 `T[16−L][dst]` 截断重制不做（Godot 普通 alpha 混合）。
+- 加色内核的进位先漏进相邻通道低位再被饱和掩码补满（低于 1/32 级）、底色是 16 位缓冲，重制按 8 位底色做浮点加法，不复现这两点。

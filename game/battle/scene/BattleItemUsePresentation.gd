@@ -19,14 +19,15 @@ extends Node2D
 ##   layout: resource-derived content/imported/hsl/shared/first_skill/global.obs (objects 396／397／398)
 ##   layout: provisional
 ##     (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36)
-##   timing: provisional
-##     (the 0x401390 objects' engADDCOLOR under engMIX drawn as additive at level／16, as LevelUpStars)
 ##   timing: remake-invented
 ##     (the draws come from a presentation RNG seeded by the use, not the original global 0x458c10 stream)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
 ##     (12／12 lead ticks, 25-tick effect stagger, 16 sparks 1..3 ticks apart × 24 ticks, 32-tick flash, number release)
+##   timing: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
+##     (engADDCOLOR＋engMIX = kind 8 level branch: AdditiveLevelBlend)
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
 ##     (sfxUseItem 402 = WAV\MHEAL001.WAV, played by 0x409e40 as the item applies)
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
 const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
@@ -141,9 +142,7 @@ var _art: Dictionary = {}
 
 func _ready() -> void:
 	_effect_layer = Node2D.new()
-	var additive := CanvasItemMaterial.new()
-	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	_effect_layer.material = additive
+	_effect_layer.material = AdditiveLevelBlend.material()
 	_effect_layer.draw.connect(_draw_effects)
 	add_child(_effect_layer)
 	var assets: Dictionary = BattleUISkin.data()["assets"]
@@ -465,9 +464,8 @@ func _draw_effects() -> void:
 		if age <= 0 or age >= 2 * FLASH_LEVELS:
 			continue
 		var grown := age if age <= FLASH_LEVELS else 2 * FLASH_LEVELS - age
-		var level := float(grown) / FLASH_LEVELS
 		_effect_layer.draw_set_transform(effect_point, 0.0, Vector2.ONE + FLASH_GROW * grown)
-		_effect_layer.draw_texture(_art["flash"]["texture"], -_art["flash"]["origin"], Color(level, level, level))
+		_effect_layer.draw_texture(_art["flash"]["texture"], -_art["flash"]["origin"], Color(1, 1, 1, AdditiveLevelBlend.alpha(grown)))
 		_effect_layer.draw_set_transform(Vector2.ZERO)
 	for star in stars:
 		var age: int = tick - int(star["start"])
@@ -479,8 +477,8 @@ func _draw_effects() -> void:
 		var record := _frame(str(EMITTER_FRAMES[int(star["code"])]) % (int(state["frame"]) + 1))
 		if record.is_empty():
 			continue
-		var level := float(state["level"]) / LEVELS
-		_effect_layer.draw_texture(record["texture"], effect_point + Vector2(star["at"]) + Vector2(state["offset"]) - record["origin"], Color(level, level, level))
+		var level := AdditiveLevelBlend.alpha(int(state["level"]))
+		_effect_layer.draw_texture(record["texture"], effect_point + Vector2(star["at"]) + Vector2(state["offset"]) - record["origin"], Color(1, 1, 1, level))
 
 
 func _frame(member: String) -> Dictionary:

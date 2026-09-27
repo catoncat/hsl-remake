@@ -1,13 +1,14 @@
 # 阵亡：遗言后 16 tick 拉伸淡出、尸格释放时序、当前行动者阵亡的队列两步
 
-> evidence: static-derived: the dead branches of the battle-actor processes read from hsl01.exe, including when a corpse's map-cell bits are cleared relative to the next actor after attack and counter kills, and the double queue step when the current actor dies; runtime-measured: 505 s1 queue trace; provisional: the 0x2c000000 draw mode's blend · status: live · functions: 0x4072b0, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407720, 0x407800, 0x409700, 0x40ba20, 0x411b90, 0x43bf30, 0x43ede0, 0x441594, 0x442720, 0x442a90, 0x446c40 · tools: run_actor_traversal_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
+> evidence: static-derived: the dead branches of the battle-actor processes read from hsl01.exe, including when a corpse's map-cell bits are cleared relative to the next actor after attack and counter kills, and the double queue step when the current actor dies, and the 0x2c000000 draw mode as kind 9 of the pixel-kind table (map_pose_floaters §4); runtime-measured: 505 s1 queue trace · status: live · functions: 0x4072b0, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407720, 0x407800, 0x409700, 0x40ba20, 0x411b90, 0x43bf30, 0x43ede0, 0x441594, 0x442720, 0x442a90, 0x446c40 · tools: run_actor_traversal_tests.gd, run_combat_aftermath_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版：遗言关闭后死者纵向缩放每 tick +0.25、层级 16→0，16 tick（0.256 s）拉到 5.0 并淡出，同时放 `sound_dead`；玩家、敌方、友军同一读法（static-derived）。
 - 普通攻击与反击击杀时，下一名行动者要等死者清格并删除后才开始，所以它寻路时尸格已空；当前行动者在自己行动里阵亡时队列连走两步，紧随其后的活单位失去当轮行动（static-derived；505 关种子 1 实测印证）。
-- 重制：`game/battle/scene/BattleAftermath.gd` 按 16 tick、+0.25／tick 拉伸与 alpha＝层级／16 淡出，死亡音在进入拉伸时响；`ActorTraversalRules` 一死即放格；`BattlePlayLoop._step_past_dead_actor` 复现两步（static-derived 规则）。
-- 差异：`0x2c000000` 的像素混合读作加法（provisional）；法术击杀的清格时序无定论，重制按已放格处理（provisional）。
+- 重制：`game/battle/scene/BattleAftermath.gd` 按 16 tick、+0.25／tick 拉伸与层级 16→0 的加色淡出，死亡音在进入拉伸时响；`ActorTraversalRules` 一死即放格；`BattlePlayLoop._step_past_dead_actor` 复现两步（static-derived 规则）。
+- `0x2c000000` 是 `0x46b6b1[6]` 种类 9（`0x462e8b`，缩放饱和加法，层级分支先按层级表取 `⌊c×L/16⌋`），重制用共用 `AdditiveLevelBlend` 画（static-derived，[map_pose_floaters §4](../runtime_observations/map_pose_floaters/README.md#4-加色层级混合0x46b6b1--像素种类表-0x46211c)）。
+- 差异：法术击杀的清格时序无定论，重制按已放格处理（provisional）。
 
 ## 证据
 
@@ -61,7 +62,6 @@
 
 ## 边界
 
-- `0x2c000000` 含 `0x04000000`／`0x08000000`（`0x46b6b1` 表的饱和加法种类）与层级位；该组合的像素例程未读。替换证据：`0x46b6b1` 对该模式的静态读或原作单帧对照。
 - 原版脚本删除路径未读（未证明原版也不播）
 - 法术击杀后下一名行动者寻路时受害者格位是否已清，取决于遗言、镜头 `0x43bf30` 与浮字各自的 tick 数，静态读无定论；替换证据为从法术击杀那一 tick 起逐 tick 读受害者 +0x8c、脚下格字与施法者调 `0x407510` 的时刻。
 - 脚本离场的当前行动者两步语义见 [initial_battle_initiative.md](initial_battle_initiative.md)，未实测。
