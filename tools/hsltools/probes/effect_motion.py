@@ -120,6 +120,8 @@ def member_series(name: str, count: int) -> list[str]:
 
 class Machine:
     """One unicorn machine with the EXE image, a synthetic object pool and the frame loop."""
+    reviewed = REVIEWED
+    processes = (EFFECT_PROCESS, SHADOW_PROCESS)
 
     def __init__(self, exe_image, templates: 'Templates', sounds: dict[int, str], metrics):
         from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
@@ -198,7 +200,7 @@ class Machine:
                     self.write(pointer & 0xffffffff, word)
             self._return(value)
             return
-        if not any(low <= at < high for low, high, _ in REVIEWED):
+        if not any(low <= at < high for low, high, _ in self.reviewed):
             raise Unreviewed(at, self.current['code'] if self.current else -1, self.frame)
 
     def destroy(self, address: int) -> None:
@@ -217,7 +219,7 @@ class Machine:
     def process(self, obj: dict) -> None:
         from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EIP
         code = self.read(obj['address'] + 0x64)
-        if code not in (EFFECT_PROCESS, SHADOW_PROCESS):
+        if code not in self.processes:
             raise Unreviewed(self.read(PROCESS_TABLE + 4 * code, '<I'), obj['code'], self.frame)
         entry = self.read(PROCESS_TABLE + 4 * code, '<I')
         self.current = obj

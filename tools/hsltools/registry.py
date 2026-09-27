@@ -229,8 +229,8 @@ MAINTAINER_NAMES = frozenset({
     'original_derived_manifest', 'evidence_index', 'visual_evidence_index', 'campaign_overview',
     'winfail_token_table', 'evef_instances',
 })
-# A probe that writes product data the game reads (content/generated/hsl/skills/effect_motion.json).
-MODDER_NAMES = frozenset({'effect_motion'})
+# Probes that write product data the game reads (content/generated/hsl/skills/effect_motion.json, objcomd_motion.json).
+MODDER_NAMES = frozenset({'effect_motion', 'objcomd_motion'})
 
 
 def tier_of(task: Task) -> str:

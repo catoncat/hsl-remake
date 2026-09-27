@@ -161,7 +161,7 @@ func every_row_compiles() -> void:
 				check(manifest["objects"].has(event["object"]) and int(event["expire"]) > int(event["tick"]), "object drawn from the manifest with a positive lifetime: " + skill_id)
 				for member in event["frames"]:
 					check(manifest["frames"].has(member), "object frame imported: " + str(member))
-				check(event["motion"] in ["static", "fly", "radial", "spin"], "known motion: " + str(event["motion"]))
+				check(event["motion"] in ["static", "fly", "radial", "spin", "native"], "known motion: " + str(event["motion"]))
 				if event["motion"] == "fly":
 					check(int(event["arrive"]) > int(event["tick"]) and int(event["expire"]) > int(event["arrive"]), "a flight arrives, then expires: " + skill_id)
 				hit_only_seen = true
@@ -231,12 +231,13 @@ func qi_blade_timeline() -> void:
 	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicOTHER:magicCode01", true, 1)
-	check(hit["release_tick"] == 60 and hit["impact_tick"] == 90 and hit["result_tick"] == 150 and hit["complete_tick"] == 190, "氣刃斬 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
+	check(hit["release_tick"] == 60 and hit["impact_tick"] == 90 and hit["result_tick"] == 150 and hit["complete_tick"] >= 190, "氣刃斬 marks (the last spark, rand(delay)＋1 behind the one before it at 0x401455, may run past the 40-tick result hold): %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
 	check(hit["attack_background"] == "MAGIC\\SP00_001.SHP" and hit["defense_background"] == "", "the attack script's aniInsertSpecialBG panel; the defense keeps the backdrop")
 	var sounds: Array = hit["events"].filter(func(event): return event["kind"] == "sound")
 	check(sounds[0]["tick"] == 0 and sounds[0]["member"] == "WAV\\SP01-001.WAV", "the attack script's aniPlaySound at tick 0")
 	# obj_Special01_03's objcomd.txt command 2 opens with objmPlaySound,WAV\BOMB0017.WAV: each
-	# of the 6 bursts plays the landing sound as it appears, within 90..94.
+	# of the 6 bursts plays the landing sound as it appears — the first at 90, each next
+	# rand(4) + 1 later (spawner 0x401390), so within 90..110.
 	var burst_ticks: Array = []
 	for event in hit["events"]:
 		if event["kind"] == "object" and event["object"] == "obj_Special01_03":
@@ -244,13 +245,14 @@ func qi_blade_timeline() -> void:
 	var landing: Array = sounds.filter(func(event): return event["member"] == "WAV\\BOMB0017.WAV").map(func(event): return int(event["tick"]))
 	burst_ticks.sort()
 	landing.sort()
-	check(landing.size() == 6 and landing == burst_ticks and landing.all(func(tick): return tick >= 90 and tick <= 94), "the landing sound WAV\\BOMB0017.WAV sounds with the impact bursts at %s (bursts %s)" % [str(landing), str(burst_ticks)])
+	check(landing.size() == 6 and landing == burst_ticks and landing[0] == 90 and landing.all(func(tick): return tick >= 90 and tick <= 110), "the landing sound WAV\\BOMB0017.WAV sounds with the impact bursts at %s (bursts %s)" % [str(landing), str(burst_ticks)])
 	check(sounds.size() == 1 + landing.size(), "no other sound: %s" % str(sounds.map(func(event): return event["member"])))
-	var flights: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["motion"] == "fly")
-	check(flights.size() == 2 and flights[0]["tick"] == 0 and flights[0]["arrive"] == 30 and flights[1]["tick"] == 80 and flights[1]["arrive"] == 90, "the blade flies for FLIGHT_TICKS in the attack shot and lands on aniProcessHitMiss in the defense shot")
+	# Every object here runs its objcomd.txt program's native track (objcomd_motion.json, 0x4051d0).
+	var flights: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["object"] in ["obj_Special01_01", "obj_Special01_02"])
+	check(flights.size() == 2 and flights.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd") and flights[0]["tick"] == 0 and flights[1]["tick"] == 80, "the blades run their objcomd.txt programs in the attack and the defense shot")
 	check(flights[1]["position"] == Vector2(700, 160) and flights[1]["frames"] == ["MAGIC\\SP01_001.SHP", "MAGIC\\SP01_002.SHP"], "the defense blade is obj_Special01_02 at (700,160)")
-	var bursts: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["motion"] == "static")
-	check(bursts.size() == 30 and bursts.all(func(event): return int(event["tick"]) >= 90 and int(event["tick"]) <= 94 and (event["position"] as Vector2).distance_to(Vector2(320, 160)) <= 90), "6 + 24 hit sparks appear within the delay range around the target centre")
+	var bursts: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["object"] in ["obj_Special01_03", "obj_Special01_04"])
+	check(bursts.size() == 30 and bursts.all(func(event): return int(event["tick"]) >= 90 and int(event["tick"]) <= 90 + 23 * 2 and (event["position"] as Vector2).distance_to(Vector2(320, 160)) <= 90), "6 + 24 hit sparks appear within the accumulated delay range around the target centre")
 	var miss: Dictionary = player.compile_row("special:magicOTHER:magicCode01", false, 1)
 	check(miss["events"].filter(func(event): return event["kind"] == "object").size() == 2 and miss["impact_tick"] == 90 and miss["complete_tick"] == 190, "a miss keeps the blades and the marks, drops the hit-only sparks")
 	check(miss["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return event["member"]) == ["WAV\\SP01-001.WAV"], "a miss inserts no burst, so no landing sound")
@@ -403,7 +405,7 @@ func geometry_and_flags() -> void:
 	var stars: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5)  # 星辰落牙破
 	check(stars["hit_ticks"].size() == 1 and stars["impact_tick"] == 30 + 20 + 40 + 10, "aniProcessHitMissMulti marks the impact like aniProcessHitMiss")
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
-	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "fly" and int(event["arrive"]) == (stars["impact_tick"] if int(event["tick"]) < int(stars["impact_tick"]) else int(event["tick"]) + SkillEffectScriptPlayer.FLIGHT_TICKS)), "meteors inserted above the stage fly to the target centre: onto the hit mark when it follows, else for FLIGHT_TICKS")
+	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
 	check(stars["result_ticks"].is_empty() and stars["result_tick"] == stars["impact_tick"] and stars["complete_tick"] == 100 + 160, "a script without aniShowHitResult shows the result on the hit mark and completes when its last delay ends")
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
 	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")

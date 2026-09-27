@@ -1,0 +1,160 @@
+# 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
+
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403aaa, 0x403be2, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: effect_motion.py, objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+
+## 结论
+
+- 原版绝技特写里的对象（global.obs `obj_Process_Code = defProcObjectMove`，过程槽 37 → `0x4051d0`）每 tick 先由积分器 `0x42fcb0` 按 `+0x88` 标志位移动（速度＋角度、加减速、绕圈、点移），再解释 obj_Data7 选中的 objcomd.txt 命令程序；角度 256 一圈（0 向右、64 向下），速度／半径／缩放均 16.16（static-derived）。
+- 同一程序的多个实例只靠共享 RNG 流错开：生成器 `0x401390` 的折叠偏移与累加延迟（每只比前一只晚 rand(delay)＋1）、objmRandomDelay、随机角／速／帧；另有全局「上一随机角」`0x4c1414` 防重复；没有按实例序号的字段（static-derived）。
+- 60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部经原指令逐 tick 执行，连同抛出的子对象写进 `content/generated/hsl/skills/objcomd_motion.json`（509 棵变体树）；重制 `SkillEffectScriptPlayer`、`PoisonArrowPresentation`、`MoonDancePresentation` 按它画（static-derived）。
+- ANIMAL 的 aniInsertRandomObject／aniInsertHitRandomObject／…Disp（op 19／27／28）同样走 `0x401390`，重制随之改为累加延迟（static-derived）。
+- 差异：随机样本用至多 4 个种子变体代替共享流、出屏判定按首个插入点、角度环／龙卷列等模式插入仍用重制几何、objcomd.txt 字布局（provisional，见边界）。
+
+## 证据
+
+EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`，r2 反汇编阅读＋unicorn 在合成对象上执行原指令，未运行原程序。
+
+### 执行顺序与单位（static-derived）
+
+- 单位：角度 0..255 一整圈（0=+x 向右，64=+y 向下，128=左，192=上；cos 表 `0x4a35fc`、sin 表 `0x4a39fc`，16.16）。速度、半径、缩放、步长均 16.16（0x10000 = 1 px/帧或 1 倍）。
+- 「续」= `jmp 0x405df1`，本帧接着执行下一条；「让」= 写回 `+0xa4` 后 `jmp 0x406381`，本帧结束（尾段仍跑淡变／帧动画／缩放／残影）。
+- 每帧顺序：插入延迟 → 积分器 `0x42fcb0` → 相位分派（相位≠0 只跑等待检查，本帧不解释新命令；等待满足时 `0x406377` 清相位，下一帧才执行后续命令）→ 解释 → 尾段 `0x406381`。
+- 插入首帧（`0x405213`）：程序第一条若是 71 则计数并跳过；若是 2（objmRandomDelay）则 base＋rand(range) 并入 `+0xae` 插入延迟并跳过。延迟期间直接返回（不积分、不解释）。延迟到期调 `0x42fab0`：`+0x88` 清零，**基点 `+0x92／+0x90` = 当前 x／y（创建点）**。
+- opcode > 0x4f：写回指针并让（空操作）。objmShowHitResultNoWait 只出现在 objcomd.txt 的注释行，不计。
+- `0x4051d0` 入口先查 `0x4c1404` bit 0（场景拆除）即销毁自己：没有出口的程序由特写结束收走。
+
+### 命令表：objcomd.txt 实际用到的操作码（static-derived）
+
+| 操作码（号，handler） | 参数 | 读法 |
+|---|---|---|
+| objmOver（0，0x405e0e） | — | 相位 99，淡出至 0 后销毁（`0x405e0e`）。让 |
+| objmDelay（1，0x405e53） | n | 相位 1，+0xa0=n，逐帧减到 ≤0 清相位；与下一条相隔 n+1 帧。让 |
+| objmRandomDelay（2，0x405e7e） | base, range | +0xa0=base+rand(range)，相位 1。让。若是程序首条则在插入时并入插入延迟 |
+| objmThrowRandomObject（5，0x4053df） | code, dx, dy, xr, yr, delay, num | 调 `0x401390(x+dx, y+dy, code, xr, yr, 0, delay, num)`（x/y 为本对象世界坐标）。续 |
+| objmThrowHitRandomObject（6，0x405424） | 同 5 | 仅当 `[0x4c1418] < [0x4c6f58]`（命中）才调 0x401390（同上）；未命中不抽随机。续 |
+| objmThrowHitRandomObjectFixDelay（7，0x405485） | code, dx, dy, xr, yr, baseDelay, step, num（实读 8 参，头文件注释少写一个） | 命中才调 `0x401480(x+dx, y+dy, code, xr, yr, baseDelay, step, num)`。续 |
+| objmThrowRandomObjectFixDelay（9，0x405527） | code, dx, dy, xr, yr, baseDelay, step, num | 无条件调 0x401480（同上）。续 |
+| 〃 生成器 0x401390 | — | 每只：dx=rand(xr)，若 dx>xr/2 则 dx=xr/2−dx（近似对称 ±xr/2）；dy 同理用 yr；`0x45e307(x+dx, y+dy, code)`；子 +0xae=累计延迟 d，d 初值 baseDelay，每只后 d += rand(delay)+1。每只 3 次 rand；子对象按创建顺序用 0x45e485 串链 |
+| 〃 生成器 0x401480 | — | 同上但 d 每只加固定 step，每只 2 次 rand |
+| objmSetAddSpeed（10，0x40556f） | step, max | 0x42fb50：+0x34=step，+0x84=max；+0x88 置 0x8，清 0x1070（点移/减速/X/Y 加速）。积分器每帧 speed=min(speed+step, max) 并重算速度向量。续 |
+| objmSetSubSpeed（11，0x405591） | step, min | 0x42fb80：同上，置 0x10、清 0x1068；每帧 speed=max(speed−step, min)。续 |
+| objmSetAddYSpeed（13，0x4055d5） | step, 界 | 0x42fbe0：置 0x40、清 0x1038；每帧 vy(+0x48) += step，step≥0 时上限夹到界，step<0 时下限夹到界（直接改速度向量，不动 +0x38/+0x3c）。续 |
+| objmSetStopSpeed（14，0x4055f7） | — | 0x42f880(obj,0)：+0x38=0，并清 +0x88 bit0（基点停止随速度移动；加减速位不清）。续 |
+| objmAddRandomSpeed（15，0x405d3b） | r | speed(+0x38) += rand(r)，经 0x42f880 写入（非 0 不改 bit0），0x42f940 重算速度向量。续 |
+| objmSetSpeed（16，0x4059fb） | angle, speed | 0x42fae0：+0x88 置 bit0；angle≠−1 写 +0x3c，speed≠−1 写 +0x38；0x45eb9d 算 vx=cos·speed>>16→+0x40，vy→+0x48，清小数累加 +0x44/+0x4c。续 |
+| objmSetRoundMove（17，0x405606） | angle, radius, step | 0x42fc60：+0x88 置 0x100；+0x94=radius，+0x98=angle，+0x9a=step，+0x50/+0x52 位移清零。angle=−1 时取全局 0x4c1410 旧值，并把 0x4c1410 在 0/128 间翻转（相继实例交替 0°/180°）。续 |
+| objmSetRoundMoveFlag（18，0x40564e） | — | 0x42fc60(obj,−1,−1,−1)：只置 0x100、清 XY 位移，保留半径/角/角步。续 |
+| objmSetRoundXYShift（19，0x405662） | xs, ys | 0x42f8c0：+0x52=xs，+0x50=ys；绕圈偏移 dx>>=xs、dy>>=ys（>31 则该轴为 0，成直线）。续 |
+| objmSetRoundPos（20，0x405684） | angle, radius | 0x42f960(obj, radius, angle)：置 0x100；非 −1 才写 +0x94/+0x98；**立即**把 x/y 定为 基点+极坐标偏移（带位移）。续 |
+| objmSetRoundRadiusStep（21，0x4056a6） | step | 0x42fb30：+0x9c=step，置 0x200。续 |
+| objmSetRandomInvAngle（22，0x405af0） | — | a=rng&0xff（0x458c10 原始数）；若 \|a−[0x4c1414]\|<6（线性差，不绕圈）则 a=a+128；[0x4c1414]=a；写移动角 +0x3c 并重算速度向量（0x42f8a0+0x42f940）。续 |
+| objmSetRandomInvAngleShape（23，0x405b35） | n | a 同上但阈值 256/n；[0x4c1414]=a；**只改帧**：+0x30=+0x32+min(a/(256/n), n−1)，不动移动角。n=0 时帧=首帧。续 |
+| objmSetAngleShape（24，0x405bbd） | n | 取绕圈角 +0x98（0x42fa50），k=angle/(256/n)；+0x30=+0x32，暂把 +0x7c 置 0 后调 0x45e575 k 次再还原（+0x7e≠0 时只保证走第一步，未读清）。续 |
+| objmSetRoundRandomInvAngle（25，0x405c2f） | — | a 同 22（阈值 6，写 0x4c1414），写绕圈角 +0x98（0x42f8e0）。续 |
+| objmAddRoundAngleStep（26，0x4056be） | d | 0x42f920：+0x9a=max(0, +0x9a(无符号字)+d)。续 |
+| objmSetRandomRadius（27，0x4056d6） | base, range, s1, s2 | r=rand(range，0 当 0x10000)；+0x94=base+r；+0x9a=s1+((r/((range/\|s2−s1\|)>>16))>>16)（≈按 r 在 s1→s2 线性插值）。不置 0x100。续 |
+| objmSetAngleRange（28，0x405c7e） | r1, r2 | a=(r1+rand(\|r2−r1\|))&0xff；[0x4c1414]=a；写移动角 +0x3c 并重算速度向量。续 |
+| objmMapAngleRange（29，0x405cc4） | r1, r2 | c=当前移动角；若 r2≥256 且 c<128 则 c+=256；c 在 [r1,r2] 内不变，否则 c=(r1+(r2−r1)·(c&0xff)/256)&0xff；写回并重算速度向量。无随机。续 |
+| objmSetPointMove（30，0x4061b7） | x, y, 阈值, 最大步 | 目标 x=(x==−1? 本对象 +4 : x+镜头 0x4c091c)，y 同理（0x4c0920）；0x42fc10：+0x86=tx，+0x84=ty，+0x36=阈值，+0x34=最大步（字）；置 0x1000，清 0x78。**让** |
+| objmRandomNextShape（32，0x405ed0） | — | k=rand(+0x7a 总帧数)，调 0x45e5a6（循环前进一帧）k 次。让 |
+| objmSetShape（33，0x405f11） | disp | +0x32 += disp，+0x30=+0x32（首帧永久后移）；+0x78=+0x7a，+0x7c=+0x7e（帧计数复位）。让 |
+| objmRandomShape（34，0x405759） | — | +0x30=+0x32+rand(+0x7a)。续 |
+| objmProcNextShape（35，0x405775） | total, delay | +0xa2=1（单次播放）；total>0 写 +0x78/+0x7a，delay>0 写 +0x7c/+0x7e（−1 保留对象定义值）。**续** |
+| objmProcNextShapeDelete（36，0x405f44） | total, delay | 相位 98（空等），+0xa2=4：单次播放完毕 → 置混合位、级 16、+0x68=0x20002、相位 99 → 每 2 帧级 −1，到 0 销毁（约 32 帧）。让 |
+| objmNextShapeInvDelete（37，0x405f6f） | total, delay | 同 36，但 +0xa2=5 用 0x45e5d9（反向/往返步进，未读清细节）。让 |
+| objmCircleProcNextShape（38，0x405f9e） | total, delay | +0xa2=2：0x45e5a6 循环播放（到尾减 +0x7a 回首帧）。让 |
+| objmCircleNextShapeInv（39，0x405ff2） | total, delay | +0xa2=3：0x45e5d9 循环（+0x7d 方向字节，往返/反向，未读清）。让 |
+| objmCircleProcNextShapeStep（40，0x406046） | — | 相位 40：每帧调 0x45e5a6，等帧号变化（前进一帧）后清相位。让 |
+| 〃 帧步进 0x45e575 | — | +0x7c 减 1，<0 时重装 +0x7e、帧+1、剩余 +0x78 减 1；剩余到 0 停在末帧并返回 1。即每 delay+1 帧走一格 |
+| objmStopZoom（42，0x4057be） | — | +0x10（X 缩放步）、+0x18（Y 缩放步）、+0x1c（缩放效果）清零。续 |
+| objmSetZoomEffect（43，0x4057cc） | lv | 标志 0x8000000；+0x1c=lv<<16（低字计数、高字上限 lv）；缩放为 0 的轴置 1.0；+0x5c/+0x60=基准缩放。尾段每帧计数+1，超过 lv 跳到 −lv（锯齿），z=基准+计数·(1/128)，下限 1/64。续 |
+| objmZoomOutIn（44，0x405810） | start, step | 标志 0x8000000；start≠−1 则 zx=zy=start；+0x10=+0x18=step。尾段：step>0 每帧 z+=step，z>8.0 且 step<16.0 时 step+=0x4000（加速）；step<0 每帧 z+=step，结果 ≤0 则不写（停在最后正值）。续 |
+| objmXZoomOutIn（45，0x405842） | start, step | 只 X：start≠−1 写 zx，zy 为 0 则置 1.0，+0x10=step。续 |
+| objmYZoomOutIn（46，0x40587a） | start, step | 只 Y：写 zy，zx 为 0 置 1.0，+0x18=step。续 |
+| objmInsertShadowDelay（49，0x405940） | lv, fade, gap | +0x6c=(lv<<16)+fade（lv bit31→高字 bit15），+0x74=gap\|gap<<16。尾段每 gap 帧在本帧积分前的位置、用本帧开始时的帧号生成残影对象（code 0x191）：复制 +0xc、置混合位、级=min(lv&0xff, 本对象级)、bit15→子 +0x94=1、子 +0x90=fade。残影对象自身行为未读。续 |
+| objmInsertShadowChange（50，0x405987） | lv, fade | 同上但 +0x74=0：仅在本帧帧号变化时生成。续 |
+| objmPlaySound（51）/PlayHitSound（52） | id | 放声（52 仅命中才放，见对象声音包）。续 |
+| objmWaitSpeedBelow（53，0x4060f2） | v | 相位 53，+0xa8=v；每帧 speed(+0x38)≤v 时放行。让 |
+| objmWaitOutScreen（55，0x406209） | — | 相位 55；每帧 0x405140≠0（x 或 y 出 640×480，含 SHP 尺寸）放行。让 |
+| objmWaitSmallerX（56，0x4060f2） | x | 每帧 (x−镜头x)≤arg 放行（屏幕坐标）。让 |
+| objmWaitLargerY（59，0x4060f2） | y | 每帧 (y−镜头y)≥arg 放行。让 |
+| objmWaitSmallerZoom（60，0x406119） | z | zx≤z 或 zy≤z 即放行。让 |
+| objmWaitLargerZoom（61，0x4060cb） | z | zx≥z 或 zy≥z 即放行。让 |
+| objmWaitRadiusBelow（62，0x4060f2） | r | 半径 +0x94≤r 放行。让 |
+| objmWaitRadiusAbove（63，0x406119） | r | 半径 +0x94≥r 放行。让 |
+| objmWaitFadeOut（64，0x406209） | — | 等级 +0x28==16（即 67 的「淡现」完成）。让 |
+| objmWaitShapeEnd（65，0x406140） | — | 等 +0xa2==0（35 单次播放结束）。让 |
+| objmWaitPointMove（66，0x406209） | — | 等 +0x88 bit 0x1000 清除（点移到达）。让 |
+| objmFadeOut（67，0x405a1d） | d | **命名与直觉相反：淡现**。置混合位（无加/减色则置 0x4000000 加色位），级=0，目标 +0x68=16，+0x70=d\|d<<16。尾段每 d 帧级+1，到 16 停（有加/减色位时清混合位）。续 |
+| objmFadeOutLevel（68，0x405a69） | d, max | 同 67 但目标级=max。续 |
+| objmFadeIn（69，0x406157） | d | **淡出并销毁**：相位 99，置混合位，级为 0 则置 16，+0x68=d\|d<<16；每 d 帧级−1，到 0 销毁（0x45e3ed）。让（程序实际终止） |
+| objmSetData（70，0x405aba） | lv | +0x28=lv；lv==16 且有加/减色位则清混合位，否则置混合位。续 |
+| objmInitMultiHitData（71）/SetMultiHitData（72） | — | 多段结算计数（见对象声音包）。续 |
+| objmBGScroll（73，0x406220） | w, h, d | 相位 73；取帧尺寸（0x4606a9）存 +0x14/+0x16/+0xa8/+0xaa；+0xa0=d（≥1）；+0xae/+0xac=w/h 向上取整到帧尺寸倍数（0 则 640/480）。相位处理 0x40658f：x/y 相对镜头越界就按平铺尺寸回绕，基点同步；+0xa0 减到 0 后按相位 99 方式每 2 帧级−1 淡出销毁。让 |
+| objmSaveCommandPos（74，0x405d86） | — | +0x14=指向下一条命令的指针。续 |
+| objmLoopCheckOutScreen（75，0x405d8b） | — | 0x405140==0（仍在屏内）且 +0x14≠0 → 指针跳回保存点；否则顺延。随后**本帧继续解释**，循环体必须含让出命令 |
+| objmLoopCheckSmallerY（76，0x405da3） | y | 世界 y（不减镜头）>arg 且有保存点则跳回；y≤arg 顺延。续 |
+| objmLoop（77，0x405db3） | — | 有保存点则无条件跳回。续 |
+| objmLoopCounter（78，0x405dbe） | n | 计数 +0x56：为 0 时置 n 并跳回（n=0 则不跳）；否则减 1，>0 跳回，到 0 清零顺延。回跳 n 次，循环体共执行 n+1 遍。续 |
+| objmDragonWaveMove（79，0x406321） | angle, throwDelay, changeDelay | 相位 79；+0x14=angle，+0x5c=throwDelay，+0x60=changeDelay\|<<16。相位处理 0x4066d6：每 throwDelay 帧 `0x401390(x,y,+0x54+1,0,0,0,0,1)` 放一只子对象并按 +0x16 偏移子首帧；每 changeDelay 帧按 +0x16 在帧序列中来回扫并改移动角（±0x40/n 步），出屏（0x405140≠0）即销毁。细节未读清。让 |
+
+### 积分器 0x42fcb0（+0x88 标志位，static-derived）
+
+每帧先把 x/y 清零，最后 x=基点 +0x92（字）+ 绕圈偏移，y=基点 +0x90 + 偏移。基点即创建点（0x42fab0 初始化），随速度/点移累加。
+
+| 位 | 设置者 | 每帧更新 |
+|---|---|---|
+| 0x1 | SetSpeed（0x42fae0）；StopSpeed 清 | 末尾 0x45ebdc：基点 += (vx+小数累加)>>16、(vy+…)>>16，小数存 +0x44/+0x4c 低字 |
+| 0x2 | objcomd 不设 | 移动角 += (byte)+0x3e |
+| 0x4 | objcomd 不设 | speed += +0x34（无夹），重算速度向量 |
+| 0x1000 | SetPointMove | 0x45e80d(基点, 目标 +0x86/+0x84, 阈值 +0x36, 最大步 +0x34)：两轴距离都 ≤阈值则吸附到目标、清 0x1000；否则每轴步 = clamp((目标−基点)>>1, ±最大步)（先匀速后对半缓入）。此位存在时跳过 0x8/0x10/0x20/0x40 |
+| 0x8 | SetAddSpeed | speed=min(speed+step,max)（0x45eb75），重算速度向量 |
+| 0x10 | SetSubSpeed | speed=max(speed−step,min)（0x45eb89），重算 |
+| 0x20 / 0x40 | SetAddX/YSpeed | vx(+0x40)/vy(+0x48) += step，按 step 符号夹到 +0x84 |
+| 0x80 | objcomd 不设 | 追踪 +0x2c 号目标（表 0x4c34c0）：按 +0x3e 步转向；目标不存在则**销毁自身** |
+| 0x100 | SetRoundMove/RoundPos/RoundMoveFlag | 0x45e9bc：偏移 = (cos/sin[+0x98]·半径 +0x94)>>32（用旧角），再按 +0x52/+0x50 右移；然后 +0x98 = (角+角步 +0x9a)&0xff |
+| 0x200 | SetRoundRadiusStep | 半径 += +0x9c；结果 ≤0 时（步<0 则半径置 0）清 0x200 |
+
+淡变（+0x70/+0x68，尾段 0x406381）与缩放（尾段 0x4068e3，对象标志 0x1000000 时跳过）不在积分器内，见表一 67/68/69/43/44。
+
+销毁时机：相位 99（Over、FadeIn、36/37 帧放完）级减到 0；BGScroll 计数完后淡到 0；DragonWave 出屏；积分器 0x80 目标丢失；场景拆除 0x4c1404 bit0。**普通对象出屏不自动销毁**，靠 WaitOutScreen/LoopCheckOutScreen 之后的 Over/FadeIn（程序末尾是否由编译器补 0，未读清）。
+
+### 圆心、目标点与多实例相位（static-derived）
+
+- 绕圈圆心 = 基点 +0x92/+0x90，即对象自己的创建点（插入延迟结束时锁定），若同时有速度（bit0）或点移则圆心随之移动。
+- 点移目标 = 参数+镜头（屏幕坐标转世界），−1 表示取对象当前 x/y。
+- 多实例错开只来自：共享 RNG 流（0x458c80/0x458c10）的抽取（生成器的位置/延迟、RandomDelay、各随机角/速/帧/半径）；全局 0x4c1414「上一随机角」防重复（差 <6 或 <256/n 则翻 180°）；0x4c1410 让 SetRoundMove angle=−1 的相继实例交替 0/128。没有按实例序号的字段（生成器只串链 0x45e485，不写序号）。
+
+### 原指令执行（static-derived）
+
+`hsltools/probes/objcomd_motion.py` 复用效果对象探针（[效果对象运动包](original_effect_motion.md)）的机器与帧模型：过程表放行槽 37（`0x4051d0`）与抛出物用的槽 38（`0x4050a0`，淡出计数到 0 销毁），已审阅代码加入 `0x401390..0x401559`（两个生成器）、`0x4050a0..0x4051c6`（槽 38 与出屏判定 `0x405140`）、`0x4051d0..0x406bc8`（解释器）、`0x42f880..0x42ffe7`（运动设置与积分器）。命令程序按 objcomd.txt 逐 token 一字写进合成表 `[0x4c1b74]`。每个对象在它在脚本里的首个插入点创建（`0x405140` 按 640×480 与 SHP 尺寸判定出屏，结果依赖绝对位置），记录每帧相对创建点的位置、SHP 成员、eng* 模式、层级与缩放。
+
+- 221 个对象全部跑完，没有停在未审阅代码；4 个对象（Special06_01／13_06／14_01／15_01）在 600 帧内没有出口，标 `open_ended`，重制随特写结束。
+- 用到随机的程序跑 4 个种子，结果与种子 0 相同的只留一份：共 509 棵变体树。
+
+读回（`OBJCOMD_ARROW_READBACK`，毒魔箭箭矢 obj_Special19_01，命令 17 `objmDelay 20 · objmSetSpeed 128,0x00200000 · objmDelay 10 · objmWaitOutScreen`）：创建帧不画，第 1..21 帧停在 (680,160)，第 22 帧起每帧 x −32（t22 = 648、t32 = 328、t33 = 296），与手算逐帧一致；`check objcomd_motion` 对整条轨迹逐样本比对这个模型。月花圓舞 花瓣（命令 10 `objmSetSpeed 80,0x00080000`）首步 (−4, +7)，手算 8·(cos, sin)(80/256 圈) = (−3.1, +7.4)，差在 16.16 取整。
+
+### ANIMAL 随机插入（static-derived）
+
+ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 aniInsertRandomObject（`0x403aaa`）、op 27 aniInsertHitRandomObject（`0x403bc1`，命中才插）、op 28 aniInsertHitRandomObjectDisp（`0x403be2`，基点 = 守方解释器对象自己的 x／y ＋位移）都在 `0x403c2b` 调 `0x401390(x, y, code, x范围, y范围, 0, 延迟, 个数)`：偏移 rand(范围) 折进 (−范围/2, 范围/2]，第一只立即出现，之后每只比前一只晚 rand(延迟)＋1（`0x401455` `lea ebp, [eax+ebp+1]`）。月花圓舞 的 64 片花瓣（延迟 6）因此约 220 tick 陆续落下，不是一次撒出。
+
+## 重制接线
+
+- `game/battle/scene/ObjcomdMotion.gd` 读 `objcomd_motion.json`（与 `EffectObjectMotion` 同列式，`sprites_at` 共用）。
+- `SkillEffectScriptPlayer._finish_timeline`：有轨迹的普通插入（原 `static`／`fly`）改为 `native`，从插入 tick 起逐帧画整棵树，位置 = 插入点＋轨迹偏移；同一对象的重复插入轮流取种子变体；`open_ended` 对象到片段结束。角度环（aniInsertAngleObject*）与龙卷列（aniInsertTornadoObject）插入时写逐实例角度／半径，轨迹里没有，保留原几何。`_insert_spawner` 按 `0x401390` 放置 op 19／27／28。
+- `PoisonArrowPresentation`：箭矢与命中火花走原生轨迹；受方段画在地图上，舞台偏移（相对舞台目标中心 (320,160)）按精灵缩放缩小——构图是重制的。
+- `MoonDancePresentation`：64 片花瓣与每脉冲一个爆点走原生轨迹，放置按 `0x401390`；爆点基点取守方精灵锚点。
+- provenance 写法：`static-derived content/generated/hsl/skills/objcomd_motion.json`、`static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md`。
+
+## 复现
+
+`python3 tools/hsl.py check objcomd_motion`（重生成需原作与 unicorn：`python3 tools/hsl.py generate objcomd_motion`）。
+
+## 边界
+
+- **随机样本**：原版每个实例从同一条 RNG 流抽取，重制用至多 4 个固定种子的变体轮流代替；插入偏移与延迟由片段的表现 RNG 抽取。不证明逐实例与某次原版运行相同。
+- **出屏与位置**：每个对象只在脚本首个插入点跑一次，其它插入点（随机散布、多次插入）平移同一条轨迹；出屏判定按镜头 (0,0)、640×480。特写舞台在重制是 640×320，花瓣等在 y > 320 的部分画在舞台外。
+- **未复用轨迹的插入**：角度环、龙卷列、aniInsertRoundRandomObject、aniInsertDistanceObjectFixDelay、aniInsertRandomObjectDelay／FixDelay 的放置仍是重制读法（provisional）；aniInsertHitRandomObjectDisp 在 `SkillEffectScriptPlayer` 里仍以舞台目标中心为基点（原版是守方对象自身位置）。
+- **字布局**：objcomd.txt 的装载器未读，"每 token 一字、块尾补 objmOver" 是 provisional；221 个对象全部正常结束或进入等待，未见越界读。
+- **未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；这些在原指令执行里照跑，只是表中读法不全。
+- **声音排程**：`command_sounds` 仍按 objmDelay 之和排（[对象声音包](original_effect_object_sounds.md)），未切到原生执行记下的声音时刻。

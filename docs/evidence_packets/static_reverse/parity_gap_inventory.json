@@ -4,15 +4,15 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 94,
-    "sources": 526,
+    "sources": 537,
     "sources_by_kind": {
-      "provenance": 206,
-      "sentence": 148,
-      "scope": 74,
+      "provenance": 208,
+      "sentence": 156,
+      "scope": 75,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 52,
+    "layout_timing_modules": 53,
     "items_by_original_status": {
       "read_complete": 17,
       "read_partial": 54,
@@ -67,8 +67,8 @@
     "panel-captions",
     "status-page-extras",
     "wait-cue",
-    "ui-layout-readings",
-    "ai-first-battle-moves"
+    "special-object-motion",
+    "ui-layout-readings"
   ],
   "items": [
     {
@@ -491,6 +491,47 @@
       ]
     },
     {
+      "id": "special-object-motion",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭）；剩随机用 4 个种子变体代替共享流、出屏按首个插入点判定、角度环／龙卷列等模式插入仍是重制几何",
+      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
+        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
+      ],
+      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留",
+      "remake_code": [
+        "game/battle/scene/ObjcomdMotion.gd",
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/MoonDancePresentation.gd",
+        "game/battle/scene/PoisonArrowPresentation.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "every_battle",
+      "effort": "M",
+      "category": "特写与施法演出",
+      "sources": [
+        "matrix:月花圓舞",
+        "provenance:game/battle/scene/MoonDancePresentation.gd|layout|provisional|",
+        "provenance:game/battle/scene/MoonDancePresentation.gd|layout|remake-invented|",
+        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
+        "provenance:game/battle/scene/ObjcomdMotion.gd|layout|provisional|",
+        "provenance:game/battle/scene/PoisonArrowPresentation.gd|layout|remake-invented|",
+        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
+        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处",
+        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#85f8668377",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#a5aade0f56",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d8db3c78e7",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#df9bc3bea0",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#e72017fdd8",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d",
+        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d"
+      ]
+    },
+    {
       "id": "ui-layout-readings",
       "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区",
       "original": "原窗体 SHP 已导入；使用／交換 窗与 裝備／丟棄 窗 Wine 实拍各三帧（runtime-measured）；其余面板原版录屏未覆盖",
@@ -599,35 +640,6 @@
         "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#3ae11d8fb6",
         "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#fabdb02c10",
         "sentence:docs/evidence_packets/static_reverse/original_ai_support.md#43889a45cf"
-      ]
-    },
-    {
-      "id": "special-object-motion",
-      "difference": "绝技特写里的对象（defProcObjectMove＋objcomd.txt 命令程序）静止或直线飞向目标中心；月花圓舞／毒魔箭的粒子轨迹是重制的",
-      "original": "objcomd.txt 命令程序的放声与延迟已读（0x4051d0 解释器），速度／半径等运动相位未执行",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
-      ],
-      "remake": "SkillEffectScriptPlayer 的 fly／radial／spin 几何与寿命；MoonDancePresentation、PoisonArrowPresentation 的粒子",
-      "remake_code": [
-        "game/battle/scene/SkillEffectScriptPlayer.gd",
-        "game/battle/scene/MoonDancePresentation.gd",
-        "game/battle/scene/PoisonArrowPresentation.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "L",
-      "category": "特写与施法演出",
-      "sources": [
-        "matrix:月花圓舞",
-        "provenance:game/battle/scene/MoonDancePresentation.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
-        "provenance:game/battle/scene/PoisonArrowPresentation.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
-        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#02cf79451c",
-        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#fa2e22fc4d"
       ]
     },
     {

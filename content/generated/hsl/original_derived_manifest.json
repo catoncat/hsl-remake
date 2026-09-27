@@ -567,6 +567,7 @@
     "content/generated/hsl/skills/effect_motion.json": {"sha256": "9cd5ff6fc88e6426284fd52f0f9be4aaa2dabaf4fae956ba8cd0c976628530a1", "task": ""},
     "content/generated/hsl/skills/initial_book.json": {"sha256": "3f8aeeda3053375a473f6fe24132ac6141b793022350b20e6350b09f7c7350b2", "task": "initial_skill_book"},
     "content/generated/hsl/skills/moon_dance.json": {"sha256": "2ed981f033cfca362c92fee4df3a2d610282ef84120a3209dd2d88f246abd5ac", "task": "moon_dance_data"},
+    "content/generated/hsl/skills/objcomd_motion.json": {"sha256": "35c922e42ffa7ab2efa6298c8d1997f6e576a46dba51d23ca8497d78ce3e31d3", "task": ""},
     "content/generated/hsl/skills/special_effect_scripts.json": {"sha256": "5bc23c288f904e33d9e23e755d724afe1d4437cc58cac89904c8d3aff0480ed9", "task": "special_effect_scripts"},
     "content/generated/hsl/skills/targeting.json": {"sha256": "5bfbf5cb8cd9a88815555158d4dfcd021f51c3254ce0af7463ce282779f9883b", "task": "skill_target_data"},
     "content/generated/hsl/static/chapter01_script_semantics/README.md": {"sha256": "a7b44dc0ba6f2e238aec52d35d6230cbcc88e498897357321ce078bef74c0387", "task": ""},

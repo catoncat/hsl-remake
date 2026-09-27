@@ -17,16 +17,19 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## native probe ran (EffectObjectMotion, effect_motion.json) plays that track — its own motion,
 ## shapes, blend, level and zoom and every object it spawns — from its insertion tick; the
 ## effInsertRandomObject placement and accumulating delays follow the interpreter 0x423873.
+## A special object (defProcObjectMove) plays its objcomd.txt program's native track
+## (ObjcomdMotion, objcomd_motion.json) the same way, displaced from its insertion point.
 ## The tick clock (60/s), the other object lifetimes (shape_number × (shape_delay + 1) ticks;
 ## untracked effect objects at least EFFECT_MIN_LIFETIME_TICKS then an EFFECT_FADE_TICKS alpha
-## tail), flights of special objects inserted outside the 640×320 stage towards the target
-## centre, the ANIMAL random／angle／round／tornado geometry and the magic impact mark (the
+## tail), flights of the special objects without a track inserted outside the 640×320 stage towards
+## the target centre, the ANIMAL random／angle／round／tornado geometry and the magic impact mark (the
 ## script's last insertion or sound cue) are provisional remake readings recorded in
-## skill_effects/manifest.json (`policy`, `replacement_evidence`); defProcObjectMove motion and
-## the effProc* programs listed unrestored are not restored; an object's own sounds are — a
+## skill_effects/manifest.json (`policy`, `replacement_evidence`); the effProc* programs listed
+## unrestored are not restored; an object's own sounds are — a
 ## special object's objcomd.txt command sounds and an effect object's obj_X1／obj_Y1／obj_X2 WAVs.
 ## provenance:
 ##   layout: static-derived content/generated/hsl/skills/effect_motion.json
+##   layout: static-derived content/generated/hsl/skills/objcomd_motion.json
 ##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
 ##   layout: resource-derived content/imported/hsl/global/tables/ANIMAL.H
 ##   layout: resource-derived content/imported/hsl/global/tables/effects.h
@@ -68,6 +71,7 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
 const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
+const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
@@ -257,10 +261,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 			_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor)
 		"aniInsertRandomObject", "aniInsertHitRandomObject":
 			if hit or op == "aniInsertRandomObject":
-				_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
+				_insert_spawner(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor)
 		"aniInsertHitRandomObjectDisp":
 			if hit:
-				_insert_random(timeline, data, rng, phase, args, TARGET_CENTRE + Vector2(number(args[1]), number(args[2])), cursor, 0, number(args[5]), false, number(args[6]))
+				_insert_spawner(timeline, data, rng, phase, args, TARGET_CENTRE + Vector2(number(args[1]), number(args[2])), cursor)
 		"aniInsertRandomObjectDelay":
 			_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), false, number(args[7]))
 		"aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
@@ -334,8 +338,27 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 	timeline["impact_tick"] = int(timeline["hit_ticks"][0]) if not timeline["hit_ticks"].is_empty() else int(timeline["release_tick"])
 	timeline["result_tick"] = int(timeline["result_ticks"][0]) if not timeline["result_ticks"].is_empty() else int(timeline["impact_tick"])
-	# Off-stage objects fly to the target centre, arriving at the phase's next hit mark
-	# (氣刃斬's blade from (700,160) reaches the victim on aniProcessHitMiss) or after FLIGHT_TICKS.
+	# A defProcObjectMove object with a native track (objcomd_motion.json) runs its objcomd.txt
+	# program: frame f of the track shows at insertion tick + f, displaced from the insertion
+	# point; repeated insertions of one object cycle its seed variants. Open-ended programs
+	# (objmOver holds, endless loops) last until the clip ends, the scene teardown that
+	# 0x4051d0 obeys (0x4c1404 bit 0). The patterned inserts (angle rings, tornado columns)
+	# write per-instance angle／radius fields the track does not carry and keep their geometry.
+	var native_order := {}
+	for event in timeline["events"]:
+		if event["kind"] != "object" or not ObjcomdMotion.tracked(str(event["object"])): continue
+		if str(event["motion"]) in ["radial", "spin"]: continue
+		var name := str(event["object"])
+		var order: int = native_order.get(name, 0)
+		native_order[name] = order + 1
+		event["motion"] = "native"
+		event["source"] = "objcomd"
+		event["variant"] = order % ObjcomdMotion.variants(name)
+		event["anchored"] = false
+		event["open_ended"] = ObjcomdMotion.open_ended(name)
+		event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(name)
+	# Remaining off-stage objects fly to the target centre, arriving at the phase's next hit mark
+	# or after FLIGHT_TICKS (remake composition).
 	for event in timeline["events"]:
 		if event.get("motion", "") != "fly": continue
 		var arrive: int = event["tick"] + FLIGHT_TICKS
@@ -350,7 +373,11 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 	# (殘影亂斬 inserts its last shadow 90 ticks in, after its final aniDelay).
 	var complete := maxi(cursor, int(timeline["result_tick"]) + RESULT_HOLD_TICKS)
 	for event in timeline["events"]:
-		complete = maxi(complete, int(event.get("expire", event["tick"])))
+		if not event.get("open_ended", false):
+			complete = maxi(complete, int(event.get("expire", event["tick"])))
+	for event in timeline["events"]:
+		if event.get("open_ended", false):
+			event["expire"] = complete
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
 
@@ -435,6 +462,20 @@ static func _fold(rng: RandomNumberGenerator, span: int) -> int:
 	var value := _rand(rng, width)
 	var half := int(width / 2)
 	return half - value if value > half else value
+
+
+## aniInsertRandomObject／aniInsertHitRandomObject／aniInsertHitRandomObjectDisp [code][x][y]
+## [x range][y range][delay][number] as the ANIMAL interpreter runs them (ops 19／27／28 →
+## 0x403c2b → spawner 0x401390 with base delay 0): each object at the point plus rand(range)
+## folded into (−range/2, range/2] (x then y), the first at once and every next one
+## rand(delay) + 1 ticks after the previous (+0xae accumulates, 0x401455) — 月花圓舞's 64 petals
+## fall over about 220 ticks, not in one burst. The draws come from the clip's presentation RNG.
+static func _insert_spawner(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int) -> void:
+	var wait := 0
+	for _index in range(number(args[6])):
+		var offset := Vector2(_fold(rng, number(args[3])), _fold(rng, number(args[4])))
+		_insert(timeline, data, phase, str(args[0]), centre + offset, cursor + wait, cursor)
+		wait += _rand(rng, number(args[5])) + 1
 
 
 static func _insert_random(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int, base_delay: int, delay: int, fixed_delay: bool, count: int) -> void:
@@ -759,7 +800,9 @@ func _draw_object(sprite: Sprite2D, event: Dictionary, tick: float, origin: Vect
 func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> int:
 	var frame := int(tick - float(event["tick"]))
 	var displacement: Vector2 = Vector2.ZERO if bool(event["anchored"]) else event["position"]
-	for entry in EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"])), frame):
+	var entries: Array = ObjcomdMotion.sprites_at(str(event["object"]), int(event["variant"]), frame) if event.get("source", "") == "objcomd" \
+		else EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"])), frame)
+	for entry in entries:
 		var member := _native_member(str(entry["member"]))
 		if member == "":
 			continue

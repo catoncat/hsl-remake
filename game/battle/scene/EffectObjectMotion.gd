@@ -78,7 +78,7 @@ static func _expand(runs: Array) -> PackedInt32Array:
 ## mirrors); engMIX weights the source by level／16; engADDCOLOR／engSUBCOLOR pick the
 ## saturating add／subtract kinds, otherwise a plain draw.
 static func sprites_at(decoded: Dictionary, frame: int) -> Array:
-	var members: Array = packet()["members"]
+	var members: Array = decoded.get("members", packet()["members"])
 	var sprites: Array = []
 	for instance in decoded["instances"]:
 		var index: int = frame - int(instance["start"])

@@ -555,21 +555,22 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技特写里的对象（defProcObjectMove＋objcomd.txt 命令程序）静止或直线飞向目标中心；月花圓舞／毒魔箭的粒子轨迹是重制的",
-      "original": "objcomd.txt 命令程序的放声与延迟已读（0x4051d0 解释器），速度／半径等运动相位未执行",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭）；剩随机用 4 个种子变体代替共享流、出屏按首个插入点判定、角度环／龙卷列等模式插入仍是重制几何",
+      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
+        "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
+        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
       ],
-      "remake": "SkillEffectScriptPlayer 的 fly／radial／spin 几何与寿命；MoonDancePresentation、PoisonArrowPresentation 的粒子",
+      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；模式插入的 radial／spin 几何保留",
       "remake_code": [
+        "game/battle/scene/ObjcomdMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
         "game/battle/scene/MoonDancePresentation.gd",
         "game/battle/scene/PoisonArrowPresentation.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
-      "effort": "L",
+      "effort": "M",
       "category": "特写与施法演出"
     },
     {
@@ -2964,6 +2965,47 @@
     },
     "provenance:game/battle/scene/EffectObjectMotion.gd|layout|provisional|": {
       "item": "effect-motion"
+    },
+    "provenance:game/battle/scene/ObjcomdMotion.gd|layout|provisional|": {
+      "item": "special-object-motion"
+    },
+    "provenance:game/battle/scene/MoonDancePresentation.gd|layout|provisional|": {
+      "item": "special-object-motion"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处": {
+      "item": "special-object-motion"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c": {
+      "item": "special-object-motion",
+      "text": "**字布局**：objcomd.txt 的装载器未读，\"每 token 一字、块尾补 objmOver\" 是 provisional；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80": {
+      "item": "special-object-motion",
+      "text": "残影对象自身行为未读。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#85f8668377": {
+      "item": "special-object-motion",
+      "text": "+0x30=+0x32，暂把 +0x7c 置 0 后调 0x45e575 k 次再还原（+0x7e≠0 时只保证走第一步，未读清）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#a5aade0f56": {
+      "item": "special-object-motion",
+      "text": "**普通对象出屏不自动销毁**，靠 WaitOutScreen/LoopCheckOutScreen 之后的 Over/FadeIn（程序末尾是否由编译器补 0，未读清）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d8db3c78e7": {
+      "item": "special-object-motion",
+      "text": "+0xa2=3：0x45e5d9 循环（+0x7d 方向字节，往返/反向，未读清）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#df9bc3bea0": {
+      "item": "special-object-motion",
+      "text": "同 36，但 +0xa2=5 用 0x45e5d9（反向/往返步进，未读清细节）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#e72017fdd8": {
+      "item": "special-object-motion",
+      "text": "**未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d": {
+      "item": "special-object-motion",
+      "text": "细节未读清。"
     },
     "provenance:game/battle/scene/EffectObjectMotion.gd|timing|provisional|": {
       "no_visible_effect": "±1 帧（16 ms）：真实平面链顺序与探针不同时子对象首帧早晚一帧"
