@@ -10,11 +10,11 @@
 
 ## 总数
 
-共 **100** 条差异（其中 0 条本轮有 lane 进行中），来自 532 个来源条目：provenance 214、sentence 147、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、17 个已做掉（句子是旧状态）。
+共 **99** 条差异（其中 0 条本轮有 lane 进行中），来自 532 个来源条目：provenance 214、sentence 147、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 58 个全部归类。另有 54 个来源判为玩家看不到、17 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 15 |
+| 已读完只差照做 | 14 |
 | 读了一部分 | 60 |
 | 未读 | 8 |
 | 原版无对应代码 | 17 |
@@ -22,7 +22,7 @@
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 18 |
-| 部分关卡 | 37 |
+| 部分关卡 | 36 |
 | 少见 | 40 |
 | 看不见 | 5 |
 
@@ -32,7 +32,7 @@
 | 战斗规则 | 13 |
 | 特写与施法演出 | 10 |
 | 面板与界面 | 10 |
-| 地图人物演出 | 9 |
+| 地图人物演出 | 8 |
 | 地图与物件 | 7 |
 | 城镇与大地图 | 6 |
 | 剧情走位 | 4 |
@@ -58,20 +58,20 @@
 | 4 | 状态页原版底部是一排页按钮（狀態／道具／魔法／特殊技，行动环 狀態 页另有上一位／下一位），说明框只在悬停装备／道具时盖在按钮排上；重制已照做，剩魔法／特殊技页超过九行时的滚动条 （`status-left-column`） | 已读完只差照做 | 每场都看得到 | M | 面板与界面 | STATUSPAGE（2026-09-27）：证据冲突已解——左栏默认就是属性页；UI7（2026-09-27）照做页按钮排与悬停说明框；剩技能页滚动条 |
 | 5 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
 | 6 | 打人閃電（LEVEL010）落雷的规则与演出已照原版（镜头滚到雷点、AIR14 两帧之一 2 倍加色画 11 帧再淡出 15 帧、FireBomb 162／165 在雷点、第 27 tick 受击者浮红色伤害数字并左右抖 60 tick、停 80／20 tick 后剧本往下走）；闪电画在 FireBomb 之上是按平面号推定 （`drop-lightning-presentation`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 7 | 受击（非阵亡）换 hit 帧并抖 60 tick 已照原版接到地图法术、打人閃電落雷与噴人沼氣；剩深淵之沼（LEVEL015）地形毒的受击态未接，法术只伤 MP 时是否进受击态未核 （`hit-pose-other`） | 已读完只差照做 | 部分关卡 | S | 地图人物演出 | — |
-| 8 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
-| 9 | 当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致 （`turn-queue-semantics`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved |
-| 10 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
-| 11 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 12 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 13 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 14 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
-| 15 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
-| 16 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
-| 17 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 18 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 19 | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | AI 待机／守候时重制显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」提示并停 0.55 s，原版没有 （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 7 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；剩余＝调级所在的全局流与原版不同步（每个对象出生先抽的张延迟 rand(24) 0x407dba 重制不抽，开场前后其它全局抽取次数也不同） （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
+| 8 | 当前行动者在自己行动里阵亡（反击击杀）时原版队列连走两步，紧随其后的单位失去本轮行动；重制只走一步。待机、轮中改速度、阵亡空洞、中途插入、回合计数已与原版一致 （`turn-queue-semantics`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | AI-PRIO-2 0ef32183（BattlePlayLoop._step_past_dead_actor）已按原版补上，未并入 pipeline-line；合并后本条改 resolved |
+| 9 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
+| 10 | 战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布 （`battle-equip-drop-hand`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 11 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。剩：对白名字后冒号仍全角（原版半角）；FONT.15 行高按 16（字格 15＋1）；四个函数（0x4264a0／0x42b2b0／0x423c90／0x42d3f0）与资料页 0x4384d5／0x438a92 两行未对上界面；法术受者条旁文字位置为重制画法 （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 12 | 施法引导的阴影底用压暗 0.35 的地图近似；引导残影与活动面板的先后、16 级交叉淡化用普通透明近似 （`cast-lead-compositing`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 13 | 地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份 （`effect-origin`） | 读了一部分 | 每场都看得到 | S | 特写与施法演出 | — |
+| 14 | 升级加点窗的弹出时机按静态读法：结算后、下一次交接前；败北不弹；逐成员 （`growth-window-timing`） | 读了一部分 | 每场都看得到 | S | 面板与界面 | — |
+| 15 | 法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出 （`magic-impact-bar`） | 读了一部分 | 每场都看得到 | S | 飘字与数字 | — |
+| 16 | 移动选格显示路径线、角括号、「移動 3/5」费用栏与「可通過，不能停留」「飛行」「無法到達」提示，原版没有 （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 17 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 18 | 状态页的永久加值行、属性／抗性悬停说明、「保存／讀取／待領物品／返回」按钮条是重制补充；原版点未交手单位不开页 （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | AI 待机／守候时重制显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」提示并停 0.55 s，原版没有 （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | 多个面板的尺寸、排列与样式是重制读法：按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区、道具目标列表 （`ui-layout-readings`） | 读了一部分 | 每场都看得到 | M | 面板与界面 | — |
 
 ## 全量（按类）
 
@@ -144,12 +144,11 @@
 | `memoir-list` | 回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法 | 战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_storage_window.md](../../../docs/evidence_packets/static_reverse/original_storage_window.md) | BattleSystemMenu 的读法<br>[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `_show_memoir_list` | 读了一部分 | 少见 | S | provenance 3、scope 1 |
 | `panel-slide-formula` | 面板滑入的减速曲线是按录屏拟合的（每 tick 去 1/8），部件左／右／上的分边是按矩形位置猜的；面板底下的压暗层级 9／16 与每 3 tick 一级的淡入淡出也是按录屏亮度拟合的 | 未找到面板滑动的 EXE 常数（系统卷轴 0x45e80d 消费者未读）；压暗过程也未读，录屏每边 8 个亮度台阶、终态亮度比 0.46<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattlePanelMotion 按拟合公式与分边规则滑动，压暗按拟合层级淡入淡出<br>[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `side_of`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `open_step`、[BattlePanelMotion.gd](../../../game/battle/scene/BattlePanelMotion.gd) `shade_step` | 读了一部分 | 少见 | S | provenance 2、sentence 2、video 1 |
 
-### 地图人物演出（9）
+### 地图人物演出（8）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `map-strike-effects` | 地图上普攻的挥击轨迹、法术受击染色 0.18 s、落空音延后 0.12 s 已删除照原版（STRIKEFX） | 地图上没有普攻效果对象：刀光（0x4021df）与击中闪光（0x40418a）都经 0x401310 建在切入层，切入路径不调地图受击态 0x407230；闪避音在闪避起步那 tick 放（0x409760 模板 +0xc），无延迟；法术落空只出 MISS 不放声<br>[original_map_strike.md](../../../docs/evidence_packets/static_reverse/original_map_strike.md) | BattlePresentation 地图分支不画挥击轨迹、不染色；落空音在命中时刻立即放，法术落空不放<br>[BattlePresentation.gd](../../../game/battle/scene/BattlePresentation.gd) `_present_impact` | 已读完只差照做 | 每场都看得到 | S | provenance 1 |
-| `hit-pose-other` | 受击（非阵亡）换 hit 帧并抖 60 tick 已照原版接到地图法术、打人閃電落雷与噴人沼氣；剩深淵之沼（LEVEL015）地形毒的受击态未接，法术只伤 MP 时是否进受击态未核 | 0x407230 受击态：hit 帧（状态 6，收尾 0x4420ba 换形）＋左右 ±1 px 抖动 60 tick；入口只有法术通道 0x40aa80（伤到或施加负面状态）、落雷 0x43cbe1、喷气 0x43c760、地形毒（行动收尾 玩家 0x4454a5、AI 0x441eb8）四处；两个不换条件：+0x80&0x800 已在受击态、0x446b60 no_showshape<br>[original_map_strike.md](../../../docs/evidence_packets/static_reverse/original_map_strike.md)、[original_drop_lightning.md](../../../docs/evidence_packets/static_reverse/original_drop_lightning.md)、[original_poison_gas.md](../../../docs/evidence_packets/static_reverse/original_poison_gas.md)、[dialogue_death/README.md](../../../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | MapHitState.begin 给法术非致死受者、落雷伤到者、喷气中毒者 hit 帧＋抖动 60 tick（BattleDropLightningPresentation／BattlePoisonGasPresentation 经 shake 调用）；地形毒回执 loop.terrain_poison 表现层不消费；死亡入口仍由 BattleAftermath 换 hit 帧<br>[MapHitState.gd](../../../game/battle/scene/MapHitState.gd) `begin`、[BattlePoisonGasPresentation.gd](../../../game/battle/scene/BattlePoisonGasPresentation.gd) `shake`、[BattleAftermath.gd](../../../game/battle/scene/BattleAftermath.gd) `show_hit_pose` | 已读完只差照做 | 部分关卡 | S | scope 2 |
 | `ai-item-use-presentation` | 用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；剩引导与玩家选格的射程格按四邻近似 | AI 低字 7–14（0x440132，表 0x4422a0）：射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star 与 0x401390 的 396／397／398 星点，首个带等待），0x43b3f0 小条＋位 0x100 的 cur/max 文字（0x4365f0 → 0x411d70），末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导<br>[original_item_use_presentation.md](../../../docs/evidence_packets/static_reverse/original_item_use_presentation.md) | BattleItemUsePresentation 三段（lead／effect／numbers），玩家与 AI 共用；BattleAttackCue.begin_item 画引导；玩家选格 BattleSceneMenus._begin_item_pick／BattleSceneOverlays.show_item_range；case 5／6／7 由 _emit／star_state 画 FlyUp2 上飘与 CollectFadeShape 聚拢星点，小条右侧印 cur/max；射程格仍是四邻近似 use_cells<br>[BattleItemUsePresentation.gd](../../../game/battle/scene/BattleItemUsePresentation.gd) `use_cells`、[BattleItemUsePresentation.gd](../../../game/battle/scene/BattleItemUsePresentation.gd) `_emit`、[BattleAttackCue.gd](../../../game/battle/scene/BattleAttackCue.gd) `begin_item` | 读了一部分 | 部分关卡 | S | provenance 1、scope 1 |
 | `draw-depth-states` | 单位与建筑的遮挡顺序：原版两段全局状态分支（深度封顶 22／再加 23）与同桶建立顺序未读透；planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模 | 32 px 行排序已读；defProcObjectMove 固定 obj_Plane 已读；两段全局状态分支与其余效果过程未读透<br>[original_draw_order.md](../../../docs/evidence_packets/static_reverse/original_draw_order.md) | ActorRuntime.depth_index 按像素行排序，不建模状态分支；fixed_plane_depth 只覆盖最低／最高固定 plane<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `depth_index`、[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `fixed_plane_depth` | 读了一部分 | 部分关卡 | S | provenance 1、sentence 4 |
 | `highlight-colours` | 高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定 | 0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮<br>[dialogue_death/README.md](../../../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `set_highlight`、[BattleSceneOverlays.gd](../../../game/battle/scene/BattleSceneOverlays.gd) `sync_unit_highlights` | 读了一部分 | 部分关卡 | S | provenance 1、scope 1 |

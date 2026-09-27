@@ -1,6 +1,6 @@
 # 噴人沼氣（defProcPoisonGas）、地形毒与剧情 VM 的 actCheckNextSerialNumber／actUseItem／actInsertStoryObjectWaitPos／actSetPlayerNoAttack
 
-> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；地形毒的 0x407230 受击态重制表现层未接 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
 
 ## 结论
 
@@ -97,6 +97,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 边界
 
 - 烟对象初始化的 12 次全局流抽取在原版发生于下一 tick，其间可能插进别的对象的抽取；重制在喷气那次结算里紧接连抽。
-- 地形毒（深淵之沼 LEVEL015）的 `0x407230` 受击态：规则回执 `loop.terrain_poison` 已写，表现层不消费，踩毒者不换 hit 帧不抖。
+- 地形毒（深淵之沼 LEVEL015）的 `0x407230` 受击态：`BattlePresentation._refresh_terrain_poison` 消费 `loop.terrain_poison` 新回执，踩毒者在该收尾的扣血数字出现时换 hit 帧并抖 60 tick（`MapHitState.begin`）。
+- 法术是否在只伤 MP 时进受击态：`0x40aa80` 没有 MP 伤害分支（`param_4 & 2` 是回复 HP，不计受击），见 [original_map_strike.md](original_map_strike.md)。
 - 道具等待时序、安装对象渲染、packed serial 的完整边界与 no-attack 的全部 AI 分支未读。
 - 552／553／554 关的 OBS 也有噴人沼氣模板，但全部剧本只有 WINFAIL032 插入它。

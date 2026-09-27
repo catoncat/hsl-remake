@@ -38,6 +38,8 @@ var navigation_cue: Node2D
 var movement_preview: Node2D
 var extra_action_cue: CanvasLayer
 var turn_end_cue: CanvasLayer
+## loop.terrain_poison receipts already put into the hit state (−1 until the first refresh).
+var terrain_poison_shown := -1
 var status_label: Label
 var combat_label: Label
 ## The battle is over and its last exchange, loot, level-up and dialogue have played: the
@@ -294,6 +296,7 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	var tail: Dictionary = loop.get("last_action_end", {})
 	if quiet and turn_end_cue.pending(loop): runtime.focus_camera_on_grid(tail["coord"])
 	var tail_point: Vector2 = runtime.grid_cell_center_to_logical_position(tail["coord"]) if not tail.is_empty() else Vector2.ZERO
+	_refresh_terrain_poison(loop, quiet)
 	var tail_was_busy: bool = turn_end_cue.busy(loop)
 	turn_end_cue.refresh(loop, tail_point, quiet, delta)
 	if tail_was_busy and not turn_end_cue.busy(loop) and loop.get(LoopKeys.INTERACTION) == Interaction.ACTION_MENU:
@@ -964,3 +967,18 @@ func current_message_id() -> String:
 ## by AnimalDefense 0x4038dd, 0x1000000 by the cast routine 0x442a90).
 func hides_game_cursor() -> bool:
 	return cutin.busy()
+
+
+## The terrain-poison action end (0x4454a5／0x441eb8) calls 0x407230 on the poisoned actor before
+## 0x409140 poisons it: the hit frame and shake start with that action end's tail numbers. Only
+## receipts appended since the last refresh play; a loaded battle does not replay earlier turns'.
+func _refresh_terrain_poison(loop: Dictionary, quiet: bool) -> void:
+	var receipts: Array = loop.get("terrain_poison", [])
+	if terrain_poison_shown < 0 or receipts.size() < terrain_poison_shown:
+		# First sight (or a reloaded loop): earlier turns' receipts are history, not new events.
+		terrain_poison_shown = receipts.filter(func(receipt): return int(receipt.get("turn", 0)) < int(loop.get("turn", 0))).size()
+	if not quiet or receipts.size() == terrain_poison_shown:
+		return
+	for index in range(terrain_poison_shown, receipts.size()):
+		MapHitState.begin(get_parent(), self, str(receipts[index]["unit_id"]), float(Timing.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0)))
+	terrain_poison_shown = receipts.size()

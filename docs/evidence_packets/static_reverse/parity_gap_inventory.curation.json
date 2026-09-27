@@ -669,27 +669,6 @@
       "category": "特写与施法演出"
     },
     {
-      "id": "hit-pose-other",
-      "difference": "受击（非阵亡）换 hit 帧并抖 60 tick 已照原版接到地图法术、打人閃電落雷与噴人沼氣；剩深淵之沼（LEVEL015）地形毒的受击态未接，法术只伤 MP 时是否进受击态未核",
-      "original": "0x407230 受击态：hit 帧（状态 6，收尾 0x4420ba 换形）＋左右 ±1 px 抖动 60 tick；入口只有法术通道 0x40aa80（伤到或施加负面状态）、落雷 0x43cbe1、喷气 0x43c760、地形毒（行动收尾 玩家 0x4454a5、AI 0x441eb8）四处；两个不换条件：+0x80&0x800 已在受击态、0x446b60 no_showshape",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_map_strike.md",
-        "docs/evidence_packets/static_reverse/original_drop_lightning.md",
-        "docs/evidence_packets/static_reverse/original_poison_gas.md",
-        "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
-      ],
-      "remake": "MapHitState.begin 给法术非致死受者、落雷伤到者、喷气中毒者 hit 帧＋抖动 60 tick（BattleDropLightningPresentation／BattlePoisonGasPresentation 经 shake 调用）；地形毒回执 loop.terrain_poison 表现层不消费；死亡入口仍由 BattleAftermath 换 hit 帧",
-      "remake_code": [
-        "game/battle/scene/MapHitState.gd:begin",
-        "game/battle/scene/BattlePoisonGasPresentation.gd:shake",
-        "game/battle/scene/BattleAftermath.gd:show_hit_pose"
-      ],
-      "original_status": "read_complete",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "地图人物演出"
-    },
-    {
       "id": "map-strike-effects",
       "difference": "地图上普攻的挥击轨迹、法术受击染色 0.18 s、落空音延后 0.12 s 已删除照原版（STRIKEFX）",
       "original": "地图上没有普攻效果对象：刀光（0x4021df）与击中闪光（0x40418a）都经 0x401310 建在切入层，切入路径不调地图受击态 0x407230；闪避音在闪避起步那 tick 放（0x409760 模板 +0xc），无延迟；法术落空只出 MISS 不放声",
@@ -3238,17 +3217,11 @@
       "item": "item-use-rules",
       "text": "原版 bucket-7 直接查对症药，抽签未读。"
     },
-    "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）、法术通道 0x40aa80 的计数位里 MP 伤害位是否计入": {
-      "item": [
-        "effect-origin",
-        "hit-pose-other"
-      ]
+    "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）": {
+      "item": "effect-origin"
     },
-    "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；地形毒的 0x407230 受击态重制表现层未接": {
-      "item": [
-        "poison-gas-presentation",
-        "hit-pose-other"
-      ]
+    "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取": {
+      "item": "poison-gas-presentation"
     },
     "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d": {
       "item": "carry-model",
