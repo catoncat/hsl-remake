@@ -8,7 +8,8 @@
 - 手上有物点货表即卖出：重要物拒收（607），否则半价入账（static-derived）。手上的物品不论来自背包拿起、卸下、买入还是倉庫，都在同一个手持槽里，都能卖。
 - 拿起背包物即离包，其后各格前移（`0x436e80`）；裝備页空手点槽卸下进手（`0x437020`），手持点槽装上时旧装备进手（`0x436f30`）（static-derived）。
 - 重制照做：`TownShopScreen` 点货行走 `TownRuntime.shop_pick`（只扣款、手持散件），点背包格走 `shop_hand place`，右键 `back`；拿起走 `hand_action lift`，卸下走 `unequip`，装上后旧件进手；散件点货表走 `shop_sell_hand`。不弹「買下」消息。
-- 差异：商店里买入／卖出／拿起的音效（399／400／2563）重制未放；满包时空手卸下仍被拒（原版卸下进手不需背包空位）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
+- 共用状态窗的持物音效（static-derived）：进手 399（货表／倉庫列表取出 `0x415559`、背包格拿起 `0x4292c3`、空手卸下 `0x429eb5`），放下 400（背包格 `0x42929d`、装上 `0x429e6d`、放入倉庫列表 `0x415452`），卖出 2563 sfxSellItem（`0x415435`）；重制照放，拒绝时不放。
+- 差异：满包时空手卸下仍被拒（原版卸下进手不需背包空位）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
 
 ## 证据
 
@@ -20,6 +21,7 @@
 | 拿起 | `0x436e80(成员, 格)`：`rep movsd` 把 格+1..7 前移一格，`[+0x154]`（第 8 格）清零 |
 | 卸下／装上 | `0x437020` 空手点槽卸下进手（音 399）；`0x436f30` 手持点槽装上、旧装备进手，返回 −1 时不能装、手持不变 |
 | 卖出价 | `fcn.00414ab0(code) = ITEM[+0x9c] * 0x32 / 100`（`0x414ac9-0x414ae2`，有符号除法；价格非负即 floor(price/2)）；`0x41541a call`、`0x415428 add`、`0x41542f` 写回金币，音 2563 |
+| 音效 | 全 EXE `push 0x18f`／`0x190`／`0xa03` 中属状态窗的七处：`0x415559`（列表取出 399）、`0x415452`（放入倉庫 400）、`0x415435`（卖出 2563），`0x4292c3`／`0x42929d`（背包格拿起 399／放下 400），`0x429eb5`／`0x429e6d`（卸下 399／装上 400）；均经 `0x4477b0`→`0x459990`→`0x42c180`；右键放回 `0x44f63a`／`0x44f652` 附近不放音 |
 | 拒收 | `0x4153b1 call 0x40e690`：`(ITEM[+0xa0] & 0x08000000) != 0`（`important` 置位）→ `0x4153c2` 消息 607「抱歉, 本店不收購此物品。」，不成交 |
 | 货表 | 来自 town_event 的 `item_code` 对应 `[item]` 表（`teCreateShop`，见 [城镇事件语义](town_event_semantics.md)） |
 
@@ -34,7 +36,7 @@ runtime-measured（`level06_pre_battle` 回憶錄只读进 席達鎮 道具店�
 
 ## 重制接线
 
-- `game/world/TownShopScreen.gd`：点货行 `buy_requested` → `TownRuntime.shop_pick` → `WorldPartyRules.pay_for_hand`，回 `show_state(…, {loose, code})`；拿起 `hand_requested("lift")`；空手点槽 `hand_requested("unequip")`；散件点货表 `sell_hand_requested` → `TownRuntime.shop_sell_hand` → `WorldPartyRules.sell_hand`（607 时保留手持）。
+- `game/world/TownShopScreen.gd`：点货行 `buy_requested` → `TownRuntime.shop_pick` → `WorldPartyRules.pay_for_hand`，回 `show_state(…, {loose, code})`；拿起 `hand_requested("lift")`；空手点槽 `hand_requested("unequip")`；散件点货表 `sell_hand_requested` → `TownRuntime.shop_sell_hand` → `WorldPartyRules.sell_hand`（607 时保留手持）。音效：请求时排队（`HAND_SOUNDS`），宿主提交（`show_state`／`show_loop`／无消息的 `show_carry`）时放 `ItemSound`，`refuse` 或出消息板时丢弃；卖出音是 `interface_audio/sell_item.wav`（sfxSellItem）。
 - `game/sim/PartyEquipmentRules.hand_action`：`lift`、`unequip`，`equip` 把旧件取到手持（`_lift_last`）；整理裝備（`PartyEquipmentScreen`）同走。
 - provenance：`TownShopScreen` 头注释 static-derived 本包与 [original_storage_window](original_storage_window.md)。
 
@@ -53,7 +55,7 @@ r2 -q -e scr.color=0 -c "s 0x4153a2; pd 16" "$EXE"   # 拒收：0x40e690 → 消
 
 ## 边界
 
-- 静态阅读＋一次两帧实测；未拍拿起后前移与卸下进手（静态读法），未核对满包互换与商店里的音效。
+- 静态阅读＋一次两帧实测；未拍拿起后前移与卸下进手（静态读法），未核对满包互换；音效只有静态读法，未录原版声音。
 - 消息 606／607 由引擎代码引用而非 TOWNDEF 脚本，`tools/hsltools/assets/town_assets.py` 以 `ENGINE_MESSAGE_IDS` 显式加入城镇消息表。
 - `0x414ab0` 用有符号除法；ITEM.TXT 现有价格均非负，负价格行为不建模。
 - 手持槽不进存档：重制扣款后物品只在窗口手上，离店／关窗前右键或 Esc 先放回（满包时散件进倉庫，重制读法）。

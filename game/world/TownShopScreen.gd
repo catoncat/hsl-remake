@@ -180,6 +180,20 @@ var slide_out_count := 0
 ## 398 ACCEPT01 (sfxAccept), the status buttons' press sound.
 const BUTTON_SOUND := "res://content/imported/hsl/shared/interface_audio/confirm.wav"
 var _button_sound: AudioStreamPlayer
+## The hand's sounds in the shared status window: 399 sfxTakeUp when an item comes into the hand
+## (list take 0x415559, bag lift 0x4292c3, take-off 0x429eb5), 400 sfxPutDown when the hand sets
+## it down (bag 0x42929d, put on 0x429e6d, storage list 0x415452), 2563 sfxSellItem on a sale
+## (0x415435). Queued with the request, played when the host commits it; a refusal stays silent.
+const ITEM_SOUNDS := {
+	"take_up": "res://content/imported/hsl/shared/interface_audio/take_up.wav",
+	"put_down": "res://content/imported/hsl/shared/interface_audio/put_down.wav",
+	"sell_item": "res://content/imported/hsl/shared/interface_audio/sell_item.wav",
+}
+const HAND_SOUNDS := {"lift": "take_up", "unequip": "take_up", "retrieve": "take_up", "place": "put_down", "equip": "put_down", "store": "put_down"}
+var _item_sound: AudioStreamPlayer
+var _pending_sound := ""
+## The last item sound played (a key of ITEM_SOUNDS; "" before any).
+var last_item_sound := ""
 
 
 func _ready() -> void:
@@ -193,6 +207,27 @@ func _ready() -> void:
 	_button_sound.stream = load(BUTTON_SOUND)
 	_button_sound.volume_db = -6.0
 	add_child(_button_sound, false, Node.INTERNAL_MODE_FRONT)
+	_item_sound = AudioStreamPlayer.new()
+	_item_sound.name = "ItemSound"
+	_item_sound.volume_db = -6.0
+	add_child(_item_sound, false, Node.INTERNAL_MODE_FRONT)
+
+
+func _request_hand(action: String, args: Dictionary, held: Dictionary) -> void:
+	_pending_sound = str(HAND_SOUNDS.get(action, ""))
+	hand_requested.emit(action, args, held)
+
+
+## The host committed the queued request: play its sound once.
+func _play_pending_sound() -> void:
+	var key := _pending_sound
+	_pending_sound = ""
+	if key == "":
+		return
+	last_item_sound = key
+	if _item_sound != null:
+		_item_sound.stream = load(str(ITEM_SOUNDS[key]))
+		_item_sound.play()
 
 
 ## 0x45e882(cur, target, speed): distance ≤ 1 lands; else step min(speed, distance >> 3), at least 2.
@@ -367,6 +402,9 @@ func show_carry(next_carry: Dictionary, next_message: String, next_color: Color 
 	carry = next_carry.duplicate(true)
 	message = next_message
 	message_color = next_color
+	if next_message == "":
+		_play_pending_sound()
+	_pending_sound = ""
 	if not keep_hand:
 		_hand = {}
 	storage = PartyStorageRules.of_carry(carry)
@@ -405,6 +443,7 @@ func show_state(next_carry: Dictionary, loop: Dictionary, next_storage: Dictiona
 	message = ""
 	last_refusal = ""
 	_hand = next_hand.duplicate()
+	_play_pending_sound()
 	_rebuild()
 
 
@@ -433,6 +472,7 @@ func show_loop(next_carry: Dictionary, loop: Dictionary, next_message: String = 
 	message_color = BattleUISkin.TEXT_WHITE
 	_hand = {}
 	last_refusal = ""
+	_play_pending_sound()
 	var ids := member_ids()
 	if not ids.has(unit_id):
 		unit_id = "" if ids.is_empty() else str(ids[0])
@@ -458,15 +498,16 @@ func click_equipment(slot: String) -> void:
 	if page != PAGE_EQUIP or message_visible() or unit_id == "":
 		return
 	if holding():
-		hand_requested.emit("equip", {"unit_id": unit_id, "slot": _slot_for_hand(slot)}, _hand.duplicate())
+		_request_hand("equip", {"unit_id": unit_id, "slot": _slot_for_hand(slot)}, _hand.duplicate())
 	elif _worn_code(slot) > 0:
 		# 0x437020: the piece comes off onto the hand.
-		hand_requested.emit("unequip", {"unit_id": unit_id, "slot": slot}, {})
+		_request_hand("unequip", {"unit_id": unit_id, "slot": slot}, {})
 
 
 ## Mode 0: the host refused the held item; it stays in the hand (no board, no sound).
 func refuse(reason: String) -> void:
 	last_refusal = reason
+	_pending_sound = ""
 
 
 ## The held item's kind picks its slot (0x436f30); accessories go to the clicked accessory slot
@@ -539,7 +580,7 @@ func put_back() -> void:
 	if holding() and (bool(_hand.get("loose", false)) or str(_hand.get("unit_id", "")) != unit_id):
 		# 0x436e30: into the shown member's first empty slot (the host decides; a full bag keeps
 		# nothing lost — see PartyEquipmentRules.hand_action back).
-		hand_requested.emit("back", {"unit_id": unit_id}, _hand.duplicate())
+		_request_hand("back", {"unit_id": unit_id}, _hand.duplicate())
 		return
 	_hand = {}
 	_rebuild()
@@ -551,18 +592,20 @@ func pick_up(slot: int) -> void:
 	var inventory: Array = _member().get("inventory", [])
 	if message_visible() or holding() or slot < 0 or slot >= inventory.size() or int(inventory[slot]) <= 0:
 		return
-	hand_requested.emit("lift", {"unit_id": unit_id, "slot": slot}, {})
+	_request_hand("lift", {"unit_id": unit_id, "slot": slot}, {})
 
 
 ## Dropping the held item on the goods list sells it (0x414c00 shop branch, 0x4153b1); whatever
 ## is on the hand sells — lifted, taken off, bought or from the storage.
 func drop_on_list() -> void:
 	if holding() and bool(_hand.get("loose", false)):
+		_pending_sound = "sell_item"
 		sell_hand_requested.emit(int(_hand["code"]))
 		return
 	if holding():
 		var hand := _hand
 		_hand = {}
+		_pending_sound = "sell_item"
 		sell_requested.emit(str(hand["unit_id"]), int(hand["slot"]))
 
 
@@ -677,7 +720,7 @@ func click_bag_with_hand(index: int) -> void:
 		_hand = {}
 		_rebuild()
 		return
-	hand_requested.emit("place", {"unit_id": unit_id, "slot": index}, _hand.duplicate())
+	_request_hand("place", {"unit_id": unit_id, "slot": index}, _hand.duplicate())
 
 
 ## Page 7: the storage list (WINDOW90「倉庫」, the loot list's rows: icon, name, count).
@@ -691,7 +734,7 @@ func _build_storage() -> void:
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var drop_area := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP), Vector2(340, BattleLootPanel.LIST_ROW * BattleLootPanel.VISIBLE_ROWS))
 	drop_area.name = "StorageDrop"
-	drop_area.pressed.connect(func(): if not message_visible() and holding(): hand_requested.emit("store", {}, _hand.duplicate()))
+	drop_area.pressed.connect(func(): if not message_visible() and holding(): _request_hand("store", {}, _hand.duplicate()))
 	var rows := PartyStorageRules.entries(storage)
 	_scroll = clampi(_scroll, 0, maxi(0, rows.size() - BattleLootPanel.VISIBLE_ROWS))
 	var job := int(_actor().get("growth_profile", {}).get("job_code", -1))
@@ -714,8 +757,8 @@ func _build_storage() -> void:
 		button.mouse_exited.connect(_hide_description.bind(label))
 		button.pressed.connect(func():
 			if message_visible(): return
-			if holding(): hand_requested.emit("store", {}, _hand.duplicate())
-			else: hand_requested.emit("retrieve", {"index": row_index}, {}))
+			if holding(): _request_hand("store", {}, _hand.duplicate())
+			else: _request_hand("retrieve", {"index": row_index}, {}))
 		storage_rows.append(button)
 	if rows.size() > BattleLootPanel.VISIBLE_ROWS:
 		for step in [-1, 1]:
@@ -756,7 +799,9 @@ func _build_goods() -> void:
 		button.pressed.connect(func():
 			if message_visible(): return
 			if holding(): drop_on_list()
-			else: buy_requested.emit(code, unit_id))
+			else:
+				_pending_sound = "take_up"
+				buy_requested.emit(code, unit_id))
 		goods_rows.append(button)
 	if goods.size() > BattleLootPanel.VISIBLE_ROWS:
 		for step in [-1, 1]:
@@ -871,10 +916,10 @@ func press_button(key: String) -> void:
 		"next": step_member(1)
 		"drop":
 			if holding():
-				hand_requested.emit("drop", {}, _hand.duplicate())
+				_request_hand("drop", {}, _hand.duplicate())
 		"use":
 			if holding():
-				hand_requested.emit("use", {"unit_id": unit_id}, _hand.duplicate())
+				_request_hand("use", {"unit_id": unit_id}, _hand.duplicate())
 		_:
 			if pages.has(key):
 				set_page(int(pages[key]))

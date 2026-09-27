@@ -987,7 +987,7 @@
     },
     {
       "id": "shop-hand-cursor",
-      "difference": "商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；剩：商店里买入／放下／卖出的音效（399／400／2563）未放；脚本购物（autoplay）一步入首空格、不经手持",
+      "difference": "商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；持物音效 399／400／2563 照原版放（lane SHOPSOUND）；剩：脚本购物（autoplay）一步入首空格、不经手持",
       "original": "0x414c00 商店分支空手点行 0x415519 读价、0x415532 扣款、0x41553c 写手持槽 0x4c1ce4、音 399、无消息；放下 0x42923b／0x436e30；卖出 0x4153b1／0x414ab0；窗口是 0x42ab40 模式 1；原版帧：买下后手持、点第 3 格落第 1 格（2026-09-28）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_shop_transaction.md",

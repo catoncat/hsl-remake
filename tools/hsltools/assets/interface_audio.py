@@ -23,7 +23,7 @@ def bindings():
     aliases = dict(re.findall(r'^#define\s+(sfx\w+)\s+(\d+)', HEADER.read_bytes().decode('cp950'), re.M))
     names = parse_table(NAMES.read_bytes())
     return {event: {'symbol': symbol, 'resource_id': int(aliases[symbol]), 'source_member': names[aliases[symbol]]}
-            for event, symbol in [('confirm', 'sfxAccept'), ('take_up', 'sfxTakeUp'), ('put_down', 'sfxPutDown'), ('use_item', 'sfxUseItem'), ('game_over', 'sfxGameOver'), ('level_up', 'sfxLevelUp'), ('get_treasure', 'sfxGetTreasure'),
+            for event, symbol in [('confirm', 'sfxAccept'), ('take_up', 'sfxTakeUp'), ('put_down', 'sfxPutDown'), ('use_item', 'sfxUseItem'), ('game_over', 'sfxGameOver'), ('level_up', 'sfxLevelUp'), ('get_treasure', 'sfxGetTreasure'), ('sell_item', 'sfxSellItem'),
                                   ('cast_magic', 'sfxCastMagic'), ('hit_staff', 'sfxHitStaff'), ('hit_sword', 'sfxHitSword'),
                                   ('hit_bow', 'sfxHitBow'), ('hit_axe', 'sfxHitAxe'), ('hit_spear', 'sfxHitSpear'), ('hit_dagger', 'sfxHitDagger')]}
 

@@ -110,7 +110,7 @@
 | select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
-| 买入 | 空手点货行走 `TownRuntime.shop_pick`：扣钱、物品进手持，再点背包格放下，右键放回首空格 | 同，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) §结论；买卖音效未放 |
+| 买入 | 空手点货行走 `TownRuntime.shop_pick`：扣钱、物品进手持，再点背包格放下，右键放回首空格 | 同，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) §结论；拿起／放下／卖出音效照放 |
 | 退店 | 右键／Esc 先关消息、再放回手上物、再退店；告别话照该店事件 te 脚本 | 同（告别话是否由退店触发未单独核对） |
 
 城镇数据：菜单树与 te 事件 `content/imported/hsl/global/world_map/towndef.json`（解释器 `game/sim/TownEventRules.gd`），文字／头像／货表 `town_messages.json`／`town_portraits.json`／`town_shop_items.json`（`tools/hsltools/assets/town_assets.py`）；城镇交易只改 hand-off 的 carry（金币与各成员 8 格背包）。
