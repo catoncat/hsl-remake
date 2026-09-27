@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 WINDOW_FINDER="$SCRIPT_DIR/hsl_window"
 INPUT_HELPER="$SCRIPT_DIR/hsl_input"
-PYTHON_BIN="${PYTHON_BIN:-/opt/homebrew/bin/python3}"
+PYTHON_BIN="${PYTHON_BIN:-$([[ -x /opt/homebrew/bin/python3 ]] && echo /opt/homebrew/bin/python3 || command -v python3 || echo python3)}"
 DEFAULT_ROUTE="$SCRIPT_DIR/routes/p1_title_to_player_control.txt"
 
 usage() {

@@ -80,7 +80,7 @@ def build(pak):
     packages = find_decoded_paks_packages(pak)
     ROOT.mkdir(parents=True, exist_ok=True)
     data = {'schema': 'hsl_shared_panels.v1', 'evidence_tier': 'resource-derived',
-            'sources': {str(p): digest(p.read_bytes()) for p in (TABLES / 'PLAYERS.TXT', TABLES / 'ITEM.TXT', TABLES / 'TYPE.H', NAMES, NATIVE_STATS, LARGE_STATS)},
+            'sources': {p.as_posix(): digest(p.read_bytes()) for p in (TABLES / 'PLAYERS.TXT', TABLES / 'ITEM.TXT', TABLES / 'TYPE.H', NAMES, NATIVE_STATS, LARGE_STATS)},
             **definitions(), 'assets': {}}
     existing=json.loads((ROOT/'manifest.json').read_text()) if (ROOT/'manifest.json').exists() else {}
     for key, member in MEMBERS.items():
@@ -111,7 +111,7 @@ def check():
     expected = definitions()
     assert data['schema'] == 'hsl_shared_panels.v1'
     assert all(data[k] == v for k, v in expected.items())
-    assert data['sources'] == {str(p): digest(p.read_bytes()) for p in (TABLES / 'PLAYERS.TXT', TABLES / 'ITEM.TXT', TABLES / 'TYPE.H', NAMES, NATIVE_STATS, LARGE_STATS)}
+    assert data['sources'] == {p.as_posix(): digest(p.read_bytes()) for p in (TABLES / 'PLAYERS.TXT', TABLES / 'ITEM.TXT', TABLES / 'TYPE.H', NAMES, NATIVE_STATS, LARGE_STATS)}
     assert set(data['assets']) == set(MEMBERS)
     for key, asset in data['assets'].items():
         assert asset['source_member'] == MEMBERS[key]

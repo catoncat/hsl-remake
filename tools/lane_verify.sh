@@ -19,7 +19,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export PYTHONDONTWRITEBYTECODE=1
 export HSL_VERIFY_JOBS="${HSL_VERIFY_JOBS:-3}"
-PYTHON_BIN="${PYTHON_BIN:-/opt/homebrew/bin/python3}"
+PYTHON_BIN="${PYTHON_BIN:-$([[ -x /opt/homebrew/bin/python3 ]] && echo /opt/homebrew/bin/python3 || command -v python3 || echo python3)}"
 LOG_DIR="$ROOT/ignored/lane-verify"
 HEAD_SHORT="$(git rev-parse --short HEAD)"
 # Result lines worth a lane's context: stage summaries, slot waits, failures. The per-task "  <- name" block of the

@@ -7,6 +7,7 @@
                                               a task whose original input is absent FAILs
                                               (WINEPREFIX / --exe), pure checkers are skipped
   hsl affected --since REF [--check] [-j N]   tasks touched by the paths changed since REF
+  hsl doctor [--original]                     read-only environment preflight (tools/doctor.sh runs it)
 
 PATTERN is a task name (`level_battle:37`), a family (`level_battle`) or an fnmatch glob
 (`level_battle:9*`). `hsl check --all` is the complete gate check set run by tools/verify.sh.
@@ -18,6 +19,13 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
+# Windows: the repository's text is UTF-8 and every tool reads it with the platform default encoding in
+# places (open()/read_text() without encoding=); UTF-8 mode makes that default UTF-8, for this process and
+# the task subprocesses it starts (the registry re-runs this file).
+if sys.platform == 'win32' and not sys.flags.utf8_mode:
+    os.environ['PYTHONUTF8'] = '1'
+    sys.exit(subprocess.call([sys.executable, '-X', 'utf8', *sys.argv]))
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -113,6 +121,11 @@ def cmd_affected(args) -> int:
     return 0
 
 
+def cmd_doctor(args) -> int:
+    from hsltools import doctor
+    return doctor.main(args.original)
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog='hsl', description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest='command', required=True)
@@ -142,6 +155,10 @@ def main(argv: list[str]) -> int:
     p.add_argument('--check', action='store_true', help='also run the affected checks')
     common(p)
     p.set_defaults(handler=cmd_affected)
+
+    p = sub.add_parser('doctor', help='read-only environment and repository preflight')
+    p.add_argument('--original', action='store_true', help='also check the Wine-hosted original and the capture helpers')
+    p.set_defaults(handler=cmd_doctor)
 
     args = parser.parse_args(argv)
     try:

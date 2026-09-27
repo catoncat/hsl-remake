@@ -45,6 +45,11 @@ import sys
 import time
 from pathlib import Path
 
+# Windows: UTF-8 mode for this runner and every test／check subprocess (see tools/hsl.py).
+if sys.platform == "win32" and not sys.flags.utf8_mode:
+    os.environ["PYTHONUTF8"] = "1"
+    sys.exit(subprocess.call([sys.executable, "-X", "utf8", *sys.argv]))
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from hsltools import original_content, registry  # noqa: E402

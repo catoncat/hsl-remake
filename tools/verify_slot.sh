@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Machine-wide cap on concurrent tools/verify.sh runs; sourced by tools/verify.sh, not run directly.
 #
-# Two mkdir slots under $HSL_VERIFY_LOCK_DIR (default /private/tmp/hsl-verify-slots):
+# Two mkdir slots under $HSL_VERIFY_LOCK_DIR (default /tmp/hsl-verify-slots):
 #   lead     only for HSL_VERIFY_PRIORITY=1 (tools/lane_merge.sh gate), so the lead never queues behind lanes
 #   shared   every other run (lane fast gates, ad-hoc runs); a lead run also takes it when "lead" is busy
 # A waiting run polls every 2 s and prints `VERIFY_WAIT slot=<wanted> waiting=<N>s holders=...` at once and
@@ -11,7 +11,7 @@
 # Python unit tests 32->246 s, the source checks 42->324 s and the Godot import 5->109 s.
 # Bash 3.2 compatible.
 
-VERIFY_SLOT_DIR="${HSL_VERIFY_LOCK_DIR:-/private/tmp/hsl-verify-slots}"
+VERIFY_SLOT_DIR="${HSL_VERIFY_LOCK_DIR:-/tmp/hsl-verify-slots}"
 VERIFY_SLOT_HELD=""
 VERIFY_SLOT_OWNER=""
 
@@ -24,7 +24,7 @@ verify_slot_alive() {
   local path="$1" owner pid recorded mtime
   [ -d "$path" ] || return 1
   if [ ! -f "$path/owner" ]; then
-    mtime="$(stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || echo 0)"
+    mtime="$(stat -c %Y "$path" 2>/dev/null || stat -f %m "$path" 2>/dev/null || echo 0)"  # GNU first (see godot_cache_seed.sh)
     [ $(( $(date +%s) - mtime )) -lt 10 ]
     return
   fi

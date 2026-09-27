@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WINE_BIN="${WINE_BIN:-/opt/homebrew/bin/wine}"
+WINE_BIN="${WINE_BIN:-$([[ -x /opt/homebrew/bin/wine ]] && echo /opt/homebrew/bin/wine || command -v wine || echo wine)}"
 export WINEPREFIX="${WINEPREFIX:-$HOME/.wine-hsl-original}"
 export WINEDLLOVERRIDES="${WINEDLLOVERRIDES:-ddraw=n,b;mscoree,mshtml=}"
 export WINEDEBUG="${WINEDEBUG:--all}"

@@ -41,7 +41,7 @@ def weapon_hits():
 
 def check():
     expected = bindings()
-    sources = {str(path): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
+    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
     data = json.loads((ROOT / 'manifest.json').read_text())
     assert data['sources'] == sources and set(data['sounds']) == set(expected)
     assert data['weapon_hit_sounds'] == weapon_hits()
@@ -55,7 +55,7 @@ def check():
 
 def build(pak):
     expected = bindings()
-    sources = {str(path): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
+    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
     ROOT.mkdir(parents=True, exist_ok=True)
     packages = find_decoded_paks_packages(pak)
     for key, row in expected.items():

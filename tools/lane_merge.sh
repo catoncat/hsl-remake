@@ -4,7 +4,7 @@
 #                                           generated docs are resolved by re-rendering them (always re-rendered)
 #   tools/lane_merge.sh gate [--deep|--fast|--affected]
 #                                           verify pipeline-line HEAD with the lead environment (HSL_VERIFY_PRIORITY=1:
-#                                           the lead's own verify slot); log: /private/tmp/gate-<HEAD>.log. Default is
+#                                           the lead's own verify slot); log: /tmp/gate-<HEAD>.log. Default is
 #                                           AUTO: when no file changed since main matches OUTCOME_PATHS (rules, battle
 #                                           data, harness, verify tooling) it runs only the affected checks and suites
 #                                           (tools/lane_verify.sh affected main, ~1-3 min); otherwise the fast gate
@@ -62,7 +62,7 @@ case "${cmd}" in
     tasks=""; files=""
     for pair in ${GENERATED}; do tasks="${tasks} ${pair##*:}"; files="${files} ${pair%%:*}"; done
     tasks="$(printf '%s\n' ${tasks} | awk '!seen[$0]++' | tr '\n' ' ')"
-    genlog="$(mktemp /private/tmp/lane-merge-generate.XXXXXX)"
+    genlog="$(mktemp /tmp/lane-merge-generate.XXXXXX)"
     if ! WINEPREFIX="${WINEPREFIX:-${REAL_HOME}/.wine-hsl-original}" python3 tools/hsl.py generate ${tasks} >"${genlog}" 2>&1; then
       grep -E "FAIL|Error|error:" "${genlog}" | head -10 || tail -10 "${genlog}"
       echo "LANE_MERGE_FAIL generate tasks=${tasks% } log=${genlog} (merge of ${ref} left uncommitted; git merge --abort undoes it)"
@@ -76,7 +76,7 @@ case "${cmd}" in
     ;;
   gate)
     cd "${PIPE}"
-    head="$(git rev-parse --short HEAD)"; log="/private/tmp/gate-${head}.log"
+    head="$(git rev-parse --short HEAD)"; log="/tmp/gate-${head}.log"
     mode="auto"; extra=""
     case "${1:-}" in
       --deep) mode="fast"; extra="--deep"; shift ;;
@@ -89,7 +89,7 @@ case "${cmd}" in
       # passed; hygiene is exactly what this mode reruns). Changed files must all be *.md.
       base=""
       for c in $(git rev-list --max-count=20 HEAD~1 2>/dev/null); do
-        cl="/private/tmp/gate-$(git rev-parse --short "${c}").log"
+        cl="/tmp/gate-$(git rev-parse --short "${c}").log"
         [ -f "${cl}" ] || continue
         if tail -1 "${cl}" | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS" || grep -q '^== repository hygiene ==' "${cl}"; then base="${c}"; break; fi
       done
@@ -157,7 +157,7 @@ case "${cmd}" in
     [ "${1:-}" = "--dry-run" ] && dry=1
     source_ref="${LANE_PUBLISH_SOURCE:-pipeline-line}"
     targets="${LANE_PUBLISH_TARGETS:-main presentation-line}"
-    head="$(git rev-parse --short "${source_ref}")"; log="/private/tmp/gate-${head}.log"
+    head="$(git rev-parse --short "${source_ref}")"; log="/tmp/gate-${head}.log"
     if ! tail -1 "${log}" 2>/dev/null | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS"; then
       [ "${dry}" = 1 ] || { echo "LANE_PUBLISH_FAIL no passing gate log for ${head}" >&2; exit 1; }
       echo "LANE_PUBLISH_DRY gate=missing (no passing ${log}; a real publish would stop here)"

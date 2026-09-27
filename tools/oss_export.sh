@@ -15,7 +15,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PYTHON_BIN="${PYTHON_BIN:-/opt/homebrew/bin/python3}"
+PYTHON_BIN="${PYTHON_BIN:-$([[ -x /opt/homebrew/bin/python3 ]] && echo /opt/homebrew/bin/python3 || command -v python3 || echo python3)}"
 [ $# -ge 1 ] && [ $# -le 2 ] || { sed -n '2,15p' "$0" >&2; exit 2; }
 OUT="$1"
 REF="${2:-HEAD}"

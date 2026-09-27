@@ -1,3 +1,36 @@
+# Text files are stored and checked out with LF on every platform (Windows clones included): the
+# generated JSON is compared byte for byte by `hsl check`, and GDScript／shell／Python do not care.
+* text=auto eol=lf
+
+# Binary media and packs: never converted, never diffed as text (extensions in both cases where the
+# original resources use upper case).
+*.png binary
+*.PNG binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.bmp binary
+*.ico binary
+*.wav binary
+*.WAV binary
+*.ogg binary
+*.mp3 binary
+*.mp4 binary
+*.webm binary
+*.ttf binary
+*.otf binary
+*.pak binary
+*.exe binary
+*.dll binary
+*.zip binary
+*.gz binary
+*.sav binary
+*.SAV binary
+*.bin binary
+*.res binary
+*.scn binary
+
 # Byte-exact extracted source inputs, not authored project text. Preserve native
 # encoding, CRLF and original whitespace; importer/source checks own their data.
 # Keep ordinary code, documentation and generated JSON under normal diff checks.
@@ -9,6 +42,8 @@ content/imported/hsl/shared/first_skill/OBJCOMD.H binary
 content/imported/hsl/chapter01/source_texts/RESOURCE.TXT binary
 content/imported/hsl/global/tables/SHAPEDEF.TXT binary
 content/imported/hsl/global/tables/ANIMAL.H binary
+content/imported/hsl/global/tables/ACTION.H binary
+content/imported/hsl/global/tables/EXTRAS.H binary
 content/imported/hsl/chapter01/battle*/source_texts/*.TXT binary
 content/imported/hsl/chapter01/battle*/source_texts/*.txt binary
 content/imported/hsl/chapter01/battle*/source_texts/*.h binary

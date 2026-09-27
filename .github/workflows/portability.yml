@@ -1,0 +1,101 @@
+# Portability check for the public repository (docs/OPEN_SOURCE_PLAN.md「Windows／Linux 可移植性」): the
+# checkout has no original-derived content, so nothing here needs the original game. Every OS proves:
+#   - the Python entry points run without bash (Windows steps use PowerShell);
+#   - `hsl check --all` passes with the original-derived tasks reported as SKIP original-absent;
+#   - the Python unit tests pass, files that read absent original content counted as SKIP original-absent;
+#   - the doctor preflight passes (Godot 4.7 headless downloaded, no original folder: INFO only);
+#   - shell, PowerShell and Python sources parse.
+# The Godot import and suites are not run: they load content/, which a public checkout imports first
+# (tools/verify.sh skips them the same way).
+name: portability
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portability:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      GODOT_VERSION: 4.7.2
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      HSL_VERIFY_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Download Godot (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          name="Godot_v${GODOT_VERSION}-stable_linux.x86_64"
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${name}.zip"
+          mkdir -p "$RUNNER_TEMP/godot" && unzip -q godot.zip -d "$RUNNER_TEMP/godot" && rm godot.zip
+          echo "GODOT_BIN=$RUNNER_TEMP/godot/${name}" >> "$GITHUB_ENV"
+
+      - name: Download Godot (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
+          mkdir -p "$RUNNER_TEMP/godot" && unzip -q godot.zip -d "$RUNNER_TEMP/godot" && rm godot.zip
+          echo "GODOT_BIN=$RUNNER_TEMP/godot/Godot.app/Contents/MacOS/Godot" >> "$GITHUB_ENV"
+
+      - name: Download Godot (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $name = "Godot_v$($env:GODOT_VERSION)-stable_win64"
+          Invoke-WebRequest -Uri "https://github.com/godotengine/godot/releases/download/$($env:GODOT_VERSION)-stable/$name.exe.zip" -OutFile godot.zip
+          Expand-Archive godot.zip -DestinationPath "$env:RUNNER_TEMP\godot"
+          Remove-Item godot.zip
+          "GODOT_BIN=$env:RUNNER_TEMP\godot\${name}_console.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Doctor
+        run: python tools/hsl.py doctor
+
+      - name: Registry checks (original absent)
+        run: python tools/hsl.py check --all
+
+      - name: Python unit tests (original absent)
+        run: python tools/verify_runner.py python-tests
+
+      - name: Godot through tools/godot.ps1
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tools/godot.ps1 --headless --version
+
+      - name: Python sources compile
+        run: python -m compileall -q tools
+
+      - name: PowerShell sources parse
+        shell: pwsh
+        run: |
+          $failed = 0
+          foreach ($file in Get-ChildItem tools -Filter *.ps1) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) { $errors | ForEach-Object { Write-Error "$($file.Name): $_" }; $failed = 1 }
+          }
+          exit $failed
+
+      - name: Shell sources parse
+        if: runner.os != 'Windows'
+        shell: bash
+        run: for script in tools/*.sh; do bash -n "$script"; done

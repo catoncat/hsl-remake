@@ -21,7 +21,7 @@ else
   DST="$(cd "$(dirname "$0")/.." && pwd)"
 fi
 
-mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0; }
+mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }  # GNU first: GNU `stat -f` prints file-system info before failing
 
 if [[ "$1" == --auto ]]; then
   SRC=""

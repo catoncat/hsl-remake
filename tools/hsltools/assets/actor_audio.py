@@ -12,6 +12,7 @@ import tempfile
 import wave
 from pathlib import Path
 
+from hsltools import original_content
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
@@ -56,6 +57,24 @@ def check():
     print('ACTOR_AUDIO_CHECK_PASS')
 
 
+def normalized_destination(lower_name: str) -> Path:
+    """audio_normalized/<name> spelled as the tracked file is (the original-derived manifest lists it, the public
+    repository included), else as a file already on disk, else lower case. Other importers write this folder in
+    PAK member case (Attack01.WAV), so without the manifest the spelling depended on which task ran first
+    and a case-sensitive disk ended up with both spellings. A case-only variant on a case-insensitive disk is
+    renamed to the tracked spelling."""
+    folder = ROOT / 'audio_normalized'
+    listed = sorted(name for name in original_content.manifest_files(folder.as_posix() + '/') if name.lower() == lower_name)
+    existing = [p for p in folder.iterdir() if p.name.lower() == lower_name]
+    destination = folder / listed[0] if listed else existing[0] if existing else folder / lower_name
+    for other in existing:
+        if other.name != destination.name and destination.exists() and other.samefile(destination):
+            staging = other.with_name(other.name + '.case')
+            other.rename(staging)
+            staging.rename(destination)
+    return destination
+
+
 def build(pak):
     raw = SOURCE.read_bytes()
     characters = bindings(raw)
@@ -76,16 +95,15 @@ def build(pak):
             if candidate is None:
                 raise ValueError('unsupported audio format: ' + member)
             data = decoded_xor_a8_wave_bytes(source, candidate)
-        existing = [p for p in (ROOT / 'audio_normalized').iterdir() if p.name.lower() == Path(name).name]
-        destination = existing[0] if existing else ROOT / 'audio_normalized' / Path(name).name
+        destination = normalized_destination(Path(name).name)
         if destination.exists() and destination.read_bytes() != data:
             raise ValueError('existing normalized audio differs: ' + str(destination))
         destination.write_bytes(data)
         sounds[name] = {'source_member': record['name'], 'source_sha256': hashlib.sha256(payload).hexdigest(),
-                        'path': str(destination), 'res_path': 'res://' + str(destination),
+                        'path': destination.as_posix(), 'res_path': 'res://' + destination.as_posix(),
                         'sha256': hashlib.sha256(data).hexdigest(), 'profile': profile(data)}
     manifest = {'schema': 'hsl_actor_audio.v1', 'evidence_tier': 'resource-derived',
-                'source': str(SOURCE), 'source_sha256': hashlib.sha256(raw).hexdigest(),
+                'source': SOURCE.as_posix(), 'source_sha256': hashlib.sha256(raw).hexdigest(),
                 'characters': characters, 'sounds': sounds,
                 'unresolved_semantics': ['character code is not automatically a scenario unit mapping',
                     'walk playback uses static-derived battle-step/scripted-frame cues; exact cadence, terrain alternatives, volume and mixing remain unresolved; attack/miss/dead now use remake combat-event timing']}

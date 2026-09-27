@@ -18,7 +18,7 @@
 
 ```sh
 export HSL_ORIGINAL_DIR=/path/to/GAME-PAK   # 含 hsl.pak 的正版目录，放在仓库外或 legal-assets/
-tools/doctor.sh --original                  # 检查 Godot、Python、原版路径与 PAK 哈希
+tools/doctor.sh --original                  # 检查原版目录与关键文件是否在场
 tools/play.sh                               # 先检查资源导入，再开游戏；导入失败直接报错
 ```
 

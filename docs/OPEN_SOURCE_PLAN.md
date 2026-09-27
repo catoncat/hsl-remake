@@ -217,3 +217,48 @@ C 类里的具体风险（按量排）：
 6. 占位美术 73 个改成从导入的 003 号帧换色生成（§2.2）。
 
 **维护代价**：清单跟着 A 类走，改了生成物的 lane 要顺手 `hsl generate original_derived_manifest`（一行一条，并行 lane 改不同文件能自动合并）。关卡任务表现在取磁盘目录与清单的并集，清单过期会多出任务而报错，不会静默少跑。
+
+## 9. Windows／Linux 可移植性（WINPORT，2026-09-27）
+
+目标用户是拿本仓库改自己游戏的人，多数在 Windows。本节记审计出的 macOS／本机假设和每条的处理；没有 Windows 真机，只做了静态改法与 CI 替身（`.github/workflows/portability.yml`，未真跑）。
+
+**入口（不需要 bash）**：`python tools/hsl.py check|generate|doctor`、`python tools/verify_runner.py python-tests`、`powershell -ExecutionPolicy Bypass -File tools\play.ps1`、`tools\godot.ps1 GODOT_ARGS…`。`hsl.py` 与 `verify_runner.py` 在 Windows 自动以 `-X utf8` 重启（`PYTHONUTF8=1` 传给子进程），因为工具里大量 `read_text()`／`open()` 没写 `encoding=`，cp936／cp1252 下会读坏 UTF-8。
+
+**原版目录探测**（`hsltools.paths.detect_original_dir`，`hsl.py doctor` 报出结果与来源）：
+
+| 平台 | `HSL_ORIGINAL_DIR` 未设时 |
+| --- | --- |
+| Windows | Steam 根：注册表 `HKCU\Software\Valve\Steam\SteamPath`，再试 C:–F: 的 `Program Files (x86)\Steam`、`Program Files\Steam`、`Steam`、`SteamLibrary` |
+| Linux | `~/.local/share/Steam`、`~/.steam/steam`、`~/.steam/root`、Flatpak `~/.var/app/com.valvesoftware.Steam/.local/share/Steam` |
+| 以上两者 | 每个 Steam 根读 `steamapps/libraryfolders.vdf` 的全部库；库内按 `appmanifest_4030150.acf` 的 `installdir`（没有就扫 `steamapps/common/*/GAME-PAK/hsl-cn.pak`，不假设目录名）取 `GAME-PAK/`，要求有 `hsl-cn.pak` 或 `hsl.pak`。Proton 前缀不用找：經典版在应用目录里，不在 `compatdata` |
+| macOS，及以上都找不到 | `$WINEPREFIX/drive_c/hsl`（默认 `~/.wine-hsl-original`），同改动前 |
+
+探测到的 Steam 目录有 `music/` 时 `STEAM_CLASSIC_ROOT` 也跟随。`ignored/original-view/hsl/` 视图在 Windows 建符号链接被拒（非管理员、未开开发者模式）时，目录改 junction、文件改硬链接、跨卷再退为复制。
+
+**审计清单**（「已改」＝本 lane 已提交；macOS 行为均不变）：
+
+| # | 假设 | 位置 | 处理 |
+| --- | --- | --- | --- |
+| 1 | BSD `stat -f %m` 在前，GNU `stat -c %Y` 兜底：Linux 上 GNU `stat -f %m FILE` 先打印文件系统信息再失败，垃圾混进 mtime | `godot_cache_seed.sh`、`verify_slot.sh` | 已改：GNU 在前（BSD `stat -c` 报错无输出） |
+| 2 | `/private/tmp` 只在 macOS 有 | `lane_merge.sh` 5 处、`verify_slot.sh` 2 处 | 已改：`/tmp`（macOS 上是同一目录的链接） |
+| 3 | `/opt/homebrew/bin/{python3,godot,wine}` 写死 | `verify.sh`、`lane_verify.sh`、`oss_export.sh`、`hsl_capture.sh`、`run_original_hsl.sh`、doctor | 已改：存在就用，否则 PATH 上同名工具；环境变量优先不变 |
+| 4 | `cp -c`（APFS clonefile） | `godot_cache_seed.sh` | 不改：已有 `cp -R` fallback（GNU `cp -c` 是 `--preserve=context`，失败也会落到 fallback） |
+| 5 | `mktemp "${TMPDIR:-/tmp}/x.XXXXXX"`、`find -newercm`、`mktemp -d DIR/x.XXXXXX` | `godot.sh`、`play.sh`、`godot_cache_seed.sh` | 不改：GNU 同样支持 |
+| 6 | zsh 专有语法 | tools/*.sh | 无：14 个脚本都是 `#!/usr/bin/env bash`，`bash -n` 通过 |
+| 7 | 整条 bash 链（godot／play／doctor／verify） | Windows 无 bash | 已改：doctor 移到 Python（`doctor.sh` 成薄包装）；新 `play.ps1`、`godot.ps1`；`verify.sh`、`lane_*.sh` 仍要 bash（Git Bash／WSL），属维护者流程 |
+| 8 | `ignored/original-view` 用 `symlink_to` | `hsltools/paths.py` | 已改：Windows 退为 junction／硬链接／复制 |
+| 9 | 生成物里嵌 `str(Path)`，Windows 会写出反斜杠 | `assets/actor_audio.py`、`interface_audio.py`、`panel_assets.py` | 已改：`.as_posix()`（POSIX 逐字节不变） |
+| 10 | 同上 | `data/attack_ranges.py`、`data/equipment.py` | 待改（OSS3 写集）；其余 f-string／`os.path` 形式未穷举。只在导入原版之后生效，原版缺席时这些任务是 SKIP |
+| 11 | 默认 Wine 前缀 `~/.wine-hsl-original` | `hsltools/paths.py` | 已改：只作 macOS 与兜底默认，见上表 |
+| 12 | `WINE_BIN` 默认 `/opt/homebrew/bin/wine`；探针 docstring 里 `uv run --python /opt/homebrew/bin/python3` | `hsl_runtime_probe.py`、`hsl_original_control.py`、`hsltools/probes/_*.py` 9 个 | 不改：原作运行观测是维护者的 macOS＋Wine 流程 |
+| 13 | macOS 专用：`screencapture`、Swift helper、`cliclick` | `hsl_capture.sh`、`build_runtime_helpers.sh` | 不改；doctor 在 Windows／无 bash 时把路由语法记 INFO、`--original` 的 helper 检查只在 macOS |
+| 14 | `/Users/` 字样 | `oss_export.sh`（脱敏规则本身）、`function_catalog.py`（泄漏检查）、测试夹具 | 不改：是检测规则，不是路径依赖 |
+| 15 | 测试里的 bash／`.sh`／`os.symlink`／`/tmp`／`chmod` | 26 个 `tools/test_hsl_*.py` | 未改：Windows CI 首跑定清单（GitHub Windows runner 有 Git Bash、以管理员跑，多数应能过） |
+| 16 | Godot 项目路径大小写 | 全部 tracked `.gd/.tscn/.tres/.json/.godot` 里的 `res://` 字面量 | 实测 35,994 处，只差大小写 0；拼接出来的路径未覆盖 |
+| 17 | 换行与二进制 | `.gitattributes` | 已改：`* text=auto eol=lf`＋26 条二进制扩展名；原版逐字节源文本仍 binary，补漏 `ACTION.H`、`EXTRAS.H`（index 里 207 个 CRLF 文件全部 -text，不触发重归一化） |
+| 18 | tracked 路径只差大小写 | 全仓 | 新检查任务 `case_collisions`：21,220 条路径 0 冲突 |
+| 19 | 生成物 JSON 的大小写差（§8 表「229 个 JSON」里的 `Attack01.WAV`） | `assets/actor_audio.py` | 已改：查清是内容引用＋磁盘文件名同源——生成器沿用磁盘上已有拼写，没有就小写，结果随任务先后变，区分大小写的盘上会留两份。现在先取派生物清单里的 tracked 拼写，其次磁盘，最后小写 |
+
+**CI 替身**：`portability.yml` 在 windows／ubuntu／macos-latest 上装 Python 3.12＋`requirements-dev.txt`、下载 Godot 4.7.2 headless，跑 `hsl.py doctor`、`hsl.py check --all`、`verify_runner.py python-tests`、Windows 上 `godot.ps1 --headless --version`、`compileall tools`、pwsh 解析 ps1、非 Windows `bash -n`。本机只做了 `actionlint`（0 报错）；另在 macOS 上对 `tools/oss_export.sh` 装配的公开树（`git init` 后）跑了同样三条：doctor 通过、`hsl check --all` → `SOURCE_CHECKS_SKIP original-absent tasks=1347 of=1432`、通过 85（OSS1 的 84＋`case_collisions`）；`verify_runner.py python-tests` → 139 个文件 76 个 SKIP original-absent、63 个通过（`PYTHON_UNIT_TESTS_SUMMARY files=139 tests=335 skipped_original_absent=76`）。
+
+**没有真机验证的**：Windows 上的注册表探测、junction／硬链接 fallback、`play.ps1`／`godot.ps1`（本机无 pwsh，连语法都只交给 CI 的解析步骤）、UTF-8 重启、`hsl check`／单测在 Windows 路径分隔符下的结果；Linux 上的 Steam 库探测（只在 macOS 上用伪造的 `libraryfolders.vdf` 走过一遍）；GitHub Actions 整个工作流。
