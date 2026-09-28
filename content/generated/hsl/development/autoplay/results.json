@@ -163,9 +163,9 @@
         "move": 0,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 7,
+        "ai_steps": 8,
         "loot_deferred": 0,
-        "scene_phases": 8
+        "scene_phases": 9
       },
       "result_page": true
     },
