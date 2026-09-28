@@ -1007,14 +1007,15 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；剩选择期间石纹板隐藏是重制读法",
-      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；剩选择期间石纹板隐藏是重制读法",
+      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1，mode 1 跳过 +0x134&0xc0000000、mode 2 只留 0x80000000 无 0x40000000（0x4557e5／0x4557fb）；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
         "docs/evidence_packets/static_reverse/original_dialogue_board.md"
       ],
       "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；选择期间石纹板隐藏是重制补充",
       "remake_code": [
+        "game/sim/TownEventRules.gd",
         "game/world/TownRuntime.gd"
       ],
       "original_status": "read_partial",

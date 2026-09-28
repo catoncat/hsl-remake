@@ -91,7 +91,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | --- | --- | --- |
 | run／frame | `begin_event` 建立帧栈逐 token 执行；`resume(run, choice)` 处理 pending | 重制模型；替换证据为 EXE 城镇脚本 VM |
 | teExecEvent | 跳转：替换当前帧 | TOWNDEF 19 处全部为事件末 token，跳转与调用不可区分 |
-| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；两种都开对象 704 选择窗（`0x4264a0`），tePlayerSelect 只列 `0x42caa0` 判为在队的成员并追加「離開」行（event −1 结束事件），`[mode]` 1／2 再按成员 `+0x134` 转职位过滤（static-derived，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）；重制窗体与在队过滤、「離開」已照原版，mode 过滤未做 |
+| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；两种都开对象 704 选择窗（`0x4264a0`），tePlayerSelect 只列 `0x42caa0` 判为在队、且 `[mode]` 1／2 按成员 `+0x134` 转职位通过的成员（至多 9 行），再追加「離開」行（event −1 结束事件）（static-derived，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」「tePlayerSelect 名单过滤」）；重制照做 |
 | teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项结束后重开菜单，`exit` 或 teMenuMoveOut 后越过该 token | 13 处；重开行为为重制读法 |
 | teMenuMoveOut | 标记最近的打开菜单在当前链结束时关闭 | 仅事件 96 使用 |
 | 条件失败 | 只中止当前帧（回到父菜单） | 重制读法 |
@@ -110,7 +110,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | teDeleteTE | provisional | DeleteTE `[parent][num][children]`: num = 0 removes the parent node and its subtree; num > 0 removes the listed children |
 | teExecEvent | provisional | jump: the current frame is replaced (every TOWNDEF use is the last token) |
 | teSelectInsertEvent | provisional | the chosen event runs as an inserted frame; the parent continues afterwards (every TOWNDEF use is the last token) |
-| tePlayerSelectInsertEvent | provisional | options record every player with in_party; the runtime lists only in-party members plus the 離開 row (event −1 ends the event); the mode argument (1／2, +0x134 job-up bit filter in the original) is passed through unused |
+| tePlayerSelectInsertEvent | provisional | options record every candidate with in_party; `listed` keeps the in-party ones whose job_up_flags pass mode 1／2 (0x4557ad), at most nine; the runtime lists those plus the 離開 row (event −1 ends the event) |
 | teCreateShop | provisional | shop goods = the owning town_event's item_code list; buying/selling is the caller's transaction |
 | teCreateSubEventMenu | provisional | children = tree[this event]; the menu re-opens after each child until exit or teMenuMoveOut |
 | teMenuMoveOut | provisional | closes the enclosing sub-menu once the current chain ends |
@@ -138,7 +138,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 
 | 项 | 观察 | 替换证据 |
 | --- | --- | --- |
-| 命運神殿 儀式环 | 71→61…68→（teCheckJobUp 失败）→71 的退出靠 tePlayerSelect 追加的「離開」行（event −1，`0x455831`，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）；TOWNDEF 两处用法 mode 为 1 与 2，原版按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤成员，重制未做这层过滤 | 原作选人窗实拍 |
+| 命運神殿 儀式环 | 71→61…68→（teCheckJobUp 失败）→71 的退出靠 tePlayerSelect 追加的「離開」行（event −1，`0x455831`，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）；TOWNDEF 两处用法 mode 为 1 与 2，按 `+0x134` 转职位筛成员，重制已照做 | 原作选人窗实拍 |
 | 神秘商人 | 机制、表索引推进与 BuyThing 价格／货物已静态确认（上表、[original_secret_man](original_secret_man.md)）；默认 ratio 与缓存重置点未证 | secret man 设定入口 |
 | 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；买入先进手持槽 `0x4c1ce4` 再点背包格放下（`0x42923b`）也已静态确认并照做（同包「结论」） | 手持放置的原版实拍已有两帧，满包互换无样本 |
 | teBMSetPointEventNotVisit 与 visited | 与 teBMSetPointEvent 的差别只在名字 | 大地图 handler |

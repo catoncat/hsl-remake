@@ -451,13 +451,12 @@ func _show_pending(pending: Dictionary) -> void:
 			var labels: Array[String] = []
 			var picks: Array[int] = []
 			var options: Array = pending.get("options", [])
-			for index in range(options.size()):
-				var option: Dictionary = options[index]
-				if not bool(option.get("in_party", true)):
-					continue  # case 0x1e lists only members 0x42caa0 finds in the party
+			# TownEventRules fills listed: 0x42caa0 in party, [mode] 1／2 +0x134 job-up bits, nine rows.
+			for index in pending.get("listed", range(options.size())):
+				var option: Dictionary = options[int(index)]
 				var speaker: Dictionary = speakers.get(str(option.get("player_token", "")), {})
 				labels.append(str(speaker.get("name_text", str(option.get("player_token", "")))))
-				picks.append(index)
+				picks.append(int(index))
 			# Every TOWNDEF use passes shape -1, so the board is centred without a picture.
 			_show_select_window(labels, "", true, picks)
 		"sub_menu":

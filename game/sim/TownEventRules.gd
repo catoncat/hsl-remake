@@ -567,6 +567,25 @@ static func _te_select_insert_event(run: Dictionary, _ctx: Dictionary, frame: Di
 	return "next"
 
 
+## tePlayerSelectInsertEvent [shape][mode][count]{[player][event]} (0x454e20 case 0x1e,
+## 0x4557ad–0x455827): a candidate is listed only when 0x42caa0 finds it in the party and
+## its record +0x134 job-up bits pass the mode — mode 1 lists members with neither
+## 0x80000000 nor 0x40000000 (0x4557fb), mode 2 members with 0x80000000 but not 0x40000000
+## (0x4557e5); any other mode lists every present member. The bits are written by
+## 0x4348f0: teCheckJobUp / actPlayerJobUpProcess 0x80000000, teCheckJobUp2 0x40000000.
+## At most nine member rows (0x4557c3), then「離開」.
+const PLAYER_SELECT_MAX_ROWS := 9
+
+
+static func player_select_mode_passes(mode: int, job_up_flags: int) -> bool:
+	match mode:
+		1:
+			return (job_up_flags & (JobUpRules.NATIVE_JOB_UP_FLAG | JobUpRules.SECOND_TIER_FLAG)) == 0
+		2:
+			return (job_up_flags & JobUpRules.NATIVE_JOB_UP_FLAG) != 0 and (job_up_flags & JobUpRules.SECOND_TIER_FLAG) == 0
+	return true
+
+
 static func _te_player_select_insert_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
 	var event_code := int(frame["event"])
 	var party: Dictionary = run["party"]
@@ -578,7 +597,15 @@ static func _te_player_select_insert_event(run: Dictionary, _ctx: Dictionary, fr
 		var token := _arg(args, position)
 		options.append({"player_token": token, "player_id": _symbol_int(towndef, token, -1), "event": _int_arg(args, position + 1), "in_party": _party_has_member(party, towndef, token)})
 		position += 2
-	run["pending"] = {"kind": "player_select", "shape": _arg(args, 0), "mode": _int_arg(args, 1), "options": options, "event": event_code}
+	var mode := _int_arg(args, 1)
+	var records: Dictionary = party.get("member_records", {}) if typeof(party.get("member_records")) == TYPE_DICTIONARY else {}
+	var listed: Array = []
+	for index in range(options.size()):
+		var option: Dictionary = options[index]
+		var record: Dictionary = records.get(str(option["player_token"]), {}) if typeof(records.get(str(option["player_token"]))) == TYPE_DICTIONARY else {}
+		if bool(option["in_party"]) and listed.size() < PLAYER_SELECT_MAX_ROWS and player_select_mode_passes(mode, int(record.get("job_up_flags", 0))):
+			listed.append(index)
+	run["pending"] = {"kind": "player_select", "shape": _arg(args, 0), "mode": mode, "options": options, "listed": listed, "event": event_code}
 	_record(run, event_code, pc, name, args, "pending")
 	return "next"
 

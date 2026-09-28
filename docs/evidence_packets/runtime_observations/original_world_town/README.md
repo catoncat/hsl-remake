@@ -1,12 +1,13 @@
 # 原版大地图与城镇画面：状态栏、系统卷轴、城镇根菜单、对白板位置、商店窗、整理裝備
 
-> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0）与石纹菜单行（0x4561d0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130, 0x4561d0 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0）、tePlayerSelect [mode] 过滤（0x4557ad）与石纹菜单行（0x4561d0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130, 0x4348f0, 0x4557ad, 0x4561d0 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
 - 原版进城不压暗大地图，TownBG 约在 (160,148)，石纹菜单板叠在其左上，菜单无「離開」项、画面无金钱／同伴栏，右键／Esc 离城；shape 台词在上、队员台词在下；商店窗是战后「獲得物品」窗的商店分支，買賣 钮暗着（runtime-measured；negative-evidence）。
 - 重制 `game/world/TownRuntime.gd`、`TownShopScreen.gd`、`WorldMapRuntime.gd`、`BattleSystemMenu.gd` 按下表对齐；对白板上下分工由 [original_dialogue_board](../../static_reverse/original_dialogue_board.md) 的 `0x414220` 顶槽位静态确认（static-derived）。
 - teSelectInsertEvent／tePlayerSelectInsertEvent 的选项不在石纹板上：原版建 BOARD02 选择窗放下槽，行距 28、FONT.24 白字、悬停脉冲绿，选人末行固定「離開」；重制照做（static-derived，见「select 选择窗」）。
+- tePlayerSelect 的 `[mode]` 按队员记录 `+0x134` 的转职位筛名单：mode 1（儀式之間）只列未转职的，mode 2（神殿中樞）只列转过一次、未转第二次的；重制照做（static-derived，见「tePlayerSelect 名单过滤」）。
 - 差异：不画红色 ↓（买入进手持再放下已照原版，[original_shop_transaction](../../static_reverse/original_shop_transaction.md)）；差异清单 `town-layout-extras`（provisional）。
 
 ## 证据
@@ -97,6 +98,20 @@
 | 取消 | 两个过程都不读 Esc／右键；tePlayerSelect 在队员行后固定追加 RESOURCE 312「離開」、事件 −1，选它结束本事件（VM 返回 1） | `0x455831`、`0x454e20` 阶段 0x1e |
 | 对白板上下 | 与选择窗无关：`0x414220` 的 `0x4000` 只由 teShapeMessage／teCheckMoney 置（上，y 20），tePlayerMessage 不置（下，y 320） | [original_dialogue_board](../../static_reverse/original_dialogue_board.md) |
 
+### static-derived：tePlayerSelect 名单过滤（`0x4557ad`–`0x455827`，r2 反汇编 `hsl01.exe`，未执行）
+
+case 0x1e 逐个读 `[player][event]` 对，候选只有同时满足下列条件才写进选项表；记录地址 ＝ `[0x4c1bc8]` ＋ (player ＋ 1)·0x1fc。
+
+| 项 | 原版 | 地址 |
+| --- | --- | --- |
+| 在队 | `0x42caa0(player)` 为 0 跳过 | `0x4557b7` |
+| 行数上限 | 已写满 9 行后其余跳过，再追加「離開」 | `0x4557c3` |
+| mode 1 | `+0x134 & 0xc0000000` 非 0 跳过：只列两位都没有的 | `0x4557fb` |
+| mode 2 | `+0x134` 无 `0x80000000` 跳过、有 `0x40000000` 跳过：只列只有第一位的 | `0x4557e5`–`0x4557f7` |
+| 其他 mode | 不筛 | `0x4557e3` |
+| 位的写者 | `0x4348f0(code, flag)` 在 `0x434b40` 把 flag 或进 `+0x134`：teCheckJobUp（case 0x1f，`0x455a54`）与战斗脚本 actPlayerJobUpProcess（`0x450840` case 0x76，`0x45149d`）传 `0x80000000`；teCheckJobUp2（case 0x20，`0x455c89`）传 `0x40000000`；读档 `0x44c51b` 原样恢复 | `0x434b2c`–`0x434b48` |
+| 两处调用 | TOWNDEF 事件 71 命運神殿 儀式之間：mode 1，候选 雷歐納德／緹娜／琥／漢克斯／雪拉／雷特／嚎／克羅蒂（→ 61–68 teCheckJobUp）；事件 87 命運神殿 受驗者：mode 2，候选 雷歐納德／緹娜（→ 69／70，其后 79／80 teCheckJobUp2） | `towndef.json` |
+
 ## 重制接线
 
 | 项 | 重制 | 与原版 |
@@ -107,7 +122,7 @@
 | TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32；悬停行 `0x42c130` 脉冲绿、阴影照画 | 同 |
 | 离城、金钱栏 | 右键／Esc 离城、退子菜单、取消选人；根画面无点名与金钱／同伴条 | 同 |
 | 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与获得金钱／物品的重制旁白放下方 | 同 |
-| select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人只列在队队员、末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
+| select 选择窗 | `TownRuntime._show_select_window`：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人名单由 `TownEventRules` 的 `listed` 给出（在队、mode 1／2 按 `job_up_flags` 的同两位、至多 9 行），末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |
 | 买入 | 空手点货行走 `TownRuntime.shop_pick`：扣钱、物品进手持，再点背包格放下，右键放回首空格 | 同，见 [original_shop_transaction](../../static_reverse/original_shop_transaction.md) §结论；拿起／放下／卖出音效照放 |
@@ -124,5 +139,5 @@
 - 商店只看了 席達鎮 三家店、一名成员：换人、商店里的 裝備／倉庫／丟棄、买入后放到别的成员背包、背包满与重要物品拒收（消息 607）无样本；背包格与货表行格位沿用战后窗静态坐标，未逐像素重测。
 - 红色 ↓ 的含义未核对。
 - 城镇根菜单项字体与菜单板纹理只看了截图，未核对资源文件；根／子菜单悬停色已照石纹菜单行 `0x4561d0` 用 `0x42c130` 脉冲绿、阴影照画（static-derived，lane TOWNMENU2，见 [original_world_town](../../static_reverse/original_world_town.md)）。
-- select 选择窗只有静态读数，无原版实拍帧；tePlayerSelect 只列 `0x42caa0` 判为在队的队员（重制按 `in_party` 滤行），`[mode]` 1／2 再按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤（case 0x1e）；TOWNDEF 的两处调用一处 mode 1（8 人）、一处 mode 2（2 人），都会走这一层——重制 `TownEventRules` 只把 `mode` 记进 pending，未按位过滤（provisional）。
+- select 选择窗与 tePlayerSelect 名单过滤只有静态读数，无原版实拍帧；重制的 `job_up_flags` 由城镇转职与 actPlayerJobUpProcess 写，未与原版存档 `+0x134` 逐位对照。
 - 读存档那一趟在帧 07 后游戏失去前台（`game_not_foreground`），商店与离城由后续三趟补采。
