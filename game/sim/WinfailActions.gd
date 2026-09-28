@@ -863,7 +863,7 @@ static func _apply_item_use(next: Dictionary, runtime: Dictionary, key: String, 
 		return
 	var rng: Array = DamageRandomStream.from_words(next.get(DamageRandomStream.LOOP_KEY))
 	var sequence := int(next.get("item_use_sequence", 0)) + 1
-	var proposed := ItemResolutionRules.prepare(actor, actor, item_code, -1, definition, catalog, rng, sequence)
+	var proposed := ItemResolutionRules.prepare(actor, actor, item_code, -1, definition, catalog, rng, sequence, false, true)
 	if not proposed.get("ok", false):
 		request["status"] = "rejected_%s" % str(proposed.get("reason", "item_rule"))
 		runtime["unsupported_encountered"].append({"key": key, "name": "actUseItem", "args": args.duplicate(), "reason": str(proposed.get("reason", "item_rule"))})

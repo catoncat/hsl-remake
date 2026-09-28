@@ -17,7 +17,6 @@ extends RefCounted
 ##   rules: remake-invented
 ##     (give confirmation／revision guards, free equip confirmation, storage projection —
 ##     docs/architecture/BATTLE_SYSTEMS.md#inventory-and-equipment)
-##   rules: provisional (large user Use range: body-edge distance 1 stands in for the range-2 flood)
 
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
@@ -32,6 +31,8 @@ const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
 const ExtraActionRules = preload("res://game/sim/ExtraActionRules.gd")
 const PositionCapabilities = preload("res://game/sim/PositionCapabilityRules.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
+const Traversal = preload("res://game/sim/ActorTraversalRules.gd")
+const Navigation = preload("res://game/sim/AINavigationRules.gd")
 const ResourceRecoveryRules = preload("res://game/sim/ResourceRecoveryRules.gd")
 const StaminaRules = preload("res://game/sim/StaminaRules.gd")
 const CampaignCarryRules = preload("res://game/sim/CampaignCarryRules.gd")
@@ -56,8 +57,10 @@ static func use_item(loop: Dictionary, item_code: String, target_id: String = ""
 
 static func resolve_item_use(loop: Dictionary, actor_id: String, recipient_id: String, item_code: String, inventory_index: int, spend: bool = false) -> Dictionary:
 	# Shared player/AI commit. The caller owns command eligibility and exactly one handoff.
-	# Only the player's Use passes `spend` (a use without effect still spends the item);
-	# the AI callers keep the refusal until AI-PRIO-2 decides their original behaviour.
+	# The player's Use passes `spend` (a use without effect still spends the item, 0x444aba).
+	# The AI applies 0x409e40 without a benefit check too (0x4402ed), but its triggers already
+	# guarantee one (0x40c110 needs 10 HP missing, 0x40c230 matches a present status), so its
+	# callers keep the refusal only as the stale-plan guard.
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false) or ItemResolutionRules.state_error(loop) != "": return {}
 	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	var recipient := BattlePlayLoop.unit_ref(loop, recipient_id)
@@ -188,27 +191,51 @@ static func recovery_target_ids(loop: Dictionary) -> Array:
 	return _item_recipient_ids(loop, true)
 
 
-## Use marks 0x40f440(user, 1, mode 4) (2 for a large user, 0x444901) with the user's own cell;
-## Give marks range 1 and 0x40f520 clears the centre. A pick needs a marked cell whose word has
-## pmPlayer 0x10000 (0x444976／0x444c6f) and, for Use only, no no_attack (0x446b00). Mode 4 does
-## not enter a 0x20000 cell unless the user is no_block. Body-edge distance 1 stands in for the
-## flood; a large user's range-2 flood is not modelled.
+## 0x40f440(user, range, mode 4) → 0x40f200／0x40ed50 (AINavigationRules.native_flood, mode 4):
+## range 2 for a 3×3 user (+0x2c, 0x444901), else 1, for Use; Give floods range 1 and 0x40f520
+## clears the centre (0x444bc7). The user's own cells carry no side bits (0x411990 clears a
+## 3×3 user's ring; the traversal context leaves the user out). Marked cells, origin included.
+static func item_range_cells(loop: Dictionary, user: Dictionary, give: bool = false) -> Array:
+	if not Presence.living(user): return []
+	var context: Dictionary = Traversal.prepare(user, loop["units"], BattlePlayLoop.TerrainEdits.tiles(loop), {}, loop["map_size"])
+	if not context["ok"]: return []
+	context = context.duplicate()
+	context["mode"] = Navigation.ITEM_MODE
+	context["mask"] = Navigation.ITEM_MASK
+	var origin: Vector2i = user["coord"]
+	var flood: Dictionary = Navigation.native_flood(context, origin, 2 if Footprint.radius(user) == 1 and not give else 1)
+	var cells: Array = []
+	var radius: int = flood["radius"]
+	var width: int = flood["width"]
+	for by in range(width):
+		for bx in range(width):
+			if flood["values"][by * width + bx] <= 0: continue
+			var cell := Vector2i(origin.x - radius + bx, origin.y - radius + by)
+			if not (give and cell == origin): cells.append(cell)
+	return cells
+
+
+## A pick needs a marked cell (0x40f560) whose word has pmPlayer 0x10000 (0x444976／0x444c6f)
+## and, for Use only, a recipient that is not no_attack (0x446b00). The user's word is only on
+## its centre cell (its ring is cleared), so it is a Use target and never a Give target.
 static func _item_recipient_ids(loop: Dictionary, use: bool) -> Array:
 	var actor := BattlePlayLoop.unit_ref(loop, str(loop.get("selected_unit_id", "")))
 	if not Presence.living(actor):
 		return []
+	var marked := item_range_cells(loop, actor, not use)
 	var targets: Array = []
 	var units: Array = [actor]
 	for unit in loop["units"]:
 		if str(unit["id"]) != str(actor["id"]): units.append(unit)
 	for recipient in units:
 		var own := str(recipient["id"]) == str(actor["id"])
-		if not Presence.living(recipient) or (own and not use):
+		if not Presence.living(recipient):
 			continue
 		var side := ActorRoleRules.side_mask(recipient)
 		if (side & ActorRoleRules.SIDE_PLAYER) == 0 or (use and bool(recipient.get("no_attack", false))):
 			continue
-		if not own and (((side & ActorRoleRules.SIDE_ENEMY) != 0 and not bool(actor["traversal"]["no_block"])) or Footprint.distance(actor, recipient) > 1):
+		var cells: Array = [actor["coord"]] if own else Footprint.cells(recipient)
+		if not cells.any(func(cell): return marked.has(cell)):
 			continue
 		targets.append(str(recipient["id"]))
 	return targets

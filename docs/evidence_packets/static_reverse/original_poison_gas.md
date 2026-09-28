@@ -86,7 +86,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 重制接线
 
 - `game/sim/PoisonGasRules.gd`：落点、九格施毒与合并；`game/sim/WinfailConditions.gd`：交接计数定时器（`0x4525e0..0x45260b`）；`game/sim/WinfailActions.gd`：`actInsertStoryObjectWaitPos` 在 loop 的全局流 `global_rng`（`GlobalRandomStream`，原版 `0x4795d4`／`0x4795d8`）抽一次 `rand(count)` 选位置，收据记全局流前后两个字；`game/sim/WinfailCompiler.gd`：OBS 过程识别。
-- `actUseItem` 解析唯一 `[SID, serial]` actor，调 `ItemResolutionRules.prepare`，提交到同一 loop 的 HP／status／inventory，记录 `item_requests`；缺 actor、catalog、inventory 或 item 显式记拒绝原因。
+- `actUseItem` 解析唯一 `[SID, serial]` actor，调 `ItemResolutionRules.prepare`（`script`：不查持有与收益、不扣背包，照 `0x451669`），提交到同一 loop 的 HP／status，记录 `item_requests`；缺 actor、catalog、inventory 或 item 显式记拒绝原因。
 - `actSetPlayerNoAttack` 找到记录后把同模板（`units_for_token(token)`）的所有单位的 `no_attack` 一起写（照 `0x451514` 写模板行）：玩家普通攻击命令与直接攻击结算都拒绝，魔法／特殊技是独立能力；AI 单位带同一键时 `BattleLoopAI._ai_take_owned_turn` 在决策前直接结束回合（`0x43f413`，见 [original_ai_navigation](original_ai_navigation.md)「结论」）。
 - `game/battle/scene/BattlePoisonGasPresentation.gd`：镜头、烟团、停顿，中毒者经 `shake` → `MapHitState.begin` 换 hit 帧并抖 60 tick；`game/sim/loop/BattlePlayLoop.gd`：地形毒收尾顺序。
 

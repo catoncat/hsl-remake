@@ -717,10 +717,9 @@ static func _ai_preflight_actor(loop: Dictionary, actor_id: String, work: Dictio
 	if not healing["ok"]: return healing
 	var healing_slot := int(healing["index"])
 	if healing_slot >= 0:
-		var item_effect := ItemUseRules.prepare(actor, loop["consumables"][str(int(actor["inventory"][healing_slot]))])
-		if not item_effect["ok"]:
-			if item_effect["reason"] != "item_has_no_effect": return item_effect
-			healing_slot = -1
+		# 0x40c1d0 does not weigh the effect: a full actor keeps the slot (0x40c110 gates the use).
+		var item_effect := ItemUseRules.prepare(actor, loop["consumables"][str(int(actor["inventory"][healing_slot]))], true)
+		if not item_effect["ok"]: return item_effect
 	var identities := {}
 	for unit in loop["units"]:
 		if not unit.get("id") is String or unit["id"] == "" or identities.has(unit["id"]):
@@ -731,7 +730,7 @@ static func _ai_preflight_actor(loop: Dictionary, actor_id: String, work: Dictio
 	if Values.non_negative_int(actor.get("move_point")) < 0 or int(actor["move_point"]) > 512:
 		return {"ok": false, "reason": "invalid_ai_near_range"}
 	# `healing_index` is the registered slot the ally-support planner reads; `healing_slot`
-	# is the self-use slot, cleared when the medicine has no effect on the actor.
+	# is the self-use slot (the same slot once its inputs are validated).
 	work.merge({"actor": actor, "profile": profile, "healing_index": int(healing["index"]), "healing_slot": healing_slot}, true)
 	return {}
 

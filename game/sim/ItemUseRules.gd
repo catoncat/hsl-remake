@@ -3,7 +3,6 @@ extends RefCounted
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_tactical_items.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md
-##   rules: provisional (default no-effect refusal kept for AI and script actUseItem callers)
 const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
@@ -69,9 +68,10 @@ static func first_status_slot(slots: Array, items: Dictionary, flags: int) -> Di
 	return {"ok": true, "index": selected}
 
 
-## `spend`: the player's Use commit and target preview — the original applies and spends a
-## held item on a full target too (0x409e40 clamps, 0x444aba clears the held code). The
-## default refuses a use without effect; AI and script actUseItem callers keep that refusal.
+## `spend`: the player's Use and target preview, script actUseItem and the AI's item pick — the
+## original applies an item to a full target too (0x409e40 clamps, 0x444aba clears the held
+## code; 0x40c1d0／0x40c230 do not weigh the effect). The default refusal is the AI commit's
+## stale-plan guard and planning quotes.
 static func prepare(target: Dictionary, item: Dictionary, spend: bool = false) -> Dictionary:
 	var error := definition_error(item)
 	if error != "":

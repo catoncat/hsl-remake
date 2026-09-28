@@ -96,10 +96,9 @@ static func _plan_healing_items(ctx: Dictionary, healing_slot: int) -> Dictionar
 	var result: Dictionary = ctx["result"]
 	var code := str(int(actor["inventory"][healing_slot]))
 	for primary in ctx["primaries"]:
-		var effect := ItemUseRules.prepare(primary,loop["consumables"][code])
-		if not effect["ok"]:
-			if effect["reason"] == "item_has_no_effect": continue
-			return effect
+		# 0x40c1d0 does not weigh the effect; the ally scan 0x40c2f0 decides who needs it.
+		var effect := ItemUseRules.prepare(primary,loop["consumables"][code],true)
+		if not effect["ok"]: return effect
 		var selected := _item_intent(actor, primary, ctx["envelope"], healing_slot, code)
 		if selected.is_empty(): continue
 		result["items"][primary["id"]] = selected
@@ -117,7 +116,7 @@ static func _plan_curing_items(ctx: Dictionary) -> Dictionary:
 		if not slot["ok"]: return slot
 		if slot["index"] < 0: continue
 		var code := str(int(actor["inventory"][int(slot["index"])]))
-		var effect := ItemUseRules.prepare(primary, loop["consumables"][code])
+		var effect := ItemUseRules.prepare(primary, loop["consumables"][code], true)
 		if not effect["ok"]: continue
 		var selected := _item_intent(actor, primary, ctx["envelope"], int(slot["index"]), code)
 		if selected.is_empty(): continue

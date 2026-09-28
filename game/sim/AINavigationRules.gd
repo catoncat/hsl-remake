@@ -20,6 +20,9 @@ const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 const Values = preload("res://game/sim/Values.gd")
+## 0x40f440 mode 4 (Use／Give range, 0x4448f4／0x444bc7) and its 0x40ed50 mask (walls, pmEnemy).
+const ITEM_MODE := 4
+const ITEM_MASK := 0x24000
 
 
 # Live-record AI fields an EVEF instance word may replace (install callback 0x42bd50,
@@ -326,6 +329,9 @@ static func native_flood(context: Dictionary, origin: Vector2i, radius: int) -> 
 ## else 1). Flying: 0x4000 stops, store, pass on budget − 1. Budget ≤ 0 stops. An up／down
 ## cell goes on, then left, then right; a left／right cell goes up, down, then on. A tile's
 ## move_cost above 1 (scenario tiles only; WRD cells cost 1) is paid on entry with the climb.
+## Mode 4 (the item range, case 4 at 0x40ef16): mask 0x24000, no height gap, no climb or cost;
+## for a 3×3 user (0x40f440 sets 0x4c1a78) 0x40ecc0 first stops at a cell whose 3×3, the
+## flood origin excepted, holds a 0x24000 word or a height-255 cell.
 static func _native_step(flood: Dictionary, cell: Vector2i, budget: int, direction: int, previous_height: int) -> void:
 	var values: PackedInt32Array = flood["values"]
 	var origin: Vector2i = flood["origin"]
@@ -353,6 +359,12 @@ static func _native_step(flood: Dictionary, cell: Vector2i, budget: int, directi
 			if values[index] >= budget: return
 			values[index] = budget
 			budget -= 1
+		elif int(context["mode"]) == ITEM_MODE:
+			if int(context["radius"]) == 1 and _item_body_blocked(cell, origin, context): return
+			if word & mask and cell_pass[map_index] == 0: return
+			if values[index] >= budget: return
+			values[index] = budget
+			budget -= _native_leave_cost(cell, direction, cell_flags, mask, size)
 		else:
 			var gap := height - previous_height
 			if absi(gap) >= 3: return
@@ -377,6 +389,16 @@ static func _native_step(flood: Dictionary, cell: Vector2i, budget: int, directi
 				_native_step(flood, cell + Vector2i(0, -1), budget, 0, height)
 				_native_step(flood, cell + Vector2i(0, 1), budget, 1, height)
 				cell += Vector2i(1, 0)
+
+
+## 0x40ecc0(x, y, 0x24000) with 0x4c1a78 = 1: the 3×3 around `cell` minus the flood origin.
+static func _item_body_blocked(cell: Vector2i, origin: Vector2i, context: Dictionary) -> bool:
+	for y in range(-1, 2):
+		for x in range(-1, 2):
+			var point := cell + Vector2i(x, y)
+			if point == origin: continue
+			if int(context["flags"].get(point, 0)) & ITEM_MASK or int(context["heights"].get(point, 0)) == 255: return true
+	return false
 
 
 ## 0x40eb80(x, y, direction, mask): 2 when the cell ahead or one of the two beside the

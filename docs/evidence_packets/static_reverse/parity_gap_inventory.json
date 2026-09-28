@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 464,
+    "sources": 460,
     "sources_by_kind": {
-      "provenance": 195,
-      "sentence": 91,
+      "provenance": 193,
+      "sentence": 89,
       "scope": 80,
       "matrix": 85,
       "video": 13
@@ -1689,30 +1689,27 @@
     },
     {
       "id": "item-use-rules",
-      "difference": "大体型角色用药范围按身体边缘距离1近似（原版 range2 泛洪）；AI 与剧情 actUseItem 仍拒绝无收益用药",
-      "original": "满值照用并消耗一件（0x409e40 夹紧、0x444aba 清暂持）；范围 0x40f440(user,1／大体型2,4) 含自己，只收 pmPlayer 且非 no_attack（0x44492a..0x4449b6）；一次一件一目标，0x444e3b→0x4454a5 结束行动",
+      "difference": "AI 用药 0x4406af 入口的触发上下文、0x40c570 无法术时是否抽数未读；死亡／隐藏对象的格字映射未读",
+      "original": "范围 0x40f440(user,1／大体型2,4)：模式4 泛洪（掩码 0x24000，大体型每格过 0x40ecc0 3×3 检查），含自己，只收 pmPlayer 且非 no_attack；满值照用并消耗一件（0x409e40 夹紧、0x444aba 清暂持）；AI 取药不比药效（0x40c1d0／0x40c230）；剧情 actUseItem 只调 0x409e40，不查持有与收益、不动背包（0x451669）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_actions.md",
         "docs/evidence_packets/static_reverse/original_tactical_items.md",
         "docs/evidence_packets/static_reverse/original_permanent_items.json"
       ],
-      "remake": "玩家 Use 满值照用照扣、浮0；选目标是地图选格（ITEMTARGET）：画自己＋四邻无敌对占位的移动色格，左键须范围格上的 pmPlayer 非 no_attack，Give 不含自己；大体型 range2 未建模，AI／剧情路径保留拒绝",
+      "remake": "范围与选格画法走同一模式4 泛洪（item_range_cells）；玩家 Use 满值照用照扣、浮0；AI 满血保留药槽，提交保留无收益拒绝作过期计划守卫；actUseItem 不查持有与收益、不扣背包",
       "remake_code": [
-        "game/sim/ItemUseRules.gd:prepare",
-        "game/sim/loop/BattleLoopInventory.gd:_item_recipient_ids",
-        "game/battle/scene/BattleSceneMenus.gd:_item_pick_pointer"
+        "game/sim/loop/BattleLoopInventory.gd:item_range_cells",
+        "game/sim/AINavigationRules.gd:native_flood",
+        "game/sim/ItemResolutionRules.gd:prepare",
+        "game/sim/WinfailActions.gd:_apply_item_use"
       ],
       "original_status": "read_partial",
       "visibility": "rare",
       "effort": "S",
       "category": "战斗规则",
       "sources": [
-        "provenance:game/sim/ItemUseRules.gd|rules|provisional|",
-        "provenance:game/sim/loop/BattleLoopInventory.gd|rules|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_give_exchange.md#48cb1c629f",
-        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#85289aa8c5",
-        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#90a588b6d5",
-        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#daf932bb60"
+        "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#85289aa8c5"
       ]
     },
     {

@@ -33,10 +33,10 @@ const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater
 const BattleRewardFloater = preload("res://game/battle/scene/BattleRewardFloater.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const Footprint = preload("res://game/sim/FootprintRules.gd")
-const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleLoopInventory = preload("res://game/sim/loop/BattleLoopInventory.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
@@ -198,20 +198,13 @@ func finish() -> void:
 	if _effect_layer != null: _effect_layer.queue_redraw()
 
 
-## 0x40f440(user, 1, mode 4) from the user's cell, standing in as FootprintRules distance 1: the
-## user's cell and each neighbour on the map without a hostile occupant (provisional).
-static func use_cells(loop: Dictionary, user: Dictionary, origin: Vector2i) -> Array:
-	var map_size: Vector2i = loop.get(LoopKeys.MAP_SIZE, Vector2i.ZERO)
-	var cells: Array = [origin]
-	for step in [Vector2i.UP, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]:
-		var cell: Vector2i = origin + step
-		if cell.x < 0 or cell.y < 0 or cell.x >= map_size.x or cell.y >= map_size.y:
-			continue
-		var occupant := Footprint.unit_at(loop.get(LoopKeys.UNITS, []), cell)
-		if not occupant.is_empty() and ActorRoleRules.hostile(user, occupant):
-			continue
-		cells.append(cell)
-	return cells
+## 0x40f440(user, 1 (2 for a 3×3 user), mode 4) from the user's cell: the sim's marked cells
+## (BattleLoopInventory.item_range_cells; `give`: range 1, centre cleared); `origin` is the
+## drawn cell of the user.
+static func use_cells(loop: Dictionary, user: Dictionary, origin: Vector2i, give: bool = false) -> Array:
+	var placed := user.duplicate()
+	placed["coord"] = origin
+	return BattleLoopInventory.item_range_cells(loop, placed, give)
 
 
 ## 0x409e40's effect kinds for a receipt, in spawn order.

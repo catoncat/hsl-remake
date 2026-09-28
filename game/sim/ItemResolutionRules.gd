@@ -18,20 +18,22 @@ const POLICY := "source_tactical_items_v3"
 
 
 ## `spend`: the player's Use — a use without effect still spends the item (0x444aba clears the
-## held code after 0x409e40). AI and script callers keep the default refusal.
-static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: int, definition: Dictionary, catalog: Dictionary, rng_state: Array, sequence: int, spend: bool = false) -> Dictionary:
+## held code after 0x409e40). The AI keeps the default refusal as its stale-plan guard (its
+## triggers always leave an effect, BattleLoopInventory.resolve_item_use). `script`: actUseItem (case 0x5d 0x451669) calls 0x409e40(actor, id,
+## vm, 0) alone — no ownership, paralysis or benefit check, and the inventory is not touched.
+static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: int, definition: Dictionary, catalog: Dictionary, rng_state: Array, sequence: int, spend: bool = false, script: bool = false) -> Dictionary:
 	if not DamageRandom.valid(rng_state) or not Values.is_integer_in(sequence, 1, Values.MAX_SIGNED): return {"ok":false,"reason":"invalid_item_sequence_state"}
 	if not actor.get("id") is String or not target.get("id") is String or not actor.get("inventory") is Array or not InventoryRules.valid(actor["inventory"]): return {"ok":false,"reason":"invalid_item_actor"}
 	if actor["id"].is_empty() or target["id"].is_empty() or ResourceRecoveryRules.health_error(actor) != "" or ResourceRecoveryRules.health_error(target) != "" or not Values.is_integer_in(target.get("stamina"), 0, 60): return {"ok":false,"reason":"invalid_item_vitals"}
 	if actor["id"] == target["id"] and actor != target: return {"ok":false,"reason":"inconsistent_self_item_snapshot"}
 	if not code.is_valid_int() or int(code)<=0 or not catalog.has(code): return {"ok":false,"reason":"unsupported_item"}
-	if StatusEffectRules.input_error(actor) != "" or StatusEffectRules.paralyzed(actor) or int(actor.get("hp",0)) <= 0 or actor.get("defeated",false) or actor.get("departed",false): return {"ok":false,"reason":"item_owner_unavailable"}
+	if StatusEffectRules.input_error(actor) != "" or (StatusEffectRules.paralyzed(actor) and not script) or int(actor.get("hp",0)) <= 0 or actor.get("defeated",false) or actor.get("departed",false): return {"ok":false,"reason":"item_owner_unavailable"}
 	if ProgressionRules.Permanent.input_error(actor) != "": return {"ok":false,"reason":"invalid_item_owner_capabilities"}
 	var index := InventoryRules.find_item(actor["inventory"],int(code),slot)
-	if index<0: return {"ok":false,"reason":"item_not_owned"}
-	var effect := ItemUseRules.prepare(target,definition,spend)
+	if index<0 and not script: return {"ok":false,"reason":"item_not_owned"}
+	var effect := ItemUseRules.prepare(target,definition,spend or script)
 	if not effect["ok"]: return effect
-	var removal := InventoryRules.remove(actor["inventory"],index,int(code))
+	var removal := {"ok": true, "inventory": actor["inventory"].duplicate()} if script else InventoryRules.remove(actor["inventory"],index,int(code))
 	if not removal["ok"]: return removal
 	var error := ProgressionRules.enhancement_profile_error(target,catalog)
 	if error != "": return {"ok":false,"reason":error}
@@ -79,6 +81,7 @@ static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: i
 		"restored_stamina":effect["restored_stamina"],"heal_numbers":effect["heal_numbers"].duplicate(),"cured_poison":effect["cured_poison"],"cured_paralysis":effect["cured_paralysis"],"cured_no_magic":effect["cured_no_magic"],"cured_weaken":effect["cured_weaken"],
 		"stat_effects":stat_effects,"permanent_effects":permanent_effects,"draws":draws,
 		"actor_before":actor.duplicate(true),"target_before":target.duplicate(true),"target_changes":changes.duplicate(true),"inventory_after":removal["inventory"].duplicate(true)}
+	if script: receipt["source"] = "script"
 	return {"ok":true,"target_changes":changes,"inventory":removal["inventory"],"rng":state,"receipt":receipt}
 
 
@@ -88,5 +91,5 @@ static func state_error(loop: Dictionary) -> String:
 	if not receipt is Dictionary: return "missing_item_use_receipt"
 	if int(loop["item_use_sequence"]) == 0: return "" if receipt.is_empty() else "inconsistent_item_use_sequence"
 	if receipt.get("sequence") != loop["item_use_sequence"] or not receipt.get("actor_before") is Dictionary or not receipt.get("target_before") is Dictionary: return "invalid_item_use_receipt"
-	if not Values.is_integer_in(receipt.get("inventory_index"), 0, 7) or not receipt.get("item_code") is String: return "invalid_item_use_receipt"
+	if not Values.is_integer_in(receipt.get("inventory_index"), -1 if receipt.get("source") == "script" else 0, 7) or not receipt.get("item_code") is String: return "invalid_item_use_receipt"
 	return ""

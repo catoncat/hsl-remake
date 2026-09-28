@@ -572,7 +572,7 @@ func _lane_k_token_actions() -> void:
 	var item_actor := WinfailConditions.unit(item_loop, "actor055_1")
 	_assert_eq(item_loop["winfail_runtime"]["item_requests"][0]["status"], "applied", "actUseItem commits through ItemResolutionRules")
 	_assert_eq(item_actor.get("hp"), item_actor.get("max_hp"), "actUseItem restores HP through the existing consumable rule")
-	_assert_eq(item_actor["inventory"].has(252), false, "actUseItem consumes the source inventory item")
+	_assert_eq(item_actor["inventory"].has(252), true, "actUseItem leaves the inventory: case 0x5d 0x451669 calls 0x409e40 alone, neither reads actor+0x138")
 	_assert_eq(item_actor["status_counters"]["poison"], 0, "actUseItem cures poison through the existing consumable rule")
 
 	var no_attack_seed := _seed([

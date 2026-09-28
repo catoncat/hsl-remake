@@ -1,14 +1,14 @@
 # 物品命令：入口状态、取消归还、重要物品保护与用药目标
 
-> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40c570, 0x40e690, 0x40eb80, 0x40ecc0, 0x40f440, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
+> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40c570, 0x40e690, 0x40eb80, 0x40ecc0, 0x40ed50, 0x40f200, 0x40f440, 0x40f560, 0x411990, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：Use／Give／Equip／Drop 是玩家 state5／6／7／8（原 `obj-051.obs` 的 obj_Data8，不按菜单字符串 `rtus` 顺序）；Equip／Drop 走 Object130 根窗口，关窗后父 state76→77→3 回物品子菜单，不结束行动；Use 完成走 state4 公共结束；ITEM `important`（+0xa0 bit27）禁丢，与禁卸的 `take_off`（+0xa4 bit1）无关（static-derived）。
-- 原版用药：模式4 从使用者格泛洪一格（大体型两格），可对自己用，敌方／NPC 格被挡；无 HP／MP／状态资格检查，满值照用并消耗一件，回复量夹到 0 浮出 0；AI 用药只看阈值与状态 mask（static-derived）。
+- 原版用药：模式4 从使用者格泛洪一格（大体型两格且每格先过 3×3 检查），可对自己用，墙与敌方格被挡；无 HP／MP／状态资格检查，满值照用并消耗一件，回复量夹到 0 浮出 0；AI 取药不比药效，只看阈值与状态 mask；剧情 `actUseItem` 只调 `0x409e40`，不查持有与收益、不动背包（static-derived）。
 - 原版裝備／丟棄窗：mode4／5 同一持物窗（`0x43b7fd`），空手点背包格拿起、持物点格放回首空格；持物点装备板槽装上、旧装备进手，空手点槽卸下进手；mode5 多一个 丟棄 钮（中心 (285,387)），只清非重要持物；右键先放回持物、空手才关窗回道具子环；持物且指针在装备板上时左栏改显屬性页，离板回道具页（`0x439a0f`）；无确认页、无饰品选位置页（static-derived）。
 - 重制：`InventoryRules.discard_error/discard`、`ItemUseRules`、`ItemResolutionRules`、`game/sim/loop/BattleLoopInventory.gd`；丢弃与换装免费并保留当前行动；`BattleItemPanel` 裝備／丟棄 走同一持物窗，持物记所持背包格，行里即按删格收拢显示，装上／卸下／丢弃／放回各提交一次 PlayLoop 命令（static-derived）。
-- 差异：重要物品不附加给予限制；差异清单 `item-use-rules`（static-derived）。用药选目标时右键取消已照 `0x444a5c` 首空归还（收拢后的末尾）并重开道具窗，无音。
+- 差异：重要物品不附加给予限制；AI 提交时保留无收益拒绝作过期计划守卫（触发条件已保证有收益，正常对局不触发）；差异清单 `item-use-rules`（static-derived）。用药选目标时右键取消已照 `0x444a5c` 首空归还（收拢后的末尾）并重开道具窗，无音。
 
 ## 证据
 
@@ -54,8 +54,9 @@
 
 | 条目 | 锚点 | 行为 |
 | --- | --- | --- |
-| 范围 | `0x40f440(user, 2 或 1, 4)`，按使用者 +0x2c 大体型；`0x444be4` 开选格 | 模式4 经 `0x40ed50` 泛洪，中心格保留；不进 `0x24000`（pmEnemy／pmNPC）格，no_block 例外；物品无射程字段参与 |
-| 给予范围 | `0x444bc7`：`0x40f440(user,1,4)` 后 `0x40f520(0)` 清中心 | 不能给自己 |
+| 范围 | `0x40f440(user, 2 或 1, 4)`，按使用者 +0x2c 大体型；`0x444be4` 开选格 | `0x40f200` 半径夹到 50、中心记 半径+1，向上下左右各进 `0x40ed50`；case 4（`0x40ef16`）掩码 `0x24000`（墙 0x4000＋pmEnemy 0x20000，NPC 不挡），高差清零、不扣爬坡；带掩码位的格只有站着 no_block 对象（`0x407800`→`0x446b30`，对象 +0xa0 bit 0x10）才进；离格扣 `0x40eb80`（前方三格有掩码位扣 2，否则 1）；物品无射程字段参与 |
+| 大体型 | `0x40f440` 见 +0x2c 非零：`0x4c1a78`=1，`0x411990` 把使用者 `0x40ba20` 侧位从中心周围 8 格清掉 | `0x40ed50` 在模式4 先调 `0x40ecc0(x, y, 0x24000)`：该格 3×3（泛洪起点除外）任一格带掩码位或高 255 即停；半径 2 时标到本体 3×3 与四边正中外一格，不到身体边角外侧 |
+| 给予范围 | `0x444bc7`：`0x40f440(user,1,4)` 后 `0x40f520(0)` 清中心 | 不能给自己；大体型本体环已清侧位，范围内无别的 pmPlayer 格 |
 | 选取 | `0x44492a..0x4449b6` | 格须标记（`0x40f560`）且格字 `0x411c40` 含 `0x10000`（EBX 在 `0x443955` 设定）；`0x407800` 取对象写 `0x4c1cec`；`0x446b00` 排除 no_attack（PLAYER+0xa0 bit2）；给予从 `0x444c27` 同样检查但不调 `0x446b00` |
 | 生效与消耗 | `0x444ab2` 调 `0x409e40(target, code, user, 0)`；`0x444aba` 无条件清暂持 | 一次一件、一个目标；`0x409e40` 先把 `0x4c1a44`／`0x4c1a48` 置 -1，HP（`0x40a1b9..0x40a218`）／MP 按上限夹紧写实际增量 |
 | 数字 | state108 `0x444ac9` | 不为 -1 的各浮一个数，满血喝药浮 0 |
@@ -69,13 +70,14 @@ AI 用药：
 | `0x44086e..0x4408dd` 对症药 | 桶 7；`0x40c1b0` 取状态 mask，`0x40c230` 找首件对症药 | 自己原地，否则 `0x40d530` 距离 1；state `0x100000`；找不到转 `0x4408e2` 的 `0x40c3a0(actor, 8, 1)` |
 | `0x4406af` | `0x44060e` 在 `0x40df70` 返回 0 后进入；`0x4c2c50==1` 时查 `0x40c1d0` | 自己原地，否则距离 1 |
 
-`0x40c110` 要求缺血至少 10，AI 不对满血目标用回血药。`0x40d530` 落点见 [original_ai_support.md](original_ai_support.md#证据)。
+`0x40c110` 要求缺血至少 10，AI 不对满血目标用回血药；`0x40c1d0`／`0x40c230` 与 `0x4402ed` 都不比药效，满血也保留药槽（自身 HP 检查照常抽数）。`0x40d530` 落点见 [original_ai_support.md](original_ai_support.md#证据)。
 
 ## 重制接线
 
 - `game/sim/InventoryRules.gd`：`discard_error`／`discard` 读 catalog important 布尔，缺记录或字段拒绝；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_item_actions.md`。
 - `game/sim/loop/BattleLoopInventory.gd` 的 `discard_item`：只提交库存，保留行动与可撤销移动；面板对重要物品置灰并说明，旧回调被版本检查拒绝。
-- `game/sim/ItemUseRules.gd`、`game/sim/ItemResolutionRules.gd`：用药目标与夹紧；`game/battle/scene/BattleItemText.gd` 浮 0。
+- `game/sim/ItemUseRules.gd`、`game/sim/ItemResolutionRules.gd`：用药目标与夹紧，`script` 路径不扣背包；`game/battle/scene/BattleItemText.gd` 浮 0。
+- 范围：`BattleLoopInventory.item_range_cells` 走 `AINavigationRules.native_flood` 模式4（含 3×3 检查），`_item_recipient_ids` 与选格画法 `BattleItemUsePresentation.use_cells` 都读它。
 - `game/battle/scene/BattleItemPanel.gd` `_show_hand_window`：裝備（state7）与丟棄（state8）同一窗，左 WINDOW20 背包、右 `BattleEquipmentView`（`accepts_empty_slots`），丟棄 时 (285,387) 加 BCMD08_1 钮；`held_index`／`held_code` 为持物草稿（行里不画被拿起的格），拿起只改所持格并发 take_up 音；放下（点背包任一行或右键）发 `hand_return_requested`，`BattleSceneMenus.return_held_item` 提交 `BattlePlayLoop.return_held_item`（`InventoryRules.put_back`：删格收拢后首空格，即末尾；不耗行动），put_down 音。
 - 用药取消：选目标页右键／Esc 发 `hand_return_requested(selected_index, code)`，`BattleSceneMenus.return_held_item` 同样提交 `BattlePlayLoop.return_held_item`（`put_back`：删格收拢后放首空格，即末尾；不耗行动），`hand_item_returned` 在 target 页重开使用窗并滑入，不发音（`0x444a5c..0x444a94` 只调 `0x436e30`、置 state 102）。
 - 装上：持物点槽发 `equipment_requested(槽, held_index, held_code)`，`BattleSceneMenus.change_equipment` 提交 `BattlePlayLoop.change_equipment`，窗不关，`hand_equipment_changed` 把换下的装备（规则放进的首空格）拿到手上；被拒则手不变、无音。卸下：空手点有物槽发 `(槽, -1, 0)`，卸下物同样进手。
@@ -89,9 +91,8 @@ AI 用药：
 
 ## 边界
 
-- 大体型使用者的 range2 泛洪（体型 `0x40ecc0`／邻接 `0x40eb80`）只读到入口参数，逐格结果未读。
 - `0x4406af` 的触发上下文、`0x40c570` 无法术时是否抽随机数未读。
-- 剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。
+- 剧情 `actUseItem`（case 0x5d `0x451669`）：`0x44fad0` 找 actor、`0x450390(code, serial, 0)`，再调 `0x409e40(actor, id, vm, 0)`；两段都不读写 actor+0x138 背包，也不查持有、麻痺与收益。`0x409e40` 返回 1 表示物品有任一效果字段（与目标是否满值无关），此时脚本停在 `+0x8c`=0x390001 等待，返回 0 才 +1。
 - 连续给予与交换见 [original_give_exchange.md](original_give_exchange.md)；库存结构与换装见 [original_inventory_equipment.md](original_inventory_equipment.md)。
 - 整理、全部脚本组合与移动标志不由本包概括。
 - 持物放回：原版拿起即删格收拢（`0x436e80`），持物点背包任一行或右键放首空格——即收拢后的末尾，重制同（规则层删格与放回一次提交，窗内无别的出口）。满包互换（`0x438c84`：`0x436ed0` 末格有物时点中格物进手、删格收拢、持物放第 8 格）只在持物来自装备板且背包满时发生；这种情形重制按规则拒绝卸下，互换顺序随之不出现。换装被拒时原版不出音与字，重制同。

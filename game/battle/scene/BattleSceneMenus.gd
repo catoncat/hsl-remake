@@ -338,7 +338,7 @@ func allocate_growth(unit_id: String, allocation: Dictionary) -> void:
 
 
 ## The use target is the original's map cell pick (state 104 0x4448f4 → 105 0x44492a):
-## 0x40f440(user, 1 (2 if large), mode 4) marks the range, drawn each tick in the move palette
+## 0x40f440(user, 1 (2 if large), mode 4) marks the range (BattleLoopInventory.item_range_cells), drawn each tick in the move palette
 ## (0x411200) with the cell cursor (0x430230); a unit under the pointer (cell word 0x70000, any
 ## side, in range or not) opens its identity strip (0x436490／0x43b4e0 mode 3, 0x4449bb); a left
 ## press confirms only on a marked cell (0x40f560) holding a player-side unit (0x411c40 & 0x10000)
@@ -351,9 +351,7 @@ var item_pick_cells: Array = []
 func _begin_item_pick() -> void:
 	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
 	var origin: Vector2i = runtime.unit_grid_coord(runtime.selected_unit_id)
-	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, origin)
-	if runtime.item_panel.operation == "give":
-		item_pick_cells.erase(origin)
+	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, origin, runtime.item_panel.operation == "give")
 	runtime.overlays.show_item_range(item_pick_cells)
 	_item_pick_hover(runtime.pointer_logical_position)
 
