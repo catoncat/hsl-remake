@@ -74,8 +74,6 @@ const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
-## MagicImpactPresentation.KEYS (not preloaded: that script preloads this one).
-const MagicImpactKeys := ["wind", "fire", "water"]
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
 ## A row whose attack script is empty still shows the caster's cast panels for this lead.
@@ -946,9 +944,10 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		"complete": lead_in + float(timeline["complete_tick"]) * scale})
 	var shift := _effect_view(host, clip, seconds * TICKS_PER_SECOND, complete)
 	var origins: Array = []
-	# A relayed damage spell (MagicImpactPresentation.KEYS) builds its Local effect on the first
-	# receiver here; the relay rebuilds it on each later one after the camera reaches it (0x443087).
-	var local_origins: Array = clip["affected_positions"].slice(0, 1) if clip["strike"].get("magic_key") in MagicImpactKeys else clip["affected_positions"]
+	# Every map spell relays (MagicImpactPresentation.is_relayed, not preloaded: that script
+	# preloads this one): its Local effect goes on the first receiver here, and the relay rebuilds
+	# it on each later one after the camera reaches it (0x443087).
+	var local_origins: Array = clip["affected_positions"].slice(0, 1) if clip["strike"].has("magic_key") else clip["affected_positions"]
 	for origin in ([clip["map_target"]] if bool(timeline["global"]) else local_origins):
 		origins.append(origin - shift)
 	var used := draw(clip, seconds, origins)

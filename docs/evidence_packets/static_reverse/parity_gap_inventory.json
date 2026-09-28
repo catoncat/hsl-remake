@@ -117,14 +117,14 @@
     },
     {
       "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），接力伤害法术（风／火／水）已照做（MAGICSEQ）；剩状态、回复等其余 Local 法术在施法时每个受影响单位同时一份",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），风／火／水先照做（MAGICSEQ），回复、状态、增益、解除等其余地图法术也已照原版 0x442a90 逐受者接力、每受者至多一个数（MAGICBARALL）；剩：首个受者前原版也滑一次镜头、Local 重放时原版重新压暗并跑 OtherBBall1 镜头轨迹与 IconBGSet 波纹，重制未做",
       "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移），子状态 0x19 对 0x4104d0(1) 取出的每个受者各走一次，效果结束才出条；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_strike.md",
         "docs/evidence_packets/static_reverse/original_magic_damage.md",
         "docs/evidence_packets/runtime_observations/effect_motion/README.md"
       ],
-      "remake": "BattlePresentation 传入各受影响单位的格中心；接力伤害法术的 Local 效果只在首个受者放，MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次",
+      "remake": "BattlePresentation 传入各受影响单位的格中心；所有地图法术（MagicImpactPresentation.is_relayed）的 Local 效果只在首个受者放，MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次",
       "remake_code": [
         "game/battle/scene/BattlePresentation.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -135,7 +135,7 @@
       "effort": "S",
       "category": "特写与施法演出",
       "sources": [
-        "sentence:docs/evidence_packets/static_reverse/original_map_strike.md#3590ff7a00"
+        "sentence:docs/evidence_packets/static_reverse/original_map_strike.md#5450643da0"
       ]
     },
     {

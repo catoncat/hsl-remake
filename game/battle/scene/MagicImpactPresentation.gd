@@ -1,12 +1,15 @@
 extends Node2D
-## Transient map receiver bars and amount: the cast routine 0x442a90 takes its receivers one
-## at a time. Each gets 0x43b3f0's small HP／MP bars (the item-use pair: BAR_HP4 frame, BAR_HP5／
-## BAR_HP6 fills, live "cur/max" beside each) for 24 ticks with the HP before the hit; then
-## 0x40b8d0 applies the damage — the bar's live read switches to the HP after it and 0x40aba0
-## spawns the number at the target's (x, y − 0x34): a hit's red kind-0 number (NUM100..109
-## revealed digit by digit, 10 ticks per digit + 34, no rise), a miss's NUM513 MISS (level 16
-## for 16 ticks, then fading to tick 46, rising 1 px every other tick), both through
-## ResultNumberFloater. The bars go 40 ticks later (a kill first waits 30 ticks, then 40 + 8
+## Transient map receiver bars and amount: the cast routine 0x442a90 takes the receivers of
+## every map spell one at a time — it never branches on the spell's function, so heals, statuses,
+## buffs and cures relay exactly like damage. Each gets 0x43b3f0's small HP／MP bars (the item-use
+## pair: BAR_HP4 frame, BAR_HP5／BAR_HP6 fills, live "cur/max" beside each) for 24 ticks with the
+## vitals before the cast; then 0x40b8d0 (0x40aa80, channel 0) settles it — the bars' live read
+## switches to the vitals after it and at most one number spawns at the target's (x, y − 0x34):
+## the red kind-0 damage (0x40aba0; NUM100..109 revealed digit by digit, 10 ticks per digit + 34,
+## no rise), else the green kind-2 heal of a Heal spell even when it restores 0 (0x40ac24), else
+## NUM513 MISS when nothing took hold (0x40b8a3; level 16 for 16 ticks, then fading to tick 46,
+## rising 1 px every other tick), all through ResultNumberFloater; an applied status, buff or cure
+## spawns nothing and the map path has no blue MP number. The bars go 40 ticks later (a kill first waits 30 ticks, then 40 + 8
 ## for eff_proc_Local, 40 + 16 for Global) and the next receiver's bars start; the numbers stay.
 ## One bar slot ([0x4c1cc8]): never two receivers' bars at once. Before every receiver after the
 ## first the routine glides the camera to it and waits there (states 9／0x19 call 0x43bf30 each
@@ -38,8 +41,6 @@ const ItemBars = preload("res://game/battle/scene/BattleItemUsePresentation.gd")
 const MapHitState = preload("res://game/battle/scene/MapHitState.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
-## The magic keys whose receivers this relay presents (BattlePresentation._present_impact).
-const KEYS := ["wind", "fire", "water"]
 ## 0x40aba0／0x40ac24: the magic channel spawns its number at (target x, target y − 0x34).
 const NUMBER_OFFSET := Vector2(0, -0x34)
 ## 0x442a90 states 9／0x1b: +0x9c = 24 ticks of the bar before 0x40b8d0 applies the damage and
@@ -62,6 +63,29 @@ var _runtime: WeakRef = weakref(null)
 ## eff_proc_Local's effect timeline, replayed on each later receiver ({} for Global or none).
 var _replay: Dictionary = {}
 var _effect: SkillEffectScriptPlayer
+## OPT-INFO=公開: called with (receipt, number point) on each receiver's settle tick to lay the
+## remake's words that have no original glyph (BattlePresentation._present_receiver_captions).
+var captions: Callable
+
+
+## Every magic-channel strike relays (0x442a90 runs all map spells); SkillEffectScriptPlayer's
+## Local origins read the same test.
+static func is_relayed(strike: Dictionary) -> bool:
+	return strike.has("magic_key")
+
+
+## The one number 0x40aa80 (channel 0) spawns for `hit`: red damage when the HP roll landed
+## (0x40ab55..0x40aba0), else the green heal of a Heal spell, 0 included (0x40abb0..0x40ac24: the
+## spawn only skips when a number is already up), else MISS when nothing added to the running
+## contribution 0x4c13fc nor the local EXP (0x40b84b..0x40b8a3: every status／buff／cure branch
+## raises the "shown" flag once 0x4c13fc is non-zero); {} when an effect took hold silently.
+static func settle_number(hit: Dictionary, heals: bool) -> Dictionary:
+	var damage := int(hit.get("actual_damage", hit.get("damage", 0)))
+	if damage > 0: return {"kind": "damage", "value": damage}
+	if heals: return {"kind": "heal", "value": int(hit.get("healing", 0))}
+	if int(hit.get("native_contribution", 0)) == 0 and hit.get("immediate_contributions", []).is_empty():
+		return {"kind": "miss", "value": 0}
+	return {}
 
 
 ## `effect_timeline`: the cast's compiled effect (SkillEffectScriptPlayer), replayed on every
@@ -76,7 +100,9 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 			_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
 	var world_height := 1e9
 	if runtime.get("map_config") != null: world_height = float(runtime.map_config.world_size.y)
-	var global := _global(strike, runtime)
+	var fields := _fields(strike, runtime)
+	var global := str(fields.get("effect_proc", "")) == "eff_proc_Global"
+	var heals := Array(str(fields.get("function", "")).split(",")).has("magicFun_Heal")
 	_replay = {} if global else effect_timeline
 	for hit in strike.get("affected_targets", [strike]):
 		var actor = runtime.actor_node_for_unit(str(hit["defender_id"]))
@@ -89,31 +115,33 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 		var panel := Node2D.new()
 		panel.position = runtime.world_to_logical_position(bar_world)
 		add_child(panel)
-		var bars: Array[Dictionary] = [{"fill": "bar_hp5", "value": int(unit["hp"]), "max": int(unit["max_hp"])},
-			{"fill": "bar_hp6", "value": int(unit.get("mp", 0)), "max": int(unit.get("max_mp", 0))}]
+		# The bars' live read after 0x40b8d0: the receipt's HP after, the MP plus any restored.
+		var bars: Array[Dictionary] = [{"fill": "bar_hp5", "value": int(unit["hp"]), "max": int(unit["max_hp"]), "after": int(hit.get("defender_hp_after", unit["hp"]))},
+			{"fill": "bar_hp6", "value": int(unit.get("mp", 0)), "max": int(unit.get("max_mp", 0)), "after": int(unit.get("mp", 0)) + int(hit.get("restored_mp", 0))}]
 		for index in bars.size():
 			var text := BattleUISkin.text(panel, ItemBars.BAR_TEXT_OFFSET + Vector2(0, ItemBars.BAR_PITCH * index), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, ItemBars.BAR_TEXT_CELL)
 			text.name = "MagicImpactBarText"
 			bars[index]["text"] = text
 			_set_bar(bars[index], int(bars[index]["value"]))
 		panel.draw.connect(_draw_bars.bind(panel, bars))
-		var damage := int(hit.get("actual_damage", hit["damage"]))
-		# 0x40aba0: the red kind-0 number of a hit, MISS (kind 5) of a miss; hold 0.
-		var amount: Node2D = ResultNumberFloater.new()
-		amount.name = "DamageDigits" if bool(hit["hit"]) else "MissGlyph"
-		amount.clocked = false
-		amount.position = runtime.world_to_logical_position(actor.position) + NUMBER_OFFSET
-		add_child(amount)
-		amount.present("damage" if bool(hit["hit"]) else "miss", damage)
-		amount.hide()
-		var hp_after := int(hit["defender_hp_after"])
+		var number := settle_number(hit, heals)
+		var amount: Node2D = null
+		if not number.is_empty():
+			amount = ResultNumberFloater.new()
+			amount.name = {"damage": "DamageDigits", "heal": "HealDigits", "miss": "MissGlyph"}[number["kind"]]
+			amount.clocked = false
+			amount.position = runtime.world_to_logical_position(actor.position) + NUMBER_OFFSET
+			add_child(amount)
+			amount.present(number["kind"], int(number["value"]))
+			amount.hide()
+		var hp_after := int(hit.get("defender_hp_after", unit["hp"]))
 		var life := BAR_TICKS + (KILL_WAIT_TICKS + (KILL_EXTRA_GLOBAL if global else KILL_EXTRA_LOCAL) if hp_after <= 0 else 0)
 		# The first receiver's bars start at once; a later one's when its lead is laid (_lead).
 		var first := entries.is_empty()
 		entries.append({"panel": panel, "bars": bars, "amount": amount, "actor": weakref(actor), "hit": bool(hit["hit"]),
 			"hp_after": hp_after, "unit_id": str(hit["defender_id"]), "outcome": hit, "coord": unit.get("coord", Vector2i.ZERO),
 			"bar_world": bar_world, "start": 0 if first else -1, "end": life if first else -1, "life": life,
-			"float_ticks": amount.life_ticks()})
+			"float_ticks": amount.life_ticks() if amount != null else 0})
 	elapsed = 0.0
 	_process(0.0)
 
@@ -151,13 +179,12 @@ func death_released(unit_id: String) -> bool:
 	return true
 
 
-## eff_proc_Global (MAGIC +0x2c = 1, read by 0x409920) takes the 0x442a90 branch whose kill
-## adds 16; Local adds 8.
-func _global(strike: Dictionary, runtime: Node) -> bool:
+## The cast's MAGIC row: eff_proc_Global (+0x2c = 1, read by 0x409920) takes the 0x442a90 branch
+## whose kill adds 16, Local adds 8; `function` carries the Heal bit settle_number reads.
+func _fields(strike: Dictionary, runtime: Node) -> Dictionary:
 	var loop = runtime.get("play_loop")
-	if not (loop is Dictionary): return false
-	var skill: Dictionary = loop.get(LoopKeys.SKILL_BOOK, {}).get("skills", {}).get(str(strike.get("skill_id", "")), {})
-	return str(skill.get("fields", {}).get("effect_proc", "")) == "eff_proc_Global"
+	if not (loop is Dictionary): return {}
+	return loop.get(LoopKeys.SKILL_BOOK, {}).get("skills", {}).get(str(strike.get("skill_id", "")), {}).get("fields", {})
 
 
 ## Seconds until every bar and number has gone: the last receiver's bars, or the longest
@@ -224,7 +251,7 @@ func _process(delta: float) -> void:
 		# The bars and numbers stay on their map points while the camera glides.
 		if runtime != null and actor != null:
 			entry["panel"].position = runtime.world_to_logical_position(entry["bar_world"])
-			entry["amount"].position = runtime.world_to_logical_position(actor.position) + NUMBER_OFFSET
+			if entry["amount"] != null: entry["amount"].position = runtime.world_to_logical_position(actor.position) + NUMBER_OFFSET
 		if entry.has("glide_end") and tick >= int(entry["glide_end"]) and not entry.get("landed", false):
 			entry["landed"] = true
 			if controller != null and controller.is_scrolling(): controller.finish_scroll()
@@ -236,14 +263,18 @@ func _process(delta: float) -> void:
 		var on := start >= 0 and local >= 0 and tick < int(entry["end"])
 		entry["panel"].visible = on
 		if start >= 0 and local >= BEFORE_TICKS and not entry.get("after_shown", false):
-			# 0x40b8d0 applied the damage: the bar's live read shows the HP after it, and a hurt
-			# receiver enters the map hit state this tick (0x40aa80 → 0x40b831 → 0x407230).
+			# 0x40b8d0 settled the receiver: the bars' live read shows the vitals after it, and a
+			# hurt receiver enters the map hit state this tick (0x40aa80 → 0x40b831 → 0x407230).
 			entry["after_shown"] = true
-			_set_bar(entry["bars"][0], int(entry["hp_after"]))
+			for bar in entry["bars"]: _set_bar(bar, int(bar["after"]))
 			entry["panel"].queue_redraw()
 			if runtime != null and MapHitState.hurt(entry["outcome"]):
 				MapHitState.begin(runtime, self, str(entry["unit_id"]), pace)
-		if start < 0 or local < NUMBER_TICKS:
+			if runtime != null and actor != null and captions.is_valid():
+				captions.call(entry["outcome"], runtime.world_to_logical_position(actor.position) + NUMBER_OFFSET)
+		if entry["amount"] == null:
+			pass
+		elif start < 0 or local < NUMBER_TICKS:
 			entry["amount"].hide()
 		else:
 			entry["amount"].draw_at(local - NUMBER_TICKS)
@@ -266,7 +297,7 @@ func finish() -> void:
 		var actor: Node2D = entry["actor"].get_ref()
 		if actor != null: actor.modulate = Color.WHITE
 		entry["panel"].queue_free()
-		entry["amount"].queue_free()
+		if entry["amount"] != null: entry["amount"].queue_free()
 	entries.clear()
 	if _effect != null: _effect.clear()
 

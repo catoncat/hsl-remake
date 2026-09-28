@@ -632,14 +632,13 @@ func _present_release(_strike: Dictionary, attacker: Dictionary, _defender: Dict
 
 func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool) -> void:
 	if strike.get("silent_after_defeat", false): return
-	# The magic channel (0x40aa80) puts every receiver it hurt into the map hit state 0x407230:
-	# hit shape and ±1 px shake for 60 ticks, no tint. The close-up's strikes leave the map alone.
-	# The relayed damage spells enter it per receiver on its damage tick (MagicImpactPresentation).
-	if strike.get("magic_key") in magic_impact.KEYS:
+	# Every map spell (the magic channel, 0x442a90 → 0x40b8d0) settles its receivers one at a time:
+	# bars, number (or MISS) and 公開 words per receiver, each hurt one entering the map hit state
+	# 0x407230 on its settle tick (MagicImpactPresentation). The close-up's strikes leave the map alone.
+	if magic_impact.is_relayed(strike):
+		magic_impact.captions = _present_receiver_captions
 		magic_impact.begin(strike, get_parent(), cutin.clips[0].get("effect_timeline", {}) if not cutin.clips.is_empty() else {})
 		return
-	if strike.has("magic_key"):
-		MapHitState.begin_strike(strike, get_parent(), self, float(Timing.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0)))
 	# OPT-INFO (read once per impact): 公開 puts the remake's words back beside the numbers.
 	var public := not GameOptions.is_original("OPT-INFO")
 	if strike.has("status_effects") or strike.has("support_effects") or strike.has("stat_effects"):
@@ -835,7 +834,8 @@ func _update_dialogue_page() -> void:
 
 ## `public`: OPT-INFO=公開 (read by _present_impact) shows the status／cure／buff captions and adds
 ## the HP／MP word the remake put after a heal／MP number before UI6, in the number's colour among
-## the captions; the original path shows the numbers alone (0x404643).
+## the captions; the original path shows the numbers alone (0x404643). The close-up channel's
+## support／stat／status strikes come here; map spells settle per receiver (MagicImpactPresentation).
 func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 	var occupied: Array[Rect2] = []
 	var captions: Array[Array] = []
@@ -848,34 +848,60 @@ func _present_status_effects(strike: Dictionary, public: bool = false) -> void:
 			# glyph for (status／cure／buff captions) are white Labels stacked above them.
 			var point: Vector2 = get_parent().world_to_logical_position(actor.position)
 			var amounts := {"damage": 0, "heal": 0, "mp": 0}
-			var parts: Array[Dictionary] = []
 			for part in cutin.feedback_parts(result):
 				if amounts.has(str(part["kind"])): amounts[str(part["kind"])] = int(part["text"])
-				else: parts.append(part)
-			if public:
-				if amounts["mp"] > 0: parts.push_front({"text": "MP", "kind": "mp"})
-				if amounts["heal"] > 0: parts.push_front({"text": "HP", "kind": "heal"})
-			for effect in result.get("status_effects", []):
-				if effect["applied"]: parts.append({"text": StatusCatalog.name_of(effect["status"]), "kind": "caption"})
-				elif effect["reason"] != "target_defeated": parts.append({"text": "免疫" if effect["reason"] == "immune" else "未生效", "kind": "caption"})
 			for number in ResultNumberFloater.spawn_all(status_feedback, ResultNumberFloater.spawns(amounts["damage"], amounts["heal"], amounts["mp"], false), point + MAGIC_NUMBER_OFFSET):
 				number.finished.connect(number.queue_free)
 				occupied.append(number.bounds().grow(5))
-			for part in parts:
-				# The status／cure／buff captions have no original glyph: OPT-INFO=公開 only.
-				if not public and str(part["kind"]) == "caption": continue
-				var label := Label.new()
-				label.text = str(part["text"])
-				label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				label.add_theme_font_size_override("font_size", 18)
-				label.add_theme_constant_override("outline_size", 4)
-				label.add_theme_color_override("font_outline_color", Color.BLACK)
-				label.add_theme_color_override("font_color", ShowNumberStyle.color(str(part["kind"])))
-				status_feedback.add_child(label)
-				label.size = label.get_combined_minimum_size()
+			for label in _caption_labels(result, public):
 				captions.append([label, point])
-	# The numbers keep their original points (the original does not move them apart); the captions
-	# are laid out once every target's numbers are down, so no caption covers a neighbour's number.
+	_lay_captions(captions, occupied)
+
+
+## MagicImpactPresentation.captions: one map-spell receiver's 公開 words, laid on its settle tick
+## above its number point (`number_point`, the magic channel's (x, y − 0x34)).
+func _present_receiver_captions(result: Dictionary, number_point: Vector2) -> void:
+	var captions: Array[Array] = []
+	for label in _caption_labels(result, not GameOptions.is_original("OPT-INFO")):
+		captions.append([label, number_point - MAGIC_NUMBER_OFFSET])
+	var occupied: Array[Rect2] = [Rect2(number_point + Vector2(-30, -24), Vector2(60, 28))]
+	_lay_captions(captions, occupied)
+
+
+## One receiver's words without an original glyph (status names, 免疫／未生效, cure／buff words and
+## the HP／MP word), as Labels under status_feedback; none unless `public`.
+func _caption_labels(result: Dictionary, public: bool) -> Array[Label]:
+	var labels: Array[Label] = []
+	# The status／cure／buff captions have no original glyph: OPT-INFO=公開 only.
+	if not public: return labels
+	var parts: Array[Dictionary] = []
+	var words: Array[Dictionary] = []
+	for part in cutin.feedback_parts(result):
+		if str(part["kind"]) == "caption": parts.append(part)
+		elif str(part["kind"]) in ["heal", "mp"]: words.append({"text": "HP" if part["kind"] == "heal" else "MP", "kind": part["kind"]})
+	words.append_array(parts)
+	parts = words
+	for effect in result.get("status_effects", []):
+		if effect["applied"]: parts.append({"text": StatusCatalog.name_of(effect["status"]), "kind": "caption"})
+		elif effect["reason"] != "target_defeated": parts.append({"text": "免疫" if effect["reason"] == "immune" else "未生效", "kind": "caption"})
+	for part in parts:
+		var label := Label.new()
+		label.text = str(part["text"])
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.add_theme_font_size_override("font_size", 18)
+		label.add_theme_constant_override("outline_size", 4)
+		label.add_theme_color_override("font_outline_color", Color.BLACK)
+		label.add_theme_color_override("font_color", ShowNumberStyle.color(str(part["kind"])))
+		status_feedback.add_child(label)
+		label.size = label.get_combined_minimum_size()
+		labels.append(label)
+	return labels
+
+
+## The numbers keep their original points (the original does not move them apart); the captions
+## ([label, target point]) are laid out once every target's numbers are down, so no caption covers
+## a neighbour's number, and rise and go.
+func _lay_captions(captions: Array[Array], occupied: Array[Rect2]) -> void:
 	for caption in captions:
 		var label: Label = caption[0]
 		var bounds := Rect2(caption[1] + Vector2(-label.size.x / 2, -60), label.size).grow(5)

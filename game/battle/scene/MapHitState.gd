@@ -31,14 +31,8 @@ static func hurt(outcome: Dictionary) -> bool:
 	return outcome.get("status_effects", []).any(func(effect): return bool(effect.get("applied", false)))
 
 
-## Every receiver `hurt` by a magic-channel strike enters the hit state; `pace` is the map clock
-## multiplier (OPT-PACE).
-static func begin_strike(strike: Dictionary, runtime: Node, owner: Node, pace: float = 1.0) -> void:
-	for outcome in strike.get("affected_targets", [strike]):
-		if hurt(outcome):
-			begin(runtime, owner, str(outcome["defender_id"]), pace)
-
-
+## `pace` is the map clock multiplier (OPT-PACE); the map-spell relay (MagicImpactPresentation)
+## calls it for each receiver `hurt` on its settle tick.
 static func begin(runtime: Node, owner: Node, unit_id: String, pace: float = 1.0) -> void:
 	var actor: Node2D = runtime.actor_node_for_unit(unit_id)
 	if actor == null:

@@ -16,7 +16,7 @@
 | 两个不换姿势的条件 | 死亡入口 `0x43ef36`／`0x44347e` 调 `0x446c40(actor, 方向, 6, 2)` 前跳过：① `+0x80 & 0x800`——**已在受击态**（收尾每 tick 已画 hit 帧，不用再换）；② `0x446b60` = live 记录 `+0xa0 & 0x20`，即 PLAYERS **no_showshape**（[阵营位包](original_player_mode_sides.md)：船壳等隐形对象）——收尾对它每 tick 写形号 `0xffff`，本就不画。收尾本身另有一条：`+0x80 & 0x1000`（`0x4071e0` 升级 use_magic 姿势、`0x4516b8` 脚本姿势持有 40 tick）时不改姿势；`0x407230` 会先清掉 0x1000，所以受击优先 |
 | 法术特效原点 | 法术演出对象 `0x442a90` 按 MAGIC 行 `+0x2c`（`effect_proc`，解析器 `0x44dbb6`；`effects.h` Local=0／Global=1，读取 `0x409920`）分两条轨道：**Local（0）**→ 状态 0x14 起，镜头滚到目标对象后 `0x443087` 以目标对象的 `(+4, +8)` 调 `0x423a20` 建效果解释器——行动者初始化 `0x407d1a..0x407d4e` 把两坐标都取 `(c & ~31) + 16`，即**目标格中心，无 y 偏移**；**Global（1）**→ 状态 1 起，`0x442b58` 把 `0x4c2c70／0x4c2c74` 写成光标格 `(列×32+16, 行×32+16)`，镜头滚到同一点后 `0x442d81` 以它为原点建**一份**解释器 |
 - `0x40aa80` 的效果位 `param_4 & 2` 是回复 HP（`0x40abb0..0x40ac2c`：`+0xd8` 加到 `+0xdc` 封顶、绿字 kind 2），不碰受击计数；全函数只有 `0x40b474` 一处写 MP（`+0xe0`，`0x8000` HealMP 加 MP），没有 MP 伤害分支，所以不存在「只伤 MP」的法术，受击计数只来自 HP 伤害（`0x40ab73` 置 1）与负面位（static-derived）。重制 `MapHitState.hurt` 同样只看 HP 伤害与施加成功的负面状态，一致。
-- 重制对照：`SkillEffectScriptPlayer._present_effect` 对 Global 在 `clip["map_target"]`（`BattlePresentation._show_strike` 取 `cast_center`，无则守方格，格中心投到逻辑屏幕）放一份，Local 在每个受影响单位格中心各一份；Global 原点是光标格中心而非屏幕中心，地图边缘镜头夹住时两者不同，现按格中心（static-derived）。
+- 重制对照：`SkillEffectScriptPlayer._present_effect` 对 Global 在 `clip["map_target"]`（`BattlePresentation._show_strike` 取 `cast_center`，无则守方格，格中心投到逻辑屏幕）放一份，Local 在首个受影响单位格中心放一份、`MagicImpactPresentation` 接力到后续受者时在其格中心各重放一份；Global 原点是光标格中心而非屏幕中心，地图边缘镜头夹住时两者不同，现按格中心（static-derived）。
 
 ## 证据
 
@@ -30,7 +30,7 @@
 ## 重制接线
 
 - `game/battle/scene/MapHitState.gd` 照 `0x407230`／`0x43f288`／`0x4420ba` 写受击态：60 tick 内 hit 帧、格心左右 ±1 px 抖动，第 60 tick 回格心与站立。
-- `BattlePresentation` 对法术通道回执（`_present_impact` → `MapHitState.begin_strike`）与地形毒回执（`_refresh_terrain_poison`）调它；`BattlePoisonGasPresentation` 对喷气与落雷受者调 `MapHitState.begin`。切入路径不调。
+- 法术通道回执由 `MagicImpactPresentation` 接力，在每个受者结算那 tick 对 `MapHitState.hurt` 的受者调它；`BattlePresentation` 对地形毒回执（`_refresh_terrain_poison`）调它；`BattlePoisonGasPresentation` 对喷气与落雷受者调 `MapHitState.begin`。切入路径不调。
 
 ## 复现
 
@@ -42,7 +42,7 @@ r2 -q -e scr.color=0 -c 'pd 60 @ 0x442a90; pxw 64 @ 0x4432c8; px 32 @ 0x443304; 
 
 ## 边界
 
-- Local 法术多受者（static-derived，逐受者序列见 [original_magic_damage.md](original_magic_damage.md)「逐受者序列」）：`0x4104d0(1)` 逐个把下一受者放进 `0x4c1cec`，子状态 0x19 在每个受者身上各建一份效果（`0x443087`），前一人的条撤掉后才建下一份，不同时在场。重制的接力伤害法术（风／火／水）照此；状态、回复等其余 Local 法术重制未做，仍在施法时每个受影响单位同时一份。
+- Local 法术多受者（static-derived，逐受者序列见 [original_magic_damage.md](original_magic_damage.md)「逐受者序列」）：`0x4104d0(1)` 逐个把下一受者放进 `0x4c1cec`，子状态 0x19 在每个受者身上各建一份效果（`0x443087`），前一人的条撤掉后才建下一份，不同时在场；`0x442a90` 不按魔法功能分支，回复、状态、增益、解除法术也一样。重制所有地图法术照此接力（`MagicImpactPresentation.is_relayed`）：Local 效果只在首个受者放，其余受者在镜头到位后各重放一份。首个受者前原版也滑一次镜头、Local 重放时原版重新压暗并跑 OtherBBall1 镜头轨迹与 IconBGSet 波纹，这几处重制未做（见 original_magic_damage.md「边界」）。
 
 ### 3. 剩余（provisional）
 
