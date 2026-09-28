@@ -68,11 +68,15 @@ func manifest_contracts() -> void:
 			script_members[member] = true
 	for member in motion["members"]:
 		check(manifest["frames"].has(member) or manifest["missing_members"].has(member), "every native track member is imported or declared missing: " + str(member))
+	# The native objcomd.txt runs are native tracks too: a special object's thrown children draw
+	# members no script names (objcomd_motion.json variants／hit_variants).
+	var objcomd_drawn := _objcomd_drawers()
 	for member in manifest["missing_members"]:
-		check(script_members.has(member) or motion["members"].has(member), "a missing member is named by a scope object or a native track: " + str(member))
+		check(script_members.has(member) or motion["members"].has(member) or objcomd_drawn.has(member), "a missing member is named by a scope object or a native track: " + str(member))
 		check(not manifest["frames"].has(member), "missing and imported are disjoint: " + str(member))
 		if not script_members.has(member):
-			check(_tracked_drawers(member).size() > 0 and _tracked_drawers(member).all(func(name): return motion["objects"].has(name)), "a track-only missing member is drawn only by tracked objects (the player cycles its series): " + str(member))
+			var drawers: Array = _tracked_drawers(member) if motion["members"].has(member) else objcomd_drawn.get(member, [])
+			check(drawers.size() > 0 and drawers.all(func(name): return motion["objects"].has(name) or ObjcomdMotion.packet()["objects"].has(name)), "a track-only missing member is drawn only by tracked objects (the player cycles its series): " + str(member))
 	check(manifest["missing_members"].filter(func(member): return str(member).begins_with("MAGIC\\SP08_")).size() == 40, "the 40 SP08 shape names hsl.pak lacks stay declared missing (negative-evidence)")
 	for name in manifest["objects"]:
 		var object: Dictionary = manifest["objects"][name]
@@ -94,6 +98,26 @@ func _tracked_drawers(member: String) -> Array:
 				names.append(name)
 				break
 	return names
+
+
+## member -> the scope objects whose native objcomd.txt run draws it (any variant, hit or miss run).
+func _objcomd_drawers() -> Dictionary:
+	var packet: Dictionary = ObjcomdMotion.packet()
+	var drawers := {}
+	for name in packet["objects"]:
+		if not scope["objects"].has(name):
+			continue
+		var row: Dictionary = packet["objects"][name]
+		for instances in row.get("variants", []) + row.get("hit_variants", []):
+			for instance in instances:
+				for run in instance.get("member", []):
+					if int(run[0]) >= 0:
+						var member := str(packet["members"][int(run[0])])
+						if not drawers.has(member):
+							drawers[member] = []
+						if not drawers[member].has(name):
+							drawers[member].append(name)
+	return drawers
 
 
 ## parse() yields one instruction per ani*／eff* token, in source order, with the tokens up to

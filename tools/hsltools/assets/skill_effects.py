@@ -8,7 +8,8 @@ content/generated/hsl/skills/special_effect_scripts.json (every SHP member of ev
 effPlaySound WAV, every object's obj_X1 insertion WAV and every objmPlaySound／objmPlayHitSound WAV
 of a special object's objcomd.txt command program) plus every SHP member the native effect-object
 tracks content/generated/hsl/skills/effect_motion.json draw (the sparks, bullets and afterimages
-the effProc* programs spawn); generate re-imports them from hsl.pak
+the effProc* programs spawn) and every SHP member a special object's native objcomd.txt run draws
+(content/generated/hsl/skills/objcomd_motion.json: the children it throws); generate re-imports them from hsl.pak
 with the first_skill decoders (parse_shp / write_shp_preview, XOR-A8 WAVE). The manifest also
 declares, per row, which presentation the cut-in uses (the script player, a dedicated module,
 or the borrowed 氣刃斬 staging when an opcode is not implemented) so the fallback is data, not a
@@ -31,8 +32,8 @@ SCOPE = Path('content/generated/hsl/skills/special_effect_scripts.json')
 # The native effect-object tracks (hsltools.probes.effect_motion): their spawned objects draw
 # SHP members no script names.
 MOTION = Path('content/generated/hsl/skills/effect_motion.json')
-# The native objcomd.txt runs (hsltools.probes.objcomd_motion): their recorded sounds and the shapes
-# of their hit-only throws are imported too.
+# The native objcomd.txt runs (hsltools.probes.objcomd_motion): their recorded sounds and every shape
+# their trees draw (miss-run children and hit-only throws) are imported too.
 OBJCOMD_MOTION = Path('content/generated/hsl/skills/objcomd_motion.json')
 OBJECTS = Path('content/imported/hsl/shared/first_skill/global.obs')
 ROOT = Path('content/imported/hsl/shared/skill_effects')
@@ -138,9 +139,10 @@ def scope_members(scope: dict) -> tuple[list[str], list[str], list[str]]:
     for name, row in objcomd['objects'].items():
         if name in scope['objects']:
             wav.update(sound[1] for runs in [row['sounds']] + row.get('variant_sounds', []) for sound in runs)
-            # The hit-only throws' shapes (hit_variants: 0x405434／0x405495 fire only on a hit).
-            shp.update(objcomd['members'][index] for instances in row.get('hit_variants', []) for instance in instances
-                       for index, _ in instance.get('member', []) if index >= 0)
+            # Every shape the native runs drew: the children the program throws on every run (variants)
+            # and the hit-only throws (hit_variants: 0x405434／0x405495 fire only on a hit).
+            shp.update(objcomd['members'][index] for instances in row.get('variants', []) + row.get('hit_variants', [])
+                       for instance in instances for index, _ in instance.get('member', []) if index >= 0)
     return sorted(shp), sorted(panels), sorted(wav)
 
 

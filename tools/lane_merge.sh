@@ -76,7 +76,7 @@ case "${cmd}" in
     ;;
   gate)
     cd "${PIPE}"
-    head="$(git rev-parse --short HEAD)"; log="/tmp/gate-${head}.log"
+    head="$(git rev-parse --short=12 HEAD)"; log="/tmp/gate-${head}.log"
     mode="auto"; extra=""
     case "${1:-}" in
       --deep) mode="fast"; extra="--deep"; shift ;;
@@ -89,12 +89,12 @@ case "${cmd}" in
       # verify.sh, so "reached hygiene" no longer means the heavy stages passed). Changed files must all be *.md.
       base=""
       for c in $(git rev-list --max-count=20 HEAD~1 2>/dev/null); do
-        cl="/tmp/gate-$(git rev-parse --short "${c}").log"
+        cl="/tmp/gate-$(git rev-parse --short=12 "${c}").log"
         [ -f "${cl}" ] || continue
         if tail -1 "${cl}" | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS"; then base="${c}"; break; fi
       done
       if [ -n "${base}" ] && [ -z "$(git diff --name-only "${base}" HEAD -- | grep -v '\.md$' || true)" ]; then
-        b="$(git rev-parse --short "${base}")"
+        b="$(git rev-parse --short=12 "${base}")"
         echo "LANE_GATE_MODE docs (auto: only *.md changed since gated ${b})"
         if { git diff --check 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD -- . \
                ':(exclude)content/imported/' ':(exclude)docs/external/' ':(exclude)*.svg' \
@@ -158,7 +158,7 @@ case "${cmd}" in
     [ "${1:-}" = "--dry-run" ] && dry=1
     source_ref="${LANE_PUBLISH_SOURCE:-pipeline-line}"
     targets="${LANE_PUBLISH_TARGETS:-main presentation-line}"
-    head="$(git rev-parse --short "${source_ref}")"; log="/tmp/gate-${head}.log"
+    head="$(git rev-parse --short=12 "${source_ref}")"; log="/tmp/gate-${head}.log"
     if ! tail -1 "${log}" 2>/dev/null | grep -Eq "VERIFY_PASS|LANE_AFFECTED_PASS|LANE_DOCS_PASS"; then
       [ "${dry}" = 1 ] || { echo "LANE_PUBLISH_FAIL no passing gate log for ${head}" >&2; exit 1; }
       echo "LANE_PUBLISH_DRY gate=missing (no passing ${log}; a real publish would stop here)"
