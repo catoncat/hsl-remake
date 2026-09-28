@@ -1,12 +1,12 @@
 # 噴人沼氣（defProcPoisonGas）、地形毒与剧情 VM 的 actCheckNextSerialNumber／actUseItem／actInsertStoryObjectWaitPos／actSetPlayerNoAttack
 
-> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b00, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x451514, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；item 252 经 ItemResolutionRules.prepare 的 dispatcher 等价 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b00, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x451514, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版 拉格納沼地（LEVEL032，场次见 [命名表](../../BATTLE_NAMES.md)）的 WINFAIL032 event 9 每 4 次交接在 9 组坐标之一放一团噴人沼氣，毒中心格及周围 8 格上不免疫的任何单位；深淵之沼（LEVEL015）的 `0x200000` 地形格在行动收尾对非飞行、不免疫者施毒（static-derived；整镜像逐值重算 43/43、5/5，runtime-measured）。
 - 重制 `game/sim/PoisonGasRules.gd`、`WinfailConditions.gd`（交接计数定时器）、`WinfailActions.gd`、`game/battle/scene/BattlePoisonGasPresentation.gd` 与 `BattlePlayLoop` 的地形毒收尾照此实现（static-derived）。
-- 差异：烟团初始化的全局流抽取次序未对齐（provisional，原版下一 tick 抽、重制在结算时抽）；受击抖动局部状态 6 已由 `MapHitState.begin` 照原版消费（hit 帧＋左右抖 60 tick）；item 252 经 `ItemResolutionRules.prepare` 的 dispatcher 等价未证（provisional）。
+- 差异：烟团初始化的全局流抽取次序未对齐（provisional，原版下一 tick 抽、重制在结算时抽）；item 252 经 `ItemResolutionRules.prepare` 的 dispatcher 等价未证（provisional）。受击抖动局部状态 6 已由 `MapHitState.begin` 照原版消费（hit 帧＋左右抖 60 tick），不属差异。
 
 ## 证据
 

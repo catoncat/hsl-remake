@@ -1,6 +1,6 @@
 # 开战先手与行动队列：速度、注册槽、轮次语义
 
-> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn「证据」），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数） · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_level7_runtime_tests.gd, run_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn「证据」），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数） · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -79,7 +79,7 @@ str／dex 来自同一模板（+0x64→+0x4c，+0x68→+0x50）：001 16/16，02
 - `CoreTurnQueue.rebuild` 按 `registration_slot` 排序；名单按创建顺序写入（汇编 `trace_opening`；运行时插入由 `ScriptActorCreationRules._install` 追加），回绕前「追加」等于「下一槽」。
 - `hsltools/data/first_battle_formation.py` 保持 EVEF 记录顺序并生成 1 级速度与 str／dex；开战调级由 `InitialRosterGrowthRules` 施加。
 - `BattleCheckpoint.state` 原样存 `units` 与 `turn_queue`，读档不重排。
-- 回归钉点：`run_tests.gd`（51 关雷歐納德 5／023_1 6／023_2 7；`_test_real_equal_speed_pairs_follow_registration_slots`；6 关 EVEF 023_7 在剧情插入守卫 1..3 之前），`run_level7_runtime_tests.gd`（WINFAIL007 插入的 024 队长在同速 EVEF 038_6 之后）。
+- 回归钉点：`run_tests.gd`（51 关雷歐納德 5／023_1 6／023_2 7；`_test_real_equal_speed_pairs_follow_registration_slots`；6 关 EVEF 023_7 在剧情插入守卫 1..3 之前）。
 
 ## 复现
 

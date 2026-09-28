@@ -1,6 +1,6 @@
 # 直线效果范围：0x4100e0 的 range 21..23（Dir）分支
 
-> evidence: static-derived; provisional: 角色分支用 ACTOR 标记代替 · status: live · functions: 0x40fc90, 0x40fdc0, 0x4100e0 · tools: hsltools/data/attack_ranges.py, hsltools/data/skill_targeting.py, hsltools/probes/range_terrain.py, run_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived; provisional: 角色分支用 ACTOR 标记代替 · status: live · functions: 0x40fc90, 0x40fdc0, 0x4100e0 · tools: hsltools/data/attack_ranges.py, hsltools/data/skill_targeting.py, hsltools/probes/range_terrain.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 

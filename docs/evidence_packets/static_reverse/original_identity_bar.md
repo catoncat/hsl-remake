@@ -1,6 +1,6 @@
 # 悬停身份栏与"已知"字节：0x434d10 的 ??? 规则与 0x4c6d80 的写入者
 
-> evidence: static-derived; runtime-measured; negative-evidence · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43b4e0, 0x43e570, 0x43ede0, 0x443c63, 0x443e2a, 0x4440b7, 0x4445b7, 0x4447a7, 0x4449bb, 0x444c9e, 0x444fe6, 0x445286, 0x446b00, 0x446b30, 0x450710 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured; negative-evidence · status: live · functions: 0x407cc0, 0x407ec0, 0x430020, 0x434d10, 0x436490, 0x4364e0, 0x43ace0, 0x43ad30, 0x43ad80, 0x43b3f0, 0x43b4e0, 0x43e570, 0x43ede0, 0x443c63, 0x443e2a, 0x4440b7, 0x4445b7, 0x4447a7, 0x4449bb, 0x444c9e, 0x444fe6, 0x445286, 0x446b00, 0x446b30, 0x450710, 0x4507f0, 0x45e307 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/native/image.py, hsltools/probes/_known_byte_trace.py · updated: 2026-09-28
 
 ## 结论
 

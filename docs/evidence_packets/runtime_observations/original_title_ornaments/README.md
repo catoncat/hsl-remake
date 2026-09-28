@@ -1,13 +1,13 @@
 # 原版标题画面的宝珠与书：上下浮动，不跟随选项；点击标题项放 ACCEPT01
 
-> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表; runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x424004, 0x4241a0, 0x424360, 0x42cc10, 0x42dc90, 0x458c80, 0x45e882, 0x45e9bc, 0x46098f, 0x460a58 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表；宝珠／书按住计时 10 tick 与读入淡出 0x42dc90(2); runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x424004, 0x4241a0, 0x424360, 0x42c180, 0x42c7e0, 0x42cb60, 0x42cc10, 0x42cc70, 0x42dc90, 0x4477b0, 0x458c80, 0x459990, 0x45e575, 0x45e882, 0x45e9bc, 0x45efce, 0x46098f, 0x460a58 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
 - 原版：宝珠（Item1）与书（Item2）由 defProcMainMenu `0x423cd0` 建在菜单位置（环左上）＋(33,112)／(207,107)；defProcMainMenuItem `0x424360` 每 tick 令 y＝生成 y＋trunc(6·sin(角·2π/256))、x 不变，字节角每 tick +3，初角各自 rand()%255；点击标题项（三行字与宝珠、书同走 `0x4241a0`）放 ACCEPT01（RESOURCE 398）（static-derived）。实录周期 1.646 s、振幅 5.1–5.2 px、相位差各组不一，与读法一致（runtime-measured）。
 - 原版：菜单（环、三行字、两尊雕像、宝珠、书）首帧低 300 px，state 0 以 `0x45e882` 每 tick min(40, 距离>>3)（至少 2、1 px 内落位）滑回，落位后才收输入；悬停对象每 6 tick 按 32 px 一列撒 4 颗 Menu_Star（788），点击撒 24 颗 Menu_Star2（789）＋16 颗 788，星点随机起始张、竖直上飘、停 6..13＋1 tick 后 16 级加色淡出；点宝珠开 設定選項（792）、点书开读取回憶錄列表（790），窗开期间菜单照画不收输入，窗写回结果后复位或读入（static-derived）。
-- 重制：`game/title/TitleScreen.gd` 按同一生成位置、正弦表截断、每 tick 步进与各自随机初角逐 tick 浮动；点击标题项放 ACCEPT01；滑入、火花节拍与运动、宝珠／书开窗照上述读法（static-derived）。
 - 原版：宝珠／书点击后主菜单先数按住计时 `+0xa8`＝obj_Data8＝10 tick（state 3 `0x424004`，与三行字的 40 tick 同一套）再开窗；读入回憶錄经 `0x42cc10(1,1)` → `0x42dc90(2)` 淡出，每 2 tick 一级、30 tick 全黑（static-derived）。
+- 重制：`game/title/TitleScreen.gd` 按同一生成位置、正弦表截断、每 tick 步进与各自随机初角逐 tick 浮动；点击标题项放 ACCEPT01；滑入、火花节拍与运动、宝珠／书按住 10 tick 后开窗与读入淡出照上述读法（static-derived）。
 - 差异：星点逐颗落点用重制随机流；Menu_Star 未写 Shape_Delay 按 0；读入时 `0x42c7e0` 的表现未读，见「边界」（provisional）。
 
 ## 证据

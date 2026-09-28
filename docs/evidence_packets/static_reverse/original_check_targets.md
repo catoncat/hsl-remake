@@ -1,12 +1,12 @@
 # 脚本条件 actCheckEnemy／actCheckPlayer／actCheckEnemyNumber 的目标计数、全灭判负与 winfail 台词的脸
 
-> evidence: static-derived; negative-evidence: 非脚本全灭判负; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived; negative-evidence: 非脚本全灭判负; resource-derived: EXTRAS.H token 与剧本出现处; runtime-measured: 重制自动对局死路; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 `actCheckEnemy`／`actCheckPlayer`（case 0x23／0x26）在所列 id 全部经 `0x44fad0(code,1)` 找不到时成立——已删除、已阵亡出表与从未插入不可区分；`actCheckEnemyNumber` 是登记数严格小于 num；原版没有非脚本的全灭判负（static-derived，含有界原生执行；negative-evidence）。
 - 重制 `game/sim/WinfailConditions.gd` `condition_holds` 照此计数，遭遇战组装器把 `SID_雷歐納德` 等名字 token 绑定到上场单位；另有两条重制规则：绑定存在而本战无该单位时不计入、全队阵亡判负（`PARTY_WIPE_POLICY = remake_party_wipe_defeat_v1`）。
-- 差异：两条重制规则补偿的是 carry 模型与原版注册表的差异，不是原版等价（provisional，差异清单 `carry-model`）。
+- 差异：两条重制规则不是原版等价；carry 已照注册表传下未上场的已加入成员，「未上场不计入」只对 carry 之外的缺席者起作用（provisional，差异清单 `carry-model`）。
 
 ## 证据
 

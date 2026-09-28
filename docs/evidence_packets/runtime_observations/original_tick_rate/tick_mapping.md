@@ -1,6 +1,6 @@
 # 36 格 remake-invented 时序 → 原版 tick 的映射表
 
-> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · tools: hsl_win32_memread.c · updated: 2026-09-28
+> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · functions: 0x407230, 0x43bf30, 0x43e4a0, 0x43e570, 0x450840, 0x453b90, 0x454e20, 0x45e5a6, 0x45e80d, 0x45e882, 0x45e91e, 0x46098f, 0x4609c0, 0x46bede · tools: hsl_win32_memread.c · updated: 2026-09-28
 
 ## 结论
 

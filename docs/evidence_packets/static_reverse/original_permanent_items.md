@@ -1,6 +1,6 @@
 # 永久能力道具、原始抗性与派生刷新
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-28
+> evidence: resource-derived; static-derived · status: live · functions: 0x4075e0, 0x409e10, 0x409e40, 0x448840 · tools: hsltools/data/permanent_items.py, hsltools/probes/permanent_items.py · updated: 2026-09-28
 
 证据等级：原表字段为`resource-derived`；固定EXE内的有界执行为`static-derived`。独立随机流、开发库存和战役承接属于明示重制策略。与临时攻防状态的规则见[战斗道具](original_tactical_items.md)及[攻防增益／退魔](original_stat_magic.md)。
 

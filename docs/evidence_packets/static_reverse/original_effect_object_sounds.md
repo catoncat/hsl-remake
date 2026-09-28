@@ -7,7 +7,7 @@
 - 原版绝技命中的落地声来自 defProcObjectMove 对象（`0x4051d0`）按 obj_Data7 执行的 objcomd.txt 命令程序（`objmPlaySound`／命中才响的 `objmPlayHitSound`），不在 EFFECTS.TXT 脚本里；法术效果对象（`0x415dc0`）出现时放 obj_X1，obj_Y1／obj_X2 由各 effProc 程序在自己的事件点经 `0x415d40`／`0x415d70`／`0x415d90` 播放（static-derived）。
 - 两个原生探针逐 tick 执行这些程序时记下每次放声的帧与 WAV：`objcomd_motion.json` 每个 SPECIAL 对象的 `sounds` 是 `[帧, WAV, hit_only]`（命中局，`hit_only` 由调用返回地址 `0x4059f3` 判定），`effect_motion.json` 每棵效果树的 `sounds` 是 `[帧, WAV]`（含子对象），种子变体各有一份（static-derived）。重制 `game/battle/scene/SkillEffectScriptPlayer.gd` 的 `_insert_sounds` 按记录逐实例排声（插入 tick＋记录帧），帧未导入时声音照放。
 - 混音通道：`0x42f164` 以 `0x459b60(9, 20, …)` 开 **9 个通道**；对象程序放声（`0x42c180` → `0x45a390`，flags 0）经 `0x4593a0` 取第一个空或已停的通道，全忙则丢掉新声，不截旧声、同名不合并（static-derived）。重制 `SOUND_VOICES = 9`，同一规则。
-- 差异：角度环／龙卷等图案插入与没有轨迹的对象仍按静态表排声（provisional，见 §边界）。
+- 差异：没有轨迹的对象仍按静态表排声；角度环／龙卷等图案插入画面用重制几何，声音与 op 71／72 同样取记录；多段绝技最后一击的 waiter 释放时长是 provisional（见 §边界）。
 
 ## 证据
 
@@ -43,7 +43,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 3. 全部绝技的同类盘点（resource-derived，`hsl check special_effect_scripts` 从 tracked 源逐字节重算）
 
-60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部带 obj_Data7，全部落在 objcomd.txt 的 152 段命令里；其中 **39 个对象、24 行绝技**的命令程序含 `objmPlaySound`／`objmPlayHitSound`（被 objmThrow* 抛出的子对象的命令都不含声音）。`special_effect_scripts.json` 每个对象记 `command_code` 与 `command_sounds`（WAV、`hit_only`、前面 objmDelay 的 tick 和、前面无法计时的运动等待；下表是这张静态表，排程已改用 §4 的原生记录，静态表只留给图案插入与无轨迹对象）；`skill_effects` 导入新增 7 个 WAV（BOMB0017／0019／0020／0025、HIT00004／00007／00012），manifest 共 118 个。
+60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部带 obj_Data7，全部落在 objcomd.txt 的 152 段命令里；其中 **39 个对象、24 行绝技**的命令程序含 `objmPlaySound`／`objmPlayHitSound`（被 objmThrow* 抛出的子对象的命令都不含声音）。`special_effect_scripts.json` 每个对象记 `command_code` 与 `command_sounds`（WAV、`hit_only`、前面 objmDelay 的 tick 和、前面无法计时的运动等待；下表是这张静态表，排程已改用 §4 的原生记录，静态表只留给无轨迹对象）；`skill_effects` 导入新增 7 个 WAV（BOMB0017／0019／0020／0025、HIT00004／00007／00012），manifest 共 118 个。
 
 | 行 | 对象（command） | 声音（延迟 tick） | 计时 |
 | --- | --- | --- | --- |
@@ -108,7 +108,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 共享层在 `SkillEffectScriptPlayer._insert_sounds`（每次对象插入都经过它，与技能无关）：
 - 有轨迹的绝技对象：`ObjcomdMotion.sounds(对象, 变体)` 每条在**该实例的插入 tick ＋记录帧**入时间线；`hit_only` 的只在命中（`hit`）时；每个实例各放一次（原版每个对象程序各自调用放声——百裂突刺 26 次突刺各一声 ATTACK17）。变体按同一对象的插入次序取，与 `_finish_timeline` 给轨迹分配变体的次序相同（图案插入不计）。
 - 有轨迹的效果对象：`EffectObjectMotion.sounds(对象, 变体)`，含 obj_X1（每个实例在自己开始时放，不再"每条插入指令一次"）、obj_Y1／obj_X2 与全部子对象的声音。
-- 角度环／龙卷等图案插入（`_insert_pattern` 传 `patterned`）与没有轨迹的对象：仍按 `command_sounds`（插入 tick＋objmDelay 和）、obj_X1（每条指令一次）与 `program_sounds`。
+- 角度环／龙卷等图案插入（`_insert_pattern` 传 `patterned`）：画面按图案几何，声音与 op 71／72 同样取记录（每个实例都跑程序）。
+- 没有轨迹的对象：仍按 `command_sounds`（插入 tick＋objmDelay 和）、obj_X1（每条指令一次）与 `program_sounds`。
 - 播放：`_play` 取第一个不在响的声部，9 个全在响就丢掉这一声（`0x4593a0`）。
 - **先排声音再判能否画**：对象帧未导入（`missing_members`）或被跳过时声音照放——"素材未导入的降级路径"不再丢声。
 - **缺演员切入图的降级路径**：切入表（`chapter01/combat_animation/manifest.json`）没有 022／029／102／103 的行；此前任何带这些演员的绝技都落到 `BattleCombatCutin._process_missing_ordinary_clip`（0.75 s 纯文字、无声）——022 是 44／45 关的友军、PLAYERS `special_other = 氣刃斬`。现 `SkillEffectScriptPlayer.needs_actor_art` 恒假，脚本照常演出（底图、对象、全部声音），缺行的演员由 `_stand` 隐去；`run_presentation_contract_tests.skill_effect_contracts` 守着。专属模块（毒魔箭／月花圓舞）仍要求两端切入图。
@@ -128,7 +129,7 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 
 - **计时**：记录帧从对象创建起算（探针的帧模型见 [效果对象运动包](original_effect_motion.md) §帧模型与公共部分，±1 帧）；随机程序的声音是种子样本，原版所有实例共用一条随机流。
 - **图案插入**：角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音与 op 71／72 取记录（每个实例都跑程序）。無想冥殺 的 Special06_06 环：程序自设半径 170 px（`objmSetRoundPos`），8 个实例在插入后 128..151 帧各执行一次 op 72，守方脚本的 `aniProcessHitMissMulti` 等到这 8 击结算完（种子 7：458..484），SHOOT008／BOMB0025 落在 429..483，片段收场 584 之内。
-- **命中才抛的子对象**：`objmThrowHit*`（`0x405434`／`0x405495`）只在命中时抛出（慌雨斬、星辰落牙破、殘影亂斬、無想冥殺 的火花），轨迹取落空局，所以命中时这些子对象重制没画；声音不受影响。
+- **命中才抛的子对象**：`objmThrowHit*`（`0x405434`／`0x405495`）只在命中时抛出（慌雨斬、星辰落牙破、殘影亂斬、無想冥殺 的火花）；命中局轨迹另存 `hit_variants`，重制按该击结算的命中／落空选趟画（多段未按段区分，provisional，见[对象命令程序包](original_objcomd_programs.md)「命中趟」）；声音不受影响。
 - **叠声**：原版 9 个通道全局共用（脚本 aniPlaySound、界面音效也经 `0x45a390`）；重制的 9 个声部只给特效播放器自己的声音，其它声音走各自的播放器、不占这 9 个。
 - **不支持的结论**：不证明音量、声像、叠声的混音与原版一致；多段绝技的结算时刻在同一 tick 内对象与守方的处理先后、最后一击 waiter 释放的时长未读（±1..3 tick，provisional），每击的伤害与命中仍用整次结算的收据（sim 不分段），每段改写 `[0x4c1418]` 的选趟未按段区分。
 - 效果对象的画面按原生 effProc 轨迹运动（[效果对象运动包](original_effect_motion.md)），声音与画面来自同一次执行。

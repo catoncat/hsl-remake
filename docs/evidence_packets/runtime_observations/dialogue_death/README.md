@@ -1,6 +1,6 @@
 # 对白与阵亡演出：原版录屏三路测量（灵魂飞升与死亡音、hit 帧、遗言选句、对白框开合、单位高亮）
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关，2026-09-28 Wine 原版（v1.06，cnc-ddraw 游戏窗截图）第 1 场开场对白与行动菜单、选攻击目标各帧; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法、单位高亮 0x43db70／0x43dcb9 与阵营色 0x407cc0; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 选魔法／道具目标与选移动格时谁亮未拍 · status: live · functions: 0x407cc0, 0x40ba20, 0x4145e7, 0x43db70, 0x43dcb9, 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_original_control.py, hsl_video_events.py, run_combat_aftermath_tests.gd, run_original_hsl.sh · updated: 2026-09-28
+> evidence: runtime-measured: 2026-09-24 原版录屏（605.8 s，可变帧率约 57 fps）按源帧率量的像素轨迹与音轨互相关，2026-09-28 Wine 原版（v1.06，cnc-ddraw 游戏窗截图）第 1 场开场对白与行动菜单、选攻击目标各帧; static-derived: 死亡入口姿势 0x446c40 状态 6、遗言选句 0x43ef91..0x43efcb 的 r2 读法、单位高亮 0x43db70／0x43dcb9 与阵营色 0x407cc0; resource-derived: SHAPEDEF hit 帧、dead0003.wav; provisional: 选魔法／道具目标与选移动格时谁亮未拍 · status: live · functions: 0x407cc0, 0x407ec0, 0x40ba20, 0x4145e7, 0x43db70, 0x43dcb9, 0x43ef91, 0x446c40, 0x458c10 · tools: hsl_original_control.py, hsl_video_events.py, run_combat_aftermath_tests.gd, run_original_hsl.sh · updated: 2026-09-28
 
 ## 结论
 

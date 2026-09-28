@@ -1,6 +1,6 @@
 # WINFAIL037（level 37）：五个 token、宝石谜题与咕嚕转职
 
-> evidence: static-derived · status: live · functions: 0x4051d0, 0x407ec0, 0x42c700, 0x42caa0, 0x4348f0, 0x448840, 0x44e820, 0x450840, 0x451d0f, 0x451db7, 0x453b30, 0x45dbe1 · tools: hsltools/probes/objcomd_motion.py, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived · status: live · functions: 0x4051d0, 0x407ec0, 0x42c700, 0x42caa0, 0x4348f0, 0x448840, 0x44e820, 0x450840, 0x451d0f, 0x451db7, 0x453b30, 0x45dbe1 · tools: hsltools/probes/objcomd_motion.py, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 

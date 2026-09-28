@@ -1,6 +1,6 @@
 # 原版大地图与城镇画面：状态栏、系统卷轴、城镇根菜单、对白板位置、商店窗、整理裝備
 
-> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0）、tePlayerSelect [mode] 过滤（0x4557ad）与石纹菜单行（0x4561d0） · status: live · functions: 0x412680, 0x412760, 0x4264a0, 0x4264f0, 0x426680, 0x42c130, 0x4348f0, 0x4557ad, 0x4561d0 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: runtime-measured: 原版 v1.06（Wine、cnc-ddraw 640×480）大地图状态栏、系统卷轴、城镇根菜单、对白板上下位置、大地图网格线、商店窗构图与买卖手势、金钱不足消息、退店与离城、整理裝備三页、商店 裝備／倉庫 页与存取、换人后手持; negative-evidence: 城镇根画面上没有金钱显示（只有商店窗的金钱框）; static-derived: select 选择窗（0x4264a0／0x426680／0x4264f0）、tePlayerSelect [mode] 过滤（0x4557ad）与石纹菜单行（0x4561d0）; provisional: 差异清单 town-layout-extras · status: live · functions: 0x412680, 0x412760, 0x413040, 0x414220, 0x414c00, 0x4264a0, 0x4264f0, 0x426680, 0x42c130, 0x42caa0, 0x4348f0, 0x450840, 0x454e20, 0x4561d0 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 

@@ -1,6 +1,6 @@
 # 原 AI：目标选择与普通／魔法／特殊技类别
 
-> evidence: static-derived; runtime-measured: 原版裁判不喂抽签分布 · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40bf70, 0x40c110, 0x40c570, 0x40c620, 0x40d4e0, 0x42c780, 0x43f695, 0x43f79b, 0x43fa29, 0x43fd60, 0x440db1, 0x441002, 0x458c10, 0x458c80, 0x45ec32 · tools: hsltools/data/ai_profiles.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai.py, run_ai_decision_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原版裁判不喂抽签分布; provisional: 原函数外的候选过滤 · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40bf70, 0x40c110, 0x40c570, 0x40c620, 0x40d4e0, 0x42c780, 0x43f695, 0x43f79b, 0x43fa29, 0x43fd60, 0x440db1, 0x441002, 0x458c10, 0x458c80, 0x45ec32 · tools: hsltools/data/ai_profiles.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai.py, run_ai_decision_tests.gd · updated: 2026-09-28
 
 ## 结论
 

@@ -1,13 +1,13 @@
 # 獲得物品窗：战利品拾取的绘制、输入与三个按钮
 
-> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x414c00, 0x42aad0, 0x430710, 0x436d70, 0x436e30, 0x436e80, 0x436ed0, 0x438160, 0x43a640, 0x43b4e0, 0x442720, 0x44ef70, 0x44f100, 0x44f2d0, 0x44f430, 0x44f4d0 · tools: capture_battle_reward_review.gd, run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x40e690, 0x412060, 0x4123b0, 0x4128f0, 0x4132f0, 0x414af0, 0x414c00, 0x4156d0, 0x42aad0, 0x430710, 0x436490, 0x436d70, 0x436e30, 0x436e80, 0x436ed0, 0x438160, 0x43a640, 0x43ac10, 0x43ae20, 0x43afb0, 0x43b050, 0x43b280, 0x43b2e0, 0x43b340, 0x43b4e0, 0x442720, 0x445d70, 0x445f00, 0x446060, 0x4464f0, 0x44ef70, 0x44f100, 0x44f2d0, 0x44f430, 0x44f4d0, 0x44f4e0, 0x44f600, 0x45b6de, 0x4607f9 · tools: capture_battle_reward_review.gd, run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：击杀后金钱浮字之后、升級判定之前，玩家击杀者且待领池非空时打开状态窗 mode 0xb；接收者固定为击杀者；左栏背包 8 格、右栏 WINDOW90 待领 5 行、下方 丟棄／倉庫／離開；手持一次一件，重要物品不能从池拾起；离开时剩余全部进队伍仓库，不丢物（static-derived；录像 16 段四帧 runtime-measured）。
 - 五钮原版语义（static-derived，`0x43a640` 按钮 Data6 与 `0x414c00` 列表点击）：重要物品行空手点不拾（`0x40e690`）；丟棄只丢手上一件、重要物与空手无效；倉庫把手上一件按重要／普通加入队伍仓库表（`0x44ef70`／`0x44f100`），空手无效；手持点背包任一行：未满包放首空格，满包才与点中格交换、格物进手（`0x438c84`／`0x436ed0`）；空手点背包格拾起该物（`0x436e80`，录像 `frame_019`）；離開只在空手有效，池中剩余全部入仓库表（`0x42aad0`）。
 - 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制；拾取经 `claim_reward`，丟棄经 `discard_reward`，倉庫与離開经 `store_reward`（写入 `PartyStorageRules` 的队伍倉庫 `party_storage`），拿起的背包物放回经 `return_reward_item`、入池经 `pool_reward_item`，五钮语义与原版相同（static-derived）。
-- 差异：拿起的背包物与原版同样即刻按删格收拢显示（`0x436e80`），点列表入池（`0x44f2d0`），点背包行或 Esc／右键放收拢后的首空格（`0x436e30`）；字号 24／15 已按原版 FONT.24／FONT.15 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。
+- 拿起的背包物与原版同样即刻按删格收拢显示（`0x436e80`），点列表入池（`0x44f2d0`），点背包行或 Esc／右键放收拢后的首空格（`0x436e30`）；差异只剩按下到处理完之间的图标画暗（`0x43a993`）重制不画；字号 24／15 已按原版 FONT.24／FONT.15 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。
 
 ## 证据
 

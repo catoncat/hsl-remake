@@ -1,6 +1,6 @@
 # 物品命令：入口状态、取消归还、重要物品保护与用药目标
 
-> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40e690, 0x40f440, 0x40f560, 0x411c40, 0x436e30, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
+> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40c570, 0x40e690, 0x40eb80, 0x40ecc0, 0x40f440, 0x40f560, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
 
 ## 结论
 

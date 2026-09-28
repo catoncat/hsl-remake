@@ -1,6 +1,6 @@
 # 状态：中毒／禁魔的字段、施加、行动末毒伤与计时
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/evidence/status.py, hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived; runtime-measured: 重制侧施毒与解毒回执 · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/evidence/status.py, hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-28
 
 ## 结论
 

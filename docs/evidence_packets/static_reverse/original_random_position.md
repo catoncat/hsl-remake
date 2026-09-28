@@ -1,6 +1,6 @@
 # 随机位置 winfail 动作：槽位表、洗牌与 107／108／117／121
 
-> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule; runtime-measured: LEVEL037 进关后的洗牌结果（模拟器整镜像，单样本） · status: live · functions: 0x408115, 0x408264, 0x450670, 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80, 0x45e307 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-28
+> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule; runtime-measured: LEVEL037 进关后的洗牌结果（模拟器整镜像，单样本） · status: live · functions: 0x407ec0, 0x408115, 0x408264, 0x450670, 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80, 0x45e307 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-28
 
 ## 结论
 

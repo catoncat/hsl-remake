@@ -1,6 +1,6 @@
 # actSelectInsertEvent（战斗侧）：选项插入 winfail 事件与所选链的执行时机
 
-> evidence: static-derived: opcode 形状、case 0x4f 选择窗参数与交回; runtime-measured: 原版整镜像 LEVEL900 所选事件链时机与走位落格（unicorn）; provisional: 分支拼接与键盘选行 · status: live · functions: 0x4082a6, 0x4264a0, 0x426680, 0x43f1df, 0x44e7b0, 0x44ee20, 0x44fad0, 0x450840, 0x451f2b, 0x45354e, 0x453a80, 0x453ac0, 0x454187 · tools: hsltools/probes/_enemy_level.py, run_story_scene_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived: opcode 形状、case 0x4f 选择窗参数与交回; runtime-measured: 原版整镜像 LEVEL900 所选事件链时机与走位落格（unicorn）; resource-derived: ACTION.H 参数与 LEVEL015 选项行; provisional: 分支拼接与键盘选行 · status: live · functions: 0x4082a6, 0x4264a0, 0x426680, 0x43f1df, 0x44e7b0, 0x44ee20, 0x44fad0, 0x450840, 0x451f2b, 0x45354e, 0x453a80, 0x453ac0, 0x454187, 0x454e20 · tools: hsltools/probes/_enemy_level.py, run_story_scene_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 

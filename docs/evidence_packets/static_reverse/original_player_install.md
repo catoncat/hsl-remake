@@ -1,6 +1,6 @@
 # 脚本玩家安装：普通安装与条件队员
 
-> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42caf0, 0x42cb30, 0x4348f0, 0x43bf30, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-28
+> evidence: static-derived · status: live · functions: 0x407ec0, 0x4080b0, 0x42c700, 0x42caa0, 0x42caf0, 0x42cb30, 0x4348f0, 0x43bf30, 0x44fbd0, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-28
 
 ## 结论
 

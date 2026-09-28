@@ -1,6 +1,6 @@
 # 脚本安装的入场、落点替代与离场收尾
 
-> evidence: static-derived: 入场、落点替代与离场读法，0x44fbd0 在 LEVEL034／038／080 地图上原指令实跑; runtime-measured: 开局快照的走位单位格; provisional: 出生张延迟之后站立循环是否另有重载, 洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、链中有 Wait 时出生与后续落点的交错 · status: live · functions: 0x407cc0, 0x407ec0, 0x40d800, 0x40ed50, 0x40f200, 0x40f440, 0x40f520, 0x413740, 0x413900, 0x43ede0, 0x446c40, 0x44fbd0, 0x450450, 0x450840, 0x453b90, 0x45e307, 0x45e525, 0x45e575 · tools: hsltools/levels/battle.py, run_all.gd, test_hsl_opening_positions.py · updated: 2026-09-28
+> evidence: static-derived: 入场、落点替代与离场读法，0x44fbd0 在 LEVEL034／038／080 地图上原指令实跑; runtime-measured: 开局快照的走位单位格; provisional: 出生张延迟之后站立循环是否另有重载, 洪泛 mode 1 与重制无单位洪泛的对应、落点检查时机、链中有 Wait 时出生与后续落点的交错、剧情插入玩家的张延迟次序、开场生成器等距取格 · status: live · functions: 0x407cc0, 0x407ec0, 0x40d800, 0x40e870, 0x40ed50, 0x40f200, 0x40f440, 0x40f520, 0x411940, 0x4119d0, 0x413740, 0x413900, 0x43ede0, 0x446c40, 0x44fbd0, 0x450450, 0x450840, 0x453b90, 0x45e307, 0x45e525, 0x45e575 · tools: hsltools/levels/battle.py, run_all.gd, test_hsl_opening_positions.py · updated: 2026-09-28
 
 ## 结论
 

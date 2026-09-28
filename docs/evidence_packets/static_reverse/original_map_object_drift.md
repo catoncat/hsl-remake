@@ -1,6 +1,6 @@
 # 地图物件云漂移（mapobjCloud）与移動背景视差（mapobjMoveBG）
 
-> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x43c260, 0x43c4a0, 0x43ccf0, 0x43ce94, 0x43ceba, 0x43d07b, 0x43d13e, 0x43d758, 0x43d76a, 0x45e485, 0x45eb9d, 0x45ebdc, 0x45ef11, 0x45f5f7, 0x45fa1e, 0x4606a9, 0x4684b6, 0x46b6c1, 0x46bb65, 0x46bd67 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x407340, 0x42da60, 0x43c260, 0x43c4a0, 0x43ccf0, 0x43ce94, 0x43ceba, 0x43d07b, 0x43d13e, 0x43d758, 0x43d76a, 0x442a90, 0x445f60, 0x45dc5c, 0x45e307, 0x45e485, 0x45e80d, 0x45eb9d, 0x45ebdc, 0x45eef5, 0x45ef11, 0x45f5f7, 0x45fa1e, 0x4606a9, 0x461479, 0x4684b6, 0x46b6c1, 0x46bb65, 0x46bd67, 0x46be17 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
 
 本包回答：云每 tick 走多少、朝哪、出界后怎么回来、云影是否跟着走；移動背景同三问。EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。tick 按 [tick 率包](../runtime_observations/original_tick_rate/README.md) 的设计值换算：1 tick ＝ 16 ms ＝ 62.5 tick/s（本机 Wine 录像 19.4 ms/tick，同一 px/tick 在录像里约为下表 px/s 的 0.82 倍）。
 
@@ -16,6 +16,8 @@
 | 取镜头时机 | — | 每 tick 在对象执行器里按当时镜头放一次（static-derived）；与本 tick 滚动的先后取决于对象顺序，未读 |
 
 重制（`MapObjectDrift`）：云与移動背景都按 16 ms tick 推进；藏起条件＝場景效果 关、切入队列在播（地图魔法与战斗特写都是切入片段）或状态面板开着——藏起时精灵不可见、不步进；移動背景每 tick 取一次镜头。差异：重制的 0x400000 只接了特写与状态面板，仓库窗不在战斗里。
+
+場景效果 关时瀑布、建筑底、噴人沼氣的煙与雨滴同样不画（见「場景效果 的其余读者」）；组合物件、瀑布、engGLASS 与世界尺寸的读法与重制接线见文末同名节（static-derived）。
 
 ## 证据
 

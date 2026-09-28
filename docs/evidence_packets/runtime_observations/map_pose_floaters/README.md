@@ -1,6 +1,6 @@
 # 地图人物的施法姿势、升级星光与红色伤害数字：原版读法与重制
 
-> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 原录像 15 frame_003／006 灵魂区逐像素差、2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510、显示表 0x46b6b1 → 像素种类表 0x46211c（种类 8 0x462154／9 0x462e8b 饱和加法、4 0x4699fd 层级交叉淡化）、层级表 0x460e9c／0x461247、饱和掩码 0x461025; provisional: 无引导施法者撒星高度 h 取重制站立帧高 · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x408580, 0x408b20, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x4071e0 姿势入口与 0x446c40 状态 7、0x45e525／0x45e575／0x45e660 帧程序、敌我过程 0x43f1dc..0x43f24c／0x4436f9..0x443770 与 0x44212a..0x442161 回站立、0x4071e0 的调用点（0x402fd1／0x403128 法术引导末、0x4449a7／0x440366／0x4404c7 用道具、0x442720 升级）、0x408b20 case 3 → 0x415c10 撒星、effProcFlyUpShape 0x41f5db → effProcFlyUp2 0x416d04、0x45ebdc 位移、0x422c9a 淡出、0x408580 kind 0 分支 0x40863e..0x40888e; runtime-measured: 原录像 15 frame_003／006 灵魂区逐像素差、2026-09-24 用户录屏 470.05–471.58 s（026 施法姿势）、339.60–340.6 s（LEVEL UP 星光）、203.25 s（特写伤害数字「2」→「22」）; resource-derived: SHAPEDEF use_magic／use_magic_num、hsl.pak NNN-M0001..6、AIR06_03..06、NUM100..109、NUM510、显示表 0x46b6b1 → 像素种类表 0x46211c（种类 8 0x462154／9 0x462e8b 饱和加法、4 0x4699fd 层级交叉淡化）、层级表 0x460e9c／0x461247、饱和掩码 0x461025; provisional: 无引导施法者撒星高度 h 取重制站立帧高; negative-evidence: 044-M0002.SHP 不在 hsl.pak · status: live · functions: 0x402fd1, 0x403128, 0x406d20, 0x4071e0, 0x4084e0, 0x408580, 0x408b20, 0x409e40, 0x40c1d0, 0x40c230, 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x422c9a, 0x43f1dc, 0x440366, 0x4404c7, 0x442720, 0x4436f9, 0x4449a7, 0x446c40, 0x458c10, 0x45dc5c, 0x45e525, 0x45e575, 0x45e660, 0x45eb9d, 0x45ebdc, 0x460e9c, 0x461025, 0x46170c, 0x4617d7, 0x461982 · tools: capture_map_pose_floaters_review.gd, run_combat_aftermath_tests.gd, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -9,7 +9,7 @@
 - 重制 `ActorRuntime.play_use_magic`、`LevelUpStars`、`DamageNumberFloater`／`ResultNumberFloater` 按这些读法实现（static-derived）。
 - 原版加色层级混合：源像素每通道先按层级表取 ⌊c×层级/16⌋（RGB565 各 5／6／5 位），再与底色逐通道饱和相加；数字的层级淡出（模式 0x20000000）是 ⌊src×层级/16⌋＋⌊dst×(16−层级)/16⌋（static-derived，§4）。
 - 重制 `AdditiveLevelBlend` 一个共用着色器按同一公式画升级星光、NUM510 闪光、阵亡灵魂与用药闪光（static-derived）。
-- 无 m_shape 引导者已照原版无引导路径：8 call 压暗后第 9 call 摆姿势、撒 Cast_Star、放 403，效果等姿势位清后才开始（static-derived，见 [original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §无条带起手序列，lane CASTLEAD／NOLEADSHADOW）。
+- 无 m_shape 引导者已照原版无引导路径：8 call 压暗后第 9 call 摆姿势、撒 Cast_Star、放 403，效果等姿势位清后才开始（static-derived，见 [original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §无条带起手序列）。
 - 差异：星光与姿势用表现 RNG（remake-invented）；无引导者撒星高度 h 按重制站立帧高＋2（差异清单 `cast-strip-missing`）。
 
 ## 证据
@@ -92,7 +92,7 @@
 - 特写片段等最后一个结果数字走完寿命才收（两位红字 54 tick 的淡出尾完整播完），`RESULT_HOLD_TICKS` 40 tick 只作无数字说明行的最低停留；续击时上一镜存活数字在下一镜走完（见 [original_skill_function_bits.md](../../static_reverse/original_skill_function_bits.md) 的 aniShowHitResult 读法）。
 - 无 m_shape 引导的施法者：`0x403128` 前 `+0x90` 数 8 个 call（`0x4030f7..0x403105`），第 9 call 姿势、Cast_Star 与施法音 `0x193` 同刻，重制照此（[original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §无条带起手序列）；撒星高度 h 用重制站立帧高＋2（`cast-strip-missing`）。
 - 录屏 026 的火球在姿势结束（471.60 s）才开始：效果 VM 阶段 4／7／0x17／0x19 先测施法者姿势位 `0x1000`，置位就让出，效果等姿势放完才开始（static-derived），重制按 `caster_pose_ticks` 同样等待。
-- 脚本 `actInsertLevelUpStar`（case 0x7b `0x452590`）与升级浮字是同一 `0x408b20` case 3 调用、同一对象 149，中心取随机槽 0（`actSetPlayerPosToRandom0` 写的角色像素）；重制 `BattleOpeningCoordinator._record_level_up_star` 在该点放 `LevelUpStars`、放音效，玩家第 28 场的胜利演出（WINFAIL028，每名主角各一次）由此演出（static-derived）。
+- 脚本 `actInsertLevelUpStar`（case 0x7b `0x452590`）与升级浮字是同一 `0x408b20` case 3 调用、同一对象 149，中心取随机槽 0（`actSetPlayerPosToRandom0` 写的角色像素）；重制 `BattleOpeningCoordinator._record_level_up_star` 在该点放 `LevelUpStars`、放音效，眾神的宮殿遺址（LEVEL028）的胜利演出（WINFAIL028，每名主角各一次）由此演出（static-derived）。
 - 星光与姿势用表现 RNG，原全局随机流不复现。
 - 种类 4 数字淡出的 `T[16−L][dst]` 截断重制不做（Godot 普通 alpha 混合）。
 - 加色内核的进位先漏进相邻通道低位再被饱和掩码补满（低于 1/32 级）、底色是 16 位缓冲，重制按 8 位底色做浮点加法，不复现这两点。

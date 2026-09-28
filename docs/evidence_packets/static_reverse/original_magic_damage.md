@@ -1,6 +1,6 @@
 # 魔法伤害：風刃／幻火原公式、HP 结算与共同技能事务
 
-> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 · status: live · functions: 0x407230, 0x40a7b0, 0x4104d0, 0x423a20, 0x430020, 0x43b3f0, 0x43b4c0, 0x43bf30, 0x442a90 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻; resource-derived: 初始拥有权 · status: live · functions: 0x407230, 0x409920, 0x409940, 0x40a7b0, 0x40aa80, 0x40b8d0, 0x40e390, 0x4104d0, 0x415ba0, 0x423a20, 0x430020, 0x4364e0, 0x43ace0, 0x43ad30, 0x43b3f0, 0x43b4c0, 0x43bf30, 0x442a90 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -9,7 +9,7 @@
 - 重制：`SkillResolutionRules` 把风火接入 `NativeMagicRollRules`／`StatusApplicationRules`，PlayLoop 唯一提交；玩家与 AI 同一结算，初始拥有权来自 `content/generated/hsl/skills/initial_book.json`（static-derived；拥有权 resource-derived）。
 - 原版法术受者条是施法例程 `0x442a90` 每个受者调一次的 `0x43b3f0`——与用药同一对小条（BAR_HP4 框、BAR_HP5／BAR_HP6 填充、条旁 cur/max）；条先示命中前 HP 24 tick，`0x40b8d0` 结算的同一 tick 换成命中后 HP 并生成数字，再 40 tick 撤条；击杀先等 30 tick，再多 8（eff_proc_Local）／16（Global）tick；全局只有一个条槽，受者逐个接力（static-derived，见「受者条」）。录屏 21／29／60 tick 与之同序，差值在 19.4 ms/tick 折算误差内。
 - 多受者时原版逐人处理：前一人撤条后镜头以战斗步长滑向下一人、到位才往下，Local 在他身上再建一份效果、效果完了才出条；受击态从每人扣血那 tick 起；击杀受者在扣血后 30 tick 标死亡，死亡演出与后续受者并行（static-derived，见「逐受者序列」）。
-- 重制 `MagicImpactPresentation` 照上述画法、计数与逐受者序列（static-derived）。
+- 重制 `MagicImpactPresentation` 照上述画法、计数与逐受者序列（static-derived）；首个受者前的镜头滑动与 Local 重放时的压暗等未照做（见「边界」）。
 
 ## 证据
 

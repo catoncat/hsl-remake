@@ -1,6 +1,6 @@
 # 逃出克萊恩城（level 53）：逃脱路线、原版开局与前两回合对照、自动对局败因
 
-> evidence: runtime-measured: 重制自动对局、原版 53 关开局全部单位记录与前两回合（一趟 Wine）及其 AI 实例字解码、同一 53 交接 5 种子×3 属性档对局; resource-derived: WINFAIL053／STORY053／EVEF／WRD／obj-053.h; static-derived: 0x43ede0 追击入口与 0x40e590 气力、0x407ec0 阵营互换与 0x448840 的 hp_level 项、STORY／WINFAIL 插入同走脚本 VM 0x450840; provisional: 机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品 · status: live · functions: 0x407ec0, 0x40e590, 0x43ede0, 0x448840, 0x450840 · tools: hsl_original_probe_units.py, hsltools/data/original_save.py, run_autoplay_sweep_tests.gd, run_chapter_autoplay_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured: 重制自动对局、原版 53 关开局全部单位记录与前两回合（一趟 Wine）及其 AI 实例字解码、同一 53 交接 5 种子×3 属性档对局; resource-derived: WINFAIL053／STORY053／EVEF／WRD／obj-053.h; static-derived: 0x43ede0 追击入口与 0x40e590 气力、0x407ec0 阵营互换与 0x448840 的 hp_level 项、STORY／WINFAIL 插入同走脚本 VM 0x450840; provisional: 机器人策略、WINFAIL 插入单位当回合是否行动与最短路平局次序 · status: live · functions: 0x407ec0, 0x40e590, 0x43ede0, 0x448840, 0x450840 · tools: hsl_original_probe_units.py, hsltools/data/original_save.py, run_autoplay_sweep_tests.gd, run_chapter_autoplay_tests.gd · updated: 2026-09-28
 
 ## 结论
 

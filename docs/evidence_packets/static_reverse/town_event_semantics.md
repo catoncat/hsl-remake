@@ -1,10 +1,10 @@
 # 城镇事件（TOWNDEF te token）读法表
 
-> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-28
+> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x4264a0, 0x42caa0, 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版 TOWNDEF 的 te token 名、参数顺序、事件表与脚本引用可从资源读出；带地址的条目（teCheckMoney、teCheckItemExecEvent、teCheckTEExist、teCheckJobUp 失败链、teAppearSecretMan、teSecretManBuyThing、消息与延时的时钟、初始菜单树）已由 `0x454e20` 等静态阅读确认（resource-derived；static-derived）。
+- 原版 TOWNDEF 的 te token 名、参数顺序、事件表与脚本引用可从资源读出；带地址的条目（teCheckMoney、teCheckItemExecEvent、teCheckTEExist、teCheckJobUp 失败链、teAppearSecretMan、teSecretManBuyThing、tePlayerSelectInsertEvent 的选人名单与「離開」行、消息与延时的时钟、初始菜单树）已由 `0x454e20` 等静态阅读确认（resource-derived；static-derived）。
 - 重制 `game/sim/TownEventRules.gd`（无状态 te 解释器）与 `content/world/town_initial_trees.json` 按此实现，执行记录的 `provisional` 字段引用本表 `town_event_semantics:<te token>`。
 - 其余 token 的行为、帧栈与子菜单重开是重制读法（provisional，差异清单 `town-event-timing`）。
 

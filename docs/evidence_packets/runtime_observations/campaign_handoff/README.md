@@ -1,6 +1,6 @@
 # 战役承接与正式战斗强制胜利回执：跨关 carry、续战存档、各关结算流转
 
-> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode、关卡入口 0x4075e0 回满; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode、关卡入口 0x4075e0 回满; provisional · status: live · functions: 0x4075e0 · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-28
 
 ## 结论
 

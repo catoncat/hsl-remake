@@ -1,12 +1,12 @@
 # 原版绘制顺序：单位与站立物件谁挡住谁
 
-> evidence: static-derived; resource-derived: PROCESS.DEF plane／objattr 常量、各关 OBS 的 obj_Plane／obj_Attribute · status: live · functions: 0x4051d0, 0x4071e0, 0x410670, 0x4300f0, 0x43ccf0, 0x43f31e, 0x442a90, 0x443849, 0x446ad0, 0x45dd8a, 0x45e307, 0x45f5f7, 0x461479 · tools: run_battle_scene_runtime_tests.gd, test_hsl_opening_positions.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PROCESS.DEF plane／objattr 常量、各关 OBS 的 obj_Plane／obj_Attribute; provisional: 站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶、效果阶段取整段切入 · status: live · functions: 0x4051d0, 0x4071e0, 0x410670, 0x4300f0, 0x43ccf0, 0x43f31e, 0x442a90, 0x443849, 0x446ad0, 0x45dd8a, 0x45e307, 0x45f5f7, 0x461479 · tools: run_battle_scene_runtime_tests.gd, test_hsl_opening_positions.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版按 32 px 格行给单位和非 ATTACKFLAG 的站立物件排深度桶，行号小的先画；同桶内 plane 小者先画、同 plane 按建立顺序；飞行单位桶号 +10；ATTACKFLAG 物件固定在 `obj_Plane`（static-derived）。
 - 重制 `ActorRuntime.depth_index` 照原版算行桶：`clamp(((y+16)>>5) − 镜头顶行, 0, 19) + 4`，飞行 +10，z = (桶 + 镜头顶行)·32 + plane（玩家 planeIcon 3、敌人 planeObject1 4），同桶 plane 小者先、同 plane 按节点顺序；站立物件以锚点行桶 + obj_Plane 同域排序（`ActorRuntime.stand_object_z`）；脚点被北侧建筑盖住的 14 名单位中 11 名原版同样被盖，雷特（飞行）原版不被盖，重制已照做（static-derived）。
-- 过程不改 +0xc 的物件停在 `obj_Plane` 桶：defProcObjectMove（`0x4051d0`）整段只读不写自身 +0xc。第 53 战开场的 繩子（planeObject1 = 桶 4）因此画在 緹娜 下面——她下绳时桶号 10..19，只有她站在视口最上一格行时才与绳子同桶（static-derived）。
+- 过程不改 +0xc 的物件停在 `obj_Plane` 桶：defProcObjectMove（`0x4051d0`）整段只读不写自身 +0xc。玩家第 3 场 · 逃出克萊恩城（LEVEL053）开场的 繩子（planeObject1 = 桶 4）因此画在 緹娜 下面——她下绳时桶号 10..19，只有她站在视口最上一格行时才与绳子同桶（static-derived）。
 - 重制 `ActorRuntime.apply_object_depth` 给 defProcObjectMove 物件与带 ATTACKFLAG 的站立物件定固定 plane：planeObject1 以下压在全部单位下，planeObject1..30 = 当前视口的同号桶（`refresh_fixed_planes` 每帧按镜头顶行换算，随镜头滚动与单位交错），planeObject31 以上压在全部未抬起单位上，planeEffect* 起用 `EFFECT_Z`；繩子 = 桶 4，下绳的 緹娜 桶 10..19 画在其上（static-derived）。
 - 单位过程算完行桶与飞行 +10 后还有两段全局状态分支（static-derived）：①`[0x4c1b00] & 0x1400000`（战斗特写或状态窗／仓库窗打开期间、或魔法效果阶段）时，桶号超过 22 的飞行单位若不在施法脚印里就压回 22；②`& 0x1000000`（魔法效果阶段）时，飞行单位先压回 22，再给施法脚印内的单位和摆着施法姿势的单位 +23——施法者与目标在效果放完前画在全部 y 排序的单位与站立物件上面。
 - 重制 `BattleSceneStage.sync_cast_depth` 在地图 `magic:` 切入播放期间，给效果格内的单位与施法姿势中的单位置 `ActorRuntime.cast_lift`（桶 +23，z 进 `CAST_LIFT_Z` 带：全部行桶 z 之上、planeObject31 固定带之下，带内按桶与 plane），并给全部飞行单位置 `flying_cap`；其他切入（攻方特写，对应 0x400000）期间目标格外的飞行单位置 `flying_cap`（桶 > 22 压回 22）（static-derived）。

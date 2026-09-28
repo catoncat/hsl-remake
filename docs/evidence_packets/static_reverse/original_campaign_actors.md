@@ -1,12 +1,12 @@
 # 职业：主线角色模板、四种新增职业刷新与学习来源
 
-> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4373f0, 0x437970, 0x437a40, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42c7e0, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4348f0, 0x4373f0, 0x437970, 0x437a40, 0x4483c0, 0x448840, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-28
 
 ## 结论
 
-- 原版 34 个未放置角色模板（含最终章 059／060、第 37／80 关 066／067／068）经 `0x448840` 刷新的结果、推级／配额／出生调整与学习调用已完整执行；新增职业 93／95／96／98 各有独立刷新分支、上限行与学习归属，源 HP 半字按有符号读（static-derived）。
+- 原版 34 个未放置角色模板（含最终章 059／060、古代神殿遺跡（LEVEL037）／禁忌之魂・墳場地下（LEVEL080）的 066／067／068）经 `0x448840` 刷新的结果、推级／配额／出生调整与学习调用已完整执行；新增职业 93／95／96／98 各有独立刷新分支、上限行与学习归属，源 HP 半字按有符号读（static-derived）。
 - 重制由 `tools/hsltools/data/campaign_actors.py` 生成 `content/generated/hsl/actors/0NN.json` 与 `roles/profiles.json`，职业公式入 `content/authored/roles/job_formulas.json`、学习表入 `roles/growth_lifecycle.json`，`game/sim/JobStatsRules.gd`／`LearningRules.gd` 消费（static-derived）。
-- 注册移除不清记录：WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` 只清槽 1 的注册码，緹娜 的 live 记录（索引 2）连同 53 关的等级、经验与学会的魔法留着；第 2 关 `obj_Story_Player2` 重装槽 1 时构造器不复制模板，沿用该记录。重制以 carry 的 `reserve_units` 承接，第 2 关重装与之后各关保留（static-derived）。
+- 注册移除不清记录：WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` 只清槽 1 的注册码，緹娜 的 live 记录（索引 2）连同玩家第 3 场 · 逃出克萊恩城（LEVEL053）的等级、经验与学会的魔法留着；玩家第 4 场 · 戈爾山道（LEVEL002）的 `obj_Story_Player2` 重装槽 1 时构造器不复制模板，沿用该记录。重制以 carry 的 `reserve_units` 承接，LEVEL002 重装与之后各关保留（static-derived）。
 - 跨关承接：注册表 `0x4c4360` 只存槽码，状态全在 live 记录；每关入口 `0x4075e0` 对所有已注册槽回满 HP／MP、ST 归零（`actKeepPlayerST` 时保留），阵亡不注销，未上场成员照样随队；重制 carry 照此传下未上场成员、脚本插入沿用其记录，reserve 带走离场时的 HP／MP／ST（static-derived）。
 - 008 源装备 32 的 `range3CellCircle` 由[武器范围](original_weapon_ranges.md)接入：`content/generated/hsl/equipment/items.json` 32 号 `supported: true`，`actors/008.json` 的 `runtime_blockers` 为空，原样初始化不再被拒（resource-derived 生成物）。
 - 已知差异：模板坐标 `[0,0]` 是未放置标记（provisional）。
@@ -69,6 +69,6 @@
 - Godot 只以无装备数值夹具对拍 008 的 96 分支；带 32 号武器的刷新走通用装备叠加。
 - 模板坐标 `[0,0]` 须由组装方用本关 EVEF／脚本锚点替换（provisional）。
 - 敌方过程均为 `defProcEnemy`、玩家 `defProcPlayer`，不代表整个原 dispatcher 的行为。
-- reserve 记录的状态字（`+0x24` 等）原版随记录保留，重制不带状态；HP≤0 的注册记录被重装时原版删对象不装，重制未建模（第一章无此局面，provisional）。53 关的金钱与战利品仍按 separate party 不带走（重制策略）。
+- reserve 记录的状态字（`+0x24` 等）原版随记录保留，重制不带状态；HP≤0 的注册记录被重装时原版删对象不装，重制未建模（第一章无此局面，provisional）。LEVEL053 的金钱与战利品仍按 separate party 不带走（重制策略）。
 - 原版战斗中途注册成员阵亡后又被同关脚本重装的删对象路径、城镇名单按槽序排列与重制 carry 字典序的差别未对齐（provisional）。
 - 转职事务、原完整 parser／constructor、全局随机流、负属性／溢出区间不在本包。

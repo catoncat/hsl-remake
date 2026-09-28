@@ -1,6 +1,6 @@
 # 剧情脚本的镜头：居中缓动、走路跟随与 actScrollBG 步进
 
-> evidence: static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） · status: live · functions: 0x42dc50, 0x43bf30, 0x43c140, 0x44fcf0, 0x44fd90, 0x44ff50, 0x4501f0, 0x450450, 0x450840, 0x451e27, 0x453b90, 0x45e80d · tools: hsltools/data/story_corpus.py, run_camera_panel_motion_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 脚本 token 与参数; runtime-measured: 录屏里 AI 回合对准的法师站位旁证; provisional: 16 ms 设计值与 19.4 ms 实测的取舍 · status: live · functions: 0x407940, 0x40ba20, 0x411b90, 0x42dc50, 0x43bf30, 0x43c140, 0x44fad0, 0x44fbd0, 0x44fcf0, 0x44fd90, 0x44ff50, 0x4501f0, 0x450450, 0x450840, 0x451e27, 0x453b90, 0x457b70, 0x45e80d · tools: hsltools/data/story_corpus.py, run_camera_panel_motion_tests.gd · updated: 2026-09-28
 
 ## 结论
 

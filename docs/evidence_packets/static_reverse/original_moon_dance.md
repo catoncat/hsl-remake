@@ -1,6 +1,6 @@
 # 月花圓舞：自身中心、逐目标五段受击与动作末经验
 
-> evidence: static-derived · status: live · functions: 0x409a20, 0x40b8f0, 0x4104d0 · tools: hsltools/data/moon_dance.py, hsltools/probes/moon_dance.py, run_moon_dance_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived · status: live · functions: 0x409a20, 0x40b8f0, 0x4104d0 · tools: hsltools/data/moon_dance.py, hsltools/probes/moon_dance.py, run_moon_dance_tests.gd · updated: 2026-09-28
 
 ## 结论
 

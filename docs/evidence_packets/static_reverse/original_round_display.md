@@ -1,6 +1,6 @@
 # 回合计数、事件扫描形状与攻击上下文；回合显示与 X-Range 动作
 
-> evidence: static-derived · status: live · functions: 0x4074a0, 0x407510, 0x408370, 0x408b20, 0x42c180, 0x42c400, 0x42c640, 0x42fff0, 0x430020, 0x44e7b0, 0x44ebf0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x450840, 0x452590, 0x453ac0, 0x453b30, 0x45e307 · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: ACTION.H token 表; negative-evidence: 回合数除「剩餘回合」外无处显示; provisional: 事件链内武装的胜负判定时机、受击单位注册竞态 · status: live · functions: 0x4074a0, 0x407510, 0x408370, 0x408b20, 0x42c180, 0x42c400, 0x42c640, 0x42fff0, 0x430020, 0x44e7b0, 0x44ebf0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x450840, 0x452590, 0x453ac0, 0x453b30, 0x45e307 · tools: run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 

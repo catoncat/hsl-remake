@@ -1,6 +1,6 @@
-# 原版第 17 关（艾瓦台地）：护送 NPC 与敌方 AI，两次全待机开局
+# 原版 艾瓦台地（LEVEL017）：护送 NPC 与敌方 AI，两次全待机开局
 
-> evidence: runtime-measured; provisional: item consumption and NPC movement rule; static-derived: remake friendly candidate filter, fixed-point refinement walk · status: record-only · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py · updated: 2026-09-28
+> evidence: runtime-measured; provisional: item consumption and NPC movement rule; static-derived: remake friendly candidate filter, fixed-point refinement walk; resource-derived: level017.BIN EVEF instance words · status: record-only · functions: 0x409090, 0x40ed50, 0x411080, 0x413740, 0x42bd50 · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py · updated: 2026-09-28
 
 ## 结论
 

@@ -1,6 +1,6 @@
 # 移动：四邻扩展与邻接阻挡代价
 
-> evidence: static-derived · status: live · functions: 0x40bab0, 0x40eb80, 0x40ed50, 0x40f200, 0x446b30 · tools: hsltools/probes/movement.py, run_ai_navigation_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40bab0, 0x40eb40, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x446b30 · tools: hsltools/probes/movement.py, run_ai_navigation_tests.gd · updated: 2026-09-28
 
 ## 结论
 

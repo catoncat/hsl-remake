@@ -1,6 +1,6 @@
 # 技能目标：function 到目标模式、覆盖构建与共享来源范围
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: RANGE 矩阵; runtime-measured: 重制侧选格回执; provisional: 敌我 role 适配与 AI 候选策略 · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-28
 
 ## 结论
 

@@ -1,6 +1,6 @@
 # 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
 
-> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403989, 0x403aaa, 0x403be2, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行，剧情对象与命中趟轨迹; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、命中趟多段未按段区分 · status: live · functions: 0x401390, 0x401480, 0x4038a0, 0x403989, 0x403aaa, 0x403bc1, 0x403be2, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x406eb0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -8,6 +8,8 @@
 - 同一程序的多个实例只靠共享 RNG 流错开：生成器 `0x401390` 的折叠偏移与累加延迟（每只比前一只晚 rand(delay)＋1）、objmRandomDelay、随机角／速／帧；另有全局「上一随机角」`0x4c1414` 防重复；没有按实例序号的字段（static-derived）。
 - 60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部经原指令逐 tick 执行，连同抛出的子对象写进 `content/generated/hsl/skills/objcomd_motion.json`（509 棵变体树）；重制 `SkillEffectScriptPlayer`、`PoisonArrowPresentation`、`MoonDancePresentation` 按它画（static-derived）。
 - ANIMAL 的 aniInsertRandomObject／aniInsertHitRandomObject／…Disp（op 19／27／28）同样走 `0x401390`，重制随之改为累加延迟（static-derived）。
+- 剧情脚本插入的 defProcObjectMove 对象（12 关 19 个）走同一解释器，与绝技对象合计 240 个写进同一 JSON；重制 `StoryEffectObjects` 按轨迹逐 tick 画（static-derived）。
+- 命中才掷出的子对象另跑命中趟（17 个对象两趟不同，写进 `hit_variants`），重制按该击结算的命中／落空选趟（static-derived；多段未按段区分，provisional）。
 - 差异：随机样本用至多 4 个种子变体代替共享流、出屏判定按首个插入点、角度环／龙卷列等模式插入仍用重制几何、objcomd.txt 字布局（provisional，见边界）。
 
 ## 证据
@@ -189,7 +191,7 @@ ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 an
 
 `python3 tools/hsl.py check objcomd_motion`（重生成需原作与 unicorn：`python3 tools/hsl.py generate objcomd_motion`）。
 
-## 重生成差异（2026-09-28）
+## 重生成差异
 
 effect_motion 为效果对象补镜头与震屏模型后（`REVIEWED` 新增 `0x415d20`、`0x43bf30`、`0x46be92..0x46bf36`、`0x46163a`，Machine 初始化把镜头写成以施法者为中心的 (ORIGIN−(320,192)) = (0,48)，每帧镜头 += 震屏累加），本包整包重跑时有 19 个绝技对象的轨迹变了。逐个把镜头改回 (0,0)、其余模型不变重跑，19 个全部回到旧轨迹；这 19 个对象都没有震屏，新纳入的区间本身不改任何读数。成因只有镜头起点：
 

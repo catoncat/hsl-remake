@@ -1,6 +1,6 @@
 # ANIMAL 完整动作程序与分派计数
 
-> evidence: resource-derived; static-derived · status: live · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_skill_effect_script_tests.gd, test_hsl_animal_programs.py · updated: 2026-09-28
+> evidence: resource-derived; static-derived; provisional: 第五帧受击绑定与切入背景布局 · status: live · functions: 0x4010c0, 0x401220, 0x401c20, 0x4038a0, 0x4071e0, 0x408b20, 0x42c3d0, 0x42c3f0, 0x434d10, 0x436490, 0x446be0, 0x45e3ed, 0x45e80d, 0x4606a9, 0x46098f, 0x4609c0 · tools: hsl_native_animal_probe.py, hsltools/assets/animal_programs.py, hsltools/assets/combat_animation.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 

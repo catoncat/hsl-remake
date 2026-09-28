@@ -1,6 +1,6 @@
 # 原 AI：技能桶、使用概率、范围中心与施法站位
 
-> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x40dd80 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-28
 
 ## 结论
 

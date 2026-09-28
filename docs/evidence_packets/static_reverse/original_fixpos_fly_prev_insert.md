@@ -1,6 +1,6 @@
 # WINFAIL 的 actChangePrevInsertObjectID／actSetPlayerFixPos／actSetPlayerFly
 
-> evidence: static-derived; resource-derived: ACTION.H 与 WINFAIL012 用法; provisional: 锚点量化; negative-evidence: 碰撞、动画时序、飞行物理、对象旗标 0x4000 · status: live · functions: 0x44fa80, 0x44fad0, 0x450840 · tools: run_ai_navigation_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: ACTION.H 与 WINFAIL012 用法; provisional: 锚点量化; negative-evidence: 碰撞、动画时序、飞行物理、对象旗标 0x4000 · status: live · functions: 0x411080, 0x4111a0, 0x44fa80, 0x44fad0, 0x450840 · tools: run_ai_navigation_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 

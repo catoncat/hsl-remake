@@ -1,6 +1,6 @@
 # 原版配乐：播放引擎、关卡曲目表与各场景何时放哪首（static-derived）
 
-> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x4245c0, 0x424630, 0x424680, 0x42b6b0, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42d7c0, 0x42da60, 0x42def0, 0x452a80, 0x452a97, 0x452ab7, 0x4561d0, 0x4581c0, 0x458220, 0x459d70, 0x459e60, 0x459ec0, 0x45a0b0, 0x45a330 · tools: hsl_steam_classic.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x4245c0, 0x424630, 0x424680, 0x42aea0, 0x42b6b0, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42cbd0, 0x42cc10, 0x42cc70, 0x42ccc0, 0x42d7c0, 0x42da60, 0x42def0, 0x42e640, 0x42ebe0, 0x42ec10, 0x445f60, 0x4477b0, 0x452a80, 0x452a97, 0x452ab7, 0x4545e0, 0x456150, 0x4561d0, 0x4581c0, 0x458220, 0x459990, 0x459a20, 0x459d70, 0x459dd0, 0x459e60, 0x459ec0, 0x459f60, 0x45a0b0, 0x45a330, 0x45c5f0 · tools: hsl_steam_classic.py · updated: 2026-09-28
 
 核对：r2 静态反汇编 `$HSL_ORIGINAL_DIR/hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），脚本取自本机 hsl.pak（即 Steam 的 hsl-cn.pak）。曲目文件本身（18 首 `music\02.wav`–`19.wav`，22050 Hz 立体声 16-bit）见 [Steam 經典版](../resource_inventory/steam_classic_edition.md)。本包只记原版程序怎样使用这些曲目。
 
@@ -14,7 +14,7 @@
 
 ## 证据
 
-§1–§4 是逐条读法：播放引擎、曲目表与调用点为 static-derived（r2 反汇编），剧本放乐动作为 resource-derived（hsl.pak 脚本）。
+§1–§5 是逐条读法：播放引擎、曲目表、调用点与音量链为 static-derived（r2 反汇编），剧本放乐动作为 resource-derived（hsl.pak 脚本）。
 
 ## 1 播放引擎
 

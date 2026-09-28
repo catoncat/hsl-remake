@@ -1,6 +1,6 @@
 # 战内道具：解除禁魔、气力恢复与临时攻防
 
-> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x447fe2, 0x448840 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-28
+> evidence: resource-derived; static-derived; negative-evidence: item+0xa0 位 0x80 无消耗品来源 · status: live · functions: 0x409e10, 0x409e40, 0x40a31f, 0x40c1b0, 0x40c230, 0x42c780, 0x447fe2, 0x448840, 0x458c10 · tools: hsltools/data/tactical_items.py, hsltools/probes/item_cure_route.py, hsltools/probes/item_magic.py, hsltools/probes/tactical_items.py, run_tactical_items_tests.gd · updated: 2026-09-28
 
 本包沿确定性ITEM字段、字符串xref与已确认`0x409e40`道具函数推进，未调用Jev。源表是`resource-derived`；隔离原指令是`static-derived`，不是原版完整运行录像。机器证据为[道具应用／采样／扫描](original_tactical_items.json)、[AI自用或友援入口](original_item_cure_route.json)及[低强度道具与魔法合并／到期](original_item_magic.json)。
 

@@ -5,7 +5,7 @@
 ## 结论
 
 - 原版：演员构造 `0x407ec0` 依次做 obj_Data9 换边（pmPlayer↔pmEnemy，置 +0xa0 位 8）、obj_HitPoint 加到 HP 加值、obj_X1 直接覆盖阵营字 +0x28；AI 目标扫描排除阵营位有交集者，攻击范围丢弃含攻击者首位的占格，胜负计数只数「P 有 E 无」与「E 有 P 无」（static-derived）。
-- pmMagicAttack 占位者普通攻击选不中、魔法／绝技选得中；门（pmALL）与船壳（pmNPCPlayerNoMagic，no_attack／no_block／no_showshape）是登记演员，同组船壳共用整份 live 记录（static-derived；12 关整镜像实测改一枚 HP 62 枚同读）。
+- pmMagicAttack 占位者普通攻击选不中、魔法／绝技选得中；门（pmALL）与船壳（pmNPCPlayerNoMagic，no_attack／no_block／no_showshape）是登记演员，同组船壳共用整份 live 记录（static-derived；巴瀚納海峽（LEVEL012）整镜像实测改一枚 HP 62 枚同读）。
 - 重制：`hsltools/levels/battle.py` 按同序写单位 `player_mode`／`object_hit_point`，`game/sim/ActorRoleRules.gd` 的 `side_mask`／`hostile`／`same_side`／`counts_as_*`／`player_range_selectable` 供全部消费者读取；换边单位的出生 HP 等级项与原版开局盘 111/111 名一致（runtime-measured）。
 - 差异：「士兵不打村民」等玩家可见后果只到静态读法（provisional）；支援同侧按「有交集」而非原版「相等」；船壳只共享 HP（provisional）。
 
