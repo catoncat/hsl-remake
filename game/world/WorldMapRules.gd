@@ -15,12 +15,13 @@ extends RefCounted
 ## unvisited opens the event, visited rolls the encounter ratio then adds 0..2;
 ## Battle opens the event (+0..2 once visited); Town enters only as the chosen
 ## destination. A new game hides 17 points / 18 tracks by code (0x42c86e).
-## What sets a track to mode 1 (the reveal animation) is not located: this remake
-## reveals the non-hidden tracks at the point the party stands on (provisional).
+## Tracks enter mode 1 (the reveal animation) through 0x426e40(walker, point), called
+## from walker 0x427420 sub-state 0 (the current point on map entry) and sub-state 1
+## (show-track requests) and from 0x427d36 (call site 0x427d48: a destination whose
+## dispatch does not hold, and the way back from a town) (static-derived).
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
-##   rules: provisional (track reveal trigger — what sets mode 1 is not located)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/world_map.json
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
@@ -198,9 +199,10 @@ static func track_shown(state: Dictionary, world_map: Dictionary, track_id: int)
 ## The non-hidden, not yet shown tracks at a point enter the revealing phase.
 ## Triggers: teBMSetShowTrackPoint / actBMSetShowTrackPoint naming the point
 ## (resource-derived — the eight town events clearing a point's and a route's
-## Hidden bit all follow with this token at the far point), and, provisional
-## (the original 0→1 trigger for the initial routes is not located), the party's
-## own point on map entry and arrival. Returns the new state and the track ids.
+## Hidden bit all follow with this token at the far point), and the party's own
+## point on map entry (walker sub-state 0), on an arrival whose dispatch does not
+## hold and back from a town (0x427d36) — all through the writer 0x426e40
+## (static-derived). Returns the new state and the track ids.
 static func reveal_tracks_at(state: Dictionary, world_map: Dictionary, point_id: int) -> Dictionary:
 	var next := state.duplicate(true)
 	var modes: Dictionary = next.get("track_modes", {})
@@ -463,7 +465,11 @@ static func town(world_map: Dictionary, town_id: int) -> Dictionary:
 ##   General, visited       → encounter ratio first (0x458c80(100)+1 ≤ ratio, the
 ##                            `cmp ratio, r; jl` skip), then level <event> + 0..2;
 ##   Battle                 → level <event>, + 0..2 once visited (no ratio check);
-##   Town                   → enters the town only as the chosen destination.
+##   Town                   → enters the town only as the chosen destination, with or
+##                            without town data (0x427b5e..0x427b90 tests no town
+##                            table: Visit at 0x427b88, sub-state 15 opens it); a town
+##                            that fails to open returns 2 (0x456150 at 0x4561bf) and
+##                            0x427d2f goes straight to the 0x427d36 reveal.
 ## Visited is the bmpmVisit bit. `sample` (1..100) and `offset` (0..2) fix the
 ## dice for tests; -1 rolls. Arrival itself does not mark Visit — visit() does, and
 ## only for a dispatch that holds (level / town).
@@ -492,9 +498,9 @@ static func arrival(state: Dictionary, world_map: Dictionary, point_id: int, sel
 		TOWN:
 			if not selected:
 				return {"kind": "stop", "point_id": point_id, "reason": "passing_town"}
-			if town_id_for_point(world_map, point_id) > 0:
-				return {"kind": "town", "town_id": town_id_for_point(world_map, point_id), "point_id": point_id}
-			return {"kind": "stop", "point_id": point_id, "reason": "town_without_data"}
+			# Town ids are point ids; a point with no town data still enters (王都 希里烏斯 20,
+			# 克萊恩城 45) and the runtime's no-data fallback reveals it at once.
+			return {"kind": "town", "town_id": point_id, "point_id": point_id}
 		_:
 			return {"kind": "stop", "point_id": point_id, "reason": "untyped"}
 

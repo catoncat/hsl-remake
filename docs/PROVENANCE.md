@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (198 modules, 133 remake-invented cells, 60 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (198 modules, 133 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (198)
 
@@ -267,7 +267,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [PartyEquipmentScreen](../game/world/PartyEquipmentScreen.gd) | n/a | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md) | remake-invented | n/a | n/a |
 | [TownRuntime](../game/world/TownRuntime.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md); provisional | resource-derived [town_portraits.json](../content/imported/hsl/global/world_map/town_portraits.json); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [original_dialogue_board.md](../docs/evidence_packets/static_reverse/original_dialogue_board.md); static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); provisional; resource-derived [protected_words.json](../content/generated/hsl/text/protected_words.json); remake-invented | resource-derived [town_messages.json](../content/imported/hsl/global/world_map/town_messages.json); resource-derived [towndef.json](../content/imported/hsl/global/world_map/towndef.json); static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); provisional | static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); resource-derived [town_sounds.json](../content/imported/hsl/global/world_map/town_sounds.json); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [TownShopScreen](../game/world/TownShopScreen.gd) | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); remake-invented | resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); resource-derived [town_messages.json](../content/imported/hsl/global/world_map/town_messages.json) | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md) | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md) |
-| [WorldMapRules](../game/world/WorldMapRules.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); provisional | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | n/a | n/a |
+| [WorldMapRules](../game/world/WorldMapRules.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | n/a | n/a |
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); provisional | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
@@ -412,7 +412,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (60)
+### provisional 疑点 (59)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -475,7 +475,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TownRuntime](../game/world/TownRuntime.gd) | rules | — | a scripted confirm() cuts a hold |
 | [TownRuntime](../game/world/TownRuntime.gd) | layout | — | job-up and narration lines on the bottom board |
 | [TownRuntime](../game/world/TownRuntime.gd) | timing | — | the stone menus have no clock of their own |
-| [WorldMapRules](../game/world/WorldMapRules.gd) | rules | — | track reveal trigger — what sets mode 1 is not located |
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | rules | — | the glide uses the battle step 32 |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | rules | — | token semantics are TownEventRules' readings — docs/evidence_packets/static_reverse/town_event_semantics.md |
 
@@ -488,7 +487,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 31 | 14 | 0 | 13 | 2 | 60 |
+| provisional | 30 | 14 | 0 | 13 | 2 | 59 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 53 | 33 | 33 | 13 | 1 | 133 |

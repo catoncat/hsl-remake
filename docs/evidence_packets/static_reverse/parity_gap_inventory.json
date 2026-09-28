@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 478,
+    "sources": 477,
     "sources_by_kind": {
-      "provenance": 193,
+      "provenance": 192,
       "sentence": 87,
       "scope": 100,
       "matrix": 85,
@@ -1231,7 +1231,7 @@
     {
       "id": "world-map-rules",
       "difference": "大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；脚本行走 teSetBMWalkToPoint 已与点击同路（lane WORLDTOWN：0x45543a／0x42f7a4／0x427723，无路线原地不动）；到点分派已照原版（lane WORLDARRIVE：event 0 一律不分派、Town 也一样，只有分派成立才写 Visit，不成立按 0x427d36 揭示目的点路线；兩棲族部落第二段桥接已删，150／151 只由二转后的 0x434680 加入）；剩镜头滑行步长取战斗的 32（未读，归 WORLDWALKER）",
-      "original": "设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废）；到点分派 0x427a86..0x427bad 已静态读（event 0 在 0x427aca 先于类型测试、遇敌 0x458c80(100)+1 ≤ ratio、请求后 0x427b54 写 Visit、不成立 0x427d36 揭示不写 Visit）；大地图镜头 0x43bf30 步长未读",
+      "original": "设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废），另由 0x427d36（调用点 0x427d48，到点分派不成立与离城共用）调用；到点分派 0x427a86..0x427bad 已静态读（event 0 在 0x427aca 先于类型测试、遇敌 0x458c80(100)+1 ≤ ratio、请求后 0x427b54 写 Visit、不成立 0x427d36 揭示不写 Visit）；大地图镜头 0x43bf30 步长未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/world_map_data.md",
         "docs/evidence_packets/static_reverse/original_world_town.md"
@@ -1246,7 +1246,6 @@
       "effort": "M",
       "category": "城镇与大地图",
       "sources": [
-        "provenance:game/world/WorldMapRules.gd|rules|provisional|",
         "provenance:game/world/WorldMapRuntime.gd|rules|provisional|",
         "scope:docs/evidence_packets/resource_inventory/original_scope_inventory.md|provisional|500 段战斗桩的触发路线",
         "scope:docs/evidence_packets/static_reverse/world_map_data.md|provisional|"

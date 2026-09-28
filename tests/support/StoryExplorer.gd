@@ -279,13 +279,15 @@ func play_scene(scene: Node) -> String:
 	return OUTCOME_HANDOFF if CampaignProgress.has_pending() else OUTCOME_STUCK
 
 
-## Confirms dialogue, answers prompts with their first row and closes shops until the
-## town is back on a menu (or closed / handing off).
+## Confirms dialogue, cuts teDelay / teMenuMoveOut holds (TownRuntime.confirm, the headless
+## driver's path — player input cannot cut one), answers prompts with their first row and
+## closes shops until the town is back on a menu (or closed / handing off). A hold left
+## standing would end the drain mid-event with the town still open.
 func drain(town: Node) -> void:
 	var guard := 0
 	while is_instance_valid(town) and guard < 200 and not CampaignProgress.has_pending():
 		match str(town.mode):
-			"dialogue":
+			"dialogue", "delay":
 				town.confirm()
 			"select":
 				var pending: Dictionary = town.run.get("pending", {})
@@ -449,9 +451,13 @@ func explore_map(scene: Node) -> String:
 		# at once; here another hop's random encounter would overwrite the armed hand-off
 		# and the visited point would never open its level again (`exhausted`, ~35%). A
 		# script walk still travelling (96 px/s) gets to arrive first; selecting a point
-		# meanwhile would kill its tween and the arrival would never fire.
-		if map.traveling or bool(map.summary().get("reveal_busy", false)):
+		# meanwhile would kill its tween and the arrival would never fire. The walk itself
+		# waits for the reveals (walker sub-state 1 → 2), so it can set off on the very tick
+		# the reveals end: settle again until neither is in flight.
+		var settle_rounds := 0
+		while (map.traveling or bool(map.summary().get("reveal_busy", false))) and settle_rounds < 4:
 			await settle_map(map)
+			settle_rounds += 1
 		if CampaignProgress.has_pending():
 			return OUTCOME_HANDOFF
 		var here: int = map.current_point()

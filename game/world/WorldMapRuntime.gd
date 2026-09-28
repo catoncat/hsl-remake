@@ -130,6 +130,9 @@ func start() -> Dictionary:
 		state = carried.duplicate(true)
 	else:
 		state = Rules.initial_state(world_map, int(config.get("start_point", 1)), _initial_towns(), config.get("new_game", {}))
+	# 0x42f7a4 runs on the way back to the map, before the walker's first reveal: a script
+	# walk's `from` is the current point the map opens on.
+	_apply_pending_walk_origin()
 	_build_layer()
 	_build_status_bar()
 	_spawn_marker(str(travel.get("marker_actor_id", "001")))
@@ -158,6 +161,7 @@ func tick(delta: float) -> void:
 		return
 	_advance_reveals(delta)
 	_advance_show_sequence()
+	_consume_pending_walk()
 	_refresh_status_bar()
 	if traveling and marker != null:
 		runtime.camera_controller.snap_to(marker.position)
@@ -512,6 +516,9 @@ func _on_town_closed(town_id: int) -> void:
 	# Back from an opened town the original replays 06 from the start (0x427d31, §3.2).
 	_play_music("map_music")
 	_rebuild_layer()
+	# teSetBMWalkToPoint also asks for the map again (0x42cc10(49,49)): its `from` is the
+	# current point before the reveal, as on any return to the map (0x42f7a4).
+	_apply_pending_walk_origin()
 	_reveal_from(current_point())
 	_consume_show_track_points()
 	_consume_pending_walk()
@@ -575,24 +582,42 @@ func _glide_to_point(point_id: int) -> void:
 ## exactly like a player click, so the party walks the multi-track route (ship routes such as
 ## 薛維斯港 → 巴瀚納海峽) through select_point. No route: 0x427796 clears the click at 0x4276fd
 ## and the party stays where it is; the target being the current point re-enters a town.
+## Sub-state 2 is reached only once sub-state 0 has revealed the routes at the current point
+## (the `from`) and sub-state 1 has waited out every reveal and show-track request (walker
+## +0x88 back to 0, 0x4c1bb0 back to 0), so the walk waits here for the same: the routes a
+## scene just un-hid at `from` (黃昏之丘　陰（開場預覽）（LEVEL033）clears track 30 and walks
+## 31 → 32) are in phase 2 when 0x427070 routes them. Called on map entry, town close and
+## every tick; it does nothing while reveals, a travel or a town are in progress.
 func _consume_pending_walk() -> void:
 	var walk: Variant = state.get("pending_walk")
-	if typeof(walk) != TYPE_DICTIONARY:
+	if typeof(walk) != TYPE_DICTIONARY or reveal_busy() or traveling or town_runtime != null:
 		return
+	_apply_pending_walk_origin()
+	walk = state.get("pending_walk")
 	state.erase("pending_walk")
 	var to_point := int((walk as Dictionary).get("to", 0))
-	var from_point := int((walk as Dictionary).get("from", 0))
-	if from_point > 0 and from_point != SCRIPT_WALK_KEEP_POINT and not Rules.point(world_map, from_point).is_empty() and from_point != current_point():
-		state["current_point"] = from_point
-		if marker != null:
-			marker.position = Rules.point_position(world_map, from_point)
-		_refresh_labels()
 	if to_point <= 0 or Rules.point(world_map, to_point).is_empty():
 		_persist_state()
 		return
 	var record := select_point(to_point, "script_walk")
 	if str(record.get("kind", "")) != "travel":
 		_persist_state()
+
+
+## 0x42f7a4 on the way back to the map: 0x477c18 ≠ −1 becomes the current point 0x4c1ba4
+## (no Visit, no reveal) and is reset to −1, so a pending walk's `from` is taken once.
+func _apply_pending_walk_origin() -> void:
+	var walk: Variant = state.get("pending_walk")
+	if typeof(walk) != TYPE_DICTIONARY:
+		return
+	var from_point := int((walk as Dictionary).get("from", 0))
+	(walk as Dictionary)["from"] = -1
+	if from_point <= 0 or from_point == SCRIPT_WALK_KEEP_POINT or Rules.point(world_map, from_point).is_empty() or from_point == current_point():
+		return
+	state["current_point"] = from_point
+	if marker != null:
+		marker.position = Rules.point_position(world_map, from_point)
+	_refresh_labels()
 
 
 func _free_town() -> void:
