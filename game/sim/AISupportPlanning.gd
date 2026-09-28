@@ -47,8 +47,10 @@ static func prepare(loop: Dictionary, actor: Dictionary, envelope: Dictionary, r
 	for cell in envelope["reachable_coords"]:
 		if not cells.has(cell): cells.append(cell)
 	cells.sort_custom(AISkillPlanning.cell_before)
+	var scan := AISkillPlanning.threat_scan(loop, actor, profile, bool(capability["effects"]["move_magic_use"]))
+	if not scan["ok"]: return scan
 	var ctx := {"loop": loop, "actor": actor, "envelope": envelope, "profile": profile, "book": book, "capability": capability,
-		"primaries": primaries, "foes": sides["foes"], "cells": cells, "result": result}
+		"primaries": primaries, "threat_scan": scan, "cells": cells, "result": result}
 	if healing_slot >= 0:
 		var failed := _plan_healing_items(ctx, healing_slot)
 		if not failed.is_empty(): return failed
@@ -72,21 +74,17 @@ static func _support_ids(loop: Dictionary, actor: Dictionary, book: Dictionary) 
 	return ids
 
 
-## Living units split into the patients in search range (primaries) and the foes, cell-ordered.
+## The living allies in search range (the patients); foes are skipped.
 static func _support_sides(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	var primaries: Array = []
-	var foes: Array = []
 	for unit in loop["units"]:
 		if not BattlePresenceRules.living(unit): continue
 		if unit.get("battle_actor_role") not in SkillTargetRules.ROLES: return {"ok": false, "reason": "unsupported_target_role"}
-		if SkillTargetRules.ActorRoleRules.hostile(actor, unit):
-			foes.append(unit)
-			continue
+		if SkillTargetRules.ActorRoleRules.hostile(actor, unit): continue
 		var error := StatusEffectRules.input_error(unit)
 		if error != "": return {"ok": false, "reason": error}
 		if unit["id"] != actor["id"] and Rules.AIPriorityRules.within_square(unit["coord"], actor["coord"], Rules.SEARCH_RADIUS): primaries.append(unit)
-	foes.sort_custom(func(a, b): return AISkillPlanning.cell_before(a["coord"], b["coord"]))
-	return {"ok": true, "primaries": primaries, "foes": foes}
+	return {"ok": true, "primaries": primaries}
 
 
 ## Healing-item intents per patient ({} or the failing receipt).
@@ -102,7 +100,7 @@ static func _plan_healing_items(ctx: Dictionary, healing_slot: int) -> Dictionar
 		var selected := _item_intent(actor, primary, ctx["envelope"], healing_slot, code)
 		if selected.is_empty(): continue
 		result["items"][primary["id"]] = selected
-		result["heal"][primary["id"]] = AISkillPlanning.target_plan(primary["id"],"magic",ctx["profile"],actor,ctx["foes"])
+		result["heal"][primary["id"]] = AISkillPlanning.target_plan(primary["id"],"magic",ctx["profile"],actor,ctx["threat_scan"])
 	return {}
 
 
@@ -121,7 +119,7 @@ static func _plan_curing_items(ctx: Dictionary) -> Dictionary:
 		var selected := _item_intent(actor, primary, ctx["envelope"], int(slot["index"]), code)
 		if selected.is_empty(): continue
 		result["status_items"][primary["id"]] = selected
-		result["status"][primary["id"]] = AISkillPlanning.target_plan(primary["id"], "magic", ctx["profile"], actor, ctx["foes"])
+		result["status"][primary["id"]] = AISkillPlanning.target_plan(primary["id"], "magic", ctx["profile"], actor, ctx["threat_scan"])
 	return {}
 
 
@@ -156,7 +154,7 @@ static func _plan_support_skill(ctx: Dictionary, id: Variant) -> Dictionary:
 	var failed := _collect_support_intents(ctx, id, entry, recipients, by_primary)
 	if not failed.is_empty(): return failed
 	for primary_id in by_primary:
-		if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning.target_plan(primary_id, "magic", ctx["profile"], actor, ctx["foes"])
+		if not result[kind].has(primary_id): result[kind][primary_id] = AISkillPlanning.target_plan(primary_id, "magic", ctx["profile"], actor, ctx["threat_scan"])
 		result[kind][primary_id]["skills"].append({"skill_id": id, "source_order": source_order, "use_ratio": rate,
 			"bucket": bucket, "channel": entry["channel"], "intents": by_primary[primary_id]})
 	return {}
@@ -233,7 +231,7 @@ static func choose(prepared: Dictionary, actor: Dictionary, profile: Dictionary,
 	var attempted := (4 if prepared["heal"].is_empty() else 0) | (8 if prepared["status"].is_empty() else 0) | (16 if prepared["buff"].is_empty() else 0)
 	var decision := {"checks": [], "scans": [], "attempts": [], "composition_evidence": "provisional",
 		"source": "original_ai_support", "search_radius": Rules.SEARCH_RADIUS,
-		"geometry_policy": "current legal movement, useful allied coverage, existing farthest-threat selector"}
+		"geometry_policy": "current legal movement, useful allied coverage, 0x40bb80 threat then farthest station"}
 	if attempted == 28: return {"kind": "ordinary", "lock_roll": carried_roll}
 	var roll := carried_roll
 	while attempted != 28:

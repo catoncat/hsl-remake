@@ -16,6 +16,8 @@ const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
+const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: String, fields_by_id: Dictionary, envelope: Dictionary) -> Dictionary:
@@ -30,17 +32,18 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 			if not cells.has(cell): cells.append(cell)
 	cells.sort_custom(cell_before)
 	var primaries: Array = []
-	var centers: Array = []
 	for unit in loop["units"]:
 		if not BattlePresenceRules.living(unit) or unit.get("battle_actor_role") not in SkillTargetRules.ROLES: continue
 		if not SkillTargetRules.ActorRoleRules.hostile(actor, unit): continue
-		centers.append(unit)
 		if foes.any(func(foe): return foe.get("id") == unit.get("id")): primaries.append(unit)
-	centers.sort_custom(func(a, b): return cell_before(a["coord"], b["coord"]))
 	var targets := {}
 	var offensive_targets := {}
 	var any_skills: Array = []
 	var profile: Dictionary = loop["ai_profiles"]["actors"].get(str(actor["actor_id"]), {}).get("profile", {})
+	var scan := {}
+	if not fields_by_id.is_empty():
+		scan = threat_scan(loop, actor, profile, bool(capability["effects"]["move_magic_use"]))
+		if not scan["ok"]: return scan
 	var ctx := {"loop": loop, "actor": actor, "book": book, "targeting": targeting, "origin": origin, "cells": cells,
 		"primaries": primaries, "envelope": envelope}
 	for id in fields_by_id:
@@ -76,12 +79,12 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 		for primary_id in by_primary:
 			var candidate := {"skill_id": id, "source_order": source_order,
 				"use_ratio": rate, "bucket": offense_bucket, "intents": by_primary[primary_id]}
-			if not targets.has(primary_id): targets[primary_id] = target_plan(primary_id, channel, profile, actor, centers)
+			if not targets.has(primary_id): targets[primary_id] = target_plan(primary_id, channel, profile, actor, scan)
 			targets[primary_id]["skills"].append(candidate)
 			if mask & 1:
-				if not offensive_targets.has(primary_id): offensive_targets[primary_id] = target_plan(primary_id, channel, profile, actor, centers)
+				if not offensive_targets.has(primary_id): offensive_targets[primary_id] = target_plan(primary_id, channel, profile, actor, scan)
 				offensive_targets[primary_id]["skills"].append(candidate)
-	var any_target := target_plan("", channel, profile, actor, centers)
+	var any_target := target_plan("", channel, profile, actor, scan)
 	any_target.merge({"skills": any_skills, "available": not any_skills.is_empty(),
 		"move_search": channel != "magic" or bool(capability["effects"]["move_magic_use"])}, true)
 	return {"ok": true, "targets": targets, "offensive_targets": offensive_targets, "any_target": any_target}
@@ -158,18 +161,56 @@ static func cast_terrain(actor: Dictionary, cell: Vector2i, lifted: Dictionary) 
 		"area_modes": {"offensive": RangePropagationRules.offensive_mode(actor), "support": support_mode(actor)}}
 
 
-static func target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, foes: Array) -> Dictionary:
-	var threat: Variant = null
-	var distance := 0x7fffffff
-	# Current roster/WRD adapter: nearest living enemy in the 8-cell threat search.
-	# Native nearest-target tie quirks and movement grid remain separate evidence.
-	for foe in foes:
-		var delta: Vector2i = foe["coord"] - actor["coord"]
-		var current := TacticalGridRules.manhattan(foe["coord"], actor["coord"])
-		if delta.length_squared() <= 64 and current < distance:
-			distance = current
-			threat = foe["coord"]
-	return {"primary_target_id": primary_id, "channel": channel, "skills": [], "threat": threat,
+## The inputs of the move-cast threat scan. 0x40cca0 calls 0x40bb80(actor, 3, 0, 8) — find_type
+## 3 (nearest, score 32×Manhattan), find_flag 0, radius arg4×32 (0x40bb95) — with the caster's
+## own find_no_id (+0x1bc read at 0x40bbf3, compared at 0x40bd88..0x40bd9a) and near range
+## (+0x12c, move_point×32, 0x40bbe6), over the object array 0x4c34c0 in slot order: the rows
+## are every living object from the actor's pre-move board (null for a dead slot), the layout
+## CoreTurnQueue.registry_layout, the same the acquisition scan walks. No guard radius: that
+## filter sits in the acquisition caller, not in 0x40bb80. The coins are drawn at cast time
+## (`threat`), once the stations are known.
+static func threat_scan(loop: Dictionary, actor: Dictionary, profile: Dictionary, move_magic_use: bool) -> Dictionary:
+	var rows: Array = []
+	var owner_index := -1
+	for index in range(loop["units"].size()):
+		var unit: Dictionary = loop["units"][index]
+		if unit["id"] == actor["id"]: owner_index = index
+		if not BattlePresenceRules.living(unit):
+			rows.append(null)
+			continue
+		var source: Dictionary = loop["ai_profiles"]["actors"].get(str(unit["actor_id"]), {})
+		if source.get("sid") == null or not source.get("profile") is Dictionary: return {"ok": false, "reason": "missing_ai_actor_identity"}
+		rows.append({"coord": unit["coord"], "side": SkillTargetRules.ActorRoleRules.side_mask(unit), "job": source["profile"].get("job"),
+			"sid": source["sid"], "level": unit.get("level"), "hp": unit["hp"], "removed": false})
+	var search := profile.duplicate()
+	search.merge({"find_type": 3, "find_flag": 0, "find_range": 8}, true)
+	var layout := CoreTurnQueue.registry_layout(loop["units"])
+	var error := AIDecisionRules.profile_error(search)
+	if error == "": error = AIDecisionRules.rows_error(AIDecisionRules.registry_rows(rows, layout), layout.find(owner_index) if not layout.is_empty() else owner_index)
+	if error != "": return {"ok": false, "reason": error}
+	return {"ok": true, "rows": rows, "layout": layout, "owner_index": owner_index, "profile": search,
+		"near_range": int(actor["move_point"]), "move_magic_use": move_magic_use}
+
+
+## The threat 0x40cca0 flees from, scanned when the move search has at least one station
+## (0x40d1a8; none: 0x40d0d2 skips to 0x40d31b with no scan). A plan without scan inputs
+## carries a fixed `threat` instead.
+static func threat(plan: Dictionary, rng: Variant) -> Dictionary:
+	var scan: Dictionary = plan.get("threat_scan", {})
+	if scan.is_empty(): return {"coord": plan.get("threat"), "draws": [], "source": "fixed"}
+	var selected := AIDecisionRules.select_registered_target(scan["rows"], scan["layout"], int(scan["owner_index"]), scan["profile"], int(scan["near_range"]), rng)
+	var found := bool(selected["ok"]) and int(selected["index"]) >= 0
+	return {"coord": scan["rows"][int(selected["index"])]["coord"] if found else null, "target_index": int(selected.get("index", -1)),
+		"draws": selected.get("draws", []), "reason": selected.get("reason", ""), "source": "0x40bb80(actor, 3, 0, 8) at 0x40d1a8"}
+
+
+## A magic plan without move_magic_use casts from its own cell and never enters 0x40cca0.
+static func moves_to_cast(plan: Dictionary) -> bool:
+	return plan["channel"] != "magic" or bool(plan.get("threat_scan", {}).get("move_magic_use", plan.has("threat")))
+
+
+static func target_plan(primary_id: String, channel: String, profile: Dictionary, actor: Dictionary, scan: Dictionary) -> Dictionary:
+	return {"primary_target_id": primary_id, "channel": channel, "skills": [], "threat_scan": scan,
 		"area_flag": profile.get("ai_magic_multi_first"), "origin": actor["coord"]}
 
 
@@ -179,7 +220,7 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	skills.sort_custom(func(a, b): return int(a["source_order"]) > int(b["source_order"]))
 	var decision := {"primary_target_id": plan["primary_target_id"], "attempts": [],
 		"composition_evidence": "provisional", "source": "original_ai_skills",
-		"threat_policy": "nearest living foe within eight cells, deterministic equal-distance row-major order"}
+		"threat_policy": "0x40bb80(actor, 3, 0, 8) at cast time: registry-order nearest non-own-side object within radius 8, retain-old coin 0x40bd4f"}
 	var skill: Dictionary = {}
 	# Offense walks the 0x40d4e0 (first, fallback) pair: 0x40d340 through 0x40c770 for MAGIC,
 	# 0x40df70 through 0x40dd80 for SPECIAL (same rand(32)%count start and per-node use_ratio roll,
@@ -221,18 +262,21 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 		destinations.append(intent["destination"])
 		distinct.append(intent)
 	decision["center_tie_draws"] = center_draws
+	# 0x40d340 (MAGIC) and 0x40df70 (SPECIAL, push 1 at 0x40e030 → 0x40cca0 at 0x40e03d) share
+	# the move search: the threat scan after the stations, then the farthest one from it.
 	var index := 0
-	if plan["channel"] == "special":
-		for candidate in range(distinct.size()):
-			if int(distinct[candidate]["movement_cost"]) < int(distinct[index]["movement_cost"]): index = candidate
-	elif plan["threat"] is Vector2i:
-		var position := AISkillDecisionRules.farthest_index(destinations, plan["threat"], rng)
+	var found := {"coord": null}
+	if moves_to_cast(plan):
+		found = threat(plan, rng)
+		decision["threat_scan"] = found
+	if found["coord"] is Vector2i:
+		var position := AISkillDecisionRules.farthest_index(destinations, found["coord"], rng)
 		index = int(position["index"])
 		decision["position_selection"] = position
 	elif distinct.size() > 1:
 		index = CoreCombatRules.rand_range(distinct.size(), rng)
 	decision["coverage"] = best
-	decision["threat"] = plan["threat"]
+	decision["threat"] = found["coord"]
 	decision["skill_id"] = skill["skill_id"]
 	return {"intent": distinct[index], "decision": decision}
 
@@ -254,7 +298,7 @@ static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dicti
 	skills.sort_custom(func(a, b): return int(a["source_order"]) > int(b["source_order"]))
 	var decision := {"primary_target_id": held_id, "attempts": [], "held_target_free": true,
 		"source": "0x40d340／0x40df70 flag 0 (0x43fedd／0x43fe61)",
-		"threat_policy": "nearest living foe within eight cells, deterministic equal-distance row-major order"}
+		"threat_policy": "0x40bb80(actor, 3, 0, 8) at cast time: registry-order nearest non-own-side object within radius 8, retain-old coin 0x40bd4f"}
 	var order := AISkillDecisionRules.area_order(int(plan["area_flag"]), rng)
 	decision["bucket_order"] = order
 	for bucket in order["order"]:
@@ -270,7 +314,7 @@ static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dicti
 		if search["intent"].is_empty(): continue
 		decision["coverage"] = int(search["count"])
 		if search["receipt"].has("position_selection"): decision["position_selection"] = search["receipt"]["position_selection"]
-		decision["threat"] = plan["threat"]
+		decision["threat"] = search["receipt"].get("threat")
 		decision["skill_id"] = skill["skill_id"]
 		return {"intent": search["intent"], "decision": decision}
 	return {"intent": {}, "decision": decision}
@@ -299,8 +343,11 @@ static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng:
 		receipt["stations"] = stations.map(func(intent): return intent["destination"])
 		if not stations.is_empty():
 			var index := 0
-			if plan["threat"] is Vector2i:
-				var position := AISkillDecisionRules.farthest_index(receipt["stations"], plan["threat"], rng)
+			var found := threat(plan, rng)
+			receipt["threat_scan"] = found
+			receipt["threat"] = found["coord"]
+			if found["coord"] is Vector2i:
+				var position := AISkillDecisionRules.farthest_index(receipt["stations"], found["coord"], rng)
 				index = int(position["index"])
 				receipt["position_draws"] = position["draws"]
 				receipt["position_selection"] = position

@@ -1028,8 +1028,8 @@
     },
     {
       "id": "ai-skill-buckets",
-      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 5 驱散行的目标掩码 0x40c2d0 未模拟；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）；移动施法的威胁对象取 8 格内最近的敌人（确定取法），原版经 0x40bb80 抽",
-      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码已读未接入",
+      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 5 驱散行的目标掩码 0x40c2d0 未模拟；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）；施放目标为行动者本人时 0x40cca0 的逃离分支（本人分支 +0xc 为 0，或一般分支最高覆盖 1 且目标本人；0x40bb80 → 0x40ba20 → 0x413930 → 0x410a50）未做，重制自施法原地施放",
+      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码已读未接入，移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
         "docs/evidence_packets/static_reverse/original_ai_skills.md",
@@ -3202,7 +3202,7 @@
     "scope:docs/evidence_packets/static_reverse/original_ai_priority.md|provisional|无注册药品时跳过自身 HP 检查": {
       "item": "ai-skill-buckets"
     },
-    "scope:docs/evidence_packets/static_reverse/original_ai_skills.md|provisional|威胁选取与有效收益计数": {
+    "scope:docs/evidence_packets/static_reverse/original_ai_skills.md|provisional|有效收益计数": {
       "item": "ai-skill-buckets"
     },
     "scope:docs/evidence_packets/static_reverse/original_campaign_actors.md|provisional|模板坐标、reserve 状态字、HP≤0 重装与名单排序": {

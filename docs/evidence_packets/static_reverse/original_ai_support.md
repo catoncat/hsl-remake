@@ -52,7 +52,7 @@ HP5 行原版不救的种子 1、2、4 位 4 抽到 85、96、93（>80）。第 
 - 技能援助经 `AISkillPlanning.choose` 传入桶 1/2（回复）或 7（驱毒），范围收益只计缺 HP／中毒目标；移动后范围按目的地枚举。
 - 药品援助：`_item_intent` 收集站位（不抽随机），类别选中后 `AINavigationRules.station_order` 抽等键硬币；`_resolve_item_use` 提交 HP 与库存；收据 `move_then_item`，到达后才显示反馈。
 - 所有资格、资源、目标在 RNG 前验证，坏输入返回命名错误；无有效援助手段接续进攻或 Wait。
-- 重制组合（provisional）：最大有效人数、同中心 row-major 平分、最近威胁、WRD 可达网格；Godot 先排除死亡与不可用角色。
+- 重制组合（provisional）：最大有效人数、同中心 row-major 平分、WRD 可达网格；移动施法的威胁对象照原版 `0x40bb80(actor, 3, 0, 8)`（[original_ai_skills](original_ai_skills.md)「移动施法的威胁对象」）；Godot 先排除死亡与不可用角色。
 
 ## 复现
 
