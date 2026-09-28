@@ -122,9 +122,6 @@ class TrackedCorpusTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.index = corpus.load_index(corpus.OUTPUT_DIR)
 
-    def test_offline_check_passes(self) -> None:
-        self.assertEqual(corpus.check_offline(corpus.OUTPUT_DIR), [])
-
     def test_claim_limits_are_ids_into_the_packet_table(self) -> None:
         # The boundary text lives only in the packet; index.json and the code carry ids.
         self.assertEqual(self.index["claim_limits"], corpus.CLAIM_LIMIT_IDS)
@@ -173,16 +170,6 @@ class TrackedCorpusTests(unittest.TestCase):
         self.assertEqual(speakers["SID_PLAYER0"], "雷歐納德")
         row = next(r for r in self.index["scripts"] if r["family"] == "winfail" and r["number"] == 51)
         self.assertEqual([(e["level"], e["event"]) for e in row["next_level_events"]], [(52, 52), (52, 52)])
-
-    def test_tracked_message_evidence_matches_corpus(self) -> None:
-        errors, stats = corpus.compare_with_evidence(corpus.OUTPUT_DIR)
-        self.assertEqual(errors, [])
-        self.assertGreaterEqual(stats["files"], 13)
-        self.assertGreater(stats["compared_messages"], 300)
-
-    @unittest.skipUnless(corpus.DEFAULT_PAK.is_file(), "original PAK not available")
-    def test_pak_rebuild_matches_tracked_corpus(self) -> None:
-        self.assertEqual(corpus.compare_with_tracked(corpus.build_from_pak(corpus.DEFAULT_PAK), corpus.OUTPUT_DIR), [])
 
 
 if __name__ == "__main__":

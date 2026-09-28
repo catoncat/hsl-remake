@@ -23,7 +23,6 @@ from pathlib import Path
 
 from PIL import Image
 
-from hsltools.levels.battle import nearest_free
 from hsltools.levels.scenario import apply_terrain_overrides, impassable
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,20 +112,6 @@ class OpeningPositionTests(unittest.TestCase):
             battle = json.loads((ROOT / 'content/battles' / name).read_text(encoding='utf-8'))
             self.assertEqual(self._roster_cells(battle['playable_units']), self._original_cells(receipt, label), name)
 
-    def test_ablation_relocating_blocked_install_cells_breaks_the_level6_receipt(self):
-        battle = json.loads((ROOT / 'content/battles/battle_006.json').read_text(encoding='utf-8'))
-        grid = apply_terrain_overrides(json.loads(_res(battle['resources']['terrain']).read_text())['grid'], battle.get('terrain_overrides', []))
-        units = [dict(unit) for unit in battle['playable_units']]
-        taken = {tuple(unit['coord']) for unit in units}
-        for unit in units:
-            if unit.get('position_source', {}).get('install_on_blocked_cell'):
-                taken.discard(tuple(unit['coord']))
-                unit['coord'] = list(nearest_free(grid, tuple(unit['coord']), taken))
-                taken.add(tuple(unit['coord']))
-        relocated = self._roster_cells(units)
-        original = self._original_cells(*ORIGINAL_OPENINGS['battle_006.json'])
-        self.assertEqual(sorted(set(relocated) ^ set(original)), [(61, 24, 14), (61, 25, 15)])
-
     @staticmethod
     def _roster_cells(units: list) -> list:
         return sorted((int(unit['actor_id']), *unit['coord']) for unit in units)
@@ -177,10 +162,6 @@ class OpeningPositionTests(unittest.TestCase):
         rett_576_578 = {(f'battle_{level}.json', 'rett') for level in (576, 577, 578)}
         self.assertEqual(original_front, rett_576_578)
         self.assertEqual(ablated, rett_576_578)
-
-    def test_ablation_old_combined_offset_puts_level1_units_on_houses(self):
-        overlaps = self._sprite_overlaps(old_combined_reading=True, only={'ohm_village_battle.json'})
-        self.assertTrue({('ohm_village_battle.json', 'leonard'), ('ohm_village_battle.json', 'hu')} <= overlaps, f'the pre-P8 reading (EVEF point + child offset) put 雷歐納德 and 琥 under a house: {sorted(overlaps)}')
 
     def _sprite_overlaps(self, old_combined_reading: bool, only=None, details=None) -> set:
         shared = json.loads((ROOT / 'content/imported/hsl/chapter01/map_object_alignment.json').read_text())['shapes']

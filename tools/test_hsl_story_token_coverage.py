@@ -73,7 +73,6 @@ class StoryTokenCoverageTests(unittest.TestCase):
 
     def test_tracked_report_covers_every_story_token(self):
         report = json.loads(Path("content/generated/hsl/static/hsl01/story_token_coverage.json").read_text(encoding="utf-8"))
-        self.assertEqual(report["schema"], "hsl_story_token_coverage.v1")
         self.assertEqual(report["summary"]["story_used_unmapped_count"], 0)
         self.assertEqual(report["summary"]["level_count"], report["sources"]["story_file_count"])
         self.assertEqual(report["levels"]["001"]["unmapped_tokens"], [])

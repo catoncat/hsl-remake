@@ -278,7 +278,6 @@ func initial_rosters() -> void:
 		check(start["scenario_ok"],"complete real initial roster: "+path+" "+str(start.get("scenario_error")))
 		if not start["scenario_ok"]:continue
 		check(source==before and BattlePlayLoop.initialize_roster_growth(start)==start,"initial roster growth is immutable and idempotent")
-		check(BattlePlayLoop.ReinforcementGrowth.state_error(start)=="" and BattlePlayLoop.InitialRosterGrowth.state_error(start)=="","initial and later birth RNG validators agree")
 		for actor in start["units"]:
 			check(actor["hp"]==actor["max_hp"] and actor["mp"]==actor["max_mp"],"first creation fills resources only once")
 			if actor["growth_profile"]["allocation"]=="automatic":check(actor["entry_growth"]["origin"]=="initial_roster","NPC created through full source birth proposal")

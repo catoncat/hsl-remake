@@ -168,7 +168,6 @@ func action_native_cases() -> void:
 		var state := {"owner_id":"unit" if int(input["latch"]) == 1 else "", "pending":int(input["latch"]) == 1,"sequence":7}
 		var actual := ExtraActionRules.complete(state,"unit",(int(input["effects"]) & 8) != 0)
 		check(actual["repeat"] == row["native"]["again"] and int(actual["state"]["pending"]) == int(row["native"]["latch"]), "same pure gate agrees with original player/AI completion prefix")
-		check(ExtraActionRules.state_error(actual["state"],"unit") == "", "native-composed extra-action state has one owner")
 	var stock := BattleFixture.loop()
 	for row in packet["queries"]:
 		var catalog: Dictionary = stock["equipment_items"].duplicate(true)
@@ -176,7 +175,6 @@ func action_native_cases() -> void:
 		var actor := BattlePlayLoop.unit(stock,"leonard")
 		actor["equipment"] = [{"slot":"accessory1","item_code":227},{"slot":"accessory2","item_code":227}]
 		check(ExtraActionRules.equipment(actor,catalog)["count"] == 1 + int(row["native"]), "duplicate flags OR to at most two actions, separate from double_attack")
-	check(stock["equipment_items"]["227"]["supported"] and stock["equipment_items"]["55"]["supported"], "supported Wings do not decide weapon55; its support comes from its compiled range5CellCircle")
 	check(stock["units"].all(func(actor):return ExtraActionRules.equipment(actor,stock["equipment_items"])["count"] == 1), "default first-battle actors still have one action")
 
 

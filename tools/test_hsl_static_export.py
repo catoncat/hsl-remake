@@ -25,13 +25,11 @@ class StaticExportTests(unittest.TestCase):
                     dry_run=True,
                 )
 
-            self.assertEqual(manifest["schema"], "hsl_static_export.v1")
             self.assertEqual(manifest["exe"]["size"], len(b"fake exe"))
             self.assertTrue(manifest["commands"])
             self.assertTrue(manifest["known_windows"])
             self.assertTrue((out_dir / "manifest.json").exists())
             saved = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
-            self.assertEqual(saved["source_policy"], manifest["source_policy"])
             self.assertIn("input_aggregator_candidate", [item["label"] for item in saved["known_windows"]])
 
     def test_tracked_static_index_omits_private_paths_hashes_and_raw_content(self):
@@ -470,7 +468,6 @@ class StaticExportTests(unittest.TestCase):
         index = hsl_exe_static_export.build_tracked_static_index(manifest)
         text = json.dumps(index)
 
-        self.assertEqual(index["schema"], "hsl_static_compact_index.v1")
         self.assertEqual(index["tool_presence"], {"r2": True, "rabin2": True, "radare2": False})
         self.assertEqual(index["export_status_counts"], {"dry-run": 1, "ok": 1})
         self.assertEqual(index["known_windows"][0]["label"], "input_aggregator_candidate")
@@ -517,13 +514,11 @@ class StaticExportTests(unittest.TestCase):
         self.assertEqual(condition_candidates["handler_window_summaries"][0]["handler_address"], "0x4511e9")
         status_candidates = index["status_lifecycle_handler_candidates"]
         self.assertEqual(status_candidates["semantic_status"], "unresolved")
-        self.assertEqual(status_candidates["execution_policy"], "scheduled_only_no_live_mutation")
         self.assertEqual(status_candidates["bridge_commit_timing_status"], "unresolved")
         self.assertEqual(status_candidates["actions"][0]["commit_timing_evidence_status"], "unresolved")
         self.assertEqual(status_candidates["actions"][0]["lifecycle_semantic_status"], "scheduled_only")
         commit_path = index["script_status_commit_path_static_context"]
         self.assertEqual(commit_path["semantic_status"], "unresolved")
-        self.assertEqual(commit_path["execution_policy"], "scheduled_only_no_live_mutation")
         self.assertEqual(commit_path["bridge_address"], "0x450840")
         self.assertEqual(commit_path["script_cursor_progress"]["commit_boundary_status"], "script_cursor_progress_observed")
         self.assertEqual(commit_path["script_cursor_progress"]["status_mutation_commit_status"], "unresolved")

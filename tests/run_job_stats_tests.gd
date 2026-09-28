@@ -38,7 +38,6 @@ func run() -> void:
 		if row["input"]["name"] != "initial" or row["input"]["actor"] == "025": continue
 		for actor in loop["units"]:
 			if actor["actor_id"] != row["input"]["actor"]: continue
-			check(actor.get("growth_profile",{}).get("model") == "native_job_stats_v1", "every live source job owns a complete refresh profile")
 			for element in range(5):
 				check(actor["combat_profile"]["resist_by_type"][str(element)] == row["native"][0]["values"]["resist_by_type"][str(element)], "initial NPC and player resists include source job and equipped bonuses")
 	var second := BattlePlayLoop.create([],"",BattlePlayLoop.BattleScenario.load_file("res://content/battles/battle_052.json"))

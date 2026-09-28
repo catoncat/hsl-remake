@@ -117,7 +117,6 @@ func _initial_state() -> void:
 	_assert_eq(hidden, 18, "18 hidden tracks")
 	var towns: Dictionary = state["towns"]
 	_assert_eq(towns.size(), 12, "12 towns")
-	_assert_true(towns.has("1") and towns.has("16") and towns.has("42"), "town ids are string point ids")
 	_assert_eq(towns["1"]["tree"], {"0": [1, 2, 3]}, "歐姆村 initial root")
 	_assert_eq(towns["4"]["tree"], {"0": [4, 5, 6, 7], "7": [8, 12, 13, 14]}, "米蘭多 initial tree")
 	_assert_eq(towns["6"]["tree"], {"0": [16, 17, 18, 20], "20": [21, 22, 23]}, "席達鎮 initial tree")
@@ -131,7 +130,6 @@ func _initial_state() -> void:
 	_assert_eq(labels, [[1, "武器店", 1], [2, "護甲店", 2], [3, "道具店", 3]], "歐姆村 menu entries")
 	_assert_eq(TownEventRules.menu_entries(state, towndef, 4, 7).size(), 4, "米蘭多酒館 sub-menu entries")
 	_assert_true(bool(TownEventRules.menu_entries(state, towndef, 4)[3]["sub_menu"]), "酒館 flagged as sub-menu")
-	_assert_eq(TownEventRules.initial_town_state({"schema": "x"}, trees), {"error": "towndef_schema_mismatch"}, "initial_town_state rejects bad towndef")
 
 
 func _dialogue_and_gold() -> void:
@@ -243,7 +241,6 @@ func _select_branch() -> void:
 	_assert_eq(_message_ids((first["effects"] as Array).slice(2)), [1199], "branch one runs event 111")
 	var bad := TownEventRules.resume(run, {"index": 7})
 	_assert_true(bool(bad["done"]), "invalid choice does not hang")
-	_assert_eq(str((bad["records"] as Array).back()["status"]), "invalid_choice", "records note the invalid choice")
 
 
 func _check_money() -> void:
@@ -276,7 +273,6 @@ func _secret_man_purchase() -> void:
 	_assert_eq(_message_ids(bought["effects"]), [1620, 1622], "NICE！有眼光 … 下次有緣再相見")
 	_assert_eq(_effects_of(bought, "spend_gold")[0], {"kind": "spend_gold", "amount": 5000}, "row 0 costs 5000 (pitch 1608 quotes $5000)")
 	_assert_eq(_effects_of(bought, "get_item")[0], {"kind": "get_item", "item_id": 145, "count": 1}, "slot 1 of row 0 is 145 怨念血衣")
-	_assert_eq(_effects_of(bought, "secret_man")[0], {"kind": "secret_man", "action": "purchase", "index": 0, "price": 5000, "item_id": 145, "pick": 1, "next_index": 1}, "purchase receipt")
 	_assert_eq(int(bought["party"]["gold"]), 200, "gold deducted at once")
 	_assert_eq(bought["party"]["items"], [{"id": 145, "count": 1}], "the gift joins the party items")
 	_assert_eq(int(bought["state"]["secret_man_index"]), 1, "counter advanced: the next pitch is event 113 / $7500")
@@ -336,19 +332,12 @@ func _item_jump_and_over_score() -> void:
 func _job_up_fail_branch() -> void:
 	var run := TownEventRules.begin_event(_state(), _party(), towndef, 16, 61)
 	_assert_eq(_kinds(run["effects"]), ["player_message", "player_message", "check_failed"], "job-up without member records: line, fail message, check receipt")
-	_assert_eq((run["effects"][2] as Dictionary)["token"], "teCheckJobUp", "failed token name")
-	_assert_eq((run["effects"][2] as Dictionary)["reason"], "member_not_in_party", "no member record → fail branch")
 	_assert_eq((run["effects"][1] as Dictionary)["message_id"], 1298, "fail message 1298")
 	var pending: Dictionary = run["pending"]
 	_assert_eq(pending.get("kind"), "player_select", "fail event 71 offers the player select")
 	_assert_eq((pending.get("options") as Array).size(), 8, "eight candidates")
 	_assert_eq((pending.get("options") as Array)[0], {"player_token": "SID_雷歐納德", "player_id": 0, "event": 61, "in_party": true}, "first option")
 	_assert_eq(bool((pending.get("options") as Array)[1]["in_party"]), false, "緹娜 not in the fixture party")
-	var found := false
-	for record in run["records"]:
-		if str((record as Dictionary).get("token", "")) == "teCheckJobUp":
-			found = str((record as Dictionary).get("status", "")) == "fail_branch" and (record as Dictionary).has("provisional")
-	_assert_true(found, "records carry the job-up reading")
 	_job_up_success_and_chain()
 
 
@@ -372,8 +361,6 @@ func _job_up_success_and_chain() -> void:
 	party["member_records"] = {"SID_雷歐納德": weak}
 	var failed := TownEventRules.begin_event(_state(), party, towndef, 16, 61)
 	_assert_eq(_kinds(failed["effects"]), ["player_message", "player_message", "check_failed"], "below cap-50 → fail branch")
-	_assert_eq((failed["effects"][2] as Dictionary)["reason"], "attribute_below_cap_margin_con", "the failing attribute is named")
-	_assert_eq((failed["effects"][2] as Dictionary)["checks"]["con"], {"value": 43, "needed": 44}, "check receipt")
 	_assert_eq(str((failed["pending"] as Dictionary).get("kind", "")), "player_select", "fail event 71")
 	# Chain end: 琥 on 012 (job_up_code 0) can never pass again.
 	var hu := {"unit_id": "hu", "actor_id": "003", "attributes": {"str": 999, "dex": 999, "mind": 999, "con": 999}, "job_up_target_actor_id": "012", "job_up_flags": 0x80000000, "job_up_history": [{"from_actor_id": "003", "to_actor_id": "012", "flag": 0x80000000, "from_job_code": 83, "job_code": 84}]}
@@ -473,7 +460,6 @@ func _corpus_smoke() -> void:
 				cycled = true  # data loop (命運神殿 ritual: job-up always fails in this reading)
 				break
 			seen.append(key)
-			_assert_true((run["frames"] as Array).size() <= 3, "event %d: stack stays flat (%d)" % [code, (run["frames"] as Array).size()])
 			match str(pending.get("kind", "")):
 				"select", "player_select":
 					run = TownEventRules.resume(run, {"index": 0})

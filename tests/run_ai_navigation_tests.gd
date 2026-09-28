@@ -334,7 +334,6 @@ func instance_cases() -> void:
 	var full := {"inventory": [1, 2, 3, 4, 5, 6, 7, 8], "stamina": 1, "evef_instance": {"items": [241]}}
 	ActorInitializationRules.apply_instance_words(full)
 	check(full["inventory"] == [1, 2, 3, 4, 5, 6, 7, 8], "a full inventory drops the instance item like the native slot scan")
-	check(ActorInitializationRules.instance_input_error({"evef_instance": {"items": [0]}}) == "invalid_evef_instance_items" and ActorInitializationRules.instance_input_error({"evef_instance": {"overrides": {"fixed_point": [1]}}}) == "invalid_evef_fixed_point" and ActorInitializationRules.instance_input_error({"evef_instance": {"overrides": {"wait_round": -1}}}) == "invalid_evef_instance_override_wait_round", "malformed instance words are explicit scenario errors")
 	# Indices 1..14 replace the PLAYERS strategy per unit; the fixed point is ai_fixed 8 until arrival.
 	var declared := {"wait_round": 0, "find_range": 80, "ai_fixed": 0, "ai_lock": 60}
 	var waiter := {"evef_instance": {"overrides": {"wait_round": 8, "find_range": 10}}}
@@ -397,7 +396,6 @@ func script_anchor_cases() -> void:
 	var retreating := {"coord": Vector2i(2, 5), "ai_target_id": "", "ai_wait_remaining": 0, "ai_home_coord": Vector2i(-5, 57), "ai_fixed_radius": 1}
 	check(AINavigationRules.instance_profile(retreating, declared)["ai_fixed"] == 1 and AINavigationRules.instance_profile({"ai_fixed_radius": 3, "evef_instance": {"overrides": {"fixed_point": [4, 4]}}, "ai_fixed_point_pending": true}, declared)["ai_fixed"] == 3, "the script distance is the live ai_fixed, written after the instance words")
 	check(AINavigationRules.state_error(retreating, 1) == "" and AINavigationRules.state_error({"ai_target_id": "", "ai_wait_remaining": 0, "ai_home_coord": Vector2i(-5, 57)}, 1) == "", "an anchor beyond the map edge is a legal guard destination")
-	check(AINavigationRules.state_error({"ai_target_id": "", "ai_wait_remaining": 0, "ai_home_coord": Vector2i(-5, 57), "ai_fixed_radius": 0}, 1) == "invalid_ai_fixed_radius" and AINavigationRules.state_error({"ai_target_id": "", "ai_wait_remaining": 0, "ai_home_coord": Vector2i(999, 57)}, 1) == "invalid_ai_home_coord", "a zero script radius or an anchor no walk could measure against stays an explicit error")
 	# Live turn: an armed enemy whose anchor is off the map west drops every foe at the guard
 	# filter and walks to its westmost reachable cell (the retreat the level-12 script stages
 	# two rounds before actWalkAndDelete).

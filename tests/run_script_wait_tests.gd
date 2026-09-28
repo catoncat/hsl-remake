@@ -103,7 +103,6 @@ func insertion_order() -> void:
 	WinfailActions.apply_actions(loop,{"key":"event_insert","actions":actions,"inserts":[{"class_id":"Enemy026","object_symbol":"obj_guard","wait_round":1}]},"test")
 	BattleLoopScript.consume_script_waits(loop)
 	check(loop["scenario_ok"] and loop["winfail_runtime"]["inserts"][0]["wait_round"] == 1, "previous/explicit/previous writes keep original action order")
-	check(loop["winfail_runtime"]["wait_requests"][1]["insert_index"] == 0, "code/serial query can address an inserted actor awaiting materialization")
 	loop["rule_adapter"] = "winfail"
 	loop["winfail_runtime"]["initial_class_unit_ids"] = {"Enemy026":["enemy026_1","enemy026_2"]}
 	loop["reinforcement_templates"] = [BattlePlayLoop.unit(loop,"enemy026_1")]

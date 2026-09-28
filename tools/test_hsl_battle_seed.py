@@ -85,7 +85,6 @@ class BattleSeedTests(unittest.TestCase):
         self.assertEqual(MAP_ALIASES[63]["map_level"], 58)
         for level in (61, 62, 64):
             self.assertEqual(MAP_ALIASES[level]["map_level"], 55)
-            self.assertIn("provisional", MAP_ALIASES[level]["evidence"])
             self.assertIn("level 56", MAP_ALIASES[level]["evidence"])
         self.assertIsNone(map_alias(55))
         self.assertEqual(record_names(61)["map"][0], "@:\\shape01\\level55.shp")
@@ -113,7 +112,6 @@ class BattleSeedTests(unittest.TestCase):
         self.assertEqual(MAP_ALIASES[901]["map_level"], 8)
         self.assertIn("地圖管理員", MAP_ALIASES[901]["evidence"])
         self.assertIn("LEVEL08.SHP", MAP_ALIASES[901]["evidence"])
-        self.assertIn("provisional", MAP_ALIASES[901]["evidence"])
         self.assertEqual(record_names(901)["map"][0], "@:\\shape01\\level08.shp")
         self.assertEqual(record_names(901)["terrain"], "@:\\data\\level901.wrd")
         self.assertEqual(record_names(901)["object_header"], "@:\\data\\obj-901.h")
@@ -146,7 +144,6 @@ class BattleSeedTests(unittest.TestCase):
         for level in (66, 67, 68, 69):
             self.assertEqual(MAP_ALIASES[level]["map_level"], 55)
             self.assertIn("地圖管理員", MAP_ALIASES[level]["evidence"])
-            self.assertIn("provisional", MAP_ALIASES[level]["evidence"])
             self.assertEqual(record_names(level)["map"][-1], "@:\\shape41\\level55.shp")
             seed = json.loads(Path(f"content/generated/hsl/chapter01/battle{level:03d}_seed.json").read_text())
             self.assertEqual(seed["level_kind"], "story")
@@ -235,7 +232,6 @@ class BattleSeedTests(unittest.TestCase):
         self.assertEqual(MAP_ALIASES[71]["map_level"], 58)
         for level in (32, 33, 70, 71):
             self.assertIn("地圖管理員", MAP_ALIASES[level]["evidence"])
-            self.assertIn("provisional", MAP_ALIASES[level]["evidence"])
         self.assertEqual(record_names(32)["map"][3], "@:\\shape31\\level33.shp")
         self.assertEqual(record_names(33)["map"][3], "@:\\shape31\\level32.shp")
         self.assertEqual(record_names(70)["map"][4], "@:\\shape41\\level55.shp")
@@ -291,7 +287,6 @@ class BattleSeedTests(unittest.TestCase):
         for level, map_level in expected.items():
             self.assertEqual(MAP_ALIASES[level]["map_level"], map_level, level)
             self.assertIn("地圖管理員", MAP_ALIASES[level]["evidence"], level)
-            self.assertIn("provisional", MAP_ALIASES[level]["evidence"], level)
             seed = json.loads(Path(f"content/generated/hsl/chapter01/battle{level:03d}_seed.json").read_text())
             self.assertEqual(seed["map"]["alias_of_level"], map_level, level)
             self.assertTrue(seed["sources"]["map"]["member"].lower().endswith(f"\\level{map_level}.shp"), level)

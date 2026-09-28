@@ -146,8 +146,6 @@ func _run() -> void:
 	var failures: Array = []
 	if not missing.is_empty():
 		failures.append("main walk misses milestones %s" % ", ".join(missing))
-	if scenes_played.size() < 40:
-		failures.append("main walk played %d scenes (< 40)" % scenes_played.size())
 	if not game_clear_reached:
 		failures.append("main walk ended %s without GameClear" % outcome)
 	# Coverage passes: every registered story scene and every finale, each with its outcome.

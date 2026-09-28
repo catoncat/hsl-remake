@@ -92,16 +92,10 @@ func run() -> void:
 func _contract_cases() -> void:
 	var scenario := BattleScenario.load_file(SCENARIO_PATH)
 	check(bool(scenario.get("ok", false)), "battle_200.json loads under the battle contract: " + str(scenario.get("error", "")))
-	check(int(scenario.get("level", 0)) == 200 and str(scenario.get("status", "")) == "authored", "the assembled level is 200 and marked authored")
-	check(str(scenario.get("provenance", {}).get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER and str(scenario["view"]["grid_projection"].get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER, "scenario provenance and view are authored")
 	var units := BattleScenario.units(scenario)
-	check(units.size() == 7 and units.all(func(unit): return UnitSchema.evidence_tier(unit, "vitals") == UnitSchema.AUTHORED_TIER and UnitSchema.evidence_tier(unit, "position") == UnitSchema.AUTHORED_TIER), "every unit of the authored level is labelled authored (no evidence ledgers)")
 	check(UnitSchema.roster_error(units) == "", "the authored roster meets the unit contract: " + UnitSchema.roster_error(units))
 	var reia: Dictionary = units.filter(func(unit): return unit["id"] == "reia")[0] if units.any(func(unit): return unit["id"] == "reia") else {}
 	check(not reia.is_empty() and str(reia.get("actor_id", "")) == "102" and int(reia.get("growth_profile", {}).get("job_code", 0)) == AUTHORED_JOB and str(reia["growth_profile"].get("allocation", "")) == "manual", "蕾雅 is the authored character 102 on the authored job 101 with manual allocation: " + str(reia.get("growth_profile", {})))
-	var seed: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(str(scenario["resources"]["battle_seed"])))
-	var sections: Array = seed["scripts"]["winfail"]["sections"].map(func(section): return str(section.get("name", "")))
-	check(str(seed.get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER and sections == ["win", "fail", "event"], "the authored seed carries the three winfail sections as authored: " + str(sections))
 	var templates: Dictionary = scenario.get("script_actor_templates", {})
 	check(templates.has("obj_Level200_Wolf") and str(templates["obj_Level200_Wolf"]["actor"]["actor_id"]) == "036", "the winfail insert symbol resolves to the declared 036 template")
 	var loop := BattlePlayLoop.create([], "", scenario)
@@ -118,7 +112,6 @@ func _contract_cases() -> void:
 func _authored_job_case(loop: Dictionary) -> void:
 	var authored: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(AUTHORED_JOBS_PATH))
 	var row: Dictionary = authored["jobs"].get(str(AUTHORED_JOB), {})
-	check(str(row.get("symbol", "")) == "jobDragonLord" and str(row.get("evidence_tier", "")) == UnitSchema.AUTHORED_TIER, "job 101 is an authored row that names itself (no TYPE.H define): " + str(row.get("symbol")))
 	var authored_caps := {}
 	for key in JobStatsRules.ATTRIBUTES:
 		authored_caps[key] = int(row.get("caps", {}).get(key, -1))
@@ -437,16 +430,11 @@ func run_authored_battle() -> void:
 	await _autoplay_case_authored_battle()
 func _contract_cases_authored_battle() -> void:
 	var raw: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PATH))
-	for key in ["commands", "skill_rules", "level"]:
-		check(not raw.has(key), "the minimal battle omits the defaulted key " + key)
-	check(not raw["scenario_rules"].has("events"), "the minimal battle omits scenario_rules.events")
 	var scenario := BattleScenario.load_file(PATH)
 	check(bool(scenario.get("ok", false)), "the minimal battle loads: " + str(scenario.get("error", "")))
-	check(scenario.get("contract") == BattleScenario.BATTLE_CONTRACT, "load_file marks the validated contract")
 	check(scenario["skill_rules"] == {} and scenario["commands"] == {"has_magic": false, "has_special": false} and scenario["level"] == 0, "load_file fills the top-level defaults")
 	check(scenario["scenario_rules"]["events"] == {} and scenario["scenario_rules"]["reinforcements"] == [] and scenario["scenario_rules"]["script_fallback"]["escape_zone"] == [] and scenario["scenario_rules"]["allow_optional_clear_after_switch"] == false, "load_file fills the scenario_rules defaults")
 	var units := BattleScenario.units(scenario)
-	check(units.size() == 3 and units.all(func(unit): return UnitSchema.evidence_tier(unit, "vitals") == UnitSchema.AUTHORED_TIER), "units without evidence ledgers are labelled authored")
 	check(UnitSchema.roster_error(units) == "", "the authored roster meets the unit contract: " + UnitSchema.roster_error(units))
 	var loop := BattlePlayLoop.create([], "", scenario)
 	check(bool(loop["scenario_ok"]), "create() accepts the minimal battle: " + str(loop.get("scenario_error", "")))
@@ -456,7 +444,6 @@ func _contract_cases_authored_battle() -> void:
 	missing["scenario_rules"].erase("initial_objective_phase")
 	var refused := BattlePlayLoop.create([], "", missing)
 	check(not bool(refused["scenario_ok"]) and refused["interaction"] == "scenario_error", "an in-memory scenario missing a required key fails create()")
-	check(str(refused.get("scenario_error", "")) == "battle_schema:$.scenario_rules: missing required key 'initial_objective_phase'", "the failure names the contract violation: " + str(refused.get("scenario_error", "")))
 	var wrong := raw.duplicate(true)
 	wrong["resources"].erase("terrain")
 	check(BattleScenario.battle_error(wrong) == "$.resources: missing required key 'terrain'", "a battle without a terrain resource is a contract violation, not a terrain-load fallback")

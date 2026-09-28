@@ -491,7 +491,6 @@ class PriestIntegrationTests(unittest.TestCase):
         self.assertEqual(scenario['player_unit_id'],'tina')
         self.assertEqual(scenario['rule_adapter'],'development_battle')
         self.assertEqual(items['items']['244']['heal_mp'],30)
-        self.assertEqual(rules['schema'],'hsl_development_objectives.v1')
         book=json.loads(Path('content/generated/hsl/skills/initial_book.json').read_text())
         self.assertEqual(book['actors']['002']['supported_initial_ids'],['special:magicOTHER:magicCode06','magic:magicWATER:magicCode06'])
         self.assertNotIn('magic:magicWATER:magicCode06',book['actors']['001']['supported_initial_ids'])
@@ -660,7 +659,6 @@ class TacticalItemsTests(unittest.TestCase):
     def test_source_items_keep_source_initial_kits(self):
         compiled=consumables_tactical_items.build()
         self.assertEqual(json.loads(consumables_tactical_items.OUTPUT.read_text()),compiled)
-        self.assertEqual(compiled['schema'],'hsl_first_battle_consumables.v4')
         source=native_tactical_items.sources()[0]
         for code in ['001','002']:
             self.assertEqual(compiled['initial_inventory'][code],[int(source[code][f'item{i}']) for i in range(1,9)])

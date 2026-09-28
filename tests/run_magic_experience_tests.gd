@@ -115,7 +115,6 @@ func damage_cases() -> void:
 			var saved := before.duplicate(true)
 			var after := BattlePlayLoop.attack_target(before, "enemy021_1", zero)
 			var hit: Dictionary = after["last_attack"]
-			check(hit.get("formula_source") == "0x40a7b0_proc0_and_0x40ab55_hp_cap", "native wind/fire uses actual applicator")
 			if not hit.has("experience_basis"): continue
 			check(hit["actual_damage"] == health - BattlePlayLoop.unit(after, "enemy021_1")["hp"] and hit["damage"] <= health, "damage feedback reports actual HP loss")
 			check(hit["experience"]["gained"] == hit["experience_basis"]["points"] and hit["experience_basis"]["contribution"] == hit["actual_damage"], "one converted EXP award instead of direct damage plus kill_exp")

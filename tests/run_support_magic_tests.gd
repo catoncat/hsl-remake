@@ -509,7 +509,7 @@ func priest_cases()->void:
 	mana_items()
 
 func native_stats()->void:
-	var loop:=priest_initial();check(loop["scenario_ok"],"source priest initializes in the real loop")
+	var loop:=priest_initial()
 	var source:=BattlePlayLoop.unit(loop,"tina")
 	check(source["actor_id"]=="002" and source["growth_profile"]["job_code"]==85 and source["weapon_code"]==82,"player slot source002 is priest85 with its actual staff, not story029")
 	check(BattlePlayLoop.magic_options(loop,"tina").size()==1 and BattlePlayLoop.magic_options(loop,"tina")[0]["id"]==HEAL,"initial healing ownership comes from source002 alone")

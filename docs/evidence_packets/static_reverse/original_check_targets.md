@@ -140,5 +140,5 @@ token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/
 ## 边界
 
 - opcode 的执行时机见 original_round_display；`0x44fad0` 负 code 分支（-1／-2／-3）的调用方未逐一追。
-- 已登记但禁用槽位的查找结果由 `conditional_party` 的 carry 读法代表（provisional）；原版注册表没有写禁用位的调用者。
+- 已登记但禁用槽位在原版不可达（注册表没有写禁用位的调用者，见[原安装分支](original_player_install.md)）；`conditional_party` 的 carry 读法不需要代表它。
 - 未上场不计入与全队阵亡判负是重制规则，不声称原版等价。

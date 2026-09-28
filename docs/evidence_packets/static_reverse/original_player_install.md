@@ -1,12 +1,13 @@
 # 脚本玩家安装：普通安装与条件队员
 
-> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42cb30, 0x43bf30, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x42caf0, 0x42cb30, 0x4348f0, 0x43bf30, 0x45e3ed, 0x46ee10 · tools: hsltools/probes/player_install.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`defProcPlayerInstall`（`0x4080b0`）以 Data9 为零起始注册槽；Data8 缺省（0）是普通安装，经 `0x42cb30` 启用该槽（空槽设 `800+slot`）后请求构造；Data8=1 是条件安装，只有已存在且启用的槽进入构造器，空槽或禁用槽走占位物删除（static-derived；51 次有界原指令执行）。
 - 重制：`game/sim/ScriptActorCreationRules.gd` 与 `game/sim/loop/BattleLoopScript.gd` 按普通安装创建脚本玩家；`game/sim/ConditionalPartyRules.gd` 让随机遭遇里标 `install_if_carried` 的九个槽只上场战役承接中持有的成员（static-derived 规则＋重制组合）。
-- 差异：「已注册但禁用」的成员未建模，承接名单代替原注册启用表；原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。
+- 「已注册但禁用」槽在原版不可达：`0x42caa0` 测 `0x80000000`，但注册表唯一写入者 `0x42c700` 只从 `0x42c869`（新游戏槽 0 写 800）、`0x42cb47`（空槽写 800+slot）、`0x43493d`（转职写升级对象码）调用，`0x42cb50` 取低 16 位，`0x42cafa` 只清零；承接名单代替注册启用表不丢原版可达状态（static-derived）。
+- 差异：原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。
 
 ## 证据
 
@@ -19,6 +20,7 @@
 | `0x42cb30` | 空槽写 `800+slot`；已有槽取低 16 位（可重新启用禁用记录） | 15 次完整返回，其余 19 槽不变 |
 | `0x42c700` | 把对象代码写入注册槽 | 由 `0x42cb30` 实际调用 |
 | `0x4080b0` 初始化消息 | 位置 `(pixel & ~31)+16` 对齐；清初始化位、更新形状低字 | 4 次前段，停在 `0x43bf30` 前（含负坐标、非对齐输入） |
+| 注册表 `0x4c4360` 全部 9 处引用 | 写：`0x42c70d`（`0x42c700`，调用点 `0x42c869`／`0x42cb47`／`0x43493d`，写入值 800、800+slot、record+0x60 升级对象码）、`0x42cb55`（低 16 位）、`0x42cafa`（清零）、`0x42c867` 新游戏清表、`0x42e9c0` 读档搬 0x54 字节；读：`0x42caa4`、`0x42cb34`、`0x42cac0` 反查、`0x42e3dd` 存档；没有写 `0x80000000` 的指令 | 反汇编逐条读，未执行 |
 | `0x45dd2d`、`0x45e0d7` | OBS 记录先由 `0x46ee10` 清 176 字节；缺 Data8／Data9 时读取保留 0 | 2 组前段，停 `0x45dd3d`／`0x45e11b` |
 
 受测路径都不改变两个 RNG 状态字。
@@ -42,6 +44,6 @@
 ## 边界
 
 - 整次对象安装／删除、构造器与 `0x43bf30` 可视初始化未执行。
-- 已注册但禁用的成员未建模。
+- 禁用位不可达的结论来自 .text 全部引用的静态阅读；若外部改写存档写入 `0x80000000`，读档会原样恢复，重制不承接这种存档。
 - 原对象调度、跨关注册表保存格式、全局 RNG 与墙钟不在本包范围；创建顺序、保存格式与渲染节奏是重制合同。
 - 生成后的成长与装备刷新见 [original_priest.md](original_priest.md)、[original_growth_lifecycle.md](original_growth_lifecycle.md)、[original_auto_growth.md](original_auto_growth.md)。

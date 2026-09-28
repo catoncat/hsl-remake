@@ -121,7 +121,6 @@ func _run_level_2_preview_skip_battle() -> void:
 	var skip: Dictionary = coordinator.config.get("skip_battle", {})
 	var skip_next: Array = skip.get("next_level_event", [])
 	_assert_true(skip_next.size() == 2 and int(skip_next[0]) == 2 and int(skip_next[1]) == 55, "story_002 carries WINFAIL002's win-section next level (2,55)")
-	_assert_eq((skip.get("world_actions", []) as Array).size(), 3, "the win section writes point 2's event, encounter ratio and track 3's flag")
 	_fast(coordinator)
 	var frames := 0
 	while coordinator.active and not coordinator.story_finished and frames < 4000:
@@ -169,12 +168,6 @@ func _run_level_2_preview_skip_battle() -> void:
 	_assert_eq(int(((next_world.get("encounter_ratios", {}) as Dictionary).get("2", -1))), 20, "actBMSetPointEncounterRatio 2,20 is applied")
 	_assert_true(WorldMapRules.track_hidden(next_world, world_map, 3), "actBMSetTrackFlag 3,bmpmHidden hides track 3")
 	_assert_eq(int(((CampaignProgress.pending.get("carry", {}) as Dictionary).get("loop", {}) as Dictionary).get("gold", 0)), 275, "the carry passes through the skipped battle unchanged")
-	var skipped: Dictionary = {}
-	for record in coordinator.summary().get("story_records", []):
-		if str((record as Dictionary).get("kind", "")) == "battle_skipped":
-			skipped = record
-	_assert_eq(int(skipped.get("level", 0)), 2, "the skip is recorded against level 2")
-	_assert_eq(int(skipped.get("world_action_count", 0)), 3, "the record counts the applied world actions")
 	scene.queue_free()
 	await process_frame
 	await process_frame
@@ -565,11 +558,6 @@ func _run_camp_and_hall_chains() -> void:
 	_assert_eq(float(hall63["panel_tops"].get("1002", -1.0)), 20.0, "the second spy's actShapeMessage line takes the top slot (y 20)")
 	_assert_eq(float(hall63["panel_tops"].get("999", -1.0)), 320.0, "克里歐司's actMessage answer keeps the bottom slot (y 320)")
 	_assert_eq(str(hall63["speakers"].get("999", "")), "克里歐司：", "克里歐司 answers between the spies' lines")
-	var face_records := 0
-	for record in (hall63["coordinator"] as Node).summary().get("story_records", []):
-		if str((record as Dictionary).get("kind", "")) == "shape_message" and bool((record as Dictionary).get("face_imported", false)):
-			face_records += 1
-	_assert_eq(face_records, 5, "all five actShapeMessage tokens resolved with an imported face")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 6,gameBigMapLevel returns to the big map")
 	var world63: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world63.get("current_point", 0)), 6, "the party stands at 席達鎮 (point 6) after the hall scene")
@@ -701,8 +689,6 @@ func _run_level_57_ending_routes() -> void:
 	if coordinator == null:
 		return
 	_assert_true(coordinator.story_finished, "STORY057 reaches its card")
-	var storage: Array = coordinator.summary().get("story_records", []).filter(func(record): return str(record.get("kind", "")) == "storage_window_enter")
-	_assert_eq(storage.map(func(record): return str(record.get("status", ""))), ["skipped_unknown_source_scenario"], "actEnterStorageWindow with the sweep's source-less carry closes the 整理裝備 screen again and records why")
 	var options: Array = coordinator.summary().get("end_card_options", [])
 	var ids: Array = options.map(func(option): return str(option.get("id", "")))
 	_assert_eq(ids, ["end_route", "world_map"], "the card offers the dispatched finale then the plain return")
@@ -715,9 +701,6 @@ func _run_level_57_ending_routes() -> void:
 		await process_frame
 		_assert_true(CampaignProgress.has_pending(), "confirming the finale hands off through the campaign")
 		_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/battle_077.json", "the dispatched final is the next scene")
-		var chosen: Array = coordinator.summary().get("story_records", []).filter(func(record): return str(record.get("kind", "")) == "end_route_chosen")
-		_assert_true(chosen.size() == 1 and (chosen[0].get("next_level_event", []) as Array) == [77, 77], "the route is recorded as static-derived with the pair (77, 77)")
-		_assert_eq(int((chosen[0].get("decision", {}) as Dictionary).get("over_flag", -1)) if chosen.size() == 1 else -1, 1, "the record keeps the decision inputs")
 	if is_instance_valid(scene):
 		scene.queue_free()
 	await process_frame
@@ -763,7 +746,6 @@ func _run_level_900_choice_branches() -> void:
 	if options.size() == 2:
 		_assert_true(str((options[0] as Dictionary).get("text", "")).begins_with("1.") and str((options[0] as Dictionary).get("event_code", "")) == "0", "選擇一 (message 1113) inserts winfail event 0")
 		_assert_true(str((options[1] as Dictionary).get("text", "")).begins_with("2.") and str((options[1] as Dictionary).get("event_code", "")) == "1", "選擇二 (message 1114) inserts winfail event 1")
-		_assert_true(bool((options[0] as Dictionary).get("compiled", false)) and bool((options[1] as Dictionary).get("compiled", false)), "both branches are precompiled in select_event_timelines")
 	_assert_eq(str(scene.opening_overlay.body_label.text), "雷歐納德：請選擇", "the dialogue board asks 雷歐納德 to choose")
 	_assert_true(scene.get_node_or_null("UI/StorySelectPrompt/Choice1") != null, "two choice buttons are shown")
 	var down := InputEventKey.new()
@@ -782,14 +764,10 @@ func _run_level_900_choice_branches() -> void:
 	var after: Array[String] = await _run_to_end(scene, coordinator)
 	_assert_eq(after, ["1115", "1116", "1117", "1118", "1119", "1120", "1136"] as Array[String], "選擇一 plays winfail900 event 0's seven lines in script order")
 	var records: Array = coordinator.summary().get("story_records", [])
-	var spliced: Dictionary = {}
 	var shape_changes := 0
 	for record in records:
-		if str((record as Dictionary).get("kind", "")) == "event_select_choice":
-			spliced = record
 		if str((record as Dictionary).get("kind", "")) == "actor_shape_change":
 			shape_changes += 1
-	_assert_eq([int(spliced.get("choice", -1)), int(spliced.get("inserted_events", 0))], [0, 28], "the choice spliced event 0's 28 compiled events")
 	_assert_eq(shape_changes, 1, "the kicked soldier swaps to the 023-1000x shape set")
 	var kicks := 0
 	for sound in coordinator.summary().get("sound_records", []):

@@ -14,19 +14,19 @@
         "result": "victory",
         "reason": "boss"
       },
-      "rounds": 4,
+      "rounds": 3,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 2,
-        "move": 2,
+        "attack": 2,
+        "move_then_attack": 3,
+        "move": 1,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 45,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 35,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -37,19 +37,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 2,
+        "attack": 4,
+        "move_then_attack": 1,
         "move": 4,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 18,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 21,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -60,19 +60,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 11,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 15,
-        "move": 10,
+        "attack": 3,
+        "move_then_attack": 6,
+        "move": 0,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 92,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 41,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -83,18 +83,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 6,
-        "move": 3,
+        "attack": 1,
+        "move_then_attack": 3,
+        "move": 4,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 21,
+        "ai_steps": 15,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -113,11 +113,11 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 1,
+        "move_then_attack": 2,
         "move": 0,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 2,
+        "ai_steps": 10,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -129,18 +129,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 2,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 1,
-        "move": 5,
-        "wait": 0,
+        "attack": 5,
+        "move_then_attack": 2,
+        "move": 6,
+        "wait": 1,
         "offense_finished": 0,
-        "ai_steps": 38,
+        "ai_steps": 76,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -163,9 +163,9 @@
         "move": 0,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 6,
+        "ai_steps": 7,
         "loot_deferred": 0,
-        "scene_phases": 7
+        "scene_phases": 8
       },
       "result_page": true
     },
@@ -175,19 +175,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 7,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 14,
-        "move_then_attack": 8,
+        "attack": 12,
+        "move_then_attack": 7,
         "move": 18,
-        "wait": 4,
-        "offense_finished": 0,
-        "ai_steps": 535,
-        "loot_deferred": 0,
+        "wait": 5,
+        "offense_finished": 1,
+        "ai_steps": 454,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -198,47 +198,24 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 20,
+        "move_then_attack": 7,
+        "move": 18,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 27,
+        "ai_steps": 34,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "15": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 3,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 1,
-        "move_then_attack": 10,
-        "move": 11,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 25,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "17": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -251,11 +228,34 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 0,
+        "move_then_attack": 8,
         "move": 7,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 25,
+        "ai_steps": 20,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "17": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 3,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 1,
+        "move_then_attack": 1,
+        "move": 7,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 38,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -274,8 +274,8 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 1,
-        "move": 5,
+        "move_then_attack": 2,
+        "move": 4,
         "wait": 0,
         "offense_finished": 0,
         "ai_steps": 18,
@@ -336,19 +336,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 2,
-        "move": 42,
-        "wait": 1,
-        "offense_finished": 1,
-        "ai_steps": 41,
-        "loot_deferred": 1,
+        "attack": 0,
+        "move_then_attack": 4,
+        "move": 39,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 40,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -365,13 +365,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 10,
-        "move": 8,
+        "attack": 1,
+        "move_then_attack": 9,
+        "move": 9,
         "wait": 0,
-        "offense_finished": 0,
+        "offense_finished": 1,
         "ai_steps": 81,
-        "loot_deferred": 0,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -388,12 +388,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 9,
-        "move": 11,
+        "attack": 3,
+        "move_then_attack": 6,
+        "move": 14,
         "wait": 1,
         "offense_finished": 0,
-        "ai_steps": 79,
+        "ai_steps": 75,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -428,19 +428,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 7,
-        "move_then_attack": 9,
-        "move": 9,
+        "attack": 1,
+        "move_then_attack": 19,
+        "move": 12,
         "wait": 0,
-        "offense_finished": 2,
-        "ai_steps": 58,
-        "loot_deferred": 2,
+        "offense_finished": 1,
+        "ai_steps": 70,
+        "loot_deferred": 1,
         "scene_phases": 2
       },
       "result_page": true
@@ -451,18 +451,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 29,
+        "move_then_attack": 1,
+        "move": 24,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 29,
+        "ai_steps": 28,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -474,18 +474,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 3,
-        "move": 2,
+        "attack": 0,
+        "move_then_attack": 2,
+        "move": 3,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 13,
+        "ai_steps": 12,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -497,20 +497,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 7,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 1,
-        "move": 20,
+        "attack": 1,
+        "move_then_attack": 2,
+        "move": 18,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 126,
-        "loot_deferred": 1,
-        "scene_phases": 37
+        "offense_finished": 0,
+        "ai_steps": 107,
+        "loot_deferred": 0,
+        "scene_phases": 31
       },
       "result_page": true
     },
@@ -543,18 +543,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 7,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
+        "attack": 3,
         "move_then_attack": 3,
         "move": 18,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 120,
+        "ai_steps": 111,
         "loot_deferred": 0,
         "scene_phases": 1
       },
@@ -566,20 +566,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 10,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 3,
-        "move": 37,
+        "attack": 15,
+        "move_then_attack": 8,
+        "move": 40,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 46,
+        "ai_steps": 93,
         "loot_deferred": 0,
-        "scene_phases": 0
+        "scene_phases": 2
       },
       "result_page": true
     },
@@ -589,47 +589,24 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 4,
-        "move": 19,
-        "wait": 4,
+        "attack": 6,
+        "move_then_attack": 7,
+        "move": 22,
+        "wait": 9,
         "offense_finished": 0,
-        "ai_steps": 66,
+        "ai_steps": 100,
         "loot_deferred": 0,
         "scene_phases": 1
       },
       "result_page": true
     },
     "38": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 3,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 2,
-        "move_then_attack": 10,
-        "move": 7,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 83,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "39": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -642,63 +619,17 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 8,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 17,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "40": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 5,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 4,
-        "move_then_attack": 6,
-        "move": 26,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 42,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "41": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 2,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 1,
-        "move_then_attack": 3,
+        "move_then_attack": 5,
         "move": 6,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 29,
+        "ai_steps": 54,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
-    "43": {
+    "39": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -711,11 +642,80 @@
       "detail": "",
       "actions": {
         "attack": 2,
-        "move_then_attack": 6,
-        "move": 14,
+        "move_then_attack": 8,
+        "move": 9,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 53,
+        "ai_steps": 28,
+        "loot_deferred": 0,
+        "scene_phases": 1
+      },
+      "result_page": true
+    },
+    "40": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 4,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 3,
+        "move_then_attack": 5,
+        "move": 26,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 36,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "41": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 1,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 0,
+        "move_then_attack": 2,
+        "move": 5,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 16,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "43": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 4,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 2,
+        "move_then_attack": 6,
+        "move": 16,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 55,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -734,12 +734,12 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 11,
+        "move_then_attack": 2,
+        "move": 12,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 135,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 136,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -761,7 +761,7 @@
         "move": 8,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 62,
+        "ai_steps": 65,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -849,11 +849,11 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 5,
-        "move": 3,
+        "move_then_attack": 6,
+        "move": 4,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 27,
+        "ai_steps": 19,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -888,20 +888,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 1,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 0,
-        "move_then_attack": 4,
-        "move": 1,
+        "attack": 1,
+        "move_then_attack": 5,
+        "move": 2,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 17,
+        "ai_steps": 25,
         "loot_deferred": 0,
-        "scene_phases": 0
+        "scene_phases": 1
       },
       "result_page": true
     },
@@ -918,8 +918,8 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 5,
-        "move": 3,
+        "move_then_attack": 4,
+        "move": 4,
         "wait": 0,
         "offense_finished": 0,
         "ai_steps": 3,
@@ -940,12 +940,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 10,
-        "move_then_attack": 8,
-        "move": 6,
-        "wait": 1,
+        "attack": 9,
+        "move_then_attack": 9,
+        "move": 5,
+        "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 82,
+        "ai_steps": 84,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -965,10 +965,10 @@
       "actions": {
         "attack": 0,
         "move_then_attack": 0,
-        "move": 2,
+        "move": 3,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 14,
+        "ai_steps": 17,
         "loot_deferred": 0,
         "scene_phases": 1
       },
@@ -991,7 +991,7 @@
         "move": 5,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 29,
+        "ai_steps": 28,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1003,20 +1003,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 9,
+        "attack": 2,
+        "move_then_attack": 3,
         "move": 2,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 40,
+        "ai_steps": 17,
         "loot_deferred": 0,
-        "scene_phases": 2
+        "scene_phases": 0
       },
       "result_page": true
     },
@@ -1032,13 +1032,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 12,
-        "move": 7,
+        "attack": 7,
+        "move_then_attack": 10,
+        "move": 10,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 109,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 110,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1072,20 +1072,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 0,
-        "move": 1,
+        "attack": 2,
+        "move_then_attack": 1,
+        "move": 2,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 42,
-        "loot_deferred": 1,
-        "scene_phases": 5
+        "offense_finished": 0,
+        "ai_steps": 51,
+        "loot_deferred": 0,
+        "scene_phases": 7
       },
       "result_page": true
     },
@@ -1095,20 +1095,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 8,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 1,
+        "attack": 3,
+        "move_then_attack": 4,
         "move": 1,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 54,
-        "loot_deferred": 0,
-        "scene_phases": 0
+        "offense_finished": 2,
+        "ai_steps": 102,
+        "loot_deferred": 2,
+        "scene_phases": 1
       },
       "result_page": true
     },
@@ -1118,20 +1118,20 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 3,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 1,
-        "move": 0,
+        "attack": 1,
+        "move_then_attack": 0,
+        "move": 1,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 14,
+        "ai_steps": 9,
         "loot_deferred": 0,
-        "scene_phases": 1
+        "scene_phases": 0
       },
       "result_page": true
     },
@@ -1147,9 +1147,9 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
+        "attack": 2,
         "move_then_attack": 5,
-        "move": 12,
+        "move": 13,
         "wait": 0,
         "offense_finished": 0,
         "ai_steps": 7,
@@ -1164,18 +1164,18 @@
         "result": "victory",
         "reason": "enemies_cleared"
       },
-      "rounds": 6,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 9,
+        "attack": 5,
+        "move_then_attack": 7,
         "move": 22,
-        "wait": 1,
+        "wait": 4,
         "offense_finished": 0,
-        "ai_steps": 16,
+        "ai_steps": 13,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1187,18 +1187,18 @@
         "result": "victory",
         "reason": "enemies_cleared"
       },
-      "rounds": 5,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
+        "attack": 0,
         "move_then_attack": 6,
-        "move": 24,
-        "wait": 4,
+        "move": 26,
+        "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 9,
+        "ai_steps": 7,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1242,9 +1242,9 @@
         "attack": 2,
         "move_then_attack": 5,
         "move": 21,
-        "wait": 0,
+        "wait": 5,
         "offense_finished": 0,
-        "ai_steps": 9,
+        "ai_steps": 8,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1263,8 +1263,8 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 4,
-        "move": 25,
+        "move_then_attack": 6,
+        "move": 23,
         "wait": 0,
         "offense_finished": 0,
         "ai_steps": 7,
@@ -1274,24 +1274,24 @@
       "result_page": true
     },
     "507": {
-      "outcome": "win",
+      "outcome": "fail",
       "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
+        "result": "defeat",
+        "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 3,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 11,
-        "move": 29,
+        "attack": 1,
+        "move_then_attack": 9,
+        "move": 15,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 21,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 19,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1302,42 +1302,42 @@
         "result": "victory",
         "reason": "enemies_cleared"
       },
-      "rounds": 6,
+      "rounds": 7,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 8,
-        "move_then_attack": 8,
-        "move": 24,
+        "attack": 10,
+        "move_then_attack": 10,
+        "move": 31,
         "wait": 0,
         "offense_finished": 1,
-        "ai_steps": 27,
+        "ai_steps": 31,
         "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
     },
     "509": {
-      "outcome": "win",
+      "outcome": "fail",
       "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
+        "result": "defeat",
+        "reason": "fallen"
       },
-      "rounds": 9,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 19,
-        "move": 34,
+        "attack": 3,
+        "move_then_attack": 10,
+        "move": 14,
         "wait": 0,
-        "offense_finished": 2,
-        "ai_steps": 42,
-        "loot_deferred": 2,
+        "offense_finished": 0,
+        "ai_steps": 30,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1354,12 +1354,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 8,
-        "move": 21,
+        "attack": 3,
+        "move_then_attack": 6,
+        "move": 20,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 12,
+        "ai_steps": 11,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1378,21 +1378,21 @@
       "detail": "",
       "actions": {
         "attack": 3,
-        "move_then_attack": 5,
-        "move": 9,
+        "move_then_attack": 4,
+        "move": 7,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 13,
+        "ai_steps": 10,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "512": {
-      "outcome": "fail",
+      "outcome": "win",
       "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
+        "result": "victory",
+        "reason": "enemies_cleared"
       },
       "rounds": 6,
       "reason": "",
@@ -1400,13 +1400,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
+        "attack": 1,
         "move_then_attack": 10,
-        "move": 34,
+        "move": 36,
         "wait": 0,
-        "offense_finished": 1,
+        "offense_finished": 0,
         "ai_steps": 17,
-        "loot_deferred": 1,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1423,13 +1423,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 15,
-        "move_then_attack": 13,
-        "move": 36,
+        "attack": 7,
+        "move_then_attack": 20,
+        "move": 37,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 36,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 35,
+        "loot_deferred": 0,
         "scene_phases": 1
       },
       "result_page": true
@@ -1446,18 +1446,179 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 10,
-        "move": 11,
+        "attack": 5,
+        "move_then_attack": 6,
+        "move": 13,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 19,
+        "ai_steps": 24,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "515": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 3,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 1,
+        "move_then_attack": 11,
+        "move": 8,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 23,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "516": {
+      "outcome": "win",
+      "battle_outcome": {
+        "result": "victory",
+        "reason": "enemies_cleared"
+      },
+      "rounds": 12,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 18,
+        "move_then_attack": 27,
+        "move": 45,
+        "wait": 4,
+        "offense_finished": 2,
+        "ai_steps": 73,
+        "loot_deferred": 2,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "517": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 5,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 3,
+        "move_then_attack": 12,
+        "move": 21,
+        "wait": 0,
+        "offense_finished": 1,
+        "ai_steps": 49,
+        "loot_deferred": 1,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "518": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 9,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 6,
+        "move_then_attack": 10,
+        "move": 59,
+        "wait": 1,
+        "offense_finished": 1,
+        "ai_steps": 29,
+        "loot_deferred": 1,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "519": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 3,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 3,
+        "move_then_attack": 9,
+        "move": 11,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 30,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "520": {
+      "outcome": "win",
+      "battle_outcome": {
+        "result": "victory",
+        "reason": "enemies_cleared"
+      },
+      "rounds": 4,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 10,
+        "move_then_attack": 13,
+        "move": 11,
+        "wait": 1,
+        "offense_finished": 0,
+        "ai_steps": 22,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "521": {
+      "outcome": "win",
+      "battle_outcome": {
+        "result": "victory",
+        "reason": "enemies_cleared"
+      },
+      "rounds": 9,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 18,
+        "move_then_attack": 20,
+        "move": 25,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 60,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "522": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -1470,172 +1631,11 @@
       "detail": "",
       "actions": {
         "attack": 5,
-        "move_then_attack": 12,
-        "move": 11,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 25,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "516": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 4,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 7,
-        "move_then_attack": 9,
+        "move_then_attack": 7,
         "move": 13,
-        "wait": 1,
-        "offense_finished": 1,
-        "ai_steps": 36,
-        "loot_deferred": 1,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "517": {
-      "outcome": "win",
-      "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
-      },
-      "rounds": 10,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 7,
-        "move_then_attack": 24,
-        "move": 23,
-        "wait": 0,
-        "offense_finished": 6,
-        "ai_steps": 68,
-        "loot_deferred": 6,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "518": {
-      "outcome": "win",
-      "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
-      },
-      "rounds": 11,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 8,
-        "move_then_attack": 12,
-        "move": 67,
-        "wait": 3,
-        "offense_finished": 3,
-        "ai_steps": 32,
-        "loot_deferred": 3,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "519": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 5,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 8,
-        "move_then_attack": 16,
-        "move": 18,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 38,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "520": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 4,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 7,
-        "move_then_attack": 12,
-        "move": 12,
-        "wait": 0,
-        "offense_finished": 2,
-        "ai_steps": 26,
-        "loot_deferred": 2,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "521": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 9,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 10,
-        "move_then_attack": 20,
-        "move": 26,
-        "wait": 1,
-        "offense_finished": 2,
-        "ai_steps": 57,
-        "loot_deferred": 2,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "522": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 3,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 4,
-        "move_then_attack": 3,
-        "move": 12,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 25,
+        "ai_steps": 35,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1647,19 +1647,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 2,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 0,
-        "move_then_attack": 2,
-        "move": 9,
+        "attack": 1,
+        "move_then_attack": 15,
+        "move": 16,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 13,
-        "loot_deferred": 0,
+        "offense_finished": 2,
+        "ai_steps": 37,
+        "loot_deferred": 2,
         "scene_phases": 0
       },
       "result_page": true
@@ -1677,8 +1677,8 @@
       "detail": "",
       "actions": {
         "attack": 1,
-        "move_then_attack": 3,
-        "move": 14,
+        "move_then_attack": 5,
+        "move": 13,
         "wait": 0,
         "offense_finished": 0,
         "ai_steps": 22,
@@ -1699,13 +1699,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 6,
-        "move": 13,
-        "wait": 5,
-        "offense_finished": 0,
-        "ai_steps": 31,
-        "loot_deferred": 0,
+        "attack": 1,
+        "move_then_attack": 9,
+        "move": 16,
+        "wait": 3,
+        "offense_finished": 1,
+        "ai_steps": 30,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -1716,18 +1716,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
+        "attack": 2,
         "move_then_attack": 1,
-        "move": 15,
-        "wait": 4,
+        "move": 14,
+        "wait": 1,
         "offense_finished": 0,
-        "ai_steps": 33,
+        "ai_steps": 26,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1739,19 +1739,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 7,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 7,
-        "move_then_attack": 3,
-        "move": 25,
-        "wait": 11,
-        "offense_finished": 0,
-        "ai_steps": 52,
-        "loot_deferred": 0,
+        "attack": 9,
+        "move_then_attack": 5,
+        "move": 22,
+        "wait": 6,
+        "offense_finished": 1,
+        "ai_steps": 48,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -1768,12 +1768,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 3,
-        "move": 11,
-        "wait": 1,
+        "attack": 2,
+        "move_then_attack": 5,
+        "move": 14,
+        "wait": 2,
         "offense_finished": 0,
-        "ai_steps": 17,
+        "ai_steps": 21,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -1785,19 +1785,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 11,
-        "move_then_attack": 10,
-        "move": 18,
-        "wait": 5,
-        "offense_finished": 0,
-        "ai_steps": 49,
-        "loot_deferred": 0,
+        "attack": 10,
+        "move_then_attack": 8,
+        "move": 17,
+        "wait": 3,
+        "offense_finished": 2,
+        "ai_steps": 41,
+        "loot_deferred": 2,
         "scene_phases": 0
       },
       "result_page": true
@@ -1808,18 +1808,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 4,
-        "move": 21,
-        "wait": 6,
+        "move_then_attack": 5,
+        "move": 28,
+        "wait": 5,
         "offense_finished": 1,
-        "ai_steps": 19,
+        "ai_steps": 21,
         "loot_deferred": 1,
         "scene_phases": 0
       },
@@ -1837,13 +1837,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 7,
-        "move": 9,
+        "attack": 3,
+        "move_then_attack": 9,
+        "move": 8,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 27,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 26,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -1861,12 +1861,12 @@
       "detail": "",
       "actions": {
         "attack": 1,
-        "move_then_attack": 5,
-        "move": 7,
+        "move_then_attack": 4,
+        "move": 9,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 20,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 27,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1883,10 +1883,10 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 6,
-        "move_then_attack": 6,
-        "move": 14,
-        "wait": 1,
+        "attack": 7,
+        "move_then_attack": 12,
+        "move": 8,
+        "wait": 0,
         "offense_finished": 1,
         "ai_steps": 31,
         "loot_deferred": 1,
@@ -1906,13 +1906,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 12,
-        "move": 15,
+        "attack": 6,
+        "move_then_attack": 4,
+        "move": 17,
         "wait": 0,
-        "offense_finished": 2,
+        "offense_finished": 0,
         "ai_steps": 35,
-        "loot_deferred": 2,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1946,19 +1946,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 2,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 4,
-        "move": 8,
+        "attack": 5,
+        "move_then_attack": 9,
+        "move": 12,
         "wait": 0,
-        "offense_finished": 2,
-        "ai_steps": 15,
-        "loot_deferred": 2,
+        "offense_finished": 0,
+        "ai_steps": 33,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -1975,10 +1975,10 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 8,
-        "move_then_attack": 3,
-        "move": 18,
-        "wait": 5,
+        "attack": 4,
+        "move_then_attack": 5,
+        "move": 22,
+        "wait": 4,
         "offense_finished": 0,
         "ai_steps": 26,
         "loot_deferred": 0,
@@ -1992,18 +1992,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 2,
+      "rounds": 3,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
+        "attack": 6,
         "move_then_attack": 4,
-        "move": 7,
+        "move": 9,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 18,
+        "ai_steps": 24,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2015,24 +2015,47 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 7,
-        "move_then_attack": 9,
-        "move": 17,
-        "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 21,
-        "loot_deferred": 1,
+        "attack": 3,
+        "move_then_attack": 1,
+        "move": 10,
+        "wait": 1,
+        "offense_finished": 0,
+        "ai_steps": 10,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "540": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 9,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 11,
+        "move_then_attack": 10,
+        "move": 25,
+        "wait": 0,
+        "offense_finished": 2,
+        "ai_steps": 34,
+        "loot_deferred": 2,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "541": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -2044,35 +2067,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 4,
-        "move": 16,
+        "attack": 6,
+        "move_then_attack": 6,
+        "move": 11,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 22,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "541": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 8,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 7,
-        "move_then_attack": 8,
-        "move": 45,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 46,
+        "ai_steps": 26,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2090,36 +2090,36 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 9,
-        "move": 25,
-        "wait": 0,
-        "offense_finished": 2,
-        "ai_steps": 35,
-        "loot_deferred": 2,
+        "attack": 5,
+        "move_then_attack": 14,
+        "move": 15,
+        "wait": 1,
+        "offense_finished": 1,
+        "ai_steps": 37,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
     },
     "543": {
-      "outcome": "fail",
+      "outcome": "win",
       "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
+        "result": "victory",
+        "reason": "enemies_cleared"
       },
-      "rounds": 8,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 11,
-        "move_then_attack": 11,
-        "move": 23,
+        "attack": 10,
+        "move_then_attack": 13,
+        "move": 20,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 18,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 13,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -2130,19 +2130,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 6,
-        "move": 14,
-        "wait": 2,
-        "offense_finished": 0,
-        "ai_steps": 24,
-        "loot_deferred": 0,
+        "attack": 9,
+        "move_then_attack": 15,
+        "move": 10,
+        "wait": 0,
+        "offense_finished": 1,
+        "ai_steps": 28,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -2153,19 +2153,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 6,
+        "attack": 9,
+        "move_then_attack": 7,
         "move": 14,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 16,
-        "loot_deferred": 0,
+        "offense_finished": 1,
+        "ai_steps": 26,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
@@ -2176,19 +2176,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 14,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 8,
-        "move_then_attack": 7,
-        "move": 14,
-        "wait": 1,
-        "offense_finished": 1,
-        "ai_steps": 22,
-        "loot_deferred": 1,
+        "attack": 13,
+        "move_then_attack": 15,
+        "move": 46,
+        "wait": 6,
+        "offense_finished": 2,
+        "ai_steps": 49,
+        "loot_deferred": 2,
         "scene_phases": 0
       },
       "result_page": true
@@ -2205,12 +2205,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
+        "attack": 6,
         "move_then_attack": 5,
-        "move": 11,
+        "move": 13,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 7,
+        "ai_steps": 9,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2222,18 +2222,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 6,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
+        "attack": 0,
         "move_then_attack": 2,
-        "move": 35,
+        "move": 39,
         "wait": 3,
         "offense_finished": 0,
-        "ai_steps": 20,
+        "ai_steps": 26,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2245,41 +2245,41 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 8,
-        "move_then_attack": 8,
+        "attack": 4,
+        "move_then_attack": 6,
         "move": 18,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 32,
+        "ai_steps": 25,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "550": {
-      "outcome": "win",
+      "outcome": "fail",
       "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
+        "result": "defeat",
+        "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 8,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 9,
-        "move_then_attack": 12,
-        "move": 16,
-        "wait": 1,
-        "offense_finished": 1,
-        "ai_steps": 20,
+        "attack": 7,
+        "move_then_attack": 16,
+        "move": 19,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 28,
         "loot_deferred": 1,
         "scene_phases": 0
       },
@@ -2297,35 +2297,35 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 6,
-        "move_then_attack": 9,
-        "move": 18,
+        "attack": 5,
+        "move_then_attack": 10,
+        "move": 17,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 26,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 29,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "552": {
-      "outcome": "fail",
+      "outcome": "win",
       "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
+        "result": "victory",
+        "reason": "enemies_cleared"
       },
-      "rounds": 2,
+      "rounds": 14,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 0,
-        "move_then_attack": 2,
-        "move": 11,
-        "wait": 1,
+        "attack": 7,
+        "move_then_attack": 18,
+        "move": 56,
+        "wait": 24,
         "offense_finished": 0,
-        "ai_steps": 11,
+        "ai_steps": 46,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2337,18 +2337,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 10,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 5,
+        "attack": 35,
+        "move_then_attack": 7,
         "move": 20,
-        "wait": 0,
+        "wait": 3,
         "offense_finished": 0,
-        "ai_steps": 7,
+        "ai_steps": 23,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2360,24 +2360,70 @@
         "result": "victory",
         "reason": "enemies_cleared"
       },
-      "rounds": 7,
+      "rounds": 10,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 10,
-        "move_then_attack": 11,
-        "move": 28,
-        "wait": 1,
-        "offense_finished": 4,
-        "ai_steps": 40,
-        "loot_deferred": 5,
+        "attack": 8,
+        "move_then_attack": 17,
+        "move": 38,
+        "wait": 0,
+        "offense_finished": 2,
+        "ai_steps": 46,
+        "loot_deferred": 2,
         "scene_phases": 0
       },
       "result_page": true
     },
     "555": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 6,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 13,
+        "move_then_attack": 9,
+        "move": 30,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 36,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "556": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 5,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 6,
+        "move_then_attack": 14,
+        "move": 14,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 31,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "557": {
       "outcome": "win",
       "battle_outcome": {
         "result": "victory",
@@ -2389,18 +2435,87 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 12,
-        "move_then_attack": 7,
-        "move": 22,
-        "wait": 1,
+        "attack": 7,
+        "move_then_attack": 9,
+        "move": 27,
+        "wait": 0,
+        "offense_finished": 1,
+        "ai_steps": 28,
+        "loot_deferred": 1,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "558": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 6,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 11,
+        "move_then_attack": 5,
+        "move": 16,
+        "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 35,
+        "ai_steps": 30,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
-    "556": {
+    "559": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 5,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 3,
+        "move_then_attack": 9,
+        "move": 26,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 25,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "560": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 3,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 1,
+        "move_then_attack": 1,
+        "move": 23,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 15,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "561": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -2413,126 +2528,11 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 11,
-        "wait": 1,
-        "offense_finished": 0,
-        "ai_steps": 16,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "557": {
-      "outcome": "win",
-      "battle_outcome": {
-        "result": "victory",
-        "reason": "enemies_cleared"
-      },
-      "rounds": 5,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 6,
-        "move_then_attack": 11,
-        "move": 18,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 22,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "558": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 3,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 1,
         "move_then_attack": 4,
-        "move": 14,
+        "move": 7,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 13,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "559": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 6,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 7,
-        "move_then_attack": 11,
-        "move": 26,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 30,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "560": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 4,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 3,
-        "move_then_attack": 6,
-        "move": 25,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 20,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "561": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 3,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 4,
-        "move_then_attack": 4,
-        "move": 15,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 20,
+        "ai_steps": 9,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2544,18 +2544,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 4,
+      "rounds": 3,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 8,
-        "move": 23,
+        "attack": 0,
+        "move_then_attack": 1,
+        "move": 18,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 20,
+        "ai_steps": 13,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2574,11 +2574,11 @@
       "detail": "",
       "actions": {
         "attack": 0,
-        "move_then_attack": 3,
-        "move": 7,
+        "move_then_attack": 2,
+        "move": 8,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 10,
+        "ai_steps": 11,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2590,18 +2590,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 3,
-        "move": 14,
-        "wait": 0,
+        "attack": 3,
+        "move_then_attack": 7,
+        "move": 16,
+        "wait": 1,
         "offense_finished": 0,
-        "ai_steps": 14,
+        "ai_steps": 20,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2613,18 +2613,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 5,
+        "attack": 5,
+        "move_then_attack": 8,
         "move": 13,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 12,
+        "ai_steps": 16,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2642,9 +2642,9 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 1,
-        "move_then_attack": 5,
-        "move": 12,
+        "attack": 0,
+        "move_then_attack": 7,
+        "move": 11,
         "wait": 1,
         "offense_finished": 0,
         "ai_steps": 15,
@@ -2659,18 +2659,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 4,
-        "move": 8,
+        "attack": 1,
+        "move_then_attack": 2,
+        "move": 7,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 27,
+        "ai_steps": 16,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2682,18 +2682,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 2,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 4,
-        "move_then_attack": 8,
+        "attack": 2,
+        "move_then_attack": 7,
         "move": 6,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 21,
+        "ai_steps": 20,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2711,12 +2711,12 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 3,
-        "move_then_attack": 9,
+        "attack": 1,
+        "move_then_attack": 11,
         "move": 6,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 28,
+        "ai_steps": 31,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2751,7 +2751,7 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 5,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
@@ -2759,10 +2759,10 @@
       "actions": {
         "attack": 0,
         "move_then_attack": 0,
-        "move": 13,
-        "wait": 19,
+        "move": 17,
+        "wait": 8,
         "offense_finished": 0,
-        "ai_steps": 5,
+        "ai_steps": 4,
         "loot_deferred": 0,
         "scene_phases": 0
       },
@@ -2782,8 +2782,8 @@
       "actions": {
         "attack": 0,
         "move_then_attack": 0,
-        "move": 17,
-        "wait": 1,
+        "move": 15,
+        "wait": 3,
         "offense_finished": 0,
         "ai_steps": 5,
         "loot_deferred": 0,
@@ -2803,13 +2803,13 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 0,
+        "attack": 4,
         "move_then_attack": 26,
-        "move": 46,
+        "move": 43,
         "wait": 0,
-        "offense_finished": 5,
-        "ai_steps": 89,
-        "loot_deferred": 5,
+        "offense_finished": 3,
+        "ai_steps": 91,
+        "loot_deferred": 3,
         "scene_phases": 0
       },
       "result_page": true
@@ -2820,47 +2820,24 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 5,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 15,
-        "move_then_attack": 11,
-        "move": 17,
+        "attack": 9,
+        "move_then_attack": 10,
+        "move": 16,
         "wait": 0,
         "offense_finished": 1,
-        "ai_steps": 130,
-        "loot_deferred": 3,
+        "ai_steps": 114,
+        "loot_deferred": 1,
         "scene_phases": 0
       },
       "result_page": true
     },
     "575": {
-      "outcome": "fail",
-      "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
-      },
-      "rounds": 2,
-      "reason": "",
-      "unit": "",
-      "round": 0,
-      "detail": "",
-      "actions": {
-        "attack": 1,
-        "move_then_attack": 4,
-        "move": 6,
-        "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 43,
-        "loot_deferred": 0,
-        "scene_phases": 0
-      },
-      "result_page": true
-    },
-    "576": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -2872,18 +2849,18 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 5,
-        "move_then_attack": 5,
-        "move": 8,
+        "attack": 2,
+        "move_then_attack": 7,
+        "move": 7,
         "wait": 0,
-        "offense_finished": 0,
-        "ai_steps": 37,
-        "loot_deferred": 0,
+        "offense_finished": 2,
+        "ai_steps": 51,
+        "loot_deferred": 2,
         "scene_phases": 0
       },
       "result_page": true
     },
-    "577": {
+    "576": {
       "outcome": "fail",
       "battle_outcome": {
         "result": "defeat",
@@ -2895,13 +2872,36 @@
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 7,
-        "move_then_attack": 9,
-        "move": 11,
+        "attack": 8,
+        "move_then_attack": 8,
+        "move": 8,
         "wait": 0,
-        "offense_finished": 1,
-        "ai_steps": 41,
-        "loot_deferred": 1,
+        "offense_finished": 0,
+        "ai_steps": 44,
+        "loot_deferred": 0,
+        "scene_phases": 0
+      },
+      "result_page": true
+    },
+    "577": {
+      "outcome": "fail",
+      "battle_outcome": {
+        "result": "defeat",
+        "reason": "fallen"
+      },
+      "rounds": 3,
+      "reason": "",
+      "unit": "",
+      "round": 0,
+      "detail": "",
+      "actions": {
+        "attack": 4,
+        "move_then_attack": 6,
+        "move": 9,
+        "wait": 0,
+        "offense_finished": 0,
+        "ai_steps": 33,
+        "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
@@ -2912,41 +2912,41 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
         "attack": 3,
-        "move_then_attack": 9,
-        "move": 5,
+        "move_then_attack": 15,
+        "move": 8,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 37,
+        "ai_steps": 53,
         "loot_deferred": 0,
         "scene_phases": 0
       },
       "result_page": true
     },
     "200": {
-      "outcome": "fail",
+      "outcome": "win",
       "battle_outcome": {
-        "result": "defeat",
-        "reason": "fallen"
+        "result": "victory",
+        "reason": "enemies_cleared"
       },
-      "rounds": 3,
+      "rounds": 9,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 0,
-        "move_then_attack": 2,
-        "move": 5,
-        "wait": 0,
+        "attack": 4,
+        "move_then_attack": 1,
+        "move": 13,
+        "wait": 6,
         "offense_finished": 0,
-        "ai_steps": 7,
+        "ai_steps": 19,
         "loot_deferred": 0,
         "scene_phases": 1
       },

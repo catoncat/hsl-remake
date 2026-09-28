@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `ecdb47ca22e837b160f2e417c17fb75859b82567` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `cd2aa1bec99c020ff78cec25be2290b8b240a32d` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1481 files, 49.9 MB**
-- dropped: **19022 files, 621.9 MB**
+- dropped: **19023 files, 622.0 MB**
 - processed (home path / author e-mail / public .gitignore rules): 18 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1106 | 18.9 |
+| B | 1106 | 18.8 |
 | C | 375 | 31.1 |
 
 ## Dropped (by reason)
@@ -23,7 +23,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/imported text/source/json | 1520 | 35.1 |
 | A: content/battles assembled level data | 210 | 18.8 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
-| excluded directory docs/audits/ | 7 | 0.3 |
+| excluded directory docs/audits/ | 8 | 0.3 |
 | excluded directory docs/internal/ | 8 | 0.3 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
@@ -40,6 +40,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/audits/CODE_AUDIT_2026-09-27.md`
 - `docs/audits/DOCS_AUDIT_2026-09-27.md`
 - `docs/audits/EVIDENCE_AUDIT_2026-09-27.md`
+- `docs/audits/JOBMODEL_2026-09-28.md`
 - `docs/audits/PARITY_TRIAGE_2026-09-28.md`
 - `docs/audits/STATE_COVERAGE_2026-09-28.md`
 - `docs/audits/TOOLS_AUDIT_2026-09-27.md`

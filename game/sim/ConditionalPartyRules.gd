@@ -9,8 +9,11 @@ extends RefCounted
 ## an existing, enabled registered slot reach the constructor — an empty or disabled slot
 ## takes the placeholder-deletion path (docs/evidence_packets/static_reverse/
 ## original_player_install.md, OBJ-012 codes 180–188). The carry stands in for the
-## original's registered-and-enabled slot table (a registered-but-disabled member is not
-## modelled). A scenario launched without a campaign hand-off fields every slot so dev /
+## original's registered-and-enabled slot table. A registered-but-disabled slot is
+## unreachable in the original: 0x42caa0 tests 0x80000000, but the only table writer
+## 0x42c700 is called from 0x42c869 (new game, 800), 0x42cb47 (800+slot) and 0x43493d
+## (job-up object code), 0x42cb50 keeps the low 16 bits and 0x42cafa only clears, so no
+## path sets the disable bit (static-derived). A scenario launched without a campaign hand-off fields every slot so dev /
 ## test launches show the whole roster.
 ##
 ## Slots the scenario cannot field yet (conditional_party.unavailable_slots: no reviewed

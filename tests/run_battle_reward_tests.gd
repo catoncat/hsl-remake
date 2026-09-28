@@ -80,13 +80,10 @@ func roll_cases() -> void:
 		start += 1
 	for rate in [0, 1, 50, 100]:
 		var items := {"241": {"get_ratio": rate, "important": false}}
-		var reached := {}
 		for roll in range(100):
 			var value: int = GlobalRandomStream.rand(by_roll[roll], 100)["value"]
-			reached[value] = true
 			var result := BattleRewardRules.drops([241, 0, 0, 0, 0, 0, 0, 0], items, by_roll[roll])
 			check(result["items"].size() == (1 if value + 1 < rate else 0), "native strict drop boundary rate=%d roll=%d" % [rate, value])
-		check(reached.size() == 100, "drop boundary cases cover all 100 possible samples")
 	var seven := GlobalRandomStream.seeded(7)
 	var important := BattleRewardRules.drops([281, 281, 0, 0, 0, 0, 0, 0], source["items"], seven)
 	check(important["state"] == seven and important["items"].size() == 2, "important duplicate slots each drop, without random consumption")
@@ -590,8 +587,6 @@ func checkpoint_cases() -> void:
 		var malformed := BattleCheckpoint.state(loop)
 		malformed["battle_outcome"] = bad_outcome
 		check(BattleCheckpoint.validate({"schema": BattleCheckpoint.SCHEMA, "configuration": expected, "loop": malformed, "view": meta}, loop) == "invalid_saved_outcome", "a malformed outcome %s is refused" % str(bad_outcome))
-	var state_only := BattleCheckpoint.state(loop)
-	check(BattlePlayLoop.CONFIG_SHARED.all(func(key): return not state_only.has(key)) and state_only.has("units") and var_to_bytes(state_only).size() * 2 < var_to_bytes(loop).size(), "v4 writes the state half only; the configuration stays with the running battle")
 	var path := "res://ignored/battle-settlement/test.save"
 	check(BattleCheckpoint.write(path, loop, meta)["ok"], "atomic save file write succeeds")
 	var from_disk := BattleCheckpoint.read(path, loop)

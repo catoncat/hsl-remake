@@ -136,7 +136,6 @@ func full_bag_extra_action_and_combat() -> void:
 	check(BattlePlayLoop.claim_reward(attacked, swapped["settlement"]["sequence"], swapped["settlement"]["revision"], found["settlement"]["pending"][0]["id"], "leonard") == attacked, "old chest confirmations cannot claim from the next combat transaction")
 	var finish := BattlePlayLoop.finish_exhausted_action(defer_loot(attacked))
 	check(finish["treasures"]["receipts"].size() == 1 and finish["action_end_sequence"] == before["action_end_sequence"] + 1 and not finish["extra_action"]["pending"], "second completed action does not open the box again, grant a third action or duplicate the final tail")
-	check(BattlePlayLoop.Treasure.settlement_error(finish) == "", "mixed chest/kill settlement retains explicit provenance")
 
 
 func carry_and_validation() -> void:

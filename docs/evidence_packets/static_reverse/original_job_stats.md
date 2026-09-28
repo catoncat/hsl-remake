@@ -1,6 +1,6 @@
 # 职业：初始化、成长与装备的共同刷新 `0x448840`
 
-> evidence: static-derived; provisional: 合成初始化 · status: live · functions: 0x448370, 0x448420, 0x448800, 0x448840 · tools: hsl_native_stats_probe.py, hsltools/data/role_profiles.py, hsltools/probes/job_stats.py, run_job_stats_tests.gd · updated: 2026-09-27
+> evidence: static-derived; provisional: 合成初始化 · status: live · functions: 0x448370, 0x448420, 0x448800, 0x448840 · tools: hsl_native_stats_probe.py, hsltools/data/role_profiles.py, hsltools/probes/job_stats.py, run_job_stats_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -59,6 +59,7 @@
 ## 边界
 
 - 未执行原初始化随机调级、表解析器与完整主循环；探针只运行属性刷新。
+- PLAYERS `class` 字（live +0x20 低字）不进 `0x448840`：全 .text 839 处 `[reg+0x20]` 读取后 10 条指令内没有与 class 常量 0x65–0x6a／0xf3／0xf4 的比较或减偏移，只见转职 `0x4348f0` 非零复制与存档搬运（static-derived，有界扫描）；经间接表按 class 查值未排除，替换证据是找到读 +0x20 低字的调用者。重制不读此字。
 - 转职、动态学技、弱化／增益对基础槽的重写不在本包。
 - 空装备只证刷新算术，不表示徒手攻击范围已支持；合成跨职业装备组合不放宽 use_job 资格。
 - 资源装备的行动循环见 [original_resource_recovery.md](original_resource_recovery.md)。

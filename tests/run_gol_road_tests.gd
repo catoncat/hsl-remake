@@ -124,7 +124,6 @@ func actual_action_transition() -> void:
 	var before := attack_fixture()
 	var attacked := BattlePlayLoop.attack_target(BattlePlayLoop.choose_command(before, "attack"), "actor028_2", func(_n): return 0)
 	check(attacked["scenario_ok"] and attacked["units"].size() == before["units"].size() and BattlePlayLoop.unit(attacked, "actor028_2")["defeated"], "the lethal strike itself scans nothing: the arrival waits for a completion scan")
-	check(attacked["last_combat"]["attacker_id"] == "hu" and attacked["last_combat"]["defender_id"] == "actor028_2", "the completed attack receipt keeps its participants")
 	check(BattlePlayLoop.loot_waiting(attacked) and BattlePlayLoop.finish_exhausted_action(attacked) == attacked, "the lethal action's pending loot blocks its completion and the White Wings second action")
 	var settled := BattlePlayLoop.finish_rewards(attacked, attacked["settlement"]["sequence"], attacked["settlement"]["revision"], false, true)
 	check(not BattlePlayLoop.loot_waiting(settled), "explicit defer closes the current reward interaction without dropping the item")

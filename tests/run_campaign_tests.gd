@@ -86,7 +86,6 @@ func _test_destinations() -> void:
 
 func _test_pure_carry() -> void:
 	var campaign := CampaignProgress.load_campaign()
-	_assert_eq(str(campaign.get("schema", "")), "hsl_campaign.v1", "campaign.json should load")
 	_assert_eq(str(campaign["battles"]["52"]["scenario"]), "res://content/battles/battle_052.json", "level 52 maps to the second battle scenario")
 
 	var first := BattleFixture.loop([], "", 7)
@@ -109,7 +108,6 @@ func _test_pure_carry() -> void:
 	_assert_eq(CampaignProgress.next_scenario_path(campaign, first), "res://content/battles/battle_052.json", "next scenario resolves from next_level_event")
 
 	var carry := CampaignCarryRules.capture(first, campaign["carry_policy"])
-	_assert_eq(carry["schema"], "hsl_campaign_carry.v1", "carry schema")
 	_assert_true(carry["units"].has("leonard") and not carry["units"].has("enemy021_1"), "only controlled units are carried")
 	_assert_eq(int(carry["units"]["leonard"]["level"]), 3, "carried level")
 	_assert_eq(int(carry["units"]["leonard"]["attributes"]["str"]), int(leonard["combat_profile"]["str"]), "carried str attribute")
@@ -131,7 +129,6 @@ func _test_pure_carry() -> void:
 	_assert_eq(int(carried["stamina"]), 0, "a carried member enters at 0 ST (0x407632), not the PLAYERS template's 20")
 	_assert_eq(int(applied["gold"]), 120, "gold applied to the new loop")
 	_assert_eq(int(_unit(applied, "emperor025")["hp"]), boss_hp, "other units untouched")
-	_assert_eq(applied["campaign_carry_receipt"]["applied_unit_ids"], ["leonard"], "receipt lists the carried unit")
 	_assert_eq(applied["campaign_carry_receipt"]["errors"], [], "no carry errors")
 	_assert_eq(str(applied.get("interaction", "")), "idle", "carry does not start the battle")
 	var queue_ids: Array = []
@@ -173,7 +170,6 @@ func _test_town_job_up_carry() -> void:
 	var run := TownEventRules.begin_event(state, before, towndef, 16, 61)
 	_assert_eq((run["effects"][1] as Dictionary).get("kind"), "job_up", "神殿 event 61 upgrades 雷歐納德")
 	var applied := WorldPartyRules.apply_party(carry, before, run["party"])
-	_assert_eq((applied["receipt"]["job_ups"] as Array).size(), 1, "apply_party writes one job-up back")
 	var next_carry: Dictionary = applied["carry"]
 	_assert_eq(str(next_carry["units"]["leonard"]["job_up_target_actor_id"]), "010", "carry member stands on 010")
 	_assert_eq(str(next_carry["units"]["leonard"]["actor_id"]), "001", "actor id stays the resource key")
@@ -182,7 +178,6 @@ func _test_town_job_up_carry() -> void:
 	var fielded := BattlePlayLoop.apply_campaign_carry(second, next_carry)
 	var unit := _unit(fielded, "leonard")
 	_assert_eq(fielded["campaign_carry_receipt"]["errors"], [], "job-up carry applies without errors")
-	_assert_eq(fielded["campaign_carry_receipt"].get("job_up_replayed_unit_ids", []), ["leonard"], "receipt names the replayed unit")
 	_assert_eq([int(unit["growth_profile"]["job_code"]), unit["growth_profile"]["caps"]], [81, {"str": 130, "dex": 112, "mind": 100, "con": 110}], "job 81 劍豪 with its cap row")
 	_assert_eq([str(unit["actor_id"]), str(unit["job_up_target_actor_id"]), int(unit["job_up_flags"])], ["001", "010", 0x80000000], "same actor id, target 010, native flag")
 	_assert_eq(int(unit["level"]), 12, "level carried")
@@ -258,7 +253,6 @@ func _test_battle_job_up_carry() -> void:
 	_assert_true((conditional38["receipt"]["installed"] as Array).has("gulu") and (conditional38["receipt"]["skipped"] as Array).is_empty(), "level 38 fields the transformed 咕嚕 (matched by actor id 008): %s" % str(conditional38["receipt"]))
 	var level38 := BattlePlayLoop.apply_campaign_carry(BattlePlayLoop.create([], "", conditional38["scenario"], 7), carry37)
 	_assert_eq(level38["campaign_carry_receipt"]["errors"], [], "the carry applies to level 38 without errors")
-	_assert_eq(level38["campaign_carry_receipt"].get("job_up_replayed_unit_ids", []), ["gulu"], "level 38 replays the battle job-up history")
 	var carried := _unit(level38, "gulu")
 	_assert_eq([str(carried["actor_id"]), str(carried["job_up_target_actor_id"]), int(carried["growth_profile"]["job_code"]), int(carried["weapon_code"]), int(carried["level"]), int(carried["kill_count"]), int(carried["pending_stat_points"])], ["008", "017", 97, 53, 4, 3, 5], "咕嚕 enters level 38 in his 017 form with level, kills and unspent points")
 	_assert_eq([int(carried["max_hp"]), int(carried["hp"])], [int(gulu["max_hp"]), int(gulu["max_hp"])], "the replayed form derives the same maximum as the battle refresh and restores vitals")

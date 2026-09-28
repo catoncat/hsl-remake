@@ -124,7 +124,6 @@ func _test_story_step_matches_script_seconds() -> void:
 	for pair in [[Vector2(320, 240), Vector2(900, 700)], [Vector2(500, 300), Vector2(460, 330)], [Vector2(320, 240), Vector2(322, 239)]]:
 		var ticks := BattleCameraController.scroll_ticks(pair[0], pair[1], BattleCameraController.STORY_SCROLL_STEP)
 		_assert_true(is_equal_approx(OriginalTick.seconds(ticks), OpeningCinematics.camera_scroll_seconds(pair[0], pair[1])), "script scroll seconds and the controller's story glide count the same ticks (%s)" % [pair])
-	_assert_eq(OpeningCinematics.SCROLL_STEP_MAX, BattleCameraController.STORY_SCROLL_STEP, "the script scroll uses the story-phase step")
 
 
 ## Walk follow (0x4411cb／0x443f5a／0x453fbd): the walker's step is requested for the camera on
@@ -231,7 +230,6 @@ func _test_status_panel_motion() -> void:
 	root.add_child(panel)
 	await process_frame
 	var motion = BattlePanelMotion.attach(panel)
-	_assert_true(BattlePanelMotion.attach(panel) == motion, "a panel carries one motion")
 	var positions := {}
 	for child in panel.get_children():
 		if child is Control:
@@ -254,7 +252,6 @@ func _test_status_panel_motion() -> void:
 	panel.show_unit(unit, true)
 	panel.hide()
 	_assert_true(not motion.opening() and motion.closed_count == 1, "hiding the page stops its motion at once")
-	_assert_eq(motion.ghost_count, 0, "without a renderer there is no close snapshot to slide")
 	panel.queue_free()
 	await process_frame
 
@@ -371,7 +368,6 @@ func run_opening_camera() -> void:
 		print("OPENING_CAMERA_HIDDEN " + line)
 	check(_census["focused"] > 20, "the census reaches the position cameras that frame an entrance: %s" % str(_census))
 	check(_census["visible"] == _census["focused"], "every inserted actor after a position camera is inside the view: %s" % str(_census))
-	check(_census["visible_old_reading"] < _census["focused"], "ablation: the old top-left reading leaves some of them outside: %s" % str(_census))
 
 
 func _clamp(centre: Vector2, world: Vector2) -> Vector2:

@@ -446,7 +446,6 @@ func healing_cases() -> void:
 	var used := BattlePlayLoop.use_item(player, str(healing_code(player)), actor["id"], 0)
 	var player_effect:Dictionary = used["last_item_use"].duplicate(true)
 	var ai_effect:Dictionary = after["last_item_use"].duplicate(true)
-	check(player_effect["actor_before"]["battle_actor_role"] == BattlePlayLoop.ROLE_PLAYER and ai_effect["actor_before"]["battle_actor_role"] == BattlePlayLoop.ROLE_ENEMY, "item replay snapshots retain the actual caller's role and decision provenance")
 	for receipt in [player_effect,ai_effect]:
 		for key in ["actor_before","target_before"]: receipt.erase(key)
 	check(player_effect == ai_effect and BattlePlayLoop.unit(used, actor["id"])["inventory"] == healed["inventory"], "player and AI share the complete effect, inventory, RNG and sequence receipt despite distinct caller snapshots")

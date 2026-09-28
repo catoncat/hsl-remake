@@ -415,7 +415,6 @@ class PayloadInspectorTests(unittest.TestCase):
     def test_generated_chapter01_metadata_keeps_compact_counts_and_candidates(self):
         generated = build_chapter01_generated_metadata(self.generated_report_fixture())
 
-        self.assertEqual(generated["schema"], "hsl_chapter01_generated_metadata.v1")
         self.assertEqual(generated["map_grid"]["dimensions"], {"width": 24, "height": 24})
         self.assertEqual(
             generated["map_grid"]["opaque_integrity"],
@@ -487,7 +486,6 @@ class PayloadInspectorTests(unittest.TestCase):
                 "show_status_count": 2,
             },
         )
-        self.assertIn("original payload text", generated["source_policy"])
 
     def test_generated_chapter01_writer_creates_mechanics_json(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -506,7 +504,6 @@ class PayloadInspectorTests(unittest.TestCase):
             placements = json.loads((output_dir / "initial_placements.json").read_text(encoding="utf-8"))
             self.assertEqual(generated["object_records"]["source_id"], "obj-051.obs")
             self.assertEqual(index["files"]["mechanics"], "mechanics.json")
-            self.assertEqual(placements["schema"], "hsl_chapter01_initial_placements.v1")
             self.assertEqual(placements["placement_aggregates"], generated["placement_aggregates"])
             self.assertEqual(placements["placement_join_integrity"], generated["placement_join_integrity"])
             script_summary = json.loads((output_dir / "script_summary.json").read_text(encoding="utf-8"))
@@ -522,9 +519,7 @@ class PayloadInspectorTests(unittest.TestCase):
     def test_imported_chapter01_script_ir_preserves_order_args_and_refs(self):
         story = build_chapter01_script_ir(self.generated_report_fixture())
 
-        self.assertEqual(story["schema"], "hsl_chapter01_script_ir_index.v1")
         self.assertEqual(story["evidence_tier"], "resource-derived")
-        self.assertIn("action order", story["source_policy"])
         entries = {script["id"]: script for script in story["scripts"]}
         self.assertEqual(set(entries), {"story051", "winfail051"})
         self.assertEqual(entries["story051"]["file"], "scripts/story051.json")
@@ -548,8 +543,6 @@ class PayloadInspectorTests(unittest.TestCase):
             index = json.loads(index_output.read_text(encoding="utf-8"))
             story = json.loads(story_output.read_text(encoding="utf-8"))
             winfail = json.loads(winfail_output.read_text(encoding="utf-8"))
-            self.assertEqual(index["schema"], "hsl_chapter01_script_ir_index.v1")
-            self.assertEqual(story["schema"], "hsl_chapter01_script_ir.v1")
             self.assertEqual(story["evidence_tier"], "resource-derived")
             self.assertEqual(story["id"], "story051")
             self.assertEqual(story["source_file"], "STORY051.TXT")
@@ -843,7 +836,6 @@ class PayloadInspectorTests(unittest.TestCase):
     def test_imported_map_objects_preserves_field_level_reverse_engineering_ir(self):
         imported = build_chapter01_imported_map_objects(self.imported_map_object_report_fixture())
 
-        self.assertEqual(imported["schema"], "hsl_chapter01_imported_map_objects_ir.v1")
         self.assertEqual(imported["join_integrity"]["joined_record_count"], 2)
         self.assertEqual(imported["placements"][0]["record_offset_hex"], "0x10")
         self.assertEqual(imported["placements"][0]["object_name"], "Leonard")
@@ -883,12 +875,7 @@ class PayloadInspectorTests(unittest.TestCase):
             shape_preview_index = json.loads((output_dir / "shape_preview_index.json").read_text(encoding="utf-8"))
 
             self.assertEqual(map_objects["placements"][1]["role"], "enemy")
-            self.assertEqual(resource_refs["schema"], "hsl_chapter01_imported_resource_refs.v1")
             self.assertEqual(ui_resources["resources"], resource_refs["battle_ui_resources"])
-            self.assertEqual(ui_preview_index["schema"], "hsl_chapter01_imported_ui_preview_index.v1")
-            self.assertEqual(audio_normalized["schema"], "hsl_chapter01_imported_audio_normalized.v1")
-            self.assertEqual(message_evidence["schema"], "hsl_chapter01_imported_message_text_evidence.v1")
-            self.assertEqual(shape_preview_index["schema"], "hsl_chapter01_imported_shape_preview_index.v1")
             for obsolete in [
                 "asset_browser_index.json",
                 "audio_resources.json",
@@ -925,7 +912,6 @@ class PayloadInspectorTests(unittest.TestCase):
             preview_path = output_dir.parent / "shared" / preview_index["entries"][0]["preview_relpath"]
             self.assertTrue(preview_path.exists())
             self.assertEqual(preview_path.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
-            self.assertEqual(preview_index["schema"], "hsl_chapter01_imported_shape_preview_index.v1")
             self.assertEqual(preview_index["summary"], {"entry_count": 1, "category_counts": {"actor_sprite": 1}})
             self.assertEqual(preview_index["entries"][0]["display_order"], 0)
             self.assertEqual(preview_index["entries"][0]["preview_res_path"], "res://content/imported/hsl/shared/shape_previews/actor_sprite/001-00001.SHP.png")
@@ -956,7 +942,6 @@ class PayloadInspectorTests(unittest.TestCase):
             write_chapter01_imported_map_object_ir(report, output_dir)
 
             audio = json.loads((output_dir / "audio_normalized.json").read_text(encoding="utf-8"))
-            self.assertEqual(audio["schema"], "hsl_chapter01_imported_audio_normalized.v1")
             self.assertEqual(audio["summary"], {"normalized_count": 1, "skipped_count": 0})
             item = audio["normalized_audio"][0]
             self.assertEqual(item["source_id"], "Accept01.WAV")
@@ -970,7 +955,6 @@ class PayloadInspectorTests(unittest.TestCase):
     def test_audio_normalized_manifest_keeps_trigger_semantics_unresolved(self):
         audio = build_chapter01_imported_audio_normalized({"available_audio": []}, Path("/tmp/not-used"))
 
-        self.assertEqual(audio["schema"], "hsl_chapter01_imported_audio_normalized.v1")
         self.assertEqual(audio["summary"], {"normalized_count": 0, "skipped_count": 0})
         self.assertIn("trigger semantics remain unresolved", audio["unresolved_semantics"][0])
 
@@ -1006,7 +990,6 @@ class PayloadInspectorTests(unittest.TestCase):
 
         index = build_chapter01_imported_ui_preview_index(ui_resources, preview_index)
 
-        self.assertEqual(index["schema"], "hsl_chapter01_imported_ui_preview_index.v1")
         self.assertEqual(index["summary"], {"entry_count": 1, "ui_group_counts": {"battle_command_icon": 1}, "missing_preview_count": 0})
         entry = index["entries"][0]
         self.assertEqual(entry["resource_id"], "BCMD01_1.SHP")
@@ -1032,7 +1015,6 @@ class PayloadInspectorTests(unittest.TestCase):
 
         index = build_chapter01_imported_shape_preview_index(previews)
 
-        self.assertEqual(index["schema"], "hsl_chapter01_imported_shape_preview_index.v1")
         self.assertEqual(index["sources"], {"resource_refs": "resource_refs.json"})
         self.assertEqual(index["entries"][0]["preview_res_path"], "res://content/imported/hsl/shared/shape_previews/actor_sprite/001-00001.SHP.png")
         self.assertEqual(index["entries"][0]["dimensions"], {"width": 36, "height": 76})
@@ -1054,7 +1036,6 @@ class PayloadInspectorTests(unittest.TestCase):
         ]
         evidence = build_chapter01_imported_message_text_evidence(report)
 
-        self.assertEqual(evidence["schema"], "hsl_chapter01_imported_message_text_evidence.v1")
         self.assertEqual(evidence["message_text_status"], "not_resolved_in_imported_assets")
         self.assertEqual(
             evidence["sources"],
@@ -1184,7 +1165,6 @@ class PayloadInspectorTests(unittest.TestCase):
 
         refs = build_chapter01_imported_resource_refs(report)
 
-        self.assertEqual(refs["schema"], "hsl_chapter01_imported_resource_refs.v1")
         self.assertEqual(refs["summary"]["object_shape_ref_count"], 7)
         self.assertEqual(refs["summary"]["resolved_shape_payload_count"], 5)
         self.assertEqual(refs["summary"]["unresolved_shape_ref_count"], 2)

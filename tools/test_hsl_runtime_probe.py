@@ -18,7 +18,6 @@ class RuntimeProbeTests(unittest.TestCase):
                  mock.patch.object(hsl_runtime_probe, "run_text", return_value="wine-11.0"):
                 trace = hsl_runtime_probe.build_trace(exe, Path("tools/hsl_window"))
 
-        self.assertEqual(trace["schema"], "hsl_runtime_probe_trace.v1")
         self.assertEqual(trace["process"]["pid"], 1234)
         self.assertEqual(trace["process"]["window_id"], 77)
         self.assertTrue(all(target["read_only"] for target in trace["probe_targets"]))

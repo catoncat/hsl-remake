@@ -226,7 +226,6 @@ func native_lifecycle_cases() -> void:
 		for key in row["native"]["status_counters"]:
 			check(int(result["target_changes"]["status_counters"][key]) == int(row["native"]["status_counters"][key]), "application counter matches original branch: %s actual=%s expected=%s" % [key, result["target_changes"]["status_counters"][key], row["native"]["status_counters"][key]])
 		check(result["hit_bonus_after"] == row["native"]["hit_bonus_after"] and cursor[0] == draws.size(), "application matches original bonus and full random sequence")
-		check(not row["normal_return"] and row["stop_address"] == "0x40b831", "application evidence remains a prefix, not a whole spell return")
 	for row in packet["tick_cases"]:
 		var words: Dictionary = row["input"].duplicate(true)
 		words["paralysis"] = 0

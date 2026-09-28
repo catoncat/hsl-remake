@@ -1291,13 +1291,13 @@
     },
     {
       "id": "job-model-gaps",
-      "difference": "部分职业、高阶转职与九槽受控未完整建模",
-      "original": "七职业与 91／99 已读；其余职业刷新与高阶转职分支未读完",
+      "difference": "职业、转职与九槽受控规则层已全部建模；剩 4 项（原生观察／表现／生成文本），见审计 docs/audits/JOBMODEL_2026-09-28.md",
+      "original": "80–99 全部职业刷新分支、0x434770／0x4348f0 转职与 0x4080b0 条件安装已读；转职失败路径与 018 形体未原生观察",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_job_stats.md",
         "docs/evidence_packets/static_reverse/original_town_job_up.md"
       ],
-      "remake": "JobStatsRules 已接职业，其余明确拒绝",
+      "remake": "JobStatsRules 接 80–99 全部职业；JobUpRules 接一阶／二阶转职；ConditionalPartyRules 接九槽条件安装（禁用槽原版不可达）",
       "remake_code": [
         "game/sim/ActorInitializationRules.gd"
       ],
@@ -3291,10 +3291,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_movement.md#b6f556c0c5": {
       "item": "ai-first-battle-moves",
       "text": "原 250 项缓存的执行节流与完整平分路径顺序未复刻；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_player_install.md#0c538f300c": {
-      "item": "dispatcher-scheduling",
-      "text": "原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f": {
       "item": "winfail-readings",

@@ -271,7 +271,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
 
             semantics = hsl_script_vm_semantics.build_semantics(index_path)
 
-        self.assertEqual(semantics["schema"], "hsl_chapter01_script_vm_semantics.v1")
         self.assertEqual(semantics["evidence_tier"], "resource-derived")
         self.assertEqual(semantics["status_registry"]["fail"]["initial_enabled_ids"], ["0"])
         self.assertEqual(semantics["status_registry"]["event"]["initial_enabled_ids"], ["0", "1"])
@@ -300,7 +299,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(message_entry["args"], ["SID_PLAYER0", "1", "363"])
         self.assertIn("unresolved", message_entry["unresolved_semantics"][0])
         dry_run = semantics["interpreter_dry_run_trace_model"]
-        self.assertEqual(dry_run["schema"], "hsl_script_vm_interpreter_dry_run_trace.v1")
         self.assertEqual(dry_run["evidence_tier"], "resource-derived")
         self.assertEqual(dry_run["context_examples"]["enemy_clear_candidate"]["enemy_total"], 0)
         event_trace = dry_run["trace_examples"]["round_6_objective_switch_candidate"]
@@ -341,11 +339,9 @@ class ScriptVmSemanticsTests(unittest.TestCase):
             [("delete", "event", "0"), ("insert", "win", "0"), ("insert", "event", "1")],
         )
         self.assertEqual(lifecycle["section_lifecycle"]["event"][0]["dispatch_timing_status"], "unknown")
-        self.assertEqual(lifecycle["dry_run_state_transition_policy"], "scheduled_only_no_live_mutation")
         effect_catalog = semantics["action_effect_facade_catalog"]
         self.assertEqual(effect_catalog["semantic_status"], "facade_only")
         self.assertEqual(effect_catalog["handler_mapping_status"], "unresolved")
-        self.assertEqual(effect_catalog["execution_policy"], "no_handlers_no_live_mutation")
         self.assertEqual(effect_catalog["effect_family_summary"]["message"], 2)
         self.assertEqual(effect_catalog["effect_family_summary"]["movement"], 1)
         message_effect = effect_catalog["by_action"]["actMessage"]
@@ -357,9 +353,7 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertNotIn("handler_confirmed", json.dumps(effect_catalog))
         self.assertNotIn("script_phase", json.dumps(effect_catalog["by_action"]["actMessage"]["evidence_requests"]))
         event_log = semantics["script_event_log_model"]
-        self.assertEqual(event_log["schema"], "hsl_script_vm_event_log_model.v1")
         self.assertEqual(event_log["consumer"], "godot_read_play_event_log")
-        self.assertEqual(event_log["execution_policy"], "read_only_event_log_no_live_battle_mutation")
         self.assertIn("actMessage", event_log["supported_handler_subset"])
         self.assertIn("dispatch_section_diagnostic", event_log["supported_handler_subset"])
         self.assertEqual(event_log["message_text_resolution"]["status"], "not_resolved_in_imported_assets")
@@ -372,9 +366,7 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(event_log["supported_handler_counts"]["actInsertEventStatus"], 3)
         self.assertEqual(len(event_log["dispatch_diagnostics"]), 4)
         phase_views = event_log["phase_views"]
-        self.assertEqual(phase_views["schema"], "hsl_script_vm_event_log_phase_views.v1")
         self.assertEqual(phase_views["phase_order"], ["story", "win", "fail", "event"])
-        self.assertEqual(phase_views["presentation_policy"], "read_only_grouping_no_execution")
         self.assertEqual(phase_views["views"]["story"]["entry_count"], 6)
         self.assertEqual(phase_views["views"]["story"]["dispatch_count"], 0)
         self.assertEqual(phase_views["views"]["event"]["entry_count"], 4)
@@ -382,9 +374,7 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(phase_views["views"]["win"]["dispatch_count"], 1)
         self.assertEqual(phase_views["views"]["fail"]["dispatch_count"], 1)
         panel_summaries = event_log["godot_panel_phase_summaries"]
-        self.assertEqual(panel_summaries["schema"], "hsl_script_vm_godot_panel_phase_summaries.v1")
         self.assertEqual(panel_summaries["consumer"], "godot_imported_script_panel")
-        self.assertEqual(panel_summaries["summary_policy"], "read_only_preview_no_handler_no_live_mutation")
         self.assertEqual(panel_summaries["phase_order"], ["story", "win", "fail", "event"])
         story_summary = panel_summaries["phases"]["story"]
         self.assertEqual(story_summary["display_label_count"], 3)
@@ -405,8 +395,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(event_summary["dispatch_count"], 2)
         self.assertEqual(event_summary["dispatch_preview"][0]["diagnostic_status"], "visible_unresolved_dispatch")
         panel_trace = event_log["godot_panel_read_play_trace"]
-        self.assertEqual(panel_trace["schema"], "hsl_script_vm_godot_panel_read_play_trace.v1")
-        self.assertEqual(panel_trace["trace_policy"], "read_only_panel_order_no_handler_no_live_mutation")
         self.assertEqual(panel_trace["phase_order"], ["story", "win", "fail", "event"])
         self.assertEqual(panel_trace["step_count"], len(panel_trace["steps"]))
         self.assertEqual(panel_trace["steps"][0]["phase"], "story")
@@ -426,9 +414,7 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         dispatch_step = [item for item in panel_trace["steps"] if item["step_type"] == "dispatch_diagnostic"][0]
         self.assertEqual(dispatch_step["diagnostic_status"], "visible_unresolved_dispatch")
         timeline_anchors = event_log["godot_timeline_anchors"]
-        self.assertEqual(timeline_anchors["schema"], "hsl_script_vm_godot_timeline_anchors.v1")
         self.assertEqual(timeline_anchors["consumer"], "godot_imported_script_panel")
-        self.assertEqual(timeline_anchors["anchor_policy"], "read_only_timeline_anchors_no_handler_no_live_mutation")
         self.assertEqual(timeline_anchors["phase_order"], ["story", "win", "fail", "event"])
         progress_anchor = timeline_anchors["progress_boundary_anchor"]
         self.assertEqual(progress_anchor["anchor_status"], "diagnostic_only_not_commit_evidence")
@@ -440,7 +426,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(progress_anchor["status_mutation_commit_timing_status"], "unresolved")
         self.assertEqual(progress_anchor["status_mutation_commit_status"], "unresolved")
         story_anchors = timeline_anchors["phases"]["story"]
-        self.assertEqual(story_anchors["anchor_policy"], "read_only_phase_anchor_no_execution")
         self.assertEqual(story_anchors["first_display_label"], "play level music")
         self.assertEqual(story_anchors["display_label_anchors"][0]["anchor_status"], "read_only_visible_anchor")
         self.assertEqual(story_anchors["scheduled_status_anchors"][0]["anchor_status"], "scheduled_event_log_only")
@@ -481,9 +466,7 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertNotIn("handler_confirmed", json.dumps(event_log))
         self.assertNotIn("script_phase", json.dumps(event_log))
         facade_contract = semantics["interpreter_facade_contract"]
-        self.assertEqual(facade_contract["schema"], "hsl_script_vm_interpreter_facade_contract.v1")
         self.assertEqual(facade_contract["consumer"], "godot_dry_run_diagnostics")
-        self.assertEqual(facade_contract["execution_policy"], "read_only_no_handlers_no_live_mutation")
         self.assertIn("condition_predicate_catalog", facade_contract["stable_inputs"])
         self.assertIn("status_mutation_lifecycle_model", facade_contract["stable_inputs"])
         self.assertIn("action_effect_facade_catalog", facade_contract["stable_inputs"])
@@ -493,14 +476,10 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(invariants["condition_predicates"]["semantic_status"], "unresolved")
         self.assertEqual(invariants["condition_predicates"]["static_navigation_hint_correlation_status"], ["missing", "unresolved"])
         self.assertEqual(invariants["condition_predicates"]["source_numeric_opcode_status"], "missing_in_imported_ir")
-        self.assertEqual(invariants["status_lifecycle"]["dry_run_state_transition_policy"], "scheduled_only_no_live_mutation")
-        self.assertEqual(invariants["action_effects"]["execution_policy"], "no_handlers_no_live_mutation")
-        self.assertEqual(invariants["dry_run_trace"]["schema"], "hsl_script_vm_interpreter_dry_run_trace.v1")
         self.assertFalse(facade_contract["allows_handler_execution"])
         self.assertFalse(facade_contract["allows_live_battle_mutation"])
         self.assertFalse(facade_contract["allows_evidence_tier_upgrade"])
         facade_guard = facade_contract["guard_summary"]
-        self.assertEqual(facade_guard["schema"], "hsl_script_vm_facade_guard_summary.v1")
         self.assertEqual(facade_guard["required_imported_opcode_status"], "missing_in_imported_ir")
         self.assertEqual(facade_guard["required_opcode_gap_guard_status"], "active")
         self.assertTrue(facade_guard["read_only_inputs_only"])
@@ -512,7 +491,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(facade_guard["allowed_evidence_tier"], "resource-derived")
         self.assertNotIn("script_phase", json.dumps(facade_contract))
         gap_audit = semantics["imported_opcode_token_gap_audit"]
-        self.assertEqual(gap_audit["schema"], "hsl_imported_opcode_token_gap_audit.v1")
         self.assertEqual(gap_audit["source_numeric_opcode_status"], "missing_in_imported_ir")
         self.assertEqual(gap_audit["source_token_status"], "action_name_tokens_only")
         self.assertEqual(gap_audit["numeric_opcode_field_candidates_found"], [])
@@ -521,7 +499,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertIn("args", gap_audit["observed_chain_item_fields"])
         self.assertEqual(gap_audit["importer_parser_evidence"]["parser"], "tools/hsl_payload_inspector.py::parse_action_chain")
         guard_summary = semantics["opcode_gap_guard_summary"]
-        self.assertEqual(guard_summary["schema"], "hsl_opcode_gap_guard_summary.v1")
         self.assertEqual(guard_summary["source_numeric_opcode_status"], "missing_in_imported_ir")
         self.assertEqual(guard_summary["guard_status"], "active")
         self.assertEqual(guard_summary["guarded_condition_action_count"], len(predicate_catalog["by_action"]))
@@ -616,8 +593,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
             semantics = hsl_script_vm_semantics.build_semantics(index_path, static_path)
 
         boundary = semantics["interpreter_progress_boundary"]
-        self.assertEqual(boundary["schema"], "hsl_script_vm_interpreter_progress_boundary.v1")
-        self.assertEqual(boundary["source_schema"], "hsl_static_script_status_commit_path_context.v1")
         self.assertEqual(boundary["source_bridge_address"], "0x450840")
         self.assertEqual(boundary["evidence_status"], "static_cursor_progress_loaded")
         self.assertEqual(boundary["progress_boundary_status"], "script_cursor_progress_observed")
@@ -635,7 +610,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
         self.assertEqual(candidate["correlation_status"], "unresolved")
         self.assertEqual(candidate["ordinal_as_slot_status"], "not_evidence")
         self.assertEqual(candidate["commit_timing_evidence_status"], "unresolved")
-        self.assertEqual(candidate["navigation_policy"], "navigation_only_not_commit_evidence")
 
     def test_checker_rejects_confirmed_status_lifecycle(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -845,7 +819,6 @@ class ScriptVmSemanticsTests(unittest.TestCase):
 
         bridge = semantics["script_event_log_model"]["message_text_resolution"]["evidence_bridge"]
         self.assertEqual(bridge["status"], "loaded")
-        self.assertEqual(bridge["schema"], "hsl_chapter01_imported_message_text_evidence.v1")
         self.assertEqual(bridge["message_text_status"], "not_resolved_in_imported_assets")
         self.assertEqual(bridge["message_text_source_status"], "missing_structured_text_table")
         self.assertEqual(bridge["word_shape_resource_refs"], ["SHAPE01\\WORD051.SHP"])

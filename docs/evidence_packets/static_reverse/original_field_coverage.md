@@ -85,7 +85,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `sound_attack` | consumed | `tools/hsltools/assets/actor_audio.py:build` | 非默认行 66；声明行 66 | 攻击音效 | — |
 | `sound_miss` | consumed | `tools/hsltools/assets/actor_audio.py:build` | 非默认行 64；声明行 64 | 未命中音效 | — |
 | `job` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 66；声明行 66 | 职业码 → 0x448840 数值分支 | — |
-| `class` | unconsumed | UNCONSUMED | 非默认行 66；声明行 66 | classHuman／classMonster…（+0x20 低字） | 原 0x448840／AI 是否按 class 分支未追；重制不读 |
+| `class` | unconsumed | UNCONSUMED | 非默认行 66；声明行 66 | classHuman／classMonster…（+0x20 低字） | 原版只见搬运（0x4348f0 非零复制、存档 +0x20）；全 .text 839 处 \[reg+0x20] 读后 10 条内无 class 常量比较（有界扫描）；重制不读 |
 | `status` | dead | — | 非默认行 0；声明行 15 | PLAYERS 初始状态位（15 行全 0） | 原 live +0x24 由回合 tick 改写；数据全 0 |
 | `mode` | consumed | `tools/hsltools/levels/battle.py:install_player_mode` | 非默认行 66；声明行 66 | pmPlayer／pmEnemy／pmNPCPlayer 阵营位 | 模板值经 OBJ obj_Data9 互换与 obj_X1 覆盖后写单位 player_mode（见 obj 表） |
 | `str` | consumed | `game/sim/CoreCombatRules.gd:hit_chance` | 非默认行 66；声明行 66 | 力量（伤害 str 项） | — |

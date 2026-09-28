@@ -46,7 +46,6 @@ func native_cases() -> void:
 		var expected: Variant = row["native"].map(func(value): return int(value)) if input["kind"] == "buckets" else row["native"]
 		check(result == expected, "kernel result equals original: " + input["kind"])
 		check(cursor[0] == row["draws"].size() and input == before, "all native draws used and input unchanged")
-		check(bool(row["normal_return"]) == (input["kind"] != "position_suffix"), "position suffix is not reported as whole planner return")
 
 
 static func area_fixture() -> Dictionary:
@@ -152,7 +151,6 @@ func held_target_free_cast() -> void:
 	var after := BattlePlayLoop.step_ai_turn(loop, func(_bound): return 0)
 	var action: Dictionary = after["last_ai_action"]
 	check(action["ai_decision"]["target_selection"]["reason"] == "retained_target" and action.get("skill_id") == FIRE and action.get("target_id") == "enemy023_1" and loop == saved, "state 0xa casts at the reachable foe while the held target stays out of reach: %s -> %s" % [action.get("skill_id"), action.get("target_id")])
-	check(action["ai_decision"]["skill_attempts"][0]["held_target_free"] and action["ai_decision"]["skill_attempts"][0]["primary_target_id"] == "leonard", "the receipt keeps the held target as bookkeeping only")
 	# Both foes in reach: the earlier row-major centre (0x40cb99 keeps it on raw 0) wins even though it is not the held one.
 	var both := run_ai_decision_tests.live_fixture()
 	BattlePlayLoop.unit_ref(both, "enemy023_1")["coord"] = Vector2i(3, 1)

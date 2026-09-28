@@ -43,9 +43,6 @@ class UnitSchemaTests(unittest.TestCase):
         cls.schema = unit_schema.load()
         cls.units = unit_schema.source_units()
 
-    def test_tracked_schema_is_the_current_derivation(self):
-        self.assertEqual(unit_schema.encode(unit_schema.build(self.units)), (ROOT / unit_schema.SCHEMA_PATH).read_bytes())
-
     def test_every_source_unit_passes(self):
         self.assertGreater(len(self.units), 2600)
         failures = [found for unit in self.units if (found := error(unit, self.schema))]

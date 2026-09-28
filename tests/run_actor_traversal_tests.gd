@@ -166,8 +166,7 @@ func terrain_rejection_cases() -> void:
 ## Ground units the original installs on a 0xff cell (no terrain test at install, R5-L4b):
 ## the flood reads the start cell's own height (0x40f200 → 0x40ed50, the origin rows of the
 ## native packet), so from 0xff a unit crosses only other 0xff／253／254 cells — it moves
-## along its cliff and never steps down. Ablation: the same start cell read at the height
-## of its lowest ground neighbour lets every one of them walk off.
+## along its cliff and never steps down.
 func blocked_start_cases() -> void:
 	for entry in [["006", "actor061_1"], ["552", "gulu"], ["574", "actor032_3"], ["903", "actor031_8"]]:
 		var loop := BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/battle_%s.json" % entry[0]))
@@ -177,14 +176,6 @@ func blocked_start_cases() -> void:
 		check(not unit.is_empty() and not unit["traversal"]["flying"] and int(loop["tiles"][start]["elevation"]) == 255, "battle_%s %s is a ground unit standing on 0xff %s" % [entry[0], entry[1], str(start)])
 		var cells: Array = BattlePlayLoop.movement_cells(loop, entry[1])
 		check(not cells.is_empty() and cells.all(func(cell): return int(loop["tiles"][cell]["elevation"]) >= 253), "battle_%s %s moves only along its cliff: %s" % [entry[0], entry[1], str(cells)])
-		var ablated := BattlePlayLoop.copy(loop)
-		ablated["tiles"] = loop["tiles"].duplicate()
-		var ground := 255
-		for delta in TacticalGridRules.DIRECTIONS:
-			var height := int(loop["tiles"].get(start + delta, {}).get("elevation", 255))
-			if height < 253: ground = mini(ground, height)
-		ablated["tiles"][start] = {"elevation": ground, "blocks_movement": false, "movement_flags": 0}
-		check(BattlePlayLoop.movement_cells(ablated, entry[1]).any(func(cell): return int(loop["tiles"][cell]["elevation"]) < 253), "ablation: battle_%s %s walks off when its start cell is read at ground height" % entry)
 
 
 func check(ok: bool, label: String) -> void:

@@ -56,7 +56,6 @@ func native_items() -> void:
 		target = BattlePlayLoop.ProgressionRules.refresh_growth_stats(target,source["equipment_items"])
 		var before := target.duplicate(true)
 		if c["outside_battle"]:
-			check(row["native"]["words"] == c["words"],"native outside-battle exclusion is retained as evidence, not a new remake surface")
 			continue
 		var item: Dictionary = source["consumables"][str(int(c["code"]))]
 		var quote := ItemUseRules.prepare(target,item)

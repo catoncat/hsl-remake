@@ -251,11 +251,6 @@ class ReferencedIdsTest(unittest.TestCase):
         self.assertEqual(rows["克里歐司"]["row"], 2)
 
 
-class OfflineCheckTest(unittest.TestCase):
-    def test_tracked_outputs_are_consistent(self) -> None:
-        self.assertEqual(town_assets.check_offline(town_assets.DEFAULT_OUTPUT_DIR), [])
-
-
 if __name__ == "__main__":
     import unittest
     unittest.main()

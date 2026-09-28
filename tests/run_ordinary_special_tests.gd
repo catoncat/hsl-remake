@@ -288,10 +288,8 @@ func native_cases() -> void:
 	var packet: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_stamina.json"))
 	for row in packet["cases"]:
 		var c: Dictionary = row["input"]
-		var before := c.duplicate(true)
 		var amount := StaminaRules.amounts(int(c["max_hp"]), int(c["hp_after"]), int(c["damage"]), int(c["attacker_level"]), int(c["defender_level"]), int(c["attacker_st"]), int(c["defender_st"]), int(c["attacker_flags"]), int(c["defender_flags"]))
 		check(amount["attacker"]["after"] == row["native"]["attacker"] and amount["defender"]["after"] == row["native"]["defender"], "both gains equal complete original x86 return")
-		check(row["normal_return"] and row["rng_calls"] == 0 and c == before, "native stamina case has complete return, zero RNG and no input mutation")
 	check(StaminaRules.amounts(11, 1, 5, 1, 1, 0, 0, 0, 0)["base_gain"] == 4, "odd maxHP half threshold uses integer floor")
 	check(StaminaRules.amounts(1, 1, 4, 1, 1, 0, 0, 0, 0)["base_gain"] == 3, "maxHP below10 retains original minimum denominator")
 

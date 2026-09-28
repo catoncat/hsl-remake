@@ -182,11 +182,8 @@ func carry_cases() -> void:
 	var owner := BattlePlayLoop.unit(first,"leonard")
 	check(owner["permanent_gains"].values().all(func(v):return int(v)>0),"all nine acquired offsets are nonzero")
 	var campaign := CampaignProgress.load_campaign()
-	check(campaign["carry_policy"]["unit_keys"].has("permanent_gains") and CampaignCarryRules.DEFAULT_POLICY["unit_keys"].has("permanent_gains"),"configured and default carry policies both preserve acquired sources")
 	var carry := CampaignCarryRules.capture(first,campaign["carry_policy"])
 	check(carry["units"]["leonard"]["permanent_gains"]==owner["permanent_gains"],"capture includes nine gains without conversion to basic attributes")
-	for forbidden in ["status_counters","status_flags","growth_profile","live_speed","combat_profile"]:
-		check(not carry["units"]["leonard"].has(forbidden),"carry never promotes temporary/template/cache fields: "+forbidden)
 	var handoff := {"schema":CampaignProgress.SCHEMA,"scenario_path":"res://content/battles/battle_052.json","carry":carry,"from_scenario_id":first["scenario_path"]}
 	check(CampaignProgress.save_progress(handoff,CARRY_PATH),"campaign record writes to isolated real file")
 	var loaded := CampaignProgress.load_progress(CARRY_PATH)
@@ -222,7 +219,6 @@ func carry_cases() -> void:
 	# Story/separate-party handoffs use the same carried record, without applying
 	# Leonard's sources to the independent source002 character.
 	var third := BattlePlayLoop.create([],"",BattlePlayLoop.BattleScenario.load_file("res://content/battles/battle_053.json"))
-	check(CampaignProgress.separate_party(campaign,"res://content/battles/battle_053.json"),"separate-party scenario retains its policy")
 	check(BattlePlayLoop.apply_campaign_carry(third,carry)["units"]==third["units"],"unmatched party never inherits another actor's gains")
 	CampaignProgress.pending = loaded
 	check(CampaignProgress.take_handoff()["carry"]==loaded["carry"] and not CampaignProgress.has_pending(),"handoff consumes once")

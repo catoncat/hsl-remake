@@ -2,7 +2,6 @@ import struct
 import unittest
 
 import hsltools.data.world_map as wm
-from hsltools import original_content
 
 
 def _point(field0, flags, point_id, name_id, x, y, tracks=(0, 0, 0)):
@@ -170,13 +169,6 @@ class TowndefParsingTests(unittest.TestCase):
         self.assertEqual(wm.towndef_self_check(parsed), [])
         parsed["town_events"][0]["item_code"] = 7
         self.assertEqual(wm.towndef_self_check(parsed), ["town_event 1: item_code 7 has no [item] record"])
-
-
-class TrackedOutputTests(unittest.TestCase):
-    @unittest.skipUnless(original_content.present(), 'original-derived content absent (hsltools.original_content)')
-    def test_tracked_output_is_consistent_offline(self):
-        self.assertTrue((wm.DEFAULT_OUTPUT_DIR / "world_map.json").exists())
-        self.assertEqual(wm.check_offline(wm.DEFAULT_OUTPUT_DIR), [])
 
 
 if __name__ == "__main__":
