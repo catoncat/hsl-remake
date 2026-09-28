@@ -12,7 +12,8 @@ extends Node
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##     (obj_Data7／obj_Data8／obj_Score／obj_HitPoint)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
-##     (0x45eb9d／0x45ebdc 16.16 step per tick; 0x43ceba hold on 0x4c1b00 & 0x1400000 or 場景效果 off)
+##     (0x45eb9d／0x45ebdc 16.16 step per tick; 0x43ceba hold on 0x4c1b00 & 0x1400000 or 場景效果 off;
+##     0x43d13e／0x43d758 likewise)
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (level 1: +265,+265 in 1499 ticks)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
@@ -39,7 +40,14 @@ var camera_top_left: Callable
 ## [0x4c1b00] & 0x1400000 (map magic effect 0x1000000, close-up／status window 0x400000) or while
 ## [0x477c14] bit0 (設定選項 場景效果) is clear. Moving backgrounds jump past it (0x43d573).
 var clouds_hidden: Callable
+## True while 設定選項 場景效果 is off: mapobjWaterFall (0x43d13e) and mapobjBuildBottom
+## (0x43d758) write the same hold counter on [0x477c14] bit0 clear, so they neither draw nor
+## move. (BuildBottom also holds on 0x400000, not wired here.)
+var scene_hidden: Callable
 var clouds: Array[Dictionary] = []
+## The stand objects held only by 場景效果 (waterfalls, building bottoms); the remake draws
+## them still, so a hold is just not drawing.
+var scene_held: Array[Node2D] = []
 var backgrounds: Array[Dictionary] = []
 var _clock := 0.0
 
@@ -47,6 +55,7 @@ var _clock := 0.0
 func clear() -> void:
 	clouds.clear()
 	backgrounds.clear()
+	scene_held.clear()
 	_clock = 0.0
 
 
@@ -69,6 +78,11 @@ func add_cloud(sprite: Node2D, point: Vector2, angle: int, speed: int, size: Vec
 		"v": velocity(angle, speed), "size": size, "origin": origin})
 
 
+func add_scene_held(sprite: Node2D) -> void:
+	scene_held.append(sprite)
+	sprite.visible = not (scene_hidden.is_valid() and bool(scene_hidden.call()))
+
+
 func add_background(sprite: Node2D, point: Vector2, score: int, hit_point: int, origin: Vector2i) -> void:
 	backgrounds.append({"sprite": sprite, "x0": int(point.x), "y0": int(point.y), "x": int(point.x), "y": int(point.y),
 		"score": score, "hit_point": hit_point, "origin": origin})
@@ -80,7 +94,7 @@ func add_background(sprite: Node2D, point: Vector2, score: int, hit_point: int, 
 ## drawing) keeps its point and fractions and walks on from there the first tick the condition is
 ## gone; a moving background takes the camera of that tick.
 func _process(delta: float) -> void:
-	if clouds.is_empty() and backgrounds.is_empty():
+	if clouds.is_empty() and backgrounds.is_empty() and scene_held.is_empty():
 		return
 	_clock += delta
 	var steps := floori(_clock / OriginalTick.TICK_SECONDS)
@@ -97,6 +111,10 @@ func _process(delta: float) -> void:
 		_draw_cloud(cloud)
 	for background in backgrounds:
 		_place_background(background)
+	var scene_off := scene_hidden.is_valid() and bool(scene_hidden.call())
+	for sprite in scene_held:
+		if is_instance_valid(sprite):
+			sprite.visible = not scene_off
 
 
 ## One tick of 0x45ebdc plus the wrap 0x43d7e0..0x43d848: the fraction keeps the low 16

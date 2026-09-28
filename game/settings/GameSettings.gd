@@ -22,9 +22,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md
 ##     (預備動作 = [0x477c14] bit1, default on)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_music.md (§5 volume curves)
-##   rules: provisional (sliders step 0.1 where the original steps 15／255; 場景效果 hides clouds and
-##     story effect objects, the original also hides mapobjWaterFall／mapobjBuildBottom and two
-##     unidentified objects)
+##   rules: provisional (sliders step 0.1 where the original steps 15／255; 場景效果 readers,
+##     original_map_object_drift.md: BuildBottom's close-up hold is not wired)
 ##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json

@@ -2,6 +2,8 @@ extends RefCounted
 ## 噴人沼氣 (defProcPoisonGas 0x43c7c0) presentation: replays the receipt PoisonGasRules left
 ## on winfail_runtime.story_object_wait_requests[].poison_gas. Rules are already committed.
 ## provenance:
+##   rules: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (0x43c337: 設定選項 場景效果 off leaves the smoke undrawn)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_poison_gas.md
 ##     (camera, 3 SMOKE001 at the centre ±38 px rising 0.25..0.75 px/tick, hit actors shake ±1 px)
 ##   layout: remake-invented (ADDCOLOR_MIX level drawn as additive alpha)
@@ -14,6 +16,7 @@ const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCine
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
 const TacticalGridRules = preload("res://game/sim/TacticalGridRules.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const GameSettings = preload("res://game/settings/GameSettings.gd")
 const MANIFEST := "res://content/imported/hsl/shared/skill_effects/manifest.json"
 ## global.obs 706 obj_Fire_Smoke: MAGIC\SMOKE001.SHP, obj_Shape_Delay 3 (+0x7c). From its second
 ## call defProcFireSmoke (0x43c260) writes +0x30 = +0x32 each tick, so the MIN20 frame the gas put
@@ -149,7 +152,9 @@ static func _smoke_tick(sprite: Sprite2D, base: Vector2, k: int, hold: int, spee
 		level = SMOKE_LEVELS - floori(float(k - 1 - SMOKE_LEVELS) / float(hold))
 	elif k >= 2:
 		level = k - 1
-	sprite.visible = level > 0
+	# 0x43c337: with 設定選項 場景效果 off (or 0x400000) the smoke writes +0x30 = 0xffff and is
+	# not drawn, but still rises and fades.
+	sprite.visible = level > 0 and GameSettings.scene_effects_enabled()
 	sprite.modulate.a = float(level) / float(SMOKE_LEVELS)
 	var rise := floori(-float(maxi(k - 1, 0) * speed) / 65536.0)
 	sprite.position = base + Vector2(0.0, float(rise))

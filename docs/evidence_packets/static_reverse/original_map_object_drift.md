@@ -1,6 +1,6 @@
 # 地图物件云漂移（mapobjCloud）与移動背景视差（mapobjMoveBG）
 
-> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x43ccf0, 0x43ceba, 0x43d76a, 0x45eb9d, 0x45ebdc, 0x45f5f7, 0x45fa1e, 0x4606a9 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x43c260, 0x43c4a0, 0x43ccf0, 0x43ceba, 0x43d13e, 0x43d758, 0x43d76a, 0x45eb9d, 0x45ebdc, 0x45f5f7, 0x45fa1e, 0x4606a9 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
 
 本包回答：云每 tick 走多少、朝哪、出界后怎么回来、云影是否跟着走；移動背景同三问。EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。tick 按 [tick 率包](../runtime_observations/original_tick_rate/README.md) 的设计值换算：1 tick ＝ 16 ms ＝ 62.5 tick/s（本机 Wine 录像 19.4 ms/tick，同一 px/tick 在录像里约为下表 px/s 的 0.82 倍）。
 
@@ -59,6 +59,19 @@
 
 `game/battle/runtime/MapObjectDrift.gd`：`add_cloud`／`add_background` 登记，`_process` 按 `OriginalTick.TICK_SECONDS` 累计 tick——每 tick 先问 `clouds_hidden`，真则云精灵不可见且不步进，否则 `step_cloud`（`0x45ebdc`＋回绕）后按点减原点放置；移動背景每 tick `_place_background` 取一次镜头。`game/battle/scene/BattleSceneStage.gd` 建立并接 `clouds_hidden = _clouds_hidden`（`GameSettings.scene_effects_enabled()` 为假、`BattlePresentation.cutin.busy()`、或 `status_panel` 可见）。provenance：layout／timing static-derived 指本包，藏起条件的重制映射与滚动先后记 provisional。
 
+### 場景效果 的其余读者（static-derived，r2 静读）
+
+`[0x477c14]` bit0 另有四处读者，TYPE.H 编号对跳表 `0x43d8c0`（`obj_Data9 − 1` 为下标）与 PROCESS.DEF 过程槽（表基 `0x477c2c`，槽 n 在 `0x477c2c + 4n`）认定：
+
+| 读点 | 所属 | 关时做什么 |
+| --- | --- | --- |
+| `0x43d13e` | 站立物件 mapobjWaterFall（7，跳表项 `0x43d07b`） | 只测 bit0（不测 `0x4c1b00`）：清则 `+0xae = 2`，经 `0x43d1e9` 减一仍非零跳 `0x43d202`——同云，不画不走 |
+| `0x43d758` | 站立物件 mapobjBuildBottom（2，跳表项 `0x43d74c`）；越界类型默认分支 `0x43d73e` 在带局部旗 0x200 时也落到 `0x43d74c` | 先测 `[0x4c1b00] & 0x400000`（特写／状态窗），再测 bit0，任一成立 `+0xae = 2` 进公共尾 `0x43d76a`——不画不走 |
+| `0x43c337` | defProcFireSmoke（槽 70 `0x477d44` → `0x43c260`），`0x43c298..0x43c31c` 初始化按 rand(77) 在中心 ±38 撒点 | `0x400000` 或 bit0 清时 `+0x30 = 0xffff`（不画），否则 `+0x30 = +0x32`；其后的淡入淡出与 `0x45ebdc` 上升照走 |
+| `0x43c63f` | defProcDropRain（槽 66 `0x477d34` → `0x43c4a0`），mapobjDropRain（13，`0x43d578`）按 obj_Data4 经 `0x45e307` 生出的雨滴 | 同上：不画，照落 |
+
+重制：`MapObjectDrift.add_scene_held` 登记瀑布与建筑底，每 tick 按 `scene_hidden`（`GameSettings.scene_effects_enabled()` 为假）设不可见；重制把两者画成静止图，所以藏起只是不画。噴人沼氣的煙（`BattlePoisonGasPresentation._smoke_tick`）关时不画、照升照淡；雨滴由 `StoryEffectObjects.insert` 在 場景效果 关时不建雨发射器。
+
 ## 复现
 
 `uv run --no-project --with unicorn==2.1.4 --python /opt/homebrew/bin/python3 python3 tools/hsltools/probes/_map_object_drift.py --level 1 --ticks 1500 --out ignored/clouddrift/L001.json`（首次建停点缓存约 20 s）；藏起与时机是 r2 静态读，无运行复现。
@@ -68,4 +81,4 @@
 - 原版每 tick 画一帧，重制按显示帧渲染、按 16 ms 累计 tick；一帧跨多 tick 时云连走多步、移動背景只取末 tick 的镜头。
 - 移動背景与滚镜头对象的执行先后（一 tick 滞后与否）未读；重制取当前镜头。
 - `0x400000` 的仓库窗 `0x4289e0` 不在战斗里，未接；重制的状态面板是否与原状态窗过程 `0x438xxx` 同一窗口按名称对应，未逐帧核。
-- 其余读 `[0x477c14]` bit0 的站立物件分支（`0x43c337`／`0x43c63f`／`0x43d13e`／`0x43d758`）不在本包范围。
+- 瀑布的漂移（TYPE.H：角度／速度／X1..Y2 范围）重制未做，瀑布静止画；建筑底的 `0x400000` 藏起未接；撒点雨滴在剧情中途切换 場景效果 不跟随（插入时决定）。

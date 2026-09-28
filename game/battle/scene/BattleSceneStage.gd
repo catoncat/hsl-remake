@@ -276,6 +276,8 @@ func spawn_map_objects() -> void:
 			"mapobjMoveBG":
 				drift.add_background(sprite, anchor_world, MapObjectDrift.field_int(map_object_field_value(record, "obj_Score")),
 					MapObjectDrift.field_int(map_object_field_value(record, "obj_HitPoint")), origin)
+			"mapobjWaterFall", "mapobjBuildBottom":
+				drift.add_scene_held(sprite)
 		runtime.map_object_records.append(_map_object_record(record, shape_id, texture, placement, candidate_anchor_world, anchor_world, top_left_world, runtime_layer))
 
 
@@ -378,6 +380,7 @@ func _map_object_drift() -> MapObjectDrift:
 	drift.map_size = runtime.map_config.world_size if runtime.map_config != null else Vector2i.ZERO
 	drift.camera_top_left = func() -> Vector2: return runtime.camera_controller.logical_to_world(Vector2.ZERO) if runtime.camera_controller != null else Vector2.ZERO
 	drift.clouds_hidden = _clouds_hidden
+	drift.scene_hidden = func() -> bool: return not GameSettings.scene_effects_enabled()
 	return drift
 
 
