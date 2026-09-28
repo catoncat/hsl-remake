@@ -6,7 +6,7 @@
 
 - 原版 bigmap.dat 是 45 点／44 线的定长记录，TRACK.TXT 44 条折线首末顶点与点坐标 44/44 相等，唯一不一致是点 16 命運的神殿无线；TOWNDEF.TXT 为 62 条货表与 191 条城镇事件、923 条 te 指令、0 个未知 token；剧本的大地图流转有一组可数据验证的惯例（resource-derived）。
 - 重制 `tools/hsltools/data/world_map.py` 与 `big_map_flow.py` 把这些成员解成 `content/imported/hsl/global/world_map/` 与 `big_map_flow.json`，`WorldMapRules.arrival`／`CampaignProgress.next_destination` 按流转表实现；字段的运行时语义以 [original_world_town](original_world_town.md) 的原指令读法为准（resource-derived 输入）。
-- 差异：点 16 的进入方式、TOWNDEF handler 与状态栏排版等未由本包证明（provisional）。
+- 差异：TOWNDEF handler 与状态栏排版等未由本包证明（provisional）。
 
 ## 证据
 
@@ -55,7 +55,7 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 
 - 44 条线的 from/to 都是有效点；每个点列出的 track id 都存在且确实以该点为端点；每条线都至少被一个端点列出。
 - TRACK.TXT 44 条折线（共 176 个顶点）的首顶点＝from 点 (x,y)、末顶点＝to 点 (x,y)，44/44 全部相等（`endpoints_match_points`）。
-- **唯一不一致**：点 16（命運的神殿，bmpmTown）的三个 track 槽全为 0，没有任何线连到它。TOWNDEF 里有 `teBMSetPointMode,town_命運神殿,gameBMShow`、`teBMClearPointFlag,town_命運神殿,bmpmHidden`、`teSetNextPlayLevelEvent,town_命運神殿,gameBigMapLevel` 等脚本引用；它如何在大地图上进入是未解事项，本包只记录“无线”。
+- **唯一不一致**：点 16（命運的神殿，bmpmTown）的三个 track 槽全为 0，没有任何线连到它。TOWNDEF 里有 `teBMSetPointMode,town_命運神殿,gameBMShow`、`teBMClearPointFlag,town_命運神殿,bmpmHidden`、`teSetNextPlayLevelEvent,town_命運神殿,gameBigMapLevel` 等脚本引用；进入方式是 薛維斯港 事件 51（港口船長二選一）依次执行这三条：清 Hidden、显出、回大地图站到点 16。
 - 城镇交叉核对：extras.h 12 个 `town_*` 全部指向存在且带 bmpmTown 的点；PAK 中 11 个 `TownBG` 成员（01、04、06、11、14、16、23、25、27、35、42）全部对应某个 `town_*`；`town_曼多力亞 = 9` 没有 `TownBG09`，`background` 写 null。另外点 20（王都 希里烏斯）与 45（克萊恩城）带 bmpmTown 但 extras.h 没有 `town_*` 符号，也没有 TownBG。
 
 ### resource-derived：大地图图形成员
@@ -96,7 +96,6 @@ SHA-256 逐成员写在两份 JSON 的 `sources` 里；工具在构建时核对 
 
 ## 边界
 
-- 点 16 命運的神殿没有 track，进入方式（脚本 `teSetBMWalkToPoint` 或直接进入）未读。
 - TOWNDEF 的 te 指令行为、商店定价与事件排程不由本包证明（见 [town_event_semantics](town_event_semantics.md)）；本包只复制 TOWNDEF.H 注释里的参数签名。
 - 遭遇关成三时引擎是否在三个里掷选、没有 `actSetNextPlayLevelEvent` 的战斗的默认回图行为未读（provisional）。
 - TownBG／BigMap 预览只证明共用解码器能解出这些 TLHS 成员并给出尺寸，不代表原版绘制顺序、缩放或 UI 叠加。

@@ -65,7 +65,7 @@
     "the party marker reuses Leonard's battle walk frames (actor 001) at half scale; the original big-map party sprite is not located",
     "the big-map music is located (static-derived, docs/evidence_packets/static_reverse/original_music.md §3.2): level 49 plays its table track 06 at init (0x427532, resources.map_music), a town that loads plays 05 (0x4564e1, resources.town_music) and back on the map 06 starts again from the beginning (0x427d31); a town that did not open (result 2) leaves the track alone, which the remake reads as its picture-card towns",
     "point / track field0 is the show phase (0 not shown / 1 revealing / 2 stable, static-derived) and a new game hides 17 points and 18 tracks by code; what starts a track's revealing phase is not located — the remake reveals the non-hidden tracks at the point the party stands on (provisional)",
-    "arrival follows the original handler's branches (0x427ab3: event 0 nothing; General unvisited → event, visited → encounter ratio then event + 0..2; Battle → event, + 0..2 once visited; Town only as the chosen destination); the encounter sample is read as 1..100 ≤ ratio and the level request's Visit write is assumed (both provisional)",
+    "arrival follows the original handler's branches (static-derived, 0x427ab3: event 0 nothing for every type, Town included (0x427aca); General unvisited → event, visited → encounter when 0x458c80(100)+1 ≤ ratio, then event + 0..2; Battle → event, + 0..2 once visited; Town only as the chosen destination); Visit is written right after the level request (0x427b54) or on town entry (0x427b88) and never when the dispatch does not hold (0x427d36 reveals the point's routes instead)",
     "m_trk sprites carry a baked red→white gradient; the original reveals a track by expanding a clip rectangle (mode 1, 0x4280d0) and its callbacks hold no colour interpolation — the remake runs the same square clip per tick",
     "the town screen follows the original composition (runtime-measured, docs/evidence_packets/runtime_observations/original_world_town/README.md: undimmed big map, TownBG at (158,148), WINDOW70 menu board at (60,60) with white entry rows, NPC lines on a top board and party lines on the bottom board — the top/bottom split generalised from 7 lines is provisional); the town name, gold/party strip and 離開城鎮 are remake extras placed outside it, and the shop panel is a remake composition (no original shop capture); message pacing (if_wait is 0 on every TOWNDEF message; the remake waits for a confirm each time) and teDelay units are unproven",
     "shop transactions are remake policy: goods cost their ITEM.TXT price and go to one chosen member's first empty slot, selling returns half the listed price rounded down, important items cannot be sold; the original buy/sell handler is not located",
@@ -122,44 +122,5 @@
     "completion_label": "完成度：",
     "evidence_tier": "static-derived",
     "note": "obj12 defProcBigMapStatusBar draws STATUS_BAR.SHP at camera + (0, 412) with RESOURCE 360 「完成度：」 plus the completion percent (shown non-hidden points over named points − 1, 0x427200) and the cumulative play time as h:mm:ss (0x42d090); the timer's tick source was not executed. The drawing is runtime-measured on the original big-map frame (docs/evidence_packets/runtime_observations/original_world_town/01-bigmap-status-bar.png): the shape is subtracted from the map beneath it (frame 04 fits dst - 1.04 x src, RMS 3.3) and the texts are colour-code @5 yellow / @1 white rows with their shadows at x 6 / 114 / right edge 634 on the y 427-444 glyph row"
-  },
-  "provisional_unlocks": [
-    {
-      "id": "amphibian_second_stage",
-      "evidence_tier": "provisional",
-      "when": {
-        "point_visited": 13
-      },
-      "town_actions": [
-        {
-          "name": "actDeleteTE",
-          "args": [
-            "town_兩棲族部落",
-            "145",
-            "2",
-            "148",
-            "149"
-          ]
-        },
-        {
-          "name": "actAddTE",
-          "args": [
-            "town_兩棲族部落",
-            "145",
-            "2",
-            "150",
-            "151"
-          ]
-        }
-      ],
-      "claim": "兩棲族部落 集會場 (145) second-stage talks 150 兩棲族老人二 / 151 人類學者二 (whose teSetNextPlayLevelEvent 13,13 is the only route into level 13 龍之息) appear once the party has stood at big-map point 13 龍之息 (火山); the first-stage 148 / 149 leave the menu.",
-      "basis": "No TOWNDEF te*TE, STORY or winfail act*TE token adds 150 / 151 (exhaustive corpus search, P-051); 145 carries a commented-out teAppearSecretMan variant and 151 a commented-out teBMSetPointEvent 13,13 route, and 150's line 1768 (the dragon has been enraged) follows a visit to the volcano in the dialogue. Visiting point 13 (Town-typed with event 0 after WINFAIL012, no town data) is the remake's chosen trigger. Negative evidence (2026-09-19 re-check): WINFAIL013's win section writes the exact inverse of 151's commented-out lines (point 13 -> event 0 / clear Battle / set Town), 151's own tail deletes itself from 145 and re-adds 147 / 148, and TOWNDEF 153 事件後第一次進入兩棲族部落 has no writer either — the shipped data carries the second stage's exit but no entry, so the trigger cannot be recovered from scripts alone.",
-      "replacement_evidence": "the original town menu builder / teCreateSubEventMenu handler or whichever engine path inserts 150 / 151 (source-research request P-051); when located, replace this entry with the real rule and delete it.",
-      "not_supported": [
-        "that the original uses the same trigger",
-        "that 148 / 149 disappear in the original",
-        "any effect outside town 14's 145 sub-menu"
-      ]
-    }
-  ]
+  }
 }

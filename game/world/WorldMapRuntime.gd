@@ -18,7 +18,7 @@ extends Node2D
 ##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
 ##     (reveal order and dropped clicks: walker 0x427420)
-##   rules: provisional (encounter die and provisional town-tree unlocks; the glide uses the battle step 32)
+##   rules: provisional (the glide uses the battle step 32)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01)
@@ -85,8 +85,6 @@ var track_nodes: Dictionary = {}
 var travel_records: Array[Dictionary] = []
 var arrival_records: Array[Dictionary] = []
 var input_records: Array[Dictionary] = []
-## Provisional town-tree bridges applied on arrival (config.provisional_unlocks).
-var unlock_records: Array[Dictionary] = []
 var hovered_point := 0
 var _layer: Node2D
 var _card: Control
@@ -273,24 +271,49 @@ func _arrive(point_id: int, track_id: int) -> void:
 		return
 	_route_target = 0
 	_route_tracks = []
-	# The original reads the point's flags before it marks Visit (0x427ab3 then the
-	# Visit write), so the arrival branch is taken on the pre-visit state.
-	var before: Dictionary = state
-	state = Rules.visit(state, world_map, point_id)
-	_apply_provisional_unlocks(point_id)
+	# The destination dispatch 0x427ab3 reads the point's flags before any Visit write. Only
+	# a dispatch that holds writes Visit — right after the level request (0x427b54) or on
+	# town entry (0x427b88) — and reveals nothing yet. After a level request the big map is
+	# loaded again and the walker's sub-state 0 reveals the current point's routes when no
+	# show request is pending (0x427572..0x427582, 0x4c1bb0 == 0; here the map's start()).
+	# After town entry the walker goes to sub-state 15 (0x427ce9 opens the town with
+	# 0x456150) and 16 (0x427d22) waits for it; once the town returns, unless the result is 2
+	# it first plays the map music (0x42c340), then 0x427d36 reveals [walker+0x90], the town
+	# point, and goes to sub-state 1 (here _on_town_closed, which reveals the current point
+	# unconditionally). A dispatch that does not hold (event 0, no
+	# encounter) jumps to 0x427d36: 0x426e40 reveals the point's routes and the party stands
+	# there without Visit.
+	var outcome := Rules.arrival(state, world_map, point_id, true, encounter_sample)
+	arrival_records.append(outcome)
+	match str(outcome.get("kind", "")):
+		"town":
+			_stand_at(point_id, true)
+			_open_town(int(outcome.get("town_id", 0)))
+			if town_runtime == null:
+				_reveal_from(point_id)
+		"level":
+			_stand_at(point_id, true)
+			if not _enter_level_event(point_id, int(outcome.get("level", 0))):
+				_reveal_from(point_id)
+		_:
+			_stand_at(point_id, false)
+			_reveal_from(point_id)
+
+
+func _stand_at(point_id: int, mark_visit: bool) -> void:
+	state = Rules.visit(state, world_map, point_id) if mark_visit else Rules.stand_at(state, point_id)
 	if marker != null:
 		marker.position = Rules.point_position(world_map, point_id)
-	_reveal_from(point_id)
 	_persist_state()
 	_refresh_labels()
-	_resolve_arrival(point_id, before)
 
 
 ## A point on the way to the chosen destination (0x427a86..0x427bd2): the walker runs the
 ## arrival dispatch 0x427ab3 on it as not-selected — a Town is passed, event 0 is passed, a
 ## General / Battle point with an event requests its level exactly as at a destination
 ## (the same encounter-ratio and 0..2 draws, in route order) and the walk ends there; the
-## party then stands at that point (0x42cc10 keeps it in 0x4c1ba8, 0x42f7a4 restores it).
+## party then stands at that point (0x42cc10 keeps it in 0x4c1ba8, 0x42f7a4 restores it)
+## with Visit written after the request (0x427b54), its routes revealed only back on the map.
 ## A passed point is neither marked Visit nor has its tracks revealed, and the current
 ## point 0x4c1ba4 is written only when the walk ends. False when the point is the last one.
 func _pass_point(point_id: int, track_id: int) -> bool:
@@ -300,15 +323,10 @@ func _pass_point(point_id: int, track_id: int) -> bool:
 	if str(outcome.get("kind", "")) == "level":
 		_route_target = 0
 		_route_tracks = []
-		state = Rules.visit(state, world_map, point_id)
-		_apply_provisional_unlocks(point_id)
-		if marker != null:
-			marker.position = Rules.point_position(world_map, point_id)
-		_reveal_from(point_id)
-		_persist_state()
-		_refresh_labels()
 		arrival_records.append(outcome)
-		_enter_level_event(point_id, int(outcome.get("level", 0)))
+		_stand_at(point_id, true)
+		if not _enter_level_event(point_id, int(outcome.get("level", 0))):
+			_reveal_from(point_id)
 		return true
 	if index < 0 or index + 1 >= _route_tracks.size():
 		return false
@@ -317,41 +335,10 @@ func _pass_point(point_id: int, track_id: int) -> bool:
 	return true
 
 
-## Town-tree rewrites the scripts never issue but the story needs (world scene
-## config.provisional_unlocks, each with evidence_tier provisional, its basis and the
-## replacement evidence): applied once when the party first stands at the entry's point,
-## through the same actAddTE / actDeleteTE path as script world writes.
-func _apply_provisional_unlocks(point_id: int) -> void:
-	var unlocks: Array = config.get("provisional_unlocks", [])
-	if unlocks.is_empty():
-		return
-	var progress: Node = runtime.get_node_or_null("CampaignProgress")
-	if progress == null:
-		return
-	var applied: Array = (state.get("provisional_unlocks_applied", []) as Array).duplicate()
-	for entry_value in unlocks:
-		if typeof(entry_value) != TYPE_DICTIONARY:
-			continue
-		var entry: Dictionary = entry_value
-		var id := str(entry.get("id", ""))
-		var when: Dictionary = entry.get("when", {})
-		if id == "" or applied.has(id) or int(when.get("point_visited", -1)) != point_id:
-			continue
-		var flow: Dictionary = WorldScriptActions.apply_actions(state, entry.get("town_actions", []), progress.campaign)
-		if flow.has("error"):
-			push_warning("Provisional unlock %s left unapplied: %s" % [id, str(flow["error"])])
-			unlock_records.append({"kind": "provisional_unlock", "id": id, "point_id": point_id, "status": "error", "error": str(flow["error"])})
-			continue
-		state = flow["world"]
-		applied.append(id)
-		state["provisional_unlocks_applied"] = applied
-		unlock_records.append({"kind": "provisional_unlock", "id": id, "point_id": point_id, "status": "applied", "applied": int(flow.get("applied", 0))})
-
-
 ## Re-entering the current point (select_point) resolves on the present state: a
 ## visited General point then rolls its encounter like the original.
-func _resolve_arrival(point_id: int, basis: Dictionary = {}) -> Dictionary:
-	var outcome := Rules.arrival(basis if not basis.is_empty() else state, world_map, point_id, true, encounter_sample)
+func _resolve_arrival(point_id: int) -> Dictionary:
+	var outcome := Rules.arrival(state, world_map, point_id, true, encounter_sample)
 	arrival_records.append(outcome)
 	match str(outcome.get("kind", "")):
 		"town":
@@ -1019,7 +1006,6 @@ func summary() -> Dictionary:
 		"music_records": music_records.duplicate(true),
 		"travel_records": travel_records.duplicate(true),
 		"arrival_records": arrival_records.duplicate(true),
-		"unlock_records": unlock_records.duplicate(true),
 		"input_records": input_records.duplicate(true),
 		"state": state.duplicate(true),
 		"claim_limit": "remake_notes:world_map_claim_limit",

@@ -476,7 +476,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TownRuntime](../game/world/TownRuntime.gd) | layout | — | job-up and narration lines on the bottom board |
 | [TownRuntime](../game/world/TownRuntime.gd) | timing | — | the stone menus have no clock of their own |
 | [WorldMapRules](../game/world/WorldMapRules.gd) | rules | — | track reveal trigger — what sets mode 1 is not located |
-| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | rules | — | encounter die and provisional town-tree unlocks; the glide uses the battle step 32 |
+| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | rules | — | the glide uses the battle step 32 |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | rules | — | token semantics are TownEventRules' readings — docs/evidence_packets/static_reverse/town_event_semantics.md |
 
 ### 计数（标签 × 维度）

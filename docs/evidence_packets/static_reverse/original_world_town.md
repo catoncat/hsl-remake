@@ -11,7 +11,8 @@
 - 大地图不画点名：帧 01／03／04 当前点、可达点、悬停点旁都没有地名；重制点名只在 OPT-GUIDE=提示 画（runtime-measured）。
 - 城镇 `tePlaySound`（opcode 28）分支 `0x455710` 调 `0x42c180(wav, 0)` 即播不等；重制导入三个 WAV 并当场播放（static-derived；resource-derived）。
 - 点自己所在的点：点对象过程 `0x427df0` 不比当前点，只写点击目标；行走者子状态 3 找不到自身路线后，仅 event 非 0 且带 Town 位时进城，Battle／General（及 event 0）清掉点击、不分派到达，不会重打该点关卡；重制 `select_point` 当前点分支照此（static-derived）。
-- 差异：旅行速度、揭示触发外的时钟、遭遇抽样比较方向、镜头滑行步长为重制值；差异清单 `town-event-timing`、`town-layout-extras`（provisional）。
+- 到点分派：event 0 一律不分派，Town 也一样（`0x427aca`）；已访问 General 的遇敌是 `0x458c80(100)+1 ≤ ratio`；Visit 只在分派成立时写——请求关卡后立即（`0x427b54`）或进城时（`0x427b88`）；目的点分派不成立时 `0x427d36` 揭示该点路线、不写 Visit；分派成立时当场不揭示：请求关卡的，换场后大地图重新载入，由行走者子状态 0 在请求 `0x4c1bb0` 为 0 时揭示当前点 `0x4c1ba4`；进城的，行走者子状态 15（`0x427ce9`，调 `0x456150` 开城）进 16（`0x427d22`）等城镇返回，结果不为 2 时先 `0x42c340` 放音乐，再由 `0x427d36` 揭示 `[行走者+0x90]`（城镇点）、进子状态 1，不看 `0x4c1bb0`（static-derived）。
+- 差异：旅行速度、揭示触发外的时钟、镜头滑行步长为重制值；差异清单 `town-event-timing`、`town-layout-extras`（provisional）。
 
 ## 证据
 
@@ -71,17 +72,21 @@ runtime-measured（2026-09-27，Wine 原版 v1.06，读回憶錄第 3 行 兩棲
 
 ### static-derived：到达
 
-`0x427ab3` 先读目的点当前 `+8` 再读类型；General 判断在 Battle 之前；关卡请求走 `0x42cc10`（探针止于 `0x427b3e`）。
+`0x427ab3` 先读目的点当前 `+8`（event，`0x426ce0`）再读类型（`0x426e00`）；General 判断在 Battle 之前；关卡请求走 `0x42cc10`（探针止于 `0x427b3e`）。
 
 | 当前记录 | 原分支 |
 | --- | --- |
-| event=0 | 不请求关卡／城镇 |
+| event=0 | 不请求关卡／城镇，Town 也一样：`0x427aca` `test ebx,ebx; je 0x427b95` 在任何类型位测试之前 |
 | General，未 Visit | 用当前 event 请求关卡 |
-| General，已 Visit | 先过 encounter ratio 与 1..100 抽样，再在 event 上加 0..2 |
-| Battle | 未访问用 event；已访问加 0..2，不走 encounter 检查 |
-| Town | 仅当它是选定目的点时写城镇 id、进 phase15、标 Visit；路过不进城 |
+| General，已 Visit | ratio＝`0x4545a0(点)`，r＝`0x458c80(100)+1`，`cmp ratio, r; jl 0x427b95`：r ≤ ratio 才遇敌；再加 `0x458c80(3)`，夹到 2 |
+| Battle | 未访问用 event；已访问加 `0x458c80(3)`，不走 encounter 检查 |
+| Town | 仅当点＝点击目标 `0x4c1ab8`（选定目的点）：`0x427b78` 把 event 写城镇 id `0x4c59c4`、进子状态 15、`0x427b88` `0x426d60(点, Visit)`；路过不进城 |
+| 请求关卡之后 | `0x427b3e` 调 `0x42cc10(点, level)`，`0x427b54` 立即 `0x426d60(点, 0x10000000)`（`or [点*40+0x4c4a24], Visit`） |
+| 分派结果 | 成立时 `0x427bad` `jne 0x427d59` 跳过揭示；不成立且点是目的点时 `0x427bbf` 跳 `0x427d36`：`0x426e40(行走者, 点)` 揭示该点路线、进子状态 1，不写 Visit。`0x427d36` 另一个入口是离城路径：子状态 16 `0x427d22` 等 `[esi+0xac]` 非 0，为 2（`0x456150` 建城镇对象失败时写的值）经 `0x427d2f` 直接跳来，否则先 `0x427d31` 调 `0x42c340` 再落进来 |
 
-这张表对路线上的每个点都执行（见上节「每到一个点」）。
+这张表对路线上的每个点都执行（见上节「每到一个点」）。`0x426e40` 的调用点只有 `0x427582`、`0x42763b`、`0x4276b8`、`0x4276df`、`0x427d48`，都不在成立分支里。分派成立后的揭示按两种成立分开：请求关卡的，换场后大地图重新载入，由行走者子状态 0 揭示（`0x427572..0x427582`：请求 `0x4c1bb0` 为 0 时 `0x426e40(行走者, [0x4c1ba4])`）；进城的，`0x427b7f` 写子状态 15，跳转表 `0x427da0` 第 15 项 `0x427ce9` 把子状态加到 16、清 `[esi+0xac]`、调 `0x456150([0x4c59c4], &[esi+0xac], [esi+4], [esi+8])` 开城，第 16 项 `0x427d22` 在 `[esi+0xac]` 为 0 时等，城镇返回后经 `0x427d31`／`0x427d2f` 落到 `0x427d36`：`0x426e40(行走者, [esi+0x90])` 揭示城镇点路线、进子状态 1，这条路不经子状态 0、不看 `0x4c1bb0`。重制 `_on_town_closed` 不带条件地揭示当前点，对应 `0x427d36`。
+
+城镇号取 event 值：脚本对 Town 点写的 event 只有 0 或该点自身的号（WINFAIL900／STORY009 把点 9 设为 event 0 Town，TOWNDEF 30 设 900 General；WINFAIL026／028／043 把点 26／28／43 设 event 0 Town；点 13、37、45 设 event 0 Visit 后加 Town 位），所以城镇号总等于点号（resource-derived）。
 
 点自己所在的点（不经 `0x427ab3`）：点对象过程 `0x427df0` 在 `0x427ffc` 见按下位 `0x40000`、点击目标 `0x4c1ab8` 为 −1 且 `0x4c1b00` 无 `0x40000000` 时放音并把本点号写 `0x4c1ab8`，不比较当前点 `0x4c1ba4`。行走者 `0x427420` 子状态 3 先调 `0x427070(当前,目标)`，同点在 `0x42708a` 直接返回 0（无路线），随后：
 
@@ -101,6 +106,7 @@ negative-evidence：raw load→`+8` setter/getter→到达路径中没有第二�
 | `m_pnt` | 45 个点都以 `M_PNT001.SHP` 起始、`obj_Shape_Number=3`；`POINT.H` Battle0／General1／Town2 经 `0x427f0d` 加到基础 frame | 动态 bmpm 类型与 OBS 视觉类型分开 |
 | 点命中区 | 相对 `[-16,-16,16,16]` | 按下／放开与重叠优先级未执行 |
 | `m_trk` 落点 | 顶左 = level049 EVEF 锚点 − SHP draw origin；第 1 条锚点 (910,527)、origin (51,60)、53×61 | — |
+| 点 mode1 | 点过程 `0x427df0` 的 mode 1 在 `0x427fca` 直接 `0x426b70(点, 2)` 并落到 case 2，没有显现动画 | — |
 | 路线 mode1 | 子状态 0 置裁剪位 `[obj] \|= 0x1000000`、半边 `+0x94 = 0`，计数 `+0x90 = max(\|w−ox\|, \|ox\|, \|h−oy\|, \|oy\|)`（`0x4606a9` 取 shape 宽高与 origin）；子状态 1 每 tick 半边 +1、计数 −1，到 0 设 mode2、清裁剪位、两端点 `0x426b70(point,1)`、`[0x4c1abc]+0x88` 减一；每 tick 尾 `0x428280` 把裁剪写成锚点 ± 半边的正方形；第 1 条 60 tick | negative-evidence：回调里没有红→白插值 |
 | 揭示写者 | `0x426e40(point, 行走者)` 把点记录 `+0x18..+0x24` 的路线交给 `0x426bb0(track,1)`，每成功一条行走者 `+0x88` 加一；只由行走者过程 `0x427420` 调用 | r2 阅读，未执行 |
 | 行走者子状态 | 0：等 `0x460989()` 为 0，请求 `0x4c1bb0` 为 0 时揭示当前点 `0x4c1ba4` 的路线；1：计数 >0 就等；请求为点号时每 tick 经 `0x43bf30` 滚镜头到该点、到位揭示、请求改 −1；为 −1 时滚回当前点、揭示、改 0；为 0 时进 2 并把点击目标 `0x4c1ab8` 置 −1；2：写当前点，若有 `0x4c1bb4` 设为目标，进 3 起行走 | 揭示期间的点击作废 |
@@ -137,7 +143,7 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - 脚本行走：`WorldMapRuntime._consume_pending_walk` 先按 from（≠49）设当前点，再经 `select_point(to, "script_walk")` 走 `route_between` 多跳；无路线记 `unreachable` 原地不动。
 - 点名：`WorldMapRuntime._refresh_labels` 在 OPT-GUIDE=原版 时不画。
 - 音效：`tools/hsltools/assets/town_assets.py` 从 PAK 解出 `tePlaySound` 点名的 WAV（`content/imported/hsl/global/world_map/town_sounds.json`、`town_sounds/*.wav`）；`TownRuntime._play_sound` 当场播放。
-- 重制值：旅行速度 96 px/s、揭示动画节奏、遭遇抽样比较方向、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认（provisional）。
+- 重制值：旅行速度 96 px/s、揭示动画节奏、镜头滑行步长 32、Leonard 贴图作队伍标记、TOWNDEF if_wait=0 仍逐句等确认（provisional）。
 
 ## 复现
 
@@ -145,11 +151,10 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 
 ## 边界
 
-- 探针止于地图新游戏设置、到达请求、失败对白创建、速度设置与状态栏绘制准备等具名边界；关卡加载、UI 与请求后的 Visit 写入未执行。
+- 探针止于地图新游戏设置、到达请求、失败对白创建、速度设置与状态栏绘制准备等具名边界；关卡加载与 UI 未执行；请求后的 Visit 写入（`0x427b54`）与分派结果分支为静态读，未执行。
 - 完整菜单对象创建、焦点／返回导航与后期所有树变更未执行；UI 应从当前城镇／根的现有子项生成，不从 TOWNDEF 注释归类。
 - 大地图上 `0x43bf30` 是否走剧情步长 16 未读；if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。
 - 脚本行走 from 改当前点时，原版回大地图后行走者子状态 0 揭示的是 from 的路线；重制城镇关闭时先揭示原当前点再处理脚本行走（两者只在 from≠所在城镇时不同，TOWNDEF 里两例 from 都等于所在港口）。
 - `tePlaySound` 的音效开关 `0x4c1af4` 与 `0x477c20` 对应重制的音效音量设置，未逐位核对。
-- 目的点分派不成立时原版不标 Visit，重制 `_arrive` 仍总标 Visit；Town 且 event 0 的目的点原版不进城，重制 `arrival` 仍进城（均未改）。
-- 点 16 命運的神殿在 bigmap.dat 没有路线相连，进入方式未读。
+- 点 16 命運的神殿在 bigmap.dat 没有路线相连：由 薛維斯港 事件 51（港口船長二選一）清点 16 的 Hidden、`teBMSetPointMode gameBMShow`，再 `teSetNextPlayLevelEvent(town_命運神殿, gameBigMapLevel)` 回大地图站到点 16（resource-derived）。
 - 夹具的金额、指针、角色与阶段是显式输入，不是实际存档快照。

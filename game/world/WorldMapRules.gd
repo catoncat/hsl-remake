@@ -457,20 +457,22 @@ static func town(world_map: Dictionary, town_id: int) -> Dictionary:
 
 ## What arriving at a point means for the campaign — the original arrival
 ## handler's branches (static-derived, 0x427ab3..0x427b95, SR-069):
-##   event 0                → nothing;
+##   event 0                → nothing, whatever the type — a Town included (0x427aca
+##                            tests the event before any type bit);
 ##   General, not visited   → opens level <event>;
-##   General, visited       → encounter ratio first (1..100 sample ≤ ratio), then
-##                            level <event> + 0..2;
+##   General, visited       → encounter ratio first (0x458c80(100)+1 ≤ ratio, the
+##                            `cmp ratio, r; jl` skip), then level <event> + 0..2;
 ##   Battle                 → level <event>, + 0..2 once visited (no ratio check);
 ##   Town                   → enters the town only as the chosen destination.
 ## Visited is the bmpmVisit bit. `sample` (1..100) and `offset` (0..2) fix the
-## dice for tests; -1 rolls. Arrival itself does not mark Visit — visit() does.
+## dice for tests; -1 rolls. Arrival itself does not mark Visit — visit() does, and
+## only for a dispatch that holds (level / town).
 static func arrival(state: Dictionary, world_map: Dictionary, point_id: int, selected: bool = true, sample: int = -1, offset: int = -1) -> Dictionary:
 	var event := point_event(state, world_map, point_id)
 	var flags := point_flags(state, world_map, point_id)
 	var visited := flags.has(VISIT)
 	var kind := point_type(state, world_map, point_id)
-	if event == 0 and kind != TOWN:
+	if event == 0:
 		return {"kind": "stop", "point_id": point_id, "reason": "no_event"}
 	match kind:
 		GENERAL:
@@ -497,16 +499,22 @@ static func arrival(state: Dictionary, world_map: Dictionary, point_id: int, sel
 			return {"kind": "stop", "point_id": point_id, "reason": "untyped"}
 
 
-## The party stands at a point: current_point, the visited history and the
-## point's bmpmVisit bit (the original marks Visit on town entry and after the
-## level request).
-static func visit(state: Dictionary, world_map: Dictionary, point_id: int) -> Dictionary:
+## The party stands at a point: current_point and the stood-at history, no Visit bit
+## (a destination whose dispatch does not hold, 0x427d36).
+static func stand_at(state: Dictionary, point_id: int) -> Dictionary:
 	var next := state.duplicate(true)
 	next["current_point"] = point_id
 	var visited: Array = next.get("visited_points", [])
 	if not visited.has(point_id):
 		visited.append(point_id)
 	next["visited_points"] = visited
+	return next
+
+
+## The party stands at a point and its bmpmVisit bit is set (the original marks Visit
+## on town entry, 0x427b88, and right after the level request, 0x427b54).
+static func visit(state: Dictionary, world_map: Dictionary, point_id: int) -> Dictionary:
+	var next := stand_at(state, point_id)
 	var overrides: Dictionary = next.get("point_flags", {})
 	var flags: Array = (overrides.get(str(point_id), point(world_map, point_id).get("flag_names", [])) as Array).duplicate()
 	if not flags.has(VISIT):
