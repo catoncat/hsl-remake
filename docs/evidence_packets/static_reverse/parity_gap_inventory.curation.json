@@ -210,13 +210,13 @@
     },
     {
       "id": "cast-overlay-rules",
-      "difference": "已照原版：技能页点行后先滑出、删窗后 1 tick 才进选目标（其间不画覆盖层与光标、不收点击），移动范围只在选格态画，I_rect01..08 是选格光标 8 帧（角点红色脉动）；剩技能页取消后回行动环未等滑出、光标帧计时玩家与 AI 各自计数",
-      "original": "技能页窗状态 0x4289e0／0x438160（行点击 0x42946d、关窗 0x428ee4）、单位 0x77→0x78→0x79、0x411200 调用点、光标 0x430230 帧表已读（static-derived）",
+      "difference": "已照原版：技能页点行后先滑出、删窗后 1 tick 才进选目标，右键取消同样先滑出、删窗后 3 tick（0x78→0x64→状态 0 建环）才回行动环（其间不画覆盖层与光标、不收点击），移动范围只在选格态画，I_rect01..08 是选格光标 8 帧（角点红色脉动）；剩光标帧计时玩家与 AI 各自计数",
+      "original": "技能页窗状态 0x4289e0／0x438160（行点击 0x42946d、关窗 0x428ee4）、单位 0x77→0x78→0x79（取消 0x78→0x64 0x444881→0 0x443a0d 建环）、0x411200 调用点、光标 0x430230 帧表已读（static-derived）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
-      "remake": "BattleSceneMenus 的 cast_pick_hold 等关窗快照滑完＋1 tick；BattleSelectionCursor／BattleAttackCue 播 I_rect01..08",
+      "remake": "BattleSceneMenus 的 cast_pick_hold 等关窗快照滑完，点行＋1 tick 进选目标、取消＋3 tick 回行动环；BattleSelectionCursor／BattleAttackCue 播 I_rect01..08",
       "remake_code": [
         "game/battle/scene/BattleSceneOverlays.gd",
         "game/battle/scene/BattleSceneMenus.gd",
@@ -229,8 +229,8 @@
     },
     {
       "id": "loot-panel",
-      "difference": "獲得物品窗五钮已照原版（lane LOOTHAND）；持物点背包行照 0x438c84（未满包放首空格、满包才互换）与待领列表的 0x446060 滚动条（WIN06BAR，五行）已照原版（lane HANDWIN2）；拿起的背包物即按删格收拢显示（0x436e80），点列表入池（0x44f2d0）、点背包行或 Esc／右键放收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；三钮不因手持画暗、每次按下出 398 音、不适用时不起作用已照 0x43a640 绘制段（lane UIBITS）；剩：按下瞬间的图标画暗未做；滚动条键掩码未读、不接键；胜利结束时带不走的奖励池先重开领取窗（分队关卡提示原因）",
-      "original": "原版獲得物品窗 0x43a640 三钮 Data6=6/7/8、0x414c00 列表点击与 0x446060(760,151–153,5 行) 滚动条、0x438c84／0x436ed0 背包格持物分支、0x44ef70／0x44f100 入仓库表、0x42aad0 離開剩余入表已读，0x43a640 绘制段不读手持（static-derived）；五钮按下未经原版实拍",
+      "difference": "獲得物品窗五钮已照原版（lane LOOTHAND）；持物点背包行照 0x438c84（未满包放首空格、满包才互换）与待领列表的 0x446060 滚动条（WIN06BAR，五行）已照原版（lane HANDWIN2）；拿起的背包物即按删格收拢显示（0x436e80），点列表入池（0x44f2d0）、点背包行或 Esc／右键放收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；三钮不因手持画暗、每次按下出 398 音、不适用时不起作用已照 0x43a640 绘制段（lane UIBITS）；三钮按下到松开画暗、按住移开作废（0x43a993／0x43ab52）与待领列表 ↑↓／PgUp PgDn（0x445f00 与技能页同一组键，翻页 5 行）已照原版（lane UIBITS2）；剩：延后领取（胜利时池非空则带进下一战，带不走就重开领取窗、分队关卡提示原因）是重制的防御路径，界面上没有调用者（離開 总把池中剩余入仓库）",
+      "original": "原版獲得物品窗 0x43a640 三钮 Data6=6/7/8、0x414c00 列表点击与 0x446060(760,151–153,5 行) 滚动条、0x438c84／0x436ed0 背包格持物分支、0x44ef70／0x44f100 入仓库表、0x42aad0 離開剩余入表已读，0x43a640 绘制段不读手持、按下时序（case 2→3）、0x445f00／0x445860 键分支已读（static-derived）；五钮按下未经原版实拍",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_getitem_window.md",
         "docs/evidence_packets/static_reverse/battle_reward_inputs.md"

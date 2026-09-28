@@ -329,7 +329,7 @@ func _process(delta: float) -> void:
 		$BattlePresentation.preview_target(play_loop, hovered_unit_id, hovered_grid_cell)
 		overlays.refresh_skill_footprint(hovered_grid_cell)
 		$BattlePresentation.show_selection(play_loop, hovered_grid_cell, grid_cell_center_to_logical_position(hovered_grid_cell), grid_cell_size())
-	if interaction_state == Interaction.ACTION_MENU:
+	if interaction_state == Interaction.ACTION_MENU and not menus.cast_pick_hold:
 		menus.set_action_menu_visible(selected_unit_id != "")
 	else:
 		menus.update_action_menu_anchor()

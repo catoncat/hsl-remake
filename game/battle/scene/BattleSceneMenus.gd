@@ -216,10 +216,12 @@ func _choose_magic(skill_id: String) -> void:
 	tick_cast_pick_hold(0.0)
 
 
-## True from a skill-row click until target selection begins (see _choose_magic): no overlay,
-## cursor or identity strip, and pointer clicks are ignored.
+## True from a skill-row click until target selection begins (see _choose_magic), or from a
+## right-click cancel until the action ring comes back (see cancel_magic): no overlay, cursor or
+## identity strip, and pointer clicks are ignored.
 var cast_pick_hold := false
 var _cast_pick_clock := 0.0
+var _cast_pick_cancelled := false
 
 
 func tick_cast_pick_hold(delta: float) -> void:
@@ -228,11 +230,24 @@ func tick_cast_pick_hold(delta: float) -> void:
 	if runtime.magic_panel != null and BattlePanelMotion.attach(runtime.magic_panel).closing():
 		return
 	_cast_pick_clock += delta
-	# Headless (no close snapshot) the page is gone at once and the 0x78 tick is not waited for.
-	if _cast_pick_clock < OriginalTick.TICK_SECONDS and DisplayServer.get_name() != "headless":
+	# Headless (no close snapshot) the page is gone at once and the unit ticks are not waited for.
+	var unit_ticks := CAST_CANCEL_RING_TICKS if _cast_pick_cancelled else 1
+	if _cast_pick_clock < unit_ticks * OriginalTick.TICK_SECONDS and DisplayServer.get_name() != "headless":
 		return
 	cast_pick_hold = false
+	if _cast_pick_cancelled:
+		_cast_pick_cancelled = false
+		rebuild_action_menu_buttons()
+		set_action_menu_visible(true)
+		return
 	runtime.overlays.refresh_attack_overlay()
+
+
+## A right click slides the page out like a row click (state 2, 0x45e80d step 20); the close
+## state (0x428ee4) deletes it and advances the unit, 0x78 (0x444e58) finds no pick (−1) and
+## sets 0x64, 0x64 (0x444881) returns the camera to the unit (0x43bf30) and sets 0, and state 0
+## (0x443a0d) builds the ring (0x43ea30 at 0x443a3c): three unit ticks after the page is gone.
+const CAST_CANCEL_RING_TICKS := 3
 
 
 func cancel_magic() -> void:
@@ -240,8 +255,11 @@ func cancel_magic() -> void:
 	runtime.apply_loop(BattlePlayLoop.cancel_interaction(runtime.play_loop), "cancel_magic")
 	runtime.mirror_interaction()
 	runtime.magic_panel.hide()
-	rebuild_action_menu_buttons()
-	set_action_menu_visible(true)
+	set_action_menu_visible(false)
+	cast_pick_hold = true
+	_cast_pick_cancelled = true
+	_cast_pick_clock = 0.0
+	tick_cast_pick_hold(0.0)
 
 
 ## States in which the growth window may open: the player's quiet action menu and the

@@ -97,9 +97,10 @@ func resize(rows: int) -> void:
 	scroll_to(pos, false)
 
 
-## With the bar up, a new press of ↑／↓ moves one row and PgUp／PgDn nine (0x445f00 key masks
-## 4／8／0x800／0x1000). The wheel does nothing: the original window procedure has no
-## WM_MOUSEWHEEL case.
+## With the bar up, a new press of ↑／↓ moves one row and PgUp／PgDn one page, the thumb's
+## +0x94 = visible rows (nine on the skill list, five on the 獲得物品 list); 0x445f00 key masks
+## 4／8／0x800／0x1000, the same for both. The wheel does nothing: the original window procedure
+## has no WM_MOUSEWHEEL case.
 func handle_key(event: InputEvent) -> bool:
 	if not (visible and event is InputEventKey and event.pressed and not event.echo): return false
 	var step: int = {KEY_UP: -1, KEY_DOWN: 1, KEY_PAGEUP: -visible_rows, KEY_PAGEDOWN: visible_rows}.get(event.keycode, 0)

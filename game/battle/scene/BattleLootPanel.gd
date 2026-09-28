@@ -5,7 +5,7 @@ extends Control
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 ##     (five buttons; held + bag row 0x438c84 first-empty or full swap; lift 0x436e80, pool 0x44f2d0)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
-##     (0x446060 WIN06BAR scroll bar, five rows; 0x43a640 buttons never dim for the hand)
+##     (0x446060 WIN06BAR scroll bar, five rows, keys 0x445f00; 0x43a640 buttons dim only while pressed)
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16
 ##     (frame_003／frame_006 held-item and green hover)
 ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
@@ -37,6 +37,9 @@ const DESCRIPTION_AT := Vector2(252, 390)
 const GOLD_AT := Vector2(20, 442)
 const BUTTON_CENTRES := {"drop": 285, "storage": 346, "exit": 468}
 const BUTTON_Y := 429
+## 0x43a640 case 2 → 3 marks a pressed button +0 0x10000000, +0x28 = 0x1082 (0x43a993), the dark
+## BattleStatusPanel draws on its current-page button (same flag and colour, 0x43a8fb).
+const PRESSED_DARK := Color(0.45, 0.45, 0.45)
 var rows: Array[Button] = []
 var scroll_bar: BattleSkillScrollBar
 var slots: Array[Button] = []
@@ -263,23 +266,20 @@ func _build_buttons() -> void:
 	storage_button = _icon_button("storage", "BCMD15_1", "倉庫")
 	finish_button = _icon_button("exit", "BCMD14_1", "離開")
 	var epoch := _epoch
-	# 0x43a640 case 2: every click sounds 398 ACCEPT01 whatever the hand; the press (case 3) then
-	# does nothing where it does not apply. 丟棄 drops only the held item (never an important
-	# one); 倉庫 stores the held item; 離開 needs an empty hand and stores whatever is left in the
-	# pool (0x42aad0).
+	# 0x43a640 case 2: every press sounds 398 ACCEPT01 whatever the hand (_icon_button); the
+	# release (case 3) then does nothing where it does not apply. 丟棄 drops only the held item
+	# (never an important one); 倉庫 stores the held item; 離開 needs an empty hand and stores
+	# whatever is left in the pool (0x42aad0).
 	drop_button.pressed.connect(func():
-		if not visible or epoch != _epoch: return
-		cue_requested.emit("confirm")
+		if not visible or epoch != _epoch or drop_button.get_meta("left", false): return
 		if not holding() or bool(_catalog[str(_hand["code"])]["important"]): return
 		discard_requested.emit(_hand_request()))
 	storage_button.pressed.connect(func():
-		if not visible or epoch != _epoch: return
-		cue_requested.emit("confirm")
+		if not visible or epoch != _epoch or storage_button.get_meta("left", false): return
 		if not holding(): return
 		store_requested.emit(_hand_request()))
 	finish_button.pressed.connect(func():
-		if not visible or epoch != _epoch: return
-		cue_requested.emit("confirm")
+		if not visible or epoch != _epoch or finish_button.get_meta("left", false): return
 		if holding(): return
 		var request := _request({"store_rest": true})
 		if accepts(request): finish_requested.emit(request))
@@ -301,6 +301,19 @@ func _icon_button(key: String, resource: String, caption: String) -> TextureButt
 	button_labels[key] = label
 	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
 	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
+	# 0x43a640: the press tick darkens the icon and sounds 398 (case 2 → 3); it stays dark while the
+	# left button is held over it (0x4c6398 bit 0 and the hover bit); the first tick the button is up
+	# runs the press and clears the dark (0x43ab52). Leaving it while held clears the dark and
+	# drops the press, even if the pointer comes back before the release.
+	button.button_down.connect(func():
+		button.set_meta("left", false)
+		button.self_modulate = PRESSED_DARK
+		cue_requested.emit("confirm"))
+	button.button_up.connect(func(): button.self_modulate = Color.WHITE)
+	button.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseMotion and button.is_pressed() and not Rect2(Vector2.ZERO, button.size).has_point(event.position):
+			button.set_meta("left", true)
+			button.self_modulate = Color.WHITE)
 	return button
 
 
@@ -361,6 +374,13 @@ func cancel() -> void:
 	hand_icon.hide()
 	_rebuild_rows()
 	cue_requested.emit("put_down")
+
+
+## ↑↓／PgUp PgDn go to the list's scroll bar: 0x445f00 gets the skill page's masks
+## (0x8000000／0x10000000／0x40000／0x80000 → PgUp／PgDn／↑／↓), and 0x445860 pages by the
+## thumb's +0x94, the five visible rows (0x445d70(bar, count, pos, 5, 0)). No wheel.
+func handle_key(event: InputEvent) -> bool:
+	return visible and scroll_bar != null and scroll_bar.handle_key(event)
 
 
 ## Original right click / Esc while holding (0x438160 root case 1): drop into the first free bag slot.

@@ -106,9 +106,13 @@ func handle_input(event: InputEvent) -> void:
 
 ## Esc and right click both raise the battle scroll (defProcBattleBOSS 0x4082c4 reads
 ## [0x4c6390] & 0x100000 or [0x4c6398] & 0x20000) on a fresh ring; otherwise they cancel.
-## BattleSystemMenu.open holds the original gate.
+## BattleSystemMenu.open holds the original gate. The skill page's slide-out and the unit ticks
+## after it (cast_pick_hold) raise nothing: a ring press sets [0x4c1b00] |= 0x2000000 (0x43e91a)
+## and only the next ring build clears it (0x443a52), so 0x4082ab's test of 0x7e000000 skips both keys.
 func _raise_system_scroll() -> bool:
 	if runtime.system_menu == null or runtime.has_actor_motion() or runtime.held_command_id != "":
+		return false
+	if runtime.menus.cast_pick_hold:
 		return false
 	if not bool(runtime.system_menu.open().get("ok", false)):
 		return false
@@ -140,6 +144,9 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 	update_pointer_hit(logical_position)
 	if runtime.ai_playback_active or runtime.interaction_state == Interaction.AI_RESOLVING or runtime.has_actor_motion():
 		return
+	# The skill page's slide-out after a row click or a cancel (unit 0x77) reads no clicks.
+	if runtime.menus.cast_pick_hold:
+		return
 	if runtime.hovered_command_id != "":
 		runtime.held_command_id = runtime.hovered_command_id
 		return
@@ -147,8 +154,6 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 		runtime.move_selected_actor_to_grid(runtime.hovered_grid_cell)
 		return
 	if runtime.interaction_state == Interaction.ATTACK_SELECT:
-		if runtime.menus.cast_pick_hold:
-			return
 		if runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "magic":
 			runtime.attack_selected_coord(runtime.hovered_grid_cell)
 		elif runtime.hovered_unit_id != "":

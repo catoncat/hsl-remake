@@ -161,6 +161,7 @@ func handle_input(event: InputEvent) -> bool:
 	if panel.visible:
 		# Original root window: right click / Esc with a held item drops it into the first free bag slot;
 		# with an empty hand the get-item window does not close this way (離開 does).
+		if panel.handle_key(event): return true
 		if (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE) or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT): panel.quick_place()
 		return true # Mouse still reaches actual GUI controls after Runtime returns.
 	return false
