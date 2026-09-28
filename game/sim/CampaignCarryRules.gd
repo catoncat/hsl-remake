@@ -50,7 +50,7 @@ const UNFIELDED := "unfielded_units"
 const VITAL_KEYS := ["hp", "mp", "stamina"]
 const DEFAULT_POLICY := {
 	"roles": ["player_controlled"],
-	"unit_keys": ["level", "exp", "pending_stat_points", "equipment", "weapon_code", "inventory", "kill_count", "permanent_gains", "learned_skills", "job_up_flags", "job_up_target_actor_id", "job_up_history"],
+	"unit_keys": ["level", "exp", "pending_stat_points", "equipment", "weapon_code", "inventory", "kill_count", "revive_count", "permanent_gains", "learned_skills", "job_up_flags", "job_up_target_actor_id", "job_up_history"],
 	"attribute_keys": ["str", "dex", "mind", "con"],
 	# party_storage: the 倉庫 tables (PartyStorageRules); battles never read it, it only rides along.
 	"loop_keys": ["gold", "party_storage"],

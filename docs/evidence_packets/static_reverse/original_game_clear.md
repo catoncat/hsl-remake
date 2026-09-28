@@ -1,6 +1,6 @@
 # 通关谢幕（GameClear，关卡 998）的段落、时长、滚动、跳过与字串来源
 
-> evidence: static-derived; resource-derived: obj-998.obs、PROCESS.DEF、RESOURCE.TXT、SHP 头 · status: live · functions: 0x4123b0, 0x42b130, 0x42b2b0, 0x42b6b0, 0x42ba10, 0x42bc20, 0x42c250, 0x42cc10, 0x42dc90, 0x43e2a0, 0x43e2d0, 0x4477b0, 0x453ac0, 0x45eb9d, 0x45ebdc, 0x4606a9, 0x46098f, 0x4609c0, 0x460a06  · tools: hsltools/assets/title_assets.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: obj-998.obs、PROCESS.DEF、RESOURCE.TXT、SHP 头 · status: live · functions: 0x4123b0, 0x42b130, 0x42b2b0, 0x42b6b0, 0x42ba10, 0x42bc20, 0x42c250, 0x42cc10, 0x42dc90, 0x43e2a0, 0x43e2d0, 0x43f046, 0x443330, 0x443563, 0x446bb0, 0x4477b0, 0x453ac0, 0x45eb9d, 0x45ebdc, 0x4606a9, 0x46098f, 0x4609c0, 0x460a06  · tools: hsltools/assets/title_assets.py · updated: 2026-09-28
 
 ## 结论
 
@@ -58,6 +58,9 @@
 | 6（前缀 6 空格） | 57 生命力（宽 14） | 48 殺敵總數（宽 16） | |
 | 7（前缀 6 空格） | 58 魔法力（宽 14） | 50 復活次數（宽 16） | |
 
+- 取值（`0x42b2ef` 起）：槽 n 的记录是 `*0x4c1bc8 + (n+1)·0x1fc`（活记录表，[存档格式](original_save_format.md) 第 4 段）；第 6 行殺敵總數取记录 `+0x94`（`0x42b518`），第 7 行復活次數取记录 `+0xa4`（`0x42b58c`）。
+- 復活次數的递增点：玩家对象过程 `0x443330` 收到死亡调用（调用字带 `0x8000000`、不带 `0x4000000`）时先查不死（`0x446bb0`：记录 `+0xa0` 位 4）；不死者清死亡位、记录 `+0xd8 = 1` 爬起，不计数；否则 `0x44347e` 进死亡序列，状态 0 等死亡对白结束、镜头 `0x43bf30` 滑到该单位后，`0x443563` 给记录 `+0xa4` 加一，再设淡出旗 `0x2c000000`。攻击、法术、反击致死都经这条死亡调用。敌方过程有同样的一段（`0x43f046`），计的是敌方记录，谢幕不读。全 EXE 写记录 `+0xa4` 的只有这两处；复活道具／法术与剧情复活都不写它。模板表（PLAYERS.TXT 解析结果）66 行的 `+0xa4` 与 `+0x94` 全为 0。活记录整段进存档、跨关不重装（`0x407ec0` 不覆盖工作属性非零的记录），所以两项计数随记录跨关、随存档保存。
+
   未入队的槽（`0x42caa0` 返回 0）：`###` 后接 2568「此角色未加入隊伍」，按 42 字宽居中补空格。
 
 ### 过渡
@@ -67,16 +70,17 @@
 
 ## 重制接线
 
-`game/title/GameClearScreen.gd` 按上表以 16 ms tick（`OriginalTick`）推进：开场变亮 96 tick、OVER001／OVER002／WORKTEAM 的起点、0.5 px/tick 与路程、独白段压黑与 120 tick 后换 OverBG02、主角每位 1 px/tick 与 y≤100 放行、240 tick、制作群停住后才接受按键（OPT-PACE 快／極快 为重制改良：对白外确认键跳到下一段起点，原版值不跳）、回标题压黑 32 tick；主角段九个槽都走，形状取 `combat_animation` 的战斗形状第 0 帧，状态单用 RESOURCE 字串按上表拼行、FONT.24 画（值由交接方给出）。`tools/hsltools/assets/title_assets.py` 的 `GAME_CLEAR` 改记这些数字与出处。
+`game/title/GameClearScreen.gd` 按上表以 16 ms tick（`OriginalTick`）推进：开场变亮 96 tick、OVER001／OVER002／WORKTEAM 的起点、0.5 px/tick 与路程、独白段压黑与 120 tick 后换 OverBG02、主角每位 1 px/tick 与 y≤100 放行、240 tick、制作群停住后才接受按键（OPT-PACE 快／極快 为重制改良：对白外确认键跳到下一段起点，原版值不跳）、回标题压黑 32 tick；主角段九个槽都走，形状取 `combat_animation` 的战斗形状第 0 帧，状态单用 RESOURCE 字串按上表拼行、FONT.24 画（值由交接方给出）。復活次數是单位的 `revive_count`：`BattleLoopCombat` 在攻击与法术致死、非不死、玩家控制单位走 `set_unit_defeated` 时加一（`_count_revive`），`ActorInitializationRules` 初值 0，`CampaignCarryRules` 随 `kill_count` 一起跨关承接。`tools/hsltools/assets/title_assets.py` 的 `GAME_CLEAR` 改记这些数字与出处。
 
 ## 复现
 
-`r2 -q -e scr.color=0 -c 'pd 250 @ 0x42b6b0; pxw 80 @ 0x42b9c0; pd 150 @ 0x42ba10; pd 90 @ 0x42bc20; pd 330 @ 0x42b2b0; pd 30 @ 0x45eb9d; pxw 4 @ 0x4a38fc; pxw 4 @ 0x4a3cfc; pd 40 @ 0x460a06; pxw 12 @ 0x477d54' hsl01.exe`；obj-998.obs、PROCESS.DEF、RESOURCE.TXT 从 hsl.pak 读（`hsltools.data.world_map.PakReader`）。
+`r2 -q -e scr.color=0 -c 'pd 250 @ 0x42b6b0; pxw 80 @ 0x42b9c0; pd 150 @ 0x42ba10; pd 90 @ 0x42bc20; pd 330 @ 0x42b2b0; pd 30 @ 0x45eb9d; pd 60 @ 0x42b50d; pd 70 @ 0x443501; pd 12 @ 0x446bb0; pxw 4 @ 0x4a38fc; pxw 4 @ 0x4a3cfc; pd 40 @ 0x460a06; pxw 12 @ 0x477d54' hsl01.exe`；obj-998.obs、PROCESS.DEF、RESOURCE.TXT 从 hsl.pak 读（`hsltools.data.world_map.PakReader`）。
 
 ## 边界
 
 - 没有原版谢幕录像；tick 数与滚动均为静态读法，未与运行画面逐帧对照。
 - `0x4123b0` 第 6 参数 26 按行距读，未逐指令核完。
-- 转职后的战斗形状（`0x4c1b6c` 表）重制按单位当前角色 id 在 `combat_animation` 里找，找不到退回基础 P00N；复活次数重制没有记录，显示 0。
+- 转职后的战斗形状（`0x4c1b6c` 表）重制按单位当前角色 id 在 `combat_animation` 里找，找不到退回基础 P00N。
+- 重制只给玩家控制单位计復活次數；原版按对象过程分，AI 控制的友军若走玩家过程也会计数，这一分法未核。
 - 独白段对白板、肖像与 STORYOVER 延时单位沿用 [尾声独白](original_game_clear_epilogue.md) 的读法；对象 700 每级重装 6 tick 是按 `+0x94` 高低字的读法。
 - 开场前（STORY082 → 998 换场）与回标题后的画面由各自的换场路径负责，不在本包。

@@ -46,6 +46,7 @@ static func prepare(template: Dictionary, book: Dictionary, ai: Dictionary, prog
 	actor["pending_stat_points"] = 0
 	actor["kill_chain_word"] = 0
 	actor["kill_count"] = 0
+	actor["revive_count"] = 0
 	actor["permanent_gains"] = ProgressionRules.Permanent.empty()
 	actor["learned_skills"] = []
 	if actor["growth_profile"]["allocation"] == "fixed_template": actor["growth_profile"]["allocation"] = "automatic"

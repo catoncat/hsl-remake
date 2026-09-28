@@ -203,6 +203,7 @@ static func apply_strike(loop: Dictionary, attacker_id: String, defender_id: Str
 		# The native helper can touch a zero-HP record. Consume its accepted draws,
 		# then release the one actor and clear dead statuses through the normal seam.
 		BattlePlayLoop.set_unit_defeated(loop, defender_id, true)
+		_count_revive(loop, defender_id)
 	strike["defender_after"] = CoreCombatRules.receipt_vitals(BattlePlayLoop.unit_ref(loop, defender_id))
 	# Native extra scheduling precedes the status/ST tail and caller kill handling.
 	# A nonlethal first counter cannot clear the chain before the second counter.
@@ -242,6 +243,7 @@ static func resolve_skill(loop: Dictionary, attacker_id: String, defender_id: St
 				revived.append(str(proposal["id"]))
 			else:
 				BattlePlayLoop.set_unit_defeated(loop, proposal["id"], true)
+				_count_revive(loop, str(proposal["id"]))
 	BattleLoopAI.prune_ai_calls(loop)
 	var strike: Dictionary = result["receipt"]
 	if not revived.is_empty(): strike["undead_revived"] = revived
@@ -252,6 +254,16 @@ static func resolve_skill(loop: Dictionary, attacker_id: String, defender_id: St
 	BattleLoopRewards.commit_rewards(loop, strike)
 	loop["last_combat"] = strike
 	return strike
+
+
+## 復活次數 (record +0xa4, printed by the GameClear sheet 0x42b59b): the player process's death
+## branch (0x44347e, not undead) adds one once the camera reached the fallen unit (0x443563); the
+## enemy process's twin (0x43f046) counts enemy records nobody reads. Rides the record across
+## battles and saves (CampaignCarryRules unit_keys).
+static func _count_revive(loop: Dictionary, unit_id: String) -> void:
+	var unit := BattlePlayLoop.unit_ref(loop, unit_id)
+	if str(unit.get("battle_actor_role", "")) == "player_controlled":
+		unit["revive_count"] = int(unit.get("revive_count", 0)) + 1
 
 
 ## The undead marker (actSetPlayerUndead → live +0xa0 bit 4, read by 0x446bb0): a unit at

@@ -1005,7 +1005,7 @@ func _record_level_up_star(event: Dictionary) -> void:
 ## The nine GameClear party slots (defProcClearShowPlayer, original_game_clear.md): each party
 ## member of the finale's loop by its base actor id 001–009, with the 0x42b2b0 status-sheet values
 ## (the status page's live figures) and its job row for the combat shape; the screen shows
-## 此角色未加入隊伍 for a slot with no member. Revive counts are not tracked (0).
+## 此角色未加入隊伍 for a slot with no member; 復活次數 is the unit's revive_count (record +0xa4).
 func _game_clear_showcase() -> Array:
 	var members: Array = []
 	var actors: Dictionary = UISkin.data().get("actors", {})
@@ -1024,7 +1024,7 @@ func _game_clear_showcase() -> Array:
 			"mind": int(profile.get("mind", 0)), "con": int(profile.get("con", 0)), "attack": int(profile.get("live_attack_damage", 0)),
 			"defense": int(profile.get("live_defense", 0)), "magic": int(profile.get("live_magic_attack", 0)), "move": int(unit.get("move_point", 0)),
 			"speed": int(unit.get("live_speed", 0)), "level": int(unit.get("level", 1)), "max_hp": int(unit.get("max_hp", 0)),
-			"max_mp": int(unit.get("max_mp", 0)), "kills": int(unit.get("kill_count", 0)), "revives": 0}})
+			"max_mp": int(unit.get("max_mp", 0)), "kills": int(unit.get("kill_count", 0)), "revives": int(unit.get("revive_count", 0))}})
 	return members
 
 

@@ -129,7 +129,7 @@ RUNTIME_PROPERTIES: dict[str, dict[str, dict]] = {'$': {
     # game/sim/ActorInitializationRules.gd prepare() (+ progression data merge, AINavigationRules.initialize)
     'traversal': OBJECT, 'ai_call_target_id': STRING, 'ai_target_id': STRING, 'ai_home_coord': CELL,
     'ai_wait_remaining': INTEGER, 'ai_fixed_point_pending': BOOLEAN, 'hit_bonus_accum': INTEGER, 'level': INTEGER, 'exp': INTEGER, 'kill_exp': INTEGER,
-    'pending_stat_points': INTEGER, 'kill_chain_word': INTEGER, 'kill_count': INTEGER, 'permanent_gains': OBJECT,
+    'pending_stat_points': INTEGER, 'kill_chain_word': INTEGER, 'kill_count': INTEGER, 'revive_count': INTEGER, 'permanent_gains': OBJECT,
     'learned_skills': {'type': 'array'}, 'stamina': INTEGER, 'inventory': {'type': 'array', 'items': INTEGER},
     # game/sim/InitialRosterGrowthRules.gd / EntryGrowthRules
     'entry_growth': OBJECT, 'entry_readjust': OBJECT,

@@ -852,6 +852,9 @@
       },
       "additionalProperties": false
     },
+    "revive_count": {
+      "type": "integer"
+    },
     "script_creation": {
       "type": "object"
     },

@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 456,
+    "sources": 455,
     "sources_by_kind": {
-      "provenance": 197,
+      "provenance": 196,
       "sentence": 91,
       "scope": 70,
       "matrix": 85,
@@ -1613,22 +1613,22 @@
     },
     {
       "id": "game-clear-layout",
-      "difference": "通关谢幕的段落、tick 数、滚动速度、主角状态单与跳过已按原版做；剩复活次数重制未记录（显示 0）、STORYOVER 延时单位与按键结束停顿沿用读法、状态单行距 26 未逐指令核",
-      "original": "defProcClearBOSS／ShowWorkTeam／ShowPlayer 已静态读出；制作群是 WORKTEAM.SHP 整图，无运行时字串；谢幕画面无原版录像",
+      "difference": "通关谢幕的段落、tick 数、滚动速度、主角状态单（含復活次數）与跳过已按原版做；剩 STORYOVER 延时单位与按键结束停顿沿用读法、状态单行距 26 未逐指令核",
+      "original": "defProcClearBOSS／ShowWorkTeam／ShowPlayer 已静态读出；復活次數是记录 +0xa4，玩家过程死亡序列（非不死）0x443563 加一；制作群是 WORKTEAM.SHP 整图，无运行时字串；谢幕画面无原版录像",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_game_clear.md",
         "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
       ],
-      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机；途中跳段归 OPT-PACE：原版值不可跳，快／極快 确认键跳到下一段",
+      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机；途中跳段归 OPT-PACE：原版值不可跳，快／極快 确认键跳到下一段；復活次數由 BattleLoopCombat 在玩家控制单位致死时加一、随承接跨关",
       "remake_code": [
-        "game/title/GameClearScreen.gd"
+        "game/title/GameClearScreen.gd",
+        "game/sim/loop/BattleLoopCombat.gd"
       ],
       "original_status": "read_partial",
       "visibility": "rare",
       "effort": "S",
       "category": "标题与过场",
       "sources": [
-        "provenance:game/title/GameClearScreen.gd|strings|provisional|",
         "provenance:game/title/GameClearScreen.gd|timing|provisional|",
         "provenance:game/title/GameClearScreen.gd|timing|remake-invented|"
       ]

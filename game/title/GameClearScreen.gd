@@ -27,7 +27,6 @@ extends Node2D
 ##   layout: remake-invented content/generated/hsl/text/simplified_images.json
 ##     (workteam lettering redrawn with the original FONT.24 simplified glyphs)
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json (status-sheet RESOURCE labels)
-##   strings: provisional (revive count not tracked by the remake: shown as 0)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_game_clear.md
 ##   timing: provisional (STORYOVER actDelay unit and key-ended pauses, original_game_clear_epilogue.md)
 ##   timing: remake-invented (segment skip on confirm under OPT-PACE 快／極快; 原版 keeps no skip)
