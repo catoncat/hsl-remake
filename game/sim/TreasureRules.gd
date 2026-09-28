@@ -13,6 +13,12 @@ const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const Values = preload("res://game/sim/Values.gd")
 const WinfailConditions = preload("res://game/sim/WinfailConditions.gd")
+## Actor contact rectangle relative to its cell-centre origin ((c & ~31) + 16, 0x407d1a):
+## obj_Collide_X1/Y1/X2/Y2 of the OBS defProcEnemy template (+0x68..+0x74), the value every
+## actor template of the chest levels carries. An actor may carry its own `contact_rect`.
+const ACTOR_CONTACT_RECT := [-14, -58, 14, -5]
+## 0x415730 aligns the chest to its cell and writes +0x68/+0x6c = 0, +0x70/+0x74 = 32.
+const CHEST_CONTACT_EXTENT := 32
 
 
 static func initialize(data: Dictionary, level_no: int, catalog: Dictionary, size: Vector2i) -> Dictionary:
@@ -55,6 +61,24 @@ static func chest_at(loop: Dictionary, coord: Vector2i) -> Dictionary:
 	return {}
 
 
+## 0x4454f7: the action tail looks for chests only when the actor's origin cell carries
+## tile flag 0x80000 (set each tick by a live chest on its own cell, 0x4157d2 → 0x411a30),
+## then 0x46cf98／0x46cffc walk every registered rectangle overlapping the actor's
+## rectangle (inclusive bounds) and open each process-41 object among them.
+static func contacted(loop: Dictionary, actor: Dictionary, coord: Vector2i) -> Array:
+	var live: Array = loop["treasure_source"]["chests"].filter(func(chest): return not loop["treasures"]["opened_ids"].has(chest["id"]))
+	if not live.any(func(chest): return chest["coord"] == coord): return []
+	return live.filter(func(chest): return touches(actor, coord, chest["coord"]))
+
+
+static func touches(actor: Dictionary, coord: Vector2i, cell: Vector2i) -> bool:
+	var rect: Array = actor.get("contact_rect", ACTOR_CONTACT_RECT)
+	var origin := coord * 32 + Vector2i(16, 16)
+	var box := cell * 32
+	return origin.x + int(rect[0]) <= box.x + CHEST_CONTACT_EXTENT and origin.x + int(rect[2]) >= box.x \
+		and origin.y + int(rect[1]) <= box.y + CHEST_CONTACT_EXTENT and origin.y + int(rect[3]) >= box.y
+
+
 static func entries(chests: Array) -> Array:
 	var result: Array = []
 	for chest in chests:
@@ -69,7 +93,7 @@ static func prepare(loop: Dictionary, actor: Dictionary) -> Dictionary:
 	if error != "": return {"ok": false, "reason": error}
 	if not loop.has("treasure_source") or not Presence.living(actor) or not actor.get("player_commandable", false) or actor.get("source_object_kind", 3) != 3 or StatusEffectRules.paralyzed(actor): return {"ok": true}
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false) or awaiting_handoff(loop) or not loop.get("settlement", {}).get("closed", true): return {"ok": true}
-	var chests: Array = loop["treasure_source"]["chests"].filter(func(chest): return chest["coord"] == actor["coord"] and not loop["treasures"]["opened_ids"].has(chest["id"]))
+	var chests := contacted(loop, actor, actor["coord"])
 	if chests.is_empty(): return {"ok": true}
 	var state: Dictionary = loop["treasures"].duplicate(true)
 	var found := entries(chests)
@@ -107,7 +131,7 @@ static func state_error(loop: Dictionary) -> String:
 		if actor.is_empty() or record.get("source_actor_id") != actor.get("actor_id"): return "invalid_treasure_actor"
 		var boxes: Array = []
 		for id in record["chest_ids"]:
-			if not id is String or not source.has(id) or opened.has(id) or source[id]["coord"] != record["coord"]: return "duplicate_or_mismatched_treasure"
+			if not id is String or not source.has(id) or opened.has(id) or not touches(actor, record["coord"], source[id]["coord"]): return "duplicate_or_mismatched_treasure"
 			opened.append(id); boxes.append(source[id])
 		if record.get("items") != entries(boxes): return "inconsistent_treasure_contents"
 		previous_reward = int(record["reward_sequence"])

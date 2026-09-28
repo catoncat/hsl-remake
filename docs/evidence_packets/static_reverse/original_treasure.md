@@ -1,10 +1,11 @@
 # 宝箱：实例内容、接触、开启与待领取队列
 
-> evidence: static-derived; resource-derived: 各关 OBS 宝箱模板的 obj_Attribute、PROCESS.DEF objattrATTACKFLAG、resource.h sfxGetTreasure; runtime-measured: 整个原映像经 0x42da60 进 1／2／3／6／19／28 关的首回合箱表、0x4156d0 整段领取的抽取与映像改动、同进程再进同关后的箱表、35 关 77 只箱首回合可见性普查 · status: live · functions: 0x407510, 0x411b90, 0x4156d0, 0x415730, 0x42bd50, 0x42c640, 0x42da60, 0x42ebe0, 0x42ec10, 0x445526, 0x4477b0, 0x44f290, 0x44f2d0, 0x44f4e0, 0x458c10, 0x45dc5c, 0x45e224, 0x45e307, 0x45e3ed, 0x45f655, 0x46be17, 0x46cf98 · tools: hsltools/data/treasures.py, hsltools/probes/_treasure_reentry.py, hsltools/probes/treasure.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 各关 OBS 宝箱模板的 obj_Attribute、PROCESS.DEF objattrATTACKFLAG、resource.h sfxGetTreasure; runtime-measured: 整个原映像经 0x42da60 进 1／2／3／6／19／28 关的首回合箱表、0x4156d0 整段领取的抽取与映像改动、同进程再进同关后的箱表、35 关 77 只箱首回合可见性普查 · status: live · functions: 0x407510, 0x411a30, 0x411b90, 0x411c40, 0x4156d0, 0x415730, 0x42bd50, 0x42c640, 0x42da60, 0x42ebe0, 0x42ec10, 0x445526, 0x4477b0, 0x44f290, 0x44f2d0, 0x44f4e0, 0x458c10, 0x45dc5c, 0x45e224, 0x45e307, 0x45e3ed, 0x45f655, 0x46be17, 0x46ce4b, 0x46cf98, 0x46cffc · tools: hsltools/data/treasures.py, hsltools/probes/_treasure_reentry.py, hsltools/probes/treasure.py · updated: 2026-09-29
 
 ## 结论
 
 - 原版箱内八个 DWORD 取自 EVEF 实例 `+0x10`，非零值按序（重复保留）压入对象；玩家动作后缀接触后由 `0x4156d0` 把每件以数量 1 加入共享待领队列并置已开位，领取零随机抽取；AI 行动不开箱；已开位只在对象上，新关／再进关按 EVEF 重建，箱子复原；是否可见由对象模板 `objattrATTACKFLAG` 决定，隐藏箱接触时先放 `sfxGetTreasure`（static-derived；runtime-measured）。
+- 开箱接触：动作后缀只在演员原点格带 tile flag `0x80000`（活箱每 tick 在自身格置位）时找箱，再取与演员接触矩形重叠的全部箱；标准演员矩形只够到同列本格与上方两格，原版 78 只箱没有这种排布，等于站上箱格开箱（static-derived）。
 - 重制 `game/sim/TreasureRules.gd` 按同一规则给出一次性提案，PlayLoop 持有账本与既有待领池；`game/battle/scene/BattleTreasurePresentation.gd` 只表现已提交的发现，隐藏箱不画、发现时放同一声音（static-derived）。
 - 一致：六关首回合箱表、领取改动与 35 关 77 只箱的可见性（隐藏 54、可见 23）均与重制数据对上；可见箱原版档接触即删、不出字不放声；隐藏箱删除时的短淡出为重制表现（provisional）。
 
@@ -31,6 +32,19 @@
 | `0x4454f7` 动作后缀，经 `0x46cf98` | 7 个接触前段：tile flag `0x80000` 与 process41 独立检查；合成 16×16 矩形 x=8 接触、x=9 不接触 | 可见箱停领取入口，隐藏箱停声音入口 `0x4477b0`；无标志停 `0x44556f`，无／错对象停 `0x411b90` |
 
 进关与读档：`0x42da60` 先调 `0x42c640`（`0x42c6a4` 调 `0x44f4e0` 释放待领队列 `0x4c1d28`），在 `0x42dad8` 以 `0x45e224` 清空对象池（基址 `[0x4a19c0]`、个数 `[0x4a19c4]`、步长 `[0x4a19c8]`=0xb0，散列桶 `0x4a35ec`）。读档旗 `[0x4c1ae4]`=0 时 `0x42dae7` 以 `0x46be17(0, 0x42bd50)` 按 EVEF 重建；分配器 `0x45e307` 按模板 `0x4a2728[code]` 整块复制 0xb0 字节，新箱无旧已开位。旗 bit31（回憶錄）同样 EVEF 重建再 `0x42ec10(slot,1)`；其余非零值走 `0x42db43` 的 `0x42ebe0(1)`（戰場記錄）恢复存档对象。删除器 `0x45e3ed` 只还池；无全局开箱表，回憶錄块表（[original_save_format](original_save_format.md)）无关卡对象块。队列另在交接 `0x407510` 的 `0x40751c` 释放。`0x4156d0` 唯一调用点是玩家动作后缀 `0x44554c`。
+
+### 接触矩形与调度
+
+| 环节 | 读出的指令 | 含义 |
+| --- | --- | --- |
+| 门槛 | `0x4454ba` 以对象 `(+4, +8)` 调 `0x411c40`：`(x>>5, y>>5)` 查地块旗表 `[0x4c0928]`，`0x4454f7` 测 `0x80000` | 只看演员原点所在的一格 |
+| 置位 | 箱过程 `0x415730` 每次调度，未开（消息无 `0x08000000`）时 `0x4157d2` 调 `0x411a30(箱, 0x80000)` 并 `0x4157d8` 调 `0x46ce4b(箱)` 登记 | `0x411a30` 按 PLAYERS[`+0xa4`] `+0x2c` 选本格或 3×3；标志只由箱写（演员 `0x40ba20` 只给 `0x10000／0x20000／0x40000／0x800000`） |
+| 演员矩形 | `0x46cf98`／`0x46cffc`：`[x+[+0x68], x+[+0x70]] × [y+[+0x6c], y+[+0x74]]` | `+0x68..+0x74` 是模板 `obj_Collide_X1/Y1/X2/Y2`（[字段覆盖](original_field_coverage.md)），`0x45e307` 整块复制；原点在格中心 `(c & ~31) + 16`（`0x407d1a`） |
+| 箱矩形 | `0x415730`：`+0x68 = +0x6c = 0`、`+0x70 = +0x74 = 0x20`；`0x46ce4b` 登记 `[x+X1, x+X2] × [y+Y1, y+Y2]` | 格起点到 +32，比较含端点（`jg`／`jl`） |
+| 遍历 | `0x46cf98` 取第一个重叠节点，`0x46d05a` 取对象，`+0x64 == 41` 才进 `0x445526`；`0x44555f` 经 `0x46cffc` 取下一个直到空 | 一次动作后缀开全部重叠箱 |
+| 收尾 | `0x445567` 调 `0x411b90(演员, 0x80000)` | 清原点格（大体型 3×3）标志；活箱下次调度再置位 |
+
+OBS 演员模板（`defProcEnemy`）：全部 OBJ 文件 606 个为 `(-14,-58,14,-5)`，1、2 关全部如此；其余是各关 94–99 号特定模板，如 12／26 关 97 号 `(-56,-61,52,44)`、18 关 98 号 `(-36,-54,36,7)`、51／52 关 94–99 号各不相同。标准矩形在格中心原点下 x 覆盖 `+2..+30`、y 覆盖 `-42..+11`：只与同列本格、上方一格、上方两格的箱重叠。原版 LEVEL／OBJ 普查 78 只箱无同列上下两格内的箱对，因此标准体型开箱等于站上箱格；`(-56,-61,52,44)` 可再够到左右两列、上两行下一行（28 关 (13,6)／(11,4) 这类对角排布会被同时碰到）。查询只发生在玩家动作后缀；`0x4301db`／`0x4304ac` 另有两处 `0x46cf98` 调用，不涉开箱。
 
 ### 隐藏宝物
 
@@ -64,7 +78,7 @@
 ## 重制接线
 
 - `tools/hsltools/data/treasures.py`：源记录、地图物件位置与物品目录 → `content/generated/hsl/treasures/battles.json`（含 `hidden`）。
-- `game/sim/TreasureRules.gd`：行动尾部一次性提案，入既有待领池；隐藏与可见箱同一领取规则。provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md`。
+- `game/sim/TreasureRules.gd`：`contacted` 照上表门槛与矩形重叠取箱（单位可带 `contact_rect`，默认标准模板矩形）；行动尾部一次性提案，入既有待领池；隐藏与可见箱同一领取规则。provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md`。
 - `game/battle/scene/BattleTreasurePresentation.gd`：只显示已提交发现；隐藏箱不画、无悬停提示，发现时放 `sfxGetTreasure`；可见箱原版档接触即删、无说明字与声音（`0x445526 → 0x4156d0`）；隐藏箱删除以 0.45 s 淡出表示（provisional）。「發現寶藏」说明字、悬停提示、确认音与全部画出只在重製選項 `OPT-TREASURE=全部畫出` 下出现（[OPTIONS](../../OPTIONS.md)）。
 
 ## 复现
@@ -79,7 +93,8 @@
 
 ## 边界
 
-- 接触矩形测试用合成 16×16 角色，不推广到所有演员形状。
+- 原生接触测试用合成 16×16 角色；真实演员矩形取自 OBS 模板静态读，非标准模板（各关 94–99 号）未带进重制单位数据，有箱的 1、2 关不涉及。
+- 箱对象 `+0xa4` 指向的 PLAYERS 行 `+0x2c` 未实测，按箱只置本格处理（与 `0x415730` 32 格矩形一致）。
 - 待领队列容量按 32 槽测试，未测内存扩容。
 - 28 关记录 21 的 `0x02000000` 位含义未追。
 - 隐藏箱删除时的淡出时长为重制表现。

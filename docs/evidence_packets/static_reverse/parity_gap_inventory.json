@@ -2004,12 +2004,12 @@
     },
     {
       "id": "treasure-rules",
-      "difference": "原版接触检查按对象接触矩形找箱（非 32 格演员的接触形状、全局接触调度未恢复），重制按单位所在格取箱；隐藏宝物（不画箱、踩上先放 sfxGetTreasure 再领，HIDDENCHEST 2026-09-26）、重开重置、领取零随机、无跨关开箱位已与原版一致（TREASURE 2026-09-26 整镜像实测）",
-      "original": "0x4454f7 玩家动作后缀经 0x46cf98 按 tile flag 0x80000 与接触矩形取 process 41 对象（合成 16×16 接触矩形 x=8 接触、x=9 不接触），非 32 格演员形状与全局调度未读；隐藏：模板 obj_Attribute 无 objattrATTACKFLAG → 0x415730 形状字 0xffff，0x445526 见 0xffff 先 0x4477b0(0xa05)＝sfxGetTreasure 再 0x4156d0；35 关 77 只实测隐藏 54、可见 23",
+      "difference": "开箱接触已照原版（所在格有活箱才找，再按演员接触矩形与箱矩形重叠取全部箱，TREASURECONTACT 2026-09-29）；剩非标准演员模板的接触矩形未从 OBS 带进单位数据（有箱的 1、2 关全是标准模板，行为无差）；隐藏宝物（不画箱、踩上先放 sfxGetTreasure 再领，HIDDENCHEST 2026-09-26）、重开重置、领取零随机、无跨关开箱位已与原版一致（TREASURE 2026-09-26 整镜像实测）",
+      "original": "0x4454f7 玩家动作后缀先查原点格 tile flag 0x80000（活箱每 tick 经 0x4157d2 → 0x411a30 在自身格置位），再经 0x46cf98／0x46cffc 遍历与演员矩形（格中心＋OBS obj_Collide，标准 (-14,-58,14,-5)）重叠的登记矩形，过程码 41 的逐个 0x4156d0；箱矩形 0x415730 为格起点 +0..+32 含端点；查完 0x411b90 清原点格（大体型 3×3）标志；隐藏：模板 obj_Attribute 无 objattrATTACKFLAG → 0x415730 形状字 0xffff，0x445526 见 0xffff 先 0x4477b0(0xa05)＝sfxGetTreasure 再 0x4156d0；35 关 77 只实测隐藏 54、可见 23",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_treasure.md"
       ],
-      "remake": "TreasureRules 按单位所在格取箱、本场实例、新场按原内容重建、零随机；BattleTreasurePresentation 按 hidden 不画隐藏箱、不给悬停提示、发现时放 get_treasure（读点 reveal_all_chests，默认 false）；OPT-TREASURE=全部畫出 时 reveal_all_chests=true 恢复画闭箱（OPTIONS-S1 2026-09-26）",
+      "remake": "TreasureRules.contacted 按所在格活箱门槛与接触矩形取箱（contact_rect 可覆盖，默认标准模板）、本场实例、新场按原内容重建、零随机；BattleTreasurePresentation 按 hidden 不画隐藏箱、不给悬停提示、发现时放 get_treasure（读点 reveal_all_chests，默认 false）；OPT-TREASURE=全部畫出 时 reveal_all_chests=true 恢复画闭箱（OPTIONS-S1 2026-09-26）",
       "remake_code": [
         "game/sim/TreasureRules.gd",
         "game/battle/scene/BattleTreasurePresentation.gd:chest_drawn"
