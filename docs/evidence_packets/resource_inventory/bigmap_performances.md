@@ -89,7 +89,7 @@ TOWNDEF 共 191 条事件，180 条带 teShapeMessage 或 tePlayerMessage，合�
 | C6 | 船行 | TOWNDEF 138（薛維斯港船长选一） | 队伍走 11→12 巴瀚納海峽；布置 152 | 已有 |
 | C7 | 船行 | TOWNDEF 183（戈黎塔尼港船员选一） | 揭示后走 25→26 | 已有 |
 | C8 | **行走者换人** | WINFAIL032 胜利、STORY071 | `actSetBMWalkerPlayerID SID_琥`：大地图小人改成琥（雷歐納德离队段落） | **缺失**：`TownEventRules.RECORDED_ONLY_TOKENS` 只记录，`WorldMapRuntime._spawn_marker` 固定画 001 |
-| C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示时长为重制值（见 [world_map_scene](../static_reverse/original_world_town.md)） |
+| C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示按 `0x4280d0` 每 tick 裁剪半径 +1，照原版（见 [world_map_scene](../static_reverse/original_world_town.md)） |
 
 
 ## 重制接线

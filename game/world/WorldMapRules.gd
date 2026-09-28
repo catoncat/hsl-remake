@@ -18,7 +18,9 @@ extends RefCounted
 ## Tracks enter mode 1 (the reveal animation) through 0x426e40(walker, point), called
 ## from walker 0x427420 sub-state 0 (the current point on map entry) and sub-state 1
 ## (show-track requests) and from 0x427d36 (call site 0x427d48: a destination whose
-## dispatch does not hold, and the way back from a town) (static-derived).
+## dispatch does not hold, and the way back from a town) (static-derived). The script
+## setters teBMSetTrackMode (0x4554dc → 0x426bf0) and actBMSetTrackMode (0x4511b8 →
+## 0x426bb0) can write a mode too, but the shipped scripts never write 1 (resource-derived).
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
@@ -467,9 +469,13 @@ static func town(world_map: Dictionary, town_id: int) -> Dictionary:
 ##   Battle                 → level <event>, + 0..2 once visited (no ratio check);
 ##   Town                   → enters the town only as the chosen destination, with or
 ##                            without town data (0x427b5e..0x427b90 tests no town
-##                            table: Visit at 0x427b88, sub-state 15 opens it); a town
-##                            that fails to open returns 2 (0x456150 at 0x4561bf) and
-##                            0x427d2f goes straight to the 0x427d36 reveal.
+##                            table: Visit at 0x427b88, sub-state 15 opens it); a point
+##                            with no town data (20, 45) runs the town process 0x4561d0,
+##                            whose 0x4545e0(town, 0) at 0x4564bc finds root slot 0 empty,
+##                            so 0x4564d6 writes result 2 and 0x427d2f goes straight to
+##                            the 0x427d36 reveal (0x4561bf is the other result-2 path,
+##                            0x45e307 failing to create the object). The remake shows a
+##                            「城鎮內容重製中」 card for such a point instead (remake addition).
 ## Visited is the bmpmVisit bit. `sample` (1..100) and `offset` (0..2) fix the
 ## dice for tests; -1 rolls. Arrival itself does not mark Visit — visit() does, and
 ## only for a dispatch that holds (level / town).
@@ -498,8 +504,10 @@ static func arrival(state: Dictionary, world_map: Dictionary, point_id: int, sel
 		TOWN:
 			if not selected:
 				return {"kind": "stop", "point_id": point_id, "reason": "passing_town"}
-			# Town ids are point ids; a point with no town data still enters (王都 希里烏斯 20,
-			# 克萊恩城 45) and the runtime's no-data fallback reveals it at once.
+			# The original takes the point's event as the town id (0x427b78 → 0x4c59c4);
+			# every Town point that carries an event in the shipped scripts has event ==
+			# point id, so the remake uses the point id. A point with no town data still
+			# enters (王都 希里烏斯 20, 克萊恩城 45); the runtime shows its card, then reveals.
 			return {"kind": "town", "town_id": point_id, "point_id": point_id}
 		_:
 			return {"kind": "stop", "point_id": point_id, "reason": "untyped"}

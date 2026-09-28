@@ -1,6 +1,6 @@
 # 原 AI：持有目标、等待、守备固定点、追击走法与攻击站位
 
-> evidence: static-derived; runtime-measured: 原版抽签回放; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x40f8b0, 0x40fa80, 0x40fb20, 0x410a50, 0x411080, 0x4111a0, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43f413, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/ai_navigation.py, hsltools/probes/ai_replay.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原版抽签回放; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x40f8b0, 0x40fa80, 0x40fb20, 0x410a50, 0x411080, 0x4111a0, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43f413, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/ai_navigation.py, hsltools/probes/ai_replay.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-29
 
 ## 结论
 
@@ -67,12 +67,12 @@ L051 r1 : AI_REPLAY_CHECK_PASS levels=1 runs=32 rows=352 agree=352 random=0 rule
 L051+L052 开场 (--align): AI_REPLAY_CHECK_PASS levels=2 runs=64 rows=896 agree=894 random=0 rule=0 caliber=2 unreached=0
 ```
 
-口径 2 行是第 52 场 ally024_2（s9／s13）：落点一致，原版目标 021_8、重制 021_7。不喂抽签的 32 种子落点分布（两边各自随机流）：
+口径 2 行是玩家第 2 场 · 惡夢的終曲（LEVEL052）的 ally024_2（s9／s13）：落点一致，原版目标 021_8、重制 021_7。不喂抽签的 32 种子落点分布（两边各自随机流）：
 
 | 单位 | 原版 | 重制 |
 | --- | --- | --- |
-| 第 1 场 · 棄卒（LEVEL051）r1 023_2 | [14,14]×20 [15,15]×6 [16,16]×4 [13,15]×2 | [14,14]×14 [16,16]×8 [15,15]×7 [17,17]×2 [13,15]×1 |
-| 第 2 场 · 惡夢的終曲（LEVEL052）ally024_2 | [14,35]×12 [13,36]×9 [12,37]×6 [15,36]×2 [11,38]×2 [17,38]×1 | [13,36]×15 [12,37]×5 [17,38]×4 [11,38]×4 [10,39]×2 [14,35]×2 |
+| 玩家第 1 场 · 棄卒（LEVEL051）r1 023_2 | [14,14]×20 [15,15]×6 [16,16]×4 [13,15]×2 | [14,14]×14 [16,16]×8 [15,15]×7 [17,17]×2 [13,15]×1 |
+| 玩家第 2 场 · 惡夢的終曲（LEVEL052）ally024_2 | [14,35]×12 [13,36]×9 [12,37]×6 [15,36]×2 [11,38]×2 [17,38]×1 | [13,36]×15 [12,37]×5 [17,38]×4 [11,38]×4 [10,39]×2 [14,35]×2 |
 
 分布差来自持有目标比例（023_2 原版 026_1:021_1＝17:15，重制 10:22）与两边随机流不同；同一抽签下落点逐行一致，本包的精化链不是分歧来源。原生洪泛移植前后这 64 局重制输出逐字节相同。
 

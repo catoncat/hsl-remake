@@ -204,5 +204,5 @@ func summary() -> Dictionary:
 		"message": str(shown["message"]),
 		"last_result": last_result.duplicate(true),
 		"storage": StorageRules.entries(storage),
-		"claim_limit": "Original mode 0 window layout, buttons, hand and storage list (static-derived; runtime-measured 2026-09-27); 使用 runs 0x409e40(…, 0, 1): HP／MP／stamina／cures and the permanent items, one item spent on a non-zero return.",
+		"claim_limit": "Original mode 0 window layout, buttons, hand and storage list (static-derived; runtime-measured 2026-09-27); 使用 runs 0x409e40(…, 0, 1) and spends one item on a non-zero return, but outside battle only the permanent gains last: the carry keeps no HP／MP／status and overwrites stamina (the carried value under keep_stamina, else 0), so HP／MP／stamina restores and cures are gone once the window closes (original 0x4075e0 not checked).",
 	}

@@ -67,10 +67,9 @@ var travel_pixels_per_second := WALKER_PIXELS_PER_TICK * OriginalTick.TICKS_PER_
 var encounter_sample: int = -1
 ## The original point initialiser writes a [-16,-16,16,16] hit box (0x427f0d).
 var point_hit_half_extent := 16.0
-## Wall-clock length of the original's tick-driven track clip expansion (0x4280d0, its
-## per-tick step unread — provisional); endpoints appear at once when it ends, as the
-## original point phase-1 callback settles to 2 immediately (0x427df0).
-## Wall seconds per track-reveal tick (0x4280d0 runs once per logic tick); 0 reveals at once.
+## Wall seconds per track-reveal tick: 0x4280d0 runs once per logic tick and grows the square
+## clip round the anchor by 1 px; endpoints appear at once when it ends, as the original point
+## phase-1 callback settles to 2 immediately (0x427df0). 0 reveals at once.
 var track_reveal_tick_seconds := OriginalTick.TICK_SECONDS
 ## The party marker reuses a battle actor's walk frames at their battle size: the original
 ## walker in frame 01 (original_world_town, runtime-measured) stands about 42 px tall, the
@@ -761,8 +760,8 @@ func _add_point_node(point_id: int) -> void:
 	point_nodes[point_id] = node
 
 
-## Remake reveal trigger (provisional): the non-hidden, not yet shown tracks at a
-## point start their clip animation; their far endpoints appear when it ends.
+## Reveal trigger, called where the original calls 0x426e40: the non-hidden, not yet
+## shown tracks at a point start their clip animation; their far endpoints appear when it ends.
 func _reveal_from(point_id: int) -> void:
 	var result := Rules.reveal_tracks_at(state, world_map, point_id)
 	state = result["state"]

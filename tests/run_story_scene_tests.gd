@@ -258,8 +258,9 @@ func _run_level_2_preview_skip_battle() -> void:
 
 func _run_level_5_preview() -> void:
 	## STORY005 (呼嘯平原): the camera locks on 雷歐納德, the four-member party walks to
-	## the middle of the plain and wing warriors / 038 close in from every edge; the
-	## battle is not remade, so the preview ends on its card and returns to the map.
+	## the middle of the plain and wing warriors / 038 close in from every edge. The
+	## campaign now plays this battle (campaign[5]); this direct preview path still ends
+	## on its card and returns to the map.
 	CampaignProgress.reset_campaign()
 	var world_map: Dictionary = WorldMapRules.load_world_map("res://content/imported/hsl/global/world_map/world_map.json")
 	var world: Dictionary = WorldMapRules.visit(_seeded_world(world_map, 4), world_map, 5)

@@ -244,6 +244,11 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	# the stations are the best cells away from it, even when the own cell covers more. With
 	# none ([0x4c1a00] 0: 0x40d0d2 → 0x40d31b, no threat scan) 0x40d340 casts from its own
 	# cell (0x40d439), 0x40df70 likewise (0x40e059).
+	# Not matched: 0x40cf34 tests the word before 0x411b90 lifts the caster (0x40cf47), so a
+	# 3×3 actor skips every anchor cell its body covers; the filter below drops only `origin`.
+	# 0x410a50 failing on the picked station (0x40d2ed → 0x40d31b) keeps the initial 0 return
+	# (0x40ccbf) and the actor casts in place; an empty stand table (0x40d2b7 → 0x40d2fb)
+	# returns the target's coords. The remake has neither fallback.
 	var moving := moves_to_cast(plan)
 	if moving and plan.get("origin") is Vector2i:
 		var away := intents.filter(func(intent): return intent["destination"] != plan["origin"] and int(intent["score"]) > 0)
@@ -330,6 +335,9 @@ static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dicti
 	return {"intent": {}, "decision": decision}
 
 
+## Same two gaps as `choose`: only `origin` leaves the station cells (0x40cf34 skips every
+## body cell of a 3×3 caster), and no fallback for a failed 0x410a50 (0x40d2ed) or an empty
+## stand table (0x40d2fb).
 static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng: Variant) -> Dictionary:
 	var origin: Vector2i = plan["origin"]
 	var by_cell := {}
