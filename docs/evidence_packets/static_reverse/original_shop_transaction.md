@@ -1,15 +1,15 @@
 # 原作商店交易：买入进手持、放下、卖出价与拒收
 
-> evidence: static-derived; runtime-measured: 原版 v1.06 席達鎮 道具店买入后手持与放下两帧（2026-09-28）; negative-evidence · status: live · functions: 0x40e690, 0x414ab0, 0x414c00, 0x42923b, 0x436e30, 0x436e80, 0x436f30, 0x437020 · tools: hsl_original_control.py, hsltools/assets/town_assets.py, hsltools/checks/function_catalog.py, hsltools/checks/static_index.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原版 v1.06 席達鎮 道具店买入后手持与放下两帧（2026-09-28）; negative-evidence · status: live · functions: 0x40e690, 0x414ab0, 0x414c00, 0x42923b, 0x436e30, 0x436e80, 0x436f30, 0x437020 · tools: hsl_original_control.py, hsltools/assets/town_assets.py, hsltools/checks/function_catalog.py, hsltools/checks/static_index.py · updated: 2026-09-29
 
 ## 结论
 
-- 原版商店是共用状态窗 `0x414c00` 的商店分支（窗口标志 `*0x4c1cbc & 2`、子模式 `word [win+0xa2] != 6`）。空手点货行：够钱即扣款、物品写进手持槽 `0x4c1ce4`（音 399），不弹消息、不减货表；玩家再点背包格，物品进首空格（满包时与所点格互换）；右键放回所显示成员首空格（static-derived；runtime-measured）。
+- 原版商店是共用状态窗 `0x414c00` 的商店分支（窗口标志 `*0x4c1cbc & 2`、子模式 `word [win+0xa2] != 6`）。空手点货行：够钱即扣款、物品写进手持槽 `0x4c1ce4`（音 399），不弹消息、不减货表；玩家再点背包格，物品进首空格（满包时与所点格互换）（static-derived；runtime-measured）；持物时右键／Esc 不动作（根态 `0x428dc7` 只在手持为 0 时关窗，见 [original_storage_window](original_storage_window.md)「结论」）（static-derived）。
 - 手上有物点货表即卖出：重要物拒收（607），否则半价入账（static-derived）。手上的物品不论来自背包拿起、卸下、买入还是倉庫，都在同一个手持槽里，都能卖。
 - 拿起背包物即离包，其后各格前移（`0x436e80`）；裝備页空手点槽卸下进手（`0x437020`），手持点槽装上时旧装备进手（`0x436f30`）（static-derived）。
-- 重制照做：`TownShopScreen` 点货行走 `TownRuntime.shop_pick`（只扣款、手持散件），点背包格走 `shop_hand place`，右键 `back`；拿起走 `hand_action lift`，卸下走 `unequip`，装上后旧件进手；散件点货表走 `shop_sell_hand`。不弹「買下」消息。
+- 重制照做：`TownShopScreen` 点货行走 `TownRuntime.shop_pick`（只扣款、手持散件），点背包格走 `shop_hand place`，右键 `back`（放回所显示成员首空格，重制读法）；拿起走 `hand_action lift`，卸下走 `unequip`（满包也进手，不占背包），装上后旧件进手；散件点货表走 `shop_sell_hand`。不弹「買下」消息。
 - 共用状态窗的持物音效（static-derived）：进手 399（货表／倉庫列表取出 `0x415559`、背包格拿起 `0x4292c3`、空手卸下 `0x429eb5`），放下 400（背包格 `0x42929d`、装上 `0x429e6d`、放入倉庫列表 `0x415452`），卖出 2563 sfxSellItem（`0x415435`）；重制照放，拒绝时不放。
-- 差异：满包时空手卸下仍被拒（原版卸下进手不需背包空位）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
+- 差异：持物时右键／Esc 重制放回首空格（原版不动作）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
 
 ## 证据
 
@@ -58,4 +58,4 @@ r2 -q -e scr.color=0 -c "s 0x4153a2; pd 16" "$EXE"   # 拒收：0x40e690 → 消
 - 静态阅读＋一次两帧实测；未拍拿起后前移与卸下进手（静态读法），未核对满包互换；音效只有静态读法，未录原版声音。
 - 消息 606／607 由引擎代码引用而非 TOWNDEF 脚本，`tools/hsltools/assets/town_assets.py` 以 `ENGINE_MESSAGE_IDS` 显式加入城镇消息表。
 - `0x414ab0` 用有符号除法；ITEM.TXT 现有价格均非负，负价格行为不建模。
-- 手持槽不进存档：重制扣款后物品只在窗口手上，离店／关窗前右键或 Esc 先放回（满包时散件进倉庫，重制读法）。
+- 手持槽不进存档：重制扣款后物品只在窗口手上，离店／关窗前右键或 Esc 先放回（重制读法；满包时散件留在手上）。

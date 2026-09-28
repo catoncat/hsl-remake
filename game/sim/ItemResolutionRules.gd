@@ -42,16 +42,11 @@ static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: i
 		if error != "": return {"ok":false,"reason":error}
 	var next := target.duplicate(true)
 	next.merge(effect["changes"],true)
-	var state := rng_state.duplicate()
-	var draws: Array = []
+	var permanent := draw_permanent(next,effect["permanent_proposals"],rng_state)
+	var state: Array = permanent["state"]
+	var draws: Array = permanent["draws"]
 	var stat_effects: Array = []
-	var permanent_effects: Array = []
-	for proposal in effect["permanent_proposals"]:
-		var bound := int(proposal["high"]) - int(proposal["low"]) + 1
-		var sample := DamageRandom.rand(state,bound)
-		state = sample["state"]
-		draws.append({"bound":bound,"value":sample["value"]})
-		permanent_effects.append(ProgressionRules.Permanent.apply_sample(next,proposal,int(proposal["low"])+int(sample["value"])))
+	var permanent_effects: Array = permanent["effects"]
 	for proposal in effect["stat_proposals"]:
 		var before := int(proposal["before_word"])
 		var strength := before >> 16
@@ -83,6 +78,23 @@ static func prepare(actor: Dictionary, target: Dictionary, code: String, slot: i
 		"actor_before":actor.duplicate(true),"target_before":target.duplicate(true),"target_changes":changes.duplicate(true),"inventory_after":removal["inventory"].duplicate(true)}
 	if script: receipt["source"] = "script"
 	return {"ok":true,"target_changes":changes,"inventory":removal["inventory"],"rng":state,"receipt":receipt}
+
+
+## The permanent block of 0x409e40 (0x409ef8–0x40a115): one 0x409e10 draw per proposal in handler
+## order — low + rand(high - low + 1) from the damage stream (0x42c780) — applied to `next` in place
+## (a resistance re-clamps to 80 after the draw). Shared by the battle Use and the 整理裝備 倉庫
+## page's 使用 (PartyEquipmentRules). {state, draws, effects}.
+static func draw_permanent(next: Dictionary, proposals: Array, rng_state: Array) -> Dictionary:
+	var state := rng_state.duplicate()
+	var draws: Array = []
+	var effects: Array = []
+	for proposal in proposals:
+		var bound := int(proposal["high"]) - int(proposal["low"]) + 1
+		var sample := DamageRandom.rand(state,bound)
+		state = sample["state"]
+		draws.append({"bound":bound,"value":sample["value"]})
+		effects.append(ProgressionRules.Permanent.apply_sample(next,proposal,int(proposal["low"])+int(sample["value"])))
+	return {"state":state,"draws":draws,"effects":effects}
 
 
 static func state_error(loop: Dictionary) -> String:

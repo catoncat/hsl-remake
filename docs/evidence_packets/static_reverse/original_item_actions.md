@@ -1,6 +1,6 @@
 # 物品命令：入口状态、取消归还、重要物品保护与用药目标
 
-> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40c570, 0x40e690, 0x40eb80, 0x40ecc0, 0x40ed50, 0x40f200, 0x40f440, 0x40f560, 0x411990, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-28
+> evidence: static-derived · status: live · functions: 0x4097d0, 0x409830, 0x409e40, 0x40c570, 0x40e690, 0x40eb80, 0x40ecc0, 0x40ed50, 0x40f200, 0x40f440, 0x40f560, 0x411990, 0x411c40, 0x436e30, 0x436e80, 0x436ed0, 0x438c84, 0x439a0f, 0x43ac10, 0x43b4e0, 0x443330, 0x4466d0, 0x446b00 · tools: hsltools/evidence/item_action.py, run_inventory_equipment_tests.gd · updated: 2026-09-29
 
 ## 结论
 
@@ -92,7 +92,7 @@ AI 用药：
 ## 边界
 
 - `0x4406af` 的触发上下文、`0x40c570` 无法术时是否抽随机数未读。
-- 剧情 `actUseItem`（case 0x5d `0x451669`）：`0x44fad0` 找 actor、`0x450390(code, serial, 0)`，再调 `0x409e40(actor, id, vm, 0)`；两段都不读写 actor+0x138 背包，也不查持有、麻痺与收益。`0x409e40` 返回 1 表示物品有任一效果字段（与目标是否满值无关），此时脚本停在 `+0x8c`=0x390001 等待，返回 0 才 +1。
+- 剧情 `actUseItem`（case 0x5d `0x451669`）：`0x44fad0` 找 actor、`0x450390(code, serial, 0)`，再调 `0x409e40(actor, id, vm, 0)`；两段都不读写 actor+0x138 背包，也不查持有、麻痺与收益。`0x409e40` 返回 1 表示有一项结算生效：HP／MP／体力字段或解状态字（+0xa0 & 0xf0000080）非零——只看字段、与目标是否满值无关；临时攻防块写入（ebp，该项时长已为 9 时不写）；永久旗（力／禦／魔／速之源字段非零，抗性之源抽样后增量 >0，抗性已 80 则不置），见 [original_storage_window.md](original_storage_window.md)「结论」。返回 1 时脚本停在 `+0x8c`=0x390001 等待，返回 0 才 +1。
 - 连续给予与交换见 [original_give_exchange.md](original_give_exchange.md)；库存结构与换装见 [original_inventory_equipment.md](original_inventory_equipment.md)。
 - 整理、全部脚本组合与移动标志不由本包概括。
 - 持物放回：原版拿起即删格收拢（`0x436e80`），持物点背包任一行或右键放首空格——即收拢后的末尾，重制同（规则层删格与放回一次提交，窗内无别的出口）。满包互换（`0x438c84`：`0x436ed0` 末格有物时点中格物进手、删格收拢、持物放第 8 格）只在持物来自装备板且背包满时发生；这种情形重制按规则拒绝卸下，互换顺序随之不出现。换装被拒时原版不出音与字，重制同。

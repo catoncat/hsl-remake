@@ -6,8 +6,8 @@ extends CanvasLayer
 ## docs/evidence_packets/static_reverse/original_storage_window.md). This node owns the
 ## sandbox PlayLoop built from the carry's source scenario and the party storage
 ## (carry.loop.party_storage, PartyStorageRules), runs every hand gesture through
-## PartyEquipmentRules.hand_action and every unequip through change (the in-battle validation
-## order), and on close projects the sandbox and the storage back into the carry and emits
+## PartyEquipmentRules.hand_action (equipment changes in the in-battle validation order), and
+## on close projects the sandbox and the storage back into the carry and emits
 ## closed(next_carry, changes) for the host to persist.
 ## Presentation only: no second copy of the carry is kept after close.
 ## provenance:
@@ -51,7 +51,6 @@ func _ready() -> void:
 	add_child(window)
 	window.name = "PartyEquipment"
 	window.hand_requested.connect(_on_hand_requested)
-	window.unequip_requested.connect(_on_unequip_requested)
 	window.close_requested.connect(close)
 	_portraits = preload("res://game/sim/ContentPaths.gd").actor_portraits()
 	visible = false
@@ -135,12 +134,16 @@ static func _slot_for(unit: Dictionary, kind: int) -> String:
 	return "accessory2" if EquipmentRules.equipped_code(unit.get("equipment", []), "accessory1") > 0 and EquipmentRules.equipped_code(unit.get("equipment", []), "accessory2") == 0 else "accessory1"
 
 
-## A hand gesture from the window (place／store／retrieve／drop／use／equip／back).
+## A hand gesture from the window (place／store／retrieve／drop／use／equip／lift／unequip／back).
 func _on_hand_requested(action: String, args: Dictionary, held: Dictionary) -> void:
 	if error != "":
 		return
 	var result := Rules.hand_action(loop, storage, held, action, args, EquipmentCatalog.items())
 	if not bool(result["ok"]):
+		# A 使用 that returns 0 still keeps its damage-stream draws (PartyEquipmentRules._use_stored).
+		if not is_same(result["loop"], loop):
+			loop = result["loop"]
+			changes += 1
 		last_result = {"ok": false, "action": action, "reason": str(result["reason"])}
 		window.refuse(str(result["reason"]))
 		return
@@ -150,22 +153,6 @@ func _on_hand_requested(action: String, args: Dictionary, held: Dictionary) -> v
 	changes += 1
 	last_result = {"ok": true, "action": action, "status": "changed"}
 	window.show_state(carry, loop, storage, hand)
-
-
-func _on_unequip_requested(unit_id: String, slot: String) -> void:
-	_change({"kind": "unequip", "unit_id": unit_id, "slot": slot, "index": -1, "code": 0})
-
-
-func _change(request: Dictionary) -> void:
-	var result := Rules.change(loop, request["unit_id"], request["slot"], int(request["index"]), int(request["code"]))
-	if bool(result["ok"]):
-		loop = result["loop"]
-		changes += 1
-		last_result = {"ok": true, "action": request["kind"], "status": "changed", "slot": request["slot"]}
-		window.show_loop(carry, loop)
-	else:
-		last_result = {"ok": false, "action": request["kind"], "reason": str(result["error"])}
-		window.refuse(str(result["error"]))
 
 
 ## Closes and hands the projected carry back (the input carry when nothing changed / no sandbox).
@@ -217,5 +204,5 @@ func summary() -> Dictionary:
 		"message": str(shown["message"]),
 		"last_result": last_result.duplicate(true),
 		"storage": StorageRules.entries(storage),
-		"claim_limit": "Original mode 0 window layout, buttons, hand and storage list (static-derived; runtime-measured 2026-09-27); 使用 applies HP／MP／status only.",
+		"claim_limit": "Original mode 0 window layout, buttons, hand and storage list (static-derived; runtime-measured 2026-09-27); 使用 runs 0x409e40(…, 0, 1): HP／MP／stamina／cures and the permanent items, one item spent on a non-zero return.",
 	}

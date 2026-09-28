@@ -33,7 +33,7 @@ extends Control
 ## right board is the six equipment slots on every page but 倉庫. Only on the 裝備 page do the
 ## slots take the hand: an empty hand takes an item off, a held bag item goes on by its kind.
 ## The window keeps no rules: every hand gesture goes to the host (hand_requested →
-## PartyEquipmentRules.hand_action; unequip_requested → change) and comes back through
+## PartyEquipmentRules.hand_action) and comes back through
 ## show_loop／show_state. The hand survives 上一位／下一位 (0x4282c0 never writes 0x4c1ce4) and
 ## page changes; on the 倉庫 page (7) the right board is the storage list (WINDOW90「倉庫」,
 ## rows with counts) and 丟棄／使用 act on the hand. A picked-up bag item leaves the bag
@@ -62,8 +62,6 @@ signal sell_requested(unit_id: String, slot: int)
 ## Shop: the hand dropped on the goods list (0x4153b1: important → 607, else half price, 2563).
 signal sell_hand_requested(code: int)
 signal close_requested
-## Mode 0: the host runs PartyEquipmentRules.change and answers with show_loop or refuse.
-signal unequip_requested(unit_id: String, slot: String)
 ## Both modes: a hand gesture (PartyEquipmentRules.hand_action action／args) on the current hand.
 signal hand_requested(action: String, args: Dictionary, hand: Dictionary)
 
@@ -186,13 +184,15 @@ var _button_sound: AudioStreamPlayer
 ## The hand's sounds in the shared status window: 399 sfxTakeUp when an item comes into the hand
 ## (list take 0x415559, bag lift 0x4292c3, take-off 0x429eb5), 400 sfxPutDown when the hand sets
 ## it down (bag 0x42929d, put on 0x429e6d, storage list 0x415452), 2563 sfxSellItem on a sale
-## (0x415435). Queued with the request, played when the host commits it; a refusal stays silent.
+## (0x415435), 402 sfxUseItem when 使用 takes (0x40a347, on a non-zero 0x409e40 return). Queued
+## with the request, played when the host commits it; a refusal stays silent.
 const ITEM_SOUNDS := {
 	"take_up": "res://content/imported/hsl/shared/interface_audio/take_up.wav",
 	"put_down": "res://content/imported/hsl/shared/interface_audio/put_down.wav",
 	"sell_item": "res://content/imported/hsl/shared/interface_audio/sell_item.wav",
+	"use_item": "res://content/imported/hsl/shared/interface_audio/use_item.wav",
 }
-const HAND_SOUNDS := {"lift": "take_up", "unequip": "take_up", "retrieve": "take_up", "place": "put_down", "equip": "put_down", "store": "put_down"}
+const HAND_SOUNDS := {"lift": "take_up", "unequip": "take_up", "retrieve": "take_up", "place": "put_down", "equip": "put_down", "store": "put_down", "use": "use_item"}
 var _item_sound: AudioStreamPlayer
 var _pending_sound := ""
 ## The last item sound played (a key of ITEM_SOUNDS; "" before any).
@@ -563,7 +563,9 @@ func step_member(step: int) -> void:
 	_rebuild()
 
 
-## Original right click／Esc order: close the message, else put the held item back, else leave.
+## Right click／Esc: close the message, else put the held item back, else leave. The original
+## root state (0x428dac) closes only with an empty hand (0x428dc7) and ignores the click while
+## an item is held; the put-back is a remake reading.
 func back() -> void:
 	if message_visible():
 		dismiss_message()
@@ -581,8 +583,8 @@ func dismiss_message() -> void:
 
 func put_back() -> void:
 	if holding() and (bool(_hand.get("loose", false)) or str(_hand.get("unit_id", "")) != unit_id):
-		# 0x436e30: into the shown member's first empty slot (the host decides; a full bag keeps
-		# nothing lost — see PartyEquipmentRules.hand_action back).
+		# 0x436e30: into the shown member's first empty slot (the host decides; with a full bag a
+		# loose item stays on the hand — PartyEquipmentRules.hand_action back).
 		_request_hand("back", {"unit_id": unit_id}, _hand.duplicate())
 		return
 	_hand = {}

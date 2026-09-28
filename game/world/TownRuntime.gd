@@ -603,7 +603,6 @@ func _open_shop(pending: Dictionary) -> void:
 	shop_screen.sell_hand_requested.connect(func(code: int): shop_sell_hand(code))
 	shop_screen.close_requested.connect(shop_close)
 	shop_screen.hand_requested.connect(func(action: String, args: Dictionary, held: Dictionary): shop_hand(action, args, held))
-	shop_screen.unequip_requested.connect(func(unit_id: String, slot: String): shop_unequip(unit_id, slot))
 	add_child(shop_screen)
 	shop_screen.open(message_text(int(pending.get("shop_name_id", 0))).strip_edges(), shop_goods(), carry, speakers, shop_catalog, _shop_scenario_path())
 
@@ -737,26 +736,15 @@ func shop_hand(action: String, args: Dictionary, held: Dictionary) -> Dictionary
 	var result := PartyEquipmentRules.hand_action(box["loop"], storage, held, action, args, EquipmentCatalog.items())
 	records.append({"kind": "shop_hand", "action": action, "ok": bool(result["ok"]), "reason": str(result.get("reason", ""))})
 	if not bool(result["ok"]):
+		# A 使用 that returns 0 still keeps its damage-stream draws (PartyEquipmentRules._use_stored).
+		if not is_same(result["loop"], box["loop"]):
+			carry = PartyEquipmentRules.project(carry, result["loop"])
+			party_changed.emit(state, carry)
 		shop_screen.refuse(str(result["reason"]))
 		return {"ok": false, "reason": str(result["reason"])}
 	carry = PartyStorageRules.with_carry(PartyEquipmentRules.project(carry, result["loop"]), result["storage"])
 	party_changed.emit(state, carry)
 	shop_screen.show_state(carry, {}, result["storage"], result["hand"])
-	return {"ok": true}
-
-
-## 裝備 page, empty hand on a worn slot: off into the bag (the rules' unequip).
-func shop_unequip(unit_id: String, slot: String) -> Dictionary:
-	var box := _shop_sandbox()
-	if mode != "shop" or not bool(box["ok"]):
-		return {"ok": false, "reason": "no_sandbox"}
-	var result := PartyEquipmentRules.change(box["loop"], unit_id, slot, -1, 0)
-	if not bool(result["ok"]):
-		shop_screen.refuse(str(result["error"]))
-		return {"ok": false, "reason": str(result["error"])}
-	carry = PartyEquipmentRules.project(carry, result["loop"])
-	party_changed.emit(state, carry)
-	shop_screen.show_state(carry, {}, PartyStorageRules.of_carry(carry), {})
 	return {"ok": true}
 
 

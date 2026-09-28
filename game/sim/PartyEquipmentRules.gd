@@ -23,7 +23,7 @@ extends RefCounted
 ## change() so the two transaction bodies stop being duplicated.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_storage_window.md
-##     (hand_action: hand kept across members, storage put／take, 丟棄 non-important, 使用 via 0x409e40, full-bag swap)
+##     (hand_action: hand across members, storage, 丟棄, 使用 0x409e40(…, 0, 1), take-off 0x437020, bag swap)
 ##   rules: remake-invented
 ##     (sandbox PlayLoop transaction mirroring change_equipment between battles; no original between-battle transaction
 ##     located)
@@ -44,6 +44,8 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const InventoryRules = preload("res://game/sim/InventoryRules.gd")
 const StorageRules = preload("res://game/sim/PartyStorageRules.gd")
 const ItemUseRules = preload("res://game/sim/ItemUseRules.gd")
+const ItemResolution = preload("res://game/sim/ItemResolutionRules.gd")
+const DamageRandom = preload("res://game/sim/DamageRandomStream.gd")
 
 const ROLE_PLAYER := "player_controlled"
 const SKIPPED_KINDS := ["story", "game_clear", "world_map"]
@@ -108,7 +110,10 @@ static func change(loop: Dictionary, unit_id: String, slot: String, inventory_in
 	return {"ok": true, "loop": prepared["loop"], "error": ""}
 
 
-static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_index: int, expected_code: int) -> Dictionary:
+## `to_hand`: the window's take-off (0x437020) clears the slot and hands back the piece without
+## looking at the bag, so the bag takes no part — replace() runs on an empty bag and the member
+## keeps its own.
+static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_index: int, expected_code: int, to_hand: bool = false) -> Dictionary:
 	var actor := _live_unit(loop, unit_id).duplicate(true)
 	if actor.is_empty() or str(actor.get("battle_actor_role", "")) != ROLE_PLAYER:
 		return {"ok": false, "reason": "unknown_member"}
@@ -121,7 +126,15 @@ static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_
 	if error != "": return {"ok": false, "reason": error}
 	error = ExperienceRules.input_error(loop, actor)
 	if error != "": return {"ok": false, "reason": error}
+	var bag: Variant = actor.get("inventory")
+	if to_hand and InventoryRules.valid(bag):
+		var empty: Array = []
+		empty.resize(InventoryRules.CAPACITY)
+		empty.fill(0)
+		actor["inventory"] = empty
 	var result := EquipmentRules.replace(actor, slot, inventory_index, expected_code, items)
+	if to_hand and result["ok"]:
+		result["inventory"] = (bag as Array).duplicate()
 	if not result["ok"]:
 		return {"ok": false, "reason": str(result.get("reason", "rejected"))}
 	# Native409090 uses range0 for an empty weapon slot: no hostile normal target.
@@ -209,12 +222,13 @@ static func place_hand(loop: Dictionary, hand: Dictionary, unit_id: String, slot
 ##   store                  the hand into the storage list (0x44f2d0 in the window,音 400)
 ##   retrieve {index}       empty hand takes one of list row `index`; important rows stay (0x4154cd)
 ##   drop                   丟棄: a non-important hand is thrown away (0x42a7e2)
-##   use {unit_id}          使用: 0x409e40(member, hand, 0, 1) — spends the hand on the member
+##   use {unit_id}          使用: 0x409e40(member, hand, 0, 1) — a non-zero return spends the hand (_use_stored)
 ##   equip {unit_id, slot}  the hand onto an equipment slot (0x436f30 via change()); the old piece onto the hand
 ##   lift {unit_id, slot}   empty hand takes a bag item out, the bag closes up (0x436e80)
-##   unequip {unit_id, slot} empty hand takes a worn piece off onto the hand (0x437020; a full bag refuses — change())
-##   back {unit_id}         right click: the hand into the member's first empty slot (0x436e30)
-## Returns {ok, loop, storage, hand, reason}; a refusal returns the inputs unchanged.
+##   unequip {unit_id, slot} empty hand takes a worn piece off onto the hand (0x437020; no bag slot needed)
+##   back {unit_id}         right click: the hand into the member's first empty slot (remake reading, see below)
+## Returns {ok, loop, storage, hand, reason}; a refusal returns the inputs unchanged, except that a
+## 使用 whose return is zero keeps its damage-stream draws on the refused loop.
 static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary, action: String, args: Dictionary, catalog: Dictionary) -> Dictionary:
 	var refused := {"ok": false, "loop": loop, "storage": storage, "hand": hand}
 	var code := int(hand.get("code", 0))
@@ -243,23 +257,19 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 			refused["reason"] = lifted["reason"]
 			return {"ok": true, "loop": lifted["loop"], "storage": storage, "hand": {}, "reason": ""} if lifted["ok"] else refused
 		"use":
-			var definition: Dictionary = (loop.get("consumables", {}) as Dictionary).get(str(code), {})
-			var target := _live_unit(loop, str(args.get("unit_id", "")))
-			if code <= 0 or definition.is_empty() or target.is_empty():
-				refused["reason"] = "not_usable"
-				return refused
-			var effect := ItemUseRules.prepare(target, definition, true)
-			# The between-battle window applies HP／MP／status only; an item whose effect is a
-			# permanent or temporary stat change stays in the hand (ItemResolutionRules owns those).
-			if not effect["ok"] or not effect["permanent_proposals"].is_empty() or not effect["stat_proposals"].is_empty():
-				refused["reason"] = str(effect.get("reason", "not_usable_here"))
-				return refused
+			# 0x42a887: a zero return keeps the hand (0x42a8a6); otherwise 0x434d10 and the hand is cleared.
 			var lifted := remove_hand(loop, hand)
 			if not lifted["ok"]:
 				refused["reason"] = lifted["reason"]
 				return refused
-			_live_unit(lifted["loop"], str(args["unit_id"])).merge(effect["changes"], true)
-			return {"ok": true, "loop": lifted["loop"], "storage": storage, "hand": {}, "reason": ""}
+			var used := _use_stored(lifted["loop"], str(args.get("unit_id", "")), code)
+			if not used["ok"]:
+				refused["reason"] = used["reason"]
+				if used.has("rng"):
+					refused["loop"] = BattleLoopConfig.copy(loop)
+					refused["loop"][DamageRandom.LOOP_KEY] = used["rng"]
+				return refused
+			return {"ok": true, "loop": used["loop"], "storage": storage, "hand": {}, "reason": ""}
 		"equip":
 			var unit_id := str(args.get("unit_id", ""))
 			var working := loop
@@ -292,28 +302,32 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 			refused["reason"] = lifted["reason"]
 			return {"ok": true, "loop": lifted["loop"], "storage": storage, "hand": {"loose": true, "code": picked}, "reason": ""} if lifted["ok"] else refused
 		"unequip":
-			# 0x437020: an empty hand takes the worn piece off onto the hand (399).
+			# 0x437020: an empty hand takes the worn piece off onto the hand (399): the slot is cleared
+			# and the code returned without a bag check (a full bag does not matter); item +0xa4 bit 2
+			# (unequip_blocked) returns 0 and nothing moves. 0x429e75 then refreshes (0x448840).
 			if code > 0:
 				refused["reason"] = "hand_full"
 				return refused
 			var unit_id := str(args.get("unit_id", ""))
 			var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), str(args.get("slot", "")))
-			var changed := change(loop, unit_id, str(args.get("slot", "")), -1, 0)
-			refused["reason"] = changed["error"]
-			if not changed["ok"]:
+			var prepared := _prepare(loop, unit_id, str(args.get("slot", "")), -1, 0, true)
+			if not prepared["ok"]:
+				refused["reason"] = str(prepared.get("reason", "rejected"))
 				return refused
-			var taken := _lift_last(changed["loop"], unit_id, old)
-			return {"ok": true, "loop": taken["loop"], "storage": storage, "hand": taken["hand"], "reason": ""}
+			return {"ok": true, "loop": prepared["loop"], "storage": storage, "hand": {"loose": true, "code": old}, "reason": ""}
 		"back":
+			# The original root (0x428dac) closes on right click／Esc only while the hand is empty
+			# (0x428dc7) and moves no held item; putting the hand into the first empty slot is a remake
+			# reading. A full bag keeps a loose hand on the cursor — the original's outcome for it.
 			var unit_id := str(args.get("unit_id", ""))
 			if code <= 0 or (not bool(hand.get("loose", false)) and str(hand.get("unit_id", "")) == unit_id):
 				return {"ok": true, "loop": loop, "storage": storage, "hand": {}, "reason": ""}
 			var placed := place_hand(loop, hand, unit_id, -1)
 			if placed["ok"]:
 				return {"ok": true, "loop": placed["loop"], "storage": storage, "hand": {}, "reason": ""}
-			# Full bag (remake reading): a loose item goes to the storage, a bag item stays in its bag.
 			if bool(hand.get("loose", false)):
-				return {"ok": true, "loop": loop, "storage": StorageRules.put(storage, code, catalog)["storage"], "hand": {}, "reason": ""}
+				refused["reason"] = str(placed["reason"])
+				return refused
 			return {"ok": true, "loop": loop, "storage": storage, "hand": {}, "reason": ""}
 	refused["reason"] = "unknown_action"
 	return refused
@@ -333,6 +347,57 @@ static func _lift_last(loop: Dictionary, unit_id: String, code: int) -> Dictiona
 	return {"loop": lifted["loop"], "hand": {"loose": true, "code": code}} if lifted["ok"] else {"loop": loop, "hand": {}}
 
 
+## 使用 on the 倉庫 page: 0x409e40(member, code, 0, 1). The fourth argument zeroes ebp and skips the
+## temporary attack／defense block (0x40a121／0x40a125) and, after the 402 cue (0x40a347, played
+## whenever the return is non-zero), the floating numbers (0x40a39b); the permanent block before it
+## (0x409ef8–0x40a115) still draws from the damage stream (ItemResolutionRules.draw_permanent). The
+## return (0x40a369–0x40a391) is non-zero when the HP, MP, stamina or cure field is set or a permanent
+## field took: 力／禦／魔／速之源 whenever set, 土／火／水／風／靈之源 only with a gain under the 80 cap
+## (0x409fb3). So 會心之素／鐵壁之素 (temporary fields only) and a resistance source on a member already
+## at 80 return 0 and stay in the hand — the latter after its draw. {ok, loop, reason[, rng]}.
+static func _use_stored(loop: Dictionary, unit_id: String, code: int) -> Dictionary:
+	var definition: Dictionary = (loop.get("consumables", {}) as Dictionary).get(str(code), {})
+	var target := _live_unit(loop, unit_id)
+	if code <= 0 or definition.is_empty() or target.is_empty():
+		return {"ok": false, "reason": "not_usable"}
+	var effect := ItemUseRules.prepare(target, definition, true)
+	if not effect["ok"]:
+		return {"ok": false, "reason": str(effect.get("reason", "not_usable"))}
+	var items: Dictionary = loop.get("equipment_items", {})
+	var proposals: Array = effect["permanent_proposals"]
+	if not proposals.is_empty() and not DamageRandom.valid(loop.get(DamageRandom.LOOP_KEY)):
+		return {"ok": false, "reason": "invalid_item_random_state"}
+	var next := BattleLoopConfig.copy(loop)
+	var changed := _live_unit(next, unit_id)
+	changed.merge(effect["changes"], true)
+	var took := false
+	if not proposals.is_empty():
+		var drawn := ItemResolution.draw_permanent(changed, proposals, loop[DamageRandom.LOOP_KEY])
+		next[DamageRandom.LOOP_KEY] = drawn["state"]
+		for row in drawn["effects"]:
+			took = took or not str(row["kind"]).begins_with("resist_") or int(row["amount"]) > 0
+		if not took and not _fields_set(definition):
+			return {"ok": false, "reason": "item_has_no_effect", "rng": drawn["state"]}
+	elif not _fields_set(definition):
+		return {"ok": false, "reason": "item_has_no_effect"}
+	# 0x40a2ac／0x40a337: a permanent gain and the cure block end in 0x448840.
+	if took or bool(effect["cured_weaken"]):
+		var error := ProgressionRules.refresh_input_error(changed, items)
+		if error != "":
+			return {"ok": false, "reason": error}
+		changed.merge(ProgressionRules.refresh_growth_stats(changed, items), true)
+	return {"ok": true, "loop": next, "reason": ""}
+
+
+## The non-permanent return terms of 0x409e40: the HP (+0x2c), MP (+0x28) and stamina (+0x30) fields
+## and the +0xa0 cure word (0x409eed: only its 0xf0000080 bits count) — set, whatever the target's state.
+static func _fields_set(item: Dictionary) -> bool:
+	for key in ["heal_hp", "heal_mp", "restore_stamina", "cure_poison", "cure_paralysis", "cure_no_magic", "cure_weaken"]:
+		if int(item.get(key, 0)) > 0:
+			return true
+	return false
+
+
 ## In-place lookup by unit id ({} when absent); callers duplicate when they must not mutate.
 static func _live_unit(loop: Dictionary, unit_id: String) -> Dictionary:
 	for unit_value in loop.get("units", []):
@@ -342,9 +407,12 @@ static func _live_unit(loop: Dictionary, unit_id: String) -> Dictionary:
 
 
 ## The carry with units re-captured from the sandbox loop. Only carry.units entries
-## whose id exists in both are replaced; every other top-level field is kept as is.
+## whose id exists in both are replaced, and a carried damage stream takes the sandbox's (使用
+## draws from it); every other top-level field is kept as is.
 static func project(carry: Dictionary, loop: Dictionary) -> Dictionary:
 	var next := carry.duplicate(true)
+	if next.has(DamageRandom.LOOP_KEY):
+		CarryRules.keep_damage_stream(next, loop)
 	var captured: Dictionary = CarryRules.capture(loop).get("units", {})
 	var units: Dictionary = (next.get("units", {}) as Dictionary).duplicate(true) if typeof(next.get("units")) == TYPE_DICTIONARY else {}
 	for unit_id in units.keys():
