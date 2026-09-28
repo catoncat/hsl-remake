@@ -166,7 +166,7 @@ func _run_scroll_and_items() -> void:
 	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 0.5), "a groove click sets 音樂音量 by position: %s" % GameSettings.get_value("music_volume"))
 	var music_index := AudioServer.get_bus_index("Music")
 	_assert_true(music_index > 0, "the Music bus exists")
-	_assert_true(is_equal_approx(AudioServer.get_bus_volume_db(music_index) + AudioServer.get_bus_volume_db(0), linear_to_db(0.5)), "music out equals 音樂音量 alone: bus=%s master=%s" % [AudioServer.get_bus_volume_db(music_index), AudioServer.get_bus_volume_db(0)])
+	_assert_true(is_equal_approx(AudioServer.get_bus_volume_db(music_index), -12.0), "音樂音量 0.5 (v 128) is the 0x459d70 stream volume (⌊60·128/255⌋ − 60) × 40 = −1200: %s" % AudioServer.get_bus_volume_db(music_index))
 	_assert_eq(scene.get_node("BattleMusic").bus, "Music", "battle music sits on the Music bus")
 	GameSettings._cache = {}
 	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 0.5), "settings reload from disk")

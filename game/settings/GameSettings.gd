@@ -9,17 +9,22 @@ extends RefCounted
 ## their defaults, so files written before these keys still read as hsl_settings.v1; neither
 ## key goes into any save.
 ##
-## Bus model (remake): every player sits on Master by default, so 音效音量 drives the Master
-## bus and music players sit on a runtime-created "Music" bus whose gain is compensated so
-## that 音樂音量 stays independent of Master (music_out = music_db). The original mixer is
-## not located; the 設定選項 row semantics are provisional readings of the baked labels.
-## The music tracks are the original ones (docs/evidence_packets/static_reverse/original_music.md);
-## the bus model and the volume curve are the remake's: 0 mutes and a change is heard at once,
-## where the original skips PlayMusic at volume 0 and only its next call starts a track (§1).
+## Bus model (original mixer, docs/evidence_packets/static_reverse/original_music.md §5):
+## 音效音量 [0x477c20] goes to waveOutSetVolume (0x458220 → 0x4581c0, both channels v×256) —
+## a linear device gain over everything the game plays — so it drives the Master bus linearly,
+## 0 mutes. Effect sounds play at 255 (0 dB) under it. 音樂音量 [0x477c24] sets the music
+## stream's DirectSound volume (0x424630 → 0x459e60 → 0x459d70): (⌊60v/255⌋ − 60) × 40
+## hundredths of a dB, so the Music bus runs 0 dB down to −24 dB at 0 (not silent) and sends
+## into Master. Film soundtracks take the same stream curve from 音效音量 (0x42df6f → 0x45c5f0
+## → 0x45a330), on the Movie bus. Both sliders act at once on what is playing; at 音樂音量 0
+## a new track does not start (PlayMusic 0x42c250), see music_starts().
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md
 ##     (預備動作 = [0x477c14] bit1, default on)
-##   rules: provisional (設定選項 row semantics read from the baked Title039 labels; original mixer not located)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_music.md (§5 volume curves)
+##   rules: provisional (sliders step 0.1 where the original steps 15／255; 場景效果 hides clouds and
+##     story effect objects, the original also hides mapobjWaterFall／mapobjBuildBottom and two
+##     unidentified objects)
 ##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
@@ -30,7 +35,9 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const PATH := "user://settings.json"
 const SCHEMA := "hsl_settings.v1"
 const MUSIC_BUS := "Music"
-const MIN_DB := -60.0
+const MOVIE_BUS := "Movie"
+## IDirectSoundBuffer::SetVolume floor used by 0x459d70 (−10000 hundredths of a dB).
+const STREAM_FLOOR_DB := -100.0
 ## Gain of every music player (battle, title, world map, town, GameClear). The original plays
 ## music and sound effects at the same full volume (255, docs/evidence_packets/static_reverse/
 ## original_music.md §1); the remake's effect players sit at -4..-8 dB, so music sits at -6 dB.
@@ -100,29 +107,53 @@ static func ready_action_enabled() -> bool:
 
 ## Name of the music bus, created on first use so music players can be routed to it.
 static func music_bus() -> String:
-	if AudioServer.get_bus_index(MUSIC_BUS) < 0:
+	return _bus(MUSIC_BUS)
+
+
+## Name of the film soundtrack bus (stream curve from 音效音量, 0x42df6f).
+static func movie_bus() -> String:
+	return _bus(MOVIE_BUS)
+
+
+static func _bus(bus_name: String) -> String:
+	if AudioServer.get_bus_index(bus_name) < 0:
 		AudioServer.add_bus()
 		var index := AudioServer.get_bus_count() - 1
-		AudioServer.set_bus_name(index, MUSIC_BUS)
+		AudioServer.set_bus_name(index, bus_name)
 		AudioServer.set_bus_send(index, "Master")
 		apply()
-	return MUSIC_BUS
+	return bus_name
 
 
-## Master carries 音效音量; the Music bus is offset so its output equals 音樂音量 alone.
+## Master = waveOutSetVolume gain of 音效音量 (linear, 0 mutes); Music／Movie = stream curve.
 static func apply() -> void:
 	var settings := load_settings()
-	var master_db := volume_db(float(settings["sfx_volume"]))
-	AudioServer.set_bus_volume_db(0, master_db)
+	var sfx := float(settings["sfx_volume"])
+	AudioServer.set_bus_mute(0, original_level(sfx) <= 0)
+	AudioServer.set_bus_volume_db(0, linear_to_db(maxf(sfx, 0.001)))
 	var music_index := AudioServer.get_bus_index(MUSIC_BUS)
 	if music_index >= 0:
-		AudioServer.set_bus_volume_db(music_index, clampf(volume_db(float(settings["music_volume"])) - master_db, MIN_DB, -MIN_DB))
+		AudioServer.set_bus_volume_db(music_index, stream_db(float(settings["music_volume"])))
+	var movie_index := AudioServer.get_bus_index(MOVIE_BUS)
+	if movie_index >= 0:
+		AudioServer.set_bus_volume_db(movie_index, stream_db(sfx))
 
 
-static func volume_db(linear: float) -> float:
-	if linear <= 0.001:
-		return MIN_DB
-	return maxf(linear_to_db(clampf(linear, 0.0, 1.0)), MIN_DB)
+## Slider value 0..1 as the original's 0..255 volume byte.
+static func original_level(value: float) -> int:
+	return clampi(roundi(clampf(value, 0.0, 1.0) * 255.0), 0, 255)
+
+
+## 0x459d70: SetVolume((⌊60v/255⌋ − 60) × 40) hundredths of a dB, floor −10000.
+static func stream_db(value: float) -> float:
+	var v := original_level(value)
+	return maxf(float(floori(60.0 * v / 255.0) - 60) * 0.4, STREAM_FLOOR_DB)
+
+
+## PlayMusic 0x42c250 returns before stopping or starting anything while 音樂音量 is 0; the
+## track already playing goes on, and raising the volume starts nothing until the next call.
+static func music_starts() -> bool:
+	return original_level(float(get_value("music_volume"))) > 0
 
 
 static func _normalized(settings: Dictionary) -> Dictionary:

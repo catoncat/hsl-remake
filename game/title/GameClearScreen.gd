@@ -452,7 +452,7 @@ func _dark_tick() -> void:
 
 func _play_music(cue_id: String) -> void:
 	var cue: Variant = _music_cues.get(cue_id)
-	if not cue is Dictionary or _music == null:
+	if not cue is Dictionary or _music == null or not GameSettings.music_starts():
 		return
 	var stream_path := str((cue as Dictionary).get("stream", ""))
 	if stream_path == "" or not ResourceLoader.exists(stream_path):

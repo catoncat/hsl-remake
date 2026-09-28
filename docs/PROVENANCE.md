@@ -130,7 +130,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [GameOptions](../game/settings/GameOptions.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
-| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); provisional; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
+| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); provisional; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
@@ -447,7 +447,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | timing | — | lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue; EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored |
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | audio | — | objects without a native track and the patterned angle／tornado inserts keep the static command_sounds／program_sounds |
 | [BattleUISkin](../game/common/BattleUISkin.gd) | layout | — | set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart read |
-| [GameSettings](../game/settings/GameSettings.gd) | rules | — | 設定選項 row semantics read from the baked Title039 labels; original mixer not located |
+| [GameSettings](../game/settings/GameSettings.gd) | rules | — | sliders step 0.1 where the original steps 15／255; 場景效果 hides clouds and story effect objects, the original also hides mapobjWaterFall／mapobjBuildBottom and two unidentified objects |
 | [AIDecisionRules](../game/sim/AIDecisionRules.gd) | rules | — | stable-id adapter |
 | [AINavigationRules](../game/sim/AINavigationRules.gd) | rules | — | shortest-path tie-breaks, guard routes, a 3×3 actor's refinement flood are remake composition; approach_goals (candidate_filters receipt only) use flat RANGE offsets |
 | [AISelfPreservation](../game/sim/AISelfPreservation.gd) | rules | — | supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order |
@@ -487,7 +487,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 31 | 71 | 41 | 10 | 29 | 182 |
-| static-derived | 251 | 110 | 19 | 112 | 25 | 517 |
+| static-derived | 252 | 110 | 19 | 112 | 25 | 518 |
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -38,6 +38,7 @@ const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const OpeningSelectPrompt = preload("res://game/battle/runtime/opening/OpeningSelectPrompt.gd")
 const OpeningEndCard = preload("res://game/battle/runtime/opening/OpeningEndCard.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
+const GameSettings = preload("res://game/settings/GameSettings.gd")
 const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningStoryObjects.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
@@ -885,6 +886,8 @@ static func play_music_stream(player: AudioStreamPlayer, stream_path: String) ->
 		return "unchanged"
 	if not ResourceLoader.exists(stream_path):
 		return "not_imported_skipped"
+	if not GameSettings.music_starts():
+		return "music_volume_zero" # PlayMusic 0x42c250 at 音樂音量 0: nothing stops or starts
 	player.stream = load(stream_path)
 	player.play()
 	return "played"

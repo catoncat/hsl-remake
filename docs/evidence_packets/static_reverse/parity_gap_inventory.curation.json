@@ -1594,13 +1594,14 @@
     },
     {
       "id": "settings-volume-mixer",
-      "difference": "設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程",
-      "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位",
+      "difference": "音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）；剩重制滑杆 11 档对原版 18 档，場景效果 关时重制藏云与剧情特效物件，原版另藏 mapobjWaterFall／mapobjBuildBottom 与两个镜头周围撒点对象（所属过程未认定，剧情特效物件是否在其中未读）",
+      "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者：mapobjCloud 0x43cecd、mapobjWaterFall 0x43d13e、mapobjBuildBottom（及类型越界默认分支）0x43d758、镜头周围撒点对象 0x43c337（函数 0x43c326）与 0x43c63f（未认定所属过程），关时不画；音效音量 0x4245c0 → [0x477c20]＝档×15 封顶 255 → 0x458220 waveOutSetVolume(v×0x01000100)，放声门槛 0x42c180、影片声 0x42df6f；音樂音量 0x424630 → [0x477c24] → 0x459e60 → 0x459d70 SetVolume((⌊60v/255⌋−60)×40)",
       "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_music.md",
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_map_object_drift.md"
       ],
-      "remake": "GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）",
+      "remake": "GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert 与 BattleSceneStage._clouds_hidden 读（云已接，瀑布／建筑底与撒点对象未接）",
       "remake_code": [
         "game/settings/GameSettings.gd"
       ],

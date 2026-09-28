@@ -909,7 +909,7 @@ func _spawn_marker(actor_id: String) -> void:
 func _play_music(key: String) -> void:
 	var music: AudioStreamPlayer = runtime.get_node_or_null("BattleMusic")
 	var path := BattleScenario.resource_path(config, key)
-	if music == null or path == "":
+	if music == null or path == "" or not GameSettings.music_starts():
 		return
 	var stream: AudioStream = load(path)
 	if stream == null:

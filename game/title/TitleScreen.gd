@@ -272,7 +272,7 @@ func _build_scene() -> void:
 ## The original title track 03 (manifest.music, original_music.md §3.1), looping whole from the start.
 func _start_music() -> void:
 	var stream_path := str((manifest.get("music", {}) as Dictionary).get("stream", ""))
-	if stream_path == "":
+	if stream_path == "" or not GameSettings.music_starts():
 		return
 	var stream: AudioStream = load(stream_path)
 	if stream == null:

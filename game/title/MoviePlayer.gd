@@ -87,7 +87,7 @@ func _ensure_nodes() -> void:
 	add_child(_sprite)
 	_audio = AudioStreamPlayer.new()
 	_audio.name = "Soundtrack"
-	_audio.bus = GameSettings.music_bus()
+	_audio.bus = GameSettings.movie_bus() # 0x42df6f: film sound follows 音效音量
 	add_child(_audio)
 
 

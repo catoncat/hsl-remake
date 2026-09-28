@@ -1,6 +1,6 @@
 # 原版配乐：播放引擎、关卡曲目表与各场景何时放哪首（static-derived）
 
-> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42d7c0, 0x42da60, 0x42def0, 0x452a80, 0x452a97, 0x452ab7, 0x4561d0, 0x459ec0, 0x45a0b0 · tools: hsl_steam_classic.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: STORY／WINFAIL／TOWNDEF／STORYOVER 脚本与 obj-998.obs（hsl.pak）、music\NN.wav（Steam 經典版） · status: live · functions: 0x4245c0, 0x424630, 0x424680, 0x42b6b0, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x42c360, 0x42c380, 0x42d7c0, 0x42da60, 0x42def0, 0x452a80, 0x452a97, 0x452ab7, 0x4561d0, 0x4581c0, 0x458220, 0x459d70, 0x459e60, 0x459ec0, 0x45a0b0, 0x45a330 · tools: hsl_steam_classic.py · updated: 2026-09-28
 
 核对：r2 静态反汇编 `$HSL_ORIGINAL_DIR/hsl01.exe`（SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`），脚本取自本机 hsl.pak（即 Steam 的 hsl-cn.pak）。曲目文件本身（18 首 `music\02.wav`–`19.wav`，22050 Hz 立体声 16-bit）见 [Steam 經典版](../resource_inventory/steam_classic_edition.md)。本包只记原版程序怎样使用这些曲目。
 
@@ -201,9 +201,24 @@ obj-998.obs 的其余物件：5 MessageBox、10 GameClear BOSS（OVERBG01.SHP）
 - 只有 MUS、没有后续 LVL 的关卡（008、009、055–058、060–074、081、082、900），整关都放同一首剧情曲。
 - 501–578 每三关共用一个基准关卡的表内曲目。
 
+## 5 音量：設定選項 两条滑杆到混音器
+
+| 项 | 读法 |
+|---|---|
+| 音效音量滑杆 `0x4245c0` | 滑杆档（`0x445f60` 取 `+0x90`，存 `[0x4c6340]`）×15、封顶 255 写 `[0x477c20]`，立刻调 `0x458220(v)`；不在 `0x3a000000` 状态时放 RESOURCE 398 试听（`0x4477b0` → `0x459990` → `0x42c180`）。 |
+| 设备音量 `0x458220` → `0x4581c0` | 参数拼成 `v×0x01000100`（左右声道各 `v<<8`，满档 0xFF00），对每个 waveOut 设备调 `waveOutSetVolume`。这是线性增益，0 静音；作用在整台设备上，音效、音乐与影片声都在它之下（Windows 混音器口径，未实测）。开机初始化 `0x42f176` 同样按 `[0x477c20]` 调一次。 |
+| 音效放声 `0x42c180` | `[0x4c1af4]`（音效可用）为 0，或 `[0x477c20]` 为 0 且第二参数 bit0 为 0 → 不放；否则 `0x459a20(id, 255, flags)`，缓冲区音量 255 → `0x45a330` → `0x459d70` 得 0 dB。音效自身不随滑杆衰减，只受上一行的设备音量。 |
+| 音乐音量滑杆 `0x424630` | 档（存 `[0x4c6348]`）×15、封顶 255；与 `[0x477c24]` 不同时写入，若当前流 `[0x4c1c74]` 在放就 `0x459e60(流, v)` → `0x459d70`，对正在放的曲子立即生效。 |
+| 流音量 `0x459d70` | `SetVolume((⌊60v/255⌋ − 60) × 40)`，百分之一 dB，下限 −10000：255 → 0 dB，128 → −12 dB，0 → −24 dB（不静音）。 |
+| 音乐音量为 0 | PlayMusic `0x42c250` 只记曲号就返回，不停当前曲也不开新曲（§1）；已在放的曲子以 −24 dB 继续。 |
+| 影片声 `0x42df6f` | 影片播放器把 `[0x477c20]`（音效音量）传给 `0x45c5f0`，其声轨经 `0x45a330(buf, v, 0)` → `0x459d70` 用同一条流曲线；不读音乐音量。 |
+| 设置面板 `0x424680` | 打开时把 `[0x477c20]`／`[0x477c24]` 各除以 15（`imul 0x88888889`，`sar 3`）回填两条滑杆档。设置文件 `0x42ecdb` 写、`0x42edf5` 读回 `[0x477c20]`、`[0x477c14]`、`[0x477c24]`。 |
+
+`[0x477c20]` 的全部读写点：`0x4245de`／`0x4245ea`（滑杆写）、`0x4246ac`（面板回填）、`0x42c193`（放声门槛）、`0x42df71`（影片声）、`0x42ecdb`／`0x42edf7`（设置文件）、`0x42f178`（开机设备音量）。`[0x477c24]`：`0x424656`／`0x424663`（滑杆）、`0x4246bb`（面板回填）、`0x42c265`／`0x42c2e6`（PlayMusic 门槛与音量参数）、`0x42ece7`／`0x42edfd`（设置文件）。
+
 ## 重制接线
 
-- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。
+- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。音量照 §5：Master 总线＝音效音量线性增益（0 静音）；Music 总线＝§5 流曲线（0 档 −24 dB）并汇入 Master；影片声走 Movie 总线，取音效音量的流曲线；`music_starts()` 在音乐音量 0 时让各放乐点（`BattleOpeningCoordinator.play_music_stream`、`WorldMapRuntime`、`TitleScreen`、`GameClearScreen`）不停不换。重制滑杆是 0.1 一档（11 档），换算成原版字节用 `round(值×255)`，原版是 15 一档（18 档）。
 - `BattleOpeningCoordinator`／`OpeningCinematics` 按剧本放乐动作换曲，`BattleSceneRuntime` 读「戰場記錄」时先停乐再放所读关卡的表内曲目（§3.1）。
 - `TitleScreen`、`WorldMapRuntime`、`TownRuntime`、`GameClearScreen` 分别放标题、大地图、城镇与通关尾声的曲目（§3.2、§3.5）。
 
@@ -211,7 +226,7 @@ obj-998.obs 的其余物件：5 MessageBox、10 GameClear BOSS（OVERBG01.SHP）
 
 ```sh
 python3 tools/hsl_steam_classic.py music   # 18 首曲目的格式与时长
-r2 -e scr.color=0 -q -c 'pd 60 @ 0x42c250; pd 12 @ 0x42c1c0; pd 8 @ 0x42c380; pd 30 @ 0x459ec0; px 200 @ 0x477b44; pd 20 @ 0x42b6b0; pd 6 @ 0x42b898; pd 6 @ 0x42b95e; pd 6 @ 0x4564e1; pd 6 @ 0x427532; pd 8 @ 0x427d31' "$HSL_ORIGINAL_DIR/hsl01.exe"
+r2 -e scr.color=0 -q -c 'pd 60 @ 0x42c250; pd 12 @ 0x42c1c0; pd 8 @ 0x42c380; pd 30 @ 0x459ec0; px 200 @ 0x477b44; pd 20 @ 0x42b6b0; pd 6 @ 0x42b898; pd 6 @ 0x42b95e; pd 6 @ 0x4564e1; pd 6 @ 0x427532; pd 8 @ 0x427d31; pd 30 @ 0x4245c0; pd 20 @ 0x424630; pd 10 @ 0x458220; pd 24 @ 0x4581c0; pd 20 @ 0x459d70; pd 14 @ 0x42c180' "$HSL_ORIGINAL_DIR/hsl01.exe"
 ```
 
 调用点清单用 r2 `axt @ 0x42c250`／`0x42c340`／`0x42c360`／`0x42c380` 列出。脚本里的放乐动作用 `hsltools.sources.pak` 读 hsl.pak，从 STORY*／WINFAIL*／TOWNDEF／STORYOVER 里取 actPlayMusic／actPlayLevelMusic／actPlayDefaultLevelMusic／actPlayMovie 所在行，再按 §1 解析曲号。
