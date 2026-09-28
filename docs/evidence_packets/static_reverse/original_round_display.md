@@ -6,7 +6,7 @@
 
 - 原版回合计数 `0x4c1bbc` 低字从 1 起、在回合表耗尽时加一；每个完成的行动经 `0x407510` → `0x44ee20` 扫一次胜／负／事件，一次扫描至多启动一个事件（`actExecWinFailProcess` 结束时再扫一次）；三种受攻击条件只在该行动的完成扫描里读本行动的攻击者与受击列表（static-derived，只读反汇编）。
 - 重制 `BattlePlayLoop.advance_current_actor`、`WinfailScenarioRules._evaluate`、`WinfailConditions` 按这三点对齐：回合 N 的事件在回合 N 第一次完成行动后触发，一次一个事件，攻击条件在 `attack` 上下文的完成扫描里读（static-derived 输入）。
-- 差异：扫描次序（区段序 vs 槽序）、事件链内武装的胜负判定时机、受击单位注册竞态未对齐（provisional，差异清单 `winfail-readings`）。
+- 差异：事件链内武装的胜负判定时机、受击单位注册竞态未对齐（provisional，差异清单 `winfail-readings`）。
 
 ## 证据
 
@@ -98,7 +98,7 @@ An actor that dies in its own action (killed by the counter) never reaches its c
 
 ### 重制：扫描形状
 
-`WinfailScenarioRules._evaluate` walks the armed events in section order and stops at the first one that fires; the next pass runs only when that chain returned the `actExecWinFailProcess` request (`WinfailActions.apply_actions`), bounded by `MAX_PASSES` (the original has no bound; raised from 8 to 32 because one pass now starts one event, and WINFAIL038's nine arrival events plus its all-evacuated event chain end to end when the whole party reaches the exit — the battle-sweep fixture for level 38 does exactly that). `run_winfail_rules_tests.run_event_cadence` pins both halves on the live level 51 (events 0 then 1 on consecutive completions) and on a four-event fixture (only the `actExecWinFailProcess` chain pulls the next event into the same action), each with an ablation (firing every holding event: 7 failures; dropping the rescan: 4 failures and 11 in `run_winfail_rules_tests`). Sweep／chapter impact: none — in the 128-battle sweep and the seeded chapter walk no scan ever had two armed events holding at once (`HOLD_DBG` census) and every battle's fired sequence (key, round, step, context) is line-for-line unchanged, so `results.json`／`chapter.json` are unchanged. **Not aligned (remake boundary):** (a) scan order — the remake reads section order, the original slot order; they agree while no event is re-inserted into a lower hole than its section rank (a self re-arming chain reuses its own slot; `0x44e7b0` fills holes first), and the census found no scan where the difference could matter; (b) the win／fail scans — the remake still decides a win armed by an event chain within the same completion (`_evaluate` commits the terminal status and `resolve_outcome` re-reads `victory_state` after every settled action or strike), where the original, scanning win／fail before events and not again unless `0x4c1d44` is set, decides it at the next completed action; (c) the story-flag guard — remake chains apply at once, so there is no scan to skip while one plays.
+`WinfailScenarioRules._evaluate` walks the armed event slots in slot order (`WinfailCompiler.status_slots`, [claim limits](winfail_claim_limits.md) «五类读法») and stops at the first one that fires; the next pass runs only when that chain returned the `actExecWinFailProcess` request (`WinfailActions.apply_actions`), bounded by `MAX_PASSES` (the original has no bound; raised from 8 to 32 because one pass now starts one event, and WINFAIL038's nine arrival events plus its all-evacuated event chain end to end when the whole party reaches the exit — the battle-sweep fixture for level 38 does exactly that). `run_winfail_rules_tests.run_event_cadence` pins both halves on the live level 51 (events 0 then 1 on consecutive completions) and on a four-event fixture (only the `actExecWinFailProcess` chain pulls the next event into the same action), each with an ablation (firing every holding event: 7 failures; dropping the rescan: 4 failures and 11 in `run_winfail_rules_tests`). Sweep／chapter impact: none — in the 128-battle sweep and the seeded chapter walk no scan ever had two armed events holding at once (`HOLD_DBG` census) and every battle's fired sequence (key, round, step, context) is line-for-line unchanged, so `results.json`／`chapter.json` are unchanged. **Not aligned (remake boundary):** (a) scan order — now slot order like the original (first free slot on insert, last copy on delete); (b) the win／fail scans — the remake still decides a win armed by an event chain within the same completion (`_evaluate` commits the terminal status and `resolve_outcome` re-reads `victory_state` after every settled action or strike), where the original, scanning win／fail before events and not again unless `0x4c1d44` is set, decides it at the next completed action; (c) the story-flag guard — remake chains apply at once, so there is no scan to skip while one plays.
 
 ### 重制：攻击上下文
 
@@ -114,7 +114,6 @@ actCheckRoundDisp and actDetectRoundDispDisp are supported conditions in Winfail
 
 ## 边界
 
-- 扫描次序：重制按区段序、原版按槽序；事件被重新插入到低于其区段序的空槽之前两者一致，普查未见差异。
 - 胜负扫描：事件链内武装的胜利，重制在同一完成里判定；原版先扫胜负再扫事件，除非 `0x4c1d44` 置位否则到下一次完成才判。
 - 剧情旗守卫：重制事件链即时应用，没有播放期间被跳过的扫描。
 - 受击单位注册竞态：`0x44fad0(code, 1)` 要求受击单位扫描时仍注册，重制的 token 查找包括已倒下单位。

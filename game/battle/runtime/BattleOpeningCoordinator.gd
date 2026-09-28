@@ -40,6 +40,10 @@ const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningSt
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const UISkin = preload("res://game/common/BattleUISkin.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 
 const SUMMARY_SCHEMA := "hsl_battle_opening_coordinator.v1"
 ## Pacing in original ticks (16 ms). Tests may shorten these before start(); the product
@@ -914,6 +918,8 @@ func _enter_game_clear(next_path: String, source_event_id: String) -> void:
 	var clear_script: Script = load(next_path.get_basename() + ".gd")
 	if clear_script != null:
 		clear_script.set("showcase", _game_clear_showcase())
+		var resources: Dictionary = runtime.first_battle_scenario.get("resources", {})
+		clear_script.set("combat_animation_path", BattleScenario.resource_path(runtime.first_battle_scenario, "combat_animation") if resources.has("combat_animation") else "")
 	var progress: Node = runtime.get_node_or_null("CampaignProgress")
 	if progress != null:
 		progress.reset_campaign()
@@ -955,18 +961,29 @@ func _record_level_up_star(event: Dictionary) -> void:
 	story_records.append({"kind": "level_up_star_insert", "source_event_id": str(event.get("id", "")), "args": (event.get("args", []) as Array).duplicate(), "status": "skipped_no_level_up_star_sprite"})
 
 
-## The finale's controlled slots (story_actors with role player, EVEF order) with the
-## portrait and label the dialogue view used for them — the GameClear showcase.
+## The nine GameClear party slots (defProcClearShowPlayer, original_game_clear.md): each party
+## member of the finale's loop by its base actor id 001–009, with the 0x42b2b0 status-sheet values
+## (the status page's live figures) and its job row for the combat shape; the screen shows
+## 此角色未加入隊伍 for a slot with no member. Revive counts are not tracked (0).
 func _game_clear_showcase() -> Array:
 	var members: Array = []
-	var portraits: Dictionary = runtime.opening_overlay._portraits if runtime.opening_overlay != null else {}
-	var names: Dictionary = runtime.message_text_evidence.get("speaker_names", {})
-	for actor in runtime.first_battle_scenario.get("story_actors", []):
-		if str((actor as Dictionary).get("role", "")) != "player":
+	var actors: Dictionary = UISkin.data().get("actors", {})
+	for unit_value in runtime.play_loop.get("units", []):
+		if not unit_value is Dictionary:
 			continue
-		var actor_id := str((actor as Dictionary).get("actor_id", ""))
-		var token := str((actor as Dictionary).get("token", ""))
-		members.append({"actor_id": actor_id, "name": str(names.get(token, token.trim_prefix("SID_"))), "portrait": str((portraits.get(actor_id, {}) as Dictionary).get("res_path", ""))})
+		var unit: Dictionary = unit_value
+		if str(unit.get("battle_actor_role", "")) != "player_controlled":
+			continue
+		var actor_id := str(unit.get("actor_id", ""))
+		var row: Dictionary = actors.get(ActorSpriteKey.row_key(unit, actors), actors.get(actor_id, {}))
+		var profile := CoreCombatRules.combat_profile_from_unit(unit)
+		members.append({"actor_id": actor_id, "joined": true, "sprite_actor_id": ActorSpriteKey.resolve(unit), "sheet": {
+			"name": str(unit.get("display_name", row.get("name", actor_id))), "title": str(unit.get("title", row.get("title", ""))),
+			"race": str((actors.get(actor_id, {}) as Dictionary).get("race", "")), "str": int(profile.get("str", 0)), "dex": int(profile.get("dex", 0)),
+			"mind": int(profile.get("mind", 0)), "con": int(profile.get("con", 0)), "attack": int(profile.get("live_attack_damage", 0)),
+			"defense": int(profile.get("live_defense", 0)), "magic": int(profile.get("live_magic_attack", 0)), "move": int(unit.get("move_point", 0)),
+			"speed": int(unit.get("live_speed", 0)), "level": int(unit.get("level", 1)), "max_hp": int(unit.get("max_hp", 0)),
+			"max_mp": int(unit.get("max_mp", 0)), "kills": int(unit.get("kill_count", 0)), "revives": 0}})
 	return members
 
 

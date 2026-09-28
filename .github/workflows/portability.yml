@@ -7,6 +7,8 @@
 #   - shell, PowerShell and Python sources parse.
 # The Godot import and suites are not run: they load content/, which a public checkout imports first
 # (tools/verify.sh skips them the same way).
+# Private repositories skip the job: their Actions minutes are billed (macOS 10x, Windows 2x) and every
+# branch push would run three OS jobs; the public export runs it on free public-repository runners.
 name: portability
 
 on:
@@ -19,6 +21,7 @@ permissions:
 
 jobs:
   portability:
+    if: ${{ !github.event.repository.private }}
     strategy:
       fail-fast: false
       matrix:

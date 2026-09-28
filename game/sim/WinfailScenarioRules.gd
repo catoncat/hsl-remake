@@ -22,8 +22,9 @@ extends RefCounted
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: static-derived docs/evidence_packets/static_reverse/winfail_claim_limits.md
 ##   rules: provisional
-##     (one-shot status consumption, section-order event walk, MAX_PASSES bound — ids in
+##     (MAX_PASSES bound, fail-before-win on a shared scan — ids in
 ##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 ##   rules: remake-invented (party_wiped defeat rule — negative-evidence in original_check_targets.md §R8)
 
@@ -219,10 +220,7 @@ static func select_event_status(battle: Dictionary, event_code: int) -> Dictiona
 		next["interaction"] = "scenario_error"
 		next["scenario_error"] = "select_event_status_missing:%s" % key
 		return next
-	var statuses: Array = next.get("event_statuses", []).duplicate()
-	if statuses.find(event_code) == -1:
-		statuses.append(event_code)
-	next["event_statuses"] = statuses
+	WinfailCompiler.status_slot_insert(next, "event", event_code)
 	(runtime["select_requests"] as Array).append({"event_code": event_code, "status_key": key, "turn": int(next.get("turn", 1))})
 	var before := (runtime.get("fired", []) as Array).size()
 	next["winfail_runtime"] = runtime
@@ -427,10 +425,11 @@ static func _evaluate(battle: Dictionary, context: String) -> Dictionary:
 			# chain; the chain's own rescan (0x453b7c) comes frames later, so it reads c + 1.
 			_bump_handoff_counter(runtime)
 		again = false
-		for status_value in rules["statuses"]["event"]:
-			var status: Dictionary = status_value
-			var code := int(status["code"])
-			if (next.get("event_statuses", []) as Array).find(code) == -1:
+		# 0x44ed70 walks the 20 slots in index order (static-derived), not the sections.
+		for code_value in WinfailCompiler.status_slots(next, "event"):
+			var code := int(code_value)
+			var status := WinfailCompiler.status_by_key(rules, "event_%d" % code) if code != -1 else {}
+			if status.is_empty():
 				continue
 			if not WinfailConditions.conditions_hold(next, status, context):
 				continue
@@ -438,7 +437,7 @@ static func _evaluate(battle: Dictionary, context: String) -> Dictionary:
 				# provisional: a self re-arming insert event waits for its previous
 				# recruit to land before asking for the next one.
 				continue
-			next["event_statuses"] = WinfailCompiler.without(next.get("event_statuses", []), code)
+			WinfailCompiler.status_slot_disarm(next, "event", code)
 			again = WinfailActions.apply_actions(next, status, context)
 			break
 	if passes == 1 and context in ["round", "attack"]:
@@ -486,11 +485,11 @@ static func _terminal_status(battle: Dictionary, wanted_outcome: Dictionary = {}
 			return {"status": status, "outcome": (resolved["outcome"] as Dictionary).duplicate()}
 	if wanted_outcome.is_empty():
 		for kind in ["fail", "win"]:
-			var armed: Array = battle.get("%s_statuses" % kind, [])
-			for status_value in rules["statuses"][kind]:
-				var status: Dictionary = status_value
-				if _pending_enemy_count_result(battle, status): continue
-				if armed.find(int(status["code"])) == -1 or not WinfailConditions.conditions_hold(battle, status, "round"):
+			# 0x44ebf0／0x44ecb0 walk the 10 slots in index order (static-derived).
+			for code_value in WinfailCompiler.status_slots(battle, kind):
+				var status := WinfailCompiler.status_by_key(rules, "%s_%d" % [kind, int(code_value)]) if int(code_value) != -1 else {}
+				if status.is_empty() or _pending_enemy_count_result(battle, status): continue
+				if not WinfailConditions.conditions_hold(battle, status, "round"):
 					continue
 				return {"status": status, "outcome": outcome_for(status)}
 		return {"status": {}, "outcome": {}}

@@ -7,8 +7,9 @@ extends RefCounted
 ## WinfailActions. Schema: hsl_winfail_script_rules.v1.
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
+##   rules: static-derived docs/evidence_packets/static_reverse/winfail_claim_limits.md
 ##   rules: provisional
-##     (AND-combined condition prefix and insert lifecycle — ids in
+##     (AND-combined condition prefix, fixture only — ids in
 ##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
@@ -410,11 +411,16 @@ static func _initial_statuses(seed: Dictionary) -> Dictionary:
 					if kind == "":
 						continue
 					found = true
+					# Same slot rules as the chain actions (0x44e7b0 first free slot, no
+					# duplicate check; 0x44e8d0 frees the last copy); provisional: a hole a
+					# STORY delete leaves is compacted instead of kept for the next insert.
 					if name.begins_with("actInsert"):
-						if (statuses[kind] as Array).find(int(arg(args, 0))) == -1:
+						if (statuses[kind] as Array).size() < int(STATUS_SLOT_COUNTS[kind]):
 							(statuses[kind] as Array).append(int(arg(args, 0)))
 					elif name.begins_with("actDelete"):
-						statuses[kind] = without(statuses[kind], int(arg(args, 0)))
+						var last := (statuses[kind] as Array).rfind(int(arg(args, 0)))
+						if last != -1:
+							(statuses[kind] as Array).remove_at(last)
 	return {"statuses": statuses, "source": "story_script" if found else "none"}
 
 
@@ -559,6 +565,76 @@ static func zone_cells(zone_px: Array, cell_size: int) -> Array:
 		for x in range(x0, x1 + 1):
 			cells.append([x, y])
 	return cells
+
+
+## static-derived (hsl01.exe 0x44ebf0／0x44ecb0／0x44ed70, 0x44e7b0, 0x44e8d0): the
+## original keeps 10 win, 10 fail and 20 event slots (stride 0xb4, code -1 = free).
+## actInsert*Status writes the code into the first free slot without a duplicate check,
+## actDelete*Status frees the last slot holding the code, and a scan walks the slots in
+## index order and disarms the slot that fires. `<kind>_statuses` stays the compacted
+## view (slot order, duplicates kept); the slots with their holes live in
+## winfail_runtime.status_slots and are rebuilt from the view when the two disagree.
+const STATUS_SLOT_COUNTS := {"win": 10, "fail": 10, "event": 20}
+
+
+static func status_slots(battle: Dictionary, kind: String) -> Array:
+	var armed: Array = battle.get("%s_statuses" % kind, [])
+	var runtime: Variant = battle.get("winfail_runtime")
+	if typeof(runtime) == TYPE_DICTIONARY:
+		var slots: Variant = ((runtime as Dictionary).get("status_slots", {}) as Dictionary).get(kind)
+		if slots is Array and _compacted(slots) == _ints(armed):
+			return (slots as Array).duplicate()
+	return _ints(armed)
+
+
+static func status_slot_insert(battle: Dictionary, kind: String, code: int) -> void:
+	var slots := status_slots(battle, kind)
+	var hole := slots.find(-1)
+	if hole != -1:
+		slots[hole] = code
+	elif slots.size() < int(STATUS_SLOT_COUNTS.get(kind, 20)):
+		slots.append(code)
+	_store_slots(battle, kind, slots)
+
+
+static func status_slot_delete(battle: Dictionary, kind: String, code: int) -> void:
+	var slots := status_slots(battle, kind)
+	var index := slots.rfind(code)
+	if index != -1:
+		slots[index] = -1
+		_store_slots(battle, kind, slots)
+
+
+static func status_slot_disarm(battle: Dictionary, kind: String, code: int) -> void:
+	var slots := status_slots(battle, kind)
+	var index := slots.find(code)
+	if index != -1:
+		slots[index] = -1
+		_store_slots(battle, kind, slots)
+
+
+static func _store_slots(battle: Dictionary, kind: String, slots: Array) -> void:
+	battle["%s_statuses" % kind] = _compacted(slots)
+	var runtime: Variant = battle.get("winfail_runtime")
+	if typeof(runtime) == TYPE_DICTIONARY:
+		var all: Dictionary = (runtime as Dictionary).get("status_slots", {})
+		all[kind] = slots
+		(runtime as Dictionary)["status_slots"] = all
+
+
+static func _compacted(slots: Array) -> Array:
+	var result: Array = []
+	for value in slots:
+		if int(value) != -1:
+			result.append(int(value))
+	return result
+
+
+static func _ints(values: Array) -> Array:
+	var result: Array = []
+	for value in values:
+		result.append(int(value))
+	return result
 
 
 static func without(values: Array, code: int) -> Array:

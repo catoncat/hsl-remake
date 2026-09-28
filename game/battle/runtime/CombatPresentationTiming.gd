@@ -166,7 +166,6 @@ const SHOW_NUMBER_TICKS := 46
 const SHOW_NUMBER_RELEASE_TICKS := 32
 ## kind 0 lives 10 per digit ＋ 34 (one hold tick, 18 settle, 15 more ticks after the level first
 ## drops): 44 ticks for one digit, 54 for two (DamageNumberFloater.life_ticks).
-const DAMAGE_NUMBER_BASE_TICKS := 34
 const DAMAGE_NUMBER_DIGIT_TICKS := 10
 ## kind 0 after its bounce: 18 settle ticks (+0x90 = 0x10012), then +0x28 counts 16 → 0 one
 ## per tick and releases the waiter when it drops below 9 — the 8th of those ticks.

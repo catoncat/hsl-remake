@@ -341,95 +341,99 @@ func _run_defeat_leaves_for_game_over() -> void:
 
 
 func _run_game_clear_screen() -> void:
-	## The GameClear sequence (level 998) in the defProcClearBOSS state order
-	## (original_music.md §3.5): the epilogue text over the dusk castle, the STORYOVER dialogue
-	## on black (ten 緹娜／漢克斯 lines with the script's pauses, click-confirmed), the second
-	## text over the second backdrop, the party showcase, the credits scroll — each behind a
-	## fade, with a key skipping ahead; after the credits a key leaves for the title. The music
-	## follows the phases: 07, then 04 at the showcase, 02 at the credits, never faded.
+	## The GameClear sequence (level 998) as defProcClearBOSS runs it in 16 ms ticks
+	## (original_game_clear.md): OverBG01 fading in with track 07, Over001 rolling up from y 500 at
+	## 0.5 px/tick, the STORYOVER dialogue (ten click-confirmed lines) under the dark screen with the
+	## backdrop turned to OverBG02, Over002, track 04 and the nine party slots (a member's status
+	## sheet, 此角色未加入隊伍 for the rest), track 02 and the workteam credits resting with their
+	## bottom on 480. No key skips anything; once the credits rest a key leaves for the title.
 	var clear_script: Script = load("res://game/title/GameClearScreen.gd")
-	clear_script.set("showcase", [{"actor_id": "001", "name": "雷歐納德", "portrait": "res://content/imported/hsl/chapter01/portraits/001.png"}, {"actor_id": "002", "name": "緹娜", "portrait": "res://content/imported/hsl/chapter01/portraits/002.png"}])
+	clear_script.set("showcase", [{"actor_id": "001", "joined": true, "sprite_actor_id": "001", "sheet": {"name": "雷歐納德", "title": "劍士", "race": "人類", "str": 20, "dex": 18, "mind": 9, "con": 15, "attack": 40, "defense": 30, "magic": 17, "move": 5, "speed": 12, "level": 30, "max_hp": 300, "max_mp": 80, "kills": 99, "revives": 0}}])
+	clear_script.set("combat_animation_path", "res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	var scene = GameClearScene.instantiate()
-	scene.phase_seconds_scale = 0.05
+	scene.phase_seconds_scale = 0.002
 	root.add_child(scene)
 	current_scene = scene
-	await process_frame
 	var summary: Dictionary = scene.summary()
-	_assert_eq(str(summary.get("phase", "")), "epilogue_1", "the sequence opens on Over001 over the first backdrop (state 1)")
-	_assert_eq(int(summary.get("phase_count", 0)), 5, "five phases: epilogue 1, the dialogue, epilogue 2, the party showcase, credits")
+	_assert_eq(str(summary.get("phase", "")), "epilogue_1", "the sequence opens on the first backdrop (BOSS first frame)")
+	_assert_eq(int(summary.get("fade_level", 0)), 16, "it fades in from black")
 	_assert_eq(int(summary.get("epilogue_step_count", 0)), 24, "STORYOVER compiles to 24 steps (delays, ten lines, the footsteps, the reveal)")
-	_assert_eq(int(summary.get("showcase_count", 0)), 2, "two party members are shown")
 	_assert_true(str(summary.get("music_stream", "")).ends_with("/07.ogg") and bool(summary.get("music_playing", false)), "the ending opens on track 07 (§3.5)")
 	var background = scene.get_node_or_null("Background")
 	var text = scene.get_node_or_null("Text")
 	_assert_true(background != null and background.texture != null and background.texture.resource_path.ends_with("OverBG01.SHP.png"), "OverBG01 is the first backdrop")
-	_assert_true(text != null and text.texture != null and text.texture.resource_path.ends_with("Over001.SHP.png"), "Over001 is the first narration")
+	for tick in range(42):
+		scene._tick()
+	_assert_true(text.visible and text.texture.resource_path.ends_with("Over001.SHP.png"), "Over001 is inserted after the 40-tick wait (state 1)")
+	_assert_true(text.position.x == 48.0 and text.position.y > 520.0 and text.position.y < 530.0, "Over001 starts below the frame at x 48 (y 500 minus its origin): %s" % str(text.position))
+	var before: float = text.position.y
+	for tick in range(100):
+		scene._tick()
+	_assert_eq(before - text.position.y, 50.0, "Over001 rises 0.5 px a tick")
 	var key := InputEventKey.new()
 	key.keycode = KEY_SPACE
 	key.pressed = true
 	scene._unhandled_input(key)
-	_assert_eq(str(scene.summary().get("phase", "")), "epilogue", "a key skips to the STORYOVER dialogue (state 3)")
+	_assert_eq(str(scene.summary().get("phase", "")), "epilogue_1", "a key does not skip (the BOSS reads input only after the credits)")
+	var frames := 0
+	while str(scene.summary().get("phase", "")) != "epilogue" and frames < 600:
+		await process_frame
+		frames += 1
+	_assert_true(not text.visible, "Over001 is removed once 80 px past the top")
 	_assert_true(str(scene.summary().get("music_stream", "")).ends_with("/07.ogg"), "07 carries on through the dialogue")
-	await create_timer(0.12).timeout
-	await process_frame
+	while not bool(scene.summary().get("epilogue_waiting_confirm", false)) and frames < 1200:
+		await process_frame
+		frames += 1
 	summary = scene.summary()
-	_assert_true(bool(summary.get("epilogue_waiting_confirm", false)), "after the opening pause the first line waits for a confirm")
 	_assert_eq(summary.get("epilogue_messages", []), ["2396"] as Array[String], "緹娜's first line (2396) opens the dialogue")
 	_assert_eq(str(summary.get("epilogue_speaker", "")), "緹娜：", "the board names 緹娜")
-	_assert_true(scene.get_node("DialogueLayer/EpilogueBoard").visible, "the dialogue board shows over the black screen")
-	scene._unhandled_input(key)
-	_assert_true(not bool(scene.summary().get("epilogue_waiting_confirm", true)), "confirming the line enters the following pause")
-	await create_timer(0.08).timeout
-	await process_frame
-	_assert_eq(str(scene.summary().get("epilogue_speaker", "")), "漢克斯：", "漢克斯 answers (2397) after the pause")
-	var epilogue_frames := 0
-	while str(scene.summary().get("phase", "")) == "epilogue" and epilogue_frames < 900:
+	_assert_eq(int(summary.get("dark_level", 0)), 16, "the dark screen is full by then (6 ticks a level)")
+	while str(scene.summary().get("phase", "")) == "epilogue" and frames < 3000:
 		if bool(scene.summary().get("epilogue_waiting_confirm", false)):
 			scene._unhandled_input(key)
 		await process_frame
-		epilogue_frames += 1
+		frames += 1
 	var expected_lines: Array[String] = []
 	for step in (scene.manifest.get("game_clear_epilogue", {}) as Dictionary).get("steps", []):
 		if str((step as Dictionary).get("kind", "")) == "message":
 			expected_lines.append(str((step as Dictionary).get("message_id", "")))
 	_assert_eq(scene.summary().get("epilogue_messages", []), expected_lines, "every STORYOVER line is shown once, in script order")
 	_assert_eq(expected_lines.size(), 10, "STORYOVER has ten lines")
-	_assert_true(not scene.get_node("DialogueLayer/EpilogueBoard").visible, "the board clears when the dialogue ends")
-	summary = scene.summary()
-	_assert_eq(str(summary.get("phase", "")), "epilogue_2", "actDeleteDarkScreen hands over to the second epilogue (state 9)")
+	_assert_eq(str(scene.summary().get("phase", "")), "epilogue_2", "after the dialogue and 40 ticks Over002 follows (state 9)")
 	_assert_true(text.texture.resource_path.ends_with("Over002.SHP.png") and background.texture.resource_path.ends_with("OverBG02.SHP.png"), "Over002 over OverBG02")
-	_assert_true(str(summary.get("music_stream", "")).ends_with("/07.ogg") and bool(summary.get("music_playing", false)), "07 still plays over Over002")
-	scene._unhandled_input(key)
+	while str(scene.summary().get("phase", "")) != "showcase" and frames < 4000:
+		await process_frame
+		frames += 1
+	_assert_true(str(scene.summary().get("music_stream", "")).ends_with("/04.ogg") and bool(scene.summary().get("music_playing", false)), "the players start with track 04 (state 11)")
+	while (scene.summary().get("slots_shown", []) as Array).is_empty() and frames < 4200:
+		await process_frame
+		frames += 1
+	var first = scene.get_node_or_null("Showcase/Member0")
+	_assert_true(first != null and first.get_node_or_null("Sprite") != null, "slot 0 shows its combat shape")
+	var sheet_text := ""
+	if first != null:
+		for child in first.get_node("Sheet").get_children():
+			sheet_text += str(child.text)
+	_assert_true(sheet_text.begins_with("姓名: 雷歐納德力量: 20攻擊力: 40") and sheet_text.contains("殺敵總數: 99"), "slot 0 carries its status sheet: %s" % sheet_text)
+	while str(scene.summary().get("phase", "")) != "credits" and frames < 9000:
+		await process_frame
+		frames += 1
 	summary = scene.summary()
-	_assert_eq(str(summary.get("phase", "")), "showcase", "another key skips to the party showcase")
-	_assert_true(str(summary.get("music_stream", "")).ends_with("/04.ogg") and bool(summary.get("music_playing", false)), "the showcase switches to track 04 (state 11)")
-	_assert_true(background.texture.resource_path.ends_with("Title011.SHP.png"), "the showcase uses the TITLE011 card backdrop")
-	_assert_eq(scene.get_node("Showcase").get_child_count(), 2, "one card per member")
-	_assert_eq(str(scene.get_node("Showcase/Member0/Name").text), "雷歐納德", "the first card names 雷歐納德")
-	_assert_true(scene.get_node_or_null("Showcase/Member0/Portrait") != null, "the first card carries the portrait")
-	scene._unhandled_input(key)
-	summary = scene.summary()
-	_assert_eq(str(summary.get("phase", "")), "credits", "another key skips to the credits")
-	_assert_true(str(summary.get("music_stream", "")).ends_with("/02.ogg") and bool(summary.get("music_playing", false)), "the credits switch to track 02 (states 16-17)")
+	_assert_eq(summary.get("slots_shown", []), ["001", "002", "003", "004", "005", "006", "007", "008", "009"], "all nine slots roll, in slot order")
+	_assert_true(str(summary.get("music_stream", "")).ends_with("/02.ogg") and bool(summary.get("music_playing", false)), "the credits start with track 02 (state 17)")
 	_assert_true(text.texture.resource_path.ends_with("workteam_simplified.png"), "the workteam scroll is the credits, shown as its simplified redraw (SimplifiedDisplay.texture_path)")
-	var start_y: float = text.position.y
-	await create_timer(1.2).timeout
-	await process_frame
-	_assert_true(text.position.y < start_y, "the credits roll upwards")
-	var frames := 0
-	while str(scene.summary().get("phase", "")) != "waiting" and frames < 600:
+	while str(scene.summary().get("phase", "")) != "waiting" and frames < 12000:
 		await process_frame
 		frames += 1
 	_assert_eq(str(scene.summary().get("phase", "")), "waiting", "after the credits the screen waits for input")
+	_assert_eq(text.position, Vector2(9, -960), "the credits rest with their bottom on 480")
 	scene._unhandled_input(key)
 	_assert_eq(str(scene.summary().get("phase", "")), "fading_out", "a key after the credits starts the fade-out")
 	_assert_eq(str((scene.summary().get("transition", {}) as Dictionary).get("scene", "")), "res://game/title/TitleScreen.tscn", "the fade-out leads to the title")
-	await create_timer(scene.FADE_SECONDS * 0.5).timeout
 	summary = scene.summary()
 	_assert_true(bool(summary.get("music_playing", false)) and is_equal_approx(float(summary.get("music_volume_db", 0.0)), GameSettings.MUSIC_PLAYER_DB), "02 keeps its volume through the fade-out: %.1f dB" % float(summary.get("music_volume_db", 0.0)))
-	await create_timer(scene.FADE_SECONDS * 0.5 + 0.3).timeout
-	await process_frame
-	await process_frame
+	for wait in range(10):
+		await process_frame
 	var title = current_scene
 	_assert_true(title != null and title.has_method("summary") and str(title.summary().get("schema", "")) == "hsl_title_screen.v1", "the GameClear screen hands over to the title screen")
 	_assert_true(title != null and str(title.summary().get("music_stream", "")).ends_with("/03.ogg"), "back at the title the title track 03 plays")

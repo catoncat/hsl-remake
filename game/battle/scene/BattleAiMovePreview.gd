@@ -37,7 +37,6 @@ var _cells: Array = []
 var reach_shown := false
 ## Previews started (read by tests and the route log).
 var shown_count := 0
-var last_cells: Array = []
 
 
 static func create(scene_runtime: Node) -> RefCounted:
@@ -63,7 +62,6 @@ func begin(action: Dictionary, actor: Node, path: Array, duration: float, origin
 	_clock = 0.0
 	_ticks = 0
 	shown_count += 1
-	last_cells = cells.duplicate()
 	_cells = cells.duplicate()
 	reach_shown = false
 	_glide_ticks = 0

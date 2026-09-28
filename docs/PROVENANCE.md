@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (196 modules, 137 remake-invented cells, 67 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (196 modules, 136 remake-invented cells, 67 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (196)
 
@@ -223,9 +223,9 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [Values](../game/sim/Values.gd) | remake-invented | n/a | n/a | n/a | n/a |
 | [WeaponEffectRules](../game/sim/WeaponEffectRules.gd) | static-derived [original_weapon_effects.md](../docs/evidence_packets/static_reverse/original_weapon_effects.md) | n/a | n/a | n/a | n/a |
 | [WinfailActions](../game/sim/WinfailActions.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_player_mode.md](../docs/evidence_packets/static_reverse/original_player_mode.md); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_fixpos_fly_prev_insert.md](../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md); static-derived [original_story_object_terrain.md](../docs/evidence_packets/static_reverse/original_story_object_terrain.md); static-derived [original_exec_mode_sys_arrive.md](../docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md); static-derived [original_use_item_no_attack.md](../docs/evidence_packets/static_reverse/original_use_item_no_attack.md); static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md); static-derived [original_drop_lightning.md](../docs/evidence_packets/static_reverse/original_drop_lightning.md); static-derived [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md); provisional | n/a | n/a | n/a | n/a |
-| [WinfailCompiler](../game/sim/WinfailCompiler.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
-| [WinfailConditions](../game/sim/WinfailConditions.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_round_display.md](../docs/evidence_packets/static_reverse/original_round_display.md); provisional | n/a | n/a | n/a | n/a |
-| [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_round_display.md](../docs/evidence_packets/static_reverse/original_round_display.md); provisional; remake-invented | n/a | n/a | n/a | n/a |
+| [WinfailCompiler](../game/sim/WinfailCompiler.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [winfail_claim_limits.md](../docs/evidence_packets/static_reverse/winfail_claim_limits.md); provisional | n/a | n/a | n/a | n/a |
+| [WinfailConditions](../game/sim/WinfailConditions.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_round_display.md](../docs/evidence_packets/static_reverse/original_round_display.md); static-derived [winfail_claim_limits.md](../docs/evidence_packets/static_reverse/winfail_claim_limits.md); provisional | n/a | n/a | n/a | n/a |
+| [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md); static-derived [original_round_display.md](../docs/evidence_packets/static_reverse/original_round_display.md); static-derived [winfail_claim_limits.md](../docs/evidence_packets/static_reverse/winfail_claim_limits.md); provisional; remake-invented | n/a | n/a | n/a | n/a |
 | [WrdTerrainTiles](../game/sim/WrdTerrainTiles.gd) | resource-derived [level051_terrain.json](../content/generated/hsl/static/hsl01/level051_terrain.json); static-derived [original_story_object_terrain.md](../docs/evidence_packets/static_reverse/original_story_object_terrain.md); static-derived [original_movement.md](../docs/evidence_packets/static_reverse/original_movement.md); static-derived [original_actor_traversal.md](../docs/evidence_packets/static_reverse/original_actor_traversal.md) | n/a | n/a | n/a | n/a |
 
 #### game/sim/loop (7)
@@ -253,7 +253,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [CampaignResumePrompt](../game/title/CampaignResumePrompt.gd) | n/a | remake-invented | remake-invented | n/a | n/a |
-| [GameClearScreen](../game/title/GameClearScreen.gd) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); static-derived [original_game_clear_epilogue.md](../docs/evidence_packets/static_reverse/original_game_clear_epilogue.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); provisional; remake-invented [simplified_images.json](../content/generated/hsl/text/simplified_images.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented | provisional | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json); resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) |
+| [GameClearScreen](../game/title/GameClearScreen.gd) | static-derived [original_game_clear.md](../docs/evidence_packets/static_reverse/original_game_clear.md); static-derived [original_game_clear_epilogue.md](../docs/evidence_packets/static_reverse/original_game_clear_epilogue.md) | static-derived [original_game_clear.md](../docs/evidence_packets/static_reverse/original_game_clear.md); resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [simplified_images.json](../content/generated/hsl/text/simplified_images.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); provisional | static-derived [original_game_clear.md](../docs/evidence_packets/static_reverse/original_game_clear.md); provisional | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json); resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md); static-derived [original_game_clear_epilogue.md](../docs/evidence_packets/static_reverse/original_game_clear_epilogue.md); static-derived [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); static-derived [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md); runtime-measured [original_battle_end_flow.md](../docs/evidence_packets/static_reverse/original_battle_end_flow.md); provisional | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
 | [MoviePlayer](../game/title/MoviePlayer.gd) | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); remake-invented | resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json); remake-invented | n/a | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json) | resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json) |
 | [TitleScreen](../game/title/TitleScreen.gd) | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); provisional; remake-invented; static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#01`; static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); remake-invented | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) | static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json); static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md) |
@@ -270,7 +270,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (137)
+### remake-invented 清单 (136)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -398,7 +398,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [CampaignResumePrompt](../game/title/CampaignResumePrompt.gd) | layout | resume prompt placement |
 | [CampaignResumePrompt](../game/title/CampaignResumePrompt.gd) | strings | 「繼續」／「從第一戰重新開始」 |
 | [GameClearScreen](../game/title/GameClearScreen.gd) | layout | workteam lettering redrawn with the original FONT.24 simplified glyphs [simplified_images.json](../content/generated/hsl/text/simplified_images.json) |
-| [GameClearScreen](../game/title/GameClearScreen.gd) | strings | showcase names from portraits |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | rules | OPT-RETRY=可重新挑戰本戰 only: re-enter the battle from its entry hand-off, no self-timed exit [OPTIONS.md](../docs/OPTIONS.md) |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | layout | OPT-RETRY=可重新挑戰本戰 only: the two-row menu under the text [OPTIONS.md](../docs/OPTIONS.md) |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | strings | OPT-RETRY=可重新挑戰本戰 only: 重新挑戰本戰／回到標題 [OPTIONS.md](../docs/OPTIONS.md) |
@@ -470,14 +469,14 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TacticalGridRules](../game/sim/TacticalGridRules.gd) | rules | — | equal-cost path ties, occupancy adaptation |
 | [TownEventRules](../game/sim/TownEventRules.gd) | rules | — | execution model, every behaviour reading and the initial menu trees — docs/evidence_packets/static_reverse/town_event_semantics.md |
 | [WinfailActions](../game/sim/WinfailActions.gd) | rules | — | insert lifecycle, wait／fly／exec-mode readings — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
-| [WinfailCompiler](../game/sim/WinfailCompiler.gd) | rules | — | AND-combined condition prefix and insert lifecycle — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
-| [WinfailConditions](../game/sim/WinfailConditions.gd) | rules | — | condition polarity, AND prefix — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
-| [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | rules | — | one-shot status consumption, section-order event walk, MAX_PASSES bound — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
+| [WinfailCompiler](../game/sim/WinfailCompiler.gd) | rules | — | AND-combined condition prefix, fixture only — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
+| [WinfailConditions](../game/sim/WinfailConditions.gd) | rules | — | AND over multi-check prefixes, fixture only — winfail_claim_limits.md |
+| [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | rules | — | MAX_PASSES bound, fail-before-win on a shared scan — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
 | [BattleLoopAI](../game/sim/loop/BattleLoopAI.gd) | rules | — | target／route composition, stable-id call cleanup, dying-path category walk over the chosen foe, not the 0x43f79b loop; level-37 gems wait — docs/architecture/BATTLE_SYSTEMS.md#ai |
 | [BattleLoopInventory](../game/sim/loop/BattleLoopInventory.gd) | rules | — | large user Use range: body-edge distance 1 stands in for the range-2 flood |
 | [BattleLoopScript](../game/sim/loop/BattleLoopScript.gd) | rules | — | reinforcement spawn-cell fill order and nearest-legal landing, outcome commit ordering — docs/architecture/BATTLE_SYSTEMS.md#winfailscenariorulesgd |
-| [GameClearScreen](../game/title/GameClearScreen.gd) | layout | — | text positions, showcase card layout — no original GameClear recording |
-| [GameClearScreen](../game/title/GameClearScreen.gd) | timing | — | phase lengths, scroll speed, skip input; actDelay units are the coordinator's 16 ms ticks |
+| [GameClearScreen](../game/title/GameClearScreen.gd) | strings | — | revive count not tracked by the remake: shown as 0 |
+| [GameClearScreen](../game/title/GameClearScreen.gd) | timing | — | STORYOVER actDelay unit and key-ended pauses, original_game_clear_epilogue.md |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | timing | — | 0.6 s fade-out |
 | [TitleScreen](../game/title/TitleScreen.gd) | rules | — | 0x4c1ae4 read as a re-entry marker |
 | [TitleScreen](../game/title/TitleScreen.gd) | timing | — | the same hold／fade for 戰場記錄 and 離開遊戲; the message board reuses the save notice's in／hold／out) (Menu_Star's unset Shape_Delay taken as 0; memoir load fades without a hold |
@@ -492,15 +491,15 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 32 | 70 | 41 | 10 | 29 | 182 |
-| static-derived | 245 | 102 | 19 | 104 | 23 | 493 |
+| resource-derived | 31 | 70 | 41 | 10 | 29 | 181 |
+| static-derived | 249 | 103 | 19 | 105 | 23 | 499 |
 | runtime-measured | 17 | 33 | 4 | 17 | 2 | 73 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 34 | 15 | 0 | 16 | 2 | 67 |
+| provisional | 34 | 14 | 1 | 16 | 2 | 67 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
-| remake-invented | 54 | 36 | 34 | 12 | 1 | 137 |
+| remake-invented | 54 | 36 | 33 | 12 | 1 | 136 |
 | n/a | 62 | 115 | 146 | 133 | 164 | 620 |
 
 <!-- provenance:end -->

@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 491,
+    "sources": 490,
     "sources_by_kind": {
-      "provenance": 204,
+      "provenance": 203,
       "sentence": 117,
       "scope": 72,
       "matrix": 85,
@@ -15,14 +15,14 @@
     "layout_timing_modules": 53,
     "items_by_original_status": {
       "read_complete": 25,
-      "read_partial": 46,
-      "unread": 5,
+      "read_partial": 47,
+      "unread": 4,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 16,
+      "every_battle": 17,
       "some_levels": 30,
-      "rare": 42,
+      "rare": 41,
       "invisible": 5
     },
     "items_by_category": {
@@ -600,6 +600,57 @@
         "provenance:game/battle/scene/BattleSceneMenus.gd|layout|remake-invented|",
         "provenance:game/common/BattleUISkin.gd|layout|provisional|",
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|"
+      ]
+    },
+    {
+      "id": "winfail-readings",
+      "difference": "胜负脚本五类读法已对原版：极性逐条读出（HPLow 对已倒下目标的注销时机未读）、状态槽首个空槽插入／删最后一份／按槽序扫描已照原版；剩 RoundDisp 相对基线、同扫描胜负并立的决定者、插入对象注册时刻，AND 前缀只在夹具与原版不同",
+      "original": "扫描 0x44ee20（胜 0x44ebf0／负 0x44ecb0／事件 0x44ed70）、VM 0x450840 检查出口 0x4527a0／0x4527c3、槽 0x44e7b0／0x44e8d0 已读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/winfail_claim_limits.md"
+      ],
+      "remake": "Winfail* 解释器；状态槽 WinfailCompiler.status_slots，负先于胜与 AND 前缀仍是重制读法",
+      "remake_code": [
+        "game/sim/WinfailScenarioRules.gd",
+        "game/sim/WinfailConditions.gd",
+        "game/sim/WinfailActions.gd",
+        "game/sim/WinfailCompiler.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "every_battle",
+      "effort": "M",
+      "category": "战斗规则",
+      "sources": [
+        "matrix:胜利/失败",
+        "matrix:脚本等待与指定对象同步",
+        "provenance:game/battle/scene/BattleScriptCoordinator.gd|rules|provisional|",
+        "provenance:game/sim/WinfailActions.gd|rules|provisional|",
+        "provenance:game/sim/WinfailCompiler.gd|rules|provisional|",
+        "provenance:game/sim/WinfailConditions.gd|rules|provisional|",
+        "provenance:game/sim/WinfailScenarioRules.gd|rules|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|条件极性",
+        "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
+        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
+        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量",
+        "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接",
+        "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
+        "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb",
+        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0",
+        "sentence:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md#804d52228f",
+        "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457",
+        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37",
+        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf",
+        "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78",
+        "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f",
+        "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf",
+        "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5",
+        "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a",
+        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
+        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
       ]
     },
     {
@@ -1610,6 +1661,27 @@
       ]
     },
     {
+      "id": "game-clear-layout",
+      "difference": "通关谢幕的段落、tick 数、滚动速度、主角状态单与跳过已按原版做；剩复活次数重制未记录（显示 0）、STORYOVER 延时单位与按键结束停顿沿用读法、状态单行距 26 未逐指令核",
+      "original": "defProcClearBOSS／ShowWorkTeam／ShowPlayer 已静态读出；制作群是 WORKTEAM.SHP 整图，无运行时字串；谢幕画面无原版录像",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_game_clear.md",
+        "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
+      ],
+      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机",
+      "remake_code": [
+        "game/title/GameClearScreen.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "标题与过场",
+      "sources": [
+        "provenance:game/title/GameClearScreen.gd|strings|provisional|",
+        "provenance:game/title/GameClearScreen.gd|timing|provisional|"
+      ]
+    },
+    {
       "id": "home-recenter",
       "difference": "Home 键镜头回中、右键取消、鼠标／键盘分派顺序是重制输入",
       "original": "原版鼠标边缘滚屏读法见机制审计",
@@ -2104,57 +2176,6 @@
       ]
     },
     {
-      "id": "winfail-readings",
-      "difference": "胜负脚本的条件极性、AND 前缀、插入生命周期、一次性状态消费与事件顺序是读法",
-      "original": "20 条解释器声明边界",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/winfail_claim_limits.md"
-      ],
-      "remake": "Winfail* 解释器",
-      "remake_code": [
-        "game/sim/WinfailScenarioRules.gd",
-        "game/sim/WinfailConditions.gd",
-        "game/sim/WinfailActions.gd",
-        "game/sim/WinfailCompiler.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "L",
-      "category": "战斗规则",
-      "sources": [
-        "matrix:胜利/失败",
-        "matrix:脚本等待与指定对象同步",
-        "provenance:game/battle/scene/BattleScriptCoordinator.gd|rules|provisional|",
-        "provenance:game/sim/WinfailActions.gd|rules|provisional|",
-        "provenance:game/sim/WinfailCompiler.gd|rules|provisional|",
-        "provenance:game/sim/WinfailConditions.gd|rules|provisional|",
-        "provenance:game/sim/WinfailScenarioRules.gd|rules|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|条件极性",
-        "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
-        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
-        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量",
-        "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接",
-        "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
-        "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb",
-        "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#eb956fa5c0",
-        "sentence:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md#804d52228f",
-        "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457",
-        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37",
-        "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf",
-        "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78",
-        "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f",
-        "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf",
-        "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5",
-        "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1",
-        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e",
-        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a",
-        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
-        "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
-      ]
-    },
-    {
       "id": "story-effect-objects",
       "difference": "雨／闪电／燃树等剧情特效的寿命、密度、速度是读法，运动程序未读",
       "original": "mapobjDropRain／defProcObjectMove 未读",
@@ -2216,27 +2237,6 @@
         "matrix:Camera curve",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4",
         "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91"
-      ]
-    },
-    {
-      "id": "game-clear-layout",
-      "difference": "通关谢幕的版式、各段时长、滚动速度与跳过是重制读法，运行时制作群字串没有重制",
-      "original": "defProcClearBOSS 脚本已读；谢幕画面无原版录像",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
-      ],
-      "remake": "GameClearScreen 的读法",
-      "remake_code": [
-        "game/title/GameClearScreen.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "M",
-      "category": "标题与过场",
-      "sources": [
-        "provenance:game/title/GameClearScreen.gd|layout|provisional|",
-        "provenance:game/title/GameClearScreen.gd|strings|remake-invented|",
-        "provenance:game/title/GameClearScreen.gd|timing|provisional|"
       ]
     },
     {

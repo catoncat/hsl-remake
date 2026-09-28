@@ -68,8 +68,6 @@ var runtime: Node:
 	get:
 		return coordinator.runtime
 var _title: Control
-var _title_band: TextureRect
-var _title_name: TextureRect
 var _title_elapsed := 0.0
 ## The card's 0x452f32 state (section_title_new_state) and the ticks stepped so far.
 var _title_state: Dictionary = {}
@@ -468,8 +466,6 @@ func _ensure_title() -> void:
 		return
 	var band_origin: Array = BattleUISkin.data()["assets"][TITLE_BAND_ASSET]["draw_origin"]
 	_title = build_section_title_view(load(res_path), BattleUISkin.texture(TITLE_BAND_ASSET), Vector2(float(band_origin[0]), float(band_origin[1])))
-	_title_band = _title.get_node("SectionTitleBand")
-	_title_name = _title.get_node("SectionTitleName")
 	runtime.get_node("UI").add_child(_title)
 	_title.hide()
 

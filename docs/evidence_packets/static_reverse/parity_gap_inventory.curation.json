@@ -869,18 +869,19 @@
     },
     {
       "id": "game-clear-layout",
-      "difference": "通关谢幕的版式、各段时长、滚动速度与跳过是重制读法，运行时制作群字串没有重制",
-      "original": "defProcClearBOSS 脚本已读；谢幕画面无原版录像",
+      "difference": "通关谢幕的段落、tick 数、滚动速度、主角状态单与跳过已按原版做；剩复活次数重制未记录（显示 0）、STORYOVER 延时单位与按键结束停顿沿用读法、状态单行距 26 未逐指令核",
+      "original": "defProcClearBOSS／ShowWorkTeam／ShowPlayer 已静态读出；制作群是 WORKTEAM.SHP 整图，无运行时字串；谢幕画面无原版录像",
       "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_game_clear.md",
         "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
       ],
-      "remake": "GameClearScreen 的读法",
+      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机",
       "remake_code": [
         "game/title/GameClearScreen.gd"
       ],
-      "original_status": "unread",
+      "original_status": "read_partial",
       "visibility": "rare",
-      "effort": "M",
+      "effort": "S",
       "category": "标题与过场"
     },
     {
@@ -1211,12 +1212,12 @@
     },
     {
       "id": "winfail-readings",
-      "difference": "胜负脚本的条件极性、AND 前缀、插入生命周期、一次性状态消费与事件顺序是读法",
-      "original": "20 条解释器声明边界",
+      "difference": "胜负脚本五类读法已对原版：极性逐条读出（HPLow 对已倒下目标的注销时机未读）、状态槽首个空槽插入／删最后一份／按槽序扫描已照原版；剩 RoundDisp 相对基线、同扫描胜负并立的决定者、插入对象注册时刻，AND 前缀只在夹具与原版不同",
+      "original": "扫描 0x44ee20（胜 0x44ebf0／负 0x44ecb0／事件 0x44ed70）、VM 0x450840 检查出口 0x4527a0／0x4527c3、槽 0x44e7b0／0x44e8d0 已读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/winfail_claim_limits.md"
       ],
-      "remake": "Winfail* 解释器",
+      "remake": "Winfail* 解释器；状态槽 WinfailCompiler.status_slots，负先于胜与 AND 前缀仍是重制读法",
       "remake_code": [
         "game/sim/WinfailScenarioRules.gd",
         "game/sim/WinfailConditions.gd",
@@ -1224,8 +1225,8 @@
         "game/sim/WinfailCompiler.gd"
       ],
       "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "L",
+      "visibility": "every_battle",
+      "effort": "M",
       "category": "战斗规则"
     },
     {
@@ -2500,13 +2501,10 @@
     "provenance:game/text/SimplifiedDisplayTranslation.gd|strings|remake-invented|content/generated/hsl/text/simplified_chars.json": {
       "item": "simplified-display-gaps"
     },
-    "provenance:game/title/GameClearScreen.gd|layout|provisional|": {
-      "item": "game-clear-layout"
-    },
     "provenance:game/title/GameClearScreen.gd|layout|remake-invented|content/generated/hsl/text/simplified_images.json": {
       "item": "simplified-display-gaps"
     },
-    "provenance:game/title/GameClearScreen.gd|strings|remake-invented|": {
+    "provenance:game/title/GameClearScreen.gd|strings|provisional|": {
       "item": "game-clear-layout"
     },
     "provenance:game/title/GameClearScreen.gd|timing|provisional|": {

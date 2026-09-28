@@ -83,7 +83,6 @@ var description_box: TextureRect
 var vitals: Control
 var gold_label: Label
 var list: Control
-var scroll_pos := 0
 var scroll_bar: BattleSkillScrollBar
 var _rows: VBoxContainer
 var _hover_name: Label
@@ -106,9 +105,7 @@ func _ready() -> void:
 	_rows.add_theme_constant_override("separation", 0)
 	list.add_child(_rows)
 	scroll_bar = BattleSkillScrollBar.new(LIST_AT)
-	scroll_bar.scrolled.connect(func(pos: int):
-		scroll_pos = pos
-		_rows.position.y = -ROW_HEIGHT * pos)
+	scroll_bar.scrolled.connect(func(pos: int): _rows.position.y = -ROW_HEIGHT * pos)
 	add_child(scroll_bar)
 	BattleUISkin.board(self, "WINDOW40", GOLD_AT)
 	gold_label = BattleUISkin.text(self, GOLD_AT + Vector2(80, 4), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(108, 24))

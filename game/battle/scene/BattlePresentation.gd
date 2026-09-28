@@ -31,9 +31,6 @@ signal level_up_presented(growth: Dictionary)
 var _map_config: RefCounted
 var cutin: CanvasLayer
 var attack_cue: Node2D
-## The legal target whose strip the last preview_target showed ("" when none): the unit the
-## player's target cursor is on, lit with the shared target highlight.
-var previewed_target_id := ""
 var navigation_cue: Node2D
 var movement_preview: Node2D
 var extra_action_cue: CanvasLayer
@@ -392,7 +389,6 @@ func _sync_defeated_visibility(loop: Dictionary) -> void:
 ## 0x4445b7／0x444fe6／0x445286 tests only the cell's unit bits): legality only decides the
 ## hit／effect preview line (a full-HP ally under 治癒之水 still shows its strip).
 func preview_target(loop: Dictionary, target_id: String, center_coord: Variant = null) -> void:
-	previewed_target_id = ""
 	combat_label.hide()
 	target_vitals.hide()
 	var screen: String = loop.get(LoopKeys.INTERACTION, "") if loop.get(LoopKeys.INTERACTION) in Interaction.TARGETING else ""
@@ -406,7 +402,6 @@ func preview_target(loop: Dictionary, target_id: String, center_coord: Variant =
 	if loop.get(LoopKeys.INTERACTION) not in Interaction.TARGETING:
 		return
 	var shown := _preview_attack_target(loop, target_id, center_coord) if loop.get(LoopKeys.INTERACTION) == Interaction.ATTACK_SELECT else ""
-	previewed_target_id = shown
 	if target_id != shown:
 		preview_hovered_unit(loop, target_id)
 

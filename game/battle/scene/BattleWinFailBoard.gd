@@ -68,7 +68,6 @@ var shown_count := 0
 var hold_ticks := 0
 ## The row Labels of the board last shown, top to bottom (title, rows, title, rows).
 var row_labels: Array[Label] = []
-var last_rows := {"win": [], "fail": []}
 var _rows_root: Control
 ## Board and rows composited first, then faded as one (the rows live in the WINDOW60 surface).
 var _blend: CanvasGroup
@@ -104,7 +103,6 @@ func busy() -> bool:
 
 ## Opens the board with the labels of `rows` ({"win": [String], "fail": [String]}).
 func show_rows(rows: Dictionary) -> void:
-	last_rows = rows.duplicate(true)
 	for child in _rows_root.get_children():
 		child.queue_free()
 	row_labels.clear()

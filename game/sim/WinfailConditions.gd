@@ -8,8 +8,9 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: static-derived docs/evidence_packets/static_reverse/winfail_claim_limits.md
 ##   rules: provisional
-##     (condition polarity, AND prefix — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md)
+##     (AND over multi-check prefixes, fixture only — winfail_claim_limits.md)
 
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
@@ -186,8 +187,10 @@ static func _token_hp_low(battle: Dictionary, args: Array) -> bool:
 	# max HP +0xdc × ratio / 100 (truncating), clamped to at least 1; holds when live HP
 	# +0xd8 is not above it. The clamp is what lets `ratio 0` fire on an undead boss,
 	# which revives at 1 HP instead of dying (WINFAIL030–041／059／075–079). A defeated
-	# unit reads as HP 0 (provisional: the original's lookup no longer finds an
-	# unregistered object; the remake keeps the fallen target satisfying the check).
+	# unit reads as HP 0 (provisional): 0x4528a4 fails only once 0x44fad0 no longer finds
+	# the object, and when the death branch unregisters it relative to the completion scan
+	# is unread; WINFAIL003's only win path (event 0 HPLow on 漢克斯) needs a killed
+	# target to satisfy it.
 	var ratio := int(arg(args, 2))
 	var serial := int_arg(args, 1)
 	for unit_id in units_for_token(battle, arg(args, 0), serial):

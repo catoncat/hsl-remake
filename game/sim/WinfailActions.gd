@@ -271,18 +271,13 @@ static func _act_folded_into_insert(_c: Dictionary, _name: String, _args: Array)
 static func _act_insert_status(c: Dictionary, name: String, args: Array) -> void:
 	var next: Dictionary = c["next"]
 	if args.size() >= 1:
-		var kind := WinfailCompiler.status_kind_of(name)
-		var list: Array = next.get("%s_statuses" % kind, []).duplicate()
-		if list.find(int(_arg(args, 0))) == -1:
-			list.append(int(_arg(args, 0)))
-		next["%s_statuses" % kind] = list
+		WinfailCompiler.status_slot_insert(next, WinfailCompiler.status_kind_of(name), int(_arg(args, 0)))
 
 
 static func _act_delete_status(c: Dictionary, name: String, args: Array) -> void:
 	var next: Dictionary = c["next"]
 	if args.size() >= 1:
-		var kind := WinfailCompiler.status_kind_of(name)
-		next["%s_statuses" % kind] = WinfailCompiler.without(next.get("%s_statuses" % kind, []), int(_arg(args, 0)))
+		WinfailCompiler.status_slot_delete(next, WinfailCompiler.status_kind_of(name), int(_arg(args, 0)))
 
 
 static func _act_set_next_play_level_event(c: Dictionary, _name: String, args: Array) -> void:

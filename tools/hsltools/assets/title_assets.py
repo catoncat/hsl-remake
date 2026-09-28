@@ -25,6 +25,7 @@ from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import (decoded_xor_a8_wave_bytes, find_decoded_paks_packages, find_paks_record_by_name,
                                   parse_xor_a8_wave_candidate, read_paks_record_bytes)
 from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
+from hsltools.sources.tables import resource_names
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'content/imported/hsl/global/title'
@@ -201,25 +202,55 @@ GAME_CLEAR_SHAPES = {
     'clear_text_2': 'Over002',
     'clear_credits': 'workteam',
 }
+# The GameClear sequence as the four obj-998 processes run it, in original 16 ms ticks
+# (docs/evidence_packets/static_reverse/original_game_clear.md): defProcClearBOSS 0x42b6b0
+# orders the states, defProcClearShowWorkTeam 0x42bc20 scrolls Over001 / Over002 / workteam
+# from y 500 at 0.5 px/tick (angle 0xC0, speed 0x8000), defProcClearShowPlayer 0x42ba10 rolls
+# the nine party slots at 1 px/tick with the 0x42b2b0 status sheet (RESOURCE strings, FONT.24).
+# The work-team credits are the workteam shape itself: no runtime credit strings exist.
+def _SHEET_ITEM(resource: int, label: str, key: str, width: int, percent: bool = False) -> dict:
+    return {'resource': resource, 'label': label, 'key': key, 'width': width, 'percent': percent}
+
+
 GAME_CLEAR = {
-    'phases': [
-        {'id': 'epilogue_1', 'background': 'clear_background_1', 'text': 'clear_text_1', 'text_top_left': [42, 0], 'scroll_pixels': 520 - 440,
-         'seconds': 24.0, 'note': 'Over001 (557x520) scrolls up 80 px over the dusk castle so its last paragraph reads; centred horizontally (remake layout)'},
-        {'id': 'epilogue_2', 'background': 'clear_background_2', 'text': 'clear_text_2', 'text_top_left': [44, 196], 'scroll_pixels': 0,
-         'seconds': 12.0, 'note': 'Over002 (551x88) centred on the second backdrop (remake layout)'},
-        {'id': 'credits', 'background': 'clear_background_1', 'text': 'clear_credits', 'text_top_left': [0, 480], 'scroll_pixels': 480 + 1440 - 240,
-         'seconds': 48.0, 'note': 'workteam (640x1440) rolls up from below the frame until 劇終 rests mid-screen; the original credit names are runtime strings (ShowOverString) not in the shape and are not restored'},
-    ],
-    # Music cue per phase id, each played from the start when its phase begins (defProcClearBOSS,
-    # original_music.md §3.5): 07 on the first frame covers Over001, the STORYOVER dialogue and Over002;
-    # 04 when the nine players start (state 11); 02 with the work-team credits (states 16-17).
+    'backgrounds': ['clear_background_1', 'clear_background_2'],
+    'fade_in_ticks_per_level': 6,
+    'exit_fade_ticks_per_level': 2,
+    'fade_levels': 16,
+    'dark_screen_ticks_per_level': 6,
+    'waits': {'opening': 40, 'before_story': 40, 'backdrop_swap': 120, 'after_story': 40, 'before_players': 40, 'before_credits': 240},
+    'scroll_start_y': 500,
+    'scroll_px_per_tick': 0.5,
+    'scrolls': {
+        'epilogue_1': {'shape': 'clear_text_1', 'past_top': 80, 'removed': True},
+        'epilogue_2': {'shape': 'clear_text_2', 'past_top': 80, 'removed': True},
+        'credits': {'shape': 'clear_credits', 'rest_bottom': 480, 'removed': False},
+    },
+    'showcase': {
+        'slots': ['001', '002', '003', '004', '005', '006', '007', '008', '009'],
+        'anchor_x': 320, 'start_y': 500, 'release_y': 100, 'remove_y': -250, 'px_per_tick': 1,
+        'sheet_offset': [-252, 6], 'line_pitch': 26, 'byte_px': 12,
+        'rows': [
+            {'indent': 0, 'items': [_SHEET_ITEM(37, '姓名', 'name', 16), _SHEET_ITEM(41, '力量', 'str', 12), _SHEET_ITEM(54, '攻擊力', 'attack', 14)]},
+            {'indent': 0, 'items': [_SHEET_ITEM(38, '稱號', 'title', 16), _SHEET_ITEM(42, '反應', 'dex', 12), _SHEET_ITEM(56, '防禦力', 'defense', 14)]},
+            {'indent': 0, 'items': [_SHEET_ITEM(39, '種族', 'race', 16), _SHEET_ITEM(43, '精神', 'mind', 12), _SHEET_ITEM(131, '魔擊力', 'magic', 14, True)]},
+            {'indent': 0, 'items': [_SHEET_ITEM(70, '移動力', 'move', 16), _SHEET_ITEM(44, '體質', 'con', 12), _SHEET_ITEM(132, '敏捷度', 'speed', 14)]},
+            {'indent': 0, 'items': []},
+            {'indent': 6, 'items': [_SHEET_ITEM(15, '等級', 'level', 14)]},
+            {'indent': 6, 'items': [_SHEET_ITEM(57, '生命力', 'max_hp', 14), _SHEET_ITEM(48, '殺敵總數', 'kills', 16)]},
+            {'indent': 6, 'items': [_SHEET_ITEM(58, '魔法力', 'max_mp', 14), _SHEET_ITEM(50, '復活次數', 'revives', 16)]},
+        ],
+        'not_joined': {'resource': 2568, 'text': '此角色未加入隊伍', 'row': 3, 'width': 42},
+    },
+    # Music cue per stretch, each played from the start (original_music.md §3.5): 07 on the first
+    # frame, 04 when state 11 starts the players, 02 when state 17 inserts the work team.
     'music': {
         'epilogue_1': {'track': 7, 'stream': 'res://content/imported/hsl/music/07.ogg'},
         'showcase': {'track': 4, 'stream': 'res://content/imported/hsl/music/04.ogg'},
         'credits': {'track': 2, 'stream': 'res://content/imported/hsl/music/02.ogg'},
     },
-    'evidence_tier': 'provisional',
-    'claim_limit': 'the shapes and the party-slot showcase objects are resource-derived from obj-998.obs; their order (OverBG01 with Over001, the STORYOVER dialogue, Over002, player showcase, work team) and the music cues 07 / 04 / 02 are static-derived from the defProcClearBOSS states (original_music.md §3.5); scroll speeds, positions, phase lengths and skipping are remake readings — no recording of the original GameClear exists; the per-slot player showcase (defProcClearShowPlayer on TITLE011) is drawn in a remake layout',
+    'evidence_tier': 'static-derived',
+    'claim_limit': 'tick counts, start positions, scroll speeds and distances, the showcase release / removal lines, the status-sheet rows (RESOURCE ids) and the single exit input after the credits are static-derived from defProcClearBOSS / ShowWorkTeam / ShowPlayer (original_game_clear.md); no recording of the original GameClear exists, the sheet line pitch 26 is read from the 0x4123b0 argument, and revive counts are not tracked by the remake',
 }
 
 # The GameClear epilogue dialogue: DATA\STORYOVER.TXT is loaded by defProcClearBOSS
@@ -342,7 +373,7 @@ def build(pak: Path) -> dict:
             'the GAME OVER screen (Title011/012) is drawn on defeat when the player leaves for the title: no recording shows it, so its text position, fade timing and dismissal input are remake readings (provisional); its GAMEOVER.WAV cue (interface_audio sfxGameOver, resource 628) is static-derived: defProcGameOverBOSS 0x42aea0 plays it on its first frame',
             'the in-battle system menu (Title041-047) opens on Esc during the player action phase and scrolls in from the bottom edge (remake timing); its handler and the exact scroll speed are not located in the EXE (provisional); 讀取回憶錄 is read as "resume the saved campaign position" and 設定選項 is not remade yet',
             'the between-battle scroll (Title051-057) and the 回憶錄 list (Title031-033) are not shown in any recording: their positions, the eight-slot memoir model (user://memoir_N.json) and the slot labels are remake readings (provisional); 整理裝備 and the world variant of 讀取戰場記錄 are not remade yet',
-            'the GameClear sequence (level 998: OverBG01/02, Over001/002, workteam) is not shown in any recording: the phase order follows obj-998.obs and the defProcClearBOSS states, and the music is located — 07 from the first frame, 04 when the players start, 02 with the credits (static-derived, original_music.md §3.5; manifest.game_clear.music); text positions, scroll speeds, phase lengths and skipping are remake readings (provisional); the per-slot player showcase is a remake layout and the runtime credit strings are not remade',
+            'the GameClear sequence (level 998) runs as defProcClearBOSS orders it, in 16 ms ticks: a 96-tick fade-in, Over001 / Over002 / workteam scrolled from y 500 at 0.5 px/tick, the nine party slots at 1 px/tick with their status sheets, 240 ticks before the credits, and input only once the credits rest (static-derived, docs/evidence_packets/static_reverse/original_game_clear.md; manifest.game_clear); the credits are the workteam shape itself, no runtime credit strings exist; no recording of the original GameClear exists',
             'the 設定選項 panel (Title039) sits at (142,90) on the 2026-09-24 recording (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
         ],
     }
@@ -367,7 +398,15 @@ def check() -> None:
     if (manifest.get('system_items') != SYSTEM_ITEMS or manifest.get('world_items') != WORLD_ITEMS
             or manifest.get('confirm_items') != CONFIRM_ITEMS or manifest.get('lit_glyph_registration') != LIT_GLYPH_REGISTRATION):
         raise SystemExit('title scroll/confirm lit offsets differ from the tool constants')
-    phase_ids = {phase['id'] for phase in GAME_CLEAR['phases']} | {'showcase'}
+    phase_ids = set(GAME_CLEAR['scrolls']) | {'showcase'}
+    names = resource_names()
+    for row in GAME_CLEAR['showcase']['rows']:
+        for item in row['items']:
+            if names.get(str(item['resource'])) != item['label']:
+                raise SystemExit(f'game clear sheet label differs from RESOURCE.TXT: {item}')
+    not_joined = GAME_CLEAR['showcase']['not_joined']
+    if names.get(str(not_joined['resource'])) != not_joined['text']:
+        raise SystemExit('game clear not-joined line differs from RESOURCE.TXT')
     for phase_id, cue in GAME_CLEAR['music'].items():
         if phase_id not in phase_ids or cue['stream'] != f'res://content/imported/hsl/music/{cue["track"]:02d}.ogg':
             raise SystemExit(f'game clear music cue malformed: {phase_id} {cue}')

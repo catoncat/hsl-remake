@@ -313,7 +313,7 @@ docs/evidence_packets/runtime_observations/first_battle_visuals/
 每个证据包标题下方一行机器可读字段块（`> evidence: … · status: … · functions: … · tools: … · updated: …`，规范见 [evidence_packets/README.md](evidence_packets/README.md#packet-header)）是唯一来源；下表由 `PYTHONPATH=tools python3 -m hsltools.evidence.index --write` 生成，`--check` 在门禁里比对。按地址找包：搜 `0x4…`；按复跑入口找包：搜工具名。
 
 <!-- evidence-index:start -->
-_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (215 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
+_Generated from each packet's header line by `python3 tools/hsl.py generate evidence_index` (216 packets; `hsl check evidence_index` runs in the gate). Edit the packet header, not this block._
 
 ### resource_inventory (7)
 
@@ -411,7 +411,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [水剎：从实际学习到范围施放的窗口验收](evidence_packets/runtime_observations/water_strike/README.md) | resource-derived | superseded → ../../static_reverse/original_water_strike.md | — | — |
 | [大地圖（世界地图）场景 — runtime-measured](evidence_packets/runtime_observations/world_map_scene/README.md) | static-derived | superseded → ../../static_reverse/original_world_town.md | — | — |
 
-### static_reverse (129)
+### static_reverse (130)
 
 | Packet | Evidence | Status | Functions | Tools |
 | --- | --- | --- | --- | --- |
@@ -463,6 +463,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [原版数据字段覆盖：重制消费了哪些、漏了哪些](evidence_packets/static_reverse/original_field_coverage.md) | resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 | record-only | `0x407ec0`, `0x409a60`, `0x409be0`, `0x42bd50`, `0x43ea30`, `0x442a90`, `0x452197`, `0x45dc5c` | `hsltools/checks/field_coverage.py` |
 | [WINFAIL 的 actChangePrevInsertObjectID／actSetPlayerFixPos／actSetPlayerFly](evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md) | static-derived; resource-derived: ACTION.H 与 WINFAIL012 用法; provisional: 锚点量化与精化行走的洪泛度量; negative-evidence: 碰撞、动画时序、飞行物理、对象旗标 0x4000 | live | `0x44fa80`, `0x44fad0`, `0x450840` | `run_ai_navigation_tests.gd`, `run_winfail_rules_tests.gd` |
 | [原版如何显示简体：Big5 文本＋简体字形的位图字库](evidence_packets/static_reverse/original_font_script/README.md) | static-derived: 码位→字形表与绘制循环、各界面字库（0x460884 全部 70 个调用点的字库指针）; resource-derived: 字库字形与逐字审读; runtime-measured: 2026-09-24 原版录像全简体; negative-evidence: EXE 无 Big5→GB 转换; provisional: 鍾針魘三字未判读 | live | `0x411d70`, `0x412060`, `0x4123b0`, `0x412ad0`, `0x413040`, `0x42f230`, `0x45f798`, `0x460884`, `0x4608e4`, `0x460ace` | `hsltools/assets/workteam_simplified.py`, `hsltools/checks/simplified_display.py`, `hsltools/data/simplified_chars.py`, `hsltools/sources/original_font.py` |
+| [通关谢幕（GameClear，关卡 998）的段落、时长、滚动、跳过与字串来源](evidence_packets/static_reverse/original_game_clear.md) | static-derived; resource-derived: obj-998.obs、PROCESS.DEF、RESOURCE.TXT、SHP 头 | live | `0x4123b0`, `0x42b130`, `0x42b2b0`, `0x42b6b0`, `0x42ba10`, `0x42bc20`, `0x42c250`, `0x42cc10`, `0x42dc90`, `0x43e2a0`, `0x43e2d0`, `0x4477b0`, `0x453ac0`, `0x45eb9d`, `0x45ebdc`, `0x4606a9`, `0x46098f`, `0x4609c0`, `0x460a06` | `hsltools/assets/title_assets.py` |
 | [原作通关尾声独白 STORYOVER 的加载者（static-derived）](evidence_packets/static_reverse/original_game_clear_epilogue.md) | static-derived | live | `0x415730`, `0x42cd10`, `0x43e2a0`, `0x44cce0`, `0x45e307` | `hsltools/assets/title_assets.py` |
 | [原作 actGetItem／actDeletePosObject：发放物品与按坐标删除对象](evidence_packets/static_reverse/original_getitem_deletepos.md) | static-derived | live | `0x40e690`, `0x42c400`, `0x44ef70`, `0x44f080`, `0x44f100`, `0x4506a0`, `0x450840`, `0x45e3ed` | `hsltools/checks/function_catalog.py`, `hsltools/data/winfail_coverage.py` |
 | [獲得物品窗：战利品拾取的绘制、输入与三个按钮](evidence_packets/static_reverse/original_getitem_window.md) | static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 | live | `0x414c00`, `0x42aad0`, `0x430710`, `0x436d70`, `0x436e30`, `0x438160`, `0x43a640`, `0x43b4e0`, `0x442720`, `0x44ef70`, `0x44f100`, `0x44f2d0`, `0x44f430`, `0x44f4d0` | `capture_battle_reward_review.gd`, `run_battle_reward_tests.gd`, `run_presentation_contract_tests.gd` |
@@ -542,7 +543,7 @@ _Generated from each packet's header line by `python3 tools/hsl.py generate evid
 | [第二战模板属性补充探针](evidence_packets/static_reverse/second_battle_template_stats.md) | static-derived | superseded → original_job_stats.md | — | — |
 | [共同技能结算与初始拥有权](evidence_packets/static_reverse/shared_skill_resolution.md) | static-derived | superseded → original_magic_damage.md | — | — |
 | [城镇事件（TOWNDEF te token）读法表](evidence_packets/static_reverse/town_event_semantics.md) | provisional; resource-derived; static-derived: 带地址的读法 | live | `0x434680`, `0x434770`, `0x4348f0`, `0x4546c0`, `0x454a20`, `0x454ae0`, `0x454cd0`, `0x454db0`, `0x454e20` | `hsltools/checks/function_catalog.py`, `hsltools/data/town_initial_trees.py`, `run_town_event_rules_tests.gd` |
-| [Winfail 解释器的声明边界（claim limits）](evidence_packets/static_reverse/winfail_claim_limits.md) | provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 | live | `0x4348f0`, `0x43ede0`, `0x446bb0`, `0x448840`, `0x44e820`, `0x44fad0`, `0x44fb90`, `0x450840`, `0x453b30`, `0x458c80` | `run_battle_scene_runtime_tests.gd`, `run_winfail_rules_tests.gd` |
+| [Winfail 解释器的声明边界（claim limits）](evidence_packets/static_reverse/winfail_claim_limits.md) | provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 | live | `0x407ec0`, `0x42cbd0`, `0x42cc10`, `0x4348f0`, `0x43ede0`, `0x446bb0`, `0x448840`, `0x44e7b0`, `0x44e820`, `0x44e8d0`, `0x44ebf0`, `0x44ecb0`, `0x44ed70`, `0x44fad0`, `0x44fb90`, `0x450840`, `0x453a80`, `0x453ac0`, `0x453b30`, `0x458c80` | `run_battle_scene_runtime_tests.gd`, `run_winfail_rules_tests.gd` |
 | [世界地图／城镇数据链（bigmap.dat、TRACK、TOWNDEF）](evidence_packets/static_reverse/world_map_data.md) | resource-derived; provisional | live | — | `hsltools/data/big_map_flow.py`, `hsltools/data/world_map.py`, `hsltools/levels/map_objects.py` |
 
 <!-- evidence-index:end -->

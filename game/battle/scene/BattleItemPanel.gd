@@ -66,7 +66,6 @@ var rows: Control
 var menu: Control
 var page_root: Control
 var source_unit: Dictionary = {}
-var attack_source: Dictionary = {}
 var items: Dictionary = {}
 var targets: Array = []
 var anchor := Vector2(320, 240)
@@ -110,9 +109,8 @@ func _ready() -> void:
 	hide()
 
 
-func show_inventory(unit: Dictionary, definitions: Dictionary, recipients: Array, at: Vector2, capabilities: Dictionary) -> void:
+func show_inventory(unit: Dictionary, definitions: Dictionary, recipients: Array, at: Vector2, _capabilities: Dictionary) -> void:
 	source_unit = unit.duplicate(true)
-	attack_source = capabilities.duplicate(true)
 	items = definitions.duplicate(true)
 	targets = recipients.duplicate(true)
 	anchor = at

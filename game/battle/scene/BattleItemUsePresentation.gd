@@ -130,7 +130,6 @@ var stars: Array[Dictionary] = []
 var bar_labels: Array[Label] = []
 var release_tick := 0
 var visual_end_tick := 0
-var numbers_tick := -1
 var bars: Array[Dictionary] = []
 var numbers: Array[Node2D] = []
 var caption: Label
@@ -367,7 +366,6 @@ static func _spark_path(velocity: Vector2) -> PackedVector2Array:
 
 func _start_numbers(tick: int) -> void:
 	stage = "numbers"
-	numbers_tick = tick
 	var target := BattlePlayLoop.unit(_current_loop(), str(effect.get("target_id", "")))
 	# 0x43b3f0: the target's small HP bar and the MP bar 16 px under it.
 	var world_height := 1e9
