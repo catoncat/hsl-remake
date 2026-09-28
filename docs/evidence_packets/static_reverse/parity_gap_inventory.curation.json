@@ -3140,9 +3140,9 @@
     "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无引导施法者撒星高度 h 取重制站立帧高": {
       "item": "cast-strip-missing"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#de46f1c9bf": {
+    "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#529c104e37": {
       "item": "battle-equip-drop-hand",
-      "text": "装备板判定旗标 0x40000 的来源未读；"
+      "text": "0x40000 与背包格、待领列表判点击的是同一位（`0x438c78`／`0x43990c` 都测 `[esp+0x74] & 0x40000`），写入它的输入分派未读；"
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取": {
       "item": "poison-gas-presentation"

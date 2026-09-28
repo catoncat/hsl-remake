@@ -691,7 +691,7 @@ def _unresolved_semantics(kind: str, action: dict[str, Any]) -> list[str]:
     elif kind in WALK_KINDS:
         base.append("absolute/relative pixel targets, follow offsets, speed token and delete timing are unresolved")
     elif kind == "story_object_insert":
-        base.append("story object process (defProcObjectMove) motion and lifetime are unresolved")
+        base.append("story object process (defProcObjectMove): objects with a native objcomd track in objcomd_motion.json (white light, programs 21/62) follow it tick by tick; motion and lifetime of the rest are unresolved")
     elif kind == "screen_darken":
         base.append("fade duration and colour are unresolved")
     elif kind == "next_level_event":
