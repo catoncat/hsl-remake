@@ -88,5 +88,5 @@ EVEF 记录 → `0x45e307` 把 X／Y 原样写进对象 `+4／+8`；敌方初始
 - 敌人等级、HP 与携带品是一次随机抽样，只比较分布（provisional）。
 - 原版第 1 回合之后的行动、伤害与第 5 回合增援没有运行时样本；读出时刻在首控之前。
 - 原版里 061_1 之后的位置未采样。
-- 原 `obj_Story_PlayerN` 对不存在槽位的处理、隊長等待与增援落点的整除读法未定位。
+- 原 `obj_Story_PlayerN` 对不存在槽位的处理未定位。隊長等待已由原指令确定：setter 把参数原值写进 `+0x1b8`，AI 入口每次先减一（[original_script_wait.md](../../static_reverse/original_script_wait.md)「原指令结论」）；增援落点经 `0x44fbd0` 修正（[original_script_entry.md](../../static_reverse/original_script_entry.md)「结论」）。
 - 强制胜利夹具只证明流转，不证明 AI、平衡或原版节奏。

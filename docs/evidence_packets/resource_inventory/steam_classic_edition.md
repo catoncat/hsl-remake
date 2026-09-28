@@ -1,6 +1,6 @@
 # Steam 經典版（幻世錄 1.06）：取得、清单、两套数据包与原曲
 
-> evidence: resource-derived; static-derived: Steam hsl.exe 选包开关与 hsl01.exe 曲目调用点; negative-evidence: 本机原作目录与 hsl.pak 没有 music 文件; provisional: 两套数据包的先后与差异含义 · status: record-only · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x4561d0 · tools: hsl_steam_classic.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived: Steam hsl.exe 选包开关与 hsl01.exe 曲目调用点; negative-evidence: 本机原作目录与 hsl.pak 没有 music 文件; provisional: 两套数据包的先后与差异含义 · status: record-only · functions: 0x42b6b0, 0x42c1c0, 0x42c250, 0x4561d0 · tools: hsl_steam_classic.py, hsltools/assets/music_import.py · updated: 2026-09-28
 
 ## 结论
 
@@ -108,7 +108,7 @@ negative-evidence：本机原作目录里没有 `music\` 文件夹，本机 `hsl
 
 - 目录放在仓库外 `~/hsl-steam/fancy-realm/GAME-PAK`（环境变量 `HSL_STEAM_CLASSIC`，代码里 `hsltools.paths.STEAM_CLASSIC_ROOT`）；游戏文件不进仓库，也不覆盖 `$WINEPREFIX`（静态工具按 `hsl01.exe` 的 SHA 锁定）。
 - `tools/hsl_steam_classic.py`：`fetch` 打印 DepotDownloader 命令（Steam 登录由账号持有人执行）、`verify` 逐文件 sha1、`pakdiff --text` 逐成员比较、`music` 列格式与时长。
-- 复刻导入的都是本机（＝cn 包）的值；原曲转码照 `movie_import` 先例：原始文件留在仓库外，只把转码结果放进 `content/imported/`。
+- 复刻导入的都是本机（＝cn 包）的值；原曲由 `tools/hsltools/assets/music_import.py` 照 `movie_import` 先例转码：原始文件留在仓库外，转码结果在 `content/imported/hsl/music/`，播放调度见 [original_music](../static_reverse/original_music.md)。
 
 ## 复现
 

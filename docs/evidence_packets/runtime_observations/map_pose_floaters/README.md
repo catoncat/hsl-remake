@@ -89,7 +89,7 @@
 
 ## 边界
 
-- 特写片段的结尾由片段自己的时钟决定：脚本一击 `RESULT_HOLD_TICKS` 40 tick 后收片段，两位红字（54 tick）的淡出尾会被截掉；普通一击同理。
+- 特写片段等最后一个结果数字走完寿命才收（两位红字 54 tick 的淡出尾完整播完），`RESULT_HOLD_TICKS` 40 tick 只作无数字说明行的最低停留；续击时上一镜存活数字在下一镜走完（见 [original_skill_function_bits.md](../../static_reverse/original_skill_function_bits.md) 的 aniShowHitResult 读法）。
 - 无 m_shape 引导的施法者：`0x403128` 前 `+0x90` 数 8 个 call（`0x4030f7..0x403105`），第 9 call 姿势、Cast_Star 与施法音 `0x193` 同刻，重制照此（[original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §无条带起手序列）；撒星高度 h 用重制站立帧高＋2（`cast-strip-missing`）。
 - 录屏 026 的火球在姿势结束（471.60 s）才开始：效果 VM 阶段 4／7／0x17／0x19 先测施法者姿势位 `0x1000`，置位就让出，效果等姿势放完才开始（static-derived），重制按 `caster_pose_ticks` 同样等待。
 - 脚本 `actInsertLevelUpStar`（WINFAIL，记 `level_up_star_requests`）的星光未接到 `LevelUpStars`。

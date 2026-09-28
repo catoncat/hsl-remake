@@ -1,6 +1,6 @@
 # 原版裁判批量对照：AI 首轮回放判定与行动种类频率
 
-> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验 · status: record-only · functions: 0x407340, 0x407510, 0x409e40, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-27
+> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验 · status: record-only · functions: 0x407340, 0x407510, 0x409e40, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-28
 
 ## 结论
 
@@ -84,6 +84,6 @@
 - 状态（中毒、增益、麻痺计数）不跟原版改写，以 `board_event` 与死亡标记兜底。
 - 链内按调用点喂有语义错位（重制预先跳过不可用类别时第 k 个掷骰对应的类别不同），只由 final／low／high 兜住，不是逐值等价。
 - 重制分布只换 AI 源、全局流固定在种子 1，全局流驱动的分支（噴人沼氣喷点、出生携带）采不到；101 关只有 16 种子。
-- AI 用药：`choose_cure` 固定魔法 → 绝技 → 物品；原版 bucket-7 直接查对症药，抽签未读。
+- AI 治疗／驱毒：原版对症药分支 `0x44086e..0x4408dd` 取状态 mask 找首件对症药、找不到转 `0x40c3a0`（[original_item_actions](../../static_reverse/original_item_actions.md)），桶 7 净化行的抽签 `0x40dd80`／`0x40c770` 已读（[original_skill_function_bits](../../static_reverse/original_skill_function_bits.md)）；重制 `AISelfPreservation.choose_cure` 先魔法桶、再绝技桶、最后对症药，这一通道次序是重制组合（provisional）。
 - 回音之谷（LEVEL021）041_1 的 1 对 0 与全部关 MIND04 的 0 对 5 未复跑。
 - 资源号未建模（`0x45fc01` 顺序发号），是既有图形桩边界。

@@ -1,12 +1,12 @@
 # 宝箱：实例内容、接触、开启与待领取队列
 
-> evidence: static-derived; resource-derived: 各关 OBS 宝箱模板的 obj_Attribute、PROCESS.DEF objattrATTACKFLAG、resource.h sfxGetTreasure; runtime-measured: 整个原映像经 0x42da60 进 1／2／3／6／19／28 关的首回合箱表、0x4156d0 整段领取的抽取与映像改动、同进程再进同关后的箱表、35 关 77 只箱首回合可见性普查 · status: live · functions: 0x407510, 0x411b90, 0x4156d0, 0x415730, 0x42bd50, 0x42c640, 0x42da60, 0x42ebe0, 0x42ec10, 0x445526, 0x4477b0, 0x44f290, 0x44f2d0, 0x44f4e0, 0x458c10, 0x45dc5c, 0x45e224, 0x45e307, 0x45e3ed, 0x45f655, 0x46be17, 0x46cf98 · tools: hsltools/data/treasures.py, hsltools/probes/_treasure_reentry.py, hsltools/probes/treasure.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 各关 OBS 宝箱模板的 obj_Attribute、PROCESS.DEF objattrATTACKFLAG、resource.h sfxGetTreasure; runtime-measured: 整个原映像经 0x42da60 进 1／2／3／6／19／28 关的首回合箱表、0x4156d0 整段领取的抽取与映像改动、同进程再进同关后的箱表、35 关 77 只箱首回合可见性普查 · status: live · functions: 0x407510, 0x411b90, 0x4156d0, 0x415730, 0x42bd50, 0x42c640, 0x42da60, 0x42ebe0, 0x42ec10, 0x445526, 0x4477b0, 0x44f290, 0x44f2d0, 0x44f4e0, 0x458c10, 0x45dc5c, 0x45e224, 0x45e307, 0x45e3ed, 0x45f655, 0x46be17, 0x46cf98 · tools: hsltools/data/treasures.py, hsltools/probes/_treasure_reentry.py, hsltools/probes/treasure.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版箱内八个 DWORD 取自 EVEF 实例 `+0x10`，非零值按序（重复保留）压入对象；玩家动作后缀接触后由 `0x4156d0` 把每件以数量 1 加入共享待领队列并置已开位，领取零随机抽取；AI 行动不开箱；已开位只在对象上，新关／再进关按 EVEF 重建，箱子复原；是否可见由对象模板 `objattrATTACKFLAG` 决定，隐藏箱接触时先放 `sfxGetTreasure`（static-derived；runtime-measured）。
 - 重制 `game/sim/TreasureRules.gd` 按同一规则给出一次性提案，PlayLoop 持有账本与既有待领池；`game/battle/scene/BattleTreasurePresentation.gd` 只表现已提交的发现，隐藏箱不画、发现时放同一声音（static-derived）。
-- 一致：六关首回合箱表、领取改动与 35 关 77 只箱的可见性（隐藏 54、可见 23）均与重制数据对上；删除时的淡出为重制表现（provisional）。
+- 一致：六关首回合箱表、领取改动与 35 关 77 只箱的可见性（隐藏 54、可见 23）均与重制数据对上；可见箱原版档接触即删、不出字不放声；隐藏箱删除时的短淡出为重制表现（provisional）。
 
 ## 证据
 
@@ -65,7 +65,7 @@
 
 - `tools/hsltools/data/treasures.py`：源记录、地图物件位置与物品目录 → `content/generated/hsl/treasures/battles.json`（含 `hidden`）。
 - `game/sim/TreasureRules.gd`：行动尾部一次性提案，入既有待领池；隐藏与可见箱同一领取规则。provenance 头写 `rules: static-derived docs/evidence_packets/static_reverse/original_treasure.md`。
-- `game/battle/scene/BattleTreasurePresentation.gd`：只显示已提交发现；隐藏箱不画、无悬停提示，发现时放 `sfxGetTreasure`；删除以短淡出表示（provisional）。
+- `game/battle/scene/BattleTreasurePresentation.gd`：只显示已提交发现；隐藏箱不画、无悬停提示，发现时放 `sfxGetTreasure`；可见箱原版档接触即删、无说明字与声音（`0x445526 → 0x4156d0`）；隐藏箱删除以 0.45 s 淡出表示（provisional）。「發現寶藏」说明字、悬停提示、确认音与全部画出只在重製選項 `OPT-TREASURE=全部畫出` 下出现（[OPTIONS](../../OPTIONS.md)）。
 
 ## 复现
 
@@ -82,4 +82,4 @@
 - 接触矩形测试用合成 16×16 角色，不推广到所有演员形状。
 - 待领队列容量按 32 槽测试，未测内存扩容。
 - 28 关记录 21 的 `0x02000000` 位含义未追。
-- 删除时的淡出时长为重制表现。
+- 隐藏箱删除时的淡出时长为重制表现。

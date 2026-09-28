@@ -1,12 +1,12 @@
 # 麻痺：施加、新行动入口跳过、解除与防护
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：麻痺（flags 含 4）者在 phase 0 的新行动入口被跳过（玩家 `0x443996`、AI `0x43f47b`）；地靈縛施加 2 或 3 次、累计上限 9，每次实际增加的计时 ×10 作为贡献；`0x40b910` 按行动递减到期清除；精靈石（item 效果 `0x20000000`）清麻痺；装备 `avoid_paralysis` 与固有 `no_paralyze` 防止后续麻痺但不治疗已有（static-derived）。
 - 重制：`ActionEntryRules` 只读判定入口资格，麻痺时产生一次 `paralysis_skip` 收据并只走一次现有行动尾部，绕过白光之翼额外行动查询；`StatusEffectRules` 管三类 counter（static-derived）。
-- 差异：高位状态机其余分支、wake 回调与死亡 handler 未恢复；施法粒子、混色与显示时钟是重制编排（provisional）。
+- 差异：高位状态机其余分支、wake 回调与死亡 handler 未恢复（provisional）；地靈縛 演出走 EFFECTS 脚本与效果对象原生轨迹（[效果运动包](original_effect_motion.md)），不再是重制编排的粒子。
 
 ## 证据
 
@@ -32,7 +32,7 @@
 - 反击门禁拒绝麻痺者反击；受支持的伤害不自行清麻痺，死亡清状态并释放单格占用。
 - AI 以同侧异常目标扫描、类别选择与首个匹配道具槽组合可达相邻位置用药；旧意图在移动、扣物或 RNG 前拒绝（provisional：地图收益与路径组合为重制适配）。
 - 到达／败北条件已满足时在状态与资源尾部之前冻结结果。
-- `ParalysisMagicPresentation`：前摇、脚点投影、释放／命中各一次；入场显示「麻痺 · 無法行動」，到期／用药显示「麻痺解除」；无资源尾部的用药数字也纳入输入阻塞（provisional：粒子、烟雾、100 tick/s 换算）。
+- 演出：原 `ParalysisMagicPresentation` 已删除，地靈縛 由 `SkillEffectScriptPlayer` 按 EFFECTS 脚本播放（[效果运动包](original_effect_motion.md)）。「麻痺 · 無法行動」只在 OPT-GUIDE 非原版档时由 `BattleNavigationCue` 显示、「麻痺解除」只在 OPT-INFO=公開 时由 `BattleTurnEndCue` 显示——原版飘字只有数字（remake-invented，[OPTIONS](../../OPTIONS.md)）。
 
 ## 复现
 

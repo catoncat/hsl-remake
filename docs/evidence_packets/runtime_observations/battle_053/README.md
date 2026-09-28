@@ -1,12 +1,12 @@
 # 逃出克萊恩城（level 53）：逃脱路线、原版开局与前两回合对照、自动对局败因
 
-> evidence: runtime-measured: 重制自动对局、原版 53 关开局全部单位记录与前两回合（一趟 Wine）及其 AI 实例字解码、同一 53 交接 5 种子×3 属性档对局; resource-derived: WINFAIL053／STORY053／EVEF／WRD／obj-053.h; static-derived: 0x43ede0 追击入口与 0x40e590 气力、0x407ec0 阵营互换与 0x448840 的 hp_level 项、STORY／WINFAIL 插入同走脚本 VM 0x450840; provisional: 机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品 · status: live · functions: 0x407ec0, 0x40e590, 0x43ede0, 0x448840, 0x450840 · tools: hsl_original_probe_units.py, hsltools/data/original_save.py, run_autoplay_sweep_tests.gd, run_chapter_autoplay_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured: 重制自动对局、原版 53 关开局全部单位记录与前两回合（一趟 Wine）及其 AI 实例字解码、同一 53 交接 5 种子×3 属性档对局; resource-derived: WINFAIL053／STORY053／EVEF／WRD／obj-053.h; static-derived: 0x43ede0 追击入口与 0x40e590 气力、0x407ec0 阵营互换与 0x448840 的 hp_level 项、STORY／WINFAIL 插入同走脚本 VM 0x450840; provisional: 机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品 · status: live · functions: 0x407ec0, 0x40e590, 0x43ede0, 0x448840, 0x450840 · tools: hsl_original_probe_units.py, hsltools/data/original_save.py, run_autoplay_sweep_tests.gd, run_chapter_autoplay_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版第 53 关唯一胜利是緹娜 站上出口 4 格；四邻最短路 54 步，出口前必须在单格通道口打倒出口守卫；緹娜、出口守卫、两名脚本追兵与增援的模板、等级（脚本追兵 `actSetPrevInsertObjectAdjustLevel,0,0` → L1）、AI 实例字与前两回合走位伤害均已实测（resource-derived；runtime-measured）。
 - 重制 `content/battles/battle_053.json` 在这些项上与原版一致：脚本追兵带 `script_insert.adjust_level [0,0]`，阵营互换单位的 `hp_level` 跟随安装后的侧（原版 L1 023 敌人 28 HP）；同一交接下 lookahead 自动对局原属性 1/5、+10% 5/5、+25% 5/5，输因在自动对局策略（runtime-measured）。
-- 差异：WINFAIL 插入单位当回合能否行动、最短路平局次序、023 随机携带品来源未对齐或未测（provisional）。
+- 差异：WINFAIL 插入单位当回合能否行动、最短路平局次序未对齐或未测（provisional）；023 的随机携带品两边同为出生时按携带表在全局流抽，单局抽中哪件随流而异。
 
 ## 证据
 
@@ -98,7 +98,7 @@ y35 .......###.......#............XX   ← 城墙走道东行到出口 XX
 
 - WINFAIL 插入单位当回合能否行动未测（provisional；若能，原版只会更难）；替换证据是一趟原版第 5 回合观察。
 - 首控时 (26,22) 对 (25,23)、第 3 回合 (20,22) 对 (19,23)：`AINavigationRules` 已标注的最短路平局次序（provisional），步数相同。
-- 023 一格随机携带品在原版的来源未定位（provisional），不影响胜负。
+- 023 一格随机携带品：原版 pmEnemy 出生时 `0x407c86` 按 PLAYERS `carry_item` 取候选表逐项 `rand(101)`、抽全局流（[battle_reward_inputs](../../static_reverse/battle_reward_inputs.md)「结论」），原版 [249]／[246] 都在 023 的候选表内；重制同表同流抽，单局结果随流而异，不影响胜负。
 - `obj_Story_Block` 在 (20,21) 未建模碰撞：在北侧，不在西行路线上。
 - 原版只到第 3 回合菜单；原版里人能否逃出、增援之后的交手无样本。
 - 自动对局的气力规划、喝药时机、魔法回复从不使用、special 中点估算与逃脱关的僵局判定属自动对局策略，不是规则。

@@ -1,6 +1,6 @@
 # 换阵营与不死：actSetPlayerMode、actSetPlayerUndead、HPLow 与击杀结算
 
-> evidence: static-derived; provisional: 反击击杀 undead 攻击者时的结算（重制未对齐） · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived; provisional: 不死防守方致死后是否仍反击（差异清单 undead-counter-kill） · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -58,6 +58,6 @@
 
 - 重制在出手内复活不死防守方后仍让其反击；原版 `0x4415b5`／`0x4446cc` 致死分支是否跳过反击未追。替换证据：原版 3 关漢克斯（不死）攻击并死于緹娜反击，读双方 +0x88 前后。
 - 已阵亡单位在重制中按 HP 0 读 HPLow（成立）；原版查找在注销后失败，但扫描是否早于 `0x43ef36` 注销未读。
-- AI 接收者上方的 `$` 浮字未接；`+0x18c` 位 0x20 只建模了装备来源。
+- AI 击杀者自得的击杀金钱（`BattleRewardRules.accrue` 记入 `carried_gold_gained`）上方 `$` 浮字未接——`BattleAftermath` 的 `$` 只飘玩家方 `rewards.gold` 与偷钱 `gold_effects`；偷钱一侧双方都已照 `0x40b556..0x40b574` 飘（provisional）；`+0x18c` 位 0x20 只建模了装备来源。
 - 同一收据内击杀掉落先于 StealItem 的次序是重制次序（provisional）。
 - 开场到战斗的原生时序未追；`0x44f580` 的装备跳过与 `+0xac` 连接对象不在本包结论内。

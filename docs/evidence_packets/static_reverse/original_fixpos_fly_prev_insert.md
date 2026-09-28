@@ -1,12 +1,12 @@
 # WINFAIL 的 actChangePrevInsertObjectID／actSetPlayerFixPos／actSetPlayerFly
 
-> evidence: static-derived; resource-derived: ACTION.H 与 WINFAIL012 用法; provisional: 锚点量化与精化行走的洪泛度量; negative-evidence: 碰撞、动画时序、飞行物理、对象旗标 0x4000 · status: live · functions: 0x44fa80, 0x44fad0, 0x450840 · tools: run_ai_navigation_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: ACTION.H 与 WINFAIL012 用法; provisional: 锚点量化; negative-evidence: 碰撞、动画时序、飞行物理、对象旗标 0x4000 · status: live · functions: 0x44fa80, 0x44fad0, 0x450840 · tools: run_ai_navigation_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 `actSetPlayerFixPos` 只改对象的守备锚点（`+0x46`／`+0x44`）与非零时的守备半径（`+0x1d0`），不移动单位；`actSetPlayerFly` 切换 player 记录 `+0xa0` bit 0；`actChangePrevInsertObjectID` 改上一插入记录 `+0x84` 的身份字（static-derived）。
 - 重制 `game/sim/WinfailActions.gd` 写 `ai_home_coord` 与 `ai_fixed_radius`，单位按守备分支走向锚点，图外锚点是撤退点；飞行写单位 `traversal.flying`；插入身份只作收据（static-derived）。
-- 差异：锚点的 32 px 量化与精化行走洪泛度量为重制读法；原版 handler 是否置对象旗标 0x4000 未读（provisional；negative-evidence）。
+- 差异：锚点的 32 px 量化为重制读法；走向锚点与追击共用 `0x4111a0 → 0x411080` 精化，洪泛已照原版移植（[AI 导航包](original_ai_navigation.md#结论)）；原版 handler 是否置对象旗标 0x4000 未读（provisional；negative-evidence）。
 
 ## 证据
 
@@ -38,5 +38,5 @@
 
 ## 边界
 
-- provisional：锚点的 32 px 量化（与 EVEF 格心对齐同格）、精化行走的洪泛度量、id 10000 在重制中无可见效果。
+- provisional：锚点的 32 px 量化（与 EVEF 格心对齐同格）、id 10000 在重制中无可见效果；精化行走的洪泛见 [AI 导航包](original_ai_navigation.md#结论)。
 - negative-evidence：本读法不确立原生碰撞、动画时序、飞行物理，也不确立 handler 是否置对象旗标 0x4000；重制在到达后仍按该半径守备。替换证据是 LEVEL012 第 8–10 回合的有界运行探针。

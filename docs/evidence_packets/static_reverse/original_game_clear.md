@@ -67,7 +67,7 @@
 
 ## 重制接线
 
-`game/title/GameClearScreen.gd` 按上表以 16 ms tick（`OriginalTick`）推进：开场变亮 96 tick、OVER001／OVER002／WORKTEAM 的起点、0.5 px/tick 与路程、独白段压黑与 120 tick 后换 OverBG02、主角每位 1 px/tick 与 y≤100 放行、240 tick、制作群停住后才接受按键、回标题压黑 32 tick；主角段九个槽都走，形状取 `combat_animation` 的战斗形状第 0 帧，状态单用 RESOURCE 字串按上表拼行、FONT.24 画（值由交接方给出）。`tools/hsltools/assets/title_assets.py` 的 `GAME_CLEAR` 改记这些数字与出处。
+`game/title/GameClearScreen.gd` 按上表以 16 ms tick（`OriginalTick`）推进：开场变亮 96 tick、OVER001／OVER002／WORKTEAM 的起点、0.5 px/tick 与路程、独白段压黑与 120 tick 后换 OverBG02、主角每位 1 px/tick 与 y≤100 放行、240 tick、制作群停住后才接受按键（OPT-PACE 快／極快 为重制改良：对白外确认键跳到下一段起点，原版值不跳）、回标题压黑 32 tick；主角段九个槽都走，形状取 `combat_animation` 的战斗形状第 0 帧，状态单用 RESOURCE 字串按上表拼行、FONT.24 画（值由交接方给出）。`tools/hsltools/assets/title_assets.py` 的 `GAME_CLEAR` 改记这些数字与出处。
 
 ## 复现
 

@@ -1,12 +1,12 @@
 # 直线效果范围：0x4100e0 的 range 21..23（Dir）分支
 
-> evidence: static-derived; provisional: 效果区域接线 · status: live · functions: 0x40fc90, 0x40fdc0, 0x4100e0 · tools: hsltools/data/attack_ranges.py, hsltools/data/skill_targeting.py, hsltools/probes/range_terrain.py, run_tests.gd · updated: 2026-09-27
+> evidence: static-derived; provisional: 角色分支用 ACTOR 标记代替 · status: live · functions: 0x40fc90, 0x40fdc0, 0x4100e0 · tools: hsltools/data/attack_ranges.py, hsltools/data/skill_targeting.py, hsltools/probes/range_terrain.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`range3CellDir`／`range4CellDir`／`range5CellDir`（21..23）不读矩阵 data 行，只用首字节 size 作线长；从所选格出发朝「施法者→所选格」的轴向延伸 size 格（列不同优先水平，所选格含在内）；出界或遇 `0x4000` 格停线，排除位格与无角色的 `0x850000` 格跳过但继续（static-derived；126 次原生完整执行）。
 - 重制：`SkillTargetRules.line_direction／line_cells／effect_cells` 以施法者格为必要输入，`RangePropagationRules.line_coverage` 实现停线与跳格（static-derived）。
-- 差异：玩家施法结算与悬停预览尚未传入效果区域地形，对局中直线只裁地图边界（provisional：效果区域接线）。
+- 玩家施法（选格、悬停、结算）经 `BattlePlayLoop.skill_terrain` 传入效果区域地形，AI 施法经 `AISkillPlanning` 的 `area_modes` 传入，对局中直线按地形停线与跳格（static-derived，接线同 [original_weapon_ranges.md](original_weapon_ranges.md#重制接线)）。
 
 ## 证据
 
@@ -37,7 +37,7 @@
 - `hsltools/data/attack_ranges.py`、`hsltools/data/skill_targeting.py` 把 Dir 编译为 `shape=line`（size＋原 data 行）。
 - `SkillTargetRules.line_direction`／`line_cells`／`effect_cells(center, …, origin)`：缺施法者位置返回空；`candidate_centers` 用同一正向投影四轴反查；Dir 作施放范围返回 `unsupported_line_cast_range`；terrain 带 `area_modes` 时使用 `RangePropagationRules.line_coverage`。
 - `SkillResolutionRules.prepare_cast`、`AISkillPlanning.target_for_center`、`BattlePlayLoop.magic_target_id_at_coord`／`strike_range_cells` 传入施法者格；settled 提示条显示实际直线。
-- `BattleLoopCombat._skill_context` 与悬停预览尚未传效果区域地形，线上敌我仍由 `side_matches` 过滤（provisional），接线点同 [original_weapon_ranges.md](original_weapon_ranges.md)。
+- `BattleLoopCombat._skill_context` 与悬停预览读 `BattlePlayLoop.skill_terrain`（带 `area_modes`），AI 施法读 `AISkillPlanning.cast_terrain`；接线点同 [original_weapon_ranges.md](original_weapon_ranges.md)。
 
 ## 复现
 
@@ -46,4 +46,4 @@
 ## 边界
 
 - 角色分支（`0x40fc90` 找到活角色）只有指令读法，探针角色表为空，重制用 `ACTOR` 标记代替。
-- 对局中直线尚未按地形停线与跳格。
+- 非 P 侧施法者的命令路径（无 2／3 常量）保留平铺效果区域（见 `BattlePlayLoop.skill_terrain` 注释）。

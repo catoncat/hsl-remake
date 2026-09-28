@@ -15,7 +15,7 @@
 | 原角色 | 职业／武器 | 模板 HP／MP／速度 | 源能力 |
 | --- | --- | --- | --- |
 | 004 | job88 盗贼／102 | 43／0／25 | 玩家槽 3 映射记录 004；无已支持初始法术；銀之手由 `SpecialUtilityRules` 按纯 StealGold 行结算（见 [original_skill_function_bits.md](original_skill_function_bits.md)「重制接线」） |
-| 006 | job92 翼战士／43 | 85／21／43 | 玩家槽 5 映射记录 006；源 `move_fly` 与風刃；連續突刺未支持 |
+| 006 | job92 翼战士／43 | 85／21／43 | 玩家槽 5 映射记录 006；源 `move_fly` 与風刃；連續突刺（magicCode16）按原版特殊技伤害结算，技能已无拒绝项（差异清单 `unimplemented-abilities`） |
 | 028 | job88 盗贼／21 | 26／0／16 | 源敌人装备与 AI 配置 |
 | 036 | job92 翼战士／33 | 40／0／12 | 未声明飞行，不按职业补飞行或風刃 |
 

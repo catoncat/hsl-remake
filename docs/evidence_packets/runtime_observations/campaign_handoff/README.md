@@ -4,7 +4,7 @@
 
 ## 结论
 
-- 原版每关入口 `0x4075e0` 对全部已注册成员回满 HP／MP、ST 归零（`actKeepPlayerST` 时保留），未上场与阵亡成员照样随队（static-derived，[注册表与交接写回](../../static_reverse/original_campaign_actors.md#证据)）；金币／物品如何结算、跨关存档流程未读（provisional）。
+- 原版每关入口 `0x4075e0` 对全部已注册成员回满 HP／MP、ST 归零（`actKeepPlayerST` 时保留），未上场与阵亡成员照样随队（static-derived，[注册表与交接写回](../../static_reverse/original_campaign_actors.md#证据)）；队伍金钱是全局 `0x4c1bcc`（存档头 `+0x28`，[存档格式](../../static_reverse/original_save_format.md)），关入口是否改写它、物品如何结算、跨关存档流程未读（provisional）。
 - 重制承接上一战的 `player_controlled` 单位与未上场的已承接成员的等级／经验／未用点数／四属性／装备／库存／击杀数与 loop 级金币，在 `BattlePlayLoop.create` 之后、`begin_battle` 之前经 `apply_campaign_carry` 施加，派生数值走 `ProgressionRules.refresh_growth_stats`；下一场景由 `CampaignProgress` 交接并写 `user://campaign_progress.json`（runtime-measured）。
 - 各正式战斗在强制胜利夹具下都能从开场走到首次控制、结果页与战役交接；夹具只证明流转，不证明 AI、平衡、节奏或原版等价（runtime-measured）。
 - 与原版的差异归差异清单 `carry-model`、`script-entry-paths`、`winfail-readings`（provisional）。

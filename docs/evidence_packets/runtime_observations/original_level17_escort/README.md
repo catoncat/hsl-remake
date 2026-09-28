@@ -1,6 +1,6 @@
 # 原版第 17 关（艾瓦台地）：护送 NPC 与敌方 AI，两次全待机开局
 
-> evidence: runtime-measured; provisional: item consumption and NPC movement rule; static-derived: remake friendly candidate filter, fixed-point refinement walk · status: record-only · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py · updated: 2026-09-27
+> evidence: runtime-measured; provisional: item consumption and NPC movement rule; static-derived: remake friendly candidate filter, fixed-point refinement walk · status: record-only · tools: hsl_original_control.py, hsl_original_probe_units.py, hsltools/data/original_save.py · updated: 2026-09-28
 
 ## 结论
 
@@ -68,4 +68,4 @@
 - 未覆盖玩家行动、第 6／8 回合插入（WINFAIL017 event 1/2、嚎到场）、胜利路径与原版 fail 1 结果页。
 - 062 三回合后是否移动、原版回合内的行动次序（快照按玩家菜单而非逐个 AI）、命中抽样未覆盖。
 - 原版 RNG 未播种；逐格一致只在两次原版运行一致处声明。
-- 原生洪泛度量与 80% 拒绝对路线的影响未由本记录证明；替换证据为 `0x411080` 有界执行。
+- 精化洪泛已按 `0x411080`／`0x40ed50`／`0x413740` 静态读法移植并由原版抽签回放核对（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)「结论」）；80% 拒绝对本关护送路线的影响仍未由本记录证明。

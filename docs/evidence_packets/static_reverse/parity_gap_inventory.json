@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 490,
+    "sources": 477,
     "sources_by_kind": {
-      "provenance": 203,
-      "sentence": 117,
+      "provenance": 204,
+      "sentence": 103,
       "scope": 72,
       "matrix": 85,
       "video": 13
@@ -632,7 +632,7 @@
         "scope:docs/evidence_packets/runtime_observations/second_battle_opening/README.md|provisional|条件极性",
         "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
         "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
-        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量",
+        "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化",
         "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接",
         "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
@@ -644,11 +644,8 @@
         "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf",
         "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78",
         "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f",
-        "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf",
         "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5",
         "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1",
-        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e",
-        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
       ]
@@ -683,7 +680,7 @@
         "provenance:game/sim/TacticalGridRules.gd|rules|provisional|",
         "provenance:game/sim/loop/BattleLoopAI.gd|rules|provisional|",
         "scope:docs/evidence_packets/runtime_observations/battle_005/README.md|provisional|机器人策略、AI 同距落点次序、WINFAIL 插入单位当回合是否行动",
-        "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流",
+        "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|原版 NPC 调级与 AI 随机流",
         "scope:docs/evidence_packets/runtime_observations/battle_053/README.md|provisional|机器人策略、WINFAIL 插入单位当回合是否行动、最短路平局次序与 023 随机携带品",
         "scope:docs/evidence_packets/runtime_observations/original_level17_escort/README.md|provisional|item consumption and NPC movement rule",
         "scope:docs/evidence_packets/runtime_observations/remake_notes.md|negative-evidence|纯首控帧与镜头曲线",
@@ -724,12 +721,6 @@
         "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟",
         "sentence:docs/evidence_packets/static_reverse/original_actor_traversal.md#42eb9c6e80",
         "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#283487b0af",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#698c63af0e",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#86c3599d3c",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#9b430cd2a3",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#ee5f326d2e",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#3ae11d8fb6",
-        "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#fabdb02c10",
         "sentence:docs/evidence_packets/static_reverse/original_ai_support.md#43889a45cf"
       ]
     },
@@ -1161,7 +1152,7 @@
         "provenance:game/sim/RangePropagationRules.gd|rules|remake-invented|",
         "provenance:game/sim/SkillResolutionRules.gd|rules|provisional|",
         "provenance:game/sim/SkillTargetRules.gd|rules|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|效果区域接线",
+        "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|角色分支用 ACTOR 标记代替",
         "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e",
         "sentence:docs/evidence_packets/static_reverse/original_skill_targets.md#e70a1b321e"
@@ -1197,7 +1188,6 @@
         "sentence:docs/evidence_packets/static_reverse/original_world_town.md#69bfcfd889",
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#413a7dbce4",
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193",
-        "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#a3bbaaf4ae",
         "sentence:docs/evidence_packets/static_reverse/world_map_data.md#79d6ecfe5d",
         "sentence:docs/evidence_packets/static_reverse/world_map_data.md#8eb537d377"
       ]
@@ -1339,9 +1329,8 @@
         "provenance:game/sim/CampaignCarryRules.gd|rules|remake-invented|",
         "provenance:game/sim/ConditionalPartyRules.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合",
+        "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交与入队调度的组合",
         "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型",
-        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#7b79afa225",
         "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#c5422b8d38",
         "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
       ]
@@ -1668,7 +1657,7 @@
         "docs/evidence_packets/static_reverse/original_game_clear.md",
         "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
       ],
-      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机",
+      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机；途中跳段归 OPT-PACE：原版值不可跳，快／極快 确认键跳到下一段",
       "remake_code": [
         "game/title/GameClearScreen.gd"
       ],
@@ -1678,7 +1667,8 @@
       "category": "标题与过场",
       "sources": [
         "provenance:game/title/GameClearScreen.gd|strings|provisional|",
-        "provenance:game/title/GameClearScreen.gd|timing|provisional|"
+        "provenance:game/title/GameClearScreen.gd|timing|provisional|",
+        "provenance:game/title/GameClearScreen.gd|timing|remake-invented|"
       ]
     },
     {
@@ -1774,7 +1764,6 @@
       "sources": [
         "provenance:game/sim/ItemUseRules.gd|rules|provisional|",
         "provenance:game/sim/loop/BattleLoopInventory.gd|rules|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#2fcd53a808",
         "sentence:docs/evidence_packets/static_reverse/original_give_exchange.md#48cb1c629f",
         "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#85289aa8c5",
         "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#90a588b6d5",
@@ -2116,7 +2105,7 @@
       "decision": "反击门未读完，按最保守不改（REWARD）",
       "sources": [
         "matrix:脚本阵营切换与不死标记（level 3 漢克斯）",
-        "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|反击击杀 undead 攻击者时的结算（重制未对齐）"
+        "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|不死防守方致死后是否仍反击（差异清单 undead-counter-kill）"
       ]
     },
     {
@@ -2145,7 +2134,6 @@
         "provenance:game/world/PartyEquipmentScreen.gd|strings|remake-invented|",
         "provenance:game/world/TownShopScreen.gd|layout|remake-invented|",
         "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#1c89d9216a",
-        "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#88ed916591",
         "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#be57cdaf93"
       ]
     },
@@ -2288,7 +2276,6 @@
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#449ea52b57",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049",
         "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51",
-        "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340",
         "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201"
       ]
     },

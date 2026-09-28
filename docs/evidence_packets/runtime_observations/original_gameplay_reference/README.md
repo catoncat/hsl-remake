@@ -1,12 +1,19 @@
 # 原版录像：已审查的视觉参考
 
-> evidence: runtime-measured · status: record-only · tools: hsltools/evidence/gameplay_reference.py · updated: 2026-09-14
+> evidence: runtime-measured · status: record-only · tools: hsltools/evidence/gameplay_reference.py · updated: 2026-09-28
 
 核对日期：2026-09-14。用途是定位可见差异、查看连续过程和制定窄问题；产品范围与开发顺序仍以 [PROJECT](../../../PROJECT.md#next-steps) 为准。
 
-用户提供的 `record.mp4` 是本包来源。原始交付的图像提取可靠，文字解释存在错误和无依据的精确断言，已由本页取代。审查过程、纠错和保存位置见 [AUDIT.md](AUDIT.md)；交给视频模型的补充任务见 [CAPTURE_SPEC.md](CAPTURE_SPEC.md)。
+外部交付的原版录像 `record.mp4` 是本包来源。原始交付的图像提取可靠，文字解释存在错误和无依据的精确断言，已由本页取代。审查过程、纠错和保存位置见 [AUDIT.md](AUDIT.md)；交给视频模型的补充任务见 [CAPTURE_SPEC.md](CAPTURE_SPEC.md)。
 
-## 使用前先分清三件事
+## 结论
+
+- 637 张外部交付 PNG 的 RGB 像素全部在原录像解码帧中找到，正式包保留 52 张原帧＋18 张接触表＋11 张细节图；下文 V01–V10 是本录像内的可见观察，只作视觉参考与窄问题入口（runtime-measured）。
+- 原交付的文字解释有错误与无依据的精确断言，已由本页取代，纠错见 [AUDIT.md](AUDIT.md)；录像观察不升级为全局规则，参考帧存在不等于重制已修复。
+
+## 证据
+
+### 使用前先分清三件事
 
 | 层次 | 本包能提供什么 | 不能据此声称什么 |
 | --- | --- | --- |
@@ -16,7 +23,7 @@
 
 录制文件是 **638×480、30 fps、489.5 秒、14,685 帧**；项目逻辑视口仍是 640×480。它是带 Screenflare 水印的 H.264/YUV420P 录像，不是无损的 640×480 原始 framebuffer。缺少的横向两像素、压缩和水印会影响坐标、颜色与文字判断；不要先拉伸成 640 再报告“像素精确”。AAC 音轨本轮未审听、未标注。
 
-## 按问题找图
+### 按问题找图
 
 目录编号保留原交付名称，避免破坏引用；以本表和 `manifest.json.label` 为语义，不能从旧目录名推断内容。接触表仅作导航，可能跨越相邻操作；查看原尺寸 `frame_*.png` 才适合核对细节。
 
@@ -41,7 +48,7 @@
 | 报告、目标变更与后续战斗 | 17 接触表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/17_story_events_and_victory/contact_sheet.jpg`） | 对白（原版帧见私有档案：`runtime_observations/original_gameplay_reference/17_story_events_and_victory/frame_013.png`）、[地图目标文字（重制画面）](../../../screenshots/remake/mission-card.png)（原版帧见私有档案：`runtime_observations/original_gameplay_reference/17_story_events_and_victory/frame_018.png`） |
 | 结束、结算及宫殿过场 | 18 接触表（原版帧见私有档案：`runtime_observations/original_gameplay_reference/18_ending_and_next_scene/contact_sheet.jpg`） | 死亡对白（原版帧见私有档案：`runtime_observations/original_gameplay_reference/18_ending_and_next_scene/frame_004.png`）、金钱（原版帧见私有档案：`runtime_observations/original_gameplay_reference/18_ending_and_next_scene/frame_007.png`）、结束台词（原版帧见私有档案：`runtime_observations/original_gameplay_reference/18_ending_and_next_scene/frame_010.png`）、宫殿（原版帧见私有档案：`runtime_observations/original_gameplay_reference/18_ending_and_next_scene/frame_014.png`） |
 
-## 已审查的观察与使用边界
+### 已审查的观察与使用边界
 
 以下观察都是 `runtime-measured`，指本录像中的可见现象。对应原帧见上表；数值公式仍回到 [机制矩阵](../../../MECHANICS_EVIDENCE_MATRIX.md) 和源表／原函数证据。
 
@@ -65,7 +72,13 @@
 
 **V10 剧情。** `17` 的目标文字显示在地图上，本样本不支持“羊皮纸任务横幅”。`18/frame_010` 可见“現在，才是真正的開始……”；实际正文仍以导入 RESOURCE 为准。录像时刻不等于回合号，下一场景画面不证明产品已实现正式跨关。原结尾接触表混入的桌面尾帧已从正式资料排除。
 
-## 帧号、时刻与复核
+## 重制接线
+
+本页不直接被规则消费；界面模块（如 `BattleDialogue`、`BattleSystemMenu`、`BattleItemPanel`、`BattleLootPanel`、`BattleEquipmentView`）的 provenance 头以 `runtime-reference` 引用本包具体帧，视觉差异应指向本包帧号与当前重制帧。
+
+## 复现
+
+### 帧号、时刻与复核
 
 `manifest.json` 是机器入口。每张保留原帧记录文件 SHA-256、RGB 像素 MD5、录制尺寸及 `source_frames`；后者是从完整视频像素匹配得到的 **零起算解码帧号**。本录像 `秒数 = source_frame / 30`。若完全相同画面对应多帧，保留全部候选，不假装唯一时刻。
 
@@ -80,4 +93,6 @@ PYTHONPATH=tools /opt/homebrew/bin/python3 -m hsltools.evidence.gameplay_referen
   --video ../hsl-fork-raw-archive-20260914-gameplay/record.mp4
 ```
 
-校验成功只证明文件和索引一致；不能自动证明本页描述、交互因果、音效、游戏 tick 或重制版视觉一致。`.gdignore` 防止 Godot 将研究参考图片当产品资源导入。
+## 边界
+
+- 校验成功只证明文件和索引一致；不能自动证明本页描述、交互因果、音效、游戏 tick 或重制版视觉一致。`.gdignore` 防止 Godot 将研究参考图片当产品资源导入。

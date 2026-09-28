@@ -1,6 +1,6 @@
 # 伤害／命中随机流：原版生成器、单一状态、随存档保存
 
-> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x403860, 0x406fe0, 0x409be0, 0x40a5d0, 0x40aa80, 0x40e430, 0x42c720, 0x42c780, 0x42c7e0, 0x42e070, 0x42e640, 0x4414a0, 0x4423c0, 0x4445cf, 0x457410, 0x458bb0, 0x458c10, 0x458c80 · tools: export_exchanges.gd, hsltools/evidence/damage_random.py, hsltools/probes/_exchange_check.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -163,5 +163,5 @@ $U compare ignored/dmgcheck/L51_12.json ignored/dmgcheck/L51_12_remake.json igno
 
 原版时钟播种分支`0x457830`没有执行，只是字节钉住；重制的`t`是产品时钟或`HSL_RNG_SEED`，不会和某次原版开局的具体数值相同。全局流接入`GlobalRandomStream`（同一生成器，状态对应`0x4795d4`／`0x4795d8`，不入存档）：AI决策、出生调级、新援、开局随机槽、opcode 86／99的随机位置已改抽它；掉落（`0x44f5d3`）、出生随机携带（`0x407c86`）与opcode 121（`0x450fe6`／`0x451012`／`0x451075`）原版也抽全局流（实测／静态，见 [battle_reward_inputs.md](battle_reward_inputs.md)），opcode 107／108原版不抽随机数，见[差异清单](parity_gap_inventory.md)的`rng-streams`。
 
-- **AI决策**：产品里AI每回合新建一个随机源来做决策。读档后，AI的选择可能和存档前那次不同，伤害流的消耗顺序也会随之不同。存档一致性测试固定了决策随机源，所以不受影响。
+- **AI决策**：AI 决策抽全局流（`GlobalRandomStream.loop_source`），全局流与原版一样不入存档、读档沿用进程里的现值，所以读档后伤害流重演（存档）而 AI 的选择可能和存档前那次不同——与原版同理；存档一致性测试固定了决策随机源，所以不受影响。
 - **交锋内抽取顺序**：由`order_cases`对照原版的静态顺序。整段普通交锋已在原程序里逐值对拍，但只限敌人回合，见[整段交锋对拍](#整段交锋对拍)。武器效果（`0x409110`–`0x409310`）、元素加成、偷窃等分支各自抽几次，仍只在各自的规则测试里对照过原版，本批局面没有触发它们。

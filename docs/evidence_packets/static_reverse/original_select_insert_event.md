@@ -1,14 +1,19 @@
 # actSelectInsertEvent（战斗侧）：选项插入 winfail 事件与所选链的执行时机
 
-> evidence: static-derived: opcode 形状; runtime-measured: 原版整镜像 LEVEL900 所选事件链时机与走位落格（unicorn）; provisional: 重制提示框与分支拼接 · status: live · functions: 0x4082a6, 0x43f1df, 0x44ee20, 0x450840, 0x453a80, 0x453ac0, 0x454187 · tools: hsltools/probes/_enemy_level.py, run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived: opcode 形状; runtime-measured: 原版整镜像 LEVEL900 所选事件链时机与走位落格（unicorn）; provisional: 重制提示框与分支拼接 · status: live · functions: 0x4082a6, 0x4264a0, 0x43f1df, 0x44ee20, 0x450840, 0x453a80, 0x453ac0, 0x454187 · tools: hsltools/probes/_enemy_level.py, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 `actSelectInsertEvent`（opcode 79）按选项把指定 winfail 事件插入；所选事件链不在剧情里跑，而是在第 1 回合排序之后、第一个行动者之前，由剧情→战斗交接扫描启动的状态对象跑完，链里的 actWalk 由被点名对象自己的进程走到并对齐目标格（runtime-measured）。
 - 重制 `WinfailScenarioRules.select_event_status` 把所选事件码追加到唯一的 `event_statuses`，`BattleOpeningCoordinator` 复用 `select_options` 提示并把所选状态时间线拼在当前 token 之后（provisional 表现合同）。
-- 差异：原版菜单光标、消息框版式与事件调度边界本包未读（provisional）。
+- 原版选项窗：opcode 79 的 handler（表 `0x4537f4`＋79×4 → `0x451f2b`）把选项消息 id 填进 `0x4c2940` 后调 `0x4264a0(picture, 0, 0x4c2940, &结果)`，与城镇 teSelectInsertEvent 同一个对象 704 Event_Select_Window（static-derived；窗体读法见 [original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）。
+- 差异：重制战斗侧选项仍是对白板右侧的 WINDOW50 行（`OpeningSelectPrompt`，remake-invented），未改用城镇已照原版的 704 选择窗；事件调度边界本包未读（provisional）。
 
 ## 证据
+
+### static-derived：选项窗对象
+
+`r2 pxw 4 @ 0x4537f4+79*4` → `0x451f2b`；该 case 在 `0x451fbb..0x451fca` 依次压入结果指针、`0x4c2940`（选项消息 id 表）、0、picture，调 `0x4264a0`。城镇 `0x454e20` case 0xf／0x1e 调的是同一函数同一参数形状，故战斗与城镇的选项窗是同一个对象 704。
 
 ### resource-derived
 
@@ -33,13 +38,13 @@
 ## 重制接线
 
 - `game/sim/WinfailScenarioRules.gd` `select_event_status`：追加事件码、求值其 `actTRUE` 分支并记录请求。
-- `game/battle/runtime/BattleOpeningCoordinator.gd`：`select_options` 提示（WINDOW50 选项，与剧情侧共用）；新触发的状态标 `presentation_inlined`，`BattleSceneRuntime` 不再把同一分支作第二段过场重播。
+- `game/battle/runtime/BattleOpeningCoordinator.gd`＋`opening/OpeningSelectPrompt.gd`：`select_options` 提示（对白板右侧 WINDOW50 行，layout remake-invented；城镇侧已改原版 704 选择窗 `TownRuntime`，战斗侧未跟）；新触发的状态标 `presentation_inlined`，`BattleSceneRuntime` 不再把同一分支作第二段过场重播。
 
 ## 复现
 
-`tools/godot.sh --headless --script res://tests/run_winfail_rules_tests.gd`（`_select_event_status_branches`）
+`tools/godot.sh --headless --script res://tests/run_winfail_rules_tests.gd`（`_select_event_status_branches`）；选项窗调用 `r2 -q -c 'pxw 4 @ 0x4537f4+79*4; pd 40 @ 0x451f2b' hsl01.exe`。
 
 ## 边界
 
-- 原版菜单光标、消息框版式、事件状态调度边界与 `0x450840` 之后的 handler 调用目标本包未读。
+- 原版选项窗已定为 704（见「证据」），其战斗侧画面未实拍；事件状态调度边界与 `0x450840` 之后的 handler 调用目标本包未读。
 - LEVEL900 读数是一次种子、一个选项的整镜像运行。

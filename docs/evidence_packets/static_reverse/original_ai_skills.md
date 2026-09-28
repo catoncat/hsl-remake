@@ -1,12 +1,12 @@
 # 原 AI：技能桶、使用概率、范围中心与施法站位
 
-> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`0x407010` 按 function 位把技能分到范围桶 3／单体桶 4（另有治疗、增益、状态、解除桶），`0x40c770` 在非空桶内 `rand(32)%count` 起步循环，逐项 `rand(100)+1 <= use_ratio` 才接受；`0x40d4e0` 决定单体／范围先后；`0x40c9a0` 选覆盖最多的范围中心，`0x40d200..0x40d2b0` 在最大覆盖施法格中取离威胁最远者（static-derived；202 组原指令执行：162 正常返回、40 距离后缀）。
 - 重制：`game/sim/AISkillDecisionRules.gd` 只算已证实的桶、顺序、逐项概率与距离比较；`game/sim/AISkillPlanning.gd` 为每个拥有的受支持技能准备独立合法站位与中心，选中后先最大化有效覆盖再用原距离末段选格，经 `_resolve_skill` 一次提交（static-derived 规则＋重制组合）。
-- 差异：原完整地图候选生成、空格中心、中心平分的随机流、目标锁定与辅助效果未复原；威胁选取与有效收益计数是重制组合（provisional）。
+- 差异：原完整地图候选生成、空格中心、中心平分的随机流未复原（目标锁定见 [original_ai_navigation](original_ai_navigation.md)「结论」，辅助见 [original_ai_support](original_ai_support.md)）；威胁选取与有效收益计数是重制组合（provisional）。
 
 ## 证据
 
@@ -45,7 +45,7 @@
 - 所有源参数、技能定义、目标在任何 RNG、移动、扣费、呼叫前验证；概率全落空是正常结果，沿类别顺序继续；坏概率或缺 `source_order` 返回 `scenario_error`，状态不变。
 - 纯毒：免疫或已达上限的目标不计分，整个范围无效时不投概率、不付款。
 - 技能书加入 `source_order` 改变 BattleCheckpoint 配置指纹，旧存档在恢复入口被拒绝。
-- 法师法术重制选择（provisional）：初始 MP 30 不回复、在付得起的法术间随机、无魔法反击；1.5 秒切入、0.65 秒命中的地图演出不是原效果解释器。
+- 法术的地图演出由 `SkillEffectScriptPlayer` 回放原生效果脚本（[original_effect_motion](original_effect_motion.md)「结论」）；AI 在付得起的技能间按上述桶与逐项概率选。
 - 相邻目标状态文字按实际字体测量错开高度（重制可读性选择）。
 
 ## 复现
@@ -56,6 +56,6 @@
 
 - 原完整地图候选生成、空格中心、中心平分两条随机流未复制；重制中心必须是活敌人，候选按行／列排序。
 - 威胁取八格圆内最近活敌人，同距按行／列；原最近目标 helper 的改选随机流未接。
-- 原候选上限、对象生命周期、目标锁定、wait_round、owner+0x12c 初始化、辅助效果、完整特殊技能选择与全局 RNG 未复原。
-- 桶识别不等于重制实现了治疗／增益。
+- 原候选上限、对象生命周期、owner+0x12c 初始化、完整特殊技能选择与全局 RNG 逐值序列未复原；目标锁定与 wait_round 见 original_ai_navigation。
+- 本包只证桶识别；治疗／增益的 AI 用法见 [original_ai_support](original_ai_support.md) 与 [original_support_magic](original_support_magic.md)。
 - 原版幻火是单体法术；最终原伤害公式与 AI 法术评分不由本包证明。

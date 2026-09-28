@@ -124,5 +124,5 @@
 - 商店只看了 席達鎮 三家店、一名成员：换人、商店里的 裝備／倉庫／丟棄、买入后放到别的成员背包、背包满与重要物品拒收（消息 607）无样本；背包格与货表行格位沿用战后窗静态坐标，未逐像素重测。
 - 红色 ↓ 的含义未核对。
 - 城镇根菜单项字体与菜单板纹理只看了截图，未核对资源文件；根／子菜单悬停色已照石纹菜单行 `0x4561d0` 用 `0x42c130` 脉冲绿、阴影照画（static-derived，lane TOWNMENU2，见 [original_world_town](../../static_reverse/original_world_town.md)）。
-- select 选择窗只有静态读数，无原版实拍帧；tePlayerSelect 只列 `0x42caa0` 判为在队的队员（重制按 `in_party` 滤行），`[mode]` 1／2 再按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤（case 0x1e），这一层重制未做。
+- select 选择窗只有静态读数，无原版实拍帧；tePlayerSelect 只列 `0x42caa0` 判为在队的队员（重制按 `in_party` 滤行），`[mode]` 1／2 再按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤（case 0x1e）；TOWNDEF 的两处调用一处 mode 1（8 人）、一处 mode 2（2 人），都会走这一层——重制 `TownEventRules` 只把 `mode` 记进 pending，未按位过滤（provisional）。
 - 读存档那一趟在帧 07 后游戏失去前台（`game_not_foreground`），商店与离城由后续三趟补采。

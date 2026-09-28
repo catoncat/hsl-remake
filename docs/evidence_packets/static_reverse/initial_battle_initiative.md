@@ -1,13 +1,13 @@
 # 开战先手与行动队列：速度、注册槽、轮次语义
 
-> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn §7），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数） · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_level7_runtime_tests.gd, run_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn「证据」），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数） · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_level7_runtime_tests.gd, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：live 速度 = 模板速度 + 职业 dex 贡献 + 装备；`0x407340` 从注册数组 `0x4c34c0` 槽 0 起收集后稳定降序排序，同速时登记玩家（槽 = PLAYERS 编号 −1）先于 NPC，NPC 按创建顺序（槽 20 起）（static-derived；模拟器实测第一战槽号印证）。
 - 队列是开轮快照：选中即清 ready，轮中改速度下一轮生效；阵亡留空洞不压缩，当前行动者阵亡会让紧随其后的一名失去当轮行动；中途插入当轮不行动；回合计数在当轮最后一名的交接里、重建之后 +1（static-derived；51／52／505 关模拟器逐事件实测）。
 - 重制：`BattlePlayLoop.begin_battle` 从真实队列首项开始，NPC 前缀走正常 AI 演出后才开玩家菜单；`CoreTurnQueue.rebuild` 按 `registration_slot` 排序；`registration_order` 对 128 个原版名单 0 失配（static-derived 规则；门禁检查）。
-- 差异：当前行动者阵亡时的连走两步由 `BattlePlayLoop._step_past_dead_actor` 照原版复现（见 [original_death_disposal.md](original_death_disposal.md)）；游标回绕（本战第 181 次 NPC 注册）后的空槽复用未建模；开战调级的初始化 RNG 序列未复现（provisional）。
+- 差异：当前行动者阵亡时的连走两步由 `BattlePlayLoop._step_past_dead_actor` 照原版复现（见 [original_death_disposal.md](original_death_disposal.md)）；游标回绕（本战第 181 次 NPC 注册）后的空槽复用未建模；开战出生（张延迟、携带、调级）按创建顺序在全局流抽（`InitialRosterGrowthRules`，见 [original_script_entry.md](original_script_entry.md)「结论」），种子与原版不同，玩家之间与 NPC 之间的创建次序是重制读法（provisional）。
 
 ## 证据
 
@@ -61,7 +61,7 @@ str／dex 来自同一模板（+0x64→+0x4c，+0x68→+0x50）：001 16/16，02
 
 | 实验 | 读数 |
 | --- | --- |
-| 第一战注册槽（[original_enemy_turn](original_enemy_turn.md) §7） | 雷歐納德 s0；021_1 s20、026_1 s21、021_2 s22、021_3 s23、021_4 s24、026_2 s25、021_5 s26、023_1 s27、023_2 s28、024_1 s29、024_2 s30（EVEF 记录 4／5／7／9／10／11／12／17／18／21／22） |
+| 第一战注册槽（[original_enemy_turn](original_enemy_turn.md)「证据」） | 雷歐納德 s0；021_1 s20、026_1 s21、021_2 s22、021_3 s23、021_4 s24、026_2 s25、021_5 s26、023_1 s27、023_2 s28、024_1 s29、024_2 s30（EVEF 记录 4／5／7／9／10／11／12／17／18／21／22） |
 | 第一战录屏 | 速度 14 的 023_1 在速度 14 的雷歐納德之后行动（[battle_051_ai_moves](../runtime_observations/battle_051_ai_moves/README.md)） |
 | E1 待机（51 r1，2 轮） | 12 项各选中一次；雷歐納德 f1266 选中（下标 6），f1280 交接同帧选中下标 7；f1562 换轮 |
 | E5 wait_round（52，3 轮） | 皇帝交接时 +0x1b8 依次 7、6、5；wait_round 单位照常占队列位 |
@@ -90,5 +90,5 @@ str／dex 来自同一模板（+0x64→+0x4c，+0x68→+0x50）：001 16/16，02
 - 游标回绕后空槽复用未建模；写入的 NPC 注册峰值 117（12 关），只有补兵事件（10、12、37、51、53、902 关）可能超过 181。
 - 原存档是否能在战中触发、读档与恢复之间是否再调 `0x42da60` 未追。
 - `0x40e430` 回复未实测执行；回合末中毒致死、`0x4075a0` ActiveAgain 第二遍扫描、待機菜单输入到 `0x10000`、脚本离场当前行动者未实测。
-- 开战调级的初始化 RNG 顺序与完整属性上限未复现。
+- 开战调级抽数已按创建顺序接全局流；全局流种子、玩家之间与 NPC 之间的创建次序、完整属性上限未复现。
 - 不恢复原 NPC AI 路径与目标选择；不得把观察到的落点硬编码。

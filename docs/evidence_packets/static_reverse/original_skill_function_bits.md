@@ -106,7 +106,7 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 - 除偷窃加成字外全部为反编译阅读，幅度、持续、贡献与原全局 RNG 顺序的等价未声明；衰弱施法者的 `0x40a7b0`／`0x409a60` 数值未做原执行。
 - 对象寿命与舞台外对象的飞行：`defProcObjectMove`（`0x4051d0`）与 `obj_Data7` 选中的 objcomd.txt 命令程序已读，221 个对象经原指令逐 tick 执行写进 `objcomd_motion.json`，重制按它画（见 [original_objcomd_programs.md](original_objcomd_programs.md)「结论」）；种子变体与模式插入几何的剩余差异记在该包「边界」。
 - `aniDelay` 计数器（`0x4022aa`）的调用频率未量。
-- phase 0x63（放行后）的处理未逐条读，按"放行即续读脚本"推定；绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；数字对象与守方对象同 tick 先后未读（±1 tick）。
+- phase 0x63（放行后）的处理未逐条读，按"放行即续读脚本"推定；片段收尾的 16 tick 变暗（守方 phase 101 `0x404b23`）与随后变亮重制已照做，数字尾巴叠在变暗后的画面上走完再变亮（`SkillEffectScriptPlayer.clip_closing_tick`；变暗起点仍取 `RESULT_HOLD_TICKS` 暂代，见 [original_tick_counts.md](original_tick_counts.md) §9）；数字对象与守方对象同 tick 先后未读（±1 tick）。
 - `*0x4c13f0` 在多目标施放中跨目标累积，重制按每目标 `experience_basis` 判定；功能绝技命中未生效时守方是否切受击帧未核。
 - `0x4c6f74` 由哪些结算路径写入未全核。
 - 自救净化的通道顺序（先 MAGIC 桶再 SPECIAL 桶再物品）是重制选择；AI 净化只以中毒触发。

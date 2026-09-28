@@ -1,6 +1,6 @@
 # 城镇事件（TOWNDEF te token）读法表
 
-> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-27
+> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -91,7 +91,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | --- | --- | --- |
 | run／frame | `begin_event` 建立帧栈逐 token 执行；`resume(run, choice)` 处理 pending | 重制模型；替换证据为 EXE 城镇脚本 VM |
 | teExecEvent | 跳转：替换当前帧 | TOWNDEF 19 处全部为事件末 token，跳转与调用不可区分 |
-| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；`mode` 参数原样透传未读 |
+| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；两种都开对象 704 选择窗（`0x4264a0`），tePlayerSelect 只列 `0x42caa0` 判为在队的成员并追加「離開」行（event −1 结束事件），`[mode]` 1／2 再按成员 `+0x134` 转职位过滤（static-derived，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）；重制窗体与在队过滤、「離開」已照原版，mode 过滤未做 |
 | teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项结束后重开菜单，`exit` 或 teMenuMoveOut 后越过该 token | 13 处；重开行为为重制读法 |
 | teMenuMoveOut | 标记最近的打开菜单在当前链结束时关闭 | 仅事件 96 使用 |
 | 条件失败 | 只中止当前帧（回到父菜单） | 重制读法 |
@@ -110,7 +110,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | teDeleteTE | provisional | DeleteTE `[parent][num][children]`: num = 0 removes the parent node and its subtree; num > 0 removes the listed children |
 | teExecEvent | provisional | jump: the current frame is replaced (every TOWNDEF use is the last token) |
 | teSelectInsertEvent | provisional | the chosen event runs as an inserted frame; the parent continues afterwards (every TOWNDEF use is the last token) |
-| tePlayerSelectInsertEvent | provisional | options list every player; in_party is informational, the mode argument is passed through unread |
+| tePlayerSelectInsertEvent | provisional | options record every player with in_party; the runtime lists only in-party members plus the 離開 row (event −1 ends the event); the mode argument (1／2, +0x134 job-up bit filter in the original) is passed through unused |
 | teCreateShop | provisional | shop goods = the owning town_event's item_code list; buying/selling is the caller's transaction |
 | teCreateSubEventMenu | provisional | children = tree[this event]; the menu re-opens after each child until exit or teMenuMoveOut |
 | teMenuMoveOut | provisional | closes the enclosing sub-menu once the current chain ends |
@@ -138,9 +138,9 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 
 | 项 | 观察 | 替换证据 |
 | --- | --- | --- |
-| 命運神殿 儀式环 | 71→61…68→（teCheckJobUp 失败）→71 在数据里没有退出分支；tePlayerSelectInsertEvent 的 `mode`（1／2）可能提供取消 | 转职 handler 与 select 菜单静态分析 |
+| 命運神殿 儀式环 | 71→61…68→（teCheckJobUp 失败）→71 的退出靠 tePlayerSelect 追加的「離開」行（event −1，`0x455831`，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」）；TOWNDEF 两处用法 mode 为 1 与 2，原版按 `+0x134` 位 `0xc0000000`／`0x80000000`、`0x40000000` 过滤成员，重制未做这层过滤 | 原作选人窗实拍 |
 | 神秘商人 | 机制、表索引推进与 BuyThing 价格／货物已静态确认（上表、[original_secret_man](original_secret_man.md)）；默认 ratio 与缓存重置点未证 | secret man 设定入口 |
-| 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；「所选成员首个空格入包」仍是重制交互改写（[城镇回执](../runtime_observations/original_world_town/README.md)） | 手持槽放置流程的有界执行 |
+| 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；买入先进手持槽 `0x4c1ce4` 再点背包格放下（`0x42923b`）也已静态确认并照做（同包「结论」） | 手持放置的原版实拍已有两帧，满包互换无样本 |
 | teBMSetPointEventNotVisit 与 visited | 与 teBMSetPointEvent 的差别只在名字 | 大地图 handler |
 | 子菜单重开／退出 | 每个子项后是否回到菜单、如何退出 | 菜单 handler 或原作单步采样 |
 | 消息 if_wait 位 | 消息都等关板、teDelay N＝N+1 tick 已读；if_wait 位 `0x2000` 在消息对象里的作用未读 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |

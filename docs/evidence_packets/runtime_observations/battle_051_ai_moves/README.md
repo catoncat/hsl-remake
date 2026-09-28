@@ -1,12 +1,12 @@
 # 第一战（level 51 棄卒）AI 走位：原版录屏逐回合对照
 
-> evidence: runtime-measured: 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位; provisional: 精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-27
+> evidence: runtime-measured: 2026-09-24 原版录屏（34–513 s 第一战全程）逐帧读出的行动顺序、第 1–3 回合每个 AI 落点与行动、第 3 回合后行动清单; static-derived: 普通追击 0x440d5c → 0x4111a0 → 0x411080 → 0x413740 精化走法、0x407340／0x407660 速度排序与注册顺序、0x40d800 候选过滤、0x40d8b0／0x413390 攻击站位; provisional: 原版 NPC 调级与 AI 随机流 · status: live · functions: 0x407340, 0x407660, 0x40d800, 0x40d8b0, 0x40e870, 0x411080, 0x4111a0, 0x413390, 0x413740, 0x43ede0, 0x440d5c · tools: export_enemy_turns.gd, probe_battle051_ai_state.gd, run_ai_navigation_tests.gd, run_entry_growth_tests.gd, run_tests.gd, trace_battle051_ai.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版录屏第 1–3 回合 26 个 AI 行动全部落在重制同一局面的可产出集合内：旧「最短路走满移动力」追击有 11 个走不出，改为原版 `0x4111a0` 精化走法后剩 1 个（R3-24），按原站位函数 `0x413390` 重写后为 0（runtime-measured 对照；规则 static-derived）。
 - 行动顺序：同速时登记玩家先于 NPC（`0x407660` 注册槽），注入录屏推得的开战等级后重制队列与原版逐项相同；其余落点与顺序差别来自开战调级与 AI 随机数不同步（runtime-measured）。
-- 原版整镜像裁判注入同一 r1 棋盘：种子 1 时落点 8/11 一致；两边各 32 种子的分布里 9 处分歧有 5 处是持有目标规则（023_1／023_2 持有集合不相交，021_2／021_4／021_5 原版常持有雷歐納德而重制从不），4 处是随机（runtime-measured）。
+- 原版整镜像裁判注入同一 r1 棋盘：种子 1 时落点 8/11 一致；两边各 32 种子的分布里 9 处分歧有 5 处是持有目标规则（023_1／023_2 持有集合不相交，021_2／021_4／021_5 原版常持有雷歐納德而重制从不），4 处是随机（runtime-measured）。持有目标比例的分歧此后按 200 种子复核为抽样噪声、目标选择层两边相同（[original_ai_decisions](../../static_reverse/original_ai_decisions.md)「结论」）；喂原版抽签的整轮回放 r1 32 种子 352/352 一致（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)「结论」）（runtime-measured）。
 - 第 3 回合之后两边棋盘已不同，只列原版行动清单，不做逐格对照。
 
 ## 证据
@@ -96,7 +96,7 @@
 | first_control 原版样本近似 | 5 | 1–2000 | 170 | 14 |
 
 - r2 断在 #7：种子 1817 下 023_1 没打死 021_4（交手结果，非走位）；从「023_1 之后」棋盘接着跑有 36 个种子全吻合。
-- first_control：原版存档样本 [HSLBAT_first_control.SAV](../../static_reverse/original_save_format.md) 自带随机状态跑出 5 条走位（[original_first_control_turn.jsonl](original_first_control_turn.jsonl)，023_2 未报告）；样本 live 速度 021_2／021_3／021_5 16、021_1／021_4 15、023_x 与雷歐納德 14、026_1 13、026_2／024_x 12；载入后队列下标 0..4 是五名 021，下标 5 雷歐納德（`0x4c6e48`=5），023_1 为 6、023_2 为 7（[original_enemy_turn](../../static_reverse/original_enemy_turn.md) §7）。
+- first_control：原版存档样本 [HSLBAT_first_control.SAV](../../static_reverse/original_save_format.md) 自带随机状态跑出 5 条走位（[original_first_control_turn.jsonl](original_first_control_turn.jsonl)，023_2 未报告）；样本 live 速度 021_2／021_3／021_5 16、021_1／021_4 15、023_x 与雷歐納德 14、026_1 13、026_2／024_x 12；载入后队列下标 0..4 是五名 021，下标 5 雷歐納德（`0x4c6e48`=5），023_1 为 6、023_2 为 7（[original_enemy_turn](../../static_reverse/original_enemy_turn.md)「证据」）。
 - 原版整镜像裁判：[`_enemy_level.py`](../../static_reverse/original_enemy_turn.md#复现) 从 `0x42da60` 进关，首个 `0x407340` 前写入 r1 棋盘；种子 1 `ORACLE_MATCH total agree=2/11 order=11/11`，落点 8/11。
 
 **static-derived**：追击 `0x43ede0` state 0xb sub 0 在 `0x40fb20` 为零时 `0x440d5c..0x440d84` 调 `0x4111a0(actor, 目标像素, 0x12, 移动力)`；站位 `0x40d8b0`→`0x413390`；排序与注册 `0x407340`／`0x407660`；候选过滤 `0x40d800`（读法见 [original_ai_navigation.md](../../static_reverse/original_ai_navigation.md#证据)、[initial_battle_initiative.md](../../static_reverse/initial_battle_initiative.md)）。
@@ -115,8 +115,8 @@
 ## 边界
 
 - 开战等级／血量／速度：调级规则两边相同，但原版全局流 `0x458c10`（状态 `0x4795d4`／`0x4795d8`，`0x40e870` 抽取点 `0x40e92c`／`0x40e938`）的开战抽样顺序与种子来源未对齐；重制全局流 `GlobalRandomStream` 以时钟／`HSL_RNG_SEED` 播种，不称同一序列。
-- 等距落点与选目标概率：AI 随机数初值与全局消耗顺序两边不同步；原版每个 NPC 先抽优先级链，重制多数不抽，抽取次序对不上（见 [original_enemy_turn](../../static_reverse/original_enemy_turn.md) §11.3）。
-- 精化的洪泛度量与候选遍历顺序：替换证据为对 `0x411080`／`0x413740` 用 51 关 WRD／占位做有界执行。
+- 等距落点与选目标概率：AI 随机数初值与全局消耗顺序两边不同步；原版每个 NPC 都走完优先级链的抽取，重制在不可能出手的分支上不抽——结果分布相同、逐值抽取次序对不上（见 [original_ai_decisions](../../static_reverse/original_ai_decisions.md)「结论」、[original_enemy_turn](../../static_reverse/original_enemy_turn.md)「结论」）。
+- 精化的洪泛度量与候选遍历顺序已按 `0x411080`／`0x40ed50`／`0x413740` 静态读法移植，并由原版抽签回放核对（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)「结论」）；逐格原指令对照仍没有。
 - 无普通攻击单位的追击仍走「沿路线走向最近施法位」前缀；替换证据为 `0x43ede0` 法术进攻状态无施法站位时的移动分支。
 - 魔法进攻无目标时的 11% 支线另见 [original_ai_navigation.md](../../static_reverse/original_ai_navigation.md)。
 - 第 3 回合后属级联差异，前两项对齐后才可能逐格比较。

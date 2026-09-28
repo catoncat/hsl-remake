@@ -1,12 +1,13 @@
 # 脚本离场、角色在场资格与演出游标
 
-> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版脚本删除（`0x450410`）与行走删除（`0x450450`）按 code／serial 找已注册对象并置删除状态；删除阶段先置 16 逻辑 tick 再递减，最后一 tick 才依次清地图占用、行动队列、模板记录头与对象链接；HP／库存等记录字节不变，不走伤害、经验或死亡奖励（static-derived）。
 - 重制 `game/sim/BattlePresenceRules.gd` 由唯一 PlayLoop 提交 `departed`、来源序号与队列移除，所有行动与 AI 共用同一在场查询；`BattleScriptPresentation`／`BattleDepartureView` 播放离场，快照保存已消费游标（static-derived）。
-- 差异：删除阶段的 16 tick 是 engMIX 层级 16→1 的逐 tick 淡出，重制按设计 tick 阶梯演出（[original_script_entry](original_script_entry.md)）；逐 tick 交错未恢复（provisional）。
+- 删除阶段的 16 tick 是 engMIX 层级 16→1 的逐 tick 淡出，重制 `BattleDepartureView` 同样每 tick 降一级、16 tick 淡完（static-derived，[original_script_entry](original_script_entry.md)「结论」）。
+- 差异：重制先提交在场变化再播淡出，原版最后一 tick 才清占用与队列，这段逐 tick 交错未恢复（provisional）。
 
 ## 证据
 

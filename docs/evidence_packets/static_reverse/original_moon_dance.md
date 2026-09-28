@@ -1,12 +1,12 @@
 # 月花圓舞：自身中心、逐目标五段受击与动作末经验
 
-> evidence: static-derived · status: live · functions: 0x409a20, 0x40b8f0, 0x4104d0 · tools: hsltools/data/moon_dance.py, hsltools/probes/moon_dance.py, run_moon_dance_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x409a20, 0x40b8f0, 0x4104d0 · tools: hsltools/data/moon_dance.py, hsltools/probes/moon_dance.py, run_moon_dance_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 002 的初始绝技月花圓舞以自身为中心、对周围 3×3 敌人逐目标完整执行五段再切换下一目标；整次只付一次 20 气力；目标 HP 归零后后续段仍抽样但伤害与经验为零；全段用施放前等级／属性／连杀 word，经验与连杀在整次动作结束统一处理（static-derived）。
 - 重制 `game/sim/RepeatedSpecialRules.gd` 提出去重后的完整五段结果，`game/sim/loop/BattlePlayLoop.gd` 一次提交扣费／HP／死亡／经验／奖励，`game/battle/scene/MoonDancePresentation.gd` 读不可变逐段快照播放（static-derived）。
-- 一致：63 组序列共 315 次伤害应用与 14 组前段与重制相符（static-derived）。花瓣轨迹、光球位置、混色与演出时钟是重制值（provisional）。
+- 一致：63 组序列共 315 次伤害应用与 14 组前段与重制相符（static-derived）。花瓣与打击光球按 objcomd.txt 命令 10／11 的原生轨迹运动（[objcomd 命令程序包](original_objcomd_programs.md)），演出按原版 16 ms tick（[tick 率包](../runtime_observations/original_tick_rate/README.md)）；落点偏移用按目标取种的随机变体、施法者开场面板与 1.5 s 起手是重制值（provisional）。
 
 ## 证据
 
@@ -33,7 +33,7 @@
 - `game/sim/loop/BattlePlayLoop.gd`：先核对全部目标／来源／状态／资源，再一次提交；每段存 HP 前后、原抽样、贡献、独立经验换算与参与者快照；`game/battle/runtime/BattleCheckpoint.gd` 核对五段顺序、目标不重复、HP 连续与单次付款，恢复不重演。
 - 玩家：“絕技”后点击自身；效果区与唯一中心不同线框；技能菜单按真实拥有权生成；取消回当前行动；移动后可用；禁魔／MP0 不阻止，麻痺禁止。
 - AI：枚举能覆盖目标的自身落点，走共享整块通行与现有技能概率；第二行动重查活目标、气力、位置与装备。普通双击、反击、武器尾部附毒与 `action_twice` 各自独立，月花不附加普通武器状态；终态冻结后不再运行命中或状态尾部。
-- `game/battle/scene/MoonDancePresentation.gd`：完整受击程序结束后才播地图死亡／EXP／领取／成长／第二行动；源等待比值放到 100 tick/s 再乘共同 0.4 播放倍率（provisional）。
+- `game/battle/scene/MoonDancePresentation.gd`：完整受击程序结束后才播地图死亡／EXP／领取／成长／第二行动；源等待按原版 tick（`OriginalTick.TICK_SECONDS`，经 `CombatPresentationTiming.scaled`）计时；1.5 s 起手代替 002 的 s_action 引导（provisional）。
 - 开发演练 `game/battle/development/MoonDanceTrial.tscn`：原 051 地形、002 源职业／装备／技能、三名原士兵，PriestTrial 开发库存、额外 40 初始气力与 120HP／20speed 加值；正式第一战与 PriestTrial 原初始气力不变。
 
 ## 复现
@@ -49,5 +49,5 @@
 ## 边界
 
 - 原完整 dispatcher、全局随机流、renderer 与现场实玩未执行；165 次与 14 组为前段。
-- 花瓣轨迹、两球位置、混色、面板布局与时钟是重制值，不能由资产存在推出原坐标或时钟。
+- 花瓣与光球的落点偏移用按目标取种的随机变体代替共享随机流；施法者开场面板布局与 1.5 s 起手是重制值；混色未逐像素对照（provisional）。
 - 正式第三战接入、伙伴入队调级／学习、其余职业不在本包。

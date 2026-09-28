@@ -7,7 +7,7 @@
 - Original: EVEF records pass raw X/Y to object creation unchanged; enemy (`0x407cc0`) and player (`0x4080b0`) installers snap each coordinate to the cell centre `(v & ~31) + 16`, then `0x411a30` marks the map cell with no terrain test — an actor stands on its EVEF cell whatever the terrain (static-derived; runtime-measured: level 6's 061_1 on a 0xff cell).
 - Original: SHP draw origins are signed per-frame header values (`0x45fa1e`); an image's top-left is object position minus that origin; stand objects keep the raw EVEF position (static-derived).
 - Remake: `MapSceneConfig` uses grid origin (0,0) with 32-pixel cells and centred actors; `hsltools/levels/battle.py` keeps install cells on blocked terrain; the importers read signed origins and `ActorRuntime` applies them per frame (static-derived).
-- Difference: none known for install coordinates; later NPC paths, foreground anchors and fire zoom/blending are outside this packet (unread).
+- Difference: none known for install coordinates; later NPC paths and foreground anchors are outside this packet. Fire zoom/blending is in [gate_fire_animation.md](gate_fire_animation.md), draw order in [original_draw_order.md](original_draw_order.md).
 
 ## 证据
 
@@ -78,7 +78,7 @@ Tree previews are 277×271. Native bridge top-left values exactly equal the earl
 
 ## 边界
 
-- Not claimed: why three STORY walkers do not stand on their blocked endpoints (80's 嚎, 34's 037_2／037_3), a large-footprint unit on a blocked cell (still moved; the PlayLoop refuses it as a stop), and two EVEF records sharing a cell (the encounter assembler refuses it; none does).
+- STORY walkers with blocked endpoints (80's 嚎, 34's 037_2／037_3): the destination goes through `0x44fbd0` and the walk stops on the `0x4111d0` chain's cell — read in [original_script_walk_path.md](original_script_walk_path.md)「证据」 and [original_script_entry.md](original_script_entry.md)「边界」. Not claimed: a large-footprint unit on a blocked cell (still moved; the PlayLoop refuses it as a stop), and two EVEF records sharing a cell (the encounter assembler refuses it; none does).
 - The curated `opening_lower_formation_before_dialogue` and `first_control_action_menu` frames show different NPC locations: initial coordinates are not the first-control formation; NPC paths, scheduling, colours, foreground anchors and final formation are not established here.
 - `first_battle_formation --check` does not validate the provisional combat templates or original AI.
-- SHP header `+0x10` semantics are unread; fire zoom/blending, animated frames and dynamic draw order are not established by these origins.
+- SHP header `+0x10` semantics are unread; animated frames and dynamic draw order are not established by these origins (see the fire and draw-order packets above).

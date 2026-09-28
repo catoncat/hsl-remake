@@ -1,12 +1,12 @@
 # 戈爾山道（level 2）重制运行回执：两阶段战斗、事件入队与营地承接
 
-> evidence: runtime-measured; provisional: 整事件原子提交、出生随机流与入队调度的组合 · status: live · tools: run_gol_road_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured; provisional: 整事件原子提交与入队调度的组合 · status: live · tools: run_gol_road_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 WINFAIL002 在事件条件满足后安装緹娜（Player2）与四名追兵、旧强盗离场、进入第二阶段；安装分派、启用槽、缺省字段与坐标前段见 [original_player_install](../../static_reverse/original_player_install.md)（static-derived）。
 - 重制 `content/battles/gol_road_battle.json` 从大地图点 2 进入，初始只有琥、雷歐納德与五名强盗，事件后整批安装提交到唯一 PlayLoop；四条窗口路线（自然胜利、事件到达、緹娜被捕、营地承接）实际跑通（runtime-measured）。
-- 差异：整事件原子提交、玩家先建／NPC 取队伍平均、合法格调整、独立出生随机流、新角色加入既有下一轮队列是重制组合，不声称原版全局随机序列或调度相同（provisional）。
+- 差异：整事件原子提交、新角色加入既有下一轮队列是重制组合，不声称原版调度相同（provisional）。安装的随机数已照原版在全局流按「落点替代 → 按安装顺序 NPC 出生（张延迟、携带、调级）」抽，NPC 调级取的队伍平均含同链先插入的玩家（[original_script_entry](../../static_reverse/original_script_entry.md)「结论」）。
 
 ## 证据
 
@@ -45,6 +45,6 @@
 
 ## 边界
 
-- 原函数前段不证明完整对象分配器或整个 VM；调度与随机流组合是重制选择（provisional）。
+- 原函数前段不证明完整对象分配器或整个 VM；整事件提交与入队调度是重制选择（provisional）；链内插入后仍有 Wait 时的抽数次序见 [original_script_entry](../../static_reverse/original_script_entry.md)「边界」。
 - 条件成员跨全部剧情的在队状态、复活／离队再加入、宝箱开启与拾取不在本回执范围。
 - `arrival`／`defeat_tina` 是明示夹具，不是自然打法。

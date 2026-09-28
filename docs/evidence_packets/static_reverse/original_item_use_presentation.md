@@ -1,6 +1,6 @@
 # 用药演出：AI 引导、Show_Magic_Star 效果、目标小条与数字
 
-> evidence: static-derived; resource-derived; runtime-measured: 2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）用回復藥选目标时指针处是道具图标、无权杖、周围五格十字蓝框、悬停己格开资料窗; provisional: 0x401390 三类效果对象的加色＋engMIX 按"加色 × 层级/16"画、随机数用重制种子；AI 引导与玩家选格的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x401390, 0x408b20, 0x408df0, 0x409e40, 0x40f440, 0x40f560, 0x411200, 0x411d70, 0x416d04, 0x41f43b, 0x430230, 0x4364e0, 0x437020, 0x439997, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4448f4, 0x4449a7, 0x4449bb, 0x444a5c, 0x444ab2, 0x444aba, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured: 2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）用回復藥选目标时指针处是道具图标、无权杖、周围五格十字蓝框、悬停己格开资料窗; provisional: 0x401390 三类效果对象的加色＋engMIX 按"加色 × 层级/16"画、随机数用重制种子；AI 引导与玩家选格的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x401390, 0x408b20, 0x408df0, 0x409e40, 0x40f440, 0x40f560, 0x411200, 0x411d70, 0x416d04, 0x41f43b, 0x430230, 0x4364e0, 0x437020, 0x439997, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4448f4, 0x4449a7, 0x4449bb, 0x444a5c, 0x444ab2, 0x444aba, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-28
 
 ## 结论
 
@@ -92,6 +92,6 @@ effProcCollectFadeShape（`0x41f43b`）子状态 0：起始张 + rand(4) 并定�
 
 - 三类效果对象的随机数（位置、延迟、速度、张、角、半径）由重制按本次用药种子抽，不是原版 `0x458c10` 全局流；加色＋engMIX 按"加色 × 层级/16"画（同 LevelUpStars 读法）；`0x45e9bc` 极坐标按浮点 cos／sin 向下取整，未用原版三角表。
 - AI 引导与玩家选格的射程格都是「自身格＋四邻无敌对占位」近似（`use_cells`）：模式4 实际只挡 pmEnemy／pmNPC 且非 no_block 的占位，重制按 `ActorRoleRules.hostile` 挡；大体型使用者的 range 2 未建模。
-- 选格期间地图不随指针贴边卷动（重制模态期间不卷；原版 state105 是否卷动未读）；悬停时原版给单位置 `+0x80 |= ebp` 亮起，重制未接单位高亮。
+- 选格期间地图不随指针贴边卷动（重制模态期间不卷；原版 state105 是否卷动未读）；悬停时原版给单位置 `+0x80 |= ebp` 亮起；重制的单位高亮（[dialogue_death §5](../runtime_observations/dialogue_death/README.md#5-单位高亮)）只在选攻击目标时全场点亮，道具选格期间未接（差异清单 `highlight-colours`：道具选目标的原版帧未拍）。
 - 小条 y 上限的 [0x4c094c] 按地图高取值，未逐关核对。
 - 给予流程原版同样经持物（`0x438c86`）与地图选格（state113 `0x444c27`），重制给予仍是窗口选人（本轮未改）。

@@ -7,7 +7,7 @@
 - 原版每个效果对象由自己的 effProc* 程序每 tick 改位置、换帧、改混合层级与缩放，许多程序还会抛出子对象（火花、子弹、残影）；效果对象一律加法混合（static-derived）。
 - 39 行法术引用的 144 个效果对象全部连同子对象逐 tick 原指令执行（84 个 effProc 程序全部复原；四个运行时助手见 §四个运行时助手），得到 `content/generated/hsl/skills/effect_motion.json`；重制 `game/battle/scene/EffectObjectMotion.gd`／`SkillEffectScriptPlayer.gd` 按它逐帧画整棵树（static-derived）。
 - 幻火（effCode23）的独立 Python 模型与原生轨迹逐样本相等，与原版录屏节拍一致（[runtime 包](../runtime_observations/effect_motion/README.md)）；幻火是一团光从目标头顶 88 px 处摇摆落下，不是从施法者飞向目标（runtime-measured）。
-- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）与屏幕波纹（FireBGSet／IconBGSet1）已记入轨迹、重制未画，逐条见边界（provisional）；声音排程未切到原生结果（`effect-sound-timing`）。
+- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）与屏幕波纹（FireBGSet／IconBGSet1）已记入轨迹并由重制画出（见「重制接线」），效果后镜头滑回与波纹层位是重制读法，逐条见边界（provisional）；声音排程未切到原生结果（`effect-sound-timing`）。
 
 ## 证据
 
@@ -149,4 +149,4 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - **±1 帧**：真实平面链顺序与探针不同时，子对象首帧可能早／晚一帧；有插入延迟的对象在原版里首个可见帧比根对象早一帧（创建帧的跳画位在等待期间已清）。
 - **缺帧**：程序画到 hsl.pak 没有的 SHP 名（如 EAR24_05..10、FIR07_03..07）时原版取的是注册表里的下一个名字，注册表内容未读；重制循环系列里已有的成员。
 - **镜头**：探针按帧体把滚动累加加到镜头；只有 OtherBBall1 写镜头，其余 143 个对象都没有写；地震类程序对镜头的作用不在本包。
-- **不支持的结论**：不证明像素级混合与原版一致（Godot 加法混合不是 RGB565 饱和加法）；不证明合成形状的逐像素外观；不证明特写绝技（defProcObjectMove／obj_Data7）的运动；不证明法术演出与伤害结算的先后。
+- **不支持的结论**：不证明像素级混合与原版一致（Godot 加法混合不是 RGB565 饱和加法）；不证明合成形状的逐像素外观；不证明特写绝技（defProcObjectMove／obj_Data7）的运动（见 [objcomd 命令程序包](original_objcomd_programs.md)）；不证明法术演出与伤害结算的先后。

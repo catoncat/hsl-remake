@@ -1,12 +1,12 @@
 # 城门火焰：第 51 关 FIRE01 的帧序列与换帧节拍
 
-> evidence: resource-derived; static-derived: defProcStandObject 的 mapobjNextShape 分支与 0x45e5a6 计数 · status: live · functions: 0x43ccf0, 0x45e5a6 · tools: hsltools/assets/fire_animation.py · updated: 2026-09-27
+> evidence: resource-derived; static-derived: defProcStandObject 的 mapobjNextShape 分支与 0x45e5a6 计数 · status: live · functions: 0x43ccf0, 0x45e5a6 · tools: hsltools/assets/fire_animation.py · updated: 2026-09-28
 
 ## 结论
 
 - 原版第 51 关两处火焰（EVEF 记录 3、6）共用 OBJ-051 对象 22：`obj_Shape_Number=10`、`obj_Shape_Delay=3`、`obj_Data9=mapobjNextShape`、`obj_Mode=engADDCOLOR_ZOOM`、两个缩放字段 `0x0000a000`（resource-derived）；立物过程 `0x43ccf0` 的 mapobjNextShape 分支每次调用 `0x45e5a6`，延迟 3 即每 4 次过程更新换一帧（static-derived）。
 - 重制 `game/battle/runtime/MapObjectAnimation.gd` 播放导入的十帧，逐帧套原绘制原点、缩放按 16.16 定点取 0.625、加色模式用 Godot 加法混合（resource-derived）。
-- 差异：过程更新按每秒 60 次（显示 15 帧／秒）、初始相位与 RGB565 饱和加法的混色结果都是重制读法。
+- 差异：过程节拍按原版 tick 设计值 16 ms（`game/common/OriginalTick.gd`；每 4 tick 一帧，约 15.6 帧／秒）；两处火焰的初始相位是重制读法；加色按原版不乘层级的饱和加法（`0x462240`，见 [original_map_object_flash](original_map_object_flash.md)「结论」），Godot 加法混合不宣称与 RGB565 逐像素相同。
 
 ## 证据
 
@@ -31,7 +31,7 @@
 
 - `tools/hsltools/assets/fire_animation.py` 从原版安装导出帧与 manifest；`MapObjectAnimation.gd` 在固定世界锚点播放、加法混合直接由渲染器实现（manifest 不另记混合标签）。
 - provenance 写法：`static-derived docs/evidence_packets/static_reverse/gate_fire_animation.md`。
-- 重制读法：每秒 60 次过程更新；替换点是 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的过程节拍实测。延迟 3 不是 3 毫秒，也不是每秒 3 帧。
+- 节拍：manifest 的 `frame_ticks` 经 `OriginalTick.seconds` 按 [原版 tick 速率](../runtime_observations/original_tick_rate/README.md) 的 16 ms 设计值换算。延迟 3 不是 3 毫秒，也不是每秒 3 帧。
 
 ## 复现
 
@@ -39,5 +39,5 @@
 
 ## 边界
 
-- 原版过程的实际频率与两处火焰的初始相位未测。
+- 两处火焰的初始相位未测；本机实测 tick 周期见 tick 速率包。
 - 混色不宣称与 RGB565 算术逐像素相同。

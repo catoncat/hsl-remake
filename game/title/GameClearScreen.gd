@@ -12,7 +12,8 @@ extends Node2D
 ## (defProcClearShowWorkTeam 0x42bc20, 0.5 px/tick until its bottom rests on 480). The credits are
 ## the workteam shape itself: no runtime credit strings exist. Nothing before that reads input
 ## except the dialogue's own confirms; once the credits rest a key or click leaves for the title
-## (0x42cc10(0,0) → 0x42dc90(2): 16 levels × 2 ticks to black).
+## (0x42cc10(0,0) → 0x42dc90(2): 16 levels × 2 ticks to black). OPT-PACE 快／極快 (docs/OPTIONS.md)
+## add a remake-invented skip: a confirm outside the dialogue jumps to the next segment's start.
 ##
 ## The epilogue dialogue is DATA\STORYOVER.TXT (manifest.game_clear_epilogue, static-derived):
 ## 緹娜 and 漢克斯 in ten lines with the script's delays and the WALKSOUND footsteps, ending with
@@ -29,6 +30,7 @@ extends Node2D
 ##   strings: provisional (revive count not tracked by the remake: shown as 0)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_game_clear.md
 ##   timing: provisional (STORYOVER actDelay unit and key-ended pauses, original_game_clear_epilogue.md)
+##   timing: remake-invented (segment skip on confirm under OPT-PACE 快／極快; 原版 keeps no skip)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 ##   audio: resource-derived content/imported/hsl/global/title/manifest.json (WALKSOUND cue)
@@ -41,6 +43,7 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SimplifiedDisplay = preload("res://game/text/SimplifiedDisplay.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const UISkin = preload("res://game/common/BattleUISkin.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 ## Tests may speed the clock up before _ready runs: one tick lasts TICK_SECONDS × this.
 var phase_seconds_scale := 1.0
 ## The nine party slots handed over by the finale (BattleOpeningCoordinator._game_clear_showcase):
@@ -505,8 +508,9 @@ func _epilogue_tick() -> void:
 
 
 ## A key / click: confirms or pages the dialogue line, ends a dialogue pause, or — once the
-## credits rest (BOSS state 19) — leaves for the title. Nothing else reads input.
-func advance() -> Dictionary:
+## credits rest (BOSS state 19) — leaves for the title. Under OPT-PACE 原版 nothing else reads
+## input; 快／極快 let a confirm (`confirm`) outside the dialogue skip to the next segment.
+func advance(confirm: bool = true) -> Dictionary:
 	if phase == "waiting":
 		return dismiss()
 	if _story_running:
@@ -515,7 +519,80 @@ func advance() -> Dictionary:
 				_run_epilogue_step(epilogue_step + 1)
 		elif _epilogue_delay_ticks > 0:
 			_run_epilogue_step(epilogue_step + 1)
+	elif confirm and not GameOptions.is_original("OPT-PACE"):
+		skip_segment()
 	return summary()
+
+
+## OPT-PACE 快／極快 skip (remake-invented; the order of segments, music cues and the final
+## key-to-title stay the original's): the opening fade and wait end, a narration scroll ends, the
+## waits around the monologue end (its lines still confirm one by one), the showcase moves to
+## the next member (after the ninth, to the credits), and the credits rest at once so the next
+## key leaves for the title. Returns whether anything was skipped.
+func skip_segment() -> bool:
+	if phase == "fading_out" or phase == "waiting" or _story_running:
+		return false
+	if _fade_direction < 0:
+		_fade_level = 0
+		_fade_direction = 0
+		_fade.color.a = 0.0
+	match boss_state:
+		0:
+			boss_state = 1
+		1, 2:
+			_end_scroll()
+			boss_state = 3
+		3, 4:
+			if boss_state == 3:
+				_boss_tick()
+			_dark_level = 16
+			_dark_direction = 0
+			_dark.color.a = 1.0
+			boss_counter = 0
+		7, 8:
+			_dark_level = 0
+			_dark_direction = 0
+			_dark.color.a = 0.0
+			boss_state = 9
+		9, 10:
+			_end_scroll()
+			boss_state = 11
+		11, 12:
+			if boss_state == 11:
+				_boss_tick()
+			boss_counter = 1
+		13, 14, 15:
+			if boss_state == 13:
+				_boss_tick()
+			for member in _members:
+				(member["node"] as Node2D).queue_free()
+			_members.clear()
+			boss_state = 15
+		16, 17:
+			if boss_state == 16:
+				_boss_tick()
+			boss_counter = 1
+		18:
+			if _scroll.is_empty() or bool(_scroll["done"]):
+				return false
+			_scroll["y"] = int(_scroll["y"]) - int(_scroll["remaining"])
+			_end_scroll()
+			_place_scroll()
+			boss_state = 19
+			phase = "waiting"
+		_:
+			return false
+	return true
+
+
+func _end_scroll() -> void:
+	if _scroll.is_empty() or bool(_scroll["done"]):
+		return
+	_scroll["remaining"] = 0
+	_scroll["done"] = true
+	if bool(_scroll["removed"]):
+		_text.visible = false
+		_text.texture = null
 
 
 func dismiss() -> Dictionary:
@@ -536,7 +613,9 @@ func _leave() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if (event is InputEventKey and event.pressed and not event.echo) \
 			or (event is InputEventMouseButton and event.pressed):
-		advance()
+		var confirm: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT) \
+				or (event is InputEventKey and (event.keycode == KEY_ENTER or event.keycode == KEY_SPACE))
+		advance(confirm)
 
 
 func summary() -> Dictionary:

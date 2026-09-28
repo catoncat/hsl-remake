@@ -7,7 +7,7 @@
 - 原版：`defProcPlayerInstall`（`0x4080b0`）以 Data9 为零起始注册槽；Data8 缺省（0）是普通安装，经 `0x42cb30` 启用该槽（空槽设 `800+slot`）后请求构造；Data8=1 是条件安装，只有已存在且启用的槽进入构造器，空槽或禁用槽走占位物删除（static-derived；51 次有界原指令执行）。
 - 重制：`game/sim/ScriptActorCreationRules.gd` 与 `game/sim/loop/BattleLoopScript.gd` 按普通安装创建脚本玩家；`game/sim/ConditionalPartyRules.gd` 让随机遭遇里标 `install_if_carried` 的九个槽只上场战役承接中持有的成员（static-derived 规则＋重制组合）。
 - 「已注册但禁用」槽在原版不可达：`0x42caa0` 测 `0x80000000`，但注册表唯一写入者 `0x42c700` 只从 `0x42c869`（新游戏槽 0 写 800）、`0x42cb47`（空槽写 800+slot）、`0x43493d`（转职写升级对象码）调用，`0x42cb50` 取低 16 位，`0x42cafa` 只清零；承接名单代替注册启用表不丢原版可达状态（static-derived）。
-- 差异：原对象调度、跨关注册表存档格式与全局 RNG 未复原（provisional）。
+- 差异：原对象调度与跨关注册表存档格式未复原（provisional）；安装链的抽数顺序（落点替代先于 NPC 出生）与出生张延迟已照原版（[脚本入场包](original_script_entry.md#安装时的随机数消费顺序)），链外其它全局流抽取仍不同。
 
 ## 证据
 
@@ -35,7 +35,7 @@
 - provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_player_install.md`：`game/sim/ScriptActorCreationRules.gd`、`game/sim/loop/BattleLoopScript.gd`、`game/sim/ConditionalPartyRules.gd`。
 - `ActorInitializationRules` 准备来源；`InitialRosterGrowthRules.prepare_player` 只推导新注册玩家的初始等级；`ReinforcementGrowthRules` 从登记队伍取追兵等级基础；`ScriptActorCreationRules` 返回完整提案，PlayLoop 一次提交角色、位置与随机游标；已注册人物不重置生命、物品、装备、成长。
 - `ConditionalPartyRules`：不能上场的槽（`conditional_party.unavailable_slots`）由 `blocked_members()` 显式报出；无战役承接的开发启动上场全部槽（remake-invented）。
-- 脚本目标格被占或不可站时取最近合法格（provisional，重制落点策略）。
+- 脚本目标格被占或不可站时照原版落点替代 `0x44fbd0` 挪格（[脚本入场包](original_script_entry.md#结论)）。
 
 ## 复现
 

@@ -1,6 +1,6 @@
 # 状态：中毒／禁魔的字段、施加、行动末毒伤与计时
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/evidence/status.py, hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-27
+> evidence: resource-derived; static-derived · status: live · functions: 0x40a7b0, 0x40aa80, 0x40b910, 0x40e240, 0x40e2f0, 0x42c780 · tools: hsltools/evidence/status.py, hsltools/probes/status_lifecycle.py, hsltools/probes/status_roll.py, run_status_application_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -52,7 +52,7 @@
 ## 重制接线
 
 - `game/sim/StatusApplicationRules.gd`：`prepare` 查当前装备免疫并采样；`game/sim/NativeMagicRollRules.gd` 按原数值；`game/sim/StatusEffectRules.gd` `apply` 是唯一合并规则，三个 counter 只接受 0..9，flag／counter 不一致或未支持高位明确失败。
-- `SkillTargetRules` 只接受 function 1／8／17 组合；`SkillResolutionRules.prepare_cast` 先验证施法者、拥有权、费用、范围与每个受影响存活敌人，全部通过才抽样；`resolve_cast` 返回一次扣费与每目标提案，PlayLoop 一次提交；免疫／落空仍按接受的施法扣费。
+- `SkillTargetRules` 按 function 掩码白名单放行（含 1／8／9／17 在内的全部源数据组合，见 [original_skill_targets](original_skill_targets.md)「结论」）；`SkillResolutionRules.prepare_cast` 先验证施法者、拥有权、费用、范围与每个受影响存活敌人，全部通过才抽样；`resolve_cast` 返回一次扣费与每目标提案，PlayLoop 一次提交；免疫／落空仍按接受的施法扣费。
 - PlayLoop `_advance_current_actor` 在唯一队列出口合并状态提案；`ItemUseRules` 生成用药效果，收据负责文案；`SkillResolutionRules.available` 在扣费与 RNG 前查禁魔。
 - 死亡目标不接受新状态；已结束战斗不再计时（provisional：不是原版全局清状态的证据）。`StatusMagicPresentation` 只读收据显示成功／免疫／未生效（provisional）。
 

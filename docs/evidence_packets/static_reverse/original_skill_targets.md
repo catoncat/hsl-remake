@@ -1,11 +1,11 @@
 # 技能目标：function 到目标模式、覆盖构建与共享来源范围
 
-> evidence: static-derived · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：玩家施放按技能 function 选目标模式——Magic 用掩码 `0xf62`、Special 用 `0x18f62`，命中为 mode3（排除 pmEnemy），否则 mode2（排除 pmPlayer）；HealMP、ActiveAgain 在 Magic 下是 mode2、在 Special 下是 mode3；覆盖由 `0x4100e0` 按 RANGE 结构写缓冲，`0x4104d0` 去重枚举角色（static-derived；32 组单格夹具完整返回）。
-- 重制：`SkillTargetRules` 由玩家特殊技、法师 AI 与战斗预告共用来源 RANGE 矩阵；当前只接受精确 Attack bit1，未实现的 function 组合明确报错（static-derived）。
+- 重制：`SkillTargetRules` 由玩家特殊技、法师 AI 与战斗预告共用来源 RANGE 矩阵；`definition_error` 按 function 掩码白名单放行，源数据出现的组合都在白名单内（技能无拒绝项，差异清单 `unimplemented-abilities`），白名单外的组合明确报错（static-derived）。
 - 差异：敌我判断走重制 role 适配，不是原全部 pm 组合；AI 候选顺序与随机抽选是重制策略（provisional）。
 
 ## 证据
@@ -36,7 +36,7 @@
 
 ## 重制接线
 
-- `game/sim/SkillTargetRules.gd`：解析 TYPE 符号，严格验证来源矩阵与单目标 effect_range；治疗、再动、Attack|Poison 等无效果实现的组合报错，不走扣费后伤害路径。
+- `game/sim/SkillTargetRules.gd`：解析 TYPE 符号，严格验证来源矩阵与单目标 effect_range；function 掩码不在白名单（源数据以外的组合）时报 `unsupported_skill_function`，不走扣费后伤害路径；效果区域由所选 resolver 逐目标准备。
 - `hsltools/data/skill_targeting.py` 生成 `content/generated/hsl/skills/targeting.json`（function 位与来源矩阵）。
 - PlayLoop 特殊技选择／确认／提交、AI 法术可达性与战斗预告共用这份范围；法师先按候选位置与真实状态逐法术筛选，再从能命中的法术中抽选；无合法目标不耗 RNG 或资源；先查可行计划再抽倾向的顺序不宣称原 AI 等价（provisional）。
 - 场景初始化与 AI 入口 `_skill_input_error` 联合验证费用与目标，失败前不移动、不耗资源、不切队列。

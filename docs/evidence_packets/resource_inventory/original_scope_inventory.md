@@ -1,22 +1,15 @@
 # Original scope inventory versus remake coverage
 
-> evidence: resource-derived · status: record-only · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-27
+> evidence: resource-derived · status: record-only · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-28
 
-**Claim boundary.** Counts only. The original-side numbers are `resource-derived`: record names and INI-style
-section headers read from `hsl.pak` by `tools/hsltools/data/scope_inventory.py`. The remake-side numbers come from the
-tracked `content/battles/campaign.json` and the scenario files it references. Nothing here establishes semantics
-for unimplemented levels, and nothing here claims original equivalence for implemented ones (see
-[机制矩阵](../../MECHANICS_EVIDENCE_MATRIX.md) for that).
+## 结论
 
-Machine-readable output: `content/generated/hsl/static/hsl01/scope_inventory.json` (schema `hsl_scope_inventory.v1`). The remake-side counts below are a snapshot; current counts are in that JSON (`python3 tools/hsl.py check scope_inventory`).
+- 原版 `hsl.pak` 共 5,600 条记录：主线 LEVEL 0–99 有 72 个关卡 bin、47 场带 WINFAIL 的战斗、22 个只有 STORY 的剧情关、884 个 actMessage；500–578 为 78 个战斗桩，900+ 为 7 个特殊关（resource-derived）。
+- 本篇只计数，不给未实现关卡定语义，也不对已实现关卡声明原版等价（等价看 [机制矩阵](../../MECHANICS_EVIDENCE_MATRIX.md)）。重制侧覆盖数随 `campaign.json` 变化，当前数以生成物和 `check scope_inventory` 结果行为准，不写进本篇。
 
-```bash
-PYTHONPATH=. python3 tools/hsl.py generate scope_inventory                 # rebuild from the PAK (needs $WINEPREFIX)
-python3 tools/hsl.py check scope_inventory                      # offline: remake side vs campaign.json + internal totals
-PYTHONPATH=. PYTHONPATH=tools python3 -m hsltools.data.scope_inventory --check --rescan  # also compare original-side counts with the PAK
-```
+## 证据
 
-## Original scope (hsl.pak, 5,600 records)
+原版侧数字由 `tools/hsltools/data/scope_inventory.py` 从 `hsl.pak` 读记录名与 INI 段头得出（resource-derived）。
 
 | Range | Levels (LEVEL*.BIN) | Battles (with WINFAIL) | Story-only (STORY without WINFAIL) | actMessage tokens |
 | --- | --- | --- | --- | --- |
@@ -24,42 +17,23 @@ PYTHONPATH=. PYTHONPATH=tools python3 -m hsltools.data.scope_inventory --check -
 | Battle stubs, level 500–578 | 78 | 78 | 0 | 0 |
 | Specials, level 900+ | 7 | 5 | 0 | 31 |
 
-Three main-range level bins (0, 49, 54) have neither STORY nor WINFAIL scripts; they are counted as levels but not as
-content. The 500-range battle stubs carry no dialogue and are read as generic encounter maps (`provisional`: their
-trigger route — random encounters or free battles — is not established by this scan).
+主线范围内 0、49、54 三个关卡 bin 既无 STORY 也无 WINFAIL，计入关卡数、不计入内容。500 段战斗桩不带对白，读作通用遭遇地图（`provisional`：本扫描不确定它们由随机遭遇还是自由战斗触发）。
 
-Global tables (INI sections): MAGIC.TXT 39 `[magic]`, SPECIAL.TXT 60 `[special]`, ITEM.TXT 239 `[item]`,
-PLAYERS.TXT 66 `[character]`, TRACK.TXT 44 `[track]`, TOWNDEF.TXT 191 `[town_event]` + 62 `[item]` shop lists,
-`bigmap.dat` 5,600 bytes. The world layer (bigmap / TOWNDEF / TRACK) has no remake counterpart yet.
+全局表（INI 段）：MAGIC.TXT 39 `[magic]`、SPECIAL.TXT 60 `[special]`、ITEM.TXT 239 `[item]`、PLAYERS.TXT 66 `[character]`、TRACK.TXT 44 `[track]`、TOWNDEF.TXT 191 `[town_event]` + 62 `[item]` 商店表、`bigmap.dat` 5,600 字节。
 
-## Remake coverage (campaign.json at the time of this packet)
+## 重制接线
 
-| Measure | Value |
-| --- | --- |
-| Main-range levels reachable through the campaign | 5 of 72 (51, 52, 58, 60, 53) |
-| Main-range battles with a battle scenario | 2 of 47 (51 playable; 52 `product-opening-provisional`) |
-| Story-only scenes / opening previews | 2 (58, 60) / 1 (53) |
-| actMessage tokens inside registered levels | 63 of 884 |
+机读输出 `content/generated/hsl/static/hsl01/scope_inventory.json`（schema `hsl_scope_inventory.v1`）；`--check` 按当前 `content/battles/campaign.json` 重算重制侧（已注册关卡、带战斗场景的主线战斗、已注册关卡内的 actMessage 数），原版侧只在 `--rescan` 时重读 PAK。主线战斗由 `level_battle:N`（`tools/hsltools/levels/battle.py`）从种子、manifest 链与 `content/battles/levels/NNN.json` 统一生成；世界层（bigmap／TOWNDEF／TRACK）的读法见 [world_map_data](../static_reverse/world_map_data.md) 与 [original_world_town](../static_reverse/original_world_town.md)，职业表见 [original_job_stats](../static_reverse/original_job_stats.md)。
 
-`--check` recomputes the remake side from the current campaign registry, so these numbers move with each
-registered level without hand editing; only the original side needs `--rescan`.
+## 复现
 
-## Ordering rationale (planning input, not evidence)
+```bash
+PYTHONPATH=. python3 tools/hsl.py generate scope_inventory                 # rebuild from the PAK (needs $WINEPREFIX)
+python3 tools/hsl.py check scope_inventory                      # offline: remake side vs campaign.json + internal totals
+PYTHONPATH=. PYTHONPATH=tools python3 -m hsltools.data.scope_inventory --check --rescan  # also compare original-side counts with the PAK
+```
 
-The remaining work is ranked by how many original levels each item unlocks per unit of verification cost:
+## 边界
 
-1. **Script VM coverage** — every level runs on the same 128 action tokens; the opening compiler maps ~37 and
-   win/fail rules are still hand-written per level (51, 52, 53). A data-driven winfail interpreter plus opening-token
-   coverage is the multiplier for all 47 battles and 22 story scenes. Coverage is measured by
-   `tools/hsltools/data/winfail_coverage.py` and `tools/hsltools/data/story_token_coverage.py` once they land.
-2. **Level-parametrized scenario generation** — done: `level_battle:N` (`tools/hsltools/levels/battle.py`) assembles every
-   main-line battle, 51／52／53 included since S5／S11, from seed + manifest chain + `content/battles/levels/NNN.json`, without per-level Python.
-3. **Level 53 as the first non-Leonard battle** — proves controlled-unit generalization (PLAYERS 002 template) and
-   escape-style win/fail on the existing PlayLoop.
-4. **Job model and roster** — 20 jobs / 66 characters versus 4 modeled jobs (80/85/90/94); level 1 already needs
-   jobBowMan 83 (the controlled 琥, PLAYERS row 003), jobThief 88 (028 raiders) and jobWingWarrior 92 (036, flying),
-   plus the pmNPCPlayer villagers 061/062. Owned by the source-research line (static evidence first).
-5. **World layer** — from level 1 onward the town / big-map layer is the flow controller (`actSetTownExecEvent`,
-   TOWNDEF, TRACK); it is a new subsystem, scheduled after the battle chain generalizes.
-
-Everything above item 4 is presentation-line scope; items 4–5 need static evidence before implementation.
+- 「已注册」只表示关卡可经 `campaign.json` 到达；开场预览与暂定场景也计为已注册，不等于原版等价。
+- 500 段战斗桩的触发路线未由本扫描确定。

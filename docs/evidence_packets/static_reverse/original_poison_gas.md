@@ -87,7 +87,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 - `game/sim/PoisonGasRules.gd`：落点、九格施毒与合并；`game/sim/WinfailConditions.gd`：交接计数定时器（`0x4525e0..0x45260b`）；`game/sim/WinfailActions.gd`：`actInsertStoryObjectWaitPos` 在 loop 的全局流 `global_rng`（`GlobalRandomStream`，原版 `0x4795d4`／`0x4795d8`）抽一次 `rand(count)` 选位置，收据记全局流前后两个字；`game/sim/WinfailCompiler.gd`：OBS 过程识别。
 - `actUseItem` 解析唯一 `[SID, serial]` actor，调 `ItemResolutionRules.prepare`，提交到同一 loop 的 HP／status／inventory，记录 `item_requests`；缺 actor、catalog、inventory 或 item 显式记拒绝原因。
-- `actSetPlayerNoAttack` 写单位字典 `no_attack`：玩家普通攻击命令与直接攻击结算都拒绝；魔法／特殊技与 AI 策略是独立能力。
+- `actSetPlayerNoAttack` 写单位字典 `no_attack`：玩家普通攻击命令与直接攻击结算都拒绝，魔法／特殊技是独立能力；AI 单位带同一键时 `BattleLoopAI._ai_take_owned_turn` 在决策前直接结束回合（`0x43f413`，见 [original_ai_navigation](original_ai_navigation.md)「结论」）。
 - `game/battle/scene/BattlePoisonGasPresentation.gd`：镜头、烟团、停顿，中毒者经 `shake` → `MapHitState.begin` 换 hit 帧并抖 60 tick；`game/sim/loop/BattlePlayLoop.gd`：地形毒收尾顺序。
 
 ## 复现
@@ -99,5 +99,5 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - 烟对象初始化的 12 次全局流抽取在原版发生于下一 tick，其间可能插进别的对象的抽取；重制在喷气那次结算里紧接连抽。
 - 地形毒（深淵之沼 LEVEL015）的 `0x407230` 受击态：`BattlePresentation._refresh_terrain_poison` 消费 `loop.terrain_poison` 新回执，踩毒者在该收尾的扣血数字出现时换 hit 帧并抖 60 tick（`MapHitState.begin`）。
 - 法术是否在只伤 MP 时进受击态：`0x40aa80` 没有 MP 伤害分支（`param_4 & 2` 是回复 HP，不计受击），见 [original_map_strike.md](original_map_strike.md)。
-- 道具等待时序、安装对象渲染、packed serial 的完整边界与 no-attack 的全部 AI 分支未读。
+- 道具等待时序、安装对象渲染与 packed serial 的完整边界未读；`actSetPlayerNoAttack` 写的位与 NPC 模板 no_attack 位（+0xa0 bit 2）是否同一位未核。
 - 552／553／554 关的 OBS 也有噴人沼氣模板，但全部剧本只有 WINFAIL032 插入它。

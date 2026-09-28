@@ -1,12 +1,12 @@
 # 原 AI：自救用药与残血敌方机会
 
-> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_support_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_support_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：每次进入先抽 `rand(99)+1`，未尝试的自身 HP 检查（+0x1d8）先比，成功选 mode2；再比残血敌方检查（+0x1d4），成功 mode1；自身门槛由 `0x40c110` 计算，药品取 `0x40c1d0` 背包中第一件回血消耗品；残血敌方由 `0x40bf70` 在含边界方形范围内按登记槽顺序找首个 `hp<=clamp(...,10,80)` 的对象（static-derived；146 组原指令执行：98 正常返回、48 有界 prefix）。
 - 重制：`game/sim/AIPriorityRules.gd`、`game/sim/AISelfPreservation.gd` 复现数值与顺序，`BattleLoopAI` 在已准备好的普通目标／呼叫提案之上按自救、残血机会选择，用药与玩家共用 `_resolve_item_use`（static-derived 规则＋重制组合）。
-- 差异：原完整辅助、target-lock、等待与整回合 RNG 序列未复原；无注册药品或无合法伤害动作时跳过对应优先级是重制组合（provisional）。
+- 差异：原完整辅助与整回合逐值 RNG 序列未复原（持有目标／ai_lock 与 wait_round 见 [original_ai_navigation](original_ai_navigation.md)「结论」，抽数分布见 [original_ai_decisions](original_ai_decisions.md)「结论」）；无注册药品或无合法伤害动作时跳过对应优先级是重制组合（provisional）。
 
 ## 证据
 
@@ -51,5 +51,5 @@
 - 优先级 dispatcher 只执行到前两种检查，完整 dispatcher 未执行。
 - 原用药效果函数未执行；物品效果沿 `ItemUseRules.prepare`。
 - 未注册的回复魔法／特殊技不会被 AI 创造。
-- 完整地图／辅助筛选、目标锁定／wait_round、owner+0x12c、可行动状态未复原。
+- 完整地图／辅助筛选、owner+0x12c、可行动状态未复原；目标锁定与 wait_round 已照原版（[original_ai_navigation](original_ai_navigation.md)「结论」）。
 - 不保证整回合 RNG 与原版相同。

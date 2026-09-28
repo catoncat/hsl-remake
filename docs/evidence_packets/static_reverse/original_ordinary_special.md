@@ -1,13 +1,13 @@
 # 普通交锋与氣刃斬：物理伤害、武器附加、暴击／反击与绝技公式
 
-> evidence: static-derived · status: live · functions: 0x409a60, 0x409af0, 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/data/equipment.py, hsltools/data/first_battle_formation.py, hsltools/probes/physical.py, hsltools/probes/special_damage.py, run_ordinary_special_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x409a60, 0x409af0, 0x409be0, 0x40a7b0, 0x40aa80 · tools: hsltools/data/equipment.py, hsltools/data/first_battle_formation.py, hsltools/probes/physical.py, hsltools/probes/special_damage.py, run_ordinary_special_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版普通伤害由攻防差与力量差分段取基础量，加随机扰动，再加武器元素附加，然后判命中、暴击（1.5–2 倍，≤32767）；反击取普通抽样量 80% 后独立判命中与暴击，不会反击再反击；源 0 反击刷新为 12、源 0 暴击为 8（static-derived）。
 - 氣刃斬（magicOTHER）走 `0x40a7b0` channel1：命中含累计补偿，三角取值加等级、体质、精神、反应随机项再乘倍率；物理防御、元素抗性、魔击力与魔法命中装备都不进入（static-derived）。
 - 重制：`SpecialDamageRules` 与普通伤害规则只出提案，`SkillResolutionRules`／PlayLoop 唯一提交；收据分存 `queued_damage`（积气用）、`damage`（impact 值）、`actual_damage`（封顶后扣血，进经验与显示）（static-derived）。
-- 差异：暴击回调仅确认派发事件 0x302，「暴擊」文字为重制反馈（provisional）。
+- 差异：暴击回调仅确认派发事件 0x302；原版飘字只有数字，「暴擊」说明字是重制反馈，只在 OPT-INFO＝公開 下显示（remake-invented，`BattlePresentation.strike_words`）。
 
 ## 证据
 
@@ -45,7 +45,7 @@
 
 - 普通伤害与氣刃斬规则由 `SpecialDamageRules` 等纯规则准备提案，`SkillResolutionRules` 管费用、资格、各目标结果与贡献，PlayLoop 唯一提交；一次扣费、取消无损、落空付费、禁魔不禁绝技、绝技无反击。
 - `ProgressionRules` 在升级与换装时从源值与当前六槽重算反击、暴击与武器附加；`hsltools/data/equipment.py` 恢复 magic_attack_type 三字段并开放 add_weapon_dmgx2；`hsltools/data/first_battle_formation.py` 与第二战生成器共享概率字段与 no_attack。
-- 表现：特写显示 actual_damage，暴击标识在 impact 后出现，反击用自身收据；装备详情页内容可滚动、按钮固定（provisional）。
+- 表现：特写显示 actual_damage，反击用自身收据；暴击说明字只在 OPT-INFO＝公開 下于 impact 后出现；装备详情页内容可滚动、按钮固定（provisional）。
 
 ## 复现
 
@@ -54,6 +54,6 @@
 ## 边界
 
 - 全局 PRNG 身份、任意有符号／超界输入、原完整初始化不在本包。
-- 其他职业的完整 refresh 与全部额外攻击被动未恢复（追加攻击见 [original_extra_attack.md](original_extra_attack.md)）。
+- 各职业的属性刷新见 [original_job_stats.md](original_job_stats.md)（全部职业按公式表），追加攻击见 [original_extra_attack.md](original_extra_attack.md)；技能与被动已无拒绝项（差异清单 `unimplemented-abilities`）。
 - 暴击事件 0x302 的完整画面／音效含义未读。
 - 风火公式见 [original_magic_damage.md](original_magic_damage.md)。

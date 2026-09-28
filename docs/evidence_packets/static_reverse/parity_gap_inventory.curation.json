@@ -875,7 +875,7 @@
         "docs/evidence_packets/static_reverse/original_game_clear.md",
         "docs/evidence_packets/static_reverse/original_game_clear_epilogue.md"
       ],
-      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机",
+      "remake": "GameClearScreen 按 16 ms tick 推进 BOSS 状态机；途中跳段归 OPT-PACE：原版值不可跳，快／極快 确认键跳到下一段",
       "remake_code": [
         "game/title/GameClearScreen.gd"
       ],
@@ -1741,10 +1741,6 @@
     }
   ],
   "sources": {
-    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#7b79afa225": {
-      "item": "carry-model",
-      "text": "金币／物品如何结算、跨关存档流程未读（provisional）。"
-    },
     "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#c5422b8d38": {
       "item": "carry-model",
       "text": "原版关卡间金币、物品结算与关间剧情／商店未读（provisional）；"
@@ -2510,6 +2506,9 @@
     "provenance:game/title/GameClearScreen.gd|timing|provisional|": {
       "item": "game-clear-layout"
     },
+    "provenance:game/title/GameClearScreen.gd|timing|remake-invented|": {
+      "item": "game-clear-layout"
+    },
     "provenance:game/title/GameOverScreen.gd|timing|provisional|": {
       "item": "game-over-screen"
     },
@@ -2658,10 +2657,10 @@
     "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|provisional|": {
       "item": "identity-bar-bits"
     },
-    "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|效果区域接线": {
+    "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|角色分支用 ACTOR 标记代替": {
       "item": "skill-area-policies"
     },
-    "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|反击击杀 undead 攻击者时的结算（重制未对齐）": {
+    "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|不死防守方致死后是否仍反击（差异清单 undead-counter-kill）": {
       "item": "undead-counter-kill"
     },
     "scope:docs/evidence_packets/static_reverse/original_player_mode_sides.md|provisional|玩家可见后果未原生观察": {
@@ -2828,10 +2827,6 @@
       "no_visible_effect": "数字对象与守方对象同 tick 处理顺序，差异 ±1 tick（16 ms）",
       "text": "±1 tick：数字对象与守方对象在同一 tick 内的处理顺序未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#a3bbaaf4ae": {
-      "item": "town-event-timing",
-      "text": "`mode` 参数原样透传未读"
-    },
     "video:1": {
       "resolved": "镜头滑动（R6-P2）与走路逐 tick 跟随（R7-CAM 37f2bbc8，camera_panel_motion）"
     },
@@ -2896,7 +2891,7 @@
     "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧": {
       "resolved": "升級窗已用原版录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
     },
-    "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|精化的洪泛度量与候选遍历顺序、原版 NPC 调级与 AI 随机流": {
+    "scope:docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md|provisional|原版 NPC 调级与 AI 随机流": {
       "item": "ai-first-battle-moves"
     },
     "provenance:game/battle/scene/EffectObjectMotion.gd|layout|provisional|": {
@@ -3065,10 +3060,6 @@
     "provenance:game/sim/SharedRecordRules.gd|rules|provisional|": {
       "no_visible_effect": "只并 HP：船壳 no_attack、没人给它回血或施状态（0x40c2f0 要求同阵营、范围魔法丢船壳格），阵营改写经 token 作用于全部船壳；池归零后其余船壳原版记录 HP 0、重制保持最后正值，船壳隐形且此时 fail 段已成立或插入即成立"
     },
-    "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#2fcd53a808": {
-      "item": "item-use-rules",
-      "text": "原版 bucket-7 直接查对症药，抽签未读。"
-    },
     "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|跟随偏移、效果取值、地图别名的引擎 loader": {
       "item": "script-walk-path"
     },
@@ -3113,17 +3104,13 @@
       "item": "town-event-timing",
       "text": "大地图上 `0x43bf30` 是否走剧情步长 16 未读；"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_poison_gas.md#8bb4935dbf": {
-      "item": "winfail-readings",
-      "text": "道具等待时序、安装对象渲染、packed serial 的完整边界与 no-attack 的全部 AI 分支未读。"
-    },
     "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组": {
       "item": "winfail-readings"
     },
     "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000": {
       "item": "winfail-readings"
     },
-    "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化与精化行走的洪泛度量": {
+    "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化": {
       "item": "winfail-readings"
     },
     "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接": {
@@ -3137,14 +3124,6 @@
       "item": "winfail-readings",
       "text": "原版 handler 是否置对象旗标 0x4000 未读（provisional；"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#96ecba6c6e": {
-      "item": "winfail-readings",
-      "text": "差异：原版菜单光标、消息框版式与事件调度边界本包未读（provisional）。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#e031171e6a": {
-      "item": "winfail-readings",
-      "text": "原版菜单光标、消息框版式、事件状态调度边界与 `0x450840` 之后的 handler 调用目标本包未读。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37": {
       "item": "winfail-readings",
       "text": "全局容量溢出处理、渲染时序与脚本 VM 重入时序未读；"
@@ -3157,7 +3136,7 @@
       "item": "winfail-readings",
       "text": "`0x45e307` 内部是否抽随机本包未读。"
     },
-    "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合": {
+    "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交与入队调度的组合": {
       "item": "carry-model"
     },
     "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78": {
@@ -3258,30 +3237,6 @@
       "item": "ai-first-battle-moves",
       "text": "原分帧目标获取、锁定、等待时序未复刻（provisional）。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#698c63af0e": {
-      "item": "ai-skill-buckets",
-      "text": "原整体 16 状态机、目标锁定／等待、引擎标记清理与槽复用、治疗与辅助优先级、麻痺 wake/skip、ai_fixed、完整原路径选择、NPC 动态等级初始化未复原。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#86c3599d3c": {
-      "item": "ai-skill-buckets",
-      "text": "差异：原整体 16 状态 AI、目标锁定／等待、原路径选择与技能评分未复原；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#9b430cd2a3": {
-      "item": "ai-skill-buckets",
-      "text": "完整地图／辅助筛选、目标锁定／wait_round、owner+0x12c、可行动状态未复原。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_priority.md#ee5f326d2e": {
-      "item": "ai-skill-buckets",
-      "text": "差异：原完整辅助、target-lock、等待与整回合 RNG 序列未复原；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#3ae11d8fb6": {
-      "item": "ai-skill-buckets",
-      "text": "差异：原完整地图候选生成、空格中心、中心平分的随机流、目标锁定与辅助效果未复原；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_ai_skills.md#fabdb02c10": {
-      "item": "ai-skill-buckets",
-      "text": "原候选上限、对象生命周期、目标锁定、wait_round、owner+0x12c 初始化、辅助效果、完整特殊技能选择与全局 RNG 未复原。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_ai_support.md#43889a45cf": {
       "item": "ai-skill-buckets",
       "text": "原空格中心、全地图遍历与全局随机流未复原（provisional）。"
@@ -3309,10 +3264,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#1c89d9216a": {
       "item": "party-equipment-screen",
       "text": "未读：页 2／3 列表的形状表项 5／10 对应哪张板、魔法／特殊技悬停描述的逐行格式。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#88ed916591": {
-      "item": "party-equipment-screen",
-      "text": "狀態页黄字与裝備页红字的着色条件未读，重制未做。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_storage_window.md#be57cdaf93": {
       "item": "party-equipment-screen",
@@ -3370,10 +3321,6 @@
         "title-ornaments",
         "memoir-list"
       ]
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#c06f5fe340": {
-      "item": "closeup-object-timing",
-      "text": "绝技片段结束后的变暗／变亮过渡重制未做，数字尾巴因此在片段内走完而非叠在过渡下；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_skill_function_bits.md#47af19c725": {
       "no_visible_effect": "±1 tick 的同帧处理先后，16 ms 以内",

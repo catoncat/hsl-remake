@@ -7,7 +7,7 @@
 - 原版：`0x40bb80` 按 find_type 七种比较在圆形搜索半径内选目标，严格改善时先更新基准再抽 `0x458c10()&1` 决定换不换；`0x40c570` 用同一个 `rand(99)+1` 样本的奇偶决定先试特殊技（奇）还是魔法（偶），并与倾向做 `<=` 比较（static-derived；200 组合成内存原函数执行全部正常返回）。
 - 重制：`game/sim/AIDecisionRules.gd` 以相同 RNG 样本复现两函数的返回值与调用次数，`game/sim/loop/BattleLoopAI.gd` 在全部输入验证通过后才抽签，魔法／特殊技与玩家共用 `SkillResolutionRules` 与 `_resolve_skill`（static-derived 规则＋重制组合）。
 - 一次行动的全局随机数消费（下表）：原版每次都走完优先级链的抽取，重制在链上各项不可能出手时不抽、锁定掷只在已持有目标时新抽；这些被省的抽取都落在不改变结果的分支上，锁定比较用的末值在原版也总是新掷，所以盯谁的分布与原版相同，逐值对拍不齐（static-derived 读法＋runtime-measured 分布）。
-- 差异：原整体 16 状态 AI、目标锁定／等待、原路径选择与技能评分未复原；原函数外的候选过滤与移动取格是重制组合（provisional），不称整体 AI 等价。
+- 差异：原整体 16 状态 AI 与技能评分未作为整体复原（持有目标／锁定、wait_round、追击精化与攻击站位见 [original_ai_navigation](original_ai_navigation.md)「结论」）；原函数外的候选过滤是重制组合（provisional），不称整体 AI 等价。
 
 ## 证据
 
@@ -76,8 +76,9 @@
   - 源范围内有本回合可攻击目标时先保留可攻击集合，再按原目标规则排序；绕开封闭最近敌人、长枪原地保持距离。
   - 源 SID 排除在候选生成前执行；纯原函数的回退 quirk 单独对照。
   - owner+0x12c 近域暂用当前 move_point。
-  - 选定目标后普通攻击取最低移动费用与最小横移；魔法取最小位移并在受支持法术中选一项。
-  - 无可攻击目标时向目标推进；无搜索结果时采用队友呼叫，仍无则 Wait。
+  - 魔法取最小位移并在受支持法术中选一项。
+  - 无搜索结果时采用队友呼叫，仍无则 Wait。
+- 普通攻击站位与向目标推进已不属重制组合：`AINavigationRules.attack_stations`／`attack_station`（`0x40d8b0 → 0x413390`）与追击精化 `approach_point`，见 [original_ai_navigation](original_ai_navigation.md)「结论」。
 
 ## 复现
 
@@ -86,7 +87,7 @@
 ## 边界
 
 - 原桶的全部技能与评分仍未复原；未注册的治疗／辅助技能不会由 AI 私造效果。
-- 原整体 16 状态机、目标锁定／等待、引擎标记清理与槽复用、治疗与辅助优先级、麻痺 wake/skip、ai_fixed、完整原路径选择、NPC 动态等级初始化未复原。
+- 原整体 16 状态机、引擎标记清理与槽复用未作为整体复原；目标锁定／等待、ai_fixed、追击精化与攻击站位见 [original_ai_navigation](original_ai_navigation.md)，治疗与辅助优先级见 [original_ai_priority](original_ai_priority.md)／[original_ai_support](original_ai_support.md)，NPC 出生调级 `0x40e870` 见 [original_auto_growth](original_auto_growth.md)，麻痺见 [original_paralysis](original_paralysis.md)。
 - 随机数消费表的重制侧只做到分布等价：同一初始状态下重制与原版的全局流逐值不齐（链省抽、锁定新掷、`0x40d4e0` 位置）；辅助三项（+0x1dc／+0x1e0／+0x1e4）选中后各自的抽取未逐条列入本表。
 - 机器包只声称已初始化并执行的路径，不推断未定义栈值。
 - 合成内存原函数执行不是原作自然游玩或整场等价证明。

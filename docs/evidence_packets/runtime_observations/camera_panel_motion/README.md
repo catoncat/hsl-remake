@@ -190,7 +190,7 @@ Godot Movie Maker 640×480、60 fps，第 51 战产品开场 → 首控 → 状�
 
 - 只有待领物（无经验无金钱）时原版也会滑镜头，重制此时没有奖励格、不滑（罕见）。
 - 快进键：镜头 +12 步长与走路同 tick 走两遍未接（重制无该输入）。
-- 滑回行动者期间原版边缘滚动 `0x43e4a0` 是否同时生效未读；重制在环等镜头与移动等镜头期间不接平移（provisional）。
+- 边缘滚动 `0x43e4a0` 归地图光标过程 `0x43e570`（每 tick 调一次，见 [tick 计数](../../static_reverse/original_tick_counts.md) `0x43e570` 一段）；滑回行动者期间该光标过程是否仍在跑、请求是否与居中缓动叠加未读；重制在环等镜头与移动等镜头期间不接平移（provisional）。
 - `actWalkFollow*` 镜头已读：Wait 变体与 actWalkWait 同、不带 Wait 不动镜头（lane CAMFOLLOW，见 [original_script_camera_scroll.md](../../static_reverse/original_script_camera_scroll.md)）；跟随者走法的剩余差异见差异清单 `cam-script-walk-variants`。
 - 移动预告两簇时长已照原版按追击 12／站位 24 tick 分开；范围消失后约 0.18 s 才起步的来源未读（`ai-move-preview-timing`）。
 - 面板部件分侧、右下框出现时机、加点窗关闭方向为 remake-invented。

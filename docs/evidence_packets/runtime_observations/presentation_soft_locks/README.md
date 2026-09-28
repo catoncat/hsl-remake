@@ -1,12 +1,12 @@
 # 自动对局暴露的表现层软锁：遗言模板、绝技切入帧、对白头像（数据合同化）
 
-> evidence: runtime-measured; resource-derived · status: live · tools: hsltools/assets/combat_animation.py, hsltools/data/combat_aftermath.py, hsltools/levels/actors.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-27
+> evidence: runtime-measured; resource-derived · status: live · tools: hsltools/assets/combat_animation.py, hsltools/data/combat_aftermath.py, hsltools/levels/actors.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：遗言文本、绝技 `s_shape` 条带与对白头像都来自 PLAYERS／ANIMAL／RESOURCE 的逐行字段；PLAYERS 66 行里没有 `dead_message` 的行本来就沉默，ANIMAL 块未声明 `s_shape` 的魔物本来就没有绝技条带（resource-derived）。
 - 重制：`content/generated/hsl/combat/aftermath.json` 对全部 66 行声明遗言（`messages: []`＝沉默）、combat manifest 对每个演员行声明 `special_frames`（条带或 `[]`）、`hsltools.levels.battle.cast_gaps` 在装配时校验阵容；运行时 `BattleAftermath`／`BattleCombatCutin`／`BattleDialogue` 遇到声明外的缺失只 `push_error`、不软锁（runtime-measured）。
-- 差异：遗言取第一条非零变体与淡出时钟仍是 provisional 编排；53 关 緹娜 winfail 台词的原版画面未采样（provisional）。
+- 差异：遗言按原版读法在两半中取一句（为 0 的一半用另一半代），奇偶来源是重制散列而非原版全局流（remake-invented，见 [dialogue_death](../dialogue_death/README.md)「3. 遗言选句」）；收尾淡出与经验时钟是 provisional 编排；53 关 緹娜 winfail 台词的原版画面未采样（provisional）。
 
 ## 证据
 
@@ -115,7 +115,7 @@ provenance 写法：`runtime-measured docs/evidence_packets/runtime_observations
 
 ## 边界
 
-- 遗言取第一条非零变体、淡出／经验时钟仍是 [combat_aftermath](../combat_aftermath/README.md) 的 provisional 编排；本包只扩数据覆盖。
+- 遗言选句的奇偶来源（重制散列）见 [dialogue_death](../dialogue_death/README.md)「3. 遗言选句」；淡出／经验时钟是 [battle_reward_inputs](../../static_reverse/battle_reward_inputs.md) 记的 provisional 收尾时长；本包只扩数据覆盖。
 - 53 关 `SID_PLAYER1`（緹娜，PLAYERS 002）的 winfail 台词现在取其单位行的 FACE0001，不再是 presentation-line 手表的 029 FACE0029；原作对白脸取说话对象自身的 face 字段是 static-derived（`original_town_job_up.md` 的 +0x5c），但 53 关这条台词原生画面未采样。
 - 重生成 40 个 `level_actors` 时吸收了共享表增长后的既有漂移：本关副本改为引用 `chapter01/portraits`／`audio_normalized`，056 的面板名按现行 `job_show_name` 规则由 席德爾 变 四魔將（对白说话人标签仍来自脚本的 652 席德爾）；170 个不再被引用的本关 PNG／WAV 副本已删除。
 - 演员是否会在某局实际阵亡／施放绝技取决于 AI 与 RNG；上表是"可能"集合，不是单局观察。

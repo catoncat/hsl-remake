@@ -1,6 +1,6 @@
 # 脚本条件 actCheckEnemy／actCheckPlayer／actCheckEnemyNumber 的目标计数、全灭判负与 winfail 台词的脸
 
-> evidence: static-derived; negative-evidence: 非脚本全灭判负; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived; negative-evidence: 非脚本全灭判负; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -114,7 +114,7 @@ token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/
 
 ### 重制：比较方向
 
-`WinfailConditions.condition_holds` 的 `actCheckEnemyNumber` 为 `registered < num`，其中 registered ＝ 该 token 的存活单位数（＋运行时 `winfail_runtime.static_enemy_counts[token]`，组装器已不再产生）。12／26 关 Enemy101 船殼、18 关 Enemy100 門、80 关 068 都是 PlayLoop 单位（读法见 [阵营位包](original_player_mode_sides.md#证据)），船殼被敌方普通攻击打倒即注销、计数下降——WINFAIL012／026 的「任一船殼被破坏即失败」由此可以发生（船殼共用一份 live 记录，HP 由 `SharedRecordRules` 并池）。歐姆村（level 1）由手写 `FirstBattleScenarioRules` 承接其 `actCheckEnemyNumber SID_ENEMY028,3`。
+`WinfailConditions.condition_holds` 的 `actCheckEnemyNumber` 为 `registered < num`，其中 registered ＝ 该 token 的存活单位数（＋运行时 `winfail_runtime.static_enemy_counts[token]`，组装器已不再产生）。12／26 关 Enemy101 船殼、18 关 Enemy100 門、80 关 068 都是 PlayLoop 单位（读法见 [阵营位包](original_player_mode_sides.md#证据)），船殼被敌方普通攻击打倒即注销、计数下降——WINFAIL012／026 的「任一船殼被破坏即失败」由此可以发生（船殼共用一份 live 记录，HP 由 `SharedRecordRules` 并池）。歐姆村（level 1，`ohm_village_battle.json`）走 `rule_adapter: winfail`，其 WINFAIL001 的 `actCheckEnemyNumber` 同样由 `WinfailConditions` 判；手写的 `FirstBattleScenarioRules` 已删除。
 
 `0x44fa80` 取的 code 是角色记录字 `+0x84`，`actChangePrevInsertObjectID` 写同一字（[original_story_object_terrain](original_story_object_terrain.md)）；扫描时机见 [original_round_display](original_round_display.md)。
 
@@ -122,11 +122,11 @@ token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/
 
 不在规则里再建第二条别名解析路径，而是让遭遇战组装器与主线走同一条数据路——`tools/hsltools/levels/battle.py build_encounter` 把每个已上场的 EVEF 有才產生 安装位（`obj_Data9` 槽 → `PARTY_SLOTS` 的 token／unit）写成 `opening.actor_bindings["SID_<名>/1"] = {unit_id, actor_id, placement_xy}`，与主线 `trace_opening` 对有才產生 安装的绑定形状一致；`token_source` 随即报 `binding`，`actCheckPlayer 1 SID_雷歐納德` 在 leonard 阵亡时成立（`defeat_leonard`），其余队员全灭不结束战斗（与脚本只列 slot 0 一致）。未上场的 `conditional_party.unavailable_slots` 不绑定（当前为空集）。单测 `run_winfail_rules_tests.gd _encounter_fail_resolves_player_name_token`（真实 `battle_571.json`），定向自动对局 571／558／525 由 `dead_end` 变 `outcome=fail battle_outcome=defeat_leonard`。
 
-不在本读法内：原作对已登记但 disabled 槽位（未随队成员）的 `0x44fad0` 查找结果由 `conditional_party` 的 carry 读法代表，仍是那里标注的 provisional 边界。
+不在本读法内：已登记但 disabled 的槽位在原作不可达（没有写禁用位的调用者，见下文与[原安装分支](original_player_install.md)）；carry 照注册表传下全体已加入成员（[注册表与交接写回](original_campaign_actors.md#证据)），`conditional_party` 按 carry 安装即对应原版的已注册槽。
 
 ### 重制：未上场成员与全队阵亡
 
-剧情模式探索在 34 沙羅尼亞近郊（队伍 hu／tina／hanks／shera，雷歐納德 被囚不在 carry）后于地图点 33 掷中遭遇战 550：`SID_雷歐納德/1` 已绑定，但 `ConditionalPartyRules` 按 carry 未上场 leonard，若按上节读法「找不到即阵亡」则首次控制时立即 `defeat_leonard`。原 `big_map_flow.json` 显示 30–34 点遭遇比例 20／10／10／10／10 非零，原作确实会在雷歐納德缺席段触发 5NN 遭遇。静态读法本身没有歧义——`0x450840 case 0x26` 对 `fcn.0044fad0(code,1) == -1` 直接不计入 count，count==0 即成立；歧义在**原作是否把 registered-but-absent 的槽装进遭遇战**（`conditional_party.claim_limit` 已写明未建模）。两条接入：
+carry 只带上一战上场者的旧模型下，剧情模式探索在 34 沙羅尼亞近郊（队伍 hu／tina／hanks／shera，雷歐納德 不在 carry）后于地图点 33 掷中遭遇战 550：`SID_雷歐納德/1` 已绑定，但 `ConditionalPartyRules` 按 carry 未上场 leonard，若按上节读法「找不到即阵亡」则首次控制时立即 `defeat_leonard`。carry 现照注册表传下 雷歐納德，这一局面只剩 carry 之外的缺席者会遇到。原 `big_map_flow.json` 显示 30–34 点遭遇比例 20／10／10／10／10 非零，原作确实会在雷歐納德缺席段触发 5NN 遭遇。静态读法本身没有歧义——`0x450840 case 0x26` 对 `fcn.0044fad0(code,1) == -1` 直接不计入 count，count==0 即成立；当时的歧义是**原作是否把 registered-but-absent 的槽装进遭遇战**；上文注册表读法已给出答案：会装入，该状态在原作遭遇战里不可达。两条接入：
 
 1. **未上场 ≠ 阵亡**：`WinfailConditions.condition_holds` 的 `actCheckPlayer`／`actCheckEnemy` 对 `token_source == "binding"` 且 `units_for_token` 为空的 token（绑定存在、本战没有该单位）不计入 dead，与 unresolved 同样跳过；`SID_ENEMYnnn` class token 从未放置仍计入（WINFAIL533 读法不变）。下文有界执行确认原版此时 雷歐納德 在场，这条是补偿 carry 模型的重制规则。
 2. **全队阵亡判负（重制显式规则）** `WinfailScenarioRules.party_wiped`／`PARTY_WIPE_POLICY = remake_party_wipe_defeat_v1`：脚本 fail 段、win 段都不成立时，本战上场且仍在场的 `player_controlled` 单位（不含 `departed`、`departed_unit_ids`，不含 friendly_ai）非空且全部 `defeated` → `DEFEAT_OUTCOME`；`commit_outcome` 记 `resolved = {key: party_wiped, kind: fail, code: -1, policy}`，不跑任何脚本 fail 链，`_terminal_status` 对该 resolution 返回空 status（不说缺席成员的死亡台词、无脚本看板标签），结果页走同一败北路径（`BattlePresentation` 主角未上场时标签「隊伍全滅」）。这是项目采纳的重制改善，不声称原版等价；效果是 autoplay 的 `party_wiped_no_defeat` 死路在任何战斗都结构性不可达。

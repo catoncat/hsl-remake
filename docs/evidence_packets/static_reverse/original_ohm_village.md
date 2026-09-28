@@ -1,6 +1,6 @@
 # 歐姆村：琥、村民、弓與生成生命週期
 
-> evidence: static-derived; resource-derived: 源角色與關卡表; negative-evidence: STORY001／WINFAIL001 無增援與撤離勝利 · status: live · functions: 0x409090, 0x40ba20, 0x40e7a0, 0x40e800, 0x40e870, 0x4100e0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x448840, 0x44cb10, 0x46bd67, 0x46be17 · tools: hsltools/data/ohm_village.py, hsltools/levels/map_objects.py, hsltools/probes/bow_range.py, hsltools/probes/ohm_growth.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived: 源角色與關卡表; negative-evidence: STORY001／WINFAIL001 無增援與撤離勝利 · status: live · functions: 0x409090, 0x40ba20, 0x40e7a0, 0x40e800, 0x40e870, 0x4100e0, 0x437080, 0x4373f0, 0x437970, 0x437a40, 0x439f80, 0x442720, 0x448840, 0x44cb10, 0x46bd67, 0x46be17 · tools: hsltools/data/ohm_village.py, hsltools/levels/map_objects.py, hsltools/probes/bow_range.py, hsltools/probes/ohm_growth.py · updated: 2026-09-28
 
 ## 结论
 
@@ -77,5 +77,5 @@ Speed = floor(94*D/100)
 - 原完整物件安裝／釋放排程、完整控制狀態機未讀。
 - 弓的全高差／障礙傳播未讀（coverage 只在平坦空圖執行）。
 - 全局流上其它抽取（AI 決策鏈、動畫延遲）次數與原版不同，同種子出生結果不等於原版那一局。
-- 原實時粒子／牆鐘、跨關持久化未恢復。
-- 尚無效果實現的其他新學技明示不可施放。
+- 原實時粒子／牆鐘未恢復；跨關承接已照原版註冊表（[注册表与交接写回](original_campaign_actors.md#证据)）。
+- 技能與被動已無拒絕項（差異清單 `unimplemented-abilities`）；未知字段與未識別常量仍明確拒絕，只守以後新增的行。

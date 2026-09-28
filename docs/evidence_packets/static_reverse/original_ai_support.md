@@ -1,6 +1,6 @@
 # 原 AI：友军回复、状态援助、增益自施与友军用药
 
-> evidence: static-derived; runtime-measured: 0x440db5 链首掷（enemy_turn 回执）, L547 buff self-cast distribution, ALLYHEAL 友军用药（模板背包、救与不救、0x40d530 落点，第 51／52 关裁判） · status: live · functions: 0x40c110, 0x40c1b0, 0x40c2d0, 0x40c2f0, 0x40c3a0, 0x40c480, 0x40d530, 0x413390, 0x43fce1, 0x44cb10 · tools: hsltools/probes/_enemy_level.py, hsltools/probes/ai_support.py, run_ai_support_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 0x440db5 链首掷（enemy_turn 回执）, L547 buff self-cast distribution, ALLYHEAL 友军用药（模板背包、救与不救、0x40d530 落点，第 51／52 关裁判） · status: live · functions: 0x40c110, 0x40c1b0, 0x40c2d0, 0x40c2f0, 0x40c3a0, 0x40c480, 0x40d530, 0x413390, 0x43fce1, 0x44cb10 · tools: hsltools/probes/_enemy_level.py, hsltools/probes/ai_support.py, run_ai_support_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -65,6 +65,6 @@ HP5 行原版不救的种子 1、2、4 位 4 抽到 85、96、93（>80）。第 
 - 同种子逐值结果不同，只要求分布一致。
 - 回放判定不把 `0x440db5` 的值喂给援助链首掷：预先跳过空类别后锁定掷骰（`0x441002`）携带的值与原版差一次抽取，喂入后漆黑之森 · 遭遇戰（LEVEL547）有 4 行只在持有目标上分歧（抽取结构差，分布相同）。
 - `0x40d530` 移动搜索未由探针执行，落点读法由裁判实测验证。
-- 自清毒与友军支援的组合位置、全局 RNG、锁定／wait_round 仍为 provisional。
+- 自清毒与友军支援的组合位置、全局 RNG 逐值序列仍为 provisional；锁定与 wait_round 已照原版（[original_ai_navigation](original_ai_navigation.md)「结论」）。
 - 完整原助攻／增益／特殊支援、驱毒药援助、所有职业成长未完成。
 - 原扫描不排除 0HP 对象；重制的排除不冒称原槽生命周期。
