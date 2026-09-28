@@ -490,16 +490,22 @@ func _finish_give_session(revision: int) -> void:
 		rebuild_action_menu_buttons()
 
 
-## Mode 4／5: the held bag item goes back first-empty (0x436e30 after 0x436e80 closed its gap).
+## Mode 4／5 and the use pick's cancel (0x444a5c): the held bag item goes back first-empty
+## (0x436e30 after the lift closed its gap). Already last, the bag is unchanged.
 func return_held_item(inventory_index: int, item_code: int) -> void:
-	if not runtime.item_panel.visible or runtime.item_panel.operation not in ["equip", "drop"] or runtime.item_panel.page != "hand":
+	var panel = runtime.item_panel
+	var use_pick: bool = panel.operation == "use" and panel.page == "target"
+	if not panel.visible or not (use_pick or (panel.operation in ["equip", "drop"] and panel.page == "hand")):
 		return
-	if runtime.item_panel.held_index != inventory_index or runtime.item_panel.held_code != item_code:
+	var held := [panel.selected_index, int(panel.selected_item)] if use_pick else [panel.held_index, panel.held_code]
+	if held != [inventory_index, item_code]:
+		return
+	var inventory: Array = BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id).get("inventory", [])
+	if inventory_index < 0 or inventory_index >= inventory.size() or int(inventory[inventory_index]) != item_code:
 		return
 	var next := BattlePlayLoop.return_held_item(runtime.play_loop, inventory_index, item_code)
-	if next == runtime.play_loop:
-		return
-	runtime.apply_loop(next, "return_held_item")
+	if next != runtime.play_loop:
+		runtime.apply_loop(next, "return_held_item")
 	runtime.item_panel.hand_item_returned(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id))
 
 

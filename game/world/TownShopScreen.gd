@@ -70,6 +70,7 @@ signal hand_requested(action: String, args: Dictionary, hand: Dictionary)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleLootPanel = preload("res://game/battle/scene/BattleLootPanel.gd")
+const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
@@ -163,6 +164,8 @@ var _hand: Dictionary = {}
 var storage: Dictionary = {}
 var storage_rows: Array[Button] = []
 var _scroll := 0
+## The goods／storage list's 0x446060 bar (null off those pages).
+var list_bar: BattleSkillScrollBar
 var _loop: Dictionary = {}
 var _items: Dictionary = {}
 var _pointer := Vector2.ZERO
@@ -629,6 +632,7 @@ func _rebuild() -> void:
 	goods_rows.clear()
 	bag_slots.clear()
 	buttons.clear()
+	list_bar = null
 	var vitals := BattleVitals.new()
 	vitals.name = "Vitals"
 	vitals.position = Vector2(0, 14)
@@ -736,37 +740,58 @@ func _build_storage() -> void:
 	drop_area.name = "StorageDrop"
 	drop_area.pressed.connect(func(): if not message_visible() and holding(): _request_hand("store", {}, _hand.duplicate()))
 	var rows := PartyStorageRules.entries(storage)
-	_scroll = clampi(_scroll, 0, maxi(0, rows.size() - BattleLootPanel.VISIBLE_ROWS))
 	var job := int(_actor().get("growth_profile", {}).get("job_code", -1))
-	for index in range(mini(BattleLootPanel.VISIBLE_ROWS, rows.size() - _scroll)):
-		var row_index := _scroll + index
-		var code := int(rows[row_index]["code"])
-		var details: Dictionary = _items.get(str(code), {"icon": "", "name": str(code), "important": false, "job_mask": 0})
-		var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
-		button.name = "Storage_%d" % row_index
-		if str(details["icon"]) != "":
-			BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
-		var color := _row_color(details, job)
-		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
-		label.text = str(details["name"])
-		label.set_meta("base_color", color)
-		var count := BattleUISkin.text(button, Vector2(BattleLootPanel.COUNT_RIGHT - BattleLootPanel.LIST_AT.x - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
-		count.text = str(int(rows[row_index]["qty"]))
-		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		button.mouse_entered.connect(_show_description.bind(code, label))
-		button.mouse_exited.connect(_hide_description.bind(label))
-		button.pressed.connect(func():
-			if message_visible(): return
-			if holding(): _request_hand("store", {}, _hand.duplicate())
-			else: _request_hand("retrieve", {"index": row_index}, {}))
-		storage_rows.append(button)
-	if rows.size() > BattleLootPanel.VISIBLE_ROWS:
-		for step in [-1, 1]:
-			var arrow := _row_button(BattleLootPanel.LIST_AT + Vector2(351, 0 if step < 0 else 200), Vector2(24, 20))
-			arrow.name = "Scroll_up" if step < 0 else "Scroll_down"
-			arrow.pressed.connect(func():
-				_scroll = clampi(_scroll + step, 0, rows.size() - BattleLootPanel.VISIBLE_ROWS)
-				_rebuild())
+	_build_list(rows.size(), func():
+		storage_rows.clear()
+		for index in range(mini(BattleLootPanel.VISIBLE_ROWS, rows.size() - _scroll)):
+			var row_index := _scroll + index
+			var code := int(rows[row_index]["code"])
+			var details: Dictionary = _items.get(str(code), {"icon": "", "name": str(code), "important": false, "job_mask": 0})
+			var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
+			button.name = "Storage_%d" % row_index
+			if str(details["icon"]) != "":
+				BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
+			var color := _row_color(details, job)
+			var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
+			label.text = str(details["name"])
+			label.set_meta("base_color", color)
+			var count := BattleUISkin.text(button, Vector2(BattleLootPanel.COUNT_RIGHT - BattleLootPanel.LIST_AT.x - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
+			count.text = str(int(rows[row_index]["qty"]))
+			count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			button.mouse_entered.connect(_show_description.bind(code, label))
+			button.mouse_exited.connect(_hide_description.bind(label))
+			button.pressed.connect(func():
+				if message_visible(): return
+				if holding(): _request_hand("store", {}, _hand.duplicate())
+				else: _request_hand("retrieve", {"index": row_index}, {}))
+			storage_rows.append(button))
+
+
+## The goods and storage lists are 0x414c00's, like the 獲得物品 list: its first tick
+## (0x414c3e, window flag 0x20000000, whatever the shop flag) hangs 0x446060(win, 760, 151,
+## 152, 153, width − 24, 0, 0, 0, 5, 0x414af0) — WIN06BAR 24×220 at WINDOW90 + (351,0), five
+## rows. `fill` lays the rows from `_scroll`; the bar swaps them in place without rebuilding the page.
+func _build_list(rows: int, fill: Callable) -> void:
+	_scroll = clampi(_scroll, 0, maxi(0, rows - BattleLootPanel.VISIBLE_ROWS))
+	var first := get_child_count()
+	fill.call()
+	var laid := [get_child_count() - first]  # lambdas capture locals by value
+	list_bar = BattleSkillScrollBar.new(BattleLootPanel.LIST_AT, "WIN06BAR", BattleLootPanel.VISIBLE_ROWS, 375 - 24)
+	add_child(list_bar)
+	list_bar.count = rows
+	list_bar.scroll_to(_scroll, false)
+	list_bar.scrolled.connect(func(pos: int):
+		_scroll = pos
+		for index in range(laid[0]):
+			var row := get_child(first)
+			remove_child(row)
+			row.queue_free()
+		var end := get_child_count()
+		fill.call()
+		laid[0] = get_child_count() - end
+		for index in range(laid[0]):
+			move_child(get_child(end + index), first + index)
+		if sliding_in(): _apply_slide())
 
 
 func _build_goods() -> void:
@@ -779,37 +804,31 @@ func _build_goods() -> void:
 	var drop_area := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP), Vector2(340, BattleLootPanel.LIST_ROW * BattleLootPanel.VISIBLE_ROWS))
 	drop_area.name = "GoodsDrop"
 	drop_area.pressed.connect(func(): if not message_visible(): drop_on_list())
-	_scroll = clampi(_scroll, 0, maxi(0, goods.size() - BattleLootPanel.VISIBLE_ROWS))
 	var job := int(_actor().get("growth_profile", {}).get("job_code", -1))
-	for index in range(mini(BattleLootPanel.VISIBLE_ROWS, goods.size() - _scroll)):
-		var code := goods[_scroll + index]
-		var details: Dictionary = _items[str(code)]
-		var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
-		button.name = "Goods%d" % code
-		BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
-		var color := _row_color(details, job)
-		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
-		label.text = str(details["name"])
-		label.set_meta("base_color", color)
-		var price := BattleUISkin.text(button, Vector2(PRICE_RIGHT - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
-		price.text = "$%d" % _cost(code)
-		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		button.mouse_entered.connect(_show_description.bind(code, label))
-		button.mouse_exited.connect(_hide_description.bind(label))
-		button.pressed.connect(func():
-			if message_visible(): return
-			if holding(): drop_on_list()
-			else:
-				_pending_sound = "take_up"
-				buy_requested.emit(code, unit_id))
-		goods_rows.append(button)
-	if goods.size() > BattleLootPanel.VISIBLE_ROWS:
-		for step in [-1, 1]:
-			var arrow := _row_button(BattleLootPanel.LIST_AT + Vector2(351, 0 if step < 0 else 200), Vector2(24, 20))
-			arrow.name = "Scroll_up" if step < 0 else "Scroll_down"
-			arrow.pressed.connect(func():
-				_scroll = clampi(_scroll + step, 0, goods.size() - BattleLootPanel.VISIBLE_ROWS)
-				_rebuild())
+	_build_list(goods.size(), func():
+		goods_rows.clear()
+		for index in range(mini(BattleLootPanel.VISIBLE_ROWS, goods.size() - _scroll)):
+			var code := goods[_scroll + index]
+			var details: Dictionary = _items[str(code)]
+			var button := _row_button(BattleLootPanel.LIST_AT + Vector2(8, BattleLootPanel.LIST_TOP + index * BattleLootPanel.LIST_ROW), Vector2(340, BattleLootPanel.LIST_ROW))
+			button.name = "Goods%d" % code
+			BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
+			var color := _row_color(details, job)
+			var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, BattleLootPanel.LIST_ROW))
+			label.text = str(details["name"])
+			label.set_meta("base_color", color)
+			var price := BattleUISkin.text(button, Vector2(PRICE_RIGHT - 8 - 108, 0), color, BattleUISkin.FONT_BODY, Vector2(108, BattleLootPanel.LIST_ROW))
+			price.text = "$%d" % _cost(code)
+			price.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			button.mouse_entered.connect(_show_description.bind(code, label))
+			button.mouse_exited.connect(_hide_description.bind(label))
+			button.pressed.connect(func():
+				if message_visible(): return
+				if holding(): drop_on_list()
+				else:
+					_pending_sound = "take_up"
+					buy_requested.emit(code, unit_id))
+			goods_rows.append(button))
 
 
 ## Mode 0 page 4: the status page's attribute column (WINDOW21, BattleGrowthPanel rows) on the
@@ -937,14 +956,14 @@ func _build_message() -> void:
 	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 
-func _row_button(at: Vector2, dimensions: Vector2) -> Button:
+func _row_button(at: Vector2, dimensions: Vector2, parent: Node = self) -> Button:
 	var button := Button.new()
 	button.position = at
 	button.size = dimensions
 	button.focus_mode = Control.FOCUS_NONE
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
-	add_child(button)
+	parent.add_child(button)
 	return button
 
 

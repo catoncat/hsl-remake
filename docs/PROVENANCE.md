@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 134 remake-invented cells, 64 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 133 remake-invented cells, 64 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (197)
 
@@ -65,7 +65,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleItemPanel](../game/battle/scene/BattleItemPanel.gd) | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); static-derived [original_give_exchange.md](../docs/evidence_packets/static_reverse/original_give_exchange.md); static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md) | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#07`; static-derived [game_cursor/README.md](../docs/evidence_packets/runtime_observations/game_cursor/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#7` | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#7`; resource-derived [items.json](../content/generated/hsl/equipment/items.json); resource-derived [consumables.json](../content/imported/hsl/chapter01/consumables.json); remake-invented | n/a | n/a |
 | [BattleItemText](../game/battle/scene/BattleItemText.gd) | n/a | n/a | remake-invented; static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md); static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#7` | n/a | n/a |
 | [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | n/a | static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json); resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); resource-derived [global.obs](../content/imported/hsl/shared/first_skill/global.obs); provisional | n/a | remake-invented; static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md) |
-| [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#16`; remake-invented | resource-derived [OBJ-ALL.H](../content/imported/hsl/global/tables/OBJ-ALL.H) | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) |
+| [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#16` | resource-derived [OBJ-ALL.H](../content/imported/hsl/global/tables/OBJ-ALL.H) | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) |
 | [BattleMagicPanel](../game/battle/scene/BattleMagicPanel.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) `#描述框-0x436d70`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | resource-derived [MAGIC.TXT](../content/imported/hsl/global/tables/MAGIC.TXT); resource-derived [SPECIAL.TXT](../content/imported/hsl/global/tables/SPECIAL.TXT); resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | n/a |
 | [BattleMovementPreview](../game/battle/scene/BattleMovementPreview.gd) | n/a | remake-invented | n/a | n/a | n/a |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | n/a | remake-invented | remake-invented | remake-invented | n/a |
@@ -271,7 +271,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (134)
+### remake-invented 清单 (133)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -301,7 +301,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleItemPanel](../game/battle/scene/BattleItemPanel.gd) | strings | 返回, 沒有道具, 道具 N / 8 — OPT-GUIDE＝提示 only |
 | [BattleItemText](../game/battle/scene/BattleItemText.gd) | strings | receipt descriptions; effect values are the settled receipt's |
 | [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | timing | the draws come from a presentation RNG seeded by the use, not the original global 0x458c10 stream |
-| [BattleLootPanel](../game/battle/scene/BattleLootPanel.gd) | layout | disabled 離開 while holding |
 | [BattleMovementPreview](../game/battle/scene/BattleMovementPreview.gd) | layout | route line drawn over the shared grid projection |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | layout | path／destination overlay |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | strings | 「待機」／「守候 · 尚餘N次」／「麻痺 · 無法行動」 |
@@ -495,7 +494,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 33 | 15 | 1 | 13 | 2 | 64 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 53 | 34 | 33 | 13 | 1 | 134 |
+| remake-invented | 53 | 33 | 33 | 13 | 1 | 133 |
 | n/a | 63 | 115 | 147 | 133 | 165 | 623 |
 
 <!-- provenance:end -->

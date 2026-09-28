@@ -5,10 +5,9 @@ extends Control
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 ##     (five buttons; held + bag row 0x438c84 first-empty or full swap; lift 0x436e80, pool 0x44f2d0)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
-##     (0x446060 scroll bar on template 760 WIN06BAR at WINDOW90 + (351,0), five rows)
+##     (0x446060 WIN06BAR scroll bar, five rows; 0x43a640 buttons never dim for the hand)
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#16
 ##     (frame_003／frame_006 held-item and green hover)
-##   layout: remake-invented (disabled 離開 while holding)
 ##   strings: resource-derived content/imported/hsl/global/tables/OBJ-ALL.H
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
 signal claim_requested(request: Dictionary)
@@ -132,7 +131,6 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	add_child(vitals)
 	var actor := _actor()
 	if not actor.is_empty(): vitals.show_unit(actor)
-	_refresh_buttons()
 	show()
 
 
@@ -265,16 +263,24 @@ func _build_buttons() -> void:
 	storage_button = _icon_button("storage", "BCMD15_1", "倉庫")
 	finish_button = _icon_button("exit", "BCMD14_1", "離開")
 	var epoch := _epoch
-	# 丟棄 drops only the held item (never an important one); 倉庫 stores the held item; 離開 needs
-	# an empty hand and stores whatever is left in the pool (0x42aad0).
+	# 0x43a640 case 2: every click sounds 398 ACCEPT01 whatever the hand; the press (case 3) then
+	# does nothing where it does not apply. 丟棄 drops only the held item (never an important
+	# one); 倉庫 stores the held item; 離開 needs an empty hand and stores whatever is left in the
+	# pool (0x42aad0).
 	drop_button.pressed.connect(func():
-		if not visible or epoch != _epoch or drop_button.disabled or not holding(): return
+		if not visible or epoch != _epoch: return
+		cue_requested.emit("confirm")
+		if not holding() or bool(_catalog[str(_hand["code"])]["important"]): return
 		discard_requested.emit(_hand_request()))
 	storage_button.pressed.connect(func():
-		if not visible or epoch != _epoch or not holding(): return
+		if not visible or epoch != _epoch: return
+		cue_requested.emit("confirm")
+		if not holding(): return
 		store_requested.emit(_hand_request()))
 	finish_button.pressed.connect(func():
-		if not visible or epoch != _epoch or holding(): return
+		if not visible or epoch != _epoch: return
+		cue_requested.emit("confirm")
+		if holding(): return
 		var request := _request({"store_rest": true})
 		if accepts(request): finish_requested.emit(request))
 
@@ -293,7 +299,7 @@ func _icon_button(key: String, resource: String, caption: String) -> TextureButt
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.set_meta("caption", caption)
 	button_labels[key] = label
-	button.mouse_entered.connect(func(): if not button.disabled: label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
+	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))
 	button.mouse_exited.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE))
 	return button
 
@@ -307,17 +313,6 @@ func _row_button(at: Vector2, dimensions: Vector2) -> Button:
 		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 	add_child(button)
 	return button
-
-
-func _refresh_buttons() -> void:
-	_set_enabled(drop_button, holding() and not bool(_catalog[str(_hand["code"])]["important"]))
-	_set_enabled(storage_button, holding())
-	_set_enabled(finish_button, not holding())
-
-
-func _set_enabled(button: TextureButton, enabled: bool) -> void:
-	button.disabled = not enabled
-	button.self_modulate = Color.WHITE if enabled else Color(0.45, 0.45, 0.45)
 
 
 ## 0x436ed0: the recipient's last slot (+0x154) holds an item.
@@ -356,7 +351,6 @@ func _grab(hand: Dictionary) -> void:
 	hand_icon.show()
 	description_box.hide()
 	_rebuild_rows()
-	_refresh_buttons()
 
 
 ## Clicking the list while holding a pool item puts it back into the pool (0x44f2d0); a lifted bag
@@ -366,7 +360,6 @@ func cancel() -> void:
 	_hand = {}
 	hand_icon.hide()
 	_rebuild_rows()
-	_refresh_buttons()
 	cue_requested.emit("put_down")
 
 

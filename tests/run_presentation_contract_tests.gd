@@ -790,9 +790,14 @@ func inventory_contracts() -> void:
 	scene.item_panel.rows.get_child(0).pressed.emit()
 	check(scene.item_panel.page == "target", "selection must precede recipient confirmation")
 	scene.item_panel.cancel()
-	check(scene.item_panel.page == "inventory" and scene.play_loop == before, "target cancellation returns to the inventory without spending")
+	# 0x444a5c..0x444a94: the cancelled use pick puts the held item back first-empty (0x436e30),
+	# the end of the compacted bag, and reopens the use window without spending the action.
+	var use_cancelled: Dictionary = scene.play_loop.duplicate(true)
+	var bag_start: Array = BattlePlayLoop.unit(before, "leonard")["inventory"].filter(func(code): return int(code) != 0)
+	var bag_use_cancelled: Array = BattlePlayLoop.unit(use_cancelled, "leonard")["inventory"].filter(func(code): return int(code) != 0)
+	check(scene.item_panel.page == "inventory" and bag_use_cancelled == bag_start.slice(1) + bag_start.slice(0, 1) and use_cancelled["turn_queue"] == before["turn_queue"] and BattlePlayLoop.unit(use_cancelled, "leonard")["hp"] == 10, "target cancellation returns the item to the end of the bag and reopens the inventory without spending")
 	scene.menus.use_inventory_item("241", "leonard")
-	check(scene.play_loop == before, "stale target callback cannot heal after cancellation")
+	check(scene.play_loop == use_cancelled, "stale target callback cannot heal after cancellation")
 	scene.item_panel.cancel()
 	check(scene.item_panel.page == "commands", "nested cancel returns to the item submenu")
 	scene.item_panel.menu._process(0.25)
@@ -801,7 +806,7 @@ func inventory_contracts() -> void:
 	scene.item_panel.cancel()
 	# 0x436e80 then 0x436e30: the cancelled pick goes back first-empty, the end of the compacted bag.
 	var put_back: Dictionary = scene.play_loop.duplicate(true)
-	var bag_before: Array = BattlePlayLoop.unit(before, "leonard")["inventory"].filter(func(code): return int(code) != 0)
+	var bag_before: Array = BattlePlayLoop.unit(use_cancelled, "leonard")["inventory"].filter(func(code): return int(code) != 0)
 	var bag_after: Array = BattlePlayLoop.unit(put_back, "leonard")["inventory"].filter(func(code): return int(code) != 0)
 	check(bag_after == bag_before.slice(1) + bag_before.slice(0, 1), "a cancelled drop pick goes back to the end of the bag")
 	scene.menus.discard_inventory_item("241")

@@ -628,8 +628,14 @@ func _return_hand() -> void:
 	hand_return_requested.emit(held_index, held_code)
 
 
-## BattleSceneMenus after a committed put-back: the hand is empty, the item is last in the bag.
+## BattleSceneMenus after a committed put-back: the hand is empty, the item is last in the bag
+## (the use pick's cancel reopens the use window instead).
 func hand_item_returned(unit: Dictionary) -> void:
+	if page == "target":
+		source_unit = unit.duplicate(true)
+		_show_list(operation)
+		BattlePanelMotion.attach(self).slide_in()
+		return
 	hand_item_dropped(unit)
 	ui_sound_requested.emit("put_down")
 
@@ -669,9 +675,10 @@ func cancel() -> void:
 		# 0x444bff: right click on the giver's window ends the session.
 		give_finished.emit(give_revision)
 	elif page == "target":
-		# 0x444a5c: right click returns the held item (0x436e30) and reopens the use window (state 102).
-		_show_list(operation)
-		BattlePanelMotion.attach(self).slide_in()
+		# 0x444a5c..0x444a94: right click puts the held item (lifted out of its row by the pick,
+		# 0x437020) back first-empty (0x436e30) — the bag's end — and reopens the use window
+		# (state 102), silently; BattleSceneMenus.return_held_item commits it.
+		hand_return_requested.emit(selected_index, int(selected_item))
 	elif page == "hand" and held_code != 0:
 		# 0x438868: right click puts the held item back (first empty) and keeps the window.
 		_return_hand()

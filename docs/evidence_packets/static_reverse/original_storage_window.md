@@ -92,6 +92,7 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 - `game/sim/PartyStorageRules.gd`：`hsl_party_storage.v1` 两表（important／normal，[{code, qty}]），`put` 同 code 叠数、`take` 拒重要物；存在 carry.loop.party_storage，`CampaignCarryRules` 的 loop 键让它随 carry 跨场与存档，旧 carry 读作空。
 - `PartyEquipmentRules.hand_action`：place（满包互换，换出物成散件手持）／store／retrieve（须空手）／drop（拒重要）／use（`ItemUseRules.prepare`，拒永久与属性类）／equip（外来或散件先放进该成员背包再 `change`，换下的旧件进手）／lift（拿起即离包，`0x436e80`）／unequip（空手卸下进手，`0x437020`；满包仍按 `change` 拒）／back（放回当前成员首空格；满包时散件回倉庫）。
 - `TownShopScreen.gd`：换人不清手持；商店六钮都可按，当前页画暗；裝備 页（10）右板六槽、倉庫 页（7）WINDOW90 列表（数量右对齐）；手势发 `hand_requested`，整理裝備由 `PartyEquipmentScreen` 结算、商店由 `TownRuntime.shop_hand` 结算后写回 carry；商店散件点货表由 `TownRuntime.shop_sell_hand` 卖出。
+- `TownShopScreen._build_list`：商店货表与倉庫页列表同是 `0x414c00`，首帧（`0x414c3e` 窗标志 0x20000000，不看商店标志）挂 `0x446060(win, 760, 151, 152, 153, 宽−24, 0, 0, 0, 5, 0x414af0)`——与獲得物品窗同一个 `BattleSkillScrollBar(LIST_AT, "WIN06BAR", 5, 351)`（箭头松开 ±1、槽点翻 5 行、拖动；不超过 5 行不出现）；滚动只换行不重建整页（static-derived）。键掩码未读，不接键。
 - `TownShopScreen.press_button`：当前页按钮不响应；其余按下放 ACCEPT01（`interface_audio/confirm.wav`＝398）再走按下分派；←／→ 键按 上一位／下一位（键位对应 0x10000／0x20000 取自状态审计复核）。
 - `TownShopScreen.gd` 滑动：`slide_in_step`＝`0x45e882`、`slide_out_step`＝`0x45e80d`（单轴）；部件分边按节点：`Vitals`（WINDOW10 与 HP／MP／ST）自上，`Button_`／`Caption_` 自下，其余中心 x<252 自左、否则自右；说明框、消息板、手持不滑；关窗快照挂在宿主层之上的 CanvasLayer。
 - `game/sim/PartyEquipmentRules.gd` `change`：与 `BattlePlayLoop.change_equipment` 同序，去掉战斗阶段门与行动结算；被拒物留在手上、无消息；右键／Esc 先放回手上物再关窗。

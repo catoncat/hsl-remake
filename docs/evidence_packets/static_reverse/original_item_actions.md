@@ -8,7 +8,7 @@
 - 原版用药：模式4 从使用者格泛洪一格（大体型两格），可对自己用，敌方／NPC 格被挡；无 HP／MP／状态资格检查，满值照用并消耗一件，回复量夹到 0 浮出 0；AI 用药只看阈值与状态 mask（static-derived）。
 - 原版裝備／丟棄窗：mode4／5 同一持物窗（`0x43b7fd`），空手点背包格拿起、持物点格放回首空格；持物点装备板槽装上、旧装备进手，空手点槽卸下进手；mode5 多一个 丟棄 钮（中心 (285,387)），只清非重要持物；右键先放回持物、空手才关窗回道具子环；持物且指针在装备板上时左栏改显屬性页，离板回道具页（`0x439a0f`）；无确认页、无饰品选位置页（static-derived）。
 - 重制：`InventoryRules.discard_error/discard`、`ItemUseRules`、`ItemResolutionRules`、`game/sim/loop/BattleLoopInventory.gd`；丢弃与换装免费并保留当前行动；`BattleItemPanel` 裝備／丟棄 走同一持物窗，持物记所持背包格，行里即按删格收拢显示，装上／卸下／丢弃／放回各提交一次 PlayLoop 命令（static-derived）。
-- 差异：用药取消（`0x444a5c` 首空归还）重制仍回原格；重要物品不附加给予限制；差异清单 `item-use-rules`（static-derived）。
+- 差异：重要物品不附加给予限制；差异清单 `item-use-rules`（static-derived）。用药选目标时右键取消已照 `0x444a5c` 首空归还（收拢后的末尾）并重开道具窗，无音。
 
 ## 证据
 
@@ -77,6 +77,7 @@ AI 用药：
 - `game/sim/loop/BattleLoopInventory.gd` 的 `discard_item`：只提交库存，保留行动与可撤销移动；面板对重要物品置灰并说明，旧回调被版本检查拒绝。
 - `game/sim/ItemUseRules.gd`、`game/sim/ItemResolutionRules.gd`：用药目标与夹紧；`game/battle/scene/BattleItemText.gd` 浮 0。
 - `game/battle/scene/BattleItemPanel.gd` `_show_hand_window`：裝備（state7）与丟棄（state8）同一窗，左 WINDOW20 背包、右 `BattleEquipmentView`（`accepts_empty_slots`），丟棄 时 (285,387) 加 BCMD08_1 钮；`held_index`／`held_code` 为持物草稿（行里不画被拿起的格），拿起只改所持格并发 take_up 音；放下（点背包任一行或右键）发 `hand_return_requested`，`BattleSceneMenus.return_held_item` 提交 `BattlePlayLoop.return_held_item`（`InventoryRules.put_back`：删格收拢后首空格，即末尾；不耗行动），put_down 音。
+- 用药取消：选目标页右键／Esc 发 `hand_return_requested(selected_index, code)`，`BattleSceneMenus.return_held_item` 同样提交 `BattlePlayLoop.return_held_item`（`put_back`：删格收拢后放首空格，即末尾；不耗行动），`hand_item_returned` 在 target 页重开使用窗并滑入，不发音（`0x444a5c..0x444a94` 只调 `0x436e30`、置 state 102）。
 - 装上：持物点槽发 `equipment_requested(槽, held_index, held_code)`，`BattleSceneMenus.change_equipment` 提交 `BattlePlayLoop.change_equipment`，窗不关，`hand_equipment_changed` 把换下的装备（规则放进的首空格）拿到手上；被拒则手不变、无音。卸下：空手点有物槽发 `(槽, -1, 0)`，卸下物同样进手。
 - 左栏：`_update_attribute_page` 每帧按 `0x439a0f` 规则切 AttributePage（WINDOW21＋九项现值，取法同状态页）——指针离板回道具页，持物在板上换屬性页，空手在板上不变；新开窗先是屬性页（`0x43ac10` 建根 +0x94 = 4）。
 - 丢弃：丟棄 钮对非重要持物发 `drop_requested`，`BattleSceneMenus.discard_inventory_item` 提交 `discard_item` 后窗不关、手清空；重要物不发、留在手上。右键：持物放回（同上，落末尾）；空手回道具子环。
