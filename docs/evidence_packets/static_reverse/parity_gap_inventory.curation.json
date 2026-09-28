@@ -1445,16 +1445,16 @@
     },
     {
       "id": "effect-sound-timing",
-      "difference": "特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计",
-      "original": "效果对象命令程序已读，运动等待与混音通道未读",
+      "difference": "特效声音已按原生执行记录排程、混音照原版 9 通道满则丢新声；剩角度环／龙卷等图案插入与无轨迹对象仍按静态表（無想冥殺 的环声因多段结算等待未接入而保留静态 2／3 tick），且 9 个声部只给特效播放器用、不与其它声音共用",
+      "original": "对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
       ],
-      "remake": "SkillEffectScriptPlayer 的 program_sounds",
+      "remake": "SkillEffectScriptPlayer._insert_sounds 的图案插入／无轨迹后备",
       "remake_code": [
         "game/battle/scene/SkillEffectScriptPlayer.gd"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "rare",
       "effort": "S",
       "category": "音频"
@@ -2517,7 +2517,7 @@
     "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型": {
       "item": "carry-model"
     },
-    "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|rows marked provisional": {
+    "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|patterned inserts and untracked objects keep the static tables": {
       "item": "effect-sound-timing"
     },
     "scope:docs/evidence_packets/static_reverse/original_enemy_turn.md|provisional|全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍）": {
@@ -2641,17 +2641,9 @@
       "item": "effect-sound-timing",
       "text": "相 1 等 `0x43bf30(obj,0)`（未读，按 0），相 2 倒数 120 → `0x415d40`"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#6e1ffa198f": {
-      "item": "effect-sound-timing",
-      "text": "声部从 4 增到 `SOUND_VOICES = 8`（remake-invented：原混音器通道数未读），最老的先被截。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#c757903751": {
       "item": "effect-sound-timing",
       "text": "缩放 16→8（每 tick 0.5，16）→1（每 tick 0.234，30）、动画等待（`0x45e5a6`，未读，按 0）、倒数 40 → `0x415d40`"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#cbfc1d443e": {
-      "item": "effect-sound-timing",
-      "text": "**叠声**：原版同 tick 多实例是否各占一个通道（`0x45a390` flags 0 走 `0x4593a0` 分配通道，未读完）；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#34226366cb": {
       "item": "unconsumed-display-flags",

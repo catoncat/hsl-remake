@@ -7,7 +7,7 @@
 - 原版每个效果对象由自己的 effProc* 程序每 tick 改位置、换帧、改混合层级与缩放，许多程序还会抛出子对象（火花、子弹、残影）；效果对象一律加法混合（static-derived）。
 - 39 行法术引用的 144 个效果对象全部连同子对象逐 tick 原指令执行（84 个 effProc 程序全部复原；四个运行时助手见 §四个运行时助手），得到 `content/generated/hsl/skills/effect_motion.json`；重制 `game/battle/scene/EffectObjectMotion.gd`／`SkillEffectScriptPlayer.gd` 按它逐帧画整棵树（static-derived）。
 - 幻火（effCode23）的独立 Python 模型与原生轨迹逐样本相等，与原版录屏节拍一致（[runtime 包](../runtime_observations/effect_motion/README.md)）；幻火是一团光从目标头顶 88 px 处摇摆落下，不是从施法者飞向目标（runtime-measured）。
-- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）与屏幕波纹（FireBGSet／IconBGSet1）已记入轨迹并由重制画出（见「重制接线」），效果后镜头滑回与波纹层位是重制读法，逐条见边界（provisional）；声音排程未切到原生结果（`effect-sound-timing`）。
+- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）与屏幕波纹（FireBGSet／IconBGSet1）已记入轨迹并由重制画出（见「重制接线」），效果后镜头滑回与波纹层位是重制读法，逐条见边界（provisional）；声音排程已切到原生结果（[特效对象声音](original_effect_object_sounds.md) §4）。
 
 ## 证据
 
@@ -122,7 +122,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 声音：原生结果与静态计数
 
-原生执行同时记录了每棵树放的全部声音。与 `special_effect_scripts.json` 的 `program_sounds`（静态计数）相比：FireBigHead、MindUBrkShp1..4、OtherGlass、WaterBeast 有 ±1～16 tick 的出入；MindBall、MindBeast、WaterBig1／2、WaterBigBall、WaterBigIce、OtherBBall2、WaterDrop、FireArray 的**子对象**各自放 obj_X1（原计数只看根对象，漏掉）。声音排程仍用静态计数，这些差异是 `effect-sound-timing` 的替换证据（见 [特效对象声音](original_effect_object_sounds.md)）。
+原生执行同时记录了每棵树放的全部声音。与 `special_effect_scripts.json` 的 `program_sounds`（静态计数）相比：FireBigHead、MindUBrkShp1..4、OtherGlass、WaterBeast 有 ±1～16 tick 的出入；MindBall、MindBeast、WaterBig1／2、WaterBigBall、WaterBigIce、OtherBBall2、WaterDrop、FireArray 的**子对象**各自放 obj_X1（原计数只看根对象，漏掉）。重制现按原生结果排声（每个种子变体各记一份 `sounds`），差值表见 [特效对象声音](original_effect_object_sounds.md) §4。
 
 ## 重制接线
 

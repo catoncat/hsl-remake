@@ -31,6 +31,8 @@ SCOPE = Path('content/generated/hsl/skills/special_effect_scripts.json')
 # The native effect-object tracks (hsltools.probes.effect_motion): their spawned objects draw
 # SHP members no script names.
 MOTION = Path('content/generated/hsl/skills/effect_motion.json')
+# The native objcomd.txt runs (hsltools.probes.objcomd_motion): their recorded sounds are imported too.
+OBJCOMD_MOTION = Path('content/generated/hsl/skills/objcomd_motion.json')
 OBJECTS = Path('content/imported/hsl/shared/first_skill/global.obs')
 ROOT = Path('content/imported/hsl/shared/skill_effects')
 # Story-object shapes no effect script reaches: global.obs 706 obj_Fire_Smoke, whose defProcFireSmoke
@@ -126,7 +128,14 @@ def scope_members(scope: dict) -> tuple[list[str], list[str], list[str]]:
         wav.update(row['sounds'])
     shp.update(panels)
     shp.update(STORY_SHAPES)
-    shp.update(json.loads(MOTION.read_text(encoding='utf-8'))['members'])
+    motion = json.loads(MOTION.read_text(encoding='utf-8'))
+    shp.update(motion['members'])
+    # Every sound the native runs recorded (children's obj_X1, per-variant timings, hit-run cues).
+    for row in motion['objects'].values():
+        wav.update(sound[1] for tree in [row] + row.get('variants', []) for sound in tree.get('sounds', []))
+    for name, row in json.loads(OBJCOMD_MOTION.read_text(encoding='utf-8'))['objects'].items():
+        if name in scope['objects']:
+            wav.update(sound[1] for runs in [row['sounds']] + row.get('variant_sounds', []) for sound in runs)
     return sorted(shp), sorted(panels), sorted(wav)
 
 
@@ -299,7 +308,7 @@ def check() -> None:
 class SkillEffectsTask(ScriptCheckTask):
     name = 'skill_effects'
     family = 'assets'
-    inputs = (SCOPE.as_posix(), OBJECTS.as_posix(), MOTION.as_posix())
+    inputs = (SCOPE.as_posix(), OBJECTS.as_posix(), MOTION.as_posix(), OBJCOMD_MOTION.as_posix())
     outputs = (ROOT.as_posix() + '/',)
     replaces = ()  # born after the migration: no historical command to replace
     scripts = ('tools/hsltools/assets/skill_effects.py',)

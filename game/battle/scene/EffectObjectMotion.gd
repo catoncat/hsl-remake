@@ -72,6 +72,13 @@ static func variants(object_name: String) -> int:
 	return 1 + (packet()["objects"][object_name].get("variants", []) as Array).size()
 
 
+## [frame, WAV] the variant's tree played (obj_X1 at 0x415e1a, obj_Y1／obj_X2 via 0x415d40／0x415d70／0x415d90).
+static func sounds(object_name: String, variant: int = 0) -> Array:
+	var row: Dictionary = packet()["objects"][object_name]
+	var index := variant % variants(object_name)
+	return row["sounds"] if index == 0 else row["variants"][index - 1].get("sounds", row["sounds"])
+
+
 ## Run-length pairs [value, count] → one value per frame.
 static func _expand(runs: Array) -> PackedInt32Array:
 	var values := PackedInt32Array()

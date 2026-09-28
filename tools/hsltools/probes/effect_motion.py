@@ -510,7 +510,8 @@ def execute_packet(exe: Path) -> dict:
             for variant in range(1, VARIANTS):
                 other = Machine(exe_image, templates, sound_names, metrics, variant); other.run_root(code, (0, 0))
                 encoded = {'frames': other.frame, 'instances': encode_instances(other, members)}
-                if encoded['instances'] != base and encoded not in variants:
+                if encoded['instances'] != base and all(encoded != {'frames': one['frames'], 'instances': one['instances']} for one in variants):
+                    encoded['sounds'] = [[event[0], event[3]] for event in other.events if event[1] == 'sound']
                     variants.append(encoded)
         except Unreviewed as stop:
             unrestored[name] = {'code': code, 'effect_process': entry['effect_process'], 'callee': f'{stop.callee:#x}', 'reason': str(stop)}

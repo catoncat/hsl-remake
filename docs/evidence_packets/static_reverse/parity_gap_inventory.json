@@ -4,18 +4,18 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 87,
-    "sources": 460,
+    "sources": 458,
     "sources_by_kind": {
       "provenance": 198,
-      "sentence": 93,
+      "sentence": 91,
       "scope": 71,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 50,
     "items_by_original_status": {
-      "read_complete": 26,
-      "read_partial": 43,
+      "read_complete": 27,
+      "read_partial": 42,
       "unread": 1,
       "no_original_code": 17
     },
@@ -1404,6 +1404,29 @@
       ]
     },
     {
+      "id": "effect-sound-timing",
+      "difference": "特效声音已按原生执行记录排程、混音照原版 9 通道满则丢新声；剩角度环／龙卷等图案插入与无轨迹对象仍按静态表（無想冥殺 的环声因多段结算等待未接入而保留静态 2／3 tick），且 9 个声部只给特效播放器用、不与其它声音共用",
+      "original": "对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
+      ],
+      "remake": "SkillEffectScriptPlayer._insert_sounds 的图案插入／无轨迹后备",
+      "remake_code": [
+        "game/battle/scene/SkillEffectScriptPlayer.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "音频",
+      "sources": [
+        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|audio|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|patterned inserts and untracked objects keep the static tables",
+        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#37f0c15aa3",
+        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#49ae21786e",
+        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#c757903751"
+      ]
+    },
+    {
       "id": "floater-lifetimes",
       "difference": "数字寿命已照原版读值（红字 10×位数＋34 tick；绿／蓝／MISS、EXP／$ 为 hold（至少 1 个初始化 tick）＋46 tick，每 2 tick 上 1 px；回合末最后一个数字按它的删除时刻收尾，hold 0 的绿／蓝数字 47 tick）；剩没有原字形的说明字借用 46 tick 上浮",
       "original": "defProcShowNumber（0x408580）寿命已读：kind 0 逐位 10 tick、揭完停 18、层级 16→0；kind 1–6 层级 16 停 16 tick 后每 2 tick 减 1、显示第 46 tick 删除；hold（+0xa8）期间不画，hold 归零那一 tick 只初始化即返回（0x4085eb／0x40861b），hold 0 的对象自生成起第 47 tick 删除",
@@ -1583,31 +1606,6 @@
         "provenance:game/debug/DebugPause.gd|rules|remake-invented|",
         "provenance:game/debug/DebugPause.gd|strings|remake-invented|",
         "provenance:game/debug/DebugPause.gd|timing|remake-invented|"
-      ]
-    },
-    {
-      "id": "effect-sound-timing",
-      "difference": "特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计",
-      "original": "效果对象命令程序已读，运动等待与混音通道未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
-      ],
-      "remake": "SkillEffectScriptPlayer 的 program_sounds",
-      "remake_code": [
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "音频",
-      "sources": [
-        "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|audio|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|rows marked provisional",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#37f0c15aa3",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#49ae21786e",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#6e1ffa198f",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#c757903751",
-        "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#cbfc1d443e"
       ]
     },
     {

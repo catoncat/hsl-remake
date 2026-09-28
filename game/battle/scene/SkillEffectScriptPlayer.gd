@@ -53,9 +53,11 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##     EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored)
 ##   audio: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
+##   audio: static-derived content/generated/hsl/skills/objcomd_motion.json
+##   audio: static-derived content/generated/hsl/skills/effect_motion.json
 ##   audio: provisional
-##     (a command sound behind a motion wait counted at zero wait; effect-program cues behind unrun motion —
-##     program_sounds timing provisional; SOUND_VOICES)
+##     (objects without a native track and the patterned angle／tornado inserts keep the static
+##     command_sounds／program_sounds)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
@@ -106,11 +108,11 @@ var scripts: Dictionary
 var casting: Array
 var sprites: Array[Sprite2D] = []
 var sounds: Array[AudioStreamPlayer] = []
-## Voices the timeline's cues rotate through, the oldest cut first (remake mixing: every
-## object instance sounds its own command cue — 百裂突刺's 26 thrusts — and the native
-## mixer's channel count is not read).
-const SOUND_VOICES := 8
-var next_sound := 0
+## The mixer's channels: 0x42f164 opens 9 (0x459b60(9, 20, …) → [0x4c23d4]) and every sound
+## the object programs play (0x42c180 → 0x45a390, flags 0) takes the first channel that is empty
+## or has stopped (0x4593a0); with all 9 sounding the new sound is dropped — no cut, no
+## same-WAV merge, so each object instance sounds its own cue (百裂突刺's 26 thrusts).
+const SOUND_VOICES := 9
 var textures: Dictionary = {}
 var materials: Dictionary = {}
 ## Track members hsl.pak lacks → the series member drawn instead (`_native_member`).
@@ -301,7 +303,7 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 			var count := number(args[3])
 			for index in range(count):
 				var angle := TAU * index / float(maxi(count, 1))
-				var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index)
+				var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index, -1, true)
 				if event.is_empty(): continue
 				event["motion"] = "radial"
 				event["direction"] = Vector2(cos(angle), sin(angle))
@@ -320,7 +322,7 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 		"aniInsertTornadoObject":
 			for index in range(number(args[10])):
 				var centre := Vector2(number(args[1]), number(args[2]) + number(args[3]) * index)
-				var event := _insert(timeline, data, phase, str(args[0]), centre, cursor)
+				var event := _insert(timeline, data, phase, str(args[0]), centre, cursor, -1, true)
 				if event.is_empty(): continue
 				event["motion"] = "spin"
 				event["centre"] = centre
@@ -522,10 +524,10 @@ static func _mark_random(timeline: Dictionary, first: int) -> void:
 ## `effect` phase the position is a displacement and the object's hold and fade are settled by
 ## compile_effect once the script's length is known. The object's own sounds are scheduled
 ## first (`_insert_sounds`), so an object whose frames cannot be drawn still sounds.
-static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1) -> Dictionary:
+static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1, patterned: bool = false) -> Dictionary:
 	var object: Dictionary = data["objects"].get(object_name, {})
 	var first_sound: int = timeline["events"].size()
-	_insert_sounds(timeline, data, phase, object, tick, sound_tick)
+	_insert_sounds(timeline, data, phase, object_name, object, tick, sound_tick, patterned)
 	for index in range(first_sound, timeline["events"].size()):
 		timeline["events"][index]["source_tick"] = tick
 	var frames: Array = []
@@ -549,36 +551,53 @@ static func _insert(timeline: Dictionary, data: Dictionary, phase: String, objec
 	return event
 
 
-## The sounds an inserted object makes by itself:
-## - an effect object's obj_X1 WAV (defProcEffectProcess1 plays template +0x10 as the object
-##   starts, 0x415e1a) once per instruction, at `sound_tick` (the instruction's cursor), and its
-##   obj_Y1／obj_X2 WAVs (manifest `program_sounds`: its effProc* program plays +0x44／+0x46 at
-##   its own events — 0x415d40／0x415d70／0x415d90) at its start plus the statically read delay,
-##   one cue per WAV and tick — 烈蝕水彈's water ball fires SHOOT002 then bursts WATER008;
-## - a special object's objcomd.txt command sounds (manifest `command_sounds`; its obj_Data7
-##   program runs from the object's insertion): objmPlaySound (0x4059b7) always and
-##   objmPlayHitSound (0x4059cf, hit roll under the hit rate) only on a hit, once per
-##   instance at its own tick plus the objmDelay ticks ahead of it, as each object's program
-##   calls the sound wrapper itself — 氣刃斬's impact bursts obj_Special01_03 (command 2) play
-##   WAV\BOMB0017.WAV as they appear, 百裂突刺's thrusts one ATTACK17 swish each.
-static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object: Dictionary, tick: int, sound_tick: int) -> void:
+## The sounds an inserted object makes by itself, from the native runs when the object has a
+## track (each cue at the instance's tick plus the frame the run played it, the variant counted
+## per object over the timeline's insertions):
+## - an effect object (effect_motion.json `sounds`): obj_X1 as it starts (0x415e1a) and the
+##   obj_Y1／obj_X2 its effProc* program plays at its own events (0x415d40／0x415d70／0x415d90),
+##   with every child it throws — 烈蝕水彈's WaterBig1 throws six balls (SHOOT002 each, WATER002
+##   as they land) and bursts WATER008;
+## - a special object (objcomd_motion.json `sounds`, hit run): objmPlaySound (0x4059b7) always
+##   and objmPlayHitSound (0x4059cf, `hit_only`) only on a hit — 氣刃斬's impact bursts
+##   obj_Special01_03 play WAV\BOMB0017.WAV as they appear.
+## Objects without a track, and the patterned inserts that keep their angle／tornado geometry
+## instead of the track (`patterned`: 無想冥殺's ring, whose recorded cues would land after the
+## remake's teardown because the aniProcessHitMissMulti wait on the ring is not run), keep the
+## static tables: obj_X1 once per instruction at `sound_tick`, `program_sounds` and
+## `command_sounds` at the insertion plus the read delay.
+static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, object: Dictionary, tick: int, sound_tick: int, patterned: bool = false) -> void:
 	var cues: Array = []
-	if phase == "effect" and str(object.get("insert_sound", "")) != "":
-		var key := str(object["insert_sound"]) + "@" + str(sound_tick)
-		if not timeline["sound_cues"].has(key):
-			timeline["sound_cues"].append(key)
-			cues.append({"member": str(object["insert_sound"]), "tick": sound_tick})
-	if phase == "effect":
-		for sound in object.get("program_sounds", []):
-			var at := tick + int(sound["delay_ticks"])
-			var key := str(sound["member"]) + "@" + str(at)
+	if not timeline.has("sound_order"):
+		timeline["sound_order"] = {}
+	var order: int = timeline["sound_order"].get(object_name, 0)
+	if phase == "effect" and EffectObjectMotion.tracked(object_name):
+		timeline["sound_order"][object_name] = order + 1
+		for sound in EffectObjectMotion.sounds(object_name, order):
+			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
+	elif phase != "effect" and not patterned and ObjcomdMotion.tracked(object_name):
+		timeline["sound_order"][object_name] = order + 1
+		for sound in ObjcomdMotion.sounds(object_name, order):
+			if bool(sound[2]) and not bool(timeline["hit"]):
+				continue
+			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
+	else:
+		if phase == "effect" and str(object.get("insert_sound", "")) != "":
+			var key := str(object["insert_sound"]) + "@" + str(sound_tick)
 			if not timeline["sound_cues"].has(key):
 				timeline["sound_cues"].append(key)
-				cues.append({"member": str(sound["member"]), "tick": at})
-	for sound in object.get("command_sounds", []):
-		if bool(sound["hit_only"]) and not bool(timeline["hit"]):
-			continue
-		cues.append({"member": str(sound["member"]), "tick": tick + int(sound["delay_ticks"])})
+				cues.append({"member": str(object["insert_sound"]), "tick": sound_tick})
+		if phase == "effect":
+			for sound in object.get("program_sounds", []):
+				var at := tick + int(sound["delay_ticks"])
+				var key := str(sound["member"]) + "@" + str(at)
+				if not timeline["sound_cues"].has(key):
+					timeline["sound_cues"].append(key)
+					cues.append({"member": str(sound["member"]), "tick": at})
+		for sound in object.get("command_sounds", []):
+			if bool(sound["hit_only"]) and not bool(timeline["hit"]):
+				continue
+			cues.append({"member": str(sound["member"]), "tick": tick + int(sound["delay_ticks"])})
 	for cue in cues:
 		if not data["sounds"].has(cue["member"]):
 			push_error("skill_effects manifest has no sound " + str(cue["member"]))
@@ -995,14 +1014,13 @@ func _sprite(index: int) -> Sprite2D:
 	return sprites[index]
 
 
+## 0x4593a0: the first channel that is empty or has stopped takes the sound; none free → dropped.
 func _play(member: String) -> void:
-	var player := sounds[next_sound]
-	next_sound = (next_sound + 1) % sounds.size()
-	# A voice still sounding is cut before its stream changes: swapping the stream of a
-	# playing AudioStreamPlayer leaves the old playback referenced until exit.
-	player.stop()
-	player.stream = load(manifest["sounds"][member]["res_path"])
-	player.play()
+	for player in sounds:
+		if not player.playing:
+			player.stream = load(manifest["sounds"][member]["res_path"])
+			player.play()
+			return
 
 
 func clear() -> void:

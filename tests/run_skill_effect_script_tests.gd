@@ -8,6 +8,7 @@ const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScri
 const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
+const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
 var manifest: Dictionary
 var scope: Dictionary
 var motion: Dictionary
@@ -80,7 +81,7 @@ func manifest_contracts() -> void:
 		check(object["zoom"].size() == 2 and float(object["zoom"][0]) != 0.0 and float(object["zoom"][1]) != 0.0, "every object carries its obj_ZoomX／Y scale (obj_Special43_06 mirrors with −1): " + name)
 		check(str(object["insert_sound"]) == "" or manifest["sounds"].has(object["insert_sound"]), "an obj_X1 insertion WAV is imported: " + name)
 	check(manifest["objects"]["obj_Effect_FireBomb"]["zoom"] == [1.25, 1.25] and manifest["objects"]["obj_Effect_AirBlade1"]["insert_sound"] == "WAV\\WIND0001.WAV" and manifest["objects"]["obj_Effect_AirBlade1"]["effect_process"] == "effProcFade", "obj_Effect_FireBomb reads engZOOM 0x14000 as 1.25; obj_Effect_AirBlade1 plays WIND0001 on insertion and names its unrestored effProcFade program")
-	check(manifest["totals"]["frames"] == manifest["frames"].size() and manifest["totals"]["missing_members"] == manifest["missing_members"].size() and manifest["totals"]["sounds"] == 124 and manifest["totals"]["objects"] == 365, "totals mirror the frame／missing sets; 124 sounds (111 script／obj_X1 + 7 objcomd-only + 6 effect-program-only), 365 objects (221 special + 144 magic)")
+	check(manifest["totals"]["frames"] == manifest["frames"].size() and manifest["totals"]["missing_members"] == manifest["missing_members"].size() and manifest["totals"]["sounds"] == 130 and manifest["totals"]["objects"] == 365, "totals mirror the frame／missing sets; 130 sounds (111 script／obj_X1 + 7 objcomd-only + 6 effect-program-only + 6 only in the native runs' records), 365 objects (221 special + 144 magic)")
 
 
 ## The tracked objects whose native tree draws `member`.
@@ -267,8 +268,8 @@ func qi_blade_timeline() -> void:
 
 
 ## Every special object's objcomd.txt command sounds (manifest `command_sounds`) reach the
-## timeline of every script row that inserts it, on its own insertion tick plus the objmDelay
-## ticks ahead of the cue; objmPlayHitSound only on a hit; an object whose frames cannot be
+## timeline of every script row that inserts it, on its own insertion tick plus the frame the
+## native run played it (objcomd_motion.json `sounds`, per variant); objmPlayHitSound only on a hit; an object whose frames cannot be
 ## drawn still sounds. 39 objects in 24 rows carry command sounds.
 func object_command_sounds() -> void:
 	var player := SkillEffectScriptPlayer.new()
@@ -301,18 +302,28 @@ func object_command_sounds() -> void:
 					var key := str(event["member"]) + "@" + str(event["tick"])
 					cues[key] = int(cues.get(key, 0)) + 1
 			var expected := 0
+			var order := {}
 			for event in timeline["events"]:
 				if event["kind"] != "object": continue
-				for sound in manifest["objects"][event["object"]]["command_sounds"]:
-					if bool(sound["hit_only"]) and not hit:
+				var recorded: Array = []
+				if str(event["motion"]) in ["radial", "spin"]:
+					# Patterned inserts keep their geometry and the static command sounds.
+					for sound in manifest["objects"][event["object"]]["command_sounds"]:
+						recorded.append([int(sound["delay_ticks"]), str(sound["member"]), bool(sound["hit_only"])])
+				else:
+					var variant: int = order.get(event["object"], 0)
+					order[event["object"]] = variant + 1
+					recorded = ObjcomdMotion.sounds(event["object"], variant)
+				for sound in recorded:
+					if bool(sound[2]) and not hit:
 						continue
-					var at := int(event["tick"]) + int(sound["delay_ticks"])
+					var at := int(event["tick"]) + int(sound[0])
 					# 0x4029a2／0x404ada: the object is deleted at its page's teardown, its program with it.
 					if at >= int(timeline["release_tick"] if event["phase"] == "attack" else timeline["complete_tick"]):
 						continue
 					expected += 1
-					var key := str(sound["member"]) + "@" + str(at)
-					check(int(cues.get(key, 0)) > 0, "%s %s: %s sounds at insertion %d + %d" % [skill_id, "hit" if hit else "miss", sound["member"], int(event["tick"]), int(sound["delay_ticks"])])
+					var key := str(sound[1]) + "@" + str(at)
+					check(int(cues.get(key, 0)) > 0, "%s %s: %s sounds at insertion %d + %d" % [skill_id, "hit" if hit else "miss", sound[1], int(event["tick"]), int(sound[0])])
 					cues[key] = int(cues.get(key, 0)) - 1
 			if hit and expected > 0: row_has = true
 		if row_has: rows += 1
@@ -358,20 +369,25 @@ func effect_program_sounds() -> void:
 			if event["kind"] == "sound":
 				cues[str(event["member"]) + "@" + str(event["tick"])] = true
 		var expected := 0
+		var order := {}
 		for event in timeline["events"]:
 			if event["kind"] != "object": continue
-			for sound in manifest["objects"][event["object"]]["program_sounds"]:
-				expected += 1
-				var at := int(event["tick"]) + int(sound["delay_ticks"])
-				check(cues.has(str(sound["member"]) + "@" + str(at)) and at <= int(timeline["complete_tick"]), "%s: %s (%s) sounds at start %d + %d inside the clip" % [skill_id, sound["member"], sound["field"], int(event["tick"]), int(sound["delay_ticks"])])
+			var variant: int = order.get(event["object"], 0)
+			order[event["object"]] = variant + 1
+			if manifest["objects"][event["object"]]["program_sounds"].is_empty(): continue
+			expected += 1
+			for sound in EffectObjectMotion.sounds(event["object"], variant):
+				var at := int(event["tick"]) + int(sound[0])
+				check(cues.has(str(sound[1]) + "@" + str(at)) and at <= int(timeline["complete_tick"]), "%s: %s sounds at start %d + native frame %d inside the clip" % [skill_id, sound[1], int(event["tick"]), int(sound[0])])
 		if expected > 0: rows += 1
 	check(rows == 8, "8 spells play effect-program cues: %d" % rows)
-	# 烈蝕水彈 (effCode10): obj_Effect_WaterBig1 enters at 40, fires SHOOT002 (+0x46) then bursts WATER008 (+0x44).
+	# 烈蝕水彈 (effCode10): obj_Effect_WaterBig1 enters at 40; its native run throws six balls every
+	# 16 ticks from frame 96 (SHOOT002 each), fires the seventh at 238 (+0x46) and bursts WATER008 at 257 (+0x44).
 	var ball: Dictionary = player.compile_row("magic:magicWATER:magicCode03", true, 7)
-	var ticks := {}
-	for event in ball["events"]:
-		if event["kind"] == "sound": ticks[str(event["member"])] = int(event["tick"])
-	check(ticks.get("WAV\\SHOOT002.WAV", -1) == 40 + 217 and ticks.get("WAV\\WATER008.WAV", -1) == 40 + 242, "烈蝕水彈: SHOOT002 at 257, WATER008 at 282: %s" % str(ticks))
+	var big: Array = ball["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Effect_WaterBig1")
+	var shots: Array = ball["events"].filter(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\SHOOT002.WAV").map(func(event): return int(event["tick"]))
+	var bursts: Array = ball["events"].filter(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\WATER008.WAV").map(func(event): return int(event["tick"]))
+	check(big.size() == 1 and int(big[0]["tick"]) == 40 and shots.has(40 + 96) and shots.has(40 + 238) and bursts == [40 + 257], "烈蝕水彈: SHOOT002 from 136 to 278, WATER008 at 297: %s %s" % [str(shots), str(bursts)])
 	player.free()
 
 
@@ -424,7 +440,7 @@ func geometry_and_flags() -> void:
 
 
 ## 風刃 (effCode16): two random wave batches at 0／4, the blades at 54／64 — the last insertion
-## is the impact mark — each object's obj_X1 WAV once per instruction; every object now plays
+## is the impact mark — each object instance's obj_X1 WAV as it starts (0x415e1a); every object now plays
 ## its native track, so a clip completes when the script's waits and the last tree are done.
 ## 幻火's bombs carry the engZOOM 1.25 scale; 極 plays at the screen centre; 治癒之水 does not dim.
 func magic_timelines() -> void:
@@ -436,12 +452,13 @@ func magic_timelines() -> void:
 	check(objects.size() == 14 and objects.filter(func(event): return event["object"] == "obj_Effect_AirWave1").size() == 6 and objects.filter(func(event): return event["object"] == "obj_Effect_AirBlade2" and event["tick"] == 64 and event["position"] == Vector2.ZERO).size() == 1, "6 + 6 waves, then the two blades at the origin")
 	check(objects.filter(func(event): return event["object"] == "obj_Effect_AirWave1").all(func(event): return (event["position"] as Vector2).x >= -4.0 and (event["position"] as Vector2).x <= 5.0 and (event["position"] as Vector2).y >= -17.0 and (event["position"] as Vector2).y <= 18.0), "effInsertRandomObject folds rand(x range 10) into −4..5 and rand(y range 36) into −17..18 around the displacement (0x4238b1)")
 	var sounds: Array = wind["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return [int(event["tick"]), str(event["member"])])
-	check(sounds == [[0, "WAV\\WIND0002.WAV"], [4, "WAV\\WIND0002.WAV"], [54, "WAV\\WIND0001.WAV"], [64, "WAV\\WIND0001.WAV"]], "the objects' obj_X1 WAVs play once per insertion instruction: %s" % str(sounds))
+	var starts: Array = objects.map(func(event): return [int(event["tick"]), str(manifest["objects"][event["object"]]["insert_sound"])])
+	check(sounds == starts and sounds.size() == 14, "each object instance plays its obj_X1 WAV as it starts: %s" % str(sounds))
 	var fire: Dictionary = player.compile_row("magic:magicFIRE:magicCode01", true, 1)
 	var bombs: Array = fire["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Effect_FireBomb")
 	check(fire["impact_tick"] == 100 and bombs.size() == 6 and bombs.all(func(event): return event["scale"] == Vector2(1.25, 1.25) and int(event["tick"]) >= 50 and int(event["tick"]) <= 50 + 5 * 23), "幻火: 6 bombs at the engZOOM 1.25 scale from tick 50, each at most 23 ticks after the previous (delay range 24 accumulates), impact on the FireBomb2 insertion at 100")
 	var water: Dictionary = player.compile_row("magic:magicWATER:magicCode01", true, 1)
-	check(water["impact_tick"] == 110 and water["complete_tick"] == _derived_complete(water, 230) and water["events"].filter(func(event): return event["kind"] == "sound").size() == 1, "水剎: WATER005 once, impact on the last drop batch at 110, complete after the 230 waits and the last drop's track")
+	check(water["impact_tick"] == 110 and water["complete_tick"] == _derived_complete(water, 230) and water["events"].filter(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\WATER005.WAV").size() == 1, "水剎: WATER005 once, impact on the last drop batch at 110, complete after the 230 waits and the last drop's track")
 	var heal: Dictionary = player.compile_row("magic:magicWATER:magicCode06", true, 1)
 	check(heal["impact_tick"] == 12 and not heal["dim"] and heal["events"].filter(func(event): return event["kind"] == "object").size() == 40, "治癒之水: 32 + 4 + 4 stars, impact on the last batch at 12, no map dimming")
 	var supreme: Dictionary = player.compile_row("magic:magicOTHER:magicCode03", true, 1)

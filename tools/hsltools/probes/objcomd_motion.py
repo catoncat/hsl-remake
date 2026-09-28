@@ -109,13 +109,33 @@ def story_rows(exe_image, reader, obs: bytes, defines, sounds, metrics, words, m
         rows[name] = {'code': code, 'command_code': command, 'point': list(em.ORIGIN), 'level_obs': story_obs(level),
                       'frames': max(machine.frame for machine in runs), 'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
                       'variants': variants,
-                      'sounds': [[event[0], event[3]] for event in runs[0].events if event[1] == 'sound']}
+                      'sounds': runs[0].heard()}
     return rows, digests
+
+
+# objmPlayHitSound (op 52, 0x4059cf) sounds only when the hit roll [0x4c1418] is below the hit rate
+# [0x4c6f58] (0x4059e0); its call to the sound player returns to 0x4059f3, objmPlaySound's (op 51)
+# to 0x4059c7. The hit rate is written by the defender insert 0x406eb0 (0x406f81), the roll by
+# aniProcessHitMiss (0 = hit). The same comparison gates the hit-only throws at 0x405434／0x405495,
+# so the hit run only contributes sounds: the tracks stay the miss run's.
+HIT_ROLL, HIT_RATE = 0x4c1418, 0x4c6f58
+HIT_SOUND_RETURN = 0x4059f3
 
 
 class Machine(em.Machine):
     reviewed = REVIEWED
     processes = (em.EFFECT_PROCESS, em.SHADOW_PROCESS, OBJECT_MOVE, OBJECT_FADE)
+
+    def _guard(self, m, at, size, data) -> None:
+        if at == em.SOUND:
+            from unicorn.x86_const import UC_X86_REG_ESP
+            self.sound_returns = getattr(self, 'sound_returns', []) + [self.read(m.reg_read(UC_X86_REG_ESP), '<I')]
+        super()._guard(m, at, size, data)
+
+    def heard(self) -> list[list]:
+        """[frame, WAV, hit_only] of every sound the tree played, in call order."""
+        played = [event for event in self.events if event[1] == 'sound']
+        return [[event[0], event[3], caller == HIT_SOUND_RETURN] for event, caller in zip(played, getattr(self, 'sound_returns', []))]
 
 
 def command_words(templates: 'em.Templates') -> dict[int, list[int]]:
@@ -155,7 +175,8 @@ def seed(variant: int) -> tuple[int, int]:
     return ((em.SEED[0] + 0x9e3779b9 * variant) & 0xffffffff, (em.SEED[1] ^ (0x7f4a7c15 * variant)) & 0xffffffff)
 
 
-def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[int, int], variant: int, screen: bool = False) -> Machine:
+def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[int, int], variant: int, screen: bool = False,
+        hit: bool = False) -> Machine:
     """screen: point is a SPECIAL script point. aniInsertObject 0x403989 creates the object at point + camera
     (0x4c091c／0x4c0920) and the off-screen tests subtract the camera again, so the root runs with the camera
     at (0,0) and the point as written; otherwise the camera stays where effect_motion centres it."""
@@ -164,6 +185,8 @@ def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[in
     machine.write(em.RNG_STATE[0], first); machine.write(em.RNG_STATE[1], second)
     if screen:
         machine.write(em.CAMERA[0], 0); machine.write(em.CAMERA[1], 0)
+    if hit:
+        machine.write(HIT_ROLL, 0); machine.write(HIT_RATE, 1)
     table, at = PROGRAM_BASE, PROGRAM_BASE + 4 * 256
     for number, program in words.items():
         machine.write(table + 4 * number, at)
@@ -234,11 +257,16 @@ def execute_packet(exe: Path) -> dict:
             if variant and encoded == variants[0]:
                 break
             variants.append(encoded); runs.append(machine)
+        # Sounds from a hit run of each kept variant (objmPlayHitSound only sounds on a hit; hit_only marks them).
+        heard = [run(exe_image, templates, sounds, metrics, words, code, point, variant, screen=True, hit=True).heard()
+                 for variant in range(len(variants))]
         objects[name] = {'code': code, 'command_code': entry['command_code'], 'point': list(point),
                          'frames': max(machine.frame for machine in runs),
                          'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
                          'variants': variants,
-                         'sounds': [[event[0], event[3]] for event in runs[0].events if event[1] == 'sound']}
+                         'sounds': heard[0]}
+        if any(one != heard[0] for one in heard):
+            objects[name]['variant_sounds'] = heard
     story, story_digests = story_rows(exe_image, reader, obs, defines, sounds, metrics, words, members, STORY_OBJECTS)
     objects.update(story)
     from hsltools.probes.effect_motion import digest
@@ -255,6 +283,8 @@ def execute_packet(exe: Path) -> dict:
                        'one shared stream.',
                        'Objects alive after frame_limit (programs ending in objmOver or looping without an exit) are '
                        'open_ended: the script end removes them.',
+                       'sounds are [frame, WAV, hit_only] from a run with the hit roll under the hit rate (objmPlayHitSound '
+                       'sounds only on a hit); variant_sounds, when present, lists them per variant.',
                        'The objcomd.txt word layout (one word per token, objmOver closing each block) is provisional.']}
 
 

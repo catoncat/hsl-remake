@@ -1,12 +1,13 @@
 # 特效对象自带的声音：绝技对象的命令程序（objcomd.txt）与法术效果对象的程序音
 
-> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers read from hsl01.exe; provisional: rows marked provisional · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers and the mixer channel allocation read from hsl01.exe, sound cues recorded by native execution (objcomd_motion.json／effect_motion.json); provisional: patterned inserts and untracked objects keep the static tables · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180, 0x42f164, 0x4593a0, 0x459b60, 0x45a390 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版绝技命中的落地声来自 defProcObjectMove 对象（`0x4051d0`）按 obj_Data7 执行的 objcomd.txt 命令程序（`objmPlaySound`／命中才响的 `objmPlayHitSound`），不在 EFFECTS.TXT 脚本里；法术效果对象（`0x415dc0`）出现时放 obj_X1，obj_Y1／obj_X2 由各 effProc 程序在自己的事件点经 `0x415d40`／`0x415d70`／`0x415d90` 播放（static-derived）。
-- 重制 `game/battle/scene/SkillEffectScriptPlayer.gd` 的 `_insert_sounds` 按 `special_effect_scripts.json` 的 `command_sounds`（39 个对象、24 行绝技）与 `program_sounds`（13 个效果对象、8 行法术）逐实例排声，帧未导入时声音照放（resource-derived）。
-- 差异：运动等待按 0 计的几声、8 声部与叠声通道是重制读法（provisional，表中逐行标注）。
+- 两个原生探针逐 tick 执行这些程序时记下每次放声的帧与 WAV：`objcomd_motion.json` 每个 SPECIAL 对象的 `sounds` 是 `[帧, WAV, hit_only]`（命中局，`hit_only` 由调用返回地址 `0x4059f3` 判定），`effect_motion.json` 每棵效果树的 `sounds` 是 `[帧, WAV]`（含子对象），种子变体各有一份（static-derived）。重制 `game/battle/scene/SkillEffectScriptPlayer.gd` 的 `_insert_sounds` 按记录逐实例排声（插入 tick＋记录帧），帧未导入时声音照放。
+- 混音通道：`0x42f164` 以 `0x459b60(9, 20, …)` 开 **9 个通道**；对象程序放声（`0x42c180` → `0x45a390`，flags 0）经 `0x4593a0` 取第一个空或已停的通道，全忙则丢掉新声，不截旧声、同名不合并（static-derived）。重制 `SOUND_VOICES = 9`，同一规则。
+- 差异：角度环／龙卷等图案插入与没有轨迹的对象仍按静态表排声（provisional，见 §边界）。
 
 ## 证据
 
@@ -19,18 +20,22 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - `effects.txt` 的 specCode02（守方脚本）没有 `aniPlaySound`／`aniPlayHitSound`：`aniDelay,20 → aniInsertObject obj_Special01_02 → aniDelay,10 → aniProcessHitMiss → aniInsertHitRandomObject obj_Special01_03 ×6 ／ obj_Special01_04 ×24 → aniDelay,60 → aniShowHitResult`（resource-derived）。
 - `global.obs` 的 obj_Special01_03（obj_code 412）是 `obj_Process_Code = defProcObjectMove`、`obj_Data7 = 2 ; action code`（resource-derived）。
 - `hsl.pak` 的 `data\objcomd.txt`（`#include OBJCOMD.H`）第 2 号 `[command]`：`objmPlaySound,WAV\BOMB0017.WAV` 然后 `objmProcNextShapeDelete,-1,-1`（resource-derived）。**这就是那一声**：每个火花对象出现时自己播 BOMB0017。
-- 本包立项时重制 `SkillEffectScriptPlayer` 只解释 EFFECTS.TXT 的 ani*／eff* 指令，特殊对象当静帧画，对象程序里的声音一并丢失；现状：对象运动按 `objcomd_motion.json` 原生轨迹回放（[original_objcomd_programs.md](original_objcomd_programs.md) §重制接线），声音按本包 `command_sounds` 排，未切到原生执行记下的声音时刻（同包 §边界）。
+- 本包立项时重制 `SkillEffectScriptPlayer` 只解释 EFFECTS.TXT 的 ani*／eff* 指令，特殊对象当静帧画，对象程序里的声音一并丢失；现状：对象运动按 `objcomd_motion.json` 原生轨迹回放（[original_objcomd_programs.md](original_objcomd_programs.md) §重制接线），声音按同一次原生执行记下的时刻排（§4）。
 
 ### 2. 原版读法（static-derived）
 
 | 地址 | 读法 |
 | --- | --- |
 | 过程表 `0x477c2c` slot 37 → `0x4051d0` | PROCESS.DEF `defProcObjectMove = 37`（resource-derived 名字）。init（`0x40522f..0x40523c`）：`程序 = [0x4c1b74][word +0xa4]`——对象 `+0xa4` 是模板 obj_Data7，即 objcomd.txt 的 `code`；首条若是 71（objmInitMultiHitData）先执行、若是 2（objmRandomDelay）化为出现前的延迟 |
+| `0x42c180(id, flags)` → `0x45a390` | `[0x4c1af4]` 为 0（声卡未开）或 flags 位 0 为 0 且 `[0x477c20]`（音效开关）为 0 时不放；否则 `0x459a20` 取缓存号后调 `0x45a390(缓存, 0xff, flags)`。flags 位 1：先停同名通道再放；位 2：同名还在响就不放；**flags 0（对象程序的全部放声）不查同名**，直接 `0x4593a0` 取通道 |
+| `0x4593a0` | 按序扫描 `[0x4c23e0]` 的 `[0x4c23d4]` 个通道（每个 0x24 字节）：空槽直接返回；槽里的 DirectSound 缓冲 GetStatus（vtable +0x24）成功且 `status & 5`（PLAYING／LOOPING）为 0 则 Release 后返回该号；全在响返回 −1，`0x45a44a` 放弃本次放声——**满了丢新声，不抢占** |
+| `0x42f164` → `0x459b60(9, 20, "@:\\", "WAV\\", …)` | 初始化写 `[0x4c23d4] = 9`（通道数）、`[0x4c23cc] = 20`（缓存 WAV 数），即全局 9 个声部，所有经 `0x45a390` 的声音共用 |
 | `0x405337..0x40537a` | 解释器：`+0x8e` 相位 ≤ 99 时从 `+0xa4` 取 32 位 opcode（0..0x4f），跳表 `0x406bc8` |
 | op 51 `objmPlaySound` → `0x4059b7` | `0x42c180(id, 0)` 放声，`jmp 0x405df1` 继续取下一条（不让出） |
 | op 52 `objmPlayHitSound` → `0x4059cf` | `[0x4c1418] < [0x4c6f58]` 时才放；`0x4c6f58` 由守方对象插入 `0x406eb0` 写入命中率（`0x406f81`），`0x4c1418` 是命中滚动（`aniProcessHitMiss` 置 0＝命中、未造成变化置 200）——即"命中才响" |
 | op 1 `objmDelay` → `0x405e53` | `+0x8e = 1`、`+0xa0 = 计数`、保存指针并让出（与 aniDelay 同形） |
 | op 71／72 `objmInitMultiHitData`／`objmSetMultiHitData` → `0x405d6d`／`0x405d76` | `0x4c6f6a++`／`0x4c6f6a--, 0x4c6f68++`，不让出；`aniProcessHitMissMulti`（`0x4047c7`）等 `0x4c6f68` 非零才结算一击——多段绝技的结算时刻由对象程序驱动（重制仍按脚本游标结算） |
+| op 52 的放声调用返回 `0x4059f3`，op 51 返回 `0x4059c7` | 探针据此给记录标 `hit_only`；同一比较（`0x405434`／`0x405495`）还管命中才抛的子对象（objmThrowHit*），所以命中局只取声音，轨迹仍取落空局 |
 | 过程表 slot 28 → `0x415dc0` `defProcEffectProcess1` | 效果对象（obj_Effect_*）出现时（插入延迟 `+0xae` 数完）`0x415e1a..0x415e24` 放模板 `+0x10`＝obj_X1；随后 `+0x46 = +0x18`（obj_X2）、`+0x44 = +0x14`（obj_Y1），留给 effProc 程序在各自事件点经 `0x415d40`（放 `+0x44` 一次后清零）／`0x415d90`（放 `+0x46` 一次后清零）／`0x415d70`（放 `+0x44` 不清零）播放 |
 
 附带读到的普攻受击音：
@@ -38,7 +43,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ### 3. 全部绝技的同类盘点（resource-derived，`hsl check special_effect_scripts` 从 tracked 源逐字节重算）
 
-60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部带 obj_Data7，全部落在 objcomd.txt 的 152 段命令里；其中 **39 个对象、24 行绝技**的命令程序含 `objmPlaySound`／`objmPlayHitSound`（被 objmThrow* 抛出的子对象的命令都不含声音）。`special_effect_scripts.json` 每个对象记 `command_code` 与 `command_sounds`（WAV、`hit_only`、前面 objmDelay 的 tick 和、前面无法计时的运动等待）；`skill_effects` 导入新增 7 个 WAV（BOMB0017／0019／0020／0025、HIT00004／00007／00012），manifest 共 118 个。
+60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部带 obj_Data7，全部落在 objcomd.txt 的 152 段命令里；其中 **39 个对象、24 行绝技**的命令程序含 `objmPlaySound`／`objmPlayHitSound`（被 objmThrow* 抛出的子对象的命令都不含声音）。`special_effect_scripts.json` 每个对象记 `command_code` 与 `command_sounds`（WAV、`hit_only`、前面 objmDelay 的 tick 和、前面无法计时的运动等待；下表是这张静态表，排程已改用 §4 的原生记录，静态表只留给图案插入与无轨迹对象）；`skill_effects` 导入新增 7 个 WAV（BOMB0017／0019／0020／0025、HIT00004／00007／00012），manifest 共 118 个。
 
 | 行 | 对象（command） | 声音（延迟 tick） | 计时 |
 | --- | --- | --- | --- |
@@ -65,43 +70,65 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 `defProcEffectProcess1`（`0x415dc0`）起始时放 obj_X1（插入音，重制原已接）、把 obj_Y1／obj_X2 存进 `+0x44`／`+0x46`；之后 obj_Data9 选中的 effProc 程序（`+0xac`，跳表 `0x4231b0`，TYPE.H `effProc*` 编号）在自己的事件点经 `0x415d40`（放 `+0x44` 一次）、`0x415d70`（放 `+0x44` 不清零，可重复）、`0x415d90`（放 `+0x46` 一次）播放。39 行法术引用的 144 个效果对象里，**13 个（8 行法术）带 obj_Y1／obj_X2 WAV**，它们的 10 个程序全部有调用点。
 
-每个程序是 `+0x8c` 相位机；下表的 tick 从对象开始（插入延迟数完）算，按各相位的倒计数相加（对象模板 obj_Data4／obj_Data6 即对象 `+0x98`／`+0xa0`，`0x45dc5c` 装载）。`counts`＝前面每一相都是固定倒数（±1 tick）；`provisional`＝前面某相等运动或动画（重制不跑），按注明的估计计。数据在 `hsltools/data/special_effect_scripts.py` 的 `EFFECT_PROGRAM_SOUNDS`（每项注释写相位），生成进 `objects.program_sounds`。
+每个程序是 `+0x8c` 相位机；下表「静态」列的 tick 从对象开始（插入延迟数完）算，按各相位的倒计数相加（对象模板 obj_Data4／obj_Data6 即对象 `+0x98`／`+0xa0`，`0x45dc5c` 装载），数据在 `hsltools/data/special_effect_scripts.py` 的 `EFFECT_PROGRAM_SOUNDS`，生成进 `objects.program_sounds`（只作无轨迹对象的后备）。「原生」列是 `effect_motion.json` 变体 0 记下的同一声（根对象，子对象的声音见 §4），排程用它。
 
-| 程序（handler） | 对象（法术） | 相位读法 | 声音（tick） | 计时 |
+| 程序（handler） | 对象（法术） | 相位读法 | 静态（tick） | 原生（tick） |
 | --- | --- | --- | --- | --- |
-| effProcFireArray（`0x421e1f`） | FireArray（怒炎魔獄燋） | 相 1→2 倒数 200→3 倒数 120→4 倒数 60→5：每 48 tick 一圈火并 `0x415d70`，共 3 次（`+0x92 = 3`） | EARTH0001 ×3（430／478／526） | counts |
-| effProcFireHead（`0x421cb3`） | FireBigHead（怒炎魔獄燋） | 相 1 数 obj_Data4＝160（`+0x98`）→ `0x415d40` | SHOOT006（161） | counts |
-| effProcMindBall（`0x418f7a`） | MindBall（封魔滅殺） | 相 1 数 40（`+0x92`）→ 相 2 环绕半径 48→2 px 每 tick 2 px（22）→ 放大到 1.125 即 `0x415d40` | BOMB0013（63） | counts |
-| effProcMindBeast（`0x420c56`） | MindBeast（死骸腐靈獄） | 倒数 66／40／100（`+0x92`）→ `0x415d40` | UPGROUND04（207） | counts |
-| effProcWaterBeast（`0x418056`） | WaterBeast（水龍波） | 倒数 42（`+0x92`）／60（`+0x96`）→ `0x415d40` | WIND0004（103） | counts |
-| effProcUpBreakShape（`0x41c6d7`） | MindUBrkShp1..4（退魔） | 片 d＝obj_Data6 先等 8·d（`+0x34`），恰好数到 0 时 `0x415d90`（d＝0 的片不响）；再数 48（`+0xa2`）→ `0x415d40` 碎裂 | SHOOT004（9／17／25，片 2–4）；BOMB0014（48／56／64／72） | counts |
-| effProcOtherWord3（`0x42248c`） | OtherWord3（極） | 相 0 即 `0x415d90`；缩放 16→8（每 tick 0.5，16）→1（每 tick 0.234，30）、动画等待（`0x45e5a6`，未读，按 0）、倒数 40 → `0x415d40` | UPGROUND04（0）；WIND0004（87） | X2 counts；Y1 provisional |
-| effProcOtherBig（`0x42270f`） | OtherBBall1（極） | 相 1 等 `0x43bf30(obj,0)`（未读，按 0），相 2 倒数 120 → `0x415d40` | SHOOT003（121） | provisional |
-| effProcOtherGlass（`0x41f643`） | OtherGlass（魔障壁） | 相 1 倒数（起值来自相 0 的局部量，未读清，按 1）→ `0x415d90`；相 2 等一个形体延迟（24）→ 倒数 80 → `0x415d40` | UPGROUND02（2）；BOMB0014（106） | provisional |
-| effProcWaterBig（`0x41db97`） | WaterBig1（烈蝕水彈） | 相 1 倒数 80 → 相 2 每 16 tick 抛一子弹共 6（96）→ 相 3 倒数 40 恰到 0 时 `0x415d90` → 以 `0x45e80d`(步 8) 飞向相 0 算出的 200 px 外目标，到达 `0x415d40` | SHOOT002（217）；WATER008（242，飞行 ≈25 按估计） | provisional |
+| effProcFireArray（`0x421e1f`） | FireArray（怒炎魔獄燋） | 相 1→2 倒数 200→3 倒数 120→4 倒数 60→5：每 48 tick 一圈火并 `0x415d70`，共 3 次（`+0x92 = 3`） | EARTH0001 ×3（430／478／526） | 429／477／525 |
+| effProcFireHead（`0x421cb3`） | FireBigHead（怒炎魔獄燋） | 相 1 数 obj_Data4＝160（`+0x98`）→ `0x415d40` | SHOOT006（161） | 160 |
+| effProcMindBall（`0x418f7a`） | MindBall（封魔滅殺） | 相 1 数 40（`+0x92`）→ 相 2 环绕半径 48→2 px 每 tick 2 px（22）→ 放大到 1.125 即 `0x415d40` | BOMB0013（63） | 79（此后每约 9.5 tick 一声，共 8 声） |
+| effProcMindBeast（`0x420c56`） | MindBeast（死骸腐靈獄） | 倒数 66／40／100（`+0x92`）→ `0x415d40` | UPGROUND04（207） | 206 |
+| effProcWaterBeast（`0x418056`） | WaterBeast（水龍波） | 倒数 42（`+0x92`）／60（`+0x96`）→ `0x415d40` | WIND0004（103） | 101 |
+| effProcUpBreakShape（`0x41c6d7`） | MindUBrkShp1..4（退魔） | 片 d＝obj_Data6 先等 8·d（`+0x34`），恰好数到 0 时 `0x415d90`（d＝0 的片不响）；再数 48（`+0xa2`）→ `0x415d40` 碎裂 | SHOOT004（9／17／25，片 2–4）；BOMB0014（48／56／64／72） | 8／16／24；64／71／79／87 |
+| effProcOtherWord3（`0x42248c`） | OtherWord3（極） | 相 0 即 `0x415d90`；缩放 16→8（每 tick 0.5，16）→1（每 tick 0.234，30）、动画等待（`0x45e5a6`，未读，按 0）、倒数 40 → `0x415d40` | UPGROUND04（0）；WIND0004（87） | 0；88 |
+| effProcOtherBig（`0x42270f`） | OtherBBall1（極） | 相 1 等 `0x43bf30(obj,0)`（未读，按 0），相 2 倒数 120 → `0x415d40` | SHOOT003（121） | 125 |
+| effProcOtherGlass（`0x41f643`） | OtherGlass（魔障壁） | 相 1 倒数（起值来自相 0 的局部量，未读清，按 1）→ `0x415d90`；相 2 等一个形体延迟（24）→ 倒数 80 → `0x415d40` | UPGROUND02（2）；BOMB0014（106） | 1／8／16／24／32；105／112／120／128／136（5 片各一声） |
+| effProcWaterBig（`0x41db97`） | WaterBig1（烈蝕水彈） | 相 1 倒数 80 → 相 2 每 16 tick 抛一子弹共 6（96）→ 相 3 倒数 40 恰到 0 时 `0x415d90` → 以 `0x45e80d`(步 8) 飞向相 0 算出的 200 px 外目标，到达 `0x415d40` | SHOOT002（217）；WATER008（242） | 96..176 每 16 tick 一声（6 颗子弹）＋238；257 |
+
+### 4. 原生执行记录与静态表的差值（static-derived）
+
+`python3 tools/hsl.py generate objcomd_motion effect_motion` 逐 tick 执行，放声都经 `0x42c180` 桩记下帧与 WAV。绝技对象（`objcomd_motion.json`，命中局变体 0；只列与静态表不同的行）：
+
+| 对象（行） | 静态（tick） | 记录（tick） | 差值 |
+| --- | --- | --- | --- |
+| Special04_02／62_02（慌雨斬 ×2） | 命中 BOMB0019（25） | 27 | +2 |
+| Special04_03／62_03（慌雨斬 ×2） | 命中 BOMB0020（25） | 27 | +2 |
+| Special24_02（星辰落牙破） | 命中 BOMB0005（14） | 16 | +2 |
+| Special30_01..05、56_01..05（殘影亂斬 ×2） | 命中两声（2） | 4 | +2 |
+| Special50_01（血之宴） | 命中 HIT00007（1） | 2 | +1 |
+| Special34_03／54_03（百裂突刺 ×2） | 命中 HIT00004（0，provisional） | 6／7／7／8（四个种子） | +6..+8 |
+| Special06_06（無想冥殺） | SHOOT008（2）、命中 BOMB0025（3）（provisional） | 102／100／99／122、133／131／130／153 | 见 §边界 |
+
+其余 22 个对象（0 tick 放 BOMB0017、ATTACK17、UPGROUND02、LASERUP004、HIT00007 的各行）记录与静态表一致。+1／+2 的规律：每个 objmDelay N 实占 N＋1 tick（计数减到 0 的那一次调用才继续）；慌雨斬／星辰落牙破／殘影亂斬 的声音前有两个 objmDelay，血之宴 一个。
+
+效果对象（`effect_motion.json`）除 §6 的根对象差值外，子对象各自放 obj_X1——静态表整列漏掉：FireArray（LASERUP005 ×5、BOMB0004 约 15 声）、MindBall（8 声 BOMB0013）、MindBeast（约 31 声 BOMB0013）、OtherBBall1／2（BOMB0001 各 8 声）、WaterBeast（SHOOT002 约 22 声）、WaterBig1／2（SHOOT002、WATER002 各 6 声）、WaterBigBall（BOMB0007 ×12）、WaterBigIce（FIRE0002 ×8）、WaterDrop（WATER003）、EarthRoundBall／EarthUpBall（SPRAY0001）、EarthUpBrk（EARTH0004 ×6、WIND0004）。随机程序的声音随种子变化，重制随所画变体取。
 
 ## 重制接线
 
 共享层在 `SkillEffectScriptPlayer._insert_sounds`（每次对象插入都经过它，与技能无关）：
-- 绝技对象：`command_sounds` 每条在**该实例自己的插入 tick ＋ objmDelay 和**入时间线；`objmPlayHitSound` 只在命中（`hit`）时；每个实例各放一次（原版每个对象程序各自调用放声——百裂突刺 26 次突刺各一声 ATTACK17）。
-- 效果对象：obj_X1 仍按原有约定每条插入指令放一次（在指令游标）。
+- 有轨迹的绝技对象：`ObjcomdMotion.sounds(对象, 变体)` 每条在**该实例的插入 tick ＋记录帧**入时间线；`hit_only` 的只在命中（`hit`）时；每个实例各放一次（原版每个对象程序各自调用放声——百裂突刺 26 次突刺各一声 ATTACK17）。变体按同一对象的插入次序取，与 `_finish_timeline` 给轨迹分配变体的次序相同（图案插入不计）。
+- 有轨迹的效果对象：`EffectObjectMotion.sounds(对象, 变体)`，含 obj_X1（每个实例在自己开始时放，不再"每条插入指令一次"）、obj_Y1／obj_X2 与全部子对象的声音。
+- 角度环／龙卷等图案插入（`_insert_pattern` 传 `patterned`）与没有轨迹的对象：仍按 `command_sounds`（插入 tick＋objmDelay 和）、obj_X1（每条指令一次）与 `program_sounds`。
+- 播放：`_play` 取第一个不在响的声部，9 个全在响就丢掉这一声（`0x4593a0`）。
 - **先排声音再判能否画**：对象帧未导入（`missing_members`）或被跳过时声音照放——"素材未导入的降级路径"不再丢声。
 - **缺演员切入图的降级路径**：切入表（`chapter01/combat_animation/manifest.json`）没有 022／029／102／103 的行；此前任何带这些演员的绝技都落到 `BattleCombatCutin._process_missing_ordinary_clip`（0.75 s 纯文字、无声）——022 是 44／45 关的友军、PLAYERS `special_other = 氣刃斬`。现 `SkillEffectScriptPlayer.needs_actor_art` 恒假，脚本照常演出（底图、对象、全部声音），缺行的演员由 `_stand` 隐去；`run_presentation_contract_tests.skill_effect_contracts` 守着。专属模块（毒魔箭／月花圓舞）仍要求两端切入图。
-- 声部从 4 增到 `SOUND_VOICES = 8`（remake-invented：原混音器通道数未读），最老的先被截。
+- 声部 `SOUND_VOICES = 9`（`0x459b60` 的通道数），满了丢新声（`0x4593a0`）。
 
 氣刃斬 命中：守方脚本 tick 90..94 出现的 6 个 obj_Special01_03 各放一次 BOMB0017（与火花同一 tick；落空不插火花、不响）。
 
-重制：`SkillEffectScriptPlayer._insert_sounds` 在效果阶段把每条 `program_sounds` 排在对象开始 tick ＋延迟（同 WAV 同 tick 一条）；全部 13 个对象都经 `effInsertObject` 单插，声音都落在各自脚本的等待之内（`run_skill_effect_script_tests.effect_program_sounds` 守"在片段内"）。例：烈蝕水彈 的 WaterBig1 在 tick 40 进场，257 放 SHOOT002、282 放 WATER008；怒炎魔獄燋 的 FireArray 在 60 进场，490／538／586 三声地鸣，FireBigHead 540 进场、701 放 SHOOT006。
+重制：效果阶段把记录的每一声排在对象开始 tick ＋记录帧（`run_skill_effect_script_tests.effect_program_sounds` 守"在片段内"）。例：烈蝕水彈 的 WaterBig1 在 tick 40 进场，136..216 每 16 tick 一声 SHOOT002（6 颗子弹）、278 再一声、297 放 WATER008；怒炎魔獄燋 的 FireArray 在 60 进场，489／537／585 三声地鸣，FireBigHead 540 进场、700 放 SHOOT006。
 
 provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md`。
 
 ## 复现
 
-`python3 tools/hsl.py check special_effect_scripts skill_effects first_skill`（重生成需原作：`python3 tools/hsl.py generate first_skill special_effect_scripts skill_effects`）。
+`python3 tools/hsl.py check special_effect_scripts skill_effects first_skill objcomd_motion effect_motion`（重生成需原作与 unicorn：`python3 tools/hsl.py generate first_skill special_effect_scripts objcomd_motion effect_motion skill_effects`）。
 
 ## 边界
 
-- **计时**：objmDelay 按重制 aniDelay 同一约定（N tick）；程序在插入当 tick 开始（`0x405294` 之后同一次调用进入解释器，未逐 tick 验证 ±1）。运动等待（`objmWaitSpeedBelow`／`objmWaitRadiusBelow`／`objmLoopCounter`／`objmRandomDelay` 的随机部分）重制不跑对象运动，按 0 计——涉及 百裂突刺 的 HIT00004 与 無想冥殺 两声。替换证据：`0x4051d0` 运动相位（速度／半径积分）的 tick 读法，或原作单场录像的音画对照。
-- **叠声**：原版同 tick 多实例是否各占一个通道（`0x45a390` flags 0 走 `0x4593a0` 分配通道，未读完）；重制每实例一条、8 声部轮转。
+- **计时**：记录帧从对象创建起算（探针的帧模型见 [效果对象运动包](original_effect_motion.md) §帧模型与公共部分，±1 帧）；随机程序的声音是种子样本，原版所有实例共用一条随机流。
+- **图案插入**：角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音也留在静态表。無想冥殺 的 Special06_06 环即此类：它的程序自设半径 170 px（`objmSetRoundPos`），记录的 SHOOT008／BOMB0025 在插入后 99..153 tick；重制把守方脚本的 `aniProcessHitMissMulti` 当即时（原版等对象程序 `objmSetMultiHitData` 置 `0x4c6f68`，见 §2），收场 tick 428 早于 330＋99，按记录整行会无声，故保留静态 2／3 tick（provisional）。替换条件：多段绝技的结算等待接入后改按记录。
+- **命中才抛的子对象**：`objmThrowHit*`（`0x405434`／`0x405495`）只在命中时抛出（慌雨斬、星辰落牙破、殘影亂斬、無想冥殺 的火花），轨迹取落空局，所以命中时这些子对象重制没画；声音不受影响。
+- **叠声**：原版 9 个通道全局共用（脚本 aniPlaySound、界面音效也经 `0x45a390`）；重制的 9 个声部只给特效播放器自己的声音，其它声音走各自的播放器、不占这 9 个。
 - **不支持的结论**：不证明音量、声像、叠声的混音与原版一致；不证明多段绝技 `aniProcessHitMissMulti` 的结算时刻（重制仍按脚本游标）。
-- provisional 的替换证据：OtherWord3 的 `0x45e5a6` 动画结束条件、OtherBig 的 `0x43bf30`、OtherGlass 相 0 的倒数起值、WaterBig 相 2 结束与相 3 飞行的逐 tick 读（或原作单场法术录像的音画对照）。效果对象的画面按原生 effProc 轨迹运动（[效果对象运动包](original_effect_motion.md)）；原指令执行记下的声音与本表的差异见该包「声音」一节，排程未切换。
+- 效果对象的画面按原生 effProc 轨迹运动（[效果对象运动包](original_effect_motion.md)），声音与画面来自同一次执行。

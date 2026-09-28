@@ -10,12 +10,12 @@
 
 ## 总数
 
-共 **87** 条差异（其中 0 条本轮有 lane 进行中），来自 460 个来源条目：provenance 198、sentence 93、scope 71、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 50 个全部归类。另有 53 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
+共 **87** 条差异（其中 0 条本轮有 lane 进行中），来自 458 个来源条目：provenance 198、sentence 91、scope 71、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 50 个全部归类。另有 53 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 26 |
-| 读了一部分 | 43 |
+| 已读完只差照做 | 27 |
+| 读了一部分 | 42 |
 | 未读 | 1 |
 | 原版无对应代码 | 17 |
 
@@ -232,7 +232,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `effect-sound-timing` | 特效声音：运动等待按 0 计（运动没跑），8 个声部、同 tick 叠声通道未读；9 个声音时刻为估计 | 效果对象命令程序已读，运动等待与混音通道未读<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer 的 program_sounds<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 读了一部分 | 少见 | S | provenance 1、sentence 5、scope 1 |
+| `effect-sound-timing` | 特效声音已按原生执行记录排程、混音照原版 9 通道满则丢新声；剩角度环／龙卷等图案插入与无轨迹对象仍按静态表（無想冥殺 的环声因多段结算等待未接入而保留静态 2／3 tick），且 9 个声部只给特效播放器用、不与其它声音共用 | 对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer._insert_sounds 的图案插入／无轨迹后备<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 已读完只差照做 | 少见 | S | provenance 1、sentence 3、scope 1 |
 | `settings-volume-mixer` | 設定選項 的 音效音量／音樂音量 走重制的 Master／Music 总线与音量曲线（0 静音、改了立刻生效），場景效果 只管剧情特效物件（雨／闪电／火焰／光环）是否绘制；原版混音器未定位，場景效果 位的读者是地图云等背景物件过程 | Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者是地图物件过程（0x43c337／0x43c63f／0x43cecd／0x43d13e／0x43d758，关时云不画不走）；第三行滑杆 0x4245c0 → [0x477c20]＝档×15 封顶 255；混音器未定位<br>[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_map_object_drift.md](../../../docs/evidence_packets/static_reverse/original_map_object_drift.md) | GameSettings：sfx_volume 驱动 Master、music_volume 由补偿过的 Music 总线单独决定；scene_effects 由 StoryEffectObjects.insert 读（关云未接，见 stage-placement）<br>[GameSettings.gd](../../../game/settings/GameSettings.gd) | 读了一部分 | 少见 | S | provenance 1 |
 
 ### 存档与流程（1）

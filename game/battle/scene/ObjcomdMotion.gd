@@ -44,6 +44,15 @@ static func variants(object_name: String) -> int:
 	return (packet()["objects"][object_name]["variants"] as Array).size()
 
 
+## [frame, WAV, hit_only] the variant's program played in the probe's hit run (objmPlaySound
+## 0x4059b7; objmPlayHitSound 0x4059cf only on a hit).
+static func sounds(object_name: String, variant: int = 0) -> Array:
+	var row: Dictionary = packet()["objects"][object_name]
+	if row.has("variant_sounds"):
+		return row["variant_sounds"][variant % (row["variant_sounds"] as Array).size()]
+	return row["sounds"]
+
+
 ## The decoded tree of one variant, in EffectObjectMotion.track's shape plus its `members`
 ## table, for EffectObjectMotion.sprites_at.
 static func track(object_name: String, variant: int = 0) -> Dictionary:
