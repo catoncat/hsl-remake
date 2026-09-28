@@ -25,8 +25,6 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 ##     (draw mode 0x2c000000: AdditiveLevelBlend, kind 9 0x462e8b)
-##   timing: provisional
-##     (one $ float per action with its recipient — the original keeps a second total 0x4c2978 for the counter)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/shared/actor_audio.json
 ##   audio: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
@@ -167,22 +165,29 @@ func prepare(receipt: Dictionary, units: Array, message_texts: Dictionary = {}) 
 	var strikes: Array = [receipt]
 	if not receipt.get("counter", {}).is_empty(): strikes.append(receipt["counter"])
 	var rewards: Dictionary = receipt.get("rewards", {})
-	# 0x442720 case 2 floats *0x4c2c84 once for the action: the drop gold plus what a StealGold
-	# special (竊殺／銀之手) took — 0x40b556..0x40b574 adds the take there on both caster sides.
-	# The float pushes the paid amount (0x44288a), after the gold_x2 doubling (0x442825). Both
-	# payment branches (party 0x442837, own record +0x98 0x442856) join at 0x44287b before the
-	# float, so an AI killer's own kill gold (rewards.carried) floats too.
-	var carried: Array = rewards.get("carried", [])
-	var kill_gold := int(rewards.get("gold", 0))
-	for row in carried: kill_gold += int(row["gold"])
-	var gold := kill_gold
+	# Each recipient's 0x442720 round floats its own accumulator in case 2, after the gold_x2
+	# doubling (0x442825), pushing the paid amount (0x44288a). Both payment branches (party
+	# 0x442837, own record +0x98 0x442856) join at 0x44287b before the float, so an AI killer's
+	# own kill gold (rewards.carried) floats too. The attacker's round reads *0x4c2c84
+	# (0x4447d8／0x4416bc): its kill gold (0x4446d3／0x4415bc) plus every StealGold take of the
+	# exchange (竊殺／銀之手; 0x40b556..0x40b574 adds it there on both caster sides, counter too).
+	# The countering target's round reads *0x4c2978 on the AI path (0x441724), which only the
+	# counter's kill of the initiator fills (0x44151d..0x44152b); the player path pushes 0
+	# (0x444847). A counter-side kill row is thus that recipient's own $.
+	var attacker_id := str(receipt["attacker_id"])
+	var gold_by_owner := {attacker_id: int(rewards.get("gold", 0))}
 	for effect in receipt.get("gold_effects", []):
-		gold += int(effect.get("paid", effect["amount"]))
-	var gold_owner := ""
-	if gold > 0:
-		gold_owner = str(receipt["attacker_id"])
-		if kill_gold > 0:
-			gold_owner = str(rewards["kills"][0]["attacker_id"]) if not rewards.get("kills", []).is_empty() else str(carried[0]["unit_id"])
+		gold_by_owner[attacker_id] += int(effect.get("paid", effect["amount"]))
+	for kill in rewards.get("kills", []):
+		var owner := str(kill["attacker_id"])
+		if owner == attacker_id: continue
+		gold_by_owner[owner] = int(gold_by_owner.get(owner, 0)) + int(kill.get("gold", 0))
+		gold_by_owner[attacker_id] -= int(kill.get("gold", 0))
+	for row in rewards.get("carried", []):
+		var owner := str(row["unit_id"])
+		gold_by_owner[owner] = int(gold_by_owner.get(owner, 0)) + int(row["gold"])
+	for owner in gold_by_owner.keys():
+		if int(gold_by_owner[owner]) <= 0: gold_by_owner.erase(owner)
 	# 0x442720 runs once per recipient — the attacker (0x4447d8／0x4416bc), then the countering
 	# target (0x44483c／0x441724): EXP (phase 0), its $ (phase 2), [get-item window, phase 4],
 	# one LEVEL UP whatever the levels gained (phase 6). The recording's 501.48 EXP → 502.05
@@ -190,7 +195,7 @@ func prepare(receipt: Dictionary, units: Array, message_texts: Dictionary = {}) 
 	for strike in strikes:
 		var growth: Dictionary = strike.get("experience", {})
 		var recipient := str(strike["attacker_id"])
-		if int(growth.get("gained", 0)) <= 0 and gold_owner != recipient: continue
+		if int(growth.get("gained", 0)) <= 0 and not gold_by_owner.has(recipient): continue
 		var unit := _unit(units, recipient)
 		var first_reward := queued.size()
 		if int(growth.get("gained", 0)) > 0:
@@ -200,15 +205,15 @@ func prepare(receipt: Dictionary, units: Array, message_texts: Dictionary = {}) 
 			if not GameOptions.is_original("OPT-INFO"):
 				for learned in growth.get("learning", []):
 					queued.append({"kind": "learning", "coord": unit["coord"], "text": str(learned)})
-		if gold_owner == recipient:
-			queued.append({"kind": "gold", "coord": unit["coord"], "gold": gold})
-			gold_owner = ""
+		if gold_by_owner.has(recipient):
+			queued.append({"kind": "gold", "coord": unit["coord"], "gold": int(gold_by_owner[recipient])})
+			gold_by_owner.erase(recipient)
 		if int(growth.get("gained", 0)) > 0 and int(growth.get("level_after", 0)) > int(growth.get("level_before", 0)):
 			queued.append({"kind": "level_up", "unit_id": recipient, "coord": unit["coord"], "growth": growth.duplicate(true)})
 		# 0x442720 phase 0: the camera glides to the recipient before its first float.
 		queued[first_reward]["focus"] = true
-	if gold_owner != "":
-		queued.append({"kind": "gold", "coord": _unit(units, gold_owner)["coord"], "gold": gold, "focus": true})
+	for owner in gold_by_owner.keys():
+		queued.append({"kind": "gold", "coord": _unit(units, owner)["coord"], "gold": int(gold_by_owner[owner]), "focus": true})
 	jobs = queued
 	stage = "queued" if not jobs.is_empty() else "idle"
 

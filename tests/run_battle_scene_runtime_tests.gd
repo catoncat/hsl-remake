@@ -1116,7 +1116,7 @@ func _test_local_spell_layers() -> void:
 	for key in ["wind", "fire"]:
 		cutin.play({"skill_id": "magic:magicAIR:magicCode01" if key == "wind" else "magic:magicFIRE:magicCode01", "magic_key": key, "magic_name": key, "hit": true, "damage": 8, "defender_hp_after": 22}, mage, target, false, Vector2(450, 430))
 		cutin._process(0.4)
-		_assert_true(cutin.background.visible and is_equal_approx(cutin.background.color.a, 0.5) and not cutin.scenery.visible and not cutin.vitals.visible, "local magic shadows the map at level 8／16 (object 154 sub-state 7, 0x401ed4／0x4030f7) but does not replace the battlefield")
+		_assert_true(cutin.map_shadow_level == 8 and not cutin.background.visible and not cutin.scenery.visible and not cutin.vitals.visible, "local magic shadows the map at level 8／16 (object 154 sub-state 7, 0x401ed4／0x4030f7) in bucket 0x17 (0x4035ef), not as a cut-in layer over every unit, and does not replace the battlefield")
 		_assert_true(not cutin.attacker_sprite.visible and not cutin.defender_sprite.visible, "local spell cannot draw an enlarged caster over its victim")
 		_assert_eq(cutin.stage.size, Vector2(640, 480), "local effects must not be clipped at the 320px close-up boundary")
 		if key == "wind":

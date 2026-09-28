@@ -1,5 +1,6 @@
 extends SceneTree
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const ScriptActorPresentation = preload("res://game/battle/scene/BattleScriptActorPresentation.gd")
 ## Rendered acceptance driver. Normal clocks, real scene commands and input events;
 ## never writes HP, inventory, coordinates, EXP, RNG, turn, or outcome.
 ## godot --path . --script res://tests/run_first_battle_playthrough.gd -- hold
@@ -54,6 +55,10 @@ func run() -> void:
 		await _sample_presentation()
 		for unit in scene.play_loop["units"]:
 			if scene.BattlePlayLoop.Presence.living(unit):
+				# A script-inserted unit is on the map only once its winfail token has fired on the
+				# presentation side (the original creates the object when the token executes).
+				if ScriptActorPresentation.defer_spawn(scene, unit):
+					continue
 				var actor = scene.actor_node_for_unit(str(unit["id"]))
 				if not _require(actor != null and actor.visible, "living unit vanished: " + str(unit["id"])):
 					return
@@ -68,11 +73,11 @@ func run() -> void:
 			if str(opening.get("current_event_kind", "")) == "dialogue_message_id":
 				var message_id := str(scene.scene_timeline.current_event().get("message_id", ""))
 				report["dialogue" if bool(opening.get("cutscene_mode", false)) else "opening"].append(message_id)
-				await _key(KEY_SPACE)
+				await _confirm_when_settled()
 			continue
 		if presentation.dialogue_active():
 			report["dialogue"].append(presentation.current_message_id())
-			await _key(KEY_SPACE)
+			await _confirm_when_settled()
 			continue
 		var loot = scene.settlement_controller.panel
 		if loot.visible:
@@ -311,3 +316,19 @@ func _require(condition: bool, message: String) -> bool:
 		push_error("FIRST_BATTLE_PLAYTHROUGH_FAIL " + message)
 		quit(1)
 	return condition
+
+
+## The dialogue board reads confirm only once its wipe or scroll has settled (0x414280 state 2);
+## press Space the way a player does — after the marker — instead of during the wipe.
+func _confirm_when_settled() -> void:
+	var presentation = scene.get_node("BattlePresentation")
+	for _i in range(400):
+		var holding := false
+		if scene.opening_overlay != null and scene.opening_overlay.has_method("holds_confirm"):
+			holding = holding or scene.opening_overlay.holds_confirm()
+		if presentation.dialogue_view != null and presentation.dialogue_view.has_method("holds_confirm"):
+			holding = holding or presentation.dialogue_view.holds_confirm()
+		if not holding:
+			break
+		await process_frame
+	await _key(KEY_SPACE)

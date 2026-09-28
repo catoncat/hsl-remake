@@ -731,9 +731,8 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
 	# shadowed whether or not the spell deals damage: level min(call + 1, 8) while +0x90 counts
 	# (0x4030f7), then 8 through sub-states 5 and 6 (0x4030b7).
-	host.background.visible = true
 	var lead_call := int(elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
-	host.background.color = Color(0, 0, 0, float(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL)) / AnimalCastLead.LEVELS)
+	host.shade_map(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL))
 	# The spell's name captions the AI lead-in's range (BattleAttackCue.caption), not the effect:
 	# the original's effect states (0x7a, 0x4419f8) draw no text.
 	host.result.visible = false
@@ -759,7 +758,7 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# After the lead the attacker object stays: sub-state 5 (0x403089) hands the flow back
 	# (parent +0x8c++) and hides itself, sub-state 6 (0x4030b7) keeps its shadow at +0x90 = 8
 	# while the effect phase holds [0x4c1b00] & 0x1000000, so the map stays at level 8／16.
-	host.background.color = Color(0, 0, 0, float(AnimalCastLead.SHADOW_MAX_LEVEL) / AnimalCastLead.LEVELS)
+	host.shade_map(AnimalCastLead.SHADOW_MAX_LEVEL)
 	var star_origin: Vector2 = clip["map_caster"] - Vector2(0, float(clip.get("caster_height", CAST_STAR_DEFAULT_HEIGHT)))
 	var star_tick: float = (elapsed - lead_end) / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND
 	if elapsed < lead_in:

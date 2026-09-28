@@ -179,7 +179,7 @@ S＝static-derived（上表调用点），R＝原录像观察（录像 14 外部
 - 光标帧计时原版全局共用（玩家与 AI 同一字），重制玩家光标与 AI 起手各自计数，相位不同。
 - 道具使用的原版目标态没有定位（provisional）；替换路线：从行动环道具项的状态转移（`0x63..0x72` 段）读起。
 - 玩家选目标时射程红格与脚印黄／青绿格的叠画与两层各自的计数器见 [范围格包](original_range_cells.md)。
-- 施法引导：planeEffect2 的数值取自 PROCESS.DEF 的排列（planeObject40 = 43 之后），本地无该文件，横幅残影低于桶 0x32 按此推定；桶 0x17 阴影与同桶 23 的单位先后（单位第二遍提交、画在阴影之上）重制未建模，重制阴影盖住全部单位。
+- 施法引导：planeEffect2 的数值取自 PROCESS.DEF 的排列（planeObject40 = 43 之后），本地无该文件，横幅残影低于桶 0x32 按此推定。桶 0x17 阴影与同桶 23 的单位（魔法效果阶段脚印内与 use_magic 姿势的单位，第二遍提交）：重制 `BattleCombatCutin.shade_map` 把阴影画成战斗 World 里 z＝`CAST_LIFT_Z − 1` 的黑层，被抬单位（`CAST_LIFT_Z` 带）画在其上，其余单位、地图与地图物件在其下压暗。
 - 施法引导：子状态 5 那一 call 重制没有单独留（效果从引导结束的下一 tick 起，差 1 call）；子状态 6 在效果结束后的 8 call 阴影淡出未播（重制片段在效果完成时整体收起），无引导的法术（含没导入条带的施法者）同样盖级 1..8 后停级 8 的阴影，不再按伤害法术另用 0.2 暗层；归 `cast-lead-phase`。
 - 无条带起手：重制 `SkillEffectScriptPlayer` 对无条带施法者用 `AnimalCastLead.skipped` 的 8 call，释放那一 call 放 403、画两批 Cast_Star 聚拢星，效果推迟姿势长 8n＋40（`BattlePresentation._note_caster` 记，有条带者同样等）；星点高 h 取重制当前站立帧高＋2，use_magic 即站立帧的 060／068 与无 SHAPEDEF 行者不等姿势（provisional）。
 - 施法对象自身模式在子状态 1 是否带 `0x80000000`（挂桶头）未逐条核对；带则局部图残影会排到桶头、画在面板之下。

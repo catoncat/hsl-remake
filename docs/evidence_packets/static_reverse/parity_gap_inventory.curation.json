@@ -415,22 +415,6 @@
       "category": "飘字与数字"
     },
     {
-      "id": "counter-gold-split",
-      "difference": "反击击杀时原版有第二份金钱累加器，重制一次行动只飘一份 $（$ 字形已是原版 NUM500，lane DIGITS 未动）",
-      "original": "反击方第二份金钱累加器 0x4c2978",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/cutin_floaters/README.md"
-      ],
-      "remake": "一次行动合并一个 $ 总数",
-      "remake_code": [
-        "game/battle/scene/BattleAftermath.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "飘字与数字"
-    },
-    {
       "id": "magic-impact-bar",
       "difference": "法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出",
       "original": "原版法术命中在受者脚边画 HP／MP 条（先前值后后值），之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字；2026-09-24 录屏 474.600／475.000／475.167／475.767 s（19.4 ms/tick 折 0／21／29／60 tick）",
@@ -467,14 +451,14 @@
     },
     {
       "id": "cast-lead-compositing",
-      "difference": "施法引导阴影底、面板与残影照原版画；只差与阴影同桶（0x17）的单位原版画在阴影之上、重制压在下面，以及 8 位 alpha 与原版 5／6 位分量截断的末位",
+      "difference": "施法引导阴影底、面板与残影照原版画，与阴影同桶（0x17）的被抬单位画在阴影之上；只差 8 位 alpha 与原版 5／6 位分量截断的末位，以及横幅残影在 planeEffect2 按 PROCESS.DEF 排列推定",
       "original": "0x4035ef：消息字带 0x1000 时全黑屏形状以操作 4 画进桶 0x17，级 min(+0x90, 8)，aniShadowBG 次 call 起 1..8；施法对象置 0x100 不画 0x4034c6 黑底；面板桶 0x33 模式 0，子状态 4 前 16 call 不淡化；残影对象 179 级 6→1，局部图残影桶 0x33 第二遍提交、在面板之上",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/animal_program_execution.md",
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "BattleCombatCutin.show_cast_lead 黑层 alpha＝阴影级／16，面板不透明，横幅残影在横幅下、局部图残影在面板上",
+      "remake": "BattleCombatCutin.shade_map 在战斗 World 里 z＝CAST_LIFT_Z − 1 画黑层 alpha＝阴影级／16（被抬单位在上、其余单位与地图在下），面板不透明，横幅残影在横幅下、局部图残影在面板上",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd"
@@ -1110,24 +1094,6 @@
       "visibility": "every_battle",
       "effort": "L",
       "category": "AI 行为"
-    },
-    {
-      "id": "undead-counter-kill",
-      "difference": "不死受击者被致死一击站回 1 HP 后，重制在同一次交换里仍让它反击；原版致死分支是否跳过反击未追完",
-      "original": "致死一击先按击杀结算——EXP、击杀金钱 0x40e390 每次致死都发（0x4415bc／0x4446d3／0x442e5c／0x443130 读 +0xd8<=0），0x44f580 不掷不死者的包——受击者自己的 tick（0x43ee66／0x4433b6）才复活；不死攻击者被反击打死复活后 0x407510 结束行动，双方都不发；+0xd8>0 时 0x4415b5／0x4446cc 跳往 0x441fa4／0x443b19，致死分支后的反击门未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_player_mode.md"
-      ],
-      "remake": "REWARD 已对齐结算：不死攻击者被反击打死不发 EXP／金钱，不死受击者每次致死都发击杀金钱、不掷掉落、不记阵亡；BattleLoopCombat 在打击内当场复活，交换随后照常判反击",
-      "remake_code": [
-        "game/sim/loop/BattleLoopCombat.gd",
-        "game/sim/BattleRewardRules.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "战斗规则",
-      "decision": "反击门未读完，按最保守不改（REWARD）"
     },
     {
       "id": "same-side-mode",
@@ -1935,9 +1901,6 @@
     "matrix:脚本等待与指定对象同步": {
       "item": "winfail-readings"
     },
-    "matrix:脚本阵营切换与不死标记（level 3 漢克斯）": {
-      "item": "undead-counter-kill"
-    },
     "matrix:装备移动力与刷新": {
       "item": "job-model-gaps"
     },
@@ -1946,6 +1909,9 @@
     },
     "matrix:角色通行与最终落点": {
       "item": "rng-streams"
+    },
+    "matrix:脚本阵营切换与不死标记（level 3 漢克斯）": {
+      "resolved": "致死一击后不反击照原版：0x4423c0 阶段 4 在目标 +0xd8 ≤ 0 时清待反击位与余下连击（0x442465..0x44247e），不死复活在其后的死亡分支（COUNTER2，original_player_mode 反击门行）"
     },
     "matrix:身份栏「已知」字节与 ??? 遮罩（按模板行）": {
       "item": [
@@ -2081,9 +2047,6 @@
     },
     "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|": {
       "item": "rng-streams"
-    },
-    "provenance:game/battle/scene/BattleAftermath.gd|timing|provisional|": {
-      "item": "counter-gold-split"
     },
     "provenance:game/battle/scene/BattleCombatCutin.gd|strings|remake-invented|": {
       "item": "floater-extra-words"
@@ -2627,9 +2590,6 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|角色分支用 ACTOR 标记代替": {
       "item": "skill-area-policies"
-    },
-    "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|不死防守方致死后是否仍反击（差异清单 undead-counter-kill）": {
-      "item": "undead-counter-kill"
     },
     "scope:docs/evidence_packets/static_reverse/original_player_mode_sides.md|provisional|玩家可见后果未原生观察": {
       "item": "same-side-mode"

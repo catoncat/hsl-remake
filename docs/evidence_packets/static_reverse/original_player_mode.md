@@ -1,6 +1,6 @@
 # 换阵营与不死：actSetPlayerMode、actSetPlayerUndead、HPLow 与击杀结算
 
-> evidence: static-derived; provisional: 不死防守方致死后是否仍反击（差异清单 undead-counter-kill） · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived · status: live · functions: 0x40a5d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f580, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -9,7 +9,7 @@
 - 击杀不死防守方照付含击杀 EXP 的整击 EXP 与击杀金钱，但不掷掉落；被反击打死的不死攻击者复活后直接结束行动，双方都不领这次交锋的奖励（static-derived）。
 - 击杀金钱的 `$` 浮字不分阵营：`0x442720` state 2 进队伍与进自身 +0x98 两支在 `0x44287b` 汇合后才建浮字，AI 击杀者自得的金钱同样在其头上飘（static-derived）。
 - 重制：`BattleLoopCombat._undead_revives`／`_attacker_revived`、`BattleRewardRules.undead_kill`、`WinfailConditions.hp_low_threshold`、`WinfailActions` 按上述读法实现；`run_winfail_rules_tests.gd` 的 `run_winnability_census` 覆盖全部已注册战斗的 HPLow 目标（static-derived 规则）。
-- 差异：重制在出手内部复活不死防守方，因而它还能反击；原版致死分支是否跳过反击未追（provisional，差异清单 `undead-counter-kill`）。
+- 被致死一击打到 +0xd8 ≤ 0 的防守方不反击，不死者也一样：出手结算 `0x4423c0` 阶段 4 在复活之前就清掉待反击位并停掉余下连击；重制同样不让站回 1 HP 的不死防守方反击、也不再补第二击（static-derived）。
 
 ## 证据
 
@@ -37,6 +37,7 @@
 | 击杀段 `0x4446ab`（AI `0x4415ac..0x4415ce`，法术 `0x442e4e..0x442e69`、`0x443126..0x44313d`） | 目标 HP ≤ 0：`gold += 0x40e390(victim)`（只读 +0x98），置 `0x8000000`；复活在目标自己的 tick，不回收 |
 | `0x442720(recipient, exp, gold)` | state 0 加 EXP 到 +0x88（`0x40e2c0` 翻倍）；state 2 金钱：0 跳过（`0x442812`），`0x40e2d0` 翻倍（`0x442819..0x442825`），`0x40ba20` 恰为 `0x10000` 进队伍 `0x4c1bcc`（上限 `0x3b9ac9ff`），否则进自身记录 +0x98（`0x442856..0x442875`）；两支汇合于 `0x44287b`，`0x4084e0(x, y−0x30, 付额, 0x4c42a0, kind 4)` 建 `$` 浮字（`0x44287b..0x442890`），无阵营判断；state 4 非玩家过程（`0x44272b..0x44273a`）走 `0x44f600` 而非拾取窗 |
 | 支付顺序 | 攻击者 `0x4447d8..0x4447e6`（AI `0x4416bc..0x4416ca`），再反击者 `0x44483c..0x44484b`（AI `0x441724..0x441738`）；被反击打死的 AI 发起者由死亡序列付 `0x4c2978`（`0x44151d`、`0x43f0f2..0x43f150`）；玩家过程发起者被反杀付 0（`0x444641`、`0x443660`） |
+| 反击门（`0x4423c0` 阶段 4） | 目标 +0xd8 ≤ 0（`0x442465..0x44246c`）：清剩余连击数 `0x4c2c48`（`0x442473`）并清 `0x4c4320` 待反击位 0x10000（`0x44246e..0x44247e`），随后 `0x44249e` 测该位为 0 返回 1；调用者 `0x4445d7`（玩家）／`0x4414a8`（AI）返回 1 走击杀／存活判定 `0x4446ab`／`0x441594`，只有返回 2 才进反击态 85（`0x4445ea`）／14（`0x4414bb`）。死亡分支 `0x43ee1f` 以 +0x80 的 `0x8000000` 进入（`0x43ee25`），该位由击杀段在返回之后才置（`0x4446f1`／`0x4415da`），所以不死复活晚于反击门 |
 | `0x44f600` | 逐个不同 code（`0x44f2d0` 合并同 code，`0x44f290`／`0x44f39b`）插一件到首个空槽 `0x436e30`；失败则 `0x44f510`／`0x436e80` 丢首个非重要物品再试一次，再失败结束；`0x44f4e0` 清空集合 |
 | 掉落来源 | `0x44f580` 由 `0x441587`、`0x44163e`、`0x441e2a`／`0x441e49`、`0x44469e`、`0x44474d`、`0x4453e9`、`0x445408` 调用；StealItem `0x40b629`→`0x44f2d0`；StealGold `0x40b562..0x40b578` 从队伍扣，不降目标 +0x98 |
 
@@ -58,7 +59,6 @@
 
 ## 边界
 
-- 重制在出手内复活不死防守方后仍让其反击；原版 `0x4415b5`／`0x4446cc` 致死分支是否跳过反击未追。替换证据：原版 3 关漢克斯（不死）攻击并死于緹娜反击，读双方 +0x88 前后。
 - 已阵亡单位在重制中按 HP 0 读 HPLow（成立）；原版查找在注销后失败，但扫描是否早于 `0x43ef36` 注销未读。
 - `+0x18c` 位 0x20（金钱翻倍）只建模了装备来源。
 - 同一收据内击杀掉落先于 StealItem 的次序是重制次序（provisional）。

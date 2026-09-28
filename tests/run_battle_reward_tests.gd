@@ -430,6 +430,14 @@ func gold_double_cases() -> void:
 		"gold_effects": [{"kind": "steal_gold", "amount": 30, "paid": 60, "from": "target_carry", "unit_id": "foe"}], "rewards": {"gold": 0, "kills": []}}, units)
 	check(aftermath.jobs.map(func(job): return [job["kind"], int(job.get("gold", 0))]) == [["gold", 60]], "the $ float shows the paid StealGold take: " + str(aftermath.jobs))
 	aftermath.cursor = aftermath.jobs.size()
+	# Each recipient's 0x442720 round floats its own accumulator: the attacker *0x4c2c84
+	# (0x4416bc), the countering target *0x4c2978 (0x441724) — two $ floats, attacker first.
+	aftermath.prepare({"sequence": 2, "attacker_id": "foe", "defender_id": "hero", "defender_hp_before": 5, "defender_hp_after": 5, "hit": true,
+		"gold_effects": [{"kind": "steal_gold", "amount": 30, "paid": 30, "from": "party", "unit_id": "hero"}],
+		"counter": {"attacker_id": "hero", "defender_id": "foe", "defender_hp_before": 5, "defender_hp_after": 5, "hit": true},
+		"rewards": {"gold": 40, "kills": [{"attacker_id": "hero", "defender_id": "foe", "gold": 40}]}}, units)
+	check(aftermath.jobs.filter(func(job): return job["kind"] == "gold").map(func(job): return [job["coord"], int(job["gold"])]) == [[Vector2i(2, 3), 30], [Vector2i(2, 2), 40]], "attacker and counterer each float their own $: " + str(aftermath.jobs))
+	aftermath.cursor = aftermath.jobs.size()
 	aftermath.queue_free()
 
 
@@ -516,6 +524,13 @@ func undead_victim_cases() -> void:
 	BattleLoopCombat.resolve_exchange(loop, "leonard", "enemy021_1", func(_n): return 0)
 	check(loop["gold"] == 2 * kill_gold and int(BattlePlayLoop.unit(loop, "enemy021_1")["hp"]) == 1, "the next lethal strike on it pays the kill gold again (0x40e390 only reads +0x98): " + str(loop["gold"]))
 	check(BattleCheckpoint.encode(loop, meta)["ok"], "the checkpoint accepts the battle after the undead enemy got up")
+	# 0x4423c0 state 4 clears the pending counter on +0xd8 <= 0 (0x442465..0x44247e) before the
+	# victim's dead branch revives it, so the stood-up undead defender does not counter.
+	var countering := fixture()
+	BattlePlayLoop.unit_ref(countering, "enemy021_1")["undead"] = true
+	BattlePlayLoop.unit_ref(countering, "enemy021_1")["combat_profile"]["attack_back"] = 100
+	var no_counter := BattleLoopCombat.resolve_exchange(countering, "leonard", "enemy021_1", func(_n): return 0)
+	check(bool(no_counter.get("undead_revived", false)) and no_counter.get("counter", {}).is_empty(), "the undead defender a lethal strike stood back up does not counter: " + str(no_counter.get("counter", {}).keys()))
 	# Spell: an area cast kills an undead and an ordinary enemy together.
 	var cast := fixture()
 	var player := BattlePlayLoop.unit_ref(cast, "leonard")

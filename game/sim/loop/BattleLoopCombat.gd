@@ -83,7 +83,12 @@ static func resolve_exchange(loop: Dictionary, attacker_id: String, defender_id:
 		counter_pending = bool(gate["triggered"]) and (int(defender.get("status_flags", 0)) & 4) == 0 and Footprint.overlaps(BattlePlayLoop.unit_ref(loop, attacker_id), BattlePlayLoop.attack_cells(loop, defender_id))
 	var primary := _resolve_attack_series(loop, attacker_id, defender_id, source)
 	primary["counter"] = {}
-	if counter_pending and not bool(BattlePlayLoop.unit_ref(loop, defender_id).get("defeated", false)):
+	# 0x4423c0 state 4 (0x442465..0x44247e) clears the pending-counter bit 0x10000 of 0x4c4320
+	# whenever the target's +0xd8 <= 0 after the primary, so it returns 1 (no counter state 85／14)
+	# to 0x4445d7／0x4414a8. The undead revive runs later, in the victim's own dead branch
+	# (0x43ee1f, entered on the 0x8000000 the kill section 0x4446f1／0x4415da sets after that
+	# return), so an undead defender a lethal strike stood back up at 1 HP does not counter.
+	if counter_pending and not bool(BattlePlayLoop.unit_ref(loop, defender_id).get("defeated", false)) and not _target_revived(primary):
 		primary["counter"] = _resolve_attack_series(loop, defender_id, attacker_id, source, true)
 	# A completed exchange grants once per participant. Neither the primary's
 	# level-up nor a changed profile may affect the already committed counter. An undead
@@ -103,7 +108,12 @@ static func resolve_exchange(loop: Dictionary, attacker_id: String, defender_id:
 ## process (a lethal counter strike with `undead_revived`).
 static func _attacker_revived(counter: Dictionary) -> bool:
 	if counter.is_empty(): return false
-	return CombatSequence.participant_strikes(counter).any(func(strike): return bool(strike.get("undead_revived", false)))
+	return _target_revived(counter)
+
+
+## Whether a lethal strike of the series left its target revived by the undead process.
+static func _target_revived(series: Dictionary) -> bool:
+	return CombatSequence.participant_strikes(series).any(func(strike): return bool(strike.get("undead_revived", false)))
 
 
 static func attack_count(loop: Dictionary, actor: Dictionary) -> Dictionary:
@@ -115,6 +125,9 @@ static func _resolve_attack_series(loop: Dictionary, attacker_id: String, defend
 	var strikes: Array = []
 	for index in range(count):
 		if int(BattlePlayLoop.unit_ref(loop, defender_id)["hp"]) <= 0: break
+		# The same +0xd8 <= 0 branch zeroes the remaining-strike count 0x4c2c48 (0x442473), so a
+		# strike that stood an undead target back up ends the series too.
+		if not strikes.is_empty() and bool(strikes[-1].get("undead_revived", false)): break
 		strikes.append(apply_strike(loop, attacker_id, defender_id, rng, counter, count - index - 1))
 	var receipt: Dictionary = strikes[0]
 	for index in range(strikes.size()):

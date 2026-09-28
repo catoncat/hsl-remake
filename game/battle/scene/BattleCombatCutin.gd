@@ -49,6 +49,7 @@ const SkillPresenter = preload("res://game/battle/scene/SkillPresenter.gd")
 const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
+const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
@@ -123,6 +124,9 @@ var transition_shade: ColorRect
 ## full-view rect last in the battle World that redraws the map and units already drawn with
 ## 0x461687's per-row x offsets. Built on first use; hidden every frame unless re-shown.
 var effect_ripple: ColorRect
+## The cast shadow (shade_map): the level 0..8 this frame and its black rect in the battle World.
+var map_shadow_level := 0
+var map_shadow: ColorRect
 const EFFECT_RIPPLE_SHADER := """shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
 uniform float offsets[480];
@@ -377,9 +381,7 @@ func show_cast_lead(clip: Dictionary, lead: Dictionary, tick: float) -> void:
 	stage.size = Vector2(640, 480)
 	scenery.visible = false
 	vitals.visible = false
-	var shadow := int(state["shadow"])
-	background.visible = shadow > 0
-	background.color = Color(0, 0, 0, float(shadow) / AnimalCastLead.LEVELS)
+	shade_map(int(state["shadow"]))
 	defender_sprite.hide()
 	blade.hide()
 	flash_sprite.hide()
@@ -444,6 +446,35 @@ func battle_camera() -> RefCounted:
 
 ## Shows this frame's ripple (EffectObjectMotion.ripple_at parameters) over the battle World's
 ## map and units; {} leaves it hidden.
+## The cast shadow at `level`／16: 0x4035ef draws the all-black shape at the camera origin into
+## bucket 0x17 (mode 0x20000000), so the map and every unit in a bucket < 0x17 darken while the
+## units the spell effect phase lifts 23 buckets (ActorRuntime.CAST_LIFT_Z, submitted in the
+## second pass of the same bucket) and the planeEffect／panel buckets above stay lit. The remake
+## draws it as a black rect in the battle World just under CAST_LIFT_Z (over every foot-y z,
+## under the lifted band and FIXED_PLANE_ABOVE_Z); the cut-in panel's own backdrop stays off.
+## Outside a battle scene only the level is kept. Reset every frame in _process.
+func shade_map(level: int) -> void:
+	map_shadow_level = level
+	background.visible = false
+	var camera := battle_camera()
+	var world: Node = get_parent().get_parent().get_node_or_null("World") if camera != null else null
+	if level <= 0 or world == null or camera.camera == null:
+		if map_shadow != null:
+			map_shadow.hide()
+		return
+	if map_shadow == null:
+		map_shadow = ColorRect.new()
+		map_shadow.name = "CastShadow"
+		map_shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		map_shadow.z_index = ActorRuntime.CAST_LIFT_Z - 1
+	if map_shadow.get_parent() != world:
+		world.add_child(map_shadow)
+	map_shadow.size = Vector2(camera.logical_viewport_size)
+	map_shadow.position = camera.logical_to_world(Vector2.ZERO)
+	map_shadow.color = Color(0, 0, 0, float(level) / AnimalCastLead.LEVELS)
+	map_shadow.show()
+
+
 func show_effect_ripple(params: Dictionary) -> void:
 	var camera := battle_camera()
 	var world: Node = get_parent().get_parent().get_node_or_null("World") if camera != null else null
@@ -500,6 +531,9 @@ func _process(delta: float) -> void:
 		presenter.hide()
 	if effect_ripple != null:
 		effect_ripple.hide()
+	map_shadow_level = 0
+	if map_shadow != null:
+		map_shadow.hide()
 	cast_inset.hide()
 	cast_portrait.hide()
 	hit_flash_sprite.hide()

@@ -18,7 +18,8 @@ extends RefCounted
 ##   layout: resource-derived content/generated/hsl/animation/animal_programs.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#施法引导的合成
-##   layout: provisional (units in the shadow's bucket 0x17 stay under it; planeEffect2 < 0x32 by PROCESS.DEF order)
+##     (shadow in bucket 0x17 over map and units < 0x17; lifted units over it, BattleCombatCutin.shade_map)
+##   layout: provisional (planeEffect2 < 0x32 by PROCESS.DEF order)
 ##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
 ##   timing: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md (預備動作 off)
 ##   timing: resource-derived content/generated/hsl/animation/animal_programs.json
