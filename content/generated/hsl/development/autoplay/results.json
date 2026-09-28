@@ -2613,18 +2613,18 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 3,
+      "rounds": 4,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 2,
-        "move_then_attack": 5,
+        "attack": 3,
+        "move_then_attack": 8,
         "move": 13,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 12,
+        "ai_steps": 16,
         "loot_deferred": 0,
         "scene_phases": 0
       },

@@ -240,6 +240,16 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 			break
 	if skill.is_empty(): return {"intent": {}, "decision": decision}
 	var intents: Array = skill["intents"]
+	# 0x40cca0 never scans the actor's own cell (0x40cf34 skips an occupied word, test 0x74000):
+	# the stations are the best cells away from it, even when the own cell covers more. With
+	# none ([0x4c1a00] 0: 0x40d0d2 → 0x40d31b, no threat scan) 0x40d340 casts from its own
+	# cell (0x40d439), 0x40df70 likewise (0x40e059).
+	var moving := moves_to_cast(plan)
+	if moving and plan.get("origin") is Vector2i:
+		var away := intents.filter(func(intent): return intent["destination"] != plan["origin"] and int(intent["score"]) > 0)
+		moving = not away.is_empty()
+		intents = away if moving else intents.filter(func(intent): return intent["destination"] == plan["origin"])
+		if intents.is_empty(): return {"intent": {}, "decision": decision}
 	var best := 0
 	for intent in intents: best = maxi(best, int(intent["score"]))
 	var finalists := intents.filter(func(intent): return int(intent["score"]) == best)
@@ -266,7 +276,7 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	# the move search: the threat scan after the stations, then the farthest one from it.
 	var index := 0
 	var found := {"coord": null}
-	if moves_to_cast(plan):
+	if moving:
 		found = threat(plan, rng)
 		decision["threat_scan"] = found
 	if found["coord"] is Vector2i:
