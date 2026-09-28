@@ -31,9 +31,10 @@ static func tracked(object_name: String) -> bool:
 
 
 ## Frames until the last instance is gone; open-ended programs (objmOver holds, endless loops)
-## report the probe's frame limit and `open_ended`.
-static func frames(object_name: String) -> int:
-	return int(packet()["objects"][object_name]["frames"])
+## report the probe's frame limit and `open_ended`. `hit` picks the hit run where it differs.
+static func frames(object_name: String, hit: bool = false) -> int:
+	var row: Dictionary = packet()["objects"][object_name]
+	return int(row["hit_frames"]) if hit and row.has("hit_frames") else int(row["frames"])
 
 
 static func open_ended(object_name: String) -> bool:
@@ -54,14 +55,17 @@ static func sounds(object_name: String, variant: int = 0) -> Array:
 
 
 ## The decoded tree of one variant, in EffectObjectMotion.track's shape plus its `members`
-## table, for EffectObjectMotion.sprites_at.
-static func track(object_name: String, variant: int = 0) -> Dictionary:
-	var key := "%s#%d" % [object_name, variant]
+## table, for EffectObjectMotion.sprites_at. `hit`: the hit run (hit roll [0x4c1418] under the
+## hit rate [0x4c6f58]), whose hit-only throws (0x405434／0x405495) the miss run lacks; objects
+## without `hit_variants` run the same either way.
+static func track(object_name: String, variant: int = 0, hit: bool = false) -> Dictionary:
+	var row: Dictionary = packet()["objects"][object_name]
+	var runs_key := "hit_variants" if hit and row.has("hit_variants") else "variants"
+	var key := "%s#%d#%s" % [object_name, variant, runs_key]
 	if _decoded.has(key):
 		return _decoded[key]
-	var row: Dictionary = packet()["objects"][object_name]
 	var instances: Array = []
-	for instance in row["variants"][variant % (row["variants"] as Array).size()]:
+	for instance in row[runs_key][variant % (row[runs_key] as Array).size()]:
 		if int(instance["start"]) < 0:
 			continue
 		instances.append({"code": int(instance["code"]), "start": int(instance["start"]),
@@ -69,10 +73,10 @@ static func track(object_name: String, variant: int = 0) -> Dictionary:
 			"member": EffectObjectMotion._expand(instance["member"]), "mode": EffectObjectMotion._expand(instance["mode"]),
 			"level": EffectObjectMotion._expand(instance["level"]),
 			"zoom_x": EffectObjectMotion._expand(instance["zoom_x"]), "zoom_y": EffectObjectMotion._expand(instance["zoom_y"])})
-	var decoded := {"motion": "translates", "frames": int(row["frames"]), "instances": instances, "members": packet()["members"]}
+	var decoded := {"motion": "translates", "frames": frames(object_name, hit), "instances": instances, "members": packet()["members"]}
 	_decoded[key] = decoded
 	return decoded
 
 
-static func sprites_at(object_name: String, variant: int, frame: int) -> Array:
-	return EffectObjectMotion.sprites_at(track(object_name, variant), frame)
+static func sprites_at(object_name: String, variant: int, frame: int, hit: bool = false) -> Array:
+	return EffectObjectMotion.sprites_at(track(object_name, variant, hit), frame)

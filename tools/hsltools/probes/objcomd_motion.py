@@ -116,8 +116,8 @@ def story_rows(exe_image, reader, obs: bytes, defines, sounds, metrics, words, m
 # objmPlayHitSound (op 52, 0x4059cf) sounds only when the hit roll [0x4c1418] is below the hit rate
 # [0x4c6f58] (0x4059e0); its call to the sound player returns to 0x4059f3, objmPlaySound's (op 51)
 # to 0x4059c7. The hit rate is written by the defender insert 0x406eb0 (0x406f81), the roll by
-# aniProcessHitMiss (0 = hit). The same comparison gates the hit-only throws at 0x405434／0x405495,
-# so the hit run only contributes sounds: the tracks stay the miss run's.
+# aniProcessHitMiss (0 = hit). The same comparison gates the hit-only throws at 0x405434／0x405495:
+# the miss run's tracks stay `variants`, the hit run's go to `hit_variants` where they differ.
 HIT_ROLL, HIT_RATE = 0x4c1418, 0x4c6f58
 HIT_SOUND_RETURN = 0x4059f3
 
@@ -245,6 +245,7 @@ def execute_packet(exe: Path) -> dict:
     points = insert_points()
     members: dict[str, int] = {}
     objects = {}
+    pending_hits: dict[str, list] = {}
     for name, entry in scope_objects().items():
         code = int(entry['obj_code'])
         point = points.get(name, em.ORIGIN)
@@ -257,9 +258,15 @@ def execute_packet(exe: Path) -> dict:
             if variant and encoded == variants[0]:
                 break
             variants.append(encoded); runs.append(machine)
-        # Sounds from a hit run of each kept variant (objmPlayHitSound only sounds on a hit; hit_only marks them).
-        heard = [run(exe_image, templates, sounds, metrics, words, code, point, variant, screen=True, hit=True).heard()
-                 for variant in range(len(variants))]
+        # A hit run of each kept variant: objmPlayHitSound sounds only on a hit (hit_only marks them) and the
+        # hit-only throws 0x405434／0x405495 fire only then; its tracks are encoded after every miss run.
+        hit_runs = [run(exe_image, templates, sounds, metrics, words, code, point, variant, screen=True, hit=True)
+                    for variant in range(len(variants))]
+        for machine in hit_runs:
+            for obj in machine.objects:
+                obj['samples'] = [[s[0], s[1] + em.ORIGIN[0] - point[0], s[2] + em.ORIGIN[1] - point[1], *s[3:]] for s in obj['samples']]
+        pending_hits[name] = hit_runs
+        heard = [machine.heard() for machine in hit_runs]
         objects[name] = {'code': code, 'command_code': entry['command_code'], 'point': list(point),
                          'frames': max(machine.frame for machine in runs),
                          'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
@@ -269,6 +276,12 @@ def execute_packet(exe: Path) -> dict:
             objects[name]['variant_sounds'] = heard
     story, story_digests = story_rows(exe_image, reader, obs, defines, sounds, metrics, words, members, STORY_OBJECTS)
     objects.update(story)
+    # Hit tracks last, so members the hit-only throws add append after the miss runs' table.
+    for name, hit_runs in pending_hits.items():
+        hit_variants = [em.encode_instances(machine, members) for machine in hit_runs]
+        if hit_variants != objects[name]['variants']:
+            objects[name]['hit_variants'] = hit_variants
+            objects[name]['hit_frames'] = max(machine.frame for machine in hit_runs)
     from hsltools.probes.effect_motion import digest
     return {'schema': SCHEMA, 'exe_sha256': EXE_SHA, 'native_execution': True, 'evidence_tier': 'static-derived',
             'sources': {'global_obs': digest(obs), 'objcomd': digest(COMMANDS.read_bytes()), 'process_def': digest(process_def),
@@ -283,6 +296,9 @@ def execute_packet(exe: Path) -> dict:
                        'one shared stream.',
                        'Objects alive after frame_limit (programs ending in objmOver or looping without an exit) are '
                        'open_ended: the script end removes them.',
+                       'variants are the miss run (hit roll [0x4c1418] not under the hit rate [0x4c6f58]); hit_variants, '
+                       'present only where they differ, are the same seeds with the roll under the rate (the hit-only throws '
+                       '0x405434／0x405495 fire), hit_frames their length.',
                        'sounds are [frame, WAV, hit_only] from a run with the hit roll under the hit rate (objmPlayHitSound '
                        'sounds only on a hit); variant_sounds, when present, lists them per variant.',
                        'The objcomd.txt word layout (one word per token, objmOver closing each block) is provisional.']}
@@ -305,7 +321,9 @@ def check(packet: dict) -> None:
                 raise ValueError(f'{name}: code／command／level OBS differ from STORY_OBJECTS')
         elif row['code'] != int(scope[name]['obj_code']) or row['command_code'] != scope[name]['command_code']:
             raise ValueError(f'{name}: code／command differ from the scope')
-        for instances in row['variants']:
+        if 'hit_variants' in row and len(row['hit_variants']) != len(row['variants']):
+            raise ValueError(f'{name}: hit_variants differ in count from variants')
+        for instances in row['variants'] + row.get('hit_variants', []):
             for instance in instances:
                 if instance['start'] < 0:
                     continue

@@ -535,8 +535,8 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何",
-      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），命中时按命中趟画命中才掷出的子对象（慌雨斬／星辰落牙破／殘影亂斬／血之宴），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何（無想冥殺 环的命中火花因此不画）、多段绝技整段按该击结果选命中趟",
+      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json，落空趟 variants＋17 个对象的命中趟 hit_variants，命中才掷出 0x405434／0x405495 比较 [0x4c1418]＜[0x4c6f58]，多段时 0x4047c7→0x4047e9 每段改写 [0x4c1418]）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
         "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",

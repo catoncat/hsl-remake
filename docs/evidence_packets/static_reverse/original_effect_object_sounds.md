@@ -35,7 +35,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | op 52 `objmPlayHitSound` → `0x4059cf` | `[0x4c1418] < [0x4c6f58]` 时才放；`0x4c6f58` 由守方对象插入 `0x406eb0` 写入命中率（`0x406f81`），`0x4c1418` 是命中滚动（`aniProcessHitMiss` 置 0＝命中、未造成变化置 200）——即"命中才响" |
 | op 1 `objmDelay` → `0x405e53` | `+0x8e = 1`、`+0xa0 = 计数`、保存指针并让出（与 aniDelay 同形） |
 | op 71／72 `objmInitMultiHitData`／`objmSetMultiHitData` → `0x405d6d`／`0x405d76` | `0x4c6f6a++`／`0x4c6f6a--, 0x4c6f68++`，不让出；`aniProcessHitMissMulti`（`0x4047c7`）等 `0x4c6f68` 非零才结算一击——多段绝技的结算时刻由对象程序驱动（重制仍按脚本游标结算） |
-| op 52 的放声调用返回 `0x4059f3`，op 51 返回 `0x4059c7` | 探针据此给记录标 `hit_only`；同一比较（`0x405434`／`0x405495`）还管命中才抛的子对象（objmThrowHit*），所以命中局只取声音，轨迹仍取落空局 |
+| op 52 的放声调用返回 `0x4059f3`，op 51 返回 `0x4059c7` | 探针据此给记录标 `hit_only`；同一比较（`0x405434`／`0x405495`）还管命中才抛的子对象（objmThrowHit*），命中局的轨迹另存 `hit_variants`（[对象命令程序包](original_objcomd_programs.md)「命中趟」），`variants` 仍是落空局 |
 | 过程表 slot 28 → `0x415dc0` `defProcEffectProcess1` | 效果对象（obj_Effect_*）出现时（插入延迟 `+0xae` 数完）`0x415e1a..0x415e24` 放模板 `+0x10`＝obj_X1；随后 `+0x46 = +0x18`（obj_X2）、`+0x44 = +0x14`（obj_Y1），留给 effProc 程序在各自事件点经 `0x415d40`（放 `+0x44` 一次后清零）／`0x415d90`（放 `+0x46` 一次后清零）／`0x415d70`（放 `+0x44` 不清零）播放 |
 
 附带读到的普攻受击音：

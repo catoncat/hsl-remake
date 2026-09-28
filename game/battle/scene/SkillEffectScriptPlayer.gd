@@ -359,7 +359,10 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event["variant"] = order % ObjcomdMotion.variants(name)
 		event["anchored"] = false
 		event["open_ended"] = ObjcomdMotion.open_ended(name)
-		event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(name)
+		# The settled strike's hit picks the hit run (hit-only throws); per-segment results of
+		# multi-hit skills are not modelled, the whole clip follows the strike.
+		event["hit"] = bool(timeline["hit"])
+		event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(name, bool(event["hit"]))
 	# Remaining off-stage objects fly to the target centre, arriving at the phase's next hit mark
 	# or after FLIGHT_TICKS (remake composition).
 	for event in timeline["events"]:
@@ -968,7 +971,7 @@ func _draw_object(sprite: Sprite2D, event: Dictionary, tick: float, origin: Vect
 func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> int:
 	var frame := int(tick - float(event["tick"]))
 	var displacement: Vector2 = Vector2.ZERO if bool(event["anchored"]) else event["position"]
-	var entries: Array = ObjcomdMotion.sprites_at(str(event["object"]), int(event["variant"]), frame) if event.get("source", "") == "objcomd" \
+	var entries: Array = ObjcomdMotion.sprites_at(str(event["object"]), int(event["variant"]), frame, bool(event.get("hit", false))) if event.get("source", "") == "objcomd" \
 		else EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"]), int(event.get("variant", 0))), frame)
 	for entry in entries:
 		var member := _native_member(str(entry["member"]))
