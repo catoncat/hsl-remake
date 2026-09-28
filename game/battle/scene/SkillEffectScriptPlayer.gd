@@ -839,17 +839,24 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 
 ## The numbers of a special shot, timed from its first result mark. A multi-hit receipt's
 ## strikes each spawn their own (0x4045d5 → 0x4084e0 the tick after the strike settles: the
-## strike's HP loss, MISS when it changed nothing — 0x4047eb clears the change words per
-## strike), held back to their own result mark; any other receipt keeps `whole`.
+## strike's HP loss — 0x4047eb clears the change words per strike), held back to their own
+## result mark; any other receipt keeps `whole`. A strike that changed nothing — both change
+## words, HP [0x4c6f74] and MP [0x4c6f78], zero (0x404611–0x404622; the hit flag is not read)
+## — spawns no number unless it is the last (0x404626: [esp+0x14] is set only when the dword
+## 0x4c6f68 reads zero at 0x4045fb); 0x404630 steps straight to sub-state 3. The last one
+## spawns MISS (kind 5, 0x404664) unless the shot's experience [0x4c13f0] is non-zero
+## (0x404656 → 0x404772, no number), as _last_strike_ticks times it.
 static func strike_spawns(strike: Dictionary, timeline: Dictionary, whole: Array[Dictionary]) -> Array[Dictionary]:
 	var parts: Array = strike.get("hit_segments", [])
 	var marks: Array = timeline.get("result_ticks", [])
 	if parts.is_empty() or marks.is_empty(): return whole
+	var experience: int = parts.reduce(func(sum, part): return sum + int(part.get("experience_points", 0)), 0)
 	var result: Array[Dictionary] = []
 	for index in range(mini(parts.size(), marks.size())):
 		var damage := int(parts[index]["actual_damage"])
 		var offset := int(marks[index]) - int(marks[0])
-		for entry in ResultNumberFloater.spawns(damage, 0, 0, damage == 0):
+		var miss := damage == 0 and index == parts.size() - 1 and experience == 0
+		for entry in ResultNumberFloater.spawns(damage, 0, 0, miss):
 			entry["hold"] = int(entry["hold"]) + offset
 			result.append(entry)
 	return result

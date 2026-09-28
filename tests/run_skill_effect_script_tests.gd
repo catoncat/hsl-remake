@@ -464,8 +464,12 @@ func geometry_and_flags() -> void:
 	var star_runs: Array = split["events"].filter(func(event): return event.has("strike_tick"))
 	star_runs.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]))
 	check(star_runs.map(func(event): return event["hit"]) == [true, false, true, false, false, true], "each star draws the hit run of the strike its op 72 queued")
-	var split_spawns := SkillEffectScriptPlayer.strike_spawns({"hit_segments": [{"actual_damage": 12}, {"actual_damage": 0}]}, stars, [])
-	check(split_spawns == [{"kind": "damage", "value": 12, "hold": 0}, {"kind": "miss", "value": 0, "hold": 11}], "each strike spawns its own number at its own result mark: %s" % [split_spawns])
+	# 0x404630: a strike before the last with both change words zero spawns no number; the last
+	# spawns MISS (0x404664) unless the shot's experience is non-zero (0x404772).
+	var split_spawns := SkillEffectScriptPlayer.strike_spawns({"hit_segments": [{"actual_damage": 0}, {"actual_damage": 12}, {"actual_damage": 0}]}, stars, [])
+	check(split_spawns == [{"kind": "damage", "value": 12, "hold": 11}, {"kind": "miss", "value": 0, "hold": 23}], "each strike spawns its own number at its own result mark; an unchanged strike before the last spawns none: %s" % [split_spawns])
+	var earned := SkillEffectScriptPlayer.strike_spawns({"hit_segments": [{"actual_damage": 12, "experience_points": 3}, {"actual_damage": 0}]}, stars, [])
+	check(earned == [{"kind": "damage", "value": 12, "hold": 0}], "an unchanged last strike spawns no MISS once the shot earned experience: %s" % [earned])
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
 	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
 	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)
