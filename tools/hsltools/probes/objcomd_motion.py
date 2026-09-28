@@ -120,6 +120,11 @@ def story_rows(exe_image, reader, obs: bytes, defines, sounds, metrics, words, m
 # the miss run's tracks stay `variants`, the hit run's go to `hit_variants` where they differ.
 HIT_ROLL, HIT_RATE = 0x4c1418, 0x4c6f58
 HIT_SOUND_RETURN = 0x4059f3
+# objmInitMultiHitData (op 71) → 0x405d6d: 0x4c6f6a++ (as a program's first word the init 0x40524d does it); objmSetMultiHitData (op 72) → 0x405d76: 0x4c6f6a--,
+# 0x4c6f68++ (neither yields). aniProcessHitMissMulti (0x4047af) holds the defense script while the dword
+# 0x4c6f68 (counters 0x4c6f68／0x4c6f6a) is non-zero and settles one strike (0x4047d5: 0x4c6f68--) on each
+# frame it finds 0x4c6f68 non-zero; both zero ends the wait (0x4047b8).
+MULTI_HIT_OPS = {0x40524d: 71, 0x405d6d: 71, 0x405d76: 72}
 
 
 class Machine(em.Machine):
@@ -130,7 +135,13 @@ class Machine(em.Machine):
         if at == em.SOUND:
             from unicorn.x86_const import UC_X86_REG_ESP
             self.sound_returns = getattr(self, 'sound_returns', []) + [self.read(m.reg_read(UC_X86_REG_ESP), '<I')]
+        elif at in MULTI_HIT_OPS:
+            self.events.append([self.frame, 'multi_hit', self.current['id'], MULTI_HIT_OPS[at]])
         super()._guard(m, at, size, data)
+
+    def multi_hits(self) -> list[list[int]]:
+        """[frame, op] of every op 71／72 the tree executed, in execution order."""
+        return [[event[0], event[3]] for event in self.events if event[1] == 'multi_hit']
 
     def heard(self) -> list[list]:
         """[frame, WAV, hit_only] of every sound the tree played, in call order."""
@@ -274,6 +285,11 @@ def execute_packet(exe: Path) -> dict:
                          'sounds': heard[0]}
         if any(one != heard[0] for one in heard):
             objects[name]['variant_sounds'] = heard
+        multi = [machine.multi_hits() for machine in hit_runs]
+        if multi[0] or any(multi):
+            objects[name]['multi_hit'] = multi[0]
+            if any(one != multi[0] for one in multi):
+                objects[name]['variant_multi_hit'] = multi
     story, story_digests = story_rows(exe_image, reader, obs, defines, sounds, metrics, words, members, STORY_OBJECTS)
     objects.update(story)
     # Hit tracks last, so members the hit-only throws add append after the miss runs' table.
@@ -301,6 +317,9 @@ def execute_packet(exe: Path) -> dict:
                        '0x405434／0x405495 fire), hit_frames their length.',
                        'sounds are [frame, WAV, hit_only] from a run with the hit roll under the hit rate (objmPlayHitSound '
                        'sounds only on a hit); variant_sounds, when present, lists them per variant.',
+                       'multi_hit, present only where the tree runs objmInitMultiHitData／objmSetMultiHitData, is [frame, op] '
+                       '(71 init 0x405d6d or, as the first word, 0x40524d; 72 set 0x405d76) of the hit run in execution order; variant_multi_hit lists them '
+                       'per variant when they differ.',
                        'The objcomd.txt word layout (one word per token, objmOver closing each block) is provisional.']}
 
 

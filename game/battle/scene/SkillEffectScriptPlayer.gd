@@ -48,6 +48,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
 ##   timing: provisional
 ##     (lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue;
 ##     EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored)
@@ -56,8 +57,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   audio: static-derived content/generated/hsl/skills/objcomd_motion.json
 ##   audio: static-derived content/generated/hsl/skills/effect_motion.json
 ##   audio: provisional
-##     (objects without a native track and the patterned angle／tornado inserts keep the static
-##     command_sounds／program_sounds)
+##     (objects without a native track keep the static command_sounds／program_sounds)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
@@ -86,6 +86,9 @@ const EMPTY_ATTACK_LEAD_TICKS := 30
 const RESULT_HOLD_TICKS := 40
 ## Flight time of an off-stage object when no aniProcessHitMiss follows in its phase.
 const FLIGHT_TICKS := 30
+## Phase 18 of aniProcessHitMissMulti: a strike's check tick to the next check (sub-states
+## 0 → 1 → 3 → 0: 0x4047d5, 0x4045d5, 0x4045c7).
+const MULTI_HIT_STRIKE_TICKS := 3
 ## An untracked effCode object (its effProc* program stopped at an unreviewed callee in the
 ## native probe — effect_motion.json `unrestored`) stays at least this long and no longer than
 ## the script's remaining waits, then fades over EFFECT_FADE_TICKS.
@@ -275,8 +278,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 				_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), true, number(args[7]))
 		"aniInsertSpecialBG":
 			timeline[phase + "_background"] = str(args[0])
-		"aniProcessHitMiss", "aniProcessHitMissMulti":
+		"aniProcessHitMiss":
 			timeline["hit_ticks"].append(cursor)
+		"aniProcessHitMissMulti":
+			cursor = _multi_hit_wait(timeline, cursor)
 		"aniShowHitResult", "aniShowHitResultNoWait":
 			timeline["result_ticks"].append(cursor)
 		"aniDoublePageMode":
@@ -294,6 +299,52 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 	return cursor
 
 
+## aniProcessHitMissMulti (op 6 of 0x404ee8 → 0x403e9e) at `cursor` puts the defender in
+## phase 18 (0x4045a4) and yields; from the next tick its sub-state 0 (0x4047af) reads the dword
+## 0x4c6f68 — the settle counter 0x4c6f68 and the pending counter 0x4c6f6a. Zero: back to the
+## script (0x4047b8 clears phase and sub-state). Settle counter non-zero: one strike settles
+## (0x4047d5: 0x4c6f68--, then the single-strike body 0x4047e9) and the next tick (sub-state 1,
+## 0x4045d5) spawns its numbers (0x4084e0; the last strike's with the defender as waiter),
+## sub-state 3 resets to 0 a tick later, so the next check comes three ticks after a strike.
+## The counters count from the defender insert (0x406ecc clears them): each defense object's
+## objmInitMultiHitData (op 71, 0x4c6f6a++; a program's first word, counted at creation by
+## 0x40524d before any insertion delay) and objmSetMultiHitData (op 72, 0x4c6f6a--,
+## 0x4c6f68++) at the tick its native run executed it (`multi_hit_ops`, _insert_sounds). Each
+## strike appends a hit mark and a result mark (its numbers); the next cursor is the check that
+## reads both counters zero. Without an op 72 among the objects the strike settles at the
+## cursor. A counter no program brings back to zero ends the wait once no op is left (the
+## original would hold until the teardown). An op on the tick of a check counts on that tick,
+## and the last strike's waiter release is not read (provisional).
+static func _multi_hit_wait(timeline: Dictionary, cursor: int) -> int:
+	var ops: Array = timeline.get("multi_hit_ops", []).duplicate()
+	if not ops.any(func(op): return int(op[1]) == 72):
+		timeline["hit_ticks"].append(cursor)
+		return cursor
+	ops.sort_custom(func(a, b): return int(a[0]) < int(b[0]))
+	var settle := 0
+	var pending := 0
+	var index := 0
+	var tick := cursor + 1
+	while true:
+		while index < ops.size() and int(ops[index][0]) <= tick:
+			if int(ops[index][1]) == 71:
+				pending += 1
+			else:
+				pending -= 1
+				settle += 1
+			index += 1
+		if settle > 0:
+			timeline["hit_ticks"].append(tick)
+			timeline["result_ticks"].append(tick + 1)
+			settle -= 1
+			tick += MULTI_HIT_STRIKE_TICKS
+			continue
+		if pending == 0 or index >= ops.size():
+			break
+		tick += 1
+	return tick
+
+
 ## The patterned multi-object inserts (line, ring, oval, tornado); false for any other op.
 static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: String, op: String, args: Array, cursor: int) -> bool:
 	match op:
@@ -305,7 +356,7 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 			var count := number(args[3])
 			for index in range(count):
 				var angle := TAU * index / float(maxi(count, 1))
-				var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index, -1, true)
+				var event := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor + number(args[4]) + number(args[5]) * index)
 				if event.is_empty(): continue
 				event["motion"] = "radial"
 				event["direction"] = Vector2(cos(angle), sin(angle))
@@ -324,7 +375,7 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 		"aniInsertTornadoObject":
 			for index in range(number(args[10])):
 				var centre := Vector2(number(args[1]), number(args[2]) + number(args[3]) * index)
-				var event := _insert(timeline, data, phase, str(args[0]), centre, cursor, -1, true)
+				var event := _insert(timeline, data, phase, str(args[0]), centre, cursor)
 				if event.is_empty(): continue
 				event["motion"] = "spin"
 				event["centre"] = centre
@@ -399,6 +450,7 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 			event["expire"] = cut
 		kept.append(event)
 	timeline["events"] = kept
+	timeline.erase("multi_hit_ops")
 	timeline["darken_tick"] = darken
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
@@ -529,10 +581,10 @@ static func _mark_random(timeline: Dictionary, first: int) -> void:
 ## `effect` phase the position is a displacement and the object's hold and fade are settled by
 ## compile_effect once the script's length is known. The object's own sounds are scheduled
 ## first (`_insert_sounds`), so an object whose frames cannot be drawn still sounds.
-static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1, patterned: bool = false) -> Dictionary:
+static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1) -> Dictionary:
 	var object: Dictionary = data["objects"].get(object_name, {})
 	var first_sound: int = timeline["events"].size()
-	_insert_sounds(timeline, data, phase, object_name, object, tick, sound_tick, patterned)
+	_insert_sounds(timeline, data, phase, object_name, object, tick, sound_tick)
 	for index in range(first_sound, timeline["events"].size()):
 		timeline["events"][index]["source_tick"] = tick
 	var frames: Array = []
@@ -566,12 +618,14 @@ static func _insert(timeline: Dictionary, data: Dictionary, phase: String, objec
 ## - a special object (objcomd_motion.json `sounds`, hit run): objmPlaySound (0x4059b7) always
 ##   and objmPlayHitSound (0x4059cf, `hit_only`) only on a hit — 氣刃斬's impact bursts
 ##   obj_Special01_03 play WAV\BOMB0017.WAV as they appear.
-## Objects without a track, and the patterned inserts that keep their angle／tornado geometry
-## instead of the track (`patterned`: 無想冥殺's ring, whose recorded cues would land after the
-## remake's teardown because the aniProcessHitMissMulti wait on the ring is not run), keep the
-## static tables: obj_X1 once per instruction at `sound_tick`, `program_sounds` and
-## `command_sounds` at the insertion plus the read delay.
-static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, object: Dictionary, tick: int, sound_tick: int, patterned: bool = false) -> void:
+## The patterned inserts (angle rings, tornado columns) keep their geometry instead of the
+## track but take its sounds and multi-hit ops the same way: every instance runs the program
+## (無想冥殺's ring obj_Special06_06 plays SHOOT008／BOMB0025 and sets the multi-hit counter,
+## which the aniProcessHitMissMulti wait follows). A defense object's op 71／72 ticks go to
+## `multi_hit_ops` (_multi_hit_wait). Objects without a track keep the static tables: obj_X1
+## once per instruction at `sound_tick`, `program_sounds` and `command_sounds` at the
+## insertion plus the read delay.
+static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, object: Dictionary, tick: int, sound_tick: int) -> void:
 	var cues: Array = []
 	if not timeline.has("sound_order"):
 		timeline["sound_order"] = {}
@@ -580,12 +634,18 @@ static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String
 		timeline["sound_order"][object_name] = order + 1
 		for sound in EffectObjectMotion.sounds(object_name, order):
 			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
-	elif phase != "effect" and not patterned and ObjcomdMotion.tracked(object_name):
+	elif phase != "effect" and ObjcomdMotion.tracked(object_name):
 		timeline["sound_order"][object_name] = order + 1
 		for sound in ObjcomdMotion.sounds(object_name, order):
 			if bool(sound[2]) and not bool(timeline["hit"]):
 				continue
 			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
+		if phase == "defense":
+			for op in ObjcomdMotion.multi_hits(object_name, order):
+				if not timeline.has("multi_hit_ops"):
+					timeline["multi_hit_ops"] = []
+				var created := sound_tick if sound_tick >= 0 and int(op[0]) == 0 and int(op[1]) == 71 else tick
+				timeline["multi_hit_ops"].append([created + int(op[0]), int(op[1])])
 	else:
 		if phase == "effect" and str(object.get("insert_sound", "")) != "":
 			var key := str(object["insert_sound"]) + "@" + str(sound_tick)

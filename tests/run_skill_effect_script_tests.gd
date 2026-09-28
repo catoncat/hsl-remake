@@ -329,15 +329,10 @@ func object_command_sounds() -> void:
 			var order := {}
 			for event in timeline["events"]:
 				if event["kind"] != "object": continue
-				var recorded: Array = []
-				if str(event["motion"]) in ["radial", "spin"]:
-					# Patterned inserts keep their geometry and the static command sounds.
-					for sound in manifest["objects"][event["object"]]["command_sounds"]:
-						recorded.append([int(sound["delay_ticks"]), str(sound["member"]), bool(sound["hit_only"])])
-				else:
-					var variant: int = order.get(event["object"], 0)
-					order[event["object"]] = variant + 1
-					recorded = ObjcomdMotion.sounds(event["object"], variant)
+				# Patterned inserts keep their geometry but sound like the track, as every object does.
+				var variant: int = order.get(event["object"], 0)
+				order[event["object"]] = variant + 1
+				var recorded: Array = ObjcomdMotion.sounds(event["object"], variant)
 				for sound in recorded:
 					if bool(sound[2]) and not hit:
 						continue
@@ -452,10 +447,10 @@ func geometry_and_flags() -> void:
 	var flowers: Dictionary = player.compile_row("special:magicOTHER:magicCode07", true, 5)  # 百花撩亂
 	check(flowers["no_dark_bg"] and flowers["double_page_tick"] == 30 + 26, "aniNoSpecialDarkBG and the double page after the empty attack lead + 26")
 	var stars: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5)  # 星辰落牙破
-	check(stars["hit_ticks"].size() == 1 and stars["impact_tick"] == 30 + 20 + 40 + 10, "aniProcessHitMissMulti marks the impact like aniProcessHitMiss")
+	check(stars["hit_ticks"] == [105, 116, 128, 140, 153, 165] and stars["impact_tick"] == 105, "aniProcessHitMissMulti settles one strike per recorded objmSetMultiHitData of the obj_Special24_02 stars: %s" % [stars["hit_ticks"]])
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
 	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
-	check(stars["result_ticks"].is_empty() and stars["result_tick"] == stars["impact_tick"] and stars["complete_tick"] == 100 + 160 + 16, "a script without aniShowHitResult shows the result on the hit mark and completes when its last delay ends")
+	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 165 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 160 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
 	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
 	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)

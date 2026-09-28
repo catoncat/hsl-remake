@@ -80,3 +80,12 @@ static func track(object_name: String, variant: int = 0, hit: bool = false) -> D
 
 static func sprites_at(object_name: String, variant: int, frame: int, hit: bool = false) -> Array:
 	return EffectObjectMotion.sprites_at(track(object_name, variant, hit), frame)
+
+
+## [frame, op] of the variant's objmInitMultiHitData (71, 0x4c6f6a++) and objmSetMultiHitData
+## (72, 0x4c6f6a--, 0x4c6f68++) in the probe's hit run; [] for a program that runs neither.
+static func multi_hits(object_name: String, variant: int = 0) -> Array:
+	var row: Dictionary = packet()["objects"].get(object_name, {})
+	if row.has("variant_multi_hit"):
+		return row["variant_multi_hit"][variant % (row["variant_multi_hit"] as Array).size()]
+	return row.get("multi_hit", [])

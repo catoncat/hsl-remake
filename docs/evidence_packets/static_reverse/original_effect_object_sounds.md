@@ -1,6 +1,6 @@
 # 特效对象自带的声音：绝技对象的命令程序（objcomd.txt）与法术效果对象的程序音
 
-> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers and the mixer channel allocation read from hsl01.exe, sound cues recorded by native execution (objcomd_motion.json／effect_motion.json); provisional: patterned inserts and untracked objects keep the static tables · status: live · functions: 0x4038a0, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180, 0x42f164, 0x4593a0, 0x459b60, 0x45a390 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: resource-derived: objcomd.txt／OBJCOMD.H／global.obs／effects.txt／PROCESS.DEF from hsl.pak; static-derived: object-process handlers and the mixer channel allocation read from hsl01.exe, sound cues recorded by native execution (objcomd_motion.json／effect_motion.json); provisional: untracked objects keep the static tables, and the last multi-hit strike's waiter release is not read · status: live · functions: 0x4038a0, 0x403e9e, 0x4045a4, 0x4047af, 0x4051d0, 0x406d20, 0x406eb0, 0x409610, 0x409760, 0x409790, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x42c180, 0x42f164, 0x4593a0, 0x459b60, 0x45a390 · tools: hsltools/assets/skill_effects.py, hsltools/data/first_skill.py, hsltools/data/special_effect_scripts.py, hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -34,7 +34,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | op 51 `objmPlaySound` → `0x4059b7` | `0x42c180(id, 0)` 放声，`jmp 0x405df1` 继续取下一条（不让出） |
 | op 52 `objmPlayHitSound` → `0x4059cf` | `[0x4c1418] < [0x4c6f58]` 时才放；`0x4c6f58` 由守方对象插入 `0x406eb0` 写入命中率（`0x406f81`），`0x4c1418` 是命中滚动（`aniProcessHitMiss` 置 0＝命中、未造成变化置 200）——即"命中才响" |
 | op 1 `objmDelay` → `0x405e53` | `+0x8e = 1`、`+0xa0 = 计数`、保存指针并让出（与 aniDelay 同形） |
-| op 71／72 `objmInitMultiHitData`／`objmSetMultiHitData` → `0x405d6d`／`0x405d76` | `0x4c6f6a++`／`0x4c6f6a--, 0x4c6f68++`，不让出；`aniProcessHitMissMulti`（`0x4047c7`）等 `0x4c6f68` 非零才结算一击——多段绝技的结算时刻由对象程序驱动（重制仍按脚本游标结算） |
+| op 71／72 `objmInitMultiHitData`／`objmSetMultiHitData` → `0x405d6d`／`0x405d76` | `0x4c6f6a++`／`0x4c6f6a--, 0x4c6f68++`，不让出；程序首字为 71 时由首帧 `0x40524d` 在插入延迟之前计数。`aniProcessHitMissMulti`（`0x403e9e`）让守方进相位 18（`0x4045a4`）：子态 0（`0x4047af`）每 tick 读双字 `0x4c6f68`，为零回脚本（`0x4047b8`），`0x4c6f68` 非零就减一结算一击（`0x4047d5`→`0x4047e9`），下一 tick 子态 1（`0x4045d5`）出该击数字（最后一击以守方为 waiter），子态 3 再一 tick 复位，所以相邻两击至少隔 3 tick；计数由守方插入 `0x406ecc` 清零。探针记下每个对象的 op 71／72 帧（`objcomd_motion.json` `multi_hit`，19 个对象），重制守方脚本按记录逐击结算、片段随之变长；无 op 72 的绝技照旧按游标 |
 | op 52 的放声调用返回 `0x4059f3`，op 51 返回 `0x4059c7` | 探针据此给记录标 `hit_only`；同一比较（`0x405434`／`0x405495`）还管命中才抛的子对象（objmThrowHit*），命中局的轨迹另存 `hit_variants`（[对象命令程序包](original_objcomd_programs.md)「命中趟」），`variants` 仍是落空局 |
 | 过程表 slot 28 → `0x415dc0` `defProcEffectProcess1` | 效果对象（obj_Effect_*）出现时（插入延迟 `+0xae` 数完）`0x415e1a..0x415e24` 放模板 `+0x10`＝obj_X1；随后 `+0x46 = +0x18`（obj_X2）、`+0x44 = +0x14`（obj_Y1），留给 effProc 程序在各自事件点经 `0x415d40`（放 `+0x44` 一次后清零）／`0x415d90`（放 `+0x46` 一次后清零）／`0x415d70`（放 `+0x44` 不清零）播放 |
 
@@ -127,8 +127,8 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 ## 边界
 
 - **计时**：记录帧从对象创建起算（探针的帧模型见 [效果对象运动包](original_effect_motion.md) §帧模型与公共部分，±1 帧）；随机程序的声音是种子样本，原版所有实例共用一条随机流。
-- **图案插入**：角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音也留在静态表。無想冥殺 的 Special06_06 环即此类：它的程序自设半径 170 px（`objmSetRoundPos`），记录的 SHOOT008／BOMB0025 在插入后 99..153 tick；重制把守方脚本的 `aniProcessHitMissMulti` 当即时（原版等对象程序 `objmSetMultiHitData` 置 `0x4c6f68`，见 §2），收场 tick 428 早于 330＋99，按记录整行会无声，故保留静态 2／3 tick（provisional）。替换条件：多段绝技的结算等待接入后改按记录。
+- **图案插入**：角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音与 op 71／72 取记录（每个实例都跑程序）。無想冥殺 的 Special06_06 环：程序自设半径 170 px（`objmSetRoundPos`），8 个实例在插入后 128..151 帧各执行一次 op 72，守方脚本的 `aniProcessHitMissMulti` 等到这 8 击结算完（种子 7：458..484），SHOOT008／BOMB0025 落在 429..483，片段收场 584 之内。
 - **命中才抛的子对象**：`objmThrowHit*`（`0x405434`／`0x405495`）只在命中时抛出（慌雨斬、星辰落牙破、殘影亂斬、無想冥殺 的火花），轨迹取落空局，所以命中时这些子对象重制没画；声音不受影响。
 - **叠声**：原版 9 个通道全局共用（脚本 aniPlaySound、界面音效也经 `0x45a390`）；重制的 9 个声部只给特效播放器自己的声音，其它声音走各自的播放器、不占这 9 个。
-- **不支持的结论**：不证明音量、声像、叠声的混音与原版一致；不证明多段绝技 `aniProcessHitMissMulti` 的结算时刻（重制仍按脚本游标）。
+- **不支持的结论**：不证明音量、声像、叠声的混音与原版一致；多段绝技的结算时刻在同一 tick 内对象与守方的处理先后、最后一击 waiter 释放的时长未读（±1..3 tick，provisional），每击的伤害与命中仍用整次结算的收据（sim 不分段），每段改写 `[0x4c1418]` 的选趟未按段区分。
 - 效果对象的画面按原生 effProc 轨迹运动（[效果对象运动包](original_effect_motion.md)），声音与画面来自同一次执行。
