@@ -306,7 +306,7 @@ func _run_level_5_preview() -> void:
 		await process_frame
 		frames += 1
 	_assert_eq(message_ids, ["899", "900", "901"] as Array[String], "STORY005 pages its three lines in script order")
-	_assert_eq(str(speakers.get("899", "")), "漢克斯：", "漢克斯 notices the encirclement")
+	_assert_eq(str(speakers.get("899", "")), "漢克斯:", "漢克斯 notices the encirclement")
 	_assert_eq(coordinator.skipped_records.size(), 0, "no STORY005 token is skipped")
 	var leonard = scene.actor_node_for_unit("leonard")
 	_assert_true(leonard != null and leonard.position.is_equal_approx(Vector2(384 + 16, 288 + 16)), "雷歐納德 ends on his actWalkWait target (384,288)")
@@ -393,8 +393,8 @@ func _run_level_12_preview() -> void:
 		frames += 1
 	_assert_true(coordinator.story_finished, "the preview should reach first_control_marker within the frame budget")
 	_assert_eq(message_ids, ["1701", "1702", "1703", "1704", "1705", "1706", "1707", "1708", "1709", "728", "1710"] as Array[String], "STORY012 pages its eleven lines in script order")
-	_assert_eq(str(speakers.get("1702", "")), "雷特：", "雷特 speaks 1702 (slot 5)")
-	_assert_eq(str(speakers.get("1704", "")), "嚎：", "嚎 speaks 1704 (slot 6)")
+	_assert_eq(str(speakers.get("1702", "")), "雷特:", "雷特 speaks 1702 (slot 5)")
+	_assert_eq(str(speakers.get("1704", "")), "嚎:", "嚎 speaks 1704 (slot 6)")
 	_assert_eq(coordinator.skipped_records.size(), 0, "no STORY012 token is skipped")
 	var effects: Dictionary = {}
 	for record in coordinator.story_records:
@@ -530,7 +530,7 @@ func _run_camp_and_hall_chains() -> void:
 	var camp61 := await _play_story_scene("res://content/battles/story_061.json", 3)
 	_assert_eq(int(camp61["initial_cast"]), 4, "STORY061: 雷歐納德, 緹娜, 琥 and 漢克斯 at the camp")
 	_assert_eq(camp61["messages"], ["847", "848", "849", "850", "380", "851", "852", "853", "854", "855", "856", "857"] as Array[String], "STORY061 pages its twelve lines in script order")
-	_assert_eq(str(camp61["speakers"].get("847", "")), "漢克斯：", "漢克斯 reports first (847)")
+	_assert_eq(str(camp61["speakers"].get("847", "")), "漢克斯:", "漢克斯 reports first (847)")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 3,gameBigMapLevel returns to the big map")
 	var world61: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world61.get("current_point", 0)), 3, "the party stands at 盜賊洞窟 (point 3)")
@@ -542,7 +542,7 @@ func _run_camp_and_hall_chains() -> void:
 	var camp62 := await _play_story_scene("res://content/battles/story_062.json", 6)
 	_assert_eq(int(camp62["initial_cast"]), 3, "STORY062: 漢克斯, 緹娜 and 雷歐納德 (琥 is not placed)")
 	_assert_eq((camp62["messages"] as Array[String]).size(), 14, "STORY062 pages its fourteen message tokens (988 twice)")
-	_assert_eq(str(camp62["speakers"].get("980", "")), "緹娜：", "緹娜 opens by questioning 漢克斯 (980)")
+	_assert_eq(str(camp62["speakers"].get("980", "")), "緹娜:", "緹娜 opens by questioning 漢克斯 (980)")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/battles/story_063.json", "actSetNextPlayLevelEvent 6,63 chains to the throne hall")
 	(camp62["scene"] as Node).queue_free()
 	await process_frame
@@ -550,7 +550,7 @@ func _run_camp_and_hall_chains() -> void:
 	var hall63 := await _play_story_scene("res://content/battles/story_063.json", 6)
 	_assert_eq(int(hall63["initial_cast"]), 4, "STORY063: 克里歐司, two 027 attendants and a 023 guard")
 	_assert_eq(hall63["messages"], ["993", "994", "678", "995", "380", "996", "997", "998", "999", "1000", "1001", "1002", "1003", "678", "380", "1004", "1005", "1006"] as Array[String], "STORY063 pages its eighteen lines including the five actShapeMessage tokens")
-	_assert_eq(str(hall63["speakers"].get("997", "")), "???：", "actShapeMessage names its speaker by resource id 306 (???)")
+	_assert_eq(str(hall63["speakers"].get("997", "")), "???:", "actShapeMessage names its speaker by resource id 306 (???)")
 	_assert_true(str(hall63["portrait_faces"].get("997", "")).ends_with("FACE0054.png"), "the first spy speaks under the script's FACE0054 face")
 	_assert_true(str(hall63["portrait_faces"].get("1002", "")).ends_with("FACE0008.png"), "the second spy speaks under FACE0008")
 	# Dialogue handler 0x414280: only a script-faced line (actShapeMessage, flag 0x4000 via
@@ -558,7 +558,7 @@ func _run_camp_and_hall_chains() -> void:
 	_assert_eq(float(hall63["panel_tops"].get("997", -1.0)), 20.0, "the first spy's actShapeMessage line takes the top slot (y 20)")
 	_assert_eq(float(hall63["panel_tops"].get("1002", -1.0)), 20.0, "the second spy's actShapeMessage line takes the top slot (y 20)")
 	_assert_eq(float(hall63["panel_tops"].get("999", -1.0)), 320.0, "克里歐司's actMessage answer keeps the bottom slot (y 320)")
-	_assert_eq(str(hall63["speakers"].get("999", "")), "克里歐司：", "克里歐司 answers between the spies' lines")
+	_assert_eq(str(hall63["speakers"].get("999", "")), "克里歐司:", "克里歐司 answers between the spies' lines")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 6,gameBigMapLevel returns to the big map")
 	var world63: Dictionary = CampaignProgress.pending.get("world", {})
 	_assert_eq(int(world63.get("current_point", 0)), 6, "the party stands at 席達鎮 (point 6) after the hall scene")
@@ -569,7 +569,7 @@ func _run_camp_and_hall_chains() -> void:
 	var camp64 := await _play_story_scene("res://content/battles/story_064.json", 7)
 	_assert_eq(int(camp64["initial_cast"]), 5, "STORY064: the five-member party with 雪拉")
 	_assert_eq((camp64["messages"] as Array[String]).size(), 19, "STORY064 pages its nineteen message tokens")
-	_assert_eq(str(camp64["speakers"].get("1036", "")), "雷歐納德：", "雷歐納德 asks 雪拉 first (1036)")
+	_assert_eq(str(camp64["speakers"].get("1036", "")), "雷歐納德:", "雷歐納德 asks 雪拉 first (1036)")
 	_assert_eq(str(CampaignProgress.pending.get("scenario_path", "")), "res://content/world/world_map_scene.json", "actSetNextPlayLevelEvent 7,gameBigMapLevel returns to the big map")
 	_assert_eq(int((CampaignProgress.pending.get("world", {}) as Dictionary).get("current_point", 0)), 7, "the party stands at 寧靜之森 (point 7)")
 	(camp64["scene"] as Node).queue_free()

@@ -466,11 +466,11 @@ func installed_dead_message() -> void:
 		if (word["messages"] as Array).is_empty():
 			check(not view.dialogue_active() and tail.stage == "fade" and actor.visible, "the −1 clear (level 24's 024) fades the victim without its row pair 374／375")
 		elif word == scripted:
-			check(view.dialogue_active() and view.current_message_id() == "375" and view.dialogue_view.speaker_label.text == "重裝兵：" and view.dialogue_view.body_label.text == "團長，抱歉我不行了........", "a run-time script word resolves its id 375 and speaker id 377 through the level's message texts")
+			check(view.dialogue_active() and view.current_message_id() == "375" and view.dialogue_view.speaker_label.text == "重裝兵:" and view.dialogue_view.body_label.text == "團長，抱歉我不行了........", "a run-time script word resolves its id 375 and speaker id 377 through the level's message texts")
 			confirm(scene)
 			check(tail.stage == "fade" and not view.dialogue_active(), "one confirmation releases the scripted line")
 		else:
-			check(view.dialogue_active() and view.current_message_id() == "373" and view.dialogue_view.speaker_label.text == "村民：" and actor.visible, "the installed word (level 34's villager) speaks 373 under its 稱號, not the row's 372")
+			check(view.dialogue_active() and view.current_message_id() == "373" and view.dialogue_view.speaker_label.text == "村民:" and actor.visible, "the installed word (level 34's villager) speaks 373 under its 稱號, not the row's 372")
 			confirm(scene)
 			check(tail.stage == "fade" and not view.dialogue_active(), "one confirmation releases the installed line")
 		scene._process(tail.FADE_SECONDS)

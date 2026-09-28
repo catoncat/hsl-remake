@@ -9,6 +9,7 @@ extends Control
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V01
 ##     (board bottom edge y≈320, portrait／name／text zones)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
+##     (name row: proc 0x414280 writes "@3"＋name＋":@1#" (0x476c50／0x476c5c), then 0x413960 wraps it)
 ##   layout: runtime-measured docs/evidence_packets/static_reverse/original_dialogue_board.md
 ##     (message 369 on the 2026-09-24 recording: rows at y 342／370／398／426, 19 glyphs a row, the name scrolled away)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
@@ -18,7 +19,7 @@ extends Control
 ##     (name, body and ▼ in FONT.24 via 0x413040／0x4147f1; cell top at window top + 28·row)
 ##   layout: remake-invented
 ##     (OPT-WORDBREAK 保護專名: protected_words.json names kept whole where the original's 38-byte break cuts
-##     them; full-width colon, original half-width)
+##     them)
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
@@ -344,7 +345,7 @@ func face_texture(actor_id: String) -> Texture2D:
 func show_message(message_key: String, speaker: String, body: String, actor_id: String) -> void:
 	position = Vector2(0, PANEL_TOP_BOTTOM_SLOT)
 	_show_body(message_key, body, true)
-	speaker_label.text = speaker + "："
+	speaker_label.text = speaker + ":"
 	if _portraits.has(actor_id):
 		BattleUISkin.show_shape(portrait, load(str(_portraits[actor_id]["res_path"])))
 		portrait.show()
@@ -366,7 +367,7 @@ func show_message(message_key: String, speaker: String, body: String, actor_id: 
 func show_face_message(message_key: String, speaker: String, body: String, shape_member: String) -> void:
 	position = Vector2(0, PANEL_TOP_TOP_SLOT)
 	_show_body(message_key, body, true)
-	speaker_label.text = speaker + "："
+	speaker_label.text = speaker + ":"
 	if _faces.has(shape_member):
 		BattleUISkin.show_shape(portrait, load(str((_faces[shape_member] as Dictionary)["res_path"])))
 		portrait.show()

@@ -291,7 +291,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleAftermath](../game/battle/scene/BattleAftermath.gd) | strings | the roll is a hash of exchange sequence and victim instead of the original global PRNG: no combat RNG spent, a reload speaks the same line |
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | strings | OPT-INFO=公開 only: cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects the original shows no glyph for |
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | timing | the borrowed 氣刃斬 staging used only by synthetic clips |
-| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | layout | OPT-WORDBREAK 保護專名: protected_words.json names kept whole where the original's 38-byte break cuts them; full-width colon, original half-width |
+| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | layout | OPT-WORDBREAK 保護專名: protected_words.json names kept whole where the original's 38-byte break cuts them |
 | [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | timing | OPT-PACE 快／極快: a player confirm during the wipe or the scroll acts at once — the original, and OPT-PACE 原版, reads no confirm until the page is still |
 | [BattleEquipmentView](../game/battle/scene/BattleEquipmentView.gd) | layout | 355×70 detail scroll area |
 | [BattleEquipmentView](../game/battle/scene/BattleEquipmentView.gd) | strings | detail captions |

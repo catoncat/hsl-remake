@@ -383,7 +383,7 @@ func _show_dialogue(key: String, speaker: String, body: String, portrait_key: St
 	else:
 		if portrait_key != "":
 			records.append({"kind": "portrait_missing", "key": portrait_key, "speaker": speaker})
-		_dialogue.show_narration(key, "%s：%s" % [speaker, body] if speaker != "" else body, speaker == "")
+		_dialogue.show_narration(key, "%s:%s" % [speaker, body] if speaker != "" else body, speaker == "")
 	_place_dialogue(top)
 
 

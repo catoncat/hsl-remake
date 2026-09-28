@@ -386,7 +386,7 @@ func _run_game_clear_screen() -> void:
 		frames += 1
 	summary = scene.summary()
 	_assert_eq(summary.get("epilogue_messages", []), ["2396"] as Array[String], "緹娜's first line (2396) opens the dialogue")
-	_assert_eq(str(summary.get("epilogue_speaker", "")), "緹娜：", "the board names 緹娜")
+	_assert_eq(str(summary.get("epilogue_speaker", "")), "緹娜:", "the board names 緹娜")
 	_assert_eq(int(summary.get("dark_level", 0)), 16, "the dark screen is full by then (6 ticks a level)")
 	while str(scene.summary().get("phase", "")) == "epilogue" and frames < 3000:
 		if bool(scene.summary().get("epilogue_waiting_confirm", false)):

@@ -43,7 +43,7 @@ func dialogue_contracts() -> void:
 	var text := "首行\n第二行\n第三行\n第四行\n第五行\n第六行\n末行。"
 	dialogue.show_message("long", "雷歐納德", text, "001")
 	check(dialogue.body_label.get_line_count() == 7 and dialogue.row_count() == 8, "the source's hard breaks are the body rows, under the name row")
-	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德：", "首行", "第二行", "第三行"]), "the first page is the name row and three body rows")
+	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德:", "首行", "第二行", "第三行"]), "the first page is the name row and three body rows")
 	# OPT-PACE 原版 (0x414280 reads confirm only in state 2): the wipe holds a player confirm until
 	# the page is still; 快 takes it at once.
 	check(dialogue.holds_confirm(), "OPT-PACE 原版: a confirm during the wipe is not read")
@@ -70,7 +70,7 @@ func dialogue_contracts() -> void:
 	# Message 369 on the 2026-09-24 original recording (398.6–400.6 s): 19-glyph rows with 「！」
 	# opening row 2, then a four-row scroll to body rows 4–7.
 	dialogue.show_message("369", "雷歐納德", messages["369"], "001")
-	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德：", "..............原來..............弟兄們", "！你們也聽到了，我們已經被捨棄了，沒有", "人會來幫助我們，也沒有人會來解救我們。"]), "369 breaks into rows exactly as the recording shows: %s" % str(RuntimeReadback.window_rows(dialogue)))
+	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德:", "..............原來..............弟兄們", "！你們也聽到了，我們已經被捨棄了，沒有", "人會來幫助我們，也沒有人會來解救我們。"]), "369 breaks into rows exactly as the recording shows: %s" % str(RuntimeReadback.window_rows(dialogue)))
 	check(dialogue.advance_page() and RuntimeReadback.window_rows(dialogue) == PackedStringArray(["看看地上，這些因此而犧牲的同伴，為了他", "們，也為了我們自己，我們絕不能就此放棄", "，現在只有一條路可走，想活命的就跟著我", "!!"]), "369's confirm scrolls four rows to the recording's last page: %s" % str(RuntimeReadback.window_rows(dialogue)))
 	check(not dialogue.advance_page(), "369 has two pages")
 	for id in ["363", "369", "370"]:
@@ -121,7 +121,7 @@ func dialogue_contracts() -> void:
 	dialogue._process(dialogue.page_wipe_seconds())
 	check(dialogue.text_window.size.y == dialogue.WINDOW_PIXELS, "the whole window is wiped in after %.3f s" % dialogue.page_wipe_seconds())
 	dialogue.show_message("wipe2", "拉爾斯帝國兵", "報告。", "021")
-	check(ghosts.call() == 1 and dialogue.speaker_label.text == "拉爾斯帝國兵：", "a speaker change leaves the old board dissolving out while the new message is already current")
+	check(ghosts.call() == 1 and dialogue.speaker_label.text == "拉爾斯帝國兵:", "a speaker change leaves the old board dissolving out while the new message is already current")
 	dialogue._process(0.0)
 	check(dialogue.modulate.a == 0.0 and dialogue._board_clock < 0.0, "the new board waits for the old one to dissolve out")
 	dialogue.clear_message()
@@ -405,7 +405,7 @@ func aftermath_contracts() -> void:
 		guard += 1
 		aftermath.advance(1.0 / 60.0, runtime)
 		if aftermath.dialogue_active():
-			check(dialogue.visible and dialogue.speaker_label.text == "魔騎士：", "the 049 line is shown with its speaker (shared portrait row)")
+			check(dialogue.visible and dialogue.speaker_label.text == "魔騎士:", "the 049 line is shown with its speaker (shared portrait row)")
 			aftermath.advance_dialogue()
 	check(not aftermath.busy() and aftermath.stage == "idle" and guard < 600, "the exchange completes (fade, line, fade) instead of locking combat_busy")
 	check(not runtime.actors["stranger"].visible and not runtime.actors["sheila"].visible and not runtime.actors["rider"].visible, "every fallen actor is hidden after its fade")
@@ -471,7 +471,7 @@ func install_dead_message_contracts() -> void:
 		if aftermath.dialogue_active():
 			spoken.append(dialogue.speaker_label.text + aftermath.current_message_id())
 			aftermath.advance_dialogue()
-	check(spoken == ["村民：373", "重裝兵：" + plain_line, "拉爾斯帝國兵：" + packed_line] and not aftermath.busy(), "three lines are shown in order, the silenced captain only fades")
+	check(spoken == ["村民:373", "重裝兵:" + plain_line, "拉爾斯帝國兵:" + packed_line] and not aftermath.busy(), "three lines are shown in order, the silenced captain only fades")
 	dialogue.free()
 	aftermath.free()
 	runtime.free()

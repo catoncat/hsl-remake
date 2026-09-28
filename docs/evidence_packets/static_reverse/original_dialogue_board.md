@@ -109,7 +109,7 @@ WINFAIL051 消息 369（雷歐納德「……原來……弟兄們！你們也�
 
 1. 断行照原版：默认照 38 字节硬断，与原版一样切开名字（语料里 17 句，如「雪｜拉」「通行｜證」）。专名保护（断点切开 `protected_words.json` 里的名字时前移到名字前）归开关 OPT-WORDBREAK＝保護專名（舒适预设开）。检查 `run_ui_class_contract_tests.word_breaks` 钉原版硬断切开的句数 17，并在保護專名下按源字符对照行首验证前移（消融：不前移 → 34 条失败，17 句 × 对白／旁白两框）。
 2. 确认照原版：OPT-PACE＝原版（默认）时擦出（状态 1）与上卷（状态 4）期间玩家确认不读（`BattleDialogue.holds_confirm`，由各宿主的玩家输入入口读），停下出 ▼／□ 后才翻页或进下一句；快／極快 两档即时整屏。脚本驱动直接调 `advance_page` 不经此读点。
-3. 名字后的冒号用全角「：」（原版半角 `:`），避免改动所有读 `speaker_label` 的断言（`bitmap-font` 条目）；字形已是原版 FONT.24 位图（见 [original_font_script/README.md](original_font_script/README.md) §各窗字库）。
+3. 名字行照原版：`BattleDialogue.show_message`／`show_face_message` 写名字＋半角 `:`（绿色、FONT.24 半角字格 12×24，对应 `"@3"`＋名字＋`":@1#"`），战斗对白、城镇对白与通关尾声共用这一行；城镇缺头像时的回退串 `名字:正文` 也用半角。字形是原版 FONT.24 位图（见 [original_font_script/README.md](original_font_script/README.md) §各窗字库）。
 
 ## 复现
 

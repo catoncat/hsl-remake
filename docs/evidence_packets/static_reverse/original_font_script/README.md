@@ -55,9 +55,12 @@ EXE 里成串的色码字符串：`@1`／`@2`／`@3`／`@6` 在 `0x476c80`／`0x
 | 物品描述框（`0x436d70`） | FONT.15 | `0x412060(x+8, y+12, …, 45 半角, 行高 16)`（`0x436e20`） |
 | 资料页按钮标签（`0x43a640`） | FONT.15 | 直调 `0x43a6f1`／`0x43a723`，(中心x − 21 + (42 − 8·字节数)/2, 中心y + 13) |
 | 条旁 cur/max（`0x4365f0`） | FONT.15 | `0x411d70`（`0x4366cf`），条对象 `+0x80` 位 0x100 置位时 |
-| 资料页另两行（`0x4384d5`／`0x438a92`） | FONT.15 | `0x411d70(x+0x16／x+0x1e, y+0x82, …, 行距 28)`，所画内容未读 |
-| 城镇 select 选择窗（`0x4264a0`，行过程 `0x4264f0`） | FONT.24 | 平时 `0x412760`（阴影 `0x8430` 在 (+1,+1)、再白）、悬停 `0x412680` 用 `0x42c130` 脉冲绿、淡入淡出 `0x413040`；行 ＝ 窗 ＋ (17, 17 ＋ 28·i)（[original_world_town](../../runtime_observations/original_world_town/README.md)） |
-| 未对应界面 | — | `0x42b2b0`（FONT.24：`0x4123b0`）、`0x423c90`（FONT.15 直调 `0x423f22`）、`0x42d3f0`（FONT.15 直调 `0x42d713`／`0x42d762`） |
+| WINDOW10 抗性数值行（过程 `0x438160` 的 `+0xac` 0 分支：`0x4384d5` 在 `0x10000` 位置位的绘制路径、`0x438a92` 在另一路径即跳表 `0x439ed8` case 0；仓库窗 `0x428fb4` 同形） | FONT.15 | 先 `0x4607f9` 逐个画元素宝石（横距 48），再 `0x411d70(x+0x16／x+0x1e, y+0x82, 0x4c1b80 第 6 行, …, 行距参数 28)`；该行由 `0x4355de`–`0x43567e` 拼成五段「数值＋`%` 或 `MAX`＋空格」，不含 `#`，只有一行。停靠 WINDOW10 (133,14) 的帧上数值墨迹 y 149–157 与 x+0x16 路径加 FONT.15 半角下移 2 对上（[menus_ui §7](../../runtime_observations/menus_ui/README.md)）；重制 `BattleVitals` 抗性行。`0x438a92` 路径未拍帧 |
+| 选择窗对象 704（`0x4264a0`，行过程 `0x4264f0`；全 EXE 三处调用：战斗 VM case 0x4f `0x451fca`、城镇 `0x454e20` 的 `0x4556dd`／`0x45585a`，见 [original_select_insert_event](../original_select_insert_event.md)） | FONT.24 | 平时 `0x412760`（阴影 `0x8430` 在 (+1,+1)、再白）、悬停 `0x412680` 用 `0x42c130` 脉冲绿、淡入淡出 `0x413040`；行 ＝ 窗 ＋ (17, 17 ＋ 28·i)（[original_world_town](../../runtime_observations/original_world_town/README.md)） |
+| 标题版本号（`0x423c90` 建主菜单对象 773，过程 defProcMainMenu `0x423cd0`；`0x423c90` 的调用点是战斗卷轴 `0x4259fb` 与大地图卷轴 `0x42605a`） | FONT.15 | 过程在非建窗消息的分支（`0x423e6a` 起）每帧拼「V」＋`0x45b6de(1)`＋「.」＋`0x45b6de(6, 两位补 0)`＝「V1.06」（EXE 里没有整串），直调 `0x423f22` 画在 (镜头x＋2, 镜头y＋454)、白 `0xffff`；半角下移 2 后字格顶 (2,456)，与 `TitleScreen` 版本号的实录位置一致（[menus_ui §1](../../runtime_observations/menus_ui/README.md)） |
+| 通关队员状态表（`0x42b2b0`） | FONT.24 | 唯一调用点是 defProcClearBOSS `0x42b6b0` 建窗消息里的 `0x42b6df`：为九个队员槽各拼一张 `@3` 标签＋数值的状态表（RESOURCE 37 姓名、38 稱號、39 種族、15 等級、70 移動力、48 殺敵總數、50 復活次數、41–44 四项属性、54／56／131／132／57／58 六项战斗值），未入队的槽只放 2568「此角色未加入隊伍」；由 defProcClearShowPlayer `0x42ba10` 经 `0x4123b0`（`0x42bbc4`）画在 (x−252, y+6)；重制 `GameClearScreen`（[original_game_clear](../original_game_clear.md)） |
+| 截图存盘（`0x42d3f0`） | — | 不是界面：写 `.TGA`，失败提示「抓圖檔案有誤!!」。每帧过程 `0x42d600` 在 `0x4c1ae8` 非 0 时读键：'C'／'D' 播 START／END 动画，'7'（`0x45b554(0x37)`，`0x42d6aa`）调它；重制不做 |
+| 坐标调试字（`0x42d600` 内直调 `0x42d713`／`0x42d762`，原表误记在 `0x42d3f0` 名下） | FONT.15 | 不是界面：`0x477c14` 位 `0x40000000` 置位时把「座標X = %d」「座標Y = %d」（`0x4c1a8c`／`0x4c1a90`）画在 (镜头x＋10, 镜头y＋10／＋30)、白；重制不做 |
 
 ### 逐字审读（glyph_review.json）
 
@@ -97,6 +100,7 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 
 
 - 原版字形已导入为重制默认字体（OPT-FONT 原版值），系统字体只是改良值。
-- 上表"未对应界面"四个函数与资料页 `0x4384d5`／`0x438a92` 两行画什么未读（provisional，替换证据：读出其串来源或 Wine 帧对上）；`MagicImpactPresentation` 条旁文字的位置、`WorldMapRuntime` 地点名的显示条件（`0x427df0` 开头的判断）未读。
+- 抗性数值行 `0x438a92`（x+0x1e）所在的绘制路径没有原版帧；`WorldMapRuntime` 地点名的显示条件（`0x427df0` 开头的判断）未读。
+- FONT.15 行距由调用者给：多行的只有物品描述框（`0x436e20` → `0x412060`，行距 16），条旁 cur/max（`0x4366cf`）也传 16；抗性行三处传 28 但串只有一行。重制 FONT.15 行高 16 与这些调用者一致。
 - 不声明原版对扩展区以外所有 13867 个码位的画法；只审读了重制文本源用到的 672 个仅繁体字。
 - 烘焙在素材图里的文字不经过字库，另见 [`image_inventory.json`](image_inventory.json)。

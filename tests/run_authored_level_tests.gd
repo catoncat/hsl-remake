@@ -274,8 +274,8 @@ func _opening_case(runtime: Node) -> void:
 			coordinator.handle_input(BattleForceWin.click())
 		await process_frame
 	check(not coordinator.active, "the opening reaches first control")
-	check(lines.has("蕾雅：") and lines["蕾雅："] == "雷歐納德，交給我吧。這把槍還沒嘗過翼狼的血。", "蕾雅 speaks her authored line under her own name: " + str(lines))
-	check(lines.has("雷歐納德：") and lines.has("翼狼："), "雷歐納德 and the 翼狼 speak their authored lines: " + str(lines.keys()))
+	check(lines.has("蕾雅:") and lines["蕾雅:"] == "雷歐納德，交給我吧。這把槍還沒嘗過翼狼的血。", "蕾雅 speaks her authored line under her own name: " + str(lines))
+	check(lines.has("雷歐納德:") and lines.has("翼狼:"), "雷歐納德 and the 翼狼 speak their authored lines: " + str(lines.keys()))
 	var skipped: Array = coordinator.summary().get("skipped_records", []).filter(func(record): return str(record.get("kind", "")) == "dialogue_message_id")
 	check(skipped.is_empty(), "no authored line was skipped for a missing binding or text: " + str(skipped))
 	var reia_node = runtime.actor_node_for_unit("reia")
