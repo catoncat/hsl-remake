@@ -81,7 +81,14 @@ func death_sounds(scene: Node, unit_id: String) -> int:
 	return count
 
 
+## A player's Space. Under OPT-PACE 原版 the dialogue board reads no confirm while its page
+## wipes in or scrolls (BattleDialogue.holds_confirm), so the player waits for the page to be
+## still first: the boards' clocks are ticked until they take the key.
 func confirm(scene: Node) -> void:
+	for board in [scene.opening_overlay, scene.get_node("BattlePresentation").dialogue_view]:
+		for _tick in 200:
+			if not board.holds_confirm(): break
+			board._process(preload("res://game/common/OriginalTick.gd").TICK_SECONDS)
 	var event := InputEventKey.new()
 	event.keycode = KEY_SPACE
 	event.pressed = true

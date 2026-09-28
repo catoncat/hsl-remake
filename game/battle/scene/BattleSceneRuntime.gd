@@ -347,6 +347,10 @@ func start_dev_first_control_harness() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# OPT-PACE 原版: a confirm while the story or battle board still wipes in or scrolls is not read
+	# (BattleDialogue.holds_confirm).
+	if opening_overlay.is_confirm(event) and (opening_overlay.holds_confirm() or $BattlePresentation.dialogue_view.holds_confirm()):
+		return
 	scene_input.handle_input(event)
 
 

@@ -1,12 +1,12 @@
 # 剧情脚本的镜头：居中缓动、走路跟随与 actScrollBG 步进
 
-> evidence: static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） · status: live · functions: 0x42dc50, 0x43bf30, 0x43c140, 0x44fcf0, 0x44fd90, 0x44ff50, 0x4501f0, 0x450450, 0x450840, 0x453b90, 0x45e80d · tools: hsltools/data/story_corpus.py, run_camera_panel_motion_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 脚本 token 与参数; provisional: 16 ms 设计值与 19.4 ms 实测的取舍（R24 负责人决定） · status: live · functions: 0x42dc50, 0x43bf30, 0x43c140, 0x44fcf0, 0x44fd90, 0x44ff50, 0x4501f0, 0x450450, 0x450840, 0x451e27, 0x453b90, 0x45e80d · tools: hsltools/data/story_corpus.py, run_camera_panel_motion_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版剧情镜头每 tick 的位置可从原指令读出：`0x43bf30` 把对象放到 640×384 视口正中 (320,192)，经 `0x45e80d` 逐轴走 `clamp(剩余/2, ±step)`（剧情 step 16、战斗 32、快进 +12，容差 4）；`actScrollBGToPosSpeed` 用 `0x43c140`（容差 1、step＝speed）；脚本行走 speed→1／2／4／8 px/tick，只有 Wait 变体先居中（到位才开走）并在越界时同步跟随，不带 Wait 的行走不碰镜头；actWalkAndDelete(Wait)、actMoveDispWait 与 actWalkFollow(Wait) 走同一行走状态、同一规则（static-derived）。
 - 重制 `OpeningStoryObjects._start_story_walk`：Wait 变体先 `OpeningCinematics._centre_camera_on_walker`（演员像素、步进 16、容差 4）缓动，到位后由 `BattleOpeningCoordinator._defer_walk` 开走并跟随（`_walk_follow` 的 Wait 形式同此）；不带 Wait 的行走不请求镜头。`OpeningCinematics.camera_scroll_seconds` 逐 tick 模拟 `0x45e80d`，`BattleOpeningCoordinator.walk_pixels_per_tick` 用 `0x4543d8` 表，`BattleCameraController.focus_centre`（点＋(0,48)）与 `scroll_to(目标, speed, 1)` 照原点位（static-derived）。
-- 差异：秒数取 16 ms/tick 设计值而非本机 19.4 ms（provisional）；插入演员「拉进画面」是重制补充（remake-invented）；actScrollBGToRandomPos 未读。
+- 差异：秒数取 16 ms/tick 设计值而非本机 19.4 ms（provisional）；插入演员「拉进画面」是重制补充（remake-invented）。
 
 ## 证据
 
@@ -28,12 +28,13 @@ EXE `hsl01.exe` sha256 `f0b5f835…`，只读反汇编／反编译，未做有�
 | --- | --- | --- |
 | `actScrollBGToPos x y`（19） | case 0x13：`+0x8c = 0x130000`，存 x／y | 阶段 0：`*0x4c3864/*0x4c3868 = (v & ~0x1f) + 0x10`（格心），清 `*0x4c38e0`；阶段 1：每 tick `0x43bf30(0x4c3860, 0)`，返回非零才前进 |
 | `actScrollBGToObject code serial`（20） | case 0x14：存 code／serial | 阶段 0：`0x44fad0` 找对象，取其像素进 `+0x9c/+0xa0`，转入 0x13 的阶段 |
+| `actScrollBGToRandomPos id`（111） | 处理器表 `0x4537f4` 第 0x6f 项 → `0x451e27`：`+0x8c = 0x130000`，从随机槽表 `0x4c28e0` 取第 id 项（x ＝ 字 `+4·id+2`、y ＝ 字 `+4·id`）存进 `+0x9c／+0xa0`；不调 `0x458c80`，不抽随机 | 与 0x13 同阶段：格心、`0x43bf30` 逐 tick 缓动。随机性只来自 actSetRandomPos 的洗牌（[original_random_position](original_random_position.md)，全局流） |
 | `actScrollBGToPosSpeed x y speed`（75） | case 0x4b：多存 speed | 阶段 0 同 0x13；阶段 1：`0x43c140(*0x4c3864, *0x4c3868, speed, 0x4c38e0)` |
 | `actWalk*`（2–7）／`actWalkDisp*` | case 2..7：`0x44fcf0`（绝对格）／`0x44fd90`（**Disp = 相对当前像素的位移**，不是「显示」）把目的格心写进对象 `+0x4a/+0x48`，速度写 `+0x98`，Wait 变体把 VM 指针写 `+0x50` | 走路本体在 `0x453b90` 状态 0x32（下节） |
 
 case 0x61（actSetBGToPos）用原值、case 0x15（actSetBGToObject）`0x43bf30(对象, 1)` 用原始点落位，都把点放在视口 (320,192)。
 
-脚本语料（`content/imported/hsl/story_corpus/scripts/`，resource-derived）：actScrollBGToPos 出现于 56 个脚本、actScrollBGToObject 22、actScrollBGToPosSpeed 18、actScrollBGToRandomPos 1（STORY037，未读）、actWalkDisp／DispWait 34／33。**STORY051（第一战开场）没有任何 actScrollBG token，只有 `actWalkDispWait SID_PLAYER0 1 0 -96 2`**——第一战的镜头曲线全部来自下节的走路跟随。
+脚本语料（`content/imported/hsl/story_corpus/scripts/`，resource-derived）：actScrollBGToPos 出现于 56 个脚本、actScrollBGToObject 22、actScrollBGToPosSpeed 18、actScrollBGToRandomPos 1（STORY037，见下行）、actWalkDisp／DispWait 34／33。**STORY051（第一战开场）没有任何 actScrollBG token，只有 `actWalkDispWait SID_PLAYER0 1 0 -96 2`**——第一战的镜头曲线全部来自下节的走路跟随。
 
 ### 脚本行走的镜头跟随（`0x453b90` 状态 0x32）
 
@@ -86,17 +87,18 @@ runtime-measured 旁证：录屏 212.45 s AI 回合被对准的法师站在 (320
 | `OpeningCinematics.script_position_camera_centre`：位置 token 的点放在视口中心（重制 640×480 视口＝点＋(0,48)） | case 0x13／0x4b 先取格心再经 `0x43bf30` 放到 (320,192) | static-derived；普查 `run_camera_panel_motion_tests.gd`：82 次「位置镜头后插入的演员」旧读法（视口左上角）仅 12 次完整在画面内，新读法 81 次，余下 WINFAIL041 event 0 的水怪在原版读法下也只露脚——重制对插入演员加「拉进画面」（remake-invented） |
 | `BattleCameraController.focus_centre`（点＋(0,48)）供战斗对准、结算对准、位置／对象 token、对白与走前瞬切共用 | `0x43bf30` 对任何对象都把点放在 (320,192) | static-derived |
 | `scroll_to(目标, speed, 1)` | case 0x4b → `0x43c140`，`tol 1, step = speed` | static-derived |
+| `BattleOpeningCoordinator._ev_camera_random_position_target`：`OpeningStoryObjects.random_slot_event` 取洗牌后的第 id 槽像素，交 `_scroll_camera_to_position`（格心＋居中缓动），不抽随机 | `0x451e27` 读槽表后进 case 0x13 阶段 | static-derived |
 
 provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_script_camera_scroll.md`（`BattleOpeningCoordinator`、`BattleCameraController`、`OpeningStoryObjects`、`OpeningCinematics`、`BattleAftermath`；测试 `run_camera_panel_motion_tests.gd`、`run_camera_panel_motion_tests.gd`）。
 
 ## 复现
 
-`tools/godot.sh --headless --script tests/run_camera_panel_motion_tests.gd`（位置镜头与插入演员普查）；静态部分 `r2 -q -e scr.color=0 -c 'pd 90 @ 0x43bf30; pd 40 @ 0x45e80d; pxw 32 @ 0x4543d8; pd 60 @ 0x44ff50; pxw 32 @ 0x4543b8' hsl01.exe`。
+`tools/godot.sh --headless --script tests/run_camera_panel_motion_tests.gd`（位置镜头与插入演员普查）；静态部分 `r2 -q -e scr.color=0 -c 'pd 90 @ 0x43bf30; pd 40 @ 0x45e80d; pxw 32 @ 0x4543d8; pd 60 @ 0x44ff50; pxw 32 @ 0x4543b8; pxw 4 @ 0x4539b0; pd 14 @ 0x451e27' hsl01.exe`。
 
 ## 边界
 
 - 秒数取 16 ms 设计值，本机 19.4 ms 的体验时长不作目标（provisional）。
 - 居中到位与开走之间原版可能差 1 tick（sub 0 到位当 tick 算路径，sub 2 起步），重制到位即开走。
 - actWalkFollow(Wait)：`+0xa8／+0xac` 何处并回 `+4／+8` 不在本读法内（领队走完后再跟随时的基准按其终点处理）；领队尚未过 sub 0 就被跟随时原版复制的是它上一段的旧表，重制按本次首段；跟随者目的格原版不经 `0x44fbd0`，重制仍走 `_fixed_destination`。actWalkAndDeleteWait 到达后原版再停 16 tick 才删（sub 7／8），重制的删除时机不在本读法内。
-- `*0x4c1b1c` 对 `0x43bf30` 负 flag 的语义、actScrollBGToRandomPos、非剧情阶段（战斗中玩家光标）的镜头路径不在本读法内。
+- `*0x4c1b1c` 对 `0x43bf30` 负 flag 的语义、非剧情阶段（战斗中玩家光标）的镜头路径不在本读法内。
 - 不支持的结论：旧的 0.6 s tween／160 px／s 与原版秒数一致。

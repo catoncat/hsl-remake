@@ -17,7 +17,9 @@ extends "res://tests/support/TestSuite.gd"
 ##                  the game uses (24–43 px), so stacked menus (the town list) never touch.
 ##   word_breaks    — no wrapped line starts inside a protected name
 ##                  (content/generated/hsl/text/protected_words.json): every story／town
-##                  corpus line that contains one, in the dialogue body and narration boxes,
+##                  corpus line that contains one, in the dialogue body and narration boxes
+##                  under OPT-WORDBREAK 保護專名 (the original's 38-byte hard break, the default,
+##                  cuts DIALOGUE_CUT_LINES of them — 雪｜拉, 通行｜證),
 ##                  every party of the town gold／party strip, and every equipment item's
 ##                  description in the status／equipment detail box; the shown text differs
 ##                  from the source only by inserted line breaks.
@@ -31,6 +33,7 @@ extends "res://tests/support/TestSuite.gd"
 
 const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
@@ -315,6 +318,8 @@ func _check_no_split(label: Label, source: String, context: String) -> void:
 
 
 var checked_wraps := 0
+## Corpus lines whose original 38-byte rows cut a protected name (dialogue-line-breaks).
+const DIALOGUE_CUT_LINES := 17
 
 
 func word_break_contracts() -> void:
@@ -339,6 +344,19 @@ func word_break_contracts() -> void:
 	root.add_child(dialogue)
 	await process_frame
 	dialogue.configure_portraits(preload("res://game/sim/ContentPaths.gd").ACTOR_PORTRAITS)
+	var cut_lines := 0
+	for line in at_risk:
+		var rows: PackedStringArray = BattleUISkin.message_rows(line)
+		var at := 0
+		for row_index in range(rows.size() - 1):
+			at += rows[row_index].length()
+			if line[at] == "\n":
+				at += 1
+			elif BattleUISkin.split_word_start(line, at) >= 0:
+				cut_lines += 1
+				break
+	check(cut_lines == DIALOGUE_CUT_LINES, "OPT-WORDBREAK 原版: the 38-byte hard break cuts a name in %d corpus lines" % cut_lines)
+	GameOptions.environment_preset = GameOptions.PRESET_COMFORT
 	checked_wraps = 0
 	for index in range(at_risk.size()):
 		dialogue.show_message("wrap%d" % index, "雷歐納德", at_risk[index], "001")
@@ -346,6 +364,7 @@ func word_break_contracts() -> void:
 		dialogue.show_narration("narr%d" % index, at_risk[index])
 		_check_no_split(dialogue.body_label, at_risk[index], "narration line %d" % index)
 	check(checked_wraps == 2 * at_risk.size(), "every at-risk line wraps without a split name in both boxes (%d of %d)" % [checked_wraps, 2 * at_risk.size()])
+	GameOptions.environment_preset = ""
 	dialogue.queue_free()
 	# Equipment detail box (BattleEquipmentView, shared by the status page, item／give views and
 	# 整理裝備): every catalog item's description at the box's fixed width.

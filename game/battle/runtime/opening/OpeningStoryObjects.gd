@@ -15,8 +15,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##     (actMoveDispWait: walk state 0x32 with +0x80 0x1800 keeps pose, loops frames, no footsteps)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_random_position.md
-##   rules: provisional docs/evidence_packets/static_reverse/actor_animation_groups.md
-##     (actChangeShape applies while the actor walks; 0x4502f0 ignores it outside state 0／0x34)
+##   rules: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
+##     (actChangeShape is skipped while the actor walks: 0x4502f0 writes only in state 0／0x34)
 ##   rules: provisional docs/evidence_packets/static_reverse/original_random_position.md
 ##     (random-position slots in table order instead of the native shuffle)
 ##   layout: resource-derived content/imported/hsl/chapter01/battle052/opening_timeline.json
@@ -590,6 +590,12 @@ func _change_shape(event: Dictionary) -> void:
 	if actor == null or entry.is_empty():
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_change", "reason": "unbound_actor" if actor == null else "shape_set_not_imported"})
 		return
+	# 0x4502f0 with a non-zero count writes only when the actor stands (+0x8c == 0) or sits in
+	# the Wait shape state 0x34 (unused in chapter 1); a walking actor keeps its frames and the
+	# VM goes on regardless.
+	if actor.is_moving():
+		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_change", "unit_id": bound[0], "reason": "walking"})
+		return
 	# actChangeShape,code,serial,delay,first_member,count: 0x4502f0 writes the script delay
 	# into +0x7e/+0x7c and the count into +0x7a/+0x78; the idle actor path ticks 0x45e5a6
 	# every tick, so each frame holds delay + 1 ticks and the set loops.
@@ -609,8 +615,11 @@ func _restore_shape(event: Dictionary) -> void:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_restore", "reason": "unbound_actor"})
 		return
 	actor.clear_shape_override()
-	# 0x4502f0 with count 0 sets +0x90 = 0xffff, so the idle path reloads the stand group
-	# from its first frame with delay 10 (0x446c40(…, 0, 10)).
+	# 0x4502f0 with count 0 writes unconditionally: +0x90 = 0xffff, so the idle path reloads
+	# the stand group from its first frame with delay 10 (0x446c40(…, 0, 10)); +0x80 &= ~0x1800
+	# drops the keep-pose hold (clear_shape_override clears _override_held); +0x8c = 0 would
+	# also end a walk in progress, which the remake leaves running (walk paths and stops stay
+	# as routed; provisional).
 	if str(actor.get("animation_state")) == "idle":
 		actor.play_state("idle", str(actor.get("facing")))
 	coordinator.story_records.append({"kind": "actor_shape_restore", "source_event_id": str(event.get("id", "")), "unit_id": bound[0]})

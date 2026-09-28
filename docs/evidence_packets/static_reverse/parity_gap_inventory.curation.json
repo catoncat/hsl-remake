@@ -56,22 +56,6 @@
   },
   "items": [
     {
-      "id": "cam-random-scroll",
-      "difference": "STORY037 的 actScrollBGToRandomPos（随机镜头位置）未读",
-      "original": "语料里只出现 1 次，handler 未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_script_camera_scroll.md"
-      ],
-      "remake": "按已读的滚动 token 处理",
-      "remake_code": [
-        "game/battle/runtime/opening/OpeningCinematics.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "镜头"
-    },
-    {
       "id": "camera-return-pan",
       "difference": "开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读",
       "original": "state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读",
@@ -314,29 +298,29 @@
     },
     {
       "id": "dialogue-timing",
-      "difference": "对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下",
+      "difference": "对白擦出（状态 1）与上卷（状态 4）期间原版不读确认键，要等这一屏停下；重制默认（OPT-PACE 原版）照做，快／極快 两档即时整屏",
       "original": "对白框过程 0x414280 已读完：淡入淡出 16 tick、擦出 17 px 起 3 px/tick、上卷 3 px/tick（10 tick／行）；只有状态 2 读确认",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_dialogue_board.md"
       ],
-      "remake": "节奏照原版画出，但确认立即翻屏或进下一句（画面只是追上逻辑页）",
+      "remake": "节奏照原版画出；OPT-PACE 原版下玩家确认在页未停时被吞掉（BattleDialogue.holds_confirm，经 BattleSceneRuntime._input／TownRuntime.handle_input／GameClearScreen._unhandled_input 读）；快／極快 立即翻屏或进下一句",
       "remake_code": [
-        "game/battle/scene/BattleDialogue.gd:advance_page"
+        "game/battle/scene/BattleDialogue.gd:holds_confirm"
       ],
       "original_status": "read_complete",
       "visibility": "every_battle",
       "effort": "S",
       "category": "对白",
-      "decision": "有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入"
+      "decision": "照原版（lane DIALOGKEYS 接入 OPT-PACE 原版档）；即时整屏留作 OPT-PACE 快／極快 改良值"
     },
     {
       "id": "dialogue-line-breaks",
-      "difference": "对白断点切开专名时重制把断点前移到名字前；原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）",
+      "difference": "原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）；重制默认照做，断点前移到名字前归 OPT-WORDBREAK 保護專名",
       "original": "行断规则已读完：每行 38 字节（全角 19 字），无禁则、无专名保护；录屏 369 逐行相符",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_dialogue_board.md"
       ],
-      "remake": "BattleUISkin.message_rows 照 38 字节断行，只在断点落进专名时前移",
+      "remake": "BattleUISkin.message_rows 照 38 字节硬断；OPT-WORDBREAK＝保護專名 时断点落进专名才前移",
       "remake_code": [
         "game/common/BattleUISkin.gd:message_rows"
       ],
@@ -344,7 +328,7 @@
       "visibility": "rare",
       "effort": "S",
       "category": "对白",
-      "decision": "有意偏离（重制改善）：原版硬断会拆开专名，保留专名保护，不设选项"
+      "decision": "照原版（lane DIALOGKEYS）；专名保护留作 OPT-WORDBREAK 改良值（舒适预设开）"
     },
     {
       "id": "bitmap-font",
@@ -682,14 +666,14 @@
     },
     {
       "id": "shape-override-cadence",
-      "difference": "演员走动中收到 actChangeShape：原版不换形（0x4502f0 只在站立或 0x34 状态生效），重制照换",
-      "original": "0x4502f0 的状态门：+0x8c 为 0 或高字 0x34 才写帧、计数与延迟（static-derived）",
+      "difference": "演员走动中收到 actRestoreShape：原版 0x4502f0 无条件写 +0x8c = 0，行走就地结束；重制只恢复站立形，走位照走",
+      "original": "0x4502f0 帧数 0 分支：+0x90 = 0xffff、+0x80 &= ~0x1800、+0x8c = 0，不看演员状态（static-derived）；走动中收到 actChangeShape 不生效已照原版",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/actor_animation_groups.md"
       ],
-      "remake": "OpeningStoryObjects 不判演员是否在走，换形照常生效；帧节拍已照原版（脚本延迟＋1 tick 一帧、保形到位停帧）",
+      "remake": "OpeningStoryObjects._change_shape 在演员走动时跳过（skipped reason walking）；_restore_shape 清换形与保形停帧，不打断走位",
       "remake_code": [
-        "game/battle/runtime/opening/OpeningStoryObjects.gd:_change_shape"
+        "game/battle/runtime/opening/OpeningStoryObjects.gd:_restore_shape"
       ],
       "original_status": "read_complete",
       "visibility": "rare",
@@ -1771,7 +1755,7 @@
       "item": "dispatcher-scheduling"
     },
     "matrix:Camera curve": {
-      "item": "cam-random-scroll"
+      "resolved": "actScrollBGToRandomPos 照原版：0x451e27 取洗牌后的随机槽像素进 actScrollBGToPos 同一阶段，不抽随机（STORYMISC2，original_script_camera_scroll.md）"
     },
     "matrix:EVEF 演员实例字：物品、逐实例 AI 覆盖、固定点": {
       "item": "ai-first-battle-moves"
@@ -2798,14 +2782,6 @@
       "item": "item-use-rules",
       "text": "剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#35c5395ff4": {
-      "item": "cam-random-scroll",
-      "text": "脚本语料（`content/imported/hsl/story_corpus/scripts/`，resource-derived）：actScrollBGToPos 出现于 56 个脚本、actScrollBGToObject 22、actScrollBGToPosSpeed 18、actScrollBGToRandomPos 1（STORY037，未读）、actWalkDisp／DispWait 34／33。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_script_camera_scroll.md#744321da91": {
-      "item": "cam-random-scroll",
-      "text": "actScrollBGToRandomPos 未读。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201": {
       "item": "closeup-object-timing",
       "text": "未读"
@@ -3351,7 +3327,7 @@
     "scope:docs/evidence_packets/static_reverse/original_map_object_flash.md|provisional|层级表逐项值与 16 位通道舍入未逐像素对照": {
       "item": "map-object-flash"
     },
-    "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/actor_animation_groups.md": {
+    "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|恢复换形时不打断走位": {
       "item": "shape-override-cadence"
     }
   }

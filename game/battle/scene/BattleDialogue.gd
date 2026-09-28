@@ -17,8 +17,8 @@ extends Control
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
 ##     (name, body and ▼ in FONT.24 via 0x413040／0x4147f1; cell top at window top + 28·row)
 ##   layout: remake-invented
-##     (protected_words.json names kept whole where the original's 38-byte break cuts them (playtest); full-width
-##     colon, original half-width)
+##     (OPT-WORDBREAK 保護專名: protected_words.json names kept whole where the original's 38-byte break cuts
+##     them; full-width colon, original half-width)
 ##   strings: resource-derived content/imported/hsl/chapter01/message_text_evidence.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_board.md
@@ -28,10 +28,12 @@ extends Control
 ##     (wipe 15 px in 0.1 s, a four-row scroll 0.80 s on the recording)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_dialogue_marker.md
 ##   timing: remake-invented
-##     (a confirm during the wipe or the scroll acts at once — the original reads no confirm until the page is still)
+##     (OPT-PACE 快／極快: a player confirm during the wipe or the scroll acts at once — the original,
+##     and OPT-PACE 原版, reads no confirm until the page is still)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 ## Text window (0x4142aa, 0x414360): rows start 17 px inside the board's top-left corner, 28 px
 ## apart, four in view (0x414661 splits four rows; the fifth drawn row is the one scrolling in).
 const TEXT_INSET := Vector2(17, 17)
@@ -209,6 +211,22 @@ func page_wipe_seconds() -> float:
 	if _scroll_rows == 0:
 		return OriginalTick.seconds(1 + ceilf((WINDOW_PIXELS - WIPE_START_PIXELS) / WIPE_PIXELS_PER_TICK) + 1)
 	return OriginalTick.seconds(_scroll_rows * SCROLL_TICKS_PER_ROW + 1)
+
+
+## Whether the board swallows a player confirm now: under OPT-PACE 原版 (docs/OPTIONS.md, read on
+## each confirm) the original handler 0x414280 reads the confirm keys only in state 2 — the page
+## still, its marker blinking — never during the wipe (state 1) or the scroll (state 4). 快／極快
+## take the confirm at once. The hosts' player-input entries ask this before paging; scripted
+## drivers call advance_page directly and need no clock.
+func holds_confirm() -> bool:
+	return visible and _reveal_clock < page_wipe_seconds() and GameOptions.is_original("OPT-PACE")
+
+
+## A confirm key or click as the dialogue hosts read it (left click, Enter, Space).
+static func is_confirm(event: InputEvent) -> bool:
+	if event is InputEventMouseButton:
+		return event.button_index == MOUSE_BUTTON_LEFT and event.pressed
+	return event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_ENTER or event.keycode == KEY_SPACE)
 
 
 func _blink_marker() -> void:

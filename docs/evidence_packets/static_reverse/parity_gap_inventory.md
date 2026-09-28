@@ -10,20 +10,20 @@
 
 ## 总数
 
-共 **93** 条差异（其中 0 条本轮有 lane 进行中），来自 475 个来源条目：provenance 203、sentence 102、scope 72、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 52 个全部归类。另有 53 个来源判为玩家看不到、18 个已做掉（句子是旧状态）。
+共 **92** 条差异（其中 0 条本轮有 lane 进行中），来自 473 个来源条目：provenance 202、sentence 100、scope 73、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 52 个全部归类。另有 53 个来源判为玩家看不到、19 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
 | 已读完只差照做 | 25 |
 | 读了一部分 | 47 |
-| 未读 | 4 |
+| 未读 | 3 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 17 |
 | 部分关卡 | 30 |
-| 少见 | 41 |
+| 少见 | 40 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
@@ -40,9 +40,9 @@
 | 飘字与数字 | 4 |
 | 光标与字体 | 3 |
 | 原版调度与随机流 | 3 |
-| 镜头 | 3 |
 | AI 行为 | 2 |
 | 对白 | 2 |
+| 镜头 | 2 |
 | 音频 | 2 |
 | 存档与流程 | 1 |
 
@@ -53,7 +53,7 @@
 | # | 玩家看到的差异 | 原版状态 | 可见度 | 量 | 类 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 施法引导阴影底、面板与残影照原版画；只差与阴影同桶（0x17）的单位原版画在阴影之上、重制压在下面，以及 8 位 alpha 与原版 5／6 位分量截断的末位 （`cast-lead-compositing`） | 已读完只差照做 | 每场都看得到 | S | 特写与施法演出 | — |
-| 2 | 对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下 （`dialogue-timing`） | 已读完只差照做 | 每场都看得到 | S | 对白 | 有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入 |
+| 2 | 对白擦出（状态 1）与上卷（状态 4）期间原版不读确认键，要等这一屏停下；重制默认（OPT-PACE 原版）照做，快／極快 两档即时整屏 （`dialogue-timing`） | 已读完只差照做 | 每场都看得到 | S | 对白 | 照原版（lane DIALOGKEYS 接入 OPT-PACE 原版档）；即时整屏留作 OPT-PACE 快／極快 改良值 |
 | 3 | 已实机核实一致：升级加点窗在阵亡台词与 EXP／金钱／LEVEL UP 浮字之后弹，停等关窗后才交接；胜利一击、反击升级、跨多级与掉落并发的先后仍是静态读法 （`growth-window-timing`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | — |
 | 4 | 特殊技／魔法页照原版状态页布局（SKILLPAGE、SKILLPAGE2）：四块板、行、宝石、红行、说明框与 2026-09-26 Wine 实拍一致；九行以上画原版滚动条（箭头、翻页、拖动、↑↓／PgUp PgDn，无滚轮）；列表照 0x434d10 按类型、magicCode 位排；悬停名是 0x42c130 脉冲绿。名字换原版 FONT.24 点阵后墨迹与 Wine 帧一致（水剎 x 45–91 y 187–202，氣刃斬 宽 71）。剩：滚动条只有静态读法，本机存档里没有十个以上技能的角色可拍 （`special-skill-page`） | 已读完只差照做 | 每场都看得到 | S | 面板与界面 | 照原版；SKILLPAGE 重做布局，SKILLPAGE2 补原版实拍核对、滚动条、列表顺序、悬停脉冲；名字用 FONT.24 点阵（lane FONT） |
 | 5 | 原版施法效果与战斗特写期间藏起光标、拿着物品时光标换成物品图标；重制已照做（lane FXQUEUE），演出期间按特写／魔法播放器 cutin.busy() 判，起止可能与 0x442a90 状态 4–9 差几 tick；用药持物图标点道具当帧出现、确认后多留一 tick 已照原版（ITEMFX2） （`cursor-hide-item-icon`） | 已读完只差照做 | 部分关卡 | S | 光标与字体 | — |
@@ -161,7 +161,7 @@
 | `draw-depth-states` | 单位与建筑的遮挡顺序：魔法效果阶段施法者与脚印内单位 +23 已照做；飞行单位封顶 22、32 px 同桶先后、planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模 | 32 px 行排序、同桶先后、两段全局状态分支（0x400000 特写／窗口、0x1000000 魔法效果阶段）已读；其余效果过程是否改 +0xc 未读<br>[original_draw_order.md](../../../docs/evidence_packets/static_reverse/original_draw_order.md) | ActorRuntime.depth_index 按像素行排序，魔法切入期间 cast_lift 抬起脚印内与施法姿势单位；fixed_plane_depth 只覆盖最低／最高固定 plane<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `depth_index`、[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `fixed_plane_depth`、[BattleSceneStage.gd](../../../game/battle/scene/BattleSceneStage.gd) `sync_cast_depth` | 读了一部分 | 部分关卡 | S | provenance 1、sentence 2 |
 | `highlight-colours` | 高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定 | 0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮<br>[dialogue_death/README.md](../../../docs/evidence_packets/runtime_observations/dialogue_death/README.md) | ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) `set_highlight`、[BattleSceneOverlays.gd](../../../game/battle/scene/BattleSceneOverlays.gd) `sync_unit_highlights`、[BattleSceneStage.gd](../../../game/battle/scene/BattleSceneStage.gd) `story_cast_player_mode` | 读了一部分 | 部分关卡 | S | provenance 1、scope 1 |
 | `ai-move-preview-timing` | 敌方移动预告已照原版分追击 12／站位 24 tick，起步动作数据下不可达已照；只剩录屏范围消失后约 0.18 s 才起步的来源未读 | 0x441043 等镜头到位后逐 tick 减 [unit+0x94] 并画范围：追击 0x440d92 写 12、站位 0x441ad3 写 24；归零后 0x446c10 查 SHAPEDEF prepare，66 条均无，恒直接走<br>[original_action_state_machine.md](../../../docs/evidence_packets/static_reverse/original_action_state_machine.md)、[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleAiMovePreview.preview_ticks 按 purpose 取 12／24，预告结束即起步（与原版无 prepare 时一致）<br>[BattleAiMovePreview.gd](../../../game/battle/scene/BattleAiMovePreview.gd) `preview_ticks` | 已读完只差照做 | 少见 | S | sentence 4、video 1 |
-| `shape-override-cadence` | 演员走动中收到 actChangeShape：原版不换形（0x4502f0 只在站立或 0x34 状态生效），重制照换 | 0x4502f0 的状态门：+0x8c 为 0 或高字 0x34 才写帧、计数与延迟（static-derived）<br>[actor_animation_groups.md](../../../docs/evidence_packets/static_reverse/actor_animation_groups.md) | OpeningStoryObjects 不判演员是否在走，换形照常生效；帧节拍已照原版（脚本延迟＋1 tick 一帧、保形到位停帧）<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_change_shape` | 已读完只差照做 | 少见 | S | provenance 1 |
+| `shape-override-cadence` | 演员走动中收到 actRestoreShape：原版 0x4502f0 无条件写 +0x8c = 0，行走就地结束；重制只恢复站立形，走位照走 | 0x4502f0 帧数 0 分支：+0x90 = 0xffff、+0x80 &= ~0x1800、+0x8c = 0，不看演员状态（static-derived）；走动中收到 actChangeShape 不生效已照原版<br>[actor_animation_groups.md](../../../docs/evidence_packets/static_reverse/actor_animation_groups.md) | OpeningStoryObjects._change_shape 在演员走动时跳过（skipped reason walking）；_restore_shape 清换形与保形停帧，不打断走位<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_restore_shape` | 已读完只差照做 | 少见 | S | scope 1 |
 | `job-018-frames` | 018 形态原版没有 SHAPEDEF 行，重制沿用 009 的帧 | 018 无 SHAPEDEF 行（negative-evidence）<br>[original_town_job_up.md](../../../docs/evidence_packets/static_reverse/original_town_job_up.md) | 转职到 018 时保留 009 帧<br>[ActorRuntime.gd](../../../game/battle/runtime/ActorRuntime.gd) | 读了一部分 | 少见 | S | scope 2、matrix 1 |
 
 ### 城镇与大地图（6）
@@ -218,14 +218,6 @@
 | `dispatcher-scheduling` | 原版全局 dispatcher、对象调度顺序与 tick 墙钟没有等价复刻：只影响同一 tick 的先后与部分计时 | 单个 handler 多已读；整个 VM／对象槽生命周期未执行<br>[original_mechanics_audit.md](../../../docs/evidence_packets/static_reverse/original_mechanics_audit.md)、[tick_mapping.md](../../../docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md) | PlayLoop 单一事务顺序<br>[BattlePlayLoop.gd](../../../game/sim/loop/BattlePlayLoop.gd) | 读了一部分 | 看不见 | L | sentence 4、matrix 8 |
 | `rng-streams` | 两条流的生成器都已照原版：伤害流（R7-RNGB，随单战存档与战役承接保存），以及全局流（R7-RNGA：时钟播种、不入存档、不随承接）。全局流上已有 AI 决策、NPC 开场与新援调级、脚本建角、开局随机槽、opcode 86／99 随机位置，以及（RNGC）击杀掉落 0x44f5d3、出生随机携带 0x407c86（排在出生调级之前）、（BIRTHDELAY）出生张延迟 rand(24) 0x407dba（玩家与 NPC 都抽、排在携带之前）、opcode 121 每个对象三抽；opcode 107／108 照原版不抽随机数，放在槽位加位移处。掉落与携带同状态逐项对拍：53 关携带 32 种子、51 关掉落 32 种子、51 关自然击杀 1 次、51 关出生携带 7 次，接受项与抽后全局字全部一致。玩家可见后果：全局流不入存档，读档后掉落与携带重掷。剩余两项：① AI 决策链的抽取次数与分支未等价，51 关第 1 回合 11 个 NPC 行动逐次对拍 0/11 一致（9 个缺优先级／类别链抽取，1 个分支不同，1 个注入缺口；决策 5/11 相同）；② 遗言 raw 抽取、秘密人物额外抽取、大地图／城镇 randi()、opcode 106 时序未接入。所以同一时钟种子下 AI 选择、出生等级与携带的序列仍与原版不同 | 全局流 0x458c10／0x458c80（状态 0x4795d4／0x4795d8，标志 0x4c1e8c 为 0 时按时钟懒播种 [t, t ^ 0xe54a231c]，不入存档）：AI 决策 0x40bd4f／0x440db5／0x40d500／0x40c138／0x40c061／0x40c58d／0x41385d 等、掉落 0x44f580（rand(100) 0x44f5d3）、出生 0x407cc0 内依次张延迟 rand(24) 0x407dba、pmEnemy 携带 0x407c40（rand(101) 0x407c86）、调级 0x40e870（模拟器实测）、脚本 0x451787／0x451ecf／0x451d0f 直接调用、opcode 121 0x450f99（0x450fe6／0x451012／0x451075），opcode 107 0x450f2c／108 0x451e64 不抽；伤害流 0x42c720／0x42c780 把自己的两个字换进同一生成器，已逐值复刻<br>[original_damage_random.md](../../../docs/evidence_packets/static_reverse/original_damage_random.md)、[original_enemy_turn.md](../../../docs/evidence_packets/static_reverse/original_enemy_turn.md)、[original_ai_navigation.md](../../../docs/evidence_packets/static_reverse/original_ai_navigation.md)、[battle_reward_inputs.md](../../../docs/evidence_packets/static_reverse/battle_reward_inputs.md)、[original_random_position.md](../../../docs/evidence_packets/static_reverse/original_random_position.md) | 伤害流 DamageRandomStream（loop 键 damage_rng，存档）；全局流 GlobalRandomStream（loop 键 global_rng，进程内单一实例，读档保留活字；无窗口时 HSL_RNG_SEED 代替时钟）；BattleRewardRules.carry／drops 与 WinfailActions 的 opcode 121 抽 global_rng，旧的 reward_rng 与 random_position_rng 已删除；逐次对拍用 tests/diagnostics/compare_ai_global_draws.gd<br>[GlobalRandomStream.gd](../../../game/sim/GlobalRandomStream.gd)、[BattleLoopAI.gd](../../../game/sim/loop/BattleLoopAI.gd)、[BattleLoopInit.gd](../../../game/sim/loop/BattleLoopInit.gd)、[WinfailActions.gd](../../../game/sim/WinfailActions.gd)、[BattleRewardRules.gd](../../../game/sim/BattleRewardRules.gd)、[InitialRosterGrowthRules.gd](../../../game/sim/InitialRosterGrowthRules.gd) | 读了一部分 | 看不见 | L | provenance 3、scope 1、matrix 17 |
 
-### 镜头（3）
-
-| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `cam-script-walk-variants` | 剧情行走镜头与 actWalkFollow(Wait) 的走法已照原版（跟随者复制领队首段路径缓冲、按基准像素偏移、不足处再算路）；剩跟随者目的格重制仍经落点修正（原版 0x44ff50 不调 0x44fbd0）、领队未开走即跟随时原版复制旧缓冲 | 0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲（0x65 dword 方向码，1 上 2 下 3 左 4 右，0 结束）、目的 = 领队目的 + (跟随者 − 领队) +4／+8、+0x50 = Wait 时 VM；sub 3／6 从 +0x9c 索引 0 逐格取码，码 0 未到目的格再调 0x4111d0（0x45412d）<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；_copied_route 按领队首段步序从跟随者格逐格平移（不查地形），终点不在目的格时 ScriptWalkPath.route 续算<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_walk_follow`、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_copied_route` | 已读完只差照做 | 少见 | S | sentence 1 |
-| `camera-return-pan` | 开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读 | state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移<br>[BattleSceneMenus.gd](../../../game/battle/scene/BattleSceneMenus.gd) `_ring_camera_ready`、[BattleSceneRuntime.gd](../../../game/battle/scene/BattleSceneRuntime.gd) `move_selected_actor_to_grid` | 读了一部分 | 少见 | S | sentence 1 |
-| `cam-random-scroll` | STORY037 的 actScrollBGToRandomPos（随机镜头位置）未读 | 语料里只出现 1 次，handler 未读<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | 按已读的滚动 token 处理<br>[OpeningCinematics.gd](../../../game/battle/runtime/opening/OpeningCinematics.gd) | 未读 | 少见 | S | sentence 2、matrix 1 |
-
 ### AI 行为（2）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
@@ -237,8 +229,15 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `dialogue-timing` | 对白擦出与上卷期间重制即时响应确认；原版擦出（状态 1）与上卷（状态 4）时不读确认键，要等这一屏停下<br>待定：有意偏离（重制改善）：保留即时确认，OPT-PACE 三档都即时整屏，不改所有对白宿主的输入 | 对白框过程 0x414280 已读完：淡入淡出 16 tick、擦出 17 px 起 3 px/tick、上卷 3 px/tick（10 tick／行）；只有状态 2 读确认<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | 节奏照原版画出，但确认立即翻屏或进下一句（画面只是追上逻辑页）<br>[BattleDialogue.gd](../../../game/battle/scene/BattleDialogue.gd) `advance_page` | 已读完只差照做 | 每场都看得到 | S | provenance 1、matrix 1 |
-| `dialogue-line-breaks` | 对白断点切开专名时重制把断点前移到名字前；原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）<br>待定：有意偏离（重制改善）：原版硬断会拆开专名，保留专名保护，不设选项 | 行断规则已读完：每行 38 字节（全角 19 字），无禁则、无专名保护；录屏 369 逐行相符<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | BattleUISkin.message_rows 照 38 字节断行，只在断点落进专名时前移<br>[BattleUISkin.gd](../../../game/common/BattleUISkin.gd) `message_rows` | 已读完只差照做 | 少见 | S | provenance 2、matrix 1 |
+| `dialogue-timing` | 对白擦出（状态 1）与上卷（状态 4）期间原版不读确认键，要等这一屏停下；重制默认（OPT-PACE 原版）照做，快／極快 两档即时整屏<br>待定：照原版（lane DIALOGKEYS 接入 OPT-PACE 原版档）；即时整屏留作 OPT-PACE 快／極快 改良值 | 对白框过程 0x414280 已读完：淡入淡出 16 tick、擦出 17 px 起 3 px/tick、上卷 3 px/tick（10 tick／行）；只有状态 2 读确认<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | 节奏照原版画出；OPT-PACE 原版下玩家确认在页未停时被吞掉（BattleDialogue.holds_confirm，经 BattleSceneRuntime._input／TownRuntime.handle_input／GameClearScreen._unhandled_input 读）；快／極快 立即翻屏或进下一句<br>[BattleDialogue.gd](../../../game/battle/scene/BattleDialogue.gd) `holds_confirm` | 已读完只差照做 | 每场都看得到 | S | provenance 1、matrix 1 |
+| `dialogue-line-breaks` | 原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）；重制默认照做，断点前移到名字前归 OPT-WORDBREAK 保護專名<br>待定：照原版（lane DIALOGKEYS）；专名保护留作 OPT-WORDBREAK 改良值（舒适预设开） | 行断规则已读完：每行 38 字节（全角 19 字），无禁则、无专名保护；录屏 369 逐行相符<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | BattleUISkin.message_rows 照 38 字节硬断；OPT-WORDBREAK＝保護專名 时断点落进专名才前移<br>[BattleUISkin.gd](../../../game/common/BattleUISkin.gd) `message_rows` | 已读完只差照做 | 少见 | S | provenance 2、matrix 1 |
+
+### 镜头（2）
+
+| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `cam-script-walk-variants` | 剧情行走镜头与 actWalkFollow(Wait) 的走法已照原版（跟随者复制领队首段路径缓冲、按基准像素偏移、不足处再算路）；剩跟随者目的格重制仍经落点修正（原版 0x44ff50 不调 0x44fbd0）、领队未开走即跟随时原版复制旧缓冲 | 0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲（0x65 dword 方向码，1 上 2 下 3 左 4 右，0 结束）、目的 = 领队目的 + (跟随者 − 领队) +4／+8、+0x50 = Wait 时 VM；sub 3／6 从 +0x9c 索引 0 逐格取码，码 0 未到目的格再调 0x4111d0（0x45412d）<br>[original_script_camera_scroll.md](../../../docs/evidence_packets/static_reverse/original_script_camera_scroll.md) | OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；_copied_route 按领队首段步序从跟随者格逐格平移（不查地形），终点不在目的格时 ScriptWalkPath.route 续算<br>[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_walk_follow`、[OpeningStoryObjects.gd](../../../game/battle/runtime/opening/OpeningStoryObjects.gd) `_copied_route` | 已读完只差照做 | 少见 | S | sentence 1 |
+| `camera-return-pan` | 开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读 | state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读<br>[camera_panel_motion/README.md](../../../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移<br>[BattleSceneMenus.gd](../../../game/battle/scene/BattleSceneMenus.gd) `_ring_camera_ready`、[BattleSceneRuntime.gd](../../../game/battle/scene/BattleSceneRuntime.gd) `move_selected_actor_to_grid` | 读了一部分 | 少见 | S | sentence 1 |
 
 ### 音频（2）
 
@@ -275,6 +274,7 @@
 
 | 来源 | 出处 |
 | --- | --- |
+| `matrix:Camera curve` | actScrollBGToRandomPos 照原版：0x451e27 取洗牌后的随机槽像素进 actScrollBGToPos 同一阶段，不抽随机（STORYMISC2，original_script_camera_scroll.md） |
 | `matrix:Status / Item` | 交換照原版：给出方持物窗点物入手→相邻格地图选人→目标持物窗点槽放入→回给出方持物窗（GIVEPICK，original_give_exchange.md 状态表 110／112／113／114／116） |
 | `matrix:地图死亡与经验交接` | 阵亡灵魂按原版种类 9 饱和加法＋层级表混合（BLEND，map_pose_floaters §4、original_death_disposal） |
 | `matrix:战斗气力与装备修饰` | 开场气力照原版：首次登记取 PLAYERS、携带进关清 0、actKeepPlayerST 后保留余气（STAMINA-RULE，original_stamina.md 开场实测） |

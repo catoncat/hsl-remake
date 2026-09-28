@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 136 remake-invented cells, 67 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 136 remake-invented cells, 66 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (197)
 
@@ -43,7 +43,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H) | static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); runtime-measured [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); runtime-measured [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md) | n/a | static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md) |
 | [OpeningEndCard](../game/battle/runtime/opening/OpeningEndCard.gd) | static-derived [original_ending_dispatch.md](../docs/evidence_packets/static_reverse/original_ending_dispatch.md); remake-invented | remake-invented | remake-invented | n/a | n/a |
 | [OpeningSelectPrompt](../game/battle/runtime/opening/OpeningSelectPrompt.gd) | static-derived [original_select_insert_event.md](../docs/evidence_packets/static_reverse/original_select_insert_event.md) | static-derived [original_select_insert_event.md](../docs/evidence_packets/static_reverse/original_select_insert_event.md) | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/message_text_evidence.json) | n/a | n/a |
-| [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_fixpos_fly_prev_insert.md](../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional; static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md); provisional [actor_animation_groups.md](../docs/evidence_packets/static_reverse/actor_animation_groups.md); provisional [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | resource-derived [opening_timeline.json](../content/imported/hsl/chapter01/battle052/opening_timeline.json); resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); static-derived [original_draw_order.md](../docs/evidence_packets/static_reverse/original_draw_order.md); provisional; static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | n/a | static-derived [actor_animation_groups.md](../docs/evidence_packets/static_reverse/actor_animation_groups.md); static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
+| [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); static-derived [original_fixpos_fly_prev_insert.md](../docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional; static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md); static-derived [actor_animation_groups.md](../docs/evidence_packets/static_reverse/actor_animation_groups.md); provisional [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | resource-derived [opening_timeline.json](../content/imported/hsl/chapter01/battle052/opening_timeline.json); resource-derived [map_object_alignment.json](../content/imported/hsl/chapter01/map_object_alignment.json); static-derived [original_draw_order.md](../docs/evidence_packets/static_reverse/original_draw_order.md); provisional; static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | n/a | static-derived [actor_animation_groups.md](../docs/evidence_packets/static_reverse/actor_animation_groups.md); static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [original_range_cells.md](../docs/evidence_packets/static_reverse/original_range_cells.md) | resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
 
 #### game/battle/scene (53)
 
@@ -290,8 +290,8 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleAftermath](../game/battle/scene/BattleAftermath.gd) | strings | the roll is a hash of exchange sequence and victim instead of the original global PRNG: no combat RNG spent, a reload speaks the same line |
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | strings | OPT-INFO=公開 only: cure labels, stat-buff captions, 未回復 and the weapon-effect line on the result line — effects the original shows no glyph for |
 | [BattleCombatCutin](../game/battle/scene/BattleCombatCutin.gd) | timing | the borrowed 氣刃斬 staging used only by synthetic clips |
-| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | layout | protected_words.json names kept whole where the original's 38-byte break cuts them (playtest); full-width colon, original half-width |
-| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | timing | a confirm during the wipe or the scroll acts at once — the original reads no confirm until the page is still |
+| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | layout | OPT-WORDBREAK 保護專名: protected_words.json names kept whole where the original's 38-byte break cuts them; full-width colon, original half-width |
+| [BattleDialogue](../game/battle/scene/BattleDialogue.gd) | timing | OPT-PACE 快／極快: a player confirm during the wipe or the scroll acts at once — the original, and OPT-PACE 原版, reads no confirm until the page is still |
 | [BattleEquipmentView](../game/battle/scene/BattleEquipmentView.gd) | layout | 355×70 detail scroll area |
 | [BattleEquipmentView](../game/battle/scene/BattleEquipmentView.gd) | strings | detail captions |
 | [BattleExtraActionCue](../game/battle/scene/BattleExtraActionCue.gd) | layout | caption outside the menu footprint |
@@ -347,7 +347,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [SkillPresenter](../game/battle/scene/SkillPresenter.gd) | rules | released／impact fire once each at the presenter's own schedule; the contract carries no clock of its own |
 | [BattleCameraController](../game/common/BattleCameraController.gd) | rules | Home recenter, clamp |
 | [BattleCameraController](../game/common/BattleCameraController.gd) | timing | Home recenter and save restore snap |
-| [BattleUISkin](../game/common/BattleUISkin.gd) | layout | button styling and the button step-down 17→11 for remake buttons; message_rows keeps a protected name whole where the 38-byte break cuts it (playtest) |
+| [BattleUISkin](../game/common/BattleUISkin.gd) | layout | button styling and the button step-down 17→11 for remake buttons; message_rows under OPT-WORDBREAK keeps a protected name whole where the 38-byte break cuts it |
 | [CampaignProgress](../game/common/CampaignProgress.gd) | rules | one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry stands in for the original registered-slot table |
 | [GameCursor](../game/cursor/GameCursor.gd) | rules | OPT-CURSOR=系統硬體游標 only: the OS pointer shows the sceptre [OPTIONS.md](../docs/OPTIONS.md) |
 | [DebugPause](../game/debug/DebugPause.gd) | rules | debug freeze and single-frame step behind the HSL_DEBUG_PAUSE development switch; the original has no such control |
@@ -414,7 +414,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (67)
+### provisional 疑点 (66)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -428,7 +428,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | timing | — | obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the mapobjDropRain／defProcObjectMove processes are unread |
 | [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | timing | — | dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | — | follow walk reading |
-| [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [actor_animation_groups.md](../docs/evidence_packets/static_reverse/actor_animation_groups.md) | actChangeShape applies while the actor walks; 0x4502f0 ignores it outside state 0／0x34 |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | random-position slots in table order instead of the native shuffle |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | layout | — | walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over the following actDelay |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | layout | — | units in the shadow's bucket 0x17 stay under it; planeEffect2 < 0x32 by PROCESS.DEF order |
@@ -493,11 +492,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 31 | 70 | 41 | 10 | 29 | 181 |
-| static-derived | 250 | 106 | 19 | 108 | 23 | 506 |
+| static-derived | 251 | 106 | 19 | 108 | 23 | 507 |
 | runtime-measured | 17 | 33 | 4 | 17 | 2 | 73 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 34 | 14 | 1 | 16 | 2 | 67 |
+| provisional | 33 | 14 | 1 | 16 | 2 | 66 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
 | remake-invented | 54 | 35 | 33 | 13 | 1 | 136 |

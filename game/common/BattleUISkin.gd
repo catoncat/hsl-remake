@@ -12,8 +12,8 @@ extends RefCounted
 ##     (FONT_BODY／FONT_SMALL = FONT.24／FONT.15 per window; cell top on row y; label() @1 white
 ##     over 0x8430 at (+1,+1))
 ##   layout: remake-invented
-##     (button styling and the button step-down 17→11 for remake buttons; message_rows keeps a protected name whole
-##     where the 38-byte break cuts it (playtest))
+##     (button styling and the button step-down 17→11 for remake buttons; message_rows under
+##     OPT-WORDBREAK keeps a protected name whole where the 38-byte break cuts it)
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ROOT := ContentPaths.BATTLE_UI_PREVIEWS
 const PANEL_DATA := "res://content/imported/hsl/shared/panels/manifest.json"
@@ -216,10 +216,11 @@ static func line_starts(label: Label, text: String) -> PackedInt32Array:
 ## The rows of a message body as the original row breaker 0x413960 cuts them: a character
 ## that would take the row past `row_bytes` source bytes starts the next row (a Big5 character
 ## is two bytes, ASCII one; the imported text's "\n" is the source's "#" hard break). The
-## original has no kinsoku and keeps no word whole; the remake moves a break that would cut a
-## protected name to the name's start (a remake improvement kept after playtest
-## feedback — the original cuts names). The rows joined by "\n" are the body plus line breaks.
+## original has no kinsoku and keeps no word whole (雪｜拉, 通行｜證 are cut). OPT-WORDBREAK
+## (docs/OPTIONS.md, read on every call) 保護專名 moves a break that would cut a protected name
+## to the name's start. The rows joined by "\n" are the body plus line breaks.
 static func message_rows(text: String, row_bytes: int = MESSAGE_ROW_BYTES) -> PackedStringArray:
+	var protect_names := str(load("res://game/settings/GameOptions.gd").value("OPT-WORDBREAK")) == "protect"
 	var rows := PackedStringArray()
 	var start := 0
 	var used := 0
@@ -234,7 +235,7 @@ static func message_rows(text: String, row_bytes: int = MESSAGE_ROW_BYTES) -> Pa
 		var width := 1 if text.unicode_at(index) < 0x80 else 2
 		if used + width > row_bytes and index > start:
 			var cut := index
-			var name_start := split_word_start(text, index)
+			var name_start := split_word_start(text, index) if protect_names else -1
 			if name_start > start:
 				cut = name_start
 			rows.append(text.substr(start, cut - start))

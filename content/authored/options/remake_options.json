@@ -100,8 +100,8 @@
       "original_value": "original",
       "comfort_value": "fast",
       "values": [
-        {"id": "original", "label": "原版", "text": "原版：切入特寫與地圖演出原速，劇情走位不能快進。"},
-        {"id": "fast", "label": "快", "text": "快：切入特寫與地圖演出 2 倍，確認鍵快進劇情走位。"},
+        {"id": "original", "label": "原版", "text": "原版：切入特寫與地圖演出原速，對白停穩才收確認，劇情走位不能快進。"},
+        {"id": "fast", "label": "快", "text": "快：切入特寫與地圖演出 2 倍，對白按鍵立即整屏，確認鍵快進劇情走位。"},
         {"id": "fastest", "label": "極快", "text": "極快：在「快」之上切入特寫不上畫面，直接出結果數字。"}
       ],
       "why": "127 场战斗反复看同样的切入很耗时间",
@@ -112,7 +112,8 @@
         "game/battle/scene/BattleAttackCue.gd:begin（每次地图起手范围演出读一次）→ pace（PACE_MAP：原版 1、快／極快 2）",
         "game/battle/scene/MagicImpactPresentation.gd:begin（每次法术受者血条与数字读一次）→ pace（PACE_MAP）",
         "game/battle/runtime/BattleOpeningCoordinator.gd:handle_input（对白外每次确认读一次）→ 原版值不快进，剧情走位与镜头照原速；快／極快 时 fast_forward_motion 落位",
-        "game/title/GameClearScreen.gd:advance（谢幕途中每次确认读一次）→ 原版值对白外不读输入，段落照原速；快／極快 时 skip_segment 跳到下一段起点（独白逐句确认不变，制作群直接停住，回标题仍需按键）"
+        "game/title/GameClearScreen.gd:advance（谢幕途中每次确认读一次）→ 原版值对白外不读输入，段落照原速；快／極快 时 skip_segment 跳到下一段起点（独白逐句确认不变，制作群直接停住，回标题仍需按键）",
+        "game/battle/scene/BattleDialogue.gd:holds_confirm（玩家每次按确认读一次：BattleSceneRuntime._input 对剧情／战斗对白框、TownRuntime.handle_input 对城镇对白、GameClearScreen._unhandled_input 对谢幕独白）→ 原版值在擦出（状态 1）与上卷（状态 4）未到位时吞掉这次确认，停下出 ▼／□ 后才翻页或进下一句（0x414280 只在状态 2 读键）；快／極快 时立即整屏。脚本驱动直接调 advance_page 不经此读点"
       ],
       "evidence": ["script-fast-forward", "game/battle/runtime/CombatPresentationTiming.gd", "docs/evidence_packets/runtime_observations/menus_ui/README.md#預備動作0x477c14-bit1"],
       "work": "M"
@@ -153,6 +154,25 @@
       "changeable": "anytime",
       "read_points": ["game/cursor/GameCursor.gd:_read_cursor_option（自動加載 GameCursor._ready 讀一次；重製選項頁關閉且有值變了經 remake_options_changed 再讀）→ hardware：原版值權杖畫進 640×480 畫面隨窗口放大；系統硬體游標 時不畫進畫面，Input.set_custom_mouse_cursor 以同一張 CURSOR01..10 圖與熱點交給系統游標（apply_frame 每換一幀換一次）"],
       "evidence": ["cursor-hide-item-icon", "docs/evidence_packets/runtime_observations/game_cursor/README.md", "CURSOR 84eb5465"],
+      "work": "S"
+    },
+    {
+      "id": "OPT-WORDBREAK",
+      "name": "對白斷行",
+      "tier": "experience",
+      "layer": "appearance",
+      "info": false,
+      "original_value": "original",
+      "comfort_value": "protect",
+      "values": [
+        {"id": "original", "label": "原版", "text": "原版：每行 38 字節硬斷，人名地名可能被切成兩行。"},
+        {"id": "protect", "label": "保護專名", "text": "改良：斷點落在專名中間時，整個專名移到下一行。"}
+      ],
+      "why": "原版每行 38 字节硬断会把「雪拉」「通行證」这类名字切成两行",
+      "save_effect": "none",
+      "changeable": "anytime",
+      "read_points": ["game/common/BattleUISkin.gd:message_rows（每条对白正文排行时读一次：BattleDialogue._show_body 换句时）→ protect：断点落进 content/generated/hsl/text/protected_words.json 的专名时前移到专名开头；原版值照 0x413960 每行 38 字节硬断、无禁则、无专名保护"],
+      "evidence": ["dialogue-line-breaks", "docs/evidence_packets/static_reverse/original_dialogue_board.md"],
       "work": "S"
     },
     {

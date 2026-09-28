@@ -615,6 +615,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			or (event is InputEventMouseButton and event.pressed):
 		var confirm: bool = (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT) \
 				or (event is InputEventKey and (event.keycode == KEY_ENTER or event.keycode == KEY_SPACE))
+		# OPT-PACE 原版: the monologue board reads no key while its page wipes in or scrolls.
+		if _story_running and _epilogue_waiting_confirm and _board.holds_confirm():
+			return
 		advance(confirm)
 
 

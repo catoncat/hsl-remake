@@ -1,6 +1,6 @@
 # Original actor animation groups
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x446c40, 0x45e525, 0x45e5a6 · tools: hsltools/evidence/actor_walk_manifest.py · updated: 2026-09-28
+> evidence: resource-derived; static-derived; provisional: 恢复换形时不打断走位 · status: live · functions: 0x446c40, 0x4502f0, 0x45e525, 0x45e5a6 · tools: hsltools/evidence/actor_walk_manifest.py · updated: 2026-09-28
 
 ## 结论
 
@@ -48,8 +48,9 @@ Verification covers all five actor types: hold duration, frame advance, complete
 **结论**
 - 原版：`actChangeShape` 把演员的帧换成脚本给的形状段，第三参数是延迟 D，每帧停 D＋1 tick，按段内帧数循环；朝向与站立状态号不动（static-derived）。
 - 原版：随后的 `actMoveDispWait` 移动途中按速度延迟循环；到位后回到状态 0，0x1800 仍置位，帧停在到位时那一帧，直到 `actRestoreShape`（static-derived）。
+- 原版：演员在走（`+0x8c` 非 0 且高字不是 0x34）时 `0x4502f0` 不写，这次换形不生效，VM 照常继续（static-derived）。
 - 原版：`actRestoreShape` 让站立组从第一帧、延迟 10 重新载入（static-derived）。
-- 重制：换形按脚本延迟推进（玩家第 3 场 · 逃出克萊恩城（LEVEL053）緹娜绳索形 D＝4，每帧 5 tick；士兵 023 形 D＝2，每帧 3 tick）；保形移动到位后停帧；恢复时站立序列从头开始（static-derived）。
+- 重制：换形按脚本延迟推进（玩家第 3 场 · 逃出克萊恩城（LEVEL053）緹娜绳索形 D＝4，每帧 5 tick；士兵 023 形 D＝2，每帧 3 tick）；保形移动到位后停帧；走动中收到换形不生效；恢复时站立序列从头开始（static-derived）。
 
 **证据**（EXE SHA-256 同上节）
 - VM 分派 `0x4508a1` 查表 `0x4537f4`：opcode 13／14（actChangeShape／Wait）→ `0x451aa3`，把 code、serial、延迟、形状号、帧数存进 VM `+0x98／+0x94／+0x9c／+0xa0／+0xa4`，逐帧 `0x460058` 预载，VM 状态 ＝ opcode；opcode 17（actRestoreShape）→ `0x451b92`。
@@ -60,7 +61,7 @@ Verification covers all five actor types: hold duration, frame advance, complete
 - Wait 版状态 0x34 用 `0x45e575`（播到末帧即停在末帧、计数置 1）走一遍后放行 VM、回状态 0；第一章 0 处使用。
 
 **重制接线**
-- `OpeningStoryObjects._change_shape` 读第三参数为延迟，以 `TICKS_PER_SECOND／(D＋1)` 传给 `ActorRuntime.set_shape_override`，帧数按第五参数截取；`_restore_shape` 清换形后站立序列从第一帧重来。
+- `OpeningStoryObjects._change_shape` 先看演员是否在走（`ActorRuntime.is_moving`，剧情走位与 PlayLoop 走位同一补间）：在走则不换形、记 skipped（reason `walking`），VM 照常继续；站立时读第三参数为延迟，以 `TICKS_PER_SECOND／(D＋1)` 传给 `ActorRuntime.set_shape_override`，帧数按第五参数截取；`_restore_shape` 清换形后站立序列从第一帧重来。
 - `ActorRuntime._finish_keep_pose_move` 置 `_override_held`，保形移动到位后停帧；再次移动或清除时解除。provenance：`timing: static-derived` 本篇。
 
 **复现**
@@ -68,7 +69,7 @@ Verification covers all five actor types: hold duration, frame advance, complete
 `r2 -q -e scr.color=0 -c 'pxw 20 @ 0x453828; pd 30 @ 0x453370; pd 40 @ 0x4502f0; pd 40 @ 0x4420ba; pd 20 @ 0x4455c9; pd 8 @ 0x454262' hsl01.exe`
 
 **边界**
-- 演员在走动（状态非 0、非 0x34）时原版忽略换形；重制不判此条，照常换（provisional）。
+- 恢复（帧数 0）原版无条件写 `+0x8c = 0`，演员若正在走会就地结束行走；重制恢复时不打断走位，路径与停点照走（provisional）。
 - 公共尾里「值 6」的触发标志（`[esp+0x30] & 0x800`）未读；若脚本演员带该标志，换形可能被站立重载覆盖（provisional）。
 
 ## 复现

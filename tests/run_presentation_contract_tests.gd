@@ -44,7 +44,17 @@ func dialogue_contracts() -> void:
 	dialogue.show_message("long", "雷歐納德", text, "001")
 	check(dialogue.body_label.get_line_count() == 7 and dialogue.row_count() == 8, "the source's hard breaks are the body rows, under the name row")
 	check(RuntimeReadback.window_rows(dialogue) == PackedStringArray(["雷歐納德：", "首行", "第二行", "第三行"]), "the first page is the name row and three body rows")
+	# OPT-PACE 原版 (0x414280 reads confirm only in state 2): the wipe holds a player confirm until
+	# the page is still; 快 takes it at once.
+	check(dialogue.holds_confirm(), "OPT-PACE 原版: a confirm during the wipe is not read")
+	var GameOptions = preload("res://game/settings/GameOptions.gd")
+	GameOptions.environment_preset = GameOptions.PRESET_COMFORT
+	check(not dialogue.holds_confirm(), "OPT-PACE 快: a confirm during the wipe acts at once")
+	GameOptions.environment_preset = ""
+	dialogue._process(dialogue.page_wipe_seconds())
+	check(not dialogue.holds_confirm(), "OPT-PACE 原版: the still page reads the confirm")
 	check(dialogue.advance_page(), "a long message offers another page")
+	check(dialogue.holds_confirm(), "OPT-PACE 原版: a confirm during the scroll is not read")
 	check(dialogue.top_row == 4 and RuntimeReadback.window_rows(dialogue) == PackedStringArray(["第四行", "第五行", "第六行", "末行。"]), "a confirm scrolls four rows up: the name scrolls away, four body rows fill the window")
 	dialogue.show_message("long", "雷歐納德", text, "001")
 	check(dialogue.top_row == 4, "per-frame refresh cannot reset a reader's current page")

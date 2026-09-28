@@ -804,7 +804,7 @@ func handle_input(event: InputEvent) -> void:
 	var right_click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT
 	match mode:
 		"dialogue":
-			if _confirm_pressed(event):
+			if _confirm_pressed(event) and not _dialogue.holds_confirm():
 				confirm()
 		"menu":
 			if escape or right_click:
