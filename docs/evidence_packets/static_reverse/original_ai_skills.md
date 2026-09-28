@@ -1,10 +1,11 @@
 # 原 AI：技能桶、使用概率、范围中心与施法站位
 
-> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定; provisional: 威胁选取与有效收益计数 · status: live · functions: 0x407010, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x40dd80 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定; provisional: 威胁选取与有效收益计数 · status: live · functions: 0x407010, 0x40aa80, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x40dd80 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-29
 
 ## 结论
 
 - 原版：`0x407010` 按 function 位把技能分到范围桶 3／单体桶 4（另有治疗、增益、状态、解除桶），`0x40c770` 在非空桶内 `rand(32)%count` 起步循环，逐项 `rand(100)+1 <= use_ratio` 才接受；`0x40d4e0` 决定单体／范围先后；`0x40c9a0` 选覆盖最多的范围中心，`0x40d200..0x40d2b0` 在最大覆盖施法格中取离威胁最远者（static-derived；202 组原指令执行：162 正常返回、40 距离后缀）。
+- 原版 AI 选法术／绝技与施放中心时不估伤：伤害公式 `0x40aa80` 全 EXE 只有两个调用者，都是实际结算——`0x40b8d0`（地图打击 `0x442a90` 在 `0x442e18`／`0x4430f4` 调）与 `0x40b8f0`（逐击结算体 `0x4047e9` 在 `0x404848` 调）；`0x40dd80` 与 `0x40c9a0` 都不读伤害字段、段数或 op 72 计数。所以多段绝技（慌雨斬 5 段、無想冥殺 8 段、星辰落牙破 6 段、殘影亂斬 7 段、百裂突刺 8 段、血之宴 12 段）的段数不影响 AI 选哪招、打谁；重制 `AISkillPlanning.useful_ids` 同样只数有效目标、不估伤，与原版一致（static-derived）。
 - 重制：`game/sim/AISkillDecisionRules.gd` 只算已证实的桶、顺序、逐项概率与距离比较；`game/sim/AISkillPlanning.gd` 为每个拥有的受支持技能准备独立合法站位与中心，选中后先最大化有效覆盖再用原距离末段选格，经 `_resolve_skill` 一次提交（static-derived 规则＋重制组合）。
 - 差异：原完整地图候选生成、空格中心、中心平分的随机流未复原（目标锁定见 [original_ai_navigation](original_ai_navigation.md)「结论」，辅助见 [original_ai_support](original_ai_support.md)）；威胁选取与有效收益计数是重制组合（provisional）。
 
@@ -22,7 +23,9 @@
 | `0x40c9a0` | 枚举施法中心，分别保留含指定目标与一般候选的最高覆盖计数 | 字节锚点 |
 | `0x40cca0`（`0x40cfea` 附近） | 收集保持最大覆盖的可移动施法格 | 字节锚点，整函数未执行 |
 | `0x40d200..0x40d2b0` | 选离威胁曼哈顿距离最大的格，相等时消费原随机低位并可能替换 | 40 组后缀执行 |
-| `0x40dd80` | SPECIAL 表孪生（use_ratio 在 +0x20），进攻桶先后与 MAGIC 共用 `0x40d4e0` | 见技能功能位包 |
+| `0x40dd80` | SPECIAL 表孪生（use_ratio 在 +0x20），进攻桶先后与 MAGIC 共用 `0x40d4e0`；只读桶链表 `[0x4c1b78]+0x38..+0x68`、`rand(32)%count`、`rand(100)+1` 对描述符 +0x20、桶 5／7 经 `0x409870` 读 function 位（+0x28） | 见技能功能位包；r2 反汇编 |
+| `0x40c9a0` 计数 | 覆盖数＝效果区网格 `0x4c1b4c` 内持有目标格计 1，其余格经 `0x411c40` 取占位字、`& 0x70000` 既非 0 也非 `0x70000` 才计 1；不读技能伤害或段数 | r2 反汇编 `0x40cad4..0x40cb3b` |
+| `0x40aa80` 调用者 | 全 EXE 的 `E8／E9` rel32 与 dword 字面量扫描：只有 `0x40b8e6`（`0x40b8d0`）、`0x40b906`（`0x40b8f0`）；`0x40b8d0` 只被 `0x442e18`／`0x4430f4`（地图打击 `0x442a90`，返回值累加 `0x4c2c7c`）调，`0x40b8f0` 只被 `0x404848`（逐击结算体 `0x4047e9`）调；无数据指针 | 字节扫描＋r2 `axt` |
 
 **resource-derived**：
 - `use_ratio`：幻火、风刃、酸蚀幻雾 90，封魔灭杀 86；技能书经 TYPE.H 与 code 位值保存 `source_order`。固定起始选择 0 时 026 单体桶先试幻火再试风刃。
@@ -58,4 +61,5 @@
 - 威胁取八格圆内最近活敌人，同距按行／列；原最近目标 helper 的改选随机流未接。
 - 原候选上限、对象生命周期、owner+0x12c 初始化、完整特殊技能选择与全局 RNG 逐值序列未复原；目标锁定与 wait_round 见 original_ai_navigation。
 - 本包只证桶识别；治疗／增益的 AI 用法见 [original_ai_support](original_ai_support.md) 与 [original_support_magic](original_support_magic.md)。
-- 原版幻火是单体法术；最终原伤害公式与 AI 法术评分不由本包证明。
+- 原版幻火是单体法术；最终原伤害公式不由本包证明。AI 选法术／绝技不估伤只证到上述选择链（`0x40c570`／`0x40c620`／`0x40d4e0`／`0x40d340`／`0x40df70`／`0x40dd80`／`0x40cca0`／`0x40c9a0`）与 `0x40aa80` 的调用者；普通攻击的目标选取见 original_ai_navigation。
+- 多段绝技的 AI 持有者（初始声明）：048 慌雨斬——巴瀚納海峽 · 遭遇戰（LEVEL538）敌方 9 名、巴瀚納海峽（LEVEL012）敌方与友军各 1 名；054 殘影亂斬——自覺與宿命・塔克斯（LEVEL075）、哈莫特沙漠（LEVEL024）、哈莫特沙漠・魔騎士團（LEVEL903）敌方；059 無想冥殺——破滅的命運・席德爾（LEVEL077）敌方。职业 80–84／88／89／92／93／98／99 的学习表另含这些绝技，出生推级学到的持有者未逐场列举；因原版不估伤，持有与否不改变 AI 的估算口径。
