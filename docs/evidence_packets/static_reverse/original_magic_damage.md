@@ -1,14 +1,14 @@
 # 魔法伤害：風刃／幻火原公式、HP 结算与共同技能事务
 
-> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 · status: live · functions: 0x40a7b0 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-27
+> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 · status: live · functions: 0x40a7b0, 0x43b3f0, 0x43b4c0, 0x442a90 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：`0x40a7b0` magic／proc0 先抽 1..100 命中（含施法者命中加成与装备魔法命中，落空累计补偿），命中后三角取值 `S`，加等级（1..80）与精神贡献，乘魔击力百分比，低值折返，再按元素抗性（≤80）缩减；不减物理防御；实际损失封顶当前 HP，并作为经验贡献（static-derived；68 组完整返回、24 组 HP 应用前段）。
 - 原版风火都是单体；damage 字段 12,26／18,32 不是固定伤害也不是均匀含端点抽样（static-derived）。
 - 重制：`SkillResolutionRules` 把风火接入 `NativeMagicRollRules`／`StatusApplicationRules`，PlayLoop 唯一提交；玩家与 AI 同一结算，初始拥有权来自 `content/generated/hsl/skills/initial_book.json`（static-derived；拥有权 resource-derived）。
-- 原版法术命中时受者脚边的 HP／MP 条先显示命中前 HP，约 21 tick 后换成命中后 HP，约 29 tick 出数字，约 60 tick 条消失而数字留下（runtime-measured，19.4 ms/tick 折算）；重制 `MagicImpactPresentation` 按这三个节拍，多受者各在本格、不互相避让（runtime-reference）。
-- 差异：短资源条的尺寸与颜色是重制画法（provisional）。
+- 原版法术受者条是施法例程 `0x442a90` 每个受者调一次的 `0x43b3f0`——与用药同一对小条（BAR_HP4 框、BAR_HP5／BAR_HP6 填充、条旁 cur/max）；条先示命中前 HP 24 tick，`0x40b8d0` 结算的同一 tick 换成命中后 HP 并生成数字，再 40 tick 撤条；击杀先等 30 tick，再多 8（eff_proc_Local）／16（Global）tick；全局只有一个条槽，受者逐个接力（static-derived，见「受者条」）。录屏 21／29／60 tick 与之同序，差值在 19.4 ms/tick 折算误差内。
+- 重制 `MagicImpactPresentation` 照上述画法与计数（static-derived）。
 
 ## 证据
 
@@ -46,13 +46,27 @@
 | 475.167 s | 头上出现数字首位 `1`（逐位揭示，475.40 s 成 `19`） | 0.567 s | 29.2 → 29 |
 | 475.767 s | 两条消失，数字留下 | 1.167 s | 60.1 → 60 |
 
-每档 ±1 帧（33 ms ≈ ±1.7 tick）。条寿命 60 tick 与受击态 `0x407230` 写入的 `+0x92 = 60` 同长，是否同一计数未读。本例单受者，未见多受者时条的排布。
+每档 ±1 帧（33 ms ≈ ±1.7 tick）。本例单受者。
+
+### 受者条
+
+**static-derived**（`r2 -q -c 's 0x442d00; pD 0x220' hsl01.exe`、`s 0x443040; pD 0x290`、`s 0x43b3f0; pD 0x40`、`s 0x43b4c0; pD 0x20`；子状态表 `pxw 0x3c @ 0x4432c8`、`px 0x1e @ 0x443304`）
+
+`0x43b3f0` 的全部调用点是用药两处（`0x440398`、`0x444acf`）与施法例程 `0x442a90` 两处（`0x442dd3`、`0x4430af`）；`0x43b4c0` 撤条在施法例程里是 `0x442ea1`、`0x44323a`。`0x442a90` 开头按 MAGIC 行 `+0x2c`（`effect_proc`，`0x409920`）分两条轨道：非 0（Global）进子状态 1 起，为 0（Local）`0x442bf1` 置子状态 0x14。两条轨道的受者段同型：
+
+| 子状态（Global／Local） | 地址 | 每 tick 做什么 |
+| --- | --- | --- |
+| 效果建好后 | `0x442d4e`／`0x443054` | 置 `+0x9c = 24`（`0x18`） |
+| 9／0x1b | `0x442da3`／`0x4430a9` | `0x43b3f0(受者)`（`[0x4c1cc8]` 非 0 即返回，只建一次）；`+0x9c` 减一，到 0：置 `+0x9c = 40`（`0x28`）、`+0x9e = 0`，`0x40b8d0` → `0x40aa80` 扣 HP 并由 `0x40aba0` 生成数字；受者 live HP ≤ 0 时 `0x40e390`、`+0x9c += 16`（`0x442e6f`）／`+= 8`（`0x443143`）、`+0x9e += 30`（`0x44314b`） |
+| 10／0x1c | `0x442e7c`／`0x443181` | `+0x9e` 非 0 先逐 tick 减，到 0 那 tick 给受者置死亡标 `0x8000000`（`0x4431a0`）；之后 `+0x9c` 减到 0：`0x43b4c0` 撤条，`0x4104d0(1)` 取下一受者，有则回 9（Global，镜头滚向它）／0x19（Local，镜头滚向它并在它身上再建一份效果） |
+
+条由 `0x43b3f0` 经 `0x43ace0`／`0x43ad30` 建，画法、位置与条旁 cur/max 见 [original_item_use_presentation.md](original_item_use_presentation.md)；条过程 `0x4364e0` 读 live cur/max，所以扣血那 tick 起条就是命中后 HP。条槽 `[0x4c1cc8]` 全局只有一个，受者逐个出条，不会两条同时在场。
 
 ## 重制接线
 
 - `game/sim/SkillResolutionRules.gd` `available`／`prepare`／`resolve`：按稳定 ID 核对定义、初始拥有权、已支持 function／范围、资格、MP／ST 与抗性；非法字段在 RNG 前拒绝；只返回 `{ok, caster_changes, target_changes, receipt}` 提案，不改输入。
 - PlayLoop `_resolve_skill`：玩家特殊技与法师 AI 的唯一资源／HP 提交点；所有目标资格与数值准备好后才抽样；一次提交付款、全目标状态、连续数与最终经验；缺抗性等坏数据以 `scenario_error` 停下，不改用物理攻击。
-- `MagicImpactPresentation`：短资源条（42×7）先示前态 HP（不可变收据 `defender_before`），第 21 tick 换后态，第 29 tick 起出实际伤害／闪避数字，第 60 tick 条消失（`BEFORE_TICKS`／`NUMBER_TICKS`／`BAR_TICKS`，按 16 ms/tick 播放）；多受者各在本格，不做避让；之后遗言／淡出 → KILL 连续数 → 最终 EXP → 金币／领取 → 成长／交接（provisional：条的位置、尺寸、颜色）。
+- `MagicImpactPresentation`：受者逐个接力；每人用 `BattleItemUsePresentation` 的小条常量与 BAR_HP4..6 画两条，先示前态 HP（不可变收据 `defender_before`）24 tick，第 24 tick 换后态并出实际伤害／闪避数字，再 40 tick 撤条（击杀 +30 再 +8／+16，按技能行 `effect_proc`）（`BEFORE_TICKS`／`AFTER_TICKS`／`KILL_*`，按 16 ms/tick 播放）；之后遗言／淡出 → KILL 连续数 → 最终 EXP → 金币／领取 → 成长／交接。
 - 共享规则能处理注册允许的区域攻击，但风火本身保持单体；多目标支援使用原驱毒范围。
 
 ## 复现
@@ -63,6 +77,6 @@
 
 - 原 PLAYERS 字节与导入表的严格 `--pak` 比较曾不一致，差异未查明，拥有权只按导入表声明。
 - 动态学习、升级解锁、转职、禁用状态与角色模式对拥有权的影响未读。
-- 原 UI 句柄不在本包；受者条的绘制函数与三个节拍的计数没有静态读出，只有录屏折算（runtime-reference）；替换路线：从 `0x40aa80` 尾部与 `0x40aba0` 的调用者往上找建条对象。
-- 多受者法术时各条是否重叠没有原版帧（provisional）。
+- 多受者时原版在两人之间镜头滚向下一受者（Local 还在其身上重建效果），击杀时死亡标在条内第 30 tick 置、条仍留到 +0x9c 减完；这两处重制未做：受者条接力时不滚镜头、不重播效果（效果原点另见 `effect-origin`），死亡演出在全部受者条结束后才开始。
+- 受击态 `0x407230` 的起点：原版在 `0x40aa80` 扣血那 tick（受者第 24 tick），重制 `MapHitState` 在受者条开始时起。
 - 氣刃斬与普通交锋公式见 [original_ordinary_special.md](original_ordinary_special.md)；费用见 [original_skill_resources.md](original_skill_resources.md)。

@@ -4,24 +4,24 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 87,
-    "sources": 461,
+    "sources": 460,
     "sources_by_kind": {
-      "provenance": 199,
+      "provenance": 198,
       "sentence": 93,
       "scope": 71,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 51,
+    "layout_timing_modules": 50,
     "items_by_original_status": {
-      "read_complete": 25,
-      "read_partial": 44,
+      "read_complete": 26,
+      "read_partial": 43,
       "unread": 1,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 17,
-      "some_levels": 30,
+      "every_battle": 16,
+      "some_levels": 31,
       "rare": 36,
       "invisible": 4
     },
@@ -57,6 +57,7 @@
     "dark-screen-fade",
     "drop-lightning-presentation",
     "level-specific-placement",
+    "magic-impact-bar",
     "map-object-flash",
     "npc-level-policy",
     "script-walk-speed",
@@ -65,7 +66,6 @@
     "battle-equip-drop-hand",
     "bitmap-font",
     "effect-origin",
-    "magic-impact-bar",
     "move-path-overlay",
     "panel-captions",
     "status-page-extras"
@@ -245,6 +245,26 @@
       ]
     },
     {
+      "id": "magic-impact-bar",
+      "difference": "法术命中受者条已照原版（MAGICBAR）：用药同款小条、示前 HP 24 tick → 扣血同 tick 换后 HP 并出数字 → 40 tick 撤条（击杀 +30 再 +8／+16）、受者逐个接力；剩多受者之间原版镜头滚向下一人（Local 还重建效果）、击杀的死亡标在条内第 30 tick 置，重制接力不滚镜头、死亡演出等全部条结束",
+      "original": "0x442a90 子状态 9／0x1b 每受者 0x43b3f0 建条（单槽 [0x4c1cc8]），+0x9c 24 后 0x40b8d0 扣血并由 0x40aba0 生数字，+0x9c 40（击杀 +0x9e 30、+0x9c 加 16 Global／8 Local）后 0x43b4c0 撤条、0x4104d0 取下一受者",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_magic_damage.md",
+        "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
+      ],
+      "remake": "MagicImpactPresentation 逐受者 start／end，BEFORE_TICKS 24／AFTER_TICKS 40／KILL_WAIT_TICKS 30／KILL_EXTRA_LOCAL 8／KILL_EXTRA_GLOBAL 16，条画法与位置取 BattleItemUsePresentation 常量",
+      "remake_code": [
+        "game/battle/scene/MagicImpactPresentation.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "飘字与数字",
+      "sources": [
+        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#e5a592a4e4"
+      ]
+    },
+    {
       "id": "map-object-flash",
       "difference": "地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照",
       "original": "0x43cee7：每 obj_HitPoint tick 一步，层级 16 降 obj_Score 级再升回（一周 2·Score+1 步）；0x462240 engMIX 位走 dst + src×层级/16，纯 engADDCOLOR 不乘层级；深度不变",
@@ -410,7 +430,6 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|"
       ]
@@ -434,28 +453,6 @@
       "category": "特写与施法演出",
       "sources": [
         "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）"
-      ]
-    },
-    {
-      "id": "magic-impact-bar",
-      "difference": "法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出",
-      "original": "原版法术命中在受者脚边画 HP／MP 条（先前值后后值），之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字；2026-09-24 录屏 474.600／475.000／475.167／475.767 s（19.4 ms/tick 折 0／21／29／60 tick）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_magic_damage.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
-      ],
-      "remake": "MagicImpactPresentation 的受者条 BEFORE_TICKS 21／NUMBER_TICKS 29／BAR_TICKS 60，42×7 条画法为重制",
-      "remake_code": [
-        "game/battle/scene/MagicImpactPresentation.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "飘字与数字",
-      "sources": [
-        "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|",
-        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#32cb0f367e"
       ]
     },
     {

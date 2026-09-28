@@ -1,55 +1,82 @@
 extends Node2D
-## Transient map receiver bars and amount, as the original recording shows them: each
-## receiver's HP／MP bars appear at its own cell with the HP before the hit, switch to the HP
-## after it, the number joins them and the bars go while the number stays. The number is the
-## original's at the target's (x, y − 0x34) (0x40aba0): a hit's red kind-0 number (NUM100..109
+## Transient map receiver bars and amount: the cast routine 0x442a90 takes its receivers one
+## at a time. Each gets 0x43b3f0's small HP／MP bars (the item-use pair: BAR_HP4 frame, BAR_HP5／
+## BAR_HP6 fills, live "cur/max" beside each) for 24 ticks with the HP before the hit; then
+## 0x40b8d0 applies the damage — the bar's live read switches to the HP after it and 0x40aba0
+## spawns the number at the target's (x, y − 0x34): a hit's red kind-0 number (NUM100..109
 ## revealed digit by digit, 10 ticks per digit + 34, no rise), a miss's NUM513 MISS (level 16
 ## for 16 ticks, then fading to tick 46, rising 1 px every other tick), both through
-## ResultNumberFloater. Several receivers' bars stay at their own cells (no avoidance).
+## ResultNumberFloater. The bars go 40 ticks later (a kill first waits 30 ticks, then 40 + 8
+## for eff_proc_Local, 40 + 16 for Global) and the next receiver's bars start; the numbers stay.
+## One bar slot ([0x4c1cc8]): never two receivers' bars at once.
 ## provenance:
-##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#V08
-##   layout: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
-##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
-##     (the cur/max text face and shadow: FONT.15 [0x4c1adc] white, 0x8430 at (+1,+1), 0x4365f0 → 0x411d70)
-##   layout: remake-invented (42×7 bar; the text's place beside it)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_magic_damage.md
+##     (0x442dd3／0x4430af → 0x43b3f0 → 0x43ace0／0x43ad30; 0x442ea1／0x44323a → 0x43b4c0)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
+##     (bar place (x − 21, min(y + 8, map height − 36)), MP 16 below, cur/max at (+44, −6))
+##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json (BAR_HP4..6)
 ##   strings: resource-derived content/imported/hsl/shared/reward_floats/manifest.json
+##   timing: static-derived docs/evidence_packets/static_reverse/original_magic_damage.md
+##     (+0x9c 24 before the damage, 40 after; a kill's +0x9e 30, then +8 Local／+16 Global)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
-##   timing: runtime-reference docs/evidence_packets/static_reverse/original_magic_damage.md
-##     (bar beats read from the 2026-09-24 recording at 19.4 ms／tick: before-HP 21, number 29, bars 60 ticks)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const LoopKeys = preload("res://game/sim/LoopKeys.gd")
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
+const ItemBars = preload("res://game/battle/scene/BattleItemUsePresentation.gd")
 ## 0x40aba0／0x40ac24: the magic channel spawns its number at (target x, target y − 0x34).
 const NUMBER_OFFSET := Vector2(0, -0x34)
-## Bar beats in original ticks, read from the recording (474.600 s bars with the HP before,
-## 475.000 s HP after, 475.167 s number, 475.767 s bars gone; 30 fps, 19.4 ms／tick).
-const BEFORE_TICKS := 21
-const NUMBER_TICKS := 29
-const BAR_TICKS := 60
+## 0x442a90 states 9／0x1b: +0x9c = 24 ticks of the bar before 0x40b8d0 applies the damage and
+## spawns the number; states 10／0x1c: +0x9c = 40 more, then 0x43b4c0 drops the bars.
+const BEFORE_TICKS := 24
+const NUMBER_TICKS := BEFORE_TICKS
+const AFTER_TICKS := 40
+const BAR_TICKS := BEFORE_TICKS + AFTER_TICKS
+## A kill (live HP ≤ 0 after 0x40b8d0): +0x9e = 30 ticks before the death mark (0x4431a0), and
+## +0x9c grows by 8 (eff_proc_Local, 0x443143) or 16 (Global, 0x442e6f).
+const KILL_WAIT_TICKS := 30
+const KILL_EXTRA_LOCAL := 8
+const KILL_EXTRA_GLOBAL := 16
 var entries: Array[Dictionary] = []
 var elapsed := 0.0
 ## OPT-PACE (docs/OPTIONS.md), read once per begin: the multiplier on the clock (Timing.PACE_MAP).
 var pace := 1.0
+var _art: Dictionary = {}
 
 
 func begin(strike: Dictionary, runtime: Node) -> void:
 	finish()
 	pace = float(Timing.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0))
+	if _art.is_empty():
+		var assets: Dictionary = BattleUISkin.data()["assets"]
+		for key in ["bar_hp4", "bar_hp5", "bar_hp6"]:
+			_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
+	var world_height := 1e9
+	if runtime.get("map_config") != null: world_height = float(runtime.map_config.world_size.y)
+	var global := _global(strike, runtime)
+	var start := 0
 	for hit in strike.get("affected_targets", [strike]):
 		var actor = runtime.actor_node_for_unit(str(hit["defender_id"]))
 		if actor == null: continue
 		var unit: Dictionary = runtime.BattlePlayLoop.unit(runtime.play_loop, str(hit["defender_id"]))
 		unit.merge(hit.get("defender_before", {}), true)
 		var point: Vector2 = runtime.world_to_logical_position(actor.position)
-		var panel := Control.new()
-		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.position = Vector2(clampf(point.x - 22, 8, 518), clampf(point.y + 5, 8, 435))
-		panel.size = Vector2(114, 30)
+		# 0x43b3f0: Bar_HP at (x − 21, min(y + 8, map height − 36)), Bar_MP 16 px under it.
+		var bar_world: Vector2 = actor.position + ItemBars.BAR_OFFSET
+		bar_world.y = minf(bar_world.y, world_height - ItemBars.BAR_BOTTOM_MARGIN)
+		var panel := Node2D.new()
+		panel.position = runtime.world_to_logical_position(bar_world)
 		add_child(panel)
-		var hp_bar := _bar(panel, int(unit["hp"]), int(unit["max_hp"]), 0, Color(0.8, 0.12, 0.08))
-		_bar(panel, int(unit.get("mp", 0)), int(unit.get("max_mp", 0)), 15, Color(0.1, 0.5, 0.85))
+		var bars: Array[Dictionary] = [{"fill": "bar_hp5", "value": int(unit["hp"]), "max": int(unit["max_hp"])},
+			{"fill": "bar_hp6", "value": int(unit.get("mp", 0)), "max": int(unit.get("max_mp", 0))}]
+		for index in bars.size():
+			var text := BattleUISkin.text(panel, ItemBars.BAR_TEXT_OFFSET + Vector2(0, ItemBars.BAR_PITCH * index), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, ItemBars.BAR_TEXT_CELL)
+			text.name = "MagicImpactBarText"
+			bars[index]["text"] = text
+			_set_bar(bars[index], int(bars[index]["value"]))
+		panel.draw.connect(_draw_bars.bind(panel, bars))
 		var damage := int(hit.get("actual_damage", hit["damage"]))
 		# 0x40aba0: the red kind-0 number of a hit, MISS (kind 5) of a miss; hold 0.
 		var amount: Node2D = ResultNumberFloater.new()
@@ -59,68 +86,60 @@ func begin(strike: Dictionary, runtime: Node) -> void:
 		add_child(amount)
 		amount.present("damage" if bool(hit["hit"]) else "miss", damage)
 		amount.hide()
-		entries.append({"panel": panel, "amount": amount, "actor": weakref(actor), "hit": bool(hit["hit"]),
-			"hp_bar": hp_bar, "hp_after": int(hit["defender_hp_after"]), "max_hp": int(unit["max_hp"]),
-			"unit_id": hit["defender_id"], "float_seconds": OriginalTick.seconds(amount.life_ticks())})
+		var hp_after := int(hit["defender_hp_after"])
+		var life := BAR_TICKS + (KILL_WAIT_TICKS + (KILL_EXTRA_GLOBAL if global else KILL_EXTRA_LOCAL) if hp_after <= 0 else 0)
+		entries.append({"panel": panel, "bars": bars, "amount": amount, "actor": weakref(actor), "hit": bool(hit["hit"]),
+			"hp_after": hp_after, "unit_id": hit["defender_id"], "start": start, "end": start + life,
+			"float_ticks": amount.life_ticks()})
+		start += life
 	elapsed = 0.0
 	_process(0.0)
 
 
-## Seconds until every bar and number has gone: the bars' 60 ticks or the longest number
-## from its tick 29, whichever ends later.
+## eff_proc_Global (MAGIC +0x2c = 1, read by 0x409920) takes the 0x442a90 branch whose kill
+## adds 16; Local adds 8.
+func _global(strike: Dictionary, runtime: Node) -> bool:
+	var loop = runtime.get("play_loop")
+	if not (loop is Dictionary): return false
+	var skill: Dictionary = loop.get(LoopKeys.SKILL_BOOK, {}).get("skills", {}).get(str(strike.get("skill_id", "")), {})
+	return str(skill.get("fields", {}).get("effect_proc", "")) == "eff_proc_Global"
+
+
+## Seconds until every bar and number has gone: the last receiver's bars, or the longest
+## number from its receiver's damage tick, whichever ends later.
 func total_seconds() -> float:
-	return maxf(OriginalTick.seconds(BAR_TICKS), OriginalTick.seconds(NUMBER_TICKS) + float_seconds())
+	var last := 0
+	for entry in entries:
+		last = maxi(last, maxi(int(entry["end"]), int(entry["start"]) + NUMBER_TICKS + int(entry["float_ticks"])))
+	return OriginalTick.seconds(last)
 
 
 ## The longest number among the entries: a red damage number lives 10 ticks per digit + 34,
 ## MISS 47 (its first tick initialises, then 46).
 func float_seconds() -> float:
-	var longest := 0.0
+	var longest := 0
 	for entry in entries:
-		longest = maxf(longest, float(entry["float_seconds"]))
-	return longest
+		longest = maxi(longest, int(entry["float_ticks"]))
+	return OriginalTick.seconds(longest)
 
 
-func _bar(parent: Control, value: int, maximum: int, top: float, color: Color) -> Dictionary:
-	# A themed ProgressBar retains a font-sized minimum height even when its
-	# percentage is hidden. These small map-only bars must stay exactly seven px.
-	var bar := Control.new()
-	bar.position = Vector2(0, top + 3)
-	bar.size = Vector2(42, 7)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(bar)
-	_rect(bar, Vector2.ZERO, Vector2(42, 7), Color(0.95, 0.95, 0.95))
-	_rect(bar, Vector2.ONE, Vector2(40, 5), Color(0.04, 0.04, 0.04, 0.94))
-	var fill := _rect(bar, Vector2.ONE, Vector2.ZERO, color)
-	var text := Label.new()
-	text.position = Vector2(47, top - 3)
-	# FONT.15 white over the 0x8430 shadow at (+1,+1): the original's only number beside a bar
-	# is 0x4365f0's cur/max through the FONT.15 helper 0x411d70.
-	text.add_theme_font_size_override("font_size", BattleUISkin.FONT_SMALL)
-	text.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
-	text.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
-	text.add_theme_constant_override("shadow_offset_x", 1)
-	text.add_theme_constant_override("shadow_offset_y", 1)
-	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(text)
-	var parts := {"fill": fill, "text": text}
-	_set_bar(parts, value, maximum)
-	return parts
+## 0x4364e0's draw branch: the BAR_HP4 frame by its origin, then the fill (BAR_HP5 HP, BAR_HP6
+## MP) filled × 39 / max wide (16.16 fixed point, 0x436576..0x4365ae) through 0x4607f9.
+func _draw_bars(panel: Node2D, bars: Array[Dictionary]) -> void:
+	for index in bars.size():
+		var bar: Dictionary = bars[index]
+		var at := Vector2(0, ItemBars.BAR_PITCH * index)
+		panel.draw_texture(_art["bar_hp4"]["texture"], at - _art["bar_hp4"]["origin"])
+		var fill: Texture2D = _art[bar["fill"]]["texture"]
+		var maximum := int(bar["max"])
+		var width := 0 if maximum <= 0 else (((int(bar["value"]) << 16) / maximum) * fill.get_width()) >> 16
+		if width > 0:
+			panel.draw_texture_rect_region(fill, Rect2(at, Vector2(width, fill.get_height())), Rect2(Vector2.ZERO, Vector2(width, fill.get_height())))
 
 
-func _set_bar(parts: Dictionary, value: int, maximum: int) -> void:
-	parts["fill"].size = Vector2(40 * clampf(float(value) / maxi(1, maximum), 0, 1), 5)
-	parts["text"].text = "%d/%d" % [value, maximum]
-
-
-func _rect(parent: Control, at: Vector2, dimensions: Vector2, color: Color) -> ColorRect:
-	var rect := ColorRect.new()
-	rect.position = at
-	rect.size = dimensions
-	rect.color = color
-	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(rect)
-	return rect
+func _set_bar(bar: Dictionary, value: int) -> void:
+	bar["value"] = value
+	bar["text"].text = "%d/%d" % [value, int(bar["max"])]
 
 
 func busy() -> bool:
@@ -135,17 +154,20 @@ func _process(delta: float) -> void:
 		return
 	var tick := OriginalTick.ticks(elapsed)
 	for entry in entries:
-		entry["panel"].visible = tick < BAR_TICKS
-		if tick >= BEFORE_TICKS and not entry.get("after_shown", false):
+		var local: int = tick - int(entry["start"])
+		entry["panel"].visible = local >= 0 and tick < int(entry["end"])
+		if local >= BEFORE_TICKS and not entry.get("after_shown", false):
+			# 0x40b8d0 applied the damage: the bar's live read shows the HP after it.
 			entry["after_shown"] = true
-			_set_bar(entry["hp_bar"], int(entry["hp_after"]), int(entry["max_hp"]))
-		if tick < NUMBER_TICKS:
+			_set_bar(entry["bars"][0], int(entry["hp_after"]))
+			entry["panel"].queue_redraw()
+		if local < NUMBER_TICKS:
 			entry["amount"].hide()
 		else:
-			entry["amount"].draw_at(tick - NUMBER_TICKS)
+			entry["amount"].draw_at(local - NUMBER_TICKS)
 		var actor: Node2D = entry["actor"].get_ref()
-		if actor != null:
-			var brightness := 1.0 + maxf(0, 1 - tick / BEFORE_TICKS) if entry["hit"] else 1.0
+		if actor != null and local >= 0 and tick < int(entry["end"]):
+			var brightness := 1.0 + maxf(0, 1 - float(local) / BEFORE_TICKS) if entry["hit"] else 1.0
 			actor.modulate = Color(brightness, brightness, brightness)
 
 

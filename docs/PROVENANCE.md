@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 135 remake-invented cells, 64 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 134 remake-invented cells, 64 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (197)
 
@@ -94,7 +94,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [DamageNumberFloater](../game/battle/scene/DamageNumberFloater.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | n/a | static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | n/a |
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | n/a | static-derived [effect_motion.json](../content/generated/hsl/skills/effect_motion.json); static-derived [original_effect_motion.md](../docs/evidence_packets/static_reverse/original_effect_motion.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); provisional | n/a | static-derived [effect_motion.json](../content/generated/hsl/skills/effect_motion.json); provisional | n/a |
 | [LevelUpStars](../game/battle/scene/LevelUpStars.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | n/a | static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); remake-invented | n/a |
-| [MagicImpactPresentation](../game/battle/scene/MagicImpactPresentation.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V08`; static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); runtime-reference [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md) | n/a |
+| [MagicImpactPresentation](../game/battle/scene/MagicImpactPresentation.gd) | n/a | static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json) | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json) | static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md) | n/a |
 | [MapHitState](../game/battle/scene/MapHitState.gd) | n/a | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md); runtime-measured [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) `#录屏对照` | n/a | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) |
 | [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | n/a | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); provisional; remake-invented | n/a | resource-derived [moon_dance.json](../content/generated/hsl/skills/moon_dance.json); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json) |
 | [ObjcomdMotion](../game/battle/scene/ObjcomdMotion.gd) | n/a | static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); provisional | n/a | static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json) | n/a |
@@ -271,7 +271,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (135)
+### remake-invented 清单 (134)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -339,7 +339,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleTurnEndCue](../game/battle/scene/BattleTurnEndCue.gd) | strings | OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat [OPTIONS.md](../docs/OPTIONS.md) |
 | [BattleWinFailBoard](../game/battle/scene/BattleWinFailBoard.gd) | rules | under a `--script` SceneTree (tests, autoplay, captures) the opening board ends itself after HOLD_TICKS, the game has no timeout; leaving 任務說明 mid-dissolve fades out from there |
 | [LevelUpStars](../game/battle/scene/LevelUpStars.gd) | timing | the draws come from a presentation RNG seeded by the exchange and the recipient, not the original global 0x458c10 stream |
-| [MagicImpactPresentation](../game/battle/scene/MagicImpactPresentation.gd) | layout | 42×7 bar; the text's place beside it |
 | [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | layout | the caster intro panels |
 | [PoisonArrowPresentation](../game/battle/scene/PoisonArrowPresentation.gd) | layout | receiver phase on the map, scaled offsets; spark insertion offsets from a clip-seeded RNG |
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | strings | the authored skills' names and scripts, sequel content from content/authored/roles/skills.json [authored_effect_scripts.json](../content/generated/hsl/skills/authored_effect_scripts.json) |
@@ -488,15 +487,15 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 31 | 70 | 41 | 10 | 29 | 181 |
-| static-derived | 251 | 110 | 19 | 110 | 23 | 513 |
+| resource-derived | 31 | 71 | 41 | 10 | 29 | 182 |
+| static-derived | 251 | 110 | 19 | 111 | 23 | 514 |
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
 | provisional | 33 | 15 | 1 | 13 | 2 | 64 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
-| runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
-| remake-invented | 53 | 35 | 33 | 13 | 1 | 135 |
+| runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
+| remake-invented | 53 | 34 | 33 | 13 | 1 | 134 |
 | n/a | 63 | 115 | 147 | 133 | 165 | 623 |
 
 <!-- provenance:end -->

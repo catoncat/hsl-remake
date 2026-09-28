@@ -382,19 +382,18 @@
     },
     {
       "id": "magic-impact-bar",
-      "difference": "法术命中受者条：先示命中前 HP、21 tick 换后 HP、29 tick 出数字、60 tick 条消失、多受者不避让，均照原版录屏（MAGICFX）；剩条的尺寸与颜色是重制画法，节拍只有录屏折算、计数未静态读出",
-      "original": "原版法术命中在受者脚边画 HP／MP 条（先前值后后值），之后 0x40aba0 在目标 (x, y−0x34) 生成 kind 0／5 数字；2026-09-24 录屏 474.600／475.000／475.167／475.767 s（19.4 ms/tick 折 0／21／29／60 tick）",
+      "difference": "法术命中受者条已照原版（MAGICBAR）：用药同款小条、示前 HP 24 tick → 扣血同 tick 换后 HP 并出数字 → 40 tick 撤条（击杀 +30 再 +8／+16）、受者逐个接力；剩多受者之间原版镜头滚向下一人（Local 还重建效果）、击杀的死亡标在条内第 30 tick 置，重制接力不滚镜头、死亡演出等全部条结束",
+      "original": "0x442a90 子状态 9／0x1b 每受者 0x43b3f0 建条（单槽 [0x4c1cc8]），+0x9c 24 后 0x40b8d0 扣血并由 0x40aba0 生数字，+0x9c 40（击杀 +0x9e 30、+0x9c 加 16 Global／8 Local）后 0x43b4c0 撤条、0x4104d0 取下一受者",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_magic_damage.md",
-        "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md",
-        "docs/evidence_packets/static_reverse/original_skill_function_bits.md"
+        "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
       ],
-      "remake": "MagicImpactPresentation 的受者条 BEFORE_TICKS 21／NUMBER_TICKS 29／BAR_TICKS 60，42×7 条画法为重制",
+      "remake": "MagicImpactPresentation 逐受者 start／end，BEFORE_TICKS 24／AFTER_TICKS 40／KILL_WAIT_TICKS 30／KILL_EXTRA_LOCAL 8／KILL_EXTRA_GLOBAL 16，条画法与位置取 BattleItemUsePresentation 常量",
       "remake_code": [
         "game/battle/scene/MagicImpactPresentation.gd"
       ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
+      "original_status": "read_complete",
+      "visibility": "some_levels",
       "effort": "S",
       "category": "飘字与数字"
     },
@@ -2198,12 +2197,6 @@
     "provenance:game/battle/scene/BattleWinFailBoard.gd|rules|remake-invented|": {
       "no_visible_effect": "只剩 --script 驱动（测试／自动对局／capture）下开场面板 112 tick 自行淡出与任務說明中途离开从当前层级淡出；游戏本身照原版等按键"
     },
-    "provenance:game/battle/scene/MagicImpactPresentation.gd|layout|remake-invented|": {
-      "item": [
-        "magic-impact-bar",
-        "bitmap-font"
-      ]
-    },
     "provenance:game/battle/scene/MoonDancePresentation.gd|layout|remake-invented|": {
       "item": "special-object-motion"
     },
@@ -3166,9 +3159,9 @@
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {
       "no_visible_effect": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#32cb0f367e": {
+    "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#e5a592a4e4": {
       "item": "magic-impact-bar",
-      "text": "条寿命 60 tick 与受击态 `0x407230` 写入的 `+0x92 = 60` 同长，是否同一计数未读。"
+      "text": "这两处重制未做：受者条接力时不滚镜头、不重播效果（效果原点另见 `effect-origin`），死亡演出在全部受者条结束后才开始。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba": {
       "item": "cast-overlay-rules",
