@@ -347,9 +347,15 @@ func allocate_growth(unit_id: String, allocation: Dictionary) -> void:
 ## Give (state 112 0x444bc7 → 113 0x444c27) is the same pick with the user's cell cleared; its
 ## left press takes a marked cell whose unit is a give target (0x40f560, 0x411c40 & 0x10000, 0x407800).
 var item_pick_cells: Array = []
+## The pick's whole-field light (0x4c1b00 & 0x200000, set on entering 105／113 at 0x444bf0):
+## every left press clears it before the cell is checked (0x444947／0x444c40), and a rejected
+## press stays in the pick (0x4449bb／0x444c9e) without setting it again, so after a miss only
+## the actor and the hovered unit stay lit for the rest of the pick (BattleSceneOverlays.sync_unit_highlights).
+var item_pick_lit := false
 
 
 func _begin_item_pick() -> void:
+	item_pick_lit = true
 	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
 	var origin: Vector2i = runtime.unit_grid_coord(runtime.selected_unit_id)
 	item_pick_cells = preload("res://game/battle/scene/BattleItemUsePresentation.gd").use_cells(runtime.play_loop, actor, origin, runtime.item_panel.operation == "give")
@@ -362,6 +368,7 @@ func _item_pick_pointer(viewport_position: Vector2, confirm: bool) -> void:
 	if not confirm:
 		_item_pick_hover(logical)
 		return
+	item_pick_lit = false
 	var cell := _item_pick_cell(logical)
 	var unit_id: String = runtime.scene_input.unit_id_at_grid(cell)
 	if not item_pick_cells.has(cell) or unit_id == "":
@@ -399,6 +406,7 @@ func _item_pick_hover(logical: Vector2) -> void:
 
 
 func _end_item_pick() -> void:
+	item_pick_lit = false
 	item_pick_cells = []
 	runtime.overlays.clear_item_range()
 	var view: Node = runtime.get_node("BattlePresentation")

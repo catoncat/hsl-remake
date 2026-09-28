@@ -12,13 +12,13 @@ extends Node2D
 ##            drops the bars.
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
-##     (effect point, burst directions and motion, bar docking)
+##     (effect point, burst directions and motion, bar docking, the AI lead-in's 0x40bab0-mode range)
 ##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json (WAT04／WAT01 frames)
 ##   layout: resource-derived content/imported/hsl/shared/reward_floats/manifest.json (NUM510)
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json (BAR_HP4..6)
 ##   layout: resource-derived content/imported/hsl/shared/first_skill/global.obs (objects 396／397／398)
 ##   layout: provisional
-##     (range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36)
+##     (bar y cap at map height − 36)
 ##   timing: remake-invented
 ##     (the draws come from a presentation RNG seeded by the use, not the original global 0x458c10 stream)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_item_use_presentation.md
@@ -172,7 +172,7 @@ func begin(receipt: Dictionary, loop: Dictionary, map_config: RefCounted, world_
 	var cue: Node2D = view.attack_cue
 	if not bool(user.get("player_commandable", false)) and not user.is_empty() and map_config != null and runtime.has_method("unit_grid_coord"):
 		var origin: Vector2i = runtime.unit_grid_coord(str(user["id"]))
-		cue.begin_item(target_id, use_cells(loop, user, origin), origin, runtime.unit_grid_coord(target_id), map_config, runtime.get("camera_controller"))
+		cue.begin_item(target_id, ai_use_cells(loop, user, origin), origin, runtime.unit_grid_coord(target_id), map_config, runtime.get("camera_controller"))
 		stage = "lead"
 	else:
 		_start_effect(loop)
@@ -198,13 +198,21 @@ func finish() -> void:
 	if _effect_layer != null: _effect_layer.queue_redraw()
 
 
-## 0x40f440(user, 1 (2 for a 3×3 user), mode 4) from the user's cell: the sim's marked cells
+## The player's pick: 0x40f440(user, 1 (2 for a 3×3 user), mode 4) from the user's cell: the sim's marked cells
 ## (BattleLoopInventory.item_range_cells; `give`: range 1, centre cleared); `origin` is the
 ## drawn cell of the user.
 static func use_cells(loop: Dictionary, user: Dictionary, origin: Vector2i, give: bool = false) -> Array:
 	var placed := user.duplicate()
 	placed["coord"] = origin
 	return BattleLoopInventory.item_range_cells(loop, placed, give)
+
+
+## The AI lead-in's range: 0x40f440(user, 1 (2 for a 3×3 user), 0x40bab0 side mode) from the
+## drawn cell, centre kept (BattleLoopInventory.ai_item_range_cells).
+static func ai_use_cells(loop: Dictionary, user: Dictionary, origin: Vector2i) -> Array:
+	var placed := user.duplicate()
+	placed["coord"] = origin
+	return BattleLoopInventory.ai_item_range_cells(loop, placed)
 
 
 ## 0x409e40's effect kinds for a receipt, in spawn order.

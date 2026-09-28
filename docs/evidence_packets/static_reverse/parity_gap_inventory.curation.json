@@ -548,18 +548,18 @@
     },
     {
       "id": "highlight-colours",
-      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
-      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标与选用药／交付格时全场亮、选格里左键误点一次即熄到选格结束，选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标时重制仍全场亮（与攻击共用 attack_select），原版不亮",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000 时亮；置位只有玩家状态机两处：分派 0x443a00 字节表 0x445758 → 指针表 0x445694，state 0x50 第 16 项 0x4442e4 在 0x4442ef 置，state 104／112 第 27／32 项 0x4448f4／0x444bc7 落到 0x444be4 在 0x444bf0 置，105／113 每次左键在查格前清（0x444947／0x444c40），校验不过停在原态不再置；魔法 0x79（0x444ec1）、绝技 0x98（0x445099）、选移动格不置；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
       ],
-      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 与道具选格（BattleSceneMenus.item_pick_lit：进选格置、每次左键先清）期间全场点亮；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:set_highlight",
         "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights",
         "game/battle/scene/BattleSceneStage.gd:story_cast_player_mode"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "S",
       "category": "地图人物演出"
@@ -1615,14 +1615,15 @@
     },
     {
       "id": "ai-item-use-presentation",
-      "difference": "用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；剩引导与玩家选格的射程格按四邻近似",
-      "original": "AI 低字 7–14（0x440132，表 0x4422a0）：射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star 与 0x401390 的 396／397／398 星点，首个带等待），0x43b3f0 小条＋位 0x100 的 cur/max 文字（0x4365f0 → 0x411d70），末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
+      "difference": "用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；引导射程格按 0x40bab0 阵营模式泛洪、玩家选格按模式4（ITEMPICKLIGHT、ITEMUSERULES）；剩三类效果对象的加色层级混合按近似、小条 y 上限按地图高未逐关核对",
+      "original": "AI 低字 7–14（0x440132，表 0x4422a0）：0x40f440(user, 体型 1／2, 0x40bab0(user)) 标射程（地面模式 2／3／7，不清中心）、射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star 与 0x401390 的 396／397／398 星点，首个带等待），0x43b3f0 小条＋位 0x100 的 cur/max 文字（0x4365f0 → 0x411d70），末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
       ],
-      "remake": "BattleItemUsePresentation 三段（lead／effect／numbers），玩家与 AI 共用；BattleAttackCue.begin_item 画引导；玩家选格 BattleSceneMenus._begin_item_pick／BattleSceneOverlays.show_item_range；case 5／6／7 由 _emit／star_state 画 FlyUp2 上飘与 CollectFadeShape 聚拢星点，小条右侧印 cur/max；射程格仍是四邻近似 use_cells",
+      "remake": "BattleItemUsePresentation 三段（lead／effect／numbers），玩家与 AI 共用；BattleAttackCue.begin_item 画引导，射程格 ai_use_cells → BattleLoopInventory.ai_item_range_cells；玩家选格 BattleSceneMenus._begin_item_pick／BattleSceneOverlays.show_item_range；case 5／6／7 由 _emit／star_state 画 FlyUp2 上飘与 CollectFadeShape 聚拢星点，小条右侧印 cur/max",
       "remake_code": [
-        "game/battle/scene/BattleItemUsePresentation.gd:use_cells",
+        "game/battle/scene/BattleItemUsePresentation.gd:ai_use_cells",
+        "game/sim/loop/BattleLoopInventory.gd:ai_item_range_cells",
         "game/battle/scene/BattleItemUsePresentation.gd:_emit",
         "game/battle/scene/BattleAttackCue.gd:begin_item"
       ],
@@ -3090,9 +3091,6 @@
     "provenance:game/battle/scene/BattleSceneOverlays.gd|timing|provisional|": {
       "item": "highlight-colours"
     },
-    "scope:docs/evidence_packets/runtime_observations/dialogue_death/README.md|provisional|选魔法／道具目标与选移动格时谁亮未拍": {
-      "item": "highlight-colours"
-    },
     "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）": {
       "item": [
         "title-ornaments",
@@ -3103,7 +3101,7 @@
       "no_visible_effect": "±1 tick 的同帧处理先后，16 ms 以内",
       "text": "数字对象与守方对象同 tick 先后未读（±1 tick）。"
     },
-    "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；AI 引导与玩家选格的射程格按\"自身格＋四邻无敌对占位\"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高": {
+    "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；小条 y 上限的 [0x4c094c] 按地图高": {
       "item": "ai-item-use-presentation"
     },
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {

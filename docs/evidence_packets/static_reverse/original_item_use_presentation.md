@@ -1,10 +1,12 @@
 # 用药演出：AI 引导、Show_Magic_Star 效果、目标小条与数字
 
-> evidence: static-derived; resource-derived; runtime-measured: 2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）用回復藥选目标时指针处是道具图标、无权杖、周围五格十字蓝框、悬停己格开资料窗; provisional: 0x401390 三类效果对象的加色＋engMIX 按"加色 × 层级/16"画、随机数用重制种子；AI 引导与玩家选格的射程格按"自身格＋四邻无敌对占位"近似 0x40f440 模式4 泛洪；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x401390, 0x408b20, 0x408df0, 0x409e40, 0x40f440, 0x40f560, 0x411200, 0x411d70, 0x416d04, 0x41f43b, 0x430230, 0x4364e0, 0x437020, 0x439997, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4448f4, 0x4449a7, 0x4449bb, 0x444a5c, 0x444ab2, 0x444aba, 0x444ac9, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-28
+> evidence: static-derived; resource-derived; runtime-measured: 2026-09-27 原版玩家第 1 場「棄卒」（LEVEL051）用回復藥选目标时指针处是道具图标、无权杖、周围五格十字蓝框、悬停己格开资料窗; provisional: 0x401390 三类效果对象的加色＋engMIX 按"加色 × 层级/16"画、随机数用重制种子；小条 y 上限的 [0x4c094c] 按地图高 · status: live · functions: 0x401390, 0x408b20, 0x408df0, 0x409e40, 0x40bab0, 0x40ecc0, 0x40f440, 0x40f560, 0x411200, 0x411d70, 0x416d04, 0x41f43b, 0x430230, 0x4364e0, 0x437020, 0x439997, 0x43b3f0, 0x43b4c0, 0x440132, 0x440176, 0x4401c7, 0x440211, 0x4402ed, 0x440391, 0x440437, 0x4448f4, 0x4449a7, 0x4449bb, 0x444a5c, 0x444ab2, 0x444aba, 0x444ac9, 0x444bc7, 0x444be4, 0x45e575, 0x45eb9d, 0x45ebdc · updated: 2026-09-28
 
 ## 结论
 
 - 原版 AI 用药有引导段：先画移动色射程 12 tick，光标从用药者滑到目标，目标亮起 12 tick，再出姿势、`0x409e40` 生效；玩家用药没有引导段，其余共用（static-derived）。
+- AI 引导的射程不是模式4：低字 7 `0x440176` 调 `0x40f440(user, 大体型 2 否则 1, 0x40bab0(user))`，按用药者阵营取地面泛洪模式（我方 2／敌方 3／NPC 7，飞行单位同样走地面），用该模式的掩码与高差，不调 `0x40f520`、中心格保留；重制 `BattleLoopInventory.ai_item_range_cells` 照此（static-derived）。
+- 玩家选用药／交付格期间全场单位按阵营色亮：`0x444be4` 离开 104／112 时置 `[0x4c1b00] |= 0x200000`（`0x444bf0`），选格按键那一 tick 清（`0x444947`／`0x444c40`）；重制 `BattleSceneOverlays.sync_unit_highlights` 在道具选格期间全场点亮（static-derived）。
 - 玩家选用药目标是地图选格，不是窗口：点道具即持物并关用药窗；state104 `0x4448f4` 用 `0x40f440(user, 1／大体型 2, 模式4)` 标范围（自己＋四邻，敌方／NPC 占位格不进）；state105 每 tick 以移动调色板 `0x411200` 画范围、`0x430230` 画格光标；光标下有任何一方的单位就开身份栏（`0x4449bb`，范围外也开）；左键只在范围格且格上是己方、非 no_attack 单位时确认，别处点击无反应；右键放回道具、重开用药窗（static-derived；帧 runtime-measured）。
 - 确认那一 tick 进 0x69 `0x4449a7` 姿势、不再画范围与光标；下一 tick `0x444ab2` 生效、`0x444aba` 清持物——持物图标只多留一 tick，不是"留到姿势结束"（static-derived）。
 - 重制照此：点道具当帧持物图标就在指针处（压在收窗快照之上），道具窗滑出收起，地图画移动色范围、I_RECT01 格光标与悬停身份栏，左键范围内己方格走原 `use_item`，右键回道具列表；确认时范围／光标／身份栏原地消失，持物图标多留一个原版 tick，不留收窗快照（static-derived）。
@@ -12,7 +14,7 @@
 - 气力／永久能力两类各由 `0x401390` 在目标脚边撒 32 颗上飘星（397 WAT04／398 WAT01，effProcFlyUp2：0.5–1.44 px／tick 上升、4 张、末张后 16 级淡出）；临时加成撒 12＋8 颗 396 WAT01（effProcCollectFadeShape：从 64–127 px 外每 tick 1.5 px 向落点聚拢、每 2 tick 亮一级，到点后逐级淡出）（static-derived；模板 resource-derived）。
 - 小条两条都置 `+0x80` 位 0x100：条右侧 (填充 x + 39 + 5, 条 y − 6) 以 FONT.15 白字（0x8430 影）印 live `cur/max`，无补位（static-derived）。
 - 重制：`game/battle/scene/BattleItemUsePresentation.gd` 按同一序列播放用药回执，AI 引导经 `BattleAttackCue.begin_item`（static-derived）。
-- 差异：射程格为近似；三类效果对象的随机数用重制种子、加色层级混合按近似；无原字形的说明行用白字 Label（差异清单 `ai-item-use-presentation`、`floater-extra-words`、`item-use-rules`；provisional）。
+- 差异：三类效果对象的随机数用重制种子、加色层级混合按近似；无原字形的说明行用白字 Label（差异清单 `ai-item-use-presentation`、`floater-extra-words`、`item-use-rules`；provisional）。
 
 ## 证据
 
@@ -46,6 +48,8 @@ AI 对象过程按 +0x8e 高字分派（`0x43f4cf`，字节表 `0x4421f4` → �
 | 108 | `0x444ac9` | 小条与数字 |
 
 模式4 泛洪（`0x40ed50` 跳表 `0x40f1c4` 第 4 项 `0x40ef16`）：地形代价与高差都记 0，只挡格字含 `0x24000`（pmEnemy／pmNPC）且占位者非 no_block（`0x446b30`）的格，出图格不收；物品本身没有射程字段参与。
+
+AI 射程（低字 7）：`0x40bab0` 读记录 `+0x28`，带 pmPlayer 0x10000 取 2、pmEnemy 0x20000 取 3、pmNPC 0x40000 取 7；`0x40ed50` 跳表第 2／3／7 项掩码 `0x64000`／`0x54000`／`0x34000`，高差 ≥ 3 停、上坡计入代价，带掩码位且非 no_block 的格停，离格代价 `0x40eb80`（前方或两侧带掩码位记 2）。大体型（`+0x2c` 非零）时 `0x40f440` 置 `0x4c1a78` = 1 并由 `0x411990` 清本体一圈的侧位，`0x40ed50` 在非模式4、非模式6 时先调 `0x40ecc0(x, y, 0x74000)`（`0x40ee5f..0x40eec4`）：该格 3×3（泛洪起点除外）任一格带侧位／0x4000 或高 255 即停。其后不调 `0x40f520`，中心格保留（`r2 -q -c 's 0x40ed50; af; pdf'`、`s 0x40ecc0; af; pdf`）。
 
 2026-09-27 原版截帧（LEVEL051 雷歐納德 → 回復藥）：范围外与悬停本格都见回復藥布袋图标、无权杖，雷歐納德周围十字五格蓝框，悬停本格下方开资料窗；确认后图标与十字蓝框一起消失（详见 [游戏光标](../runtime_observations/game_cursor/README.md#证据)）。2026-09-27 原版截帧（LEVEL051 雷歐納德 → 回復藥）：范围外与悬停本格都见回復藥布袋图标、无权杖，确认后图标与十字蓝框一起消失（详见 [游戏光标](../runtime_observations/game_cursor/README.md#证据)）。
 
@@ -91,7 +95,6 @@ effProcCollectFadeShape（`0x41f43b`）子状态 0：起始张 + rand(4) 并定�
 ## 边界
 
 - 三类效果对象的随机数（位置、延迟、速度、张、角、半径）由重制按本次用药种子抽，不是原版 `0x458c10` 全局流；加色＋engMIX 按"加色 × 层级/16"画（同 LevelUpStars 读法）；`0x45e9bc` 极坐标按浮点 cos／sin 向下取整，未用原版三角表。
-- AI 引导与玩家选格的射程格都是「自身格＋四邻无敌对占位」近似（`use_cells`）：模式4 实际只挡 pmEnemy／pmNPC 且非 no_block 的占位，重制按 `ActorRoleRules.hostile` 挡；大体型使用者的 range 2 未建模。
-- 选格期间地图不随指针贴边卷动（重制模态期间不卷；原版 state105 是否卷动未读）；悬停时原版给单位置 `+0x80 |= ebp` 亮起；重制的单位高亮（[dialogue_death §5](../runtime_observations/dialogue_death/README.md#5-单位高亮)）只在选攻击目标时全场点亮，道具选格期间未接（差异清单 `highlight-colours`：道具选目标的原版帧未拍）。
+- 选格期间地图不随指针贴边卷动（重制模态期间不卷；原版 state105 是否卷动未读）；悬停时原版给单位置 `+0x80 |= ebp` 亮起；道具选格期间的全场高亮见 [dialogue_death §5](../runtime_observations/dialogue_death/README.md#5-单位高亮)。
 - 小条 y 上限的 [0x4c094c] 按地图高取值，未逐关核对。
 - 给予流程原版同样经持物（`0x438c86`）与地图选格（state113 `0x444c27`），重制给予仍是窗口选人（本轮未改）。

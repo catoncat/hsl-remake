@@ -432,7 +432,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | layout | — | planeEffect2 < 0x32 by PROCESS.DEF order |
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | timing | — | ±1 call where the afterimage order differs |
 | [BattleDropLightningPresentation](../game/battle/scene/BattleDropLightningPresentation.gd) | layout | — | planeEffect6 drawn over planeEffect2 |
-| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36 |
+| [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | bar y cap at map height − 36 |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | — | that ordering is a static reading; a lost battle offers no window — the conservative choice |
 | [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／item target and move selection follow the attack frame; not captured |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | layout | — | runtime_layer_hint back／foreground split of the level profiles; story-scene cast without a side is lit as a player |

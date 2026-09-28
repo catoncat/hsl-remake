@@ -360,6 +360,53 @@ static func item_range_cells(loop: Dictionary, user: Dictionary, give: bool = fa
 	return cells
 
 
+## The AI's Use lead-in range (low-word state 7, 0x440176): 0x40f440(user, 2 for a 3×3 user
+## else 1, 0x40bab0(user)) — the ground flood of 0x40ed50 in the user's side mode (P 2／E 3／
+## N 7, a flyer too, RangePropagationRules.offensive_mode) with that mode's mask
+## (ActorTraversalRules.MASKS), the centre kept (no 0x40f520). A 3×3 user sets 0x4c1a78, so
+## 0x40ed50 first stops at a cell whose 3×3, the flood origin excepted, holds a 0x74000 word or
+## a height-255 cell (0x40ee5f..0x40eec4 → 0x40ecc0); such a cell is priced past any budget
+## here. Presentation-only query: the AI's item choice and commit never read it.
+static func ai_item_range_cells(loop: Dictionary, user: Dictionary) -> Array:
+	if not Presence.living(user): return []
+	var context: Dictionary = Traversal.prepare(user, loop["units"], BattlePlayLoop.TerrainEdits.tiles(loop), {}, loop["map_size"])
+	var mode := BattlePlayLoop.RangePropagationRules.offensive_mode(user)
+	if not context["ok"] or not Traversal.MASKS.has(mode): return []
+	context = context.duplicate()
+	context["mode"] = mode
+	context["mask"] = Traversal.MASKS[mode]
+	var origin: Vector2i = user["coord"]
+	var large := Footprint.radius(user) == 1
+	var radius := 2 if large else 1
+	if large:
+		var costs: PackedInt32Array = context["cell_costs"].duplicate()
+		var size: Vector2i = context["size"]
+		for y in range(origin.y - radius, origin.y + radius + 1):
+			for x in range(origin.x - radius, origin.x + radius + 1):
+				var cell := Vector2i(x, y)
+				if cell != origin and x >= 0 and y >= 0 and x < size.x and y < size.y and _large_step_blocked(cell, origin, context):
+					costs[y * size.x + x] = 0x10000
+		context["cell_costs"] = costs
+	var flood: Dictionary = Navigation.native_flood(context, origin, radius)
+	var cells: Array = []
+	var width: int = flood["width"]
+	for by in range(width):
+		for bx in range(width):
+			if flood["values"][by * width + bx] > 0: cells.append(Vector2i(origin.x - radius + bx, origin.y - radius + by))
+	return cells
+
+
+## 0x40ecc0(x, y, 0x74000) with 0x4c1a78 = 1 outside mode 6: any side bit or 0x4000 word, or a
+## height-255 cell, in the 3×3 around `cell` minus the flood origin.
+static func _large_step_blocked(cell: Vector2i, origin: Vector2i, context: Dictionary) -> bool:
+	for y in range(-1, 2):
+		for x in range(-1, 2):
+			var point := cell + Vector2i(x, y)
+			if point == origin: continue
+			if int(context["flags"].get(point, 0)) & 0x74000 or int(context["heights"].get(point, 0)) == 255: return true
+	return false
+
+
 ## A pick needs a marked cell (0x40f560) whose word has pmPlayer 0x10000 (0x444976／0x444c6f)
 ## and, for Use only, a recipient that is not no_attack (0x446b00). The user's word is only on
 ## its centre cell (its ring is cleared), so it is a Use target and never a Give target.

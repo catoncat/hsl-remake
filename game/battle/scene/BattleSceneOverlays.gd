@@ -177,10 +177,17 @@ static func footprint_palette(selected_attack: String) -> String:
 
 ## The shared map-actor highlight (ActorRuntime.set_highlight), recomputed every frame from
 ## the runtime's state (the dialogue board lights speakers itself). Target selection: every
-## actor on the field lights in its side colour while the player picks a target — the
-## original's player state machine holds 0x4c1b00 & 0x200000 then (0x4442ef／0x444bf0) and the
-## actor draw 0x43dcc4 lights every actor on it (Wine frame: allies blue, enemies pink after
-## 攻擊). Actor: the unit whose command the player is choosing (action menu, move or target
+## actor on the field lights in its side colour while the player picks an attack target or an
+## item's Use／Give cell — the original's player state machine (dispatch 0x443a00 over the
+## byte table 0x445758) sets 0x4c1b00 & 0x200000 in state 0x50 (index 16, 0x4442ef) and on
+## leaving the Use／Give range states 104／112 (indices 27／32 → 0x444be4, 0x444bf0), clears it
+## on every left press of the pick before the cell is checked and on cancel
+## (0x444947／0x444a67／0x444c40; a rejected press stays in 105／113 unlit —
+## BattleSceneMenus.item_pick_lit), and the actor draw 0x43dcc4 lights
+## every actor on it (Wine frame: allies blue, enemies pink after 攻擊). The move pick and the
+## magic／special target states 0x79／0x98 (0x444ec1／0x445099) never set it; the remake's
+## magic／special picks share attack_select and still light (parity inventory
+## highlight-colours). Actor: the unit whose command the player is choosing (action menu, move or target
 ## selection; Wine frame: only the acting unit lit at the action menu), not while a dialogue,
 ## exchange or AI turn is on. The AI's turn sets neither (no 0x200000 writer outside the
 ## player machine, no +0x80 0x100 writer in the enemy process).
@@ -192,7 +199,8 @@ func sync_unit_highlights() -> void:
 	var opening: bool = runtime.opening_coordinator != null and runtime.opening_coordinator.active
 	if view != null and not runtime.play_loop.is_empty() and not opening:
 		var busy: bool = view.dialogue_active() or view.combat_busy(runtime.play_loop) or view.battle_finished
-		targeting = not busy and not runtime.ai_playback_active and runtime.interaction_state == Interaction.ATTACK_SELECT
+		var item_pick: bool = runtime.menus != null and runtime.menus.item_pick_lit
+		targeting = not busy and not runtime.ai_playback_active and (runtime.interaction_state == Interaction.ATTACK_SELECT or item_pick)
 		if not busy and not runtime.ai_playback_active and runtime.interaction_state in Interaction.PLAYER_CONTROL:
 			actor_id = runtime.selected_unit_id
 	for actor in runtime.actors_root.get_children():
