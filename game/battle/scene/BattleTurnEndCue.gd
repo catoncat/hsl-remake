@@ -22,8 +22,8 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const EVENT_INTERVAL_TICKS := 40
 const EVENT_SECONDS := OriginalTick.TICK_SECONDS * EVENT_INTERVAL_TICKS
-## The last beat's floor: a kind 2／3 number lives 46 ticks (a longer red kind-0 number, 10 per
-## digit + 34, holds the beat until it is deleted).
+## The last beat's floor: a beat without a number stays 46 ticks; a number holds the beat until
+## 0x408580 deletes it (kind 2／3: 1 init tick + 46 = 47; red kind 0: 10 per digit + 34).
 const NUMBER_SECONDS := Timing.SHOW_NUMBER_SECONDS
 ## The turn-end numbers spawn at the unit object's (x, y − 48).
 const NUMBER_OFFSET := Vector2(0, -48)
@@ -163,7 +163,7 @@ func _spawn(events: Array) -> void:
 func _last_seconds(index: int) -> float:
 	var number: Node2D = numbers[index] if index < numbers.size() else null
 	if number == null: return NUMBER_SECONDS
-	return maxf(NUMBER_SECONDS, OriginalTick.seconds(number.life_ticks())) if number.kind == "damage" else NUMBER_SECONDS
+	return maxf(NUMBER_SECONDS, OriginalTick.seconds(number.life_ticks()))
 
 
 func _hide() -> void:

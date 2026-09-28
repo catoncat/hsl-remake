@@ -17,8 +17,9 @@ extends RefCounted
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ROOT := ContentPaths.BATTLE_UI_PREVIEWS
 const PANEL_DATA := "res://content/imported/hsl/shared/panels/manifest.json"
-## Depth of the black shade under a full panel page, in 16ths (BattlePanelMotion fades it in and out).
-const PANEL_SHADE_LEVEL := 9
+## Depth of the black shade under a full panel page, in 16ths: the battle root window's black
+## shape at its last level, 8, drawn half-blended (0x4385e0..0x4385ff; BattlePanelMotion fades it).
+const PANEL_SHADE_LEVEL := 8
 const SHADE_LEVEL_SCALE := 16.0
 ## Original text colour codes @1/@2/@3/@5/@6 (hsl01.exe table 0x476b44, RGB565 → RGB) with their
 ## shadow colours; the original draws every glyph once at (+1,+1) in the shadow colour first.

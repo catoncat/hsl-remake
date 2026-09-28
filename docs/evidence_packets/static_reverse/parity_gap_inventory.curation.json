@@ -7,7 +7,7 @@
     },
     "2": {
       "title": "面板开合动画",
-      "summary": "原版面板滑入滑出（R6-P2 已做五个面板）与底下压暗的逐级淡入淡出（R7-UI 已做）；剩拟合公式"
+      "summary": "原版面板滑入滑出（R6-P2 已做五个面板）与底下压暗的逐级淡入淡出（R7-UI 已做）；步进、起点与压暗级数已照原版战斗窗（PANELSLIDE），剩非模板部件的分边"
     },
     "3": {
       "title": "胜负条件面板",
@@ -56,33 +56,17 @@
   },
   "items": [
     {
-      "id": "camera-return-pan",
-      "difference": "开环前与移动起步前镜头已照原版先滑回行动者、到位才开环／起步；滑回期间重制不接边缘／方向键平移，原版边缘滚动是否同时生效未读",
-      "original": "state 0 0x443a1d→0x43bf30 未到位返回 0、0x443a3c 才开环（取消选格 100／移动 9、关窗 71、右键 99 都经此）；移动 1 0x443e34 同式；边缘滚动 0x43e4a0 与之的先后未读",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
-      ],
-      "remake": "BattleSceneMenus._ring_camera_ready 在环打开那一拍滑回、未到位不显示环；BattleSceneRuntime.move_selected_actor_to_grid 记 pending_walk_grid 待落位起步；两段期间不平移",
-      "remake_code": [
-        "game/battle/scene/BattleSceneMenus.gd:_ring_camera_ready",
-        "game/battle/scene/BattleSceneRuntime.gd:move_selected_actor_to_grid"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "镜头"
-    },
-    {
       "id": "panel-slide-formula",
-      "difference": "面板滑入的减速曲线是按录屏拟合的（每 tick 去 1/8），部件左／右／上的分边是按矩形位置猜的；面板底下的压暗层级 9／16 与每 3 tick 一级的淡入淡出也是按录屏亮度拟合的",
-      "original": "未找到面板滑动的 EXE 常数（系统卷轴 0x45e80d 消费者未读）；压暗过程也未读，录屏每边 8 个亮度台阶、终态亮度比 0.46",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级）；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，说明框 WINDOW50 随右侧滑动（录屏里最后一帧直接出现），升级窗加减钮起点未读、加点窗关闭方向（录屏向下）未对上",
+      "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK 自左，均 380 px）；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattlePanelMotion 按拟合公式与分边规则滑动，压暗按拟合层级淡入淡出",
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；压暗 0→8",
       "remake_code": [
-        "game/battle/scene/BattlePanelMotion.gd:side_of",
-        "game/battle/scene/BattlePanelMotion.gd:open_step",
+        "game/battle/scene/BattlePanelMotion.gd:part_side",
+        "game/battle/scene/BattlePanelMotion.gd:sides_of",
+        "game/battle/scene/BattlePanelMotion.gd:slide_in_step",
         "game/battle/scene/BattlePanelMotion.gd:shade_step"
       ],
       "original_status": "read_partial",
@@ -121,7 +105,7 @@
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_identity_bar.md"
       ],
-      "remake": "原版路径照原版：没有加值行、说明与按钮条，点他人只在移动选格态开、关窗回选格，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）",
+      "remake": "原版路径照原版：没有加值行、说明与按钮条，点他人只在移动选格态开、关窗回选格，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）；OPT-INFO=公開 时悬停／选目标身份栏与切入栏也视为已知、数值始终可见（OPTIONS-S2）",
       "remake_code": [
         "game/battle/scene/BattleStatusPanel.gd:show_unit",
         "game/battle/scene/BattleStatusPanel.gd:opens_for",
@@ -223,24 +207,6 @@
       "visibility": "every_battle",
       "effort": "S",
       "category": "重制新增（原版没有）"
-    },
-    {
-      "id": "identity-bar-bits",
-      "difference": "身份栏：位 0x100（印数字）的置位者未读，未知单位在切入栏是否印数字不确定；气力条是重制自创",
-      "original": "0x434d10 的 ??? 规则与已知字节写入者已读；位 0x100 置位者、条的画法未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_identity_bar.md"
-      ],
-      "remake": "按悬停样本处理未知单位，气力条未知时留空；未交手的敌人原版路径照原版印 ???，OPT-INFO=公開 时恢复改良：悬停／选目标／切入栏／状态页一律视为已知、数值始终可见（OPTIONS-S2）",
-      "remake_code": [
-        "game/battle/scene/BattleVitals.gd",
-        "game/battle/scene/BattlePresentation.gd:_strip_known",
-        "game/battle/scene/BattleStatusPanel.gd:show_unit"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面"
     },
     {
       "id": "cast-overlay-rules",
@@ -397,13 +363,13 @@
     },
     {
       "id": "floater-lifetimes",
-      "difference": "数字寿命已照原版读值（红字 10×位数＋34 tick；绿／蓝／MISS、EXP／$ 为 hold＋46 tick，每 2 tick 上 1 px）；剩没有原字形的说明字借用 46 tick 上浮，回合末最后一个绿／蓝数字的收尾按 46 tick（ResultNumberFloater 为 47，差 1 tick）",
-      "original": "defProcShowNumber（0x408580）寿命已读：kind 0 逐位 10 tick、揭完停 18、层级 16→0；kind 1–6 层级 16 停 16 tick 后每 2 tick 减 1、第 46 tick 删除；hold（+0xa8）期间不画",
+      "difference": "数字寿命已照原版读值（红字 10×位数＋34 tick；绿／蓝／MISS、EXP／$ 为 hold（至少 1 个初始化 tick）＋46 tick，每 2 tick 上 1 px；回合末最后一个数字按它的删除时刻收尾，hold 0 的绿／蓝数字 47 tick）；剩没有原字形的说明字借用 46 tick 上浮",
+      "original": "defProcShowNumber（0x408580）寿命已读：kind 0 逐位 10 tick、揭完停 18、层级 16→0；kind 1–6 层级 16 停 16 tick 后每 2 tick 减 1、显示第 46 tick 删除；hold（+0xa8）期间不画，hold 归零那一 tick 只初始化即返回（0x4085eb／0x40861b），hold 0 的对象自生成起第 47 tick 删除",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md",
         "docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md"
       ],
-      "remake": "ResultNumberFloater／DamageNumberFloater／BattleRewardFloater 按 tick 计；说明字 Label 与回合末节拍用 Timing.SHOW_NUMBER_SECONDS",
+      "remake": "ResultNumberFloater／DamageNumberFloater／BattleRewardFloater 按 tick 计（ResultNumberFloater.life_of＝hidden_ticks(hold)＋46）；BattleTurnEndCue 末节拍取末个数字的 life_ticks（无数字的节拍 46 tick）；说明字 Label 用 Timing.SHOW_NUMBER_SECONDS",
       "remake_code": [
         "game/battle/scene/ResultNumberFloater.gd",
         "game/battle/scene/BattleTurnEndCue.gd",
@@ -1686,10 +1652,6 @@
       "item": "script-entry-paths",
       "text": "未读：`actInsertStoryObject*` 分支是否经 `0x44fbd0`；"
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#9bfa3e0a50": {
-      "item": "camera-return-pan",
-      "text": "滑回行动者期间原版边缘滚动 `0x43e4a0` 是否同时生效未读；"
-    },
     "matrix:AI友军选择、移动施援与用药": {
       "item": "ai-skill-buckets"
     },
@@ -1914,10 +1876,7 @@
       "resolved": "致死一击后不反击照原版：0x4423c0 阶段 4 在目标 +0xd8 ≤ 0 时清待反击位与余下连击（0x442465..0x44247e），不死复活在其后的死亡分支（COUNTER2，original_player_mode 反击门行）"
     },
     "matrix:身份栏「已知」字节与 ??? 遮罩（按模板行）": {
-      "item": [
-        "identity-bar-bits",
-        "status-page-extras"
-      ]
+      "item": "status-page-extras"
     },
     "matrix:转职（命運神殿「升級」／37 战斗内）": {
       "item": "job-018-frames"
@@ -2034,7 +1993,10 @@
       ]
     },
     "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|": {
-      "item": "script-walk-path"
+      "item": [
+        "script-walk-path",
+        "cam-script-walk-variants"
+      ]
     },
     "provenance:game/sim/ScriptWalkPath.gd|rules|provisional|": {
       "item": "script-walk-path"
@@ -2129,9 +2091,6 @@
     "provenance:game/battle/scene/BattlePanelMotion.gd|layout|remake-invented|": {
       "item": "panel-slide-formula"
     },
-    "provenance:game/battle/scene/BattlePanelMotion.gd|timing|provisional|": {
-      "item": "panel-slide-formula"
-    },
     "provenance:game/sim/loop/BattlePlayLoop.gd|rules|remake-invented|": {
       "no_visible_effect": "PlayLoop 的事务顺序与菜单面，是重制内部结构"
     },
@@ -2220,7 +2179,10 @@
       "item": "treasure-caption"
     },
     "provenance:game/battle/scene/BattleTurnEndCue.gd|layout|remake-invented|": {
-      "item": "floater-extra-words"
+      "item": [
+        "floater-extra-words",
+        "floater-lifetimes"
+      ]
     },
     "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|": {
       "item": "floater-extra-words"
@@ -2583,10 +2545,7 @@
       "item": "simplified-display-gaps"
     },
     "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|negative-evidence|": {
-      "item": "identity-bar-bits"
-    },
-    "scope:docs/evidence_packets/static_reverse/original_identity_bar.md|provisional|": {
-      "item": "identity-bar-bits"
+      "no_visible_effect": "受伤且未知的敌人未实机采到；条按真实比例、文字印 ??? 由静态读出，重制已照做"
     },
     "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|角色分支用 ACTOR 标记代替": {
       "item": "skill-area-policies"
@@ -2651,10 +2610,6 @@
     "scope:docs/evidence_packets/static_reverse/world_map_data.md|provisional|": {
       "item": "world-map-rules"
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#e2a106ca9a": {
-      "item": "panel-slide-formula",
-      "text": "**静态**：未找到面板滑动的 EXE 常数（系统卷轴的 `0x45e80d` 消费者未读）；"
-    },
     "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#830f5a56f1": {
       "item": "title-flow-extras",
       "text": "标题「無存檔記錄」消息的出入时长与是否等按键未读，沿用战斗卷轴存档完成提示。"
@@ -2670,10 +2625,6 @@
     "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#705a20c6c6": {
       "item": "timing-estimates",
       "text": "未读的保留现值标 provisional 并写函数；"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#969122c1dc": {
-      "item": "floater-lifetimes",
-      "text": "EXP／KILL／$ 浮字是 `obj_ShowNumber` kind 1／4（`0x4084e0`→`0x408580`），寿命计数在 `0x408580` 内未读；"
     },
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51": {
       "item": "closeup-object-timing",
@@ -2800,10 +2751,6 @@
         "floater-extra-words"
       ]
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#e9d9d6c1f8": {
-      "item": "panel-slide-formula",
-      "text": "provisional：原压暗过程未读，层级是亮度比的拟合，节拍按录屏 tick 数折成 16 ms tick。"
-    },
     "scope:docs/evidence_packets/static_reverse/original_growth_window.md|negative-evidence|参考录像无升級窗原帧": {
       "resolved": "升級窗已用原版录屏 340–351 s 逐帧对照并照做按钮隐藏（R7-UI 492c59a2，original_growth_window §8）"
     },
@@ -2916,13 +2863,10 @@
       "item": "remake-options-page"
     },
     "provenance:game/battle/scene/BattlePresentation.gd|strings|remake-invented|docs/OPTIONS.md": {
-      "item": [
-        "floater-extra-words",
-        "identity-bar-bits"
-      ]
+      "item": "floater-extra-words"
     },
     "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|docs/OPTIONS.md": {
-      "item": "identity-bar-bits"
+      "item": "status-page-extras"
     },
     "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|docs/OPTIONS.md": {
       "item": "floater-extra-words"
@@ -3217,10 +3161,6 @@
       "item": "weapon-range-semantics",
       "text": "`0x44cb10` 敌方槽表满返回 0 的调用方处理未读；"
     },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d": {
-      "item": "cam-script-walk-variants",
-      "text": "actWalkFollow(Wait) 的镜头规则未读（`cam-script-walk-variants`）。"
-    },
     "provenance:game/battle/scene/BattleRewardFloater.gd|layout|remake-invented|docs/OPTIONS.md": {
       "item": "learning-notice"
     },
@@ -3278,6 +3218,18 @@
     },
     "scope:docs/evidence_packets/static_reverse/actor_animation_groups.md|provisional|恢复换形时不打断走位": {
       "item": "shape-override-cadence"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#3109d30b93": {
+      "item": "ai-move-preview-timing",
+      "text": "范围消失后约 0.18 s 才起步的来源未读（`ai-move-preview-timing`）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5dc53ce3f3": {
+      "item": "panel-slide-formula",
+      "text": "升级窗 BT_ADD 加减钮（模式 10 末尾另一个 `0x45e307`）起点未读，按矩形归左；"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#86d57e5290": {
+      "item": "panel-slide-formula",
+      "text": "录屏里加点窗关闭向下（350.25 s）与 `0x43b000`／`0x43b3a0` 自左的起点不符，未读清是哪一个对象，重制按起点原路滑回。"
     }
   }
 }

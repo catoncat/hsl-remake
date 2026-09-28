@@ -512,6 +512,7 @@ func _drop_icon_button() -> TextureButton:
 	button.position = DROP_BUTTON_CENTRE - Vector2(21, 21)
 	page_root.add_child(button)
 	var label := BattleUISkin.text(page_root, DROP_BUTTON_CENTRE + Vector2(-40, 13), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(80, 16))
+	label.name = "Caption_drop"
 	label.text = "丟棄"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", BattleUISkin.TEXT_YELLOW))

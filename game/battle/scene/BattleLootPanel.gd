@@ -267,6 +267,7 @@ func _icon_button(key: String, resource: String, caption: String) -> TextureButt
 	add_child(button)
 	# 0x43a640 draws the 15 px caption centred under the icon at centre_y + 13, yellow while hovered.
 	var label := BattleUISkin.text(self, Vector2(BUTTON_CENTRES[key] - 40, BUTTON_Y + 13), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(80, 16))
+	label.name = "Caption_" + key
 	label.text = caption
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.set_meta("caption", caption)

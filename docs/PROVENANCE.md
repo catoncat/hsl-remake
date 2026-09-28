@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 136 remake-invented cells, 65 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 136 remake-invented cells, 64 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (197)
 
@@ -69,7 +69,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleMagicPanel](../game/battle/scene/BattleMagicPanel.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md) `#描述框-0x436d70`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | resource-derived [MAGIC.TXT](../content/imported/hsl/global/tables/MAGIC.TXT); resource-derived [SPECIAL.TXT](../content/imported/hsl/global/tables/SPECIAL.TXT); resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5`; runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | n/a |
 | [BattleMovementPreview](../game/battle/scene/BattleMovementPreview.gd) | n/a | remake-invented | n/a | n/a | n/a |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | n/a | remake-invented | remake-invented | remake-invented | n/a |
-| [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | n/a | runtime-measured [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); remake-invented | n/a | runtime-measured [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); provisional; static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
+| [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | n/a | static-derived [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); remake-invented | n/a | static-derived [camera_panel_motion/README.md](../docs/evidence_packets/runtime_observations/camera_panel_motion/README.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 | [BattlePoisonGasPresentation](../game/battle/scene/BattlePoisonGasPresentation.gd) | n/a | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md); remake-invented | n/a | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md) | static-derived [original_poison_gas.md](../docs/evidence_packets/static_reverse/original_poison_gas.md) |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | n/a | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#17`; runtime-measured [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) `#runtime-measured`; static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented | resource-derived [message_text_evidence.json](../content/imported/hsl/chapter01/message_text_evidence.json); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md); static-derived [original_cast_overlays.md](../docs/evidence_packets/static_reverse/original_cast_overlays.md) `#无条带起手序列` | resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json); resource-derived [actor_audio.json](../content/imported/hsl/chapter01/actor_audio.json) |
 | [BattleRewardFloater](../game/battle/scene/BattleRewardFloater.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); runtime-measured [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | n/a |
@@ -307,7 +307,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | layout | path／destination overlay |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | strings | 「待機」／「守候 · 尚餘N次」／「麻痺 · 無法行動」 |
 | [BattleNavigationCue](../game/battle/scene/BattleNavigationCue.gd) | timing | 0.55 s 待機／守候 beat — deliberately kept remake beat; the original shows no AI wait cue |
-| [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | layout | the side of a part is read from its rect: centre above y 170 → top, centre left of x 246 → left, else right; bottom boxes slide with their side instead of appearing last |
+| [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | layout | a part that is no board, button, caption or vitals strip follows the board under its centre, else its rect: centre above y 170 → top, left of x 246 → left, else right |
 | [BattlePoisonGasPresentation](../game/battle/scene/BattlePoisonGasPresentation.gd) | layout | ADDCOLOR_MIX level drawn as additive alpha |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | layout | caption placement above the numbers |
 | [BattlePresentation](../game/battle/scene/BattlePresentation.gd) | strings | objective board |
@@ -414,7 +414,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (65)
+### provisional 疑点 (64)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -435,7 +435,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [AnimalCastLead](../game/battle/scene/AnimalCastLead.gd) | timing | — | ±1 call where the afterimage order differs |
 | [BattleDropLightningPresentation](../game/battle/scene/BattleDropLightningPresentation.gd) | layout | — | planeEffect6 drawn over planeEffect2 |
 | [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | range cells: the user's cell and its four neighbours without a hostile occupant; bar y cap at map height − 36 |
-| [BattlePanelMotion](../game/battle/scene/BattlePanelMotion.gd) | timing | — | the per-tick formula is a fit of the frames, the EXE helper is unread |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | — | that ordering is a static reading; a lost battle offers no window — the conservative choice |
 | [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／item target and move selection follow the attack frame; not captured |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | layout | — | combined-placement child offsets, layer hints; story-scene cast without a side is lit as a player |
@@ -491,11 +490,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 31 | 70 | 41 | 10 | 29 | 181 |
-| static-derived | 251 | 109 | 19 | 109 | 23 | 511 |
-| runtime-measured | 17 | 33 | 4 | 17 | 2 | 73 |
+| static-derived | 251 | 110 | 19 | 110 | 23 | 513 |
+| runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 33 | 15 | 1 | 14 | 2 | 65 |
+| provisional | 33 | 15 | 1 | 13 | 2 | 64 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 14 | 1 | 1 | 0 | 17 |
 | remake-invented | 54 | 35 | 33 | 13 | 1 | 136 |

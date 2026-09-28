@@ -155,10 +155,15 @@ def seed(variant: int) -> tuple[int, int]:
     return ((em.SEED[0] + 0x9e3779b9 * variant) & 0xffffffff, (em.SEED[1] ^ (0x7f4a7c15 * variant)) & 0xffffffff)
 
 
-def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[int, int], variant: int) -> Machine:
+def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[int, int], variant: int, screen: bool = False) -> Machine:
+    """screen: point is a SPECIAL script point. aniInsertObject 0x403989 creates the object at point + camera
+    (0x4c091c／0x4c0920) and the off-screen tests subtract the camera again, so the root runs with the camera
+    at (0,0) and the point as written; otherwise the camera stays where effect_motion centres it."""
     machine = Machine(exe_image, templates, sounds, metrics)
     first, second = seed(variant)
     machine.write(em.RNG_STATE[0], first); machine.write(em.RNG_STATE[1], second)
+    if screen:
+        machine.write(em.CAMERA[0], 0); machine.write(em.CAMERA[1], 0)
     table, at = PROGRAM_BASE, PROGRAM_BASE + 4 * 256
     for number, program in words.items():
         machine.write(table + 4 * number, at)
@@ -222,7 +227,7 @@ def execute_packet(exe: Path) -> dict:
         point = points.get(name, em.ORIGIN)
         variants, runs = [], []
         for variant in range(VARIANTS):
-            machine = run(exe_image, templates, sounds, metrics, words, code, point, variant)
+            machine = run(exe_image, templates, sounds, metrics, words, code, point, variant, screen=True)
             for obj in machine.objects:
                 obj['samples'] = [[s[0], s[1] + em.ORIGIN[0] - point[0], s[2] + em.ORIGIN[1] - point[1], *s[3:]] for s in obj['samples']]
             encoded = em.encode_instances(machine, members)

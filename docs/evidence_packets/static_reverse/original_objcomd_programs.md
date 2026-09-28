@@ -1,6 +1,6 @@
 # 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
 
-> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403aaa, 0x403be2, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处 · status: live · functions: 0x401390, 0x401480, 0x403989, 0x403aaa, 0x403be2, 0x4050a0, 0x405140, 0x4051d0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -168,10 +168,19 @@ ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 an
 
 `python3 tools/hsl.py check objcomd_motion`（重生成需原作与 unicorn：`python3 tools/hsl.py generate objcomd_motion`）。
 
+## 重生成差异（2026-09-28）
+
+effect_motion 为效果对象补镜头与震屏模型后（`REVIEWED` 新增 `0x415d20`、`0x43bf30`、`0x46be92..0x46bf36`、`0x46163a`，Machine 初始化把镜头写成以施法者为中心的 (ORIGIN−(320,192)) = (0,48)，每帧镜头 += 震屏累加），本包整包重跑时有 19 个绝技对象的轨迹变了。逐个把镜头改回 (0,0)、其余模型不变重跑，19 个全部回到旧轨迹；这 19 个对象都没有震屏，新纳入的区间本身不改任何读数。成因只有镜头起点：
+
+- aniInsertObject `0x403989` 建对象时把脚本点加上镜头（`add eax, [0x4c091c]`，`add ecx, [0x4c0920]`），出屏测试 `0x405140` 再减回镜头——SPECIAL 脚本点是屏幕点，屏幕上的轨迹与镜头无关。镜头 (0,48) 而对象仍放在世界脚本点，等于把插入点在屏幕上移 48 px，出屏／回绕提前或推后，随后的随机抽取整体错位。
+- 受影响的都是有出屏等待、出屏回绕或屏幕坐标阈值的程序：06_02、08_04、08_08、12_02、13_06、15_03、17_04、17_06、23_01、32_01、33_01、39_01、41_01、42_01、45_05、48_01、52_16、53_01、58_01（均为 `obj_SpecialNN_MM`）。表现为出屏淡出提前或推后（首个不同实例的寿命差 2～44 tick，如 06_02 死于 tick 193→159、08_04 112→150、48_01 的散布从 27 只变 8 只）或回绕 y 差 960（13_06 tick 260、45_05 tick 86）。
+
+结论：新轨迹不是更完整的原指令执行，不采用。探针的 SPECIAL 根改为镜头 (0,0) 运行（等价于按 `0x403989` 把镜头加到脚本点再减回），剧情对象仍用 effect_motion 的居中镜头。重跑结果 `OBJCOMD_MOTION_NATIVE_PASS objects=240 open_ended=4 variants=537 executed_now=True`，240 个对象与旧包逐字节相同，只有 `reviewed` 表头从 17 段变为 21 段。
+
 ## 边界
 
 - **随机样本**：原版每个实例从同一条 RNG 流抽取，重制用至多 4 个固定种子的变体轮流代替；插入偏移与延迟由片段的表现 RNG 抽取。不证明逐实例与某次原版运行相同。
-- **出屏与位置**：每个对象只在脚本首个插入点跑一次，其它插入点（随机散布、多次插入）平移同一条轨迹；出屏判定按镜头 (0,0)、640×480。特写舞台在重制是 640×320，花瓣等在 y > 320 的部分画在舞台外。
+- **出屏与位置**：每个对象只在脚本首个插入点跑一次，其它插入点（随机散布、多次插入）平移同一条轨迹；出屏判定按镜头 (0,0)、640×480（脚本点是屏幕点，见「重生成差异」）。objmLoopCheckSmallerY 比世界 y、不减镜头，特写时的真实镜头未读，这一条按镜头 (0,0) 取值（provisional）。特写舞台在重制是 640×320，花瓣等在 y > 320 的部分画在舞台外。
 - **未复用轨迹的插入**：角度环、龙卷列、aniInsertRoundRandomObject、aniInsertDistanceObjectFixDelay、aniInsertRandomObjectDelay／FixDelay 的放置仍是重制读法（provisional）；aniInsertHitRandomObjectDisp 在 `SkillEffectScriptPlayer` 里仍以舞台目标中心为基点（原版是守方对象自身位置）。
 - **字布局**：objcomd.txt 的装载器未读，"每 token 一字、块尾补 objmOver" 是 provisional；221 个对象全部正常结束或进入等待，未见越界读。
 - **未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；这些在原指令执行里照跑，只是表中读法不全。

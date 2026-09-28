@@ -202,23 +202,26 @@ func _scripts(directory: String) -> Array[String]:
 	return found
 
 
-## Status page 58.17–58.78 s (camera_panel_motion §2): the right window comes in from the
-## right, the left one from the left, the top strip from above, each losing about an eighth
-## of the rest per frame (260→230→202→178→156→136→120→104…) and ending in 2 px steps.
+## 0x45e882(cur, target, 40) from the battle builders' start 380 px out (0x43ac10..0x43b3a0,
+## camera_panel_motion §2): min(40, distance >> 3), at least 2, landing within 1 — 34 ticks; the
+## close 0x45e80d(4, 20) halves the rest up to 20 and lands within 4 — 22 ticks.
 func _test_panel_open_curve() -> void:
-	var offset := Vector2(260, 0)
+	var remaining: int = BattlePanelMotion.SLIDE_DISTANCE
 	var trace: Array[int] = []
-	while offset != Vector2.ZERO and trace.size() < 80:
-		offset = BattlePanelMotion.open_step(offset)
-		trace.append(int(offset.x))
-	_assert_eq(trace.slice(0, 7), [228, 200, 175, 154, 135, 119, 105], "an eighth of the rest per tick, as the recording's 230, 202, 178, 156, 136, 120, 104")
-	_assert_true(trace.size() >= 25 and trace.size() <= 36, "a 260 px slide takes about 0.4–0.6 s of ticks (%d)" % trace.size())
+	while remaining > 0 and trace.size() < 80:
+		remaining = BattlePanelMotion.slide_in_step(remaining)
+		trace.append(remaining)
+	_assert_eq(trace.slice(0, 8), [340, 300, 263, 231, 203, 178, 156, 137], "40 px while the distance is 320 or more, then an eighth of it")
+	_assert_eq(trace.size(), 34, "a 380 px slide takes 34 ticks")
 	_assert_true(trace[-3] - trace[-2] == 2 and trace[-1] == 0, "the slide ends in 2 px steps")
-	_assert_eq(BattlePanelMotion.side_of(Rect2(0, 0, 640, 168)), "top", "the vitals strip comes from above")
-	_assert_eq(BattlePanelMotion.side_of(Rect2(12, 174, 224, 264)), "left", "the left column comes from the left")
-	_assert_eq(BattlePanelMotion.side_of(Rect2(252, 174, 376, 160)), "right", "the right column comes from the right")
-	_assert_eq(BattlePanelMotion.off_screen_offset(Rect2(252, 174, 376, 160), "right"), Vector2(388, 0), "a right part starts just past the right edge")
-	_assert_eq(BattlePanelMotion.off_screen_offset(Rect2(12, 174, 224, 264), "left"), Vector2(-236, 0), "a left part starts just past the left edge")
+	var travelled := 0
+	var ticks := 0
+	while travelled < BattlePanelMotion.SLIDE_DISTANCE and ticks < 80:
+		travelled = BattlePanelMotion.slide_out_step(travelled)
+		ticks += 1
+	_assert_eq(ticks, 22, "the close slide takes 22 ticks")
+	_assert_eq(BattlePanelMotion.side_of(Rect2(12, 174, 224, 264)), "left", "a plain part in the left column comes from the left")
+	_assert_eq(BattlePanelMotion.side_of(Rect2(252, 174, 376, 160)), "right", "a plain part in the right column comes from the right")
 
 
 ## The motion never moves a Control: layout and hit testing stay the panel's own, only the
@@ -239,7 +242,7 @@ func _test_status_panel_motion() -> void:
 	var sides := {}
 	for part in motion._parts:
 		sides[part["side"]] = true
-	_assert_true(sides.has("top") and sides.has("left") and sides.has("right"), "the status page slides from the top, the left and the right (%s)" % [sides.keys()])
+	_assert_true(sides.has("top") and sides.has("left") and sides.has("bottom"), "the status page slides the top strip from above, WINDOW21 from the left and the page buttons from below (%s)" % [sides.keys()])
 	var unmoved := true
 	for child in positions:
 		unmoved = unmoved and child.position == positions[child]
@@ -248,7 +251,7 @@ func _test_status_panel_motion() -> void:
 	while motion.opening() and ticks < 120:
 		motion._tick()
 		ticks += 1
-	_assert_true(not motion.opening() and ticks >= 30 and ticks <= 50, "the page settles after about 0.5–0.8 s of ticks, the right column first (%d)" % ticks)
+	_assert_true(not motion.opening() and ticks >= 30 and ticks <= 50, "the page settles after the 34-tick slide, every part at once (%d)" % ticks)
 	panel.show_unit(unit, true)
 	panel.hide()
 	_assert_true(not motion.opening() and motion.closed_count == 1, "hiding the page stops its motion at once")
@@ -256,9 +259,10 @@ func _test_status_panel_motion() -> void:
 	await process_frame
 
 
-## The page shade fades like the original's (status page 58.2–58.6 s, 65.4–65.8 s): in from
-## level 2 to 9 of 16 one level per 3 ticks, and after the close a shade left in the panel's
-## place steps 9→2 and vanishes, with or without a renderer.
+## The page shade is the root window's black shape (0x4385d3, 0x4388d9, 0x43898f): in from
+## level 0 to 8 of 16 one level per 3 ticks, and after the close a shade left in the panel's
+## place steps down one level per 3 ticks until the 22-tick slide-out and the delete tick end
+## it, with or without a renderer.
 func _test_panel_shade_fade() -> void:
 	var loop := preload("res://tests/support/BattleFixture.gd").loop()
 	var unit: Dictionary = preload("res://game/sim/loop/BattlePlayLoop.gd").unit_ref(loop, "leonard").duplicate(true)
@@ -277,8 +281,8 @@ func _test_panel_shade_fade() -> void:
 	for tick in range(24):
 		motion._tick()
 		opening.append(motion.shade_level)
-	_assert_eq([opening[0], opening[3], opening[6], opening[18], opening[21], opening[24]], [2, 3, 4, 8, 9, 9], "the shade darkens from level 2 one level per 3 ticks to 9")
-	_assert_true(is_equal_approx(shade.color.a, 9.0 / 16.0), "at rest the shade is 9／16 black (map luma × 0.46 in the recording)")
+	_assert_eq([opening[0], opening[3], opening[6], opening[18], opening[21], opening[24]], [0, 1, 2, 6, 7, 8], "the shade darkens from level 0 one level per 3 ticks to 8")
+	_assert_true(is_equal_approx(shade.color.a, 8.0 / 16.0), "at rest the shade is 8／16 black (map luma × 0.46 in the recording)")
 	panel.hide()
 	var ghost: ColorRect = RuntimeReadback.shade_ghost(motion)
 	_assert_true(ghost != null and ghost.get_parent() == host and ghost.get_index() < panel.get_index(), "a closed page leaves its shade in its place, under where the panel was")
@@ -286,8 +290,8 @@ func _test_panel_shade_fade() -> void:
 	for tick in range(24):
 		motion._tick()
 		closing.append(motion.shade_level)
-	_assert_eq([closing[0], closing[2], closing[3], closing[21], closing[23], closing[24]], [9, 9, 8, 2, 2, 0], "the shade lightens one level per 3 ticks and drops from 2 to nothing")
-	_assert_true(RuntimeReadback.shade_ghost(motion) == null and not motion.shading(), "the fade ends by itself after 24 ticks")
+	_assert_eq([closing[0], closing[2], closing[3], closing[21], closing[22], closing[23]], [8, 8, 7, 1, 1, 0], "the shade lightens one level per 3 ticks and goes with the window")
+	_assert_true(RuntimeReadback.shade_ghost(motion) == null and not motion.shading(), "the fade ends by itself after 23 ticks")
 	panel.show_unit(unit, true)
 	panel.hide()
 	motion.finish()

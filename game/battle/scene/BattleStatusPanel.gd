@@ -188,6 +188,7 @@ func _page_button(key: String, resource: String, caption: String, centre_x: int,
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)
 	var label := UISkin.text(self, Vector2(centre_x - 40, PAGE_BUTTON_Y + 13), UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(80, 16))
+	label.name = "Caption_" + key
 	label.text = caption
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	button.mouse_entered.connect(func(): label.add_theme_color_override("font_color", UISkin.TEXT_YELLOW))
