@@ -136,6 +136,8 @@ static func validate(snapshot: Variant, current: Dictionary) -> String:
 	for receipt in [loop.get(LoopKeys.LAST_ATTACK, {}), loop.get(LoopKeys.LAST_COMBAT, {})]:
 		var sequence_error := BattlePlayLoop.SkillResolutionRules.RepeatedSpecialRules.receipt_error(receipt)
 		if sequence_error != "": return sequence_error
+		var multi_error := BattlePlayLoop.SkillResolutionRules.MultiHitSpecialRules.receipt_error(receipt)
+		if multi_error != "": return multi_error
 		var stat_error := BattlePlayLoop.SkillResolutionRules.StatMagic.receipt_error(receipt,loop[LoopKeys.SKILL_BOOK])
 		if stat_error != "": return stat_error
 	if not ids.has(loop.get("player_unit_id")): return "invalid_saved_primary_actor"

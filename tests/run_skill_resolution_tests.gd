@@ -1301,7 +1301,10 @@ func run_skill_target() -> void:
 	check(rained_ids == ["enemy021_1", "enemy021_2"] and BattlePlayLoop.unit(rained, "enemy021_3")["hp"] == 400 and BattlePlayLoop.unit(rained, "leonard")["hp"] == rain_caster["hp"], "only the ring enemies are affected; the caster inside the footprint is skipped")
 	var ring_damage: int = 400 - BattlePlayLoop.unit(rained, "enemy021_1")["hp"]
 	var ring_two_damage: int = 400 - BattlePlayLoop.unit(rained, "enemy021_2")["hp"]
-	check(ring_damage > 0 and ring_two_damage == ring_damage * 20 / 100, "each footprint target applies its own water resistance to the same special roll")
+	# 慌雨斬 settles one 0x40b8f0 per op 72 (5 strikes, 0x4047e9): resistance scales each strike.
+	var ring_parts: Array = rained["last_attack"]["affected_targets"][0]["hit_segments"]
+	var ring_two_parts: Array = rained["last_attack"]["affected_targets"][1]["hit_segments"]
+	check(ring_damage > 0 and ring_parts.size() == 5 and ring_two_parts.size() == 5 and range(5).all(func(i): return int(ring_two_parts[i]["damage"]) == int(ring_parts[i]["damage"]) * 20 / 100) and ring_two_damage == ring_two_parts.reduce(func(sum, part): return sum + int(part["damage"]), 0), "each footprint target applies its own water resistance to each strike's special roll")
 	# magicOTHER damage magic (滅): the 0x40a7b0 type switch has no case 5, so no resistance
 	# slot is read; MP, hit equipment and the level/mind/magic-attack terms follow the magic path.
 	var Resolution := BattlePlayLoop.SkillResolutionRules

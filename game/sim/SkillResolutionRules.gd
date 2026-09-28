@@ -11,6 +11,7 @@ const SupportMagicRules = preload("res://game/sim/SupportMagicRules.gd")
 const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
 const Special = preload("res://game/sim/SpecialDamageRules.gd")
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
+const MultiHitSpecialRules = preload("res://game/sim/MultiHitSpecialRules.gd")
 const StatMagic = preload("res://game/sim/StatMagicRules.gd")
 const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const OtherMagicRules = preload("res://game/sim/OtherMagicRules.gd")
@@ -373,6 +374,8 @@ static func _status_result(caster: Dictionary, target: Dictionary, skill_id: Str
 ## One special-damage target (氣刃斬 alone, or each unit inside an area special's
 ## effect footprint): original 0x40a7b0 channel1/proc0 roll and capped HP application.
 static func _resolve_special_damage(caster: Dictionary, target: Dictionary, skill_id: String, descriptor: Dictionary, ready: Dictionary, rng: Variant, _equipment: Dictionary = {}) -> Dictionary:
+	# aniProcessHitMissMulti settles one 0x40b8f0 per op 72 (MultiHitSpecialRules).
+	if MultiHitSpecialRules.strikes(descriptor) > 1: return MultiHitSpecialRules.resolve(caster, target, skill_id, descriptor, ready, rng)
 	var rolled := Special.roll(ready["special"]["input"], rng)
 	var hp_before := int(target["hp"])
 	var damage := mini(hp_before, int(rolled["value"]))

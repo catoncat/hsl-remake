@@ -218,20 +218,22 @@ static func fixed16(token: String) -> float:
 	return float(number(token)) / 65536.0
 
 
-func compile_row(skill_id: String, hit: bool, seed: int) -> Dictionary:
+func compile_row(skill_id: String, hit: bool, seed: int, strike_hits: Array = []) -> Dictionary:
 	var row: Dictionary = scripts[skill_id]
 	if str(row["channel"]) == "magic":
 		return compile_effect(row["actions"][row["effect_code"]], seed, manifest, row)
-	return compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], hit, seed, manifest)
+	return compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], hit, seed, manifest, strike_hits)
 
 
 ## The tick timeline of one attack script followed by one defense script. Pure: the same
-## inputs and seed give the same events; nothing is drawn or played here.
-static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: int, data: Dictionary) -> Dictionary:
+## inputs and seed give the same events; nothing is drawn or played here. `strike_hits`: the
+## per-strike hits of a multi-hit receipt (MultiHitSpecialRules `hit_segments`), in settlement
+## order; the defense object whose op 72 queued strike k draws strike k's hit run.
+static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: int, data: Dictionary, strike_hits: Array = []) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
 	var timeline := {"kind": "special", "events": [], "release_tick": 0, "impact_tick": -1, "result_tick": -1, "darken_tick": 0, "complete_tick": 0,
-		"hit": hit, "sound_cues": [],
+		"hit": hit, "strike_hits": strike_hits, "sound_cues": [],
 		"hit_ticks": [], "result_ticks": [], "attack_background": "", "defense_background": "",
 		"double_page_tick": -1, "no_dark_bg": false, "show_attacker": false, "xy_disp": Vector2.ZERO, "empty_attack": false,
 		"unimplemented": [], "skipped_objects": [], "instructions": 0}
@@ -410,10 +412,20 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event["variant"] = order % ObjcomdMotion.variants(name)
 		event["anchored"] = false
 		event["open_ended"] = ObjcomdMotion.open_ended(name)
-		# The settled strike's hit picks the hit run (hit-only throws); per-segment results of
-		# multi-hit skills are not modelled, the whole clip follows the strike.
+		# The settled strike's hit picks the hit run (hit-only throws, 0x405434／0x405495).
 		event["hit"] = bool(timeline["hit"])
-		event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(name, bool(event["hit"]))
+	# A multi-hit defense object follows the strike its op 72 queued: strikes settle in op 72
+	# order (0x4047d5), each rewriting [0x4c1418] (0x404803; 200 at 0x4048d6 when it changed
+	# nothing). Which strike's word an instance's hit-only throw reads within the same tick is
+	# not read (provisional).
+	var queued: Array = timeline["events"].filter(func(event): return event.has("strike_tick"))
+	queued.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]) or (int(a["strike_tick"]) == int(b["strike_tick"]) and int(a["order"]) < int(b["order"])))
+	var strike_hits: Array = timeline.get("strike_hits", [])
+	for rank in range(mini(queued.size(), strike_hits.size())):
+		queued[rank]["hit"] = bool(strike_hits[rank])
+	for event in timeline["events"]:
+		if event.get("source", "") == "objcomd":
+			event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(str(event["object"]), bool(event["hit"]))
 	# Remaining off-stage objects fly to the target centre, arriving at the phase's next hit mark
 	# or after FLIGHT_TICKS (remake composition).
 	for event in timeline["events"]:
@@ -451,6 +463,7 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		kept.append(event)
 	timeline["events"] = kept
 	timeline.erase("multi_hit_ops")
+	timeline.erase("last_strike_tick")
 	timeline["darken_tick"] = darken
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
@@ -604,6 +617,9 @@ static func _insert(timeline: Dictionary, data: Dictionary, phase: String, objec
 		"fixed_frame": -1, "rotation": 0.0, "zoom": 1.0, "scale": Vector2(float(zoom[0]), float(zoom[1])),
 		"z": int(PLANE_Z.get(str(object["plane"]), 2)), "mode": str(object.get("mode", "")),
 		"order": timeline["events"].size()}
+	if timeline.has("last_strike_tick"):
+		event["strike_tick"] = int(timeline["last_strike_tick"])
+	timeline.erase("last_strike_tick")
 	timeline["events"].append(event)
 	return event
 
@@ -646,6 +662,7 @@ static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String
 					timeline["multi_hit_ops"] = []
 				var created := sound_tick if sound_tick >= 0 and int(op[0]) == 0 and int(op[1]) == 71 else tick
 				timeline["multi_hit_ops"].append([created + int(op[0]), int(op[1])])
+				if int(op[1]) == 72: timeline["last_strike_tick"] = created + int(op[0])
 	else:
 		if phase == "effect" and str(object.get("insert_sound", "")) != "":
 			var key := str(object["insert_sound"]) + "@" + str(sound_tick)
@@ -677,7 +694,8 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		var strike: Dictionary = clip["strike"]
 		var skill_id := str(strike.get("skill_id", ""))
 		var seed := hash(skill_id + str(strike.get("attacker_id", "")) + str(strike.get("defender_id", "")) + str(strike.get("hit_roll", strike.get("native_damage_roll", ""))))
-		clip["effect_timeline"] = compile_row(skill_id, bool(strike["hit"]), seed)
+		var strike_hits: Array = strike.get("hit_segments", []).map(func(part): return bool(part["hit"]))
+		clip["effect_timeline"] = compile_row(skill_id, bool(strike["hit"]), seed, strike_hits)
 	if str(clip["effect_timeline"]["kind"]) == "effect":
 		return _present_effect(host, clip, elapsed)
 	return _present_special(host, clip, elapsed)
@@ -715,7 +733,8 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	# The script's own clock: after the lead; an empty attack script yields at once.
 	var script_tick := tick - float(lead_ticks) + (float(EMPTY_ATTACK_LEAD_TICKS) if lead_ticks > 0 and bool(timeline["empty_attack"]) else 0.0)
 	var attack_phase := script_tick < float(timeline["release_tick"])
-	var closing := clip_closing_tick(timeline, host.result_spawns(clip["strike"]))
+	var spawns := strike_spawns(clip["strike"], timeline, host.result_spawns(clip["strike"]))
+	var closing := clip_closing_tick(timeline, spawns)
 	if script_tick >= float(closing + Timing.CLOSING_LIGHTEN_TICKS):
 		clear()
 		return true
@@ -765,11 +784,29 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	var shown := script_tick >= float(timeline["result_tick"])
 	host.result.visible = shown
 	if shown:
-		host.show_result(clip["strike"], script_tick - float(timeline["result_tick"]))
+		host.show_result(clip["strike"], script_tick - float(timeline["result_tick"]), host.SCRIPT_NUMBER_POINT, spawns)
 	# 0x404b23: the defense page's phase 101 darkens 16 ticks over the running shot.
 	if script_tick >= float(timeline["darken_tick"]):
 		host._show_closing_darken(script_tick - float(timeline["darken_tick"]))
 	return false
+
+
+## The numbers of a special shot, timed from its first result mark. A multi-hit receipt's
+## strikes each spawn their own (0x4045d5 → 0x4084e0 the tick after the strike settles: the
+## strike's HP loss, MISS when it changed nothing — 0x4047eb clears the change words per
+## strike), held back to their own result mark; any other receipt keeps `whole`.
+static func strike_spawns(strike: Dictionary, timeline: Dictionary, whole: Array[Dictionary]) -> Array[Dictionary]:
+	var parts: Array = strike.get("hit_segments", [])
+	var marks: Array = timeline.get("result_ticks", [])
+	if parts.is_empty() or marks.is_empty(): return whole
+	var result: Array[Dictionary] = []
+	for index in range(mini(parts.size(), marks.size())):
+		var damage := int(parts[index]["actual_damage"])
+		var offset := int(marks[index]) - int(marks[0])
+		for entry in ResultNumberFloater.spawns(damage, 0, 0, damage == 0):
+			entry["hold"] = int(entry["hold"]) + offset
+			result.append(entry)
+	return result
 
 
 ## The tick the special shot ends: the lighten after `clip_closing_tick`.

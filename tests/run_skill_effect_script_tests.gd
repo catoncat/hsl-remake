@@ -7,6 +7,7 @@ const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.g
 const SkillEffectScriptPlayer = preload("res://game/battle/scene/SkillEffectScriptPlayer.gd")
 const PoisonArrowRules = preload("res://game/sim/PoisonArrowRules.gd")
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
+const MultiHitSpecialRules = preload("res://game/sim/MultiHitSpecialRules.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
 var manifest: Dictionary
@@ -175,6 +176,9 @@ func every_row_compiles() -> void:
 			check(not timeline["result_ticks"].is_empty() or result == impact, "a script without aniShowHitResult shows the result on the hit mark: " + skill_id)
 			check(complete >= result + SkillEffectScriptPlayer.RESULT_HOLD_TICKS, "the result stays readable: " + skill_id)
 			var row: Dictionary = scope["rows"][skill_id]
+			# The rules settle one 0x40b8f0 per op 72 (0x4047e9); the wait marks one strike per op 72.
+			if str(row["actions"][row["defense_code"]]).contains("aniProcessHitMissMulti"):
+				check(timeline["hit_ticks"].size() == MultiHitSpecialRules.strikes({"fields": {"defense_code": row["defense_code"]}}), "the rules' strike count is the defense objects' op 72 count: %s %d" % [skill_id, timeline["hit_ticks"].size()])
 			check(int(timeline["instructions"]) == SkillEffectScriptPlayer.parse(row["actions"][row["attack_code"]]).size() + SkillEffectScriptPlayer.parse(row["actions"][row["defense_code"]]).size(), "instruction count kept: " + skill_id)
 			var hit_only_seen := false
 			for event in timeline["events"]:
@@ -451,6 +455,12 @@ func geometry_and_flags() -> void:
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
 	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
 	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 165 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 160 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
+	var split: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5, [true, false, true, false, false, true])
+	var star_runs: Array = split["events"].filter(func(event): return event.has("strike_tick"))
+	star_runs.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]))
+	check(star_runs.map(func(event): return event["hit"]) == [true, false, true, false, false, true], "each star draws the hit run of the strike its op 72 queued")
+	var split_spawns := SkillEffectScriptPlayer.strike_spawns({"hit_segments": [{"actual_damage": 12}, {"actual_damage": 0}]}, stars, [])
+	check(split_spawns == [{"kind": "damage", "value": 12, "hold": 0}, {"kind": "miss", "value": 0, "hold": 11}], "each strike spawns its own number at its own result mark: %s" % [split_spawns])
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
 	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
 	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)

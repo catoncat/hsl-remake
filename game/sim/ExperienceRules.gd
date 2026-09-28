@@ -87,7 +87,15 @@ static func record(actor: Dictionary, target: Dictionary, strike: Dictionary, rn
 		var converted := from_contribution(int(value), int(actor["level"]), int(target["level"]), int(strike["defender_hp_after"]), int(target["kill_exp"]), int(actor["kill_chain_word"]), rng)
 		immediate.append(converted)
 		immediate_points += int(converted["points"])
-	var result := from_contribution(contribution, int(actor["level"]), int(target["level"]), int(strike["defender_hp_after"]), int(target["kill_exp"]), int(actor["kill_chain_word"]), rng)
+	var result := {}
+	if strike.has("hit_segments"):
+		# 0x4047e9: each multi-hit strike's 0x40b8f0 already converted its own EXP (drawn in
+		# settlement order by MultiHitSpecialRules); the defender script only sums the returns.
+		var points := 0
+		for segment in strike["hit_segments"]: points += int(segment["experience_points"])
+		result = {"points": points, "contribution": contribution, "draws": [], "segments": strike["hit_segments"].size(), "source": "0x4047e9_per_strike_0x40a5d0"}
+	else:
+		result = from_contribution(contribution, int(actor["level"]), int(target["level"]), int(strike["defender_hp_after"]), int(target["kill_exp"]), int(actor["kill_chain_word"]), rng)
 	if not immediate.is_empty():
 		result["tail_points"] = int(result["points"])
 		result["immediate_experience"] = immediate

@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (197 modules, 133 remake-invented cells, 60 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (198 modules, 133 remake-invented cells, 60 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (197)
+### 模块矩阵 (198)
 
 #### game/battle/runtime (17)
 
@@ -134,7 +134,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
-#### game/sim (90)
+#### game/sim (91)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
@@ -185,6 +185,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [LearningRules](../game/sim/LearningRules.gd) | static-derived [original_growth_lifecycle.md](../docs/evidence_packets/static_reverse/original_growth_lifecycle.md) | n/a | n/a | n/a | n/a |
 | [LoopKeys](../game/sim/LoopKeys.gd) | remake-invented | n/a | n/a | n/a | n/a |
 | [MobilityRules](../game/sim/MobilityRules.gd) | static-derived [original_equipment_mobility.md](../docs/evidence_packets/static_reverse/original_equipment_mobility.md) | n/a | n/a | n/a | n/a |
+| [MultiHitSpecialRules](../game/sim/MultiHitSpecialRules.gd) | static-derived [original_effect_object_sounds.md](../docs/evidence_packets/static_reverse/original_effect_object_sounds.md); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md) | n/a | n/a | n/a | n/a |
 | [NativeMagicRollRules](../game/sim/NativeMagicRollRules.gd) | static-derived [original_status_rolls.json](../docs/evidence_packets/static_reverse/original_status_rolls.json); static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md) | n/a | n/a | n/a | n/a |
 | [OtherMagicRules](../game/sim/OtherMagicRules.gd) | static-derived [original_special_element.md](../docs/evidence_packets/static_reverse/original_special_element.md); static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md) | n/a | n/a | n/a | n/a |
 | [PartyEquipmentRules](../game/sim/PartyEquipmentRules.gd) | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md); remake-invented | n/a | n/a | n/a | n/a |
@@ -483,7 +484,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 31 | 71 | 41 | 10 | 29 | 182 |
-| static-derived | 253 | 112 | 19 | 113 | 25 | 522 |
+| static-derived | 255 | 112 | 19 | 113 | 25 | 524 |
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -491,6 +492,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 53 | 33 | 33 | 13 | 1 | 133 |
-| n/a | 62 | 115 | 147 | 133 | 165 | 622 |
+| n/a | 62 | 116 | 148 | 134 | 166 | 626 |
 
 <!-- provenance:end -->
