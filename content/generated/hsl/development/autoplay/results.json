@@ -163,9 +163,9 @@
         "move": 0,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 8,
+        "ai_steps": 6,
         "loot_deferred": 0,
-        "scene_phases": 9
+        "scene_phases": 7
       },
       "result_page": true
     },
@@ -589,19 +589,19 @@
         "result": "defeat",
         "reason": "fallen"
       },
-      "rounds": 6,
+      "rounds": 11,
       "reason": "",
       "unit": "",
       "round": 0,
       "detail": "",
       "actions": {
-        "attack": 6,
-        "move_then_attack": 7,
+        "attack": 15,
+        "move_then_attack": 11,
         "move": 22,
-        "wait": 9,
-        "offense_finished": 0,
-        "ai_steps": 100,
-        "loot_deferred": 0,
+        "wait": 15,
+        "offense_finished": 1,
+        "ai_steps": 186,
+        "loot_deferred": 1,
         "scene_phases": 1
       },
       "result_page": true
