@@ -580,22 +580,6 @@
       "category": "特写与施法演出"
     },
     {
-      "id": "attack-flash-hold",
-      "difference": "切入攻击白闪停 0.12 s 是估值，defProcAttackFlash 与击中闪光对象寿命未读",
-      "original": "defProcAttackFlash、0x401310 寿命未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "BattleCombatCutin 固定 0.12 s",
-      "remake_code": [
-        "game/battle/scene/BattleCombatCutin.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "invisible",
-      "effort": "S",
-      "category": "特写与施法演出"
-    },
-    {
       "id": "closeup-object-timing",
       "difference": "特写里攻守对象的部分子状态与结束后的屏幕过渡长度未读，时长是估值（RECOVERY provisional）",
       "original": "守方 0x4038a0 已读；攻方子状态 5–9 与屏幕过渡 0x46098f／0x460989 未读",
@@ -732,16 +716,17 @@
     },
     {
       "id": "story-effect-objects",
-      "difference": "雨／闪电／燃树等剧情特效的寿命、密度、速度是读法，运动程序未读",
-      "original": "mapobjDropRain／defProcObjectMove 未读",
+      "difference": "雨的发射密度、落带与落点帧节拍是读法；绳子 engRANGE 按插入线裁切是读法；闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
+      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 过程与 engRANGE 绘制未读",
       "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
         "docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md"
       ],
-      "remake": "StoryEffectObjects 的发射器与闪光读法",
+      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；雨发射器仍是读法",
       "remake_code": [
         "game/battle/runtime/StoryEffectObjects.gd"
       ],
-      "original_status": "unread",
+      "original_status": "read_partial",
       "visibility": "some_levels",
       "effort": "M",
       "category": "地图与物件"
@@ -2058,6 +2043,9 @@
     "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|": {
       "item": "story-effect-objects"
     },
+    "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|provisional|": {
+      "item": "story-effect-objects"
+    },
     "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|": {
       "item": "story-effect-objects"
     },
@@ -2099,9 +2087,6 @@
     },
     "provenance:game/battle/scene/BattleCombatCutin.gd|strings|remake-invented|": {
       "item": "floater-extra-words"
-    },
-    "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|": {
-      "item": "attack-flash-hold"
     },
     "provenance:game/battle/scene/BattleCombatCutin.gd|timing|remake-invented|": {
       "item": "missing-clip-fallback"
@@ -2876,6 +2861,10 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、未读清的 5 处": {
       "item": "special-object-motion"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d9253008aa": {
+      "item": "story-effect-objects",
+      "text": "繩子 的 engRANGE 绘制未读，重制按插入线裁切（provisional）；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c": {
       "item": "special-object-motion",

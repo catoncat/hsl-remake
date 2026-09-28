@@ -3,6 +3,8 @@ extends CanvasLayer
 ##   layout: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_strike.md
+##     (0x40418a hit flash)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md#7-普攻切入的攻方开场
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#12
 ##     (one full-size actor per shot over BG051; frame_001 whited-out board)
@@ -18,7 +20,8 @@ extends CanvasLayer
 ##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   timing: provisional (0.12 s attack-flash hold until defProcAttackFlash is read in ticks)
+##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##     (defProcAttackFlash 0x401140)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   timing: remake-invented (the borrowed 氣刃斬 staging used only by synthetic clips)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
@@ -50,6 +53,7 @@ const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const StatusCatalog = preload("res://game/sim/StatusCatalog.gd")
 const ShowNumberStyle = preload("res://game/battle/runtime/ShowNumberStyle.gd")
 const ResultNumberFloater = preload("res://game/battle/scene/ResultNumberFloater.gd")
+const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 ## The word of the NUM513 glyph: a miss reads MISS on the result line and the map (0x404643 kind 5).
 const MISS_TEXT := "MISS"
 ## 0x404290: an ordinary shot's defender object spawns its red damage number at (320, camera
@@ -57,6 +61,8 @@ const MISS_TEXT := "MISS"
 const ORDINARY_NUMBER_POINT := Vector2(320, 200)
 ## aniShowHitResult (0x404643): a script shot's numbers at (320, camera y + 180).
 const SCRIPT_NUMBER_POINT := Vector2(320, 180)
+## The hit flash's y: camera y + 0xb4 (0x40416f..0x404181).
+const HIT_FLASH_Y := 180.0
 const PRESENTER_DIRECTORY := "res://game/battle/scene/"
 ## The scene's combat manifest (hsl_combat_animation rows: frames, dispatch, strips, the
 ## backdrop and opening shape), set by configure() from the scenario's
@@ -78,6 +84,8 @@ var background: ColorRect
 var attacker_sprite: Sprite2D
 var defender_sprite: Sprite2D
 var flash_sprite: Sprite2D
+## The receiver's hit flash (0x40418a): ANIMAL\ATTACK_FLASH00N.SHP by the attacker weapon's icon class.
+var hit_flash_sprite: Sprite2D
 ## The result line: only the captions the original has no glyph for (cure／buff words, the
 ## weapon-effect line); the numbers are `result_number`'s original glyphs.
 var result: Label
@@ -149,6 +157,9 @@ func _ready() -> void:
 	stage.add_child(defender_sprite)
 	flash_sprite = Sprite2D.new()
 	stage.add_child(flash_sprite)
+	hit_flash_sprite = Sprite2D.new()
+	hit_flash_sprite.hide()
+	stage.add_child(hit_flash_sprite)
 	cast_inset = Sprite2D.new()
 	cast_inset.hide()
 	stage.add_child(cast_inset)
@@ -210,7 +221,9 @@ func _build_skill_layers() -> void:
 	var light_material := CanvasItemMaterial.new()
 	light_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	blade.material = light_material
-	flash_sprite.material = light_material
+	# defProcAttackFlash draws engADDCOLOR_MIX: dst + src × level／16 (modulate alpha = level／16).
+	flash_sprite.material = AdditiveLevelBlend.material()
+	hit_flash_sprite.material = AdditiveLevelBlend.material()
 	for spark in sparks:
 		spark.material = light_material
 	panel.hide()
@@ -489,6 +502,7 @@ func _process(delta: float) -> void:
 		effect_ripple.hide()
 	cast_inset.hide()
 	cast_portrait.hide()
+	hit_flash_sprite.hide()
 	for ghost in cast_afterimages:
 		ghost.hide()
 	opening_ball.hide()
@@ -593,8 +607,10 @@ func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictiona
 	if clip["impact_emitted"]:
 		defender_sprite.position.x += CutinLayout.reaction_x(defender, hit, OriginalTick.ticks(elapsed - impact_time), defender_mirrored)
 	var flash: Dictionary = actor["flash"]
-	# aniInsertAttackFlash belongs to the attacker's pose, before cutting to the victim.
-	flash_sprite.visible = elapsed >= strike_time and elapsed < minf(strike_time + 0.12, float(schedule["target"])) and not flash.is_empty()
+	# aniInsertAttackFlash belongs to the attacker's pose; phase 101 holds the shot until the
+	# flash object deletes itself (Timing.ordinary), so it never reaches the victim's shot.
+	var flash_level := Timing.flash_level(int(OriginalTick.ticks(elapsed - strike_time)), Timing.ATTACK_FLASH_LEVEL, Timing.ATTACK_FLASH_HOLD_TICKS)
+	flash_sprite.visible = elapsed >= strike_time and flash_level > 0 and elapsed < float(schedule["target"]) and not flash.is_empty()
 	if flash_sprite.visible:
 		# 0x40222e..0x402245: the flash object starts at the attacker object's (x, y) plus the
 		# opcode's displacement — on the shot line, not at a fixed screen point. A side-swapped
@@ -602,6 +618,9 @@ func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictiona
 		# point, the displacement itself is not negated (0x402231 adds it as read).
 		var displacement: Array = actor["attack_flash_offset"]
 		_set_effect(flash_sprite, flash, CutinLayout.attacker_anchor() + Vector2(float(displacement[0]), float(displacement[1])), 1.0, attacker_mirrored)
+		flash_sprite.modulate.a = float(flash_level) / float(Timing.ATTACK_FLASH_LEVEL)
+	if hit and clip["impact_emitted"]:
+		_show_hit_flash(clip, OriginalTick.ticks(elapsed - impact_time))
 	# The source hurt pose carries the reaction; do not paint the whole person red.
 	defender_sprite.modulate = Color.WHITE
 	# Hold the source hurt pose. Map aftermath owns the later death fade.
@@ -616,6 +635,25 @@ func _show_ordinary_shot(clip: Dictionary, actor: Dictionary, schedule: Dictiona
 	if clip["impact_emitted"] and captions_public:
 		var effects := preload("res://game/sim/WeaponEffectRules.gd").feedback(clip["strike"].get("weapon_effects", {}), not defeated)
 		if effects != "": result.text += ("\n" if result.text != "" else "") + effects
+
+
+## The receiver's hit flash `tick` ticks after the hit (0x40418a → 0x401310, then level 9 and 6
+## held ticks): shape ATTACK_FLASH001 + the attacker weapon's ITEM icon class ([0x4c6f60],
+## 0x4043a5), at the defender object's x on the hit tick and camera y + 180 (0xb4), x zoom −1 when
+## the defender's side word 0x40ba20 is exactly pmPlayer. A weapon code without an ITEM weapon row
+## draws none.
+func _show_hit_flash(clip: Dictionary, tick: float) -> void:
+	var hit_flashes: Dictionary = manifest.get("hit_flashes", {})
+	var weapon := str(int(clip["attacker_unit"].get("weapon_code", 0)))
+	if hit_flashes.is_empty() or not hit_flashes["weapon_icon_class"].has(weapon):
+		return
+	var level := Timing.flash_level(int(tick), Timing.HIT_FLASH_LEVEL, Timing.HIT_FLASH_HOLD_TICKS)
+	if level <= 0:
+		return
+	var shape: Dictionary = hit_flashes["shapes"][int(hit_flashes["weapon_icon_class"][weapon])]
+	_set_effect(hit_flash_sprite, shape, Vector2(defender_anchor(clip).x, HIT_FLASH_Y), 1.0, CutinLayout.player_side(clip["defender_unit"]))
+	hit_flash_sprite.modulate.a = float(level) / float(Timing.ATTACK_FLASH_LEVEL)
+	hit_flash_sprite.show()
 
 
 ## AnimalAttack phase 100 at `tick` ticks into the clip: 24 additive zoom draws of the ball

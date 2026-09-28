@@ -50,10 +50,67 @@ REVIEWED = em.REVIEWED + [
 # Arrow tracer (毒魔箭 obj_Special19_01, command 17): objmDelay 20, objmSetSpeed 128,0x00200000,
 # objmDelay 10, objmWaitOutScreen.
 ARROW = 'obj_Special19_01'
-# Story-script defProcObjectMove objects run by the same interpreter: level 37's white lights
-# (obj-037.obs codes 17／19, BALL001, obj_Data7 21／62), created at the probe origin.
-STORY_LEVEL_OBS = '@:\\data\\obj-037.obs'
-STORY_OBJECTS = {'obj_Story_Level_WhiteLight': (17, '21'), 'obj_Story_Level_WhiteLight2': (19, '62')}
+# Story-script defProcObjectMove objects run by the same interpreter, each created at the probe
+# origin from its level's obj-0xx.obs template (obj_Mode／obj_Zoom*／obj_Data9 as written there):
+# key → (level, obj code, obj_Data7 program). Level 37's white lights keep their bare symbols;
+# every other level's object is keyed symbol@level.
+STORY_OBJECTS = {
+    'obj_Story_Level_WhiteLight': (37, 17, '21'), 'obj_Story_Level_WhiteLight2': (37, 19, '62'),
+    'obj_Story_Level10_Lightn@010': (10, 18, '5'), 'obj_Story_Level10_Lightn2@010': (10, 24, '5'),
+    'obj_Story_Level10_Ring@010': (10, 19, '7'), 'obj_Story_Level_WhiteScreen@013': (13, 17, '151'),
+    'obj_Story_Level_WhiteLight@022': (22, 20, '21'), 'obj_Story_Level_WhiteLight@028': (28, 22, '21'),
+    'obj_Story_Level_DisappearRock@039': (39, 19, '5'), 'obj_Story_Level53_Rope@053': (53, 25, '150'),
+    'obj_Story_Level58_Star@058': (58, 15, '149'), 'obj_Story_Level_WhiteLight@059': (59, 21, '21'),
+    'obj_Story_Level_WhiteLight2@059': (59, 22, '62'), 'obj_Story_Level_WhiteLight@076': (76, 17, '21'),
+    'obj_Story_Level_WhiteLight@077': (77, 17, '21'), 'obj_Story_Level_WhiteLight@079': (79, 17, '21'),
+    'obj_Story_Level_WhiteLight2@079': (79, 18, '21'), 'obj_Story_Level_DarkLight@080': (80, 22, '13'),
+    'obj_Story_Level_WhiteLight@080': (80, 19, '13'),
+}
+MAP_OBJECTS = ROOT / 'content/imported/hsl/chapter01'
+
+
+def story_obs(level: int) -> str:
+    return f'@:\\data\\obj-{level:03d}.obs'
+
+
+def story_key(symbol: str, level: int) -> str:
+    return symbol if level == 37 else f'{symbol}@{level:03d}'
+
+
+def story_scope() -> dict[str, tuple[int, int, str]]:
+    """Every defProcObjectMove script object of the chapter's map_objects, keyed like STORY_OBJECTS."""
+    scope = {}
+    for path in sorted(MAP_OBJECTS.glob('battle*/map_objects.json')):
+        level = int(path.parent.name[len('battle'):])
+        for row in json.loads(path.read_text(encoding='utf-8')).get('script_objects', []):
+            if row.get('process') == 'defProcObjectMove':
+                scope[story_key(row['symbol'], level)] = (level, int(row['object_code']), str(row['object_fields']['obj_Data7']['value']))
+    return scope
+
+
+def story_rows(exe_image, reader, obs: bytes, defines, sounds, metrics, words, members: dict[str, int], names) -> tuple[dict, dict]:
+    """The native tracks of the named STORY_OBJECTS and the digests of the level OBS files read."""
+    rows, digests = {}, {}
+    for name in names:
+        level, code, command = STORY_OBJECTS[name]
+        raw = reader.read(story_obs(level))
+        digests[f'{level:03d}'] = em.digest(raw)
+        # The level OBS names its own objects (雨's obj_Data4 → obj_Story_Level10_Rain): OBJ-0xx.H defines.
+        header = (MAP_OBJECTS / f'battle{level:03d}/source_texts/OBJ-{level:03d}.H').read_bytes().decode('cp950')
+        local = dict(defines, **{name: int(value, 0) for name, value in re.findall(r'^\s*#define\s+(\w+)\s+(-?(?:0x[0-9a-fA-F]+|\d+))', header, re.M)})
+        templates = em.Templates([obs, raw], local)
+        variants, runs = [], []
+        for variant in range(VARIANTS):   # programs 5／149 draw objmRandomShape／objmRandomDelay
+            machine = run(exe_image, templates, sounds, metrics, words, code, em.ORIGIN, variant)
+            encoded = em.encode_instances(machine, members)
+            if variant and encoded == variants[0]:
+                break
+            variants.append(encoded); runs.append(machine)
+        rows[name] = {'code': code, 'command_code': command, 'point': list(em.ORIGIN), 'level_obs': story_obs(level),
+                      'frames': max(machine.frame for machine in runs), 'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
+                      'variants': variants,
+                      'sounds': [[event[0], event[3]] for event in runs[0].events if event[1] == 'sound']}
+    return rows, digests
 
 
 class Machine(em.Machine):
@@ -116,13 +173,13 @@ def run(exe_image, templates, sounds, metrics, words, code: int, point: tuple[in
     return machine
 
 
-def execute_packet(exe: Path) -> dict:
+def setup(exe: Path) -> dict:
+    """The pak reader, templates, programs, SHP metrics and EXE image every run shares."""
     from hsltools.data.world_map import PakReader
     from hsltools.sources.shp import parse_shp
     reader = PakReader(exe.parent)
     process_def = reader.read('@:\\data\\PROCESS.DEF')
     level_obs = reader.read('@:\\data\\obj-051.obs')
-    story_obs = reader.read(STORY_LEVEL_OBS)
     defines = em.table_defines(process_def.decode('cp950'))
     for name, value in re.findall(r'^\s*#define\s+(objm\w+)\s+(\d+)', COMMAND_VERBS.read_bytes().decode('cp950'), re.M):
         defines.setdefault(name, int(value))
@@ -142,8 +199,21 @@ def execute_packet(exe: Path) -> dict:
             shp_cache[member] = (origin[0], origin[1], meta['width'], meta['height'])
         return shp_cache[member]
 
-    sounds = {value: name for name, value in templates.sounds.items()}
-    exe_image = image(exe.read_bytes())
+    return {'reader': reader, 'process_def': process_def, 'level_obs': level_obs, 'defines': defines, 'obs': obs,
+            'templates': templates, 'words': words, 'metrics': metrics,
+            'sounds': {value: name for name, value in templates.sounds.items()}, 'exe_image': image(exe.read_bytes())}
+
+
+def story_packet_rows(exe: Path, names, members: dict[str, int]) -> tuple[dict, dict]:
+    """Only the named story objects' rows (appending to a tracked packet keeps its other rows)."""
+    env = setup(exe)
+    return story_rows(env['exe_image'], env['reader'], env['obs'], env['defines'], env['sounds'], env['metrics'], env['words'], members, names)
+
+
+def execute_packet(exe: Path) -> dict:
+    env = setup(exe)
+    reader, process_def, level_obs, defines, obs = env['reader'], env['process_def'], env['level_obs'], env['defines'], env['obs']
+    templates, words, metrics, sounds, exe_image = env['templates'], env['words'], env['metrics'], env['sounds'], env['exe_image']
     points = insert_points()
     members: dict[str, int] = {}
     objects = {}
@@ -164,17 +234,12 @@ def execute_packet(exe: Path) -> dict:
                          'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
                          'variants': variants,
                          'sounds': [[event[0], event[3]] for event in runs[0].events if event[1] == 'sound']}
-    story_templates = em.Templates([obs, story_obs], defines)
-    for name, (code, command) in STORY_OBJECTS.items():
-        machine = run(exe_image, story_templates, sounds, metrics, words, code, em.ORIGIN, 0)
-        objects[name] = {'code': code, 'command_code': command, 'point': list(em.ORIGIN), 'level_obs': STORY_LEVEL_OBS,
-                         'frames': machine.frame, 'open_ended': any(obj['dead'] is None for obj in machine.objects),
-                         'variants': [em.encode_instances(machine, members)],
-                         'sounds': [[event[0], event[3]] for event in machine.events if event[1] == 'sound']}
+    story, story_digests = story_rows(exe_image, reader, obs, defines, sounds, metrics, words, members, STORY_OBJECTS)
+    objects.update(story)
     from hsltools.probes.effect_motion import digest
     return {'schema': SCHEMA, 'exe_sha256': EXE_SHA, 'native_execution': True, 'evidence_tier': 'static-derived',
             'sources': {'global_obs': digest(obs), 'objcomd': digest(COMMANDS.read_bytes()), 'process_def': digest(process_def),
-                        'obj_051_obs': digest(level_obs), 'obj_037_obs': digest(story_obs)},
+                        'obj_051_obs': digest(level_obs), 'obj_037_obs': story_digests['037'], 'story_obs': story_digests},
             'frame_limit': FRAME_LIMIT, 'seeds': [[f'{a:#010x}', f'{b:#010x}'] for a, b in map(seed, range(VARIANTS))],
             'reviewed': [[f'{low:#x}', f'{high:#x}', note] for low, high, note in REVIEWED],
             'members': sorted(members, key=members.get), 'objects': objects,
@@ -194,12 +259,15 @@ def check(packet: dict) -> None:
     if packet['sources']['global_obs'] != em.digest(GLOBAL_OBS.read_bytes()) or packet['sources']['objcomd'] != em.digest(COMMANDS.read_bytes()):
         raise ValueError('global.obs／objcomd.txt changed: regenerate objcomd_motion')
     scope = scope_objects()
+    if story_scope() != STORY_OBJECTS:
+        raise ValueError('STORY_OBJECTS differs from the defProcObjectMove script objects of the chapter map_objects')
     if set(packet['objects']) != set(scope) | set(STORY_OBJECTS):
-        raise ValueError('objcomd motion scope differs from the defProcObjectMove objects of the SPECIAL scripts')
+        raise ValueError('objcomd motion scope differs from the defProcObjectMove objects of the SPECIAL and story scripts')
     for name, row in packet['objects'].items():
         if name in STORY_OBJECTS:
-            if (row['code'], row['command_code']) != STORY_OBJECTS[name]:
-                raise ValueError(f'{name}: code／command differ from obj-037.obs')
+            level, code, command = STORY_OBJECTS[name]
+            if (row['code'], row['command_code'], row['level_obs']) != (code, command, story_obs(level)):
+                raise ValueError(f'{name}: code／command／level OBS differ from STORY_OBJECTS')
         elif row['code'] != int(scope[name]['obj_code']) or row['command_code'] != scope[name]['command_code']:
             raise ValueError(f'{name}: code／command differ from the scope')
         for instances in row['variants']:

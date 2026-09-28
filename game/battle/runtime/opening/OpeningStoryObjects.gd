@@ -24,8 +24,7 @@ extends RefCounted
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
 ##     (defProcObjectMove objects keep obj_Plane depth)
 ##   layout: provisional
-##     (walk start = final cell minus accumulated deltas; engRANGE objects hang from the insert point and unroll over
-##     the following actDelay)
+##     (walk start = final cell minus accumulated deltas)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
 ##     (actChangeShape: script delay + 1 ticks a frame; actRestoreShape restarts the stand loop)
@@ -524,8 +523,8 @@ func _insert_story_object(event: Dictionary) -> void:
 	if args.size() < 3 or preview == "" or not ResourceLoader.exists(preview):
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "story_object_insert", "reason": "unbound_story_object"})
 		return
-	if StoryEffectObjects.effect_kind(spec, symbol) != "":
-		# Rain controllers, background sounds, fire runs, flashes, glows and native tracks: one instance
+	if StoryEffectObjects.effect_kind(spec, symbol, StoryEffectObjects.scene_level(runtime)) != "":
+		# Rain controllers, background sounds, fire runs and native objcomd tracks: one instance
 		# per insert (STORY010 inserts 火01 five times), records kept by the effects object.
 		coordinator.story_records.append(_effects.insert(runtime, coordinator, spec, objects, symbol, _object_world([args[1], args[2]]), str(event.get("id", ""))))
 		return
@@ -543,8 +542,6 @@ func _insert_story_object(event: Dictionary) -> void:
 	sprite.z_index = int(anchor.y)
 	sprite.visible = true
 	var record := {"kind": "story_object_insert", "source_event_id": str(event.get("id", "")), "symbol": symbol, "anchor_world": anchor}
-	if str((spec.get("object_fields", {}) as Dictionary).get("obj_Mode", "")) == "engRANGE":
-		record.merge(_unroll_range_object(sprite, anchor, origin))
 	if str(spec.get("process", "")) == "defProcObjectMove":
 		# 0x4051d0 never rewrites the object's depth: it stays on obj_Plane instead of
 		# the y buckets (original_draw_order.md) — STORY053's 繩子 on planeObject1 draws
@@ -552,32 +549,6 @@ func _insert_story_object(event: Dictionary) -> void:
 		sprite.z_index = ActorRuntime.fixed_plane_depth(str(spec.get("plane", "")), sprite.z_index)
 		record["z_index"] = sprite.z_index
 	coordinator.story_records.append(record)
-
-
-## A defProcObjectMove object drawn with engRANGE (STORY053's 繩子 53_ROPE001, 8×241, draw
-## origin at its bottom): the remake hangs it from the insert point and lets it unroll
-## downward over the script's following actDelay (80 ticks in STORY053), so the rope reaches
-## the ground 緹娜 then slides down to. Provisional remake reading: the object process
-## (0x4051d0) and the engRANGE blit are unread, and no original frame of this moment is
-## recorded; replace with a frame capture of the level-53 opening.
-func _unroll_range_object(sprite: Sprite2D, anchor: Vector2, origin: Array) -> Dictionary:
-	var size: Vector2 = sprite.texture.get_size()
-	sprite.position = Vector2(anchor.x - float(origin[0]), anchor.y)
-	sprite.z_index = int(anchor.y + size.y)
-	sprite.region_enabled = true
-	var timeline: RefCounted = runtime.scene_timeline
-	var next: Dictionary = timeline.events[timeline.current_index + 1] if timeline.current_index + 1 < timeline.events.size() else {}
-	var ticks := int(str((next.get("args", ["0"]) as Array)[0]).to_int()) if str(next.get("kind", "")) == "opening_delay" and not (next.get("args", []) as Array).is_empty() else 0
-	var seconds := OriginalTick.seconds(ticks) if ticks > 0 else 0.0
-	var reveal := func(length: float) -> void:
-		if is_instance_valid(sprite):
-			sprite.region_rect = Rect2(0.0, size.y - length, size.x, length)
-	if seconds <= 0.0:
-		reveal.call(size.y)
-	else:
-		reveal.call(0.0)
-		coordinator.create_tween().tween_method(reveal, 0.0, size.y, seconds)
-	return {"presentation": "range_unroll", "hang_top_world": sprite.position, "unroll_seconds": seconds}
 
 
 func _change_shape(event: Dictionary) -> void:

@@ -635,8 +635,9 @@ func ordinary_program_drives_the_cutin(actor_id: String, code: String, defender_
 		seen.append(int(path.get_file().get_basename()))
 	_assert_eq(seen, expected["frames"].slice(0, calls - 1), "%s: the cut-in's attacker frames follow the ANIMAL action program call by call" % code)
 	_assert_true(cutin.attacker_sprite.visible and not cutin.defender_sprite.visible and cutin.elapsed < float(schedule["target"]), "%s: the attacker's shot lasts through call %d" % [code, calls - 1])
-	cutin._process(STEP * 2)
-	_assert_true(cutin.defender_sprite.visible and not cutin.attacker_sprite.visible, "%s: the target shot follows the program's %d calls" % [code, calls])
+	# Phase 101 (0x40298a) holds the shot until the attack flash deletes itself (Timing.ordinary).
+	cutin._process((float(schedule["target"]) - cutin.elapsed) / CombatPresentationTiming.PLAYBACK_SPEED + STEP)
+	_assert_true(cutin.defender_sprite.visible and not cutin.attacker_sprite.visible, "%s: the target shot follows the program's %d calls and the attack flash's self-delete" % [code, calls])
 	_assert_eq(release_marks, [int(expected["release_call"]) + CombatPresentationTiming.OPENING_TICKS], "%s: `released` fires once, at the aniInsertAttackFlash call after the opening" % code)
 	var poses: Array[int] = []
 	for frame in seen:

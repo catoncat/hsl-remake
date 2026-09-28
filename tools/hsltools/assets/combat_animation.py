@@ -77,6 +77,16 @@ OPENING_MEMBER = 'MAGIC\\BALL001.SHP'
 OPENING_NOTE = ('obj_Animal_Attack default shape; 0x401c20 phase 100 draws it at the screen centre: 24 additive zoom draws '
                 '(mode 0xc000000, 0x401060 ramp 0x1000..0xc4000) then 32 level-blend draws (mode 0x28000000, zoom 0x120000, '
                 'level 16..1 every 2 ticks). static-derived, docs/evidence_packets/static_reverse/original_tick_counts.md §7.')
+# The ordinary cut-in's hit flash: on a hit, defProcAnimalDefense 0x4038a0 phase 1 inserts object 178
+# (0x40418a -> 0x401310) with shape +0x86 = index of ANIMAL\ATTACK_FLASH001.SHP in the sorted shape-name
+# table (0x4043a5 -> 0x45fc01) + [0x4c6f60], the attacker weapon's ITEM icon class (0x406d20 mode 0):
+# itemIconStaff 0 ... itemIconSting 7 -> ATTACK_FLASH001 ... 008. BattleCombatCutin reads `hit_flashes`.
+HIT_FLASH_MEMBERS = tuple(f'ANIMAL\\ATTACK_FLASH{index:03d}.SHP' for index in range(1, 9))
+HIT_FLASH_NOTE = ('shapes[i] = ANIMAL\\ATTACK_FLASH00(i+1).SHP for weapon ITEM icon class i (TYPE.H itemIcon*); weapon_icon_class maps '
+                  'ITEM weapon codes to that class. 0x40418a inserts it on a hit at (defender x, camera y + 180), mirrored when the '
+                  'defender is pmPlayer; engADDCOLOR_MIX level 9, 6 held ticks, one level per 2 ticks, 12 tail ticks (0x4041a4..0x4041db). '
+                  'static-derived, docs/evidence_packets/static_reverse/original_map_strike.md.')
+ITEM_ICON_CLASSES = ('itemIconStaff', 'itemIconSword', 'itemIconBow', 'itemIconAxe', 'itemIconSpear', 'itemIconDagger', 'itemIconClaw', 'itemIconSting')
 MAGIC_FRAMES_POLICY = ('Every actor carries magic_frames: the imported ANIMAL m_shape strip (002/005/006/009/053 base rows, '
                        '010/011/014/015/019/020 up-title rows, 025/056/058/059/060/068 monsters) or [] meaning no strip is imported '
                        '(018 has no combat row, the rest declare no m_action) and the magic cut-in keeps the '
@@ -359,6 +369,7 @@ def build(pak, selected=None):
         write_shp_preview(data, parse_shp(data), target)
         result['background'] = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'png_sha256': png_sha256(target)}
         result['opening'] = import_opening(read)
+        result['hit_flashes'] = import_hit_flashes(read)
     (ROOT / 'manifest.json').write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
 
 
@@ -370,8 +381,26 @@ def import_opening(read):
             'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target), 'note': OPENING_NOTE}
 
 
-def append_opening(pak):
-    """Import only the opening shape into the existing manifest; every actor frame stays as verified."""
+def weapon_icon_classes():
+    from hsltools.sources.tables import TABLES, blocks
+    return {row['code']: ITEM_ICON_CLASSES.index(row['icon']) for row in blocks((TABLES / 'ITEM.TXT').read_bytes(), 'item')
+            if row.get('type') == 'itemTypeWeapon' and row.get('icon') in ITEM_ICON_CLASSES}
+
+
+def import_hit_flashes(read):
+    shapes = []
+    for index, member in enumerate(HIT_FLASH_MEMBERS):
+        data = read(member)
+        target = ROOT / 'hit_flash' / f'{index}.png'
+        target.parent.mkdir(parents=True, exist_ok=True)
+        write_shp_preview(data, parse_shp(data), target)
+        shapes.append({'res_path': 'res://' + target.as_posix(), 'source_member': member, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)),
+                       'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target)})
+    return {'shapes': shapes, 'weapon_icon_class': weapon_icon_classes(), 'note': HIT_FLASH_NOTE}
+
+
+def append_opening(pak, hit_flashes=False):
+    """Import only the opening shape (or the hit flashes) into the existing manifest; every actor frame stays as verified."""
     packages = find_decoded_paks_packages(pak)
     def read(name):
         for package in packages:
@@ -381,7 +410,10 @@ def append_opening(pak):
         raise ValueError('missing ' + name)
     path = ROOT / 'manifest.json'
     result = json.loads(path.read_text())
-    result['opening'] = import_opening(read)
+    if hit_flashes:
+        result['hit_flashes'] = import_hit_flashes(read)
+    else:
+        result['opening'] = import_opening(read)
     path.write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
 
 
@@ -399,6 +431,11 @@ def check():
     opening = manifest['opening']
     assert opening['source_member'] == OPENING_MEMBER and opening['note'] == OPENING_NOTE and len(opening['draw_origin']) == 2
     assert png_sha256(Path(opening['res_path'].removeprefix('res://'))) == opening['png_sha256']
+    hit_flashes = manifest['hit_flashes']
+    assert hit_flashes['note'] == HIT_FLASH_NOTE and hit_flashes['weapon_icon_class'] == weapon_icon_classes()
+    assert [shape['source_member'] for shape in hit_flashes['shapes']] == list(HIT_FLASH_MEMBERS)
+    for shape in hit_flashes['shapes']:
+        assert png_sha256(Path(shape['res_path'].removeprefix('res://'))) == shape['png_sha256']
     source = (ROOT / 'ANIMAL.TXT').read_bytes().decode('cp950')
     records = {row['code']: row for row in json.loads(PROGRAMS.read_text())['records']}
     bound_opcodes = {event['op'] for item in manifest['actors'].values() for event in item.get('dispatch', {}).get('events', [])}
@@ -442,8 +479,8 @@ def check():
 class CombatAnimationTask(ScriptCheckTask):
     name = 'combat_animation'
     family = 'assets'
-    inputs = (PROGRAMS.as_posix(), (ROOT / 'ANIMAL.TXT').as_posix())
-    outputs = tuple(path.as_posix() for path in (ROOT / 'manifest.json', ROOT / 'background.png', ROOT / 'opening_ball.png')) + tuple(f'{ROOT.as_posix()}/{actor}/' for actor in ACTORS)
+    inputs = (PROGRAMS.as_posix(), (ROOT / 'ANIMAL.TXT').as_posix(), 'content/imported/hsl/global/tables/ITEM.TXT')
+    outputs = tuple(path.as_posix() for path in (ROOT / 'manifest.json', ROOT / 'background.png', ROOT / 'opening_ball.png')) + (f'{ROOT.as_posix()}/hit_flash/',) + tuple(f'{ROOT.as_posix()}/{actor}/' for actor in ACTORS)
     replaces = ('tools/hsl_combat_animation.py --check',)
     scripts = ('tools/hsltools/assets/combat_animation.py',)
 
@@ -467,12 +504,17 @@ if __name__ == '__main__':
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--bind-programs', action='store_true', help='Bind validated ordinary program data without reimporting any SHP assets')
     parser.add_argument('--opening', action='store_true', help='Import only the opening shape (MAGIC\\BALL001.SHP) into the existing manifest')
+    parser.add_argument('--hit-flashes', action='store_true', help='Import only the hit flashes (ANIMAL\\ATTACK_FLASH001-008.SHP) into the existing manifest')
     args = parser.parse_args()
     if args.check: check()
     elif args.opening:
         if not args.pak: parser.error('--opening requires --pak')
         append_opening(args.pak)
         print('COMBAT_OPENING_IMPORT_PASS')
+    elif args.hit_flashes:
+        if not args.pak: parser.error('--hit-flashes requires --pak')
+        append_opening(args.pak, hit_flashes=True)
+        print('COMBAT_HIT_FLASH_IMPORT_PASS')
     elif args.bind_programs:
         path = ROOT / 'manifest.json'
         result = bind_programs(json.loads(path.read_text()))

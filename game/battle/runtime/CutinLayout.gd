@@ -25,6 +25,7 @@ extends RefCounted
 ## The shot line: viewport + (0x140, 0x14a) for both close-up objects (the recording's
 ## attacker and victim anchors stand on y 330 too).
 const SHOT_ANCHOR := Vector2(320, 330)
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 ## Hit move flag (ANIMAL.H) → defender x shift at the start of its shot (0x404560).
 const K_ACTION_SHIFT := {"aniKStop": 0.0, "aniKRight": -50.0, "aniKLeft": 30.0}
 ## Hit move flag → direction of the knock-back and the dodge slide (angle 0 = +x, 0x80 = −x).
@@ -42,6 +43,12 @@ const DODGE_MIN_STEP := 2
 ## flash 0x401310, the defender object 0x4038a0.
 static func side_swapped(unit: Dictionary) -> bool:
 	return bool(unit.get("side_swapped", false))
+
+
+## The actor's side word 0x40ba20 (live mode & 0x870000, the magic-only bit kept) is exactly
+## pmPlayer: the receiver's hit flash is mirrored then (0x40415b..0x40416a).
+static func player_side(unit: Dictionary) -> bool:
+	return (ActorRoleRules.side_mask(unit) | (int(unit.get("player_mode", 0)) & ActorRoleRules.MAGIC_ONLY_BIT)) == ActorRoleRules.SIDE_PLAYER
 
 
 ## The defender object's live hit move flag: the row's, aniKRight／aniKLeft exchanged when

@@ -134,6 +134,23 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 读回（`OBJCOMD_ARROW_READBACK`，毒魔箭箭矢 obj_Special19_01，命令 17 `objmDelay 20 · objmSetSpeed 128,0x00200000 · objmDelay 10 · objmWaitOutScreen`）：创建帧不画，第 1..21 帧停在 (680,160)，第 22 帧起每帧 x −32（t22 = 648、t32 = 328、t33 = 296），与手算逐帧一致；`check objcomd_motion` 对整条轨迹逐样本比对这个模型。月花圓舞 花瓣（命令 10 `objmSetSpeed 80,0x00080000`）首步 (−4, +7)，手算 8·(cos, sin)(80/256 圈) = (−3.1, +7.4)，差在 16.16 取整。
 
+### 剧情对象（static-derived）
+
+剧情脚本插入的 `defProcObjectMove` 对象（各关 map_objects 的 script_objects，12 关 19 个）走同一解释器。探针用本关 obj-0xx.obs 模板（`obj_Mode`／`obj_Zoom*`／`obj_Data9` 照写，OBJ-0xx.H 解析对象符号）在原点创建，逐 tick 执行 obj_Data7 选中的程序；程序 5 带 objmRandomDelay，跑 4 个种子。键名 `符号@关号`，37 关两条保留裸符号。
+
+| 程序 | objcomd.txt | 对象（关） | 原指令轨迹 |
+| --- | --- | --- | --- |
+| 5 | objmRandomShape · objmRandomDelay 8 12 · objmFadeIn 2 | 閃電 AIR14_01／AIR14_05（010）、消失岩石 39_ROCK002（039，模板 obj_Data9 0x00020000） | 不动；閃電 模板 engZOOM 2.0 倍，整幅加色 8–14 tick（4 个种子），再加 engMIX 16→1 每 2 tick 一级，tick 41–47 删除；消失岩石 无缩放，tick 2 起画，同样加色后 32 tick 淡出，tick 42–48 删除 |
+| 7 | objmZoomOutIn 0x400 0x2000 · objmWaitLargerZoom 0x120000 · objmFadeIn 2 | 光環 EAR32_01（010，模板 engADDCOLOR_MIX、obj_Data 6） | 不动；缩放 0.2656 起加速放大，过 18 倍即淡出（删除前 68 倍）；全程 engZOOM｜engADDCOLOR｜engMIX，级数 6 保持 74 tick，再 5→1 每 2 tick 一级，tick 85 删除 |
+| 13 | objmZoomOutIn 0x1000 0x800 · objmWaitLargerZoom 0x30000 | 白光圈（080）、黑光圈（080，模板 engSUBCOLOR） | 不动；缩放 0.125 起每 tick +0.03125，到 3 倍后淡出 32 tick（16→1 每 2 tick），tick 127 删除；白光圈加色，黑光圈减色 |
+| 21 | objmZoomOutIn 0x1000 0x3000 · objmWaitLargerZoom 0x10000 | 白光（022、028、037、059、076、077、079）、白光2（079） | 同 [37 关白光](original_level37_tokens.md)：0.4375 起每 tick +0.1875，加色 5 tick 后淡出，tick 38 删除；79 关白光贴图 AIR16_01，轨迹相同 |
+| 62 | objmZoomOutIn 0x1000 0x1000 · objmWaitLargerZoom 0x18000 · objmStopZoom · objmSetZoomEffect 4 · objmDelay 80 · objmFadeIn 3 | 白光2（037、059） | 同 37 关白光2，tick 153 删除 |
+| 149 | objmRandomShape · objmSetSpeed 186 0x40000 · objmSetAddYSpeed 0x6000 0x80000 · objmDelay 32 · objmSetStopSpeed · objmFadeIn 2 | 徽章 AIR06_04（058，obj_ReadShape 1） | 向左上抛出再下落（tick 1 (−1,−4)，最高 −19，落到 (−20,+79) 停下）；加色，停下后 32 tick 淡出，tick 65 删除 |
+| 150 | objmSetSpeed 64 0x40000 · objmDelay 64 · objmSetStopSpeed · objmDelay 160 · objmFadeIn 2 | 繩子 53_ROPE001（053，模板 engRANGE） | 每 tick 向下 4 px，tick 65 停在 +260；再停 160 tick 后加色淡出 32 tick，tick 258 删除 |
+| 151 | objmZoomOutIn 0x1000 0x1000 · objmWaitLargerZoom 0x40000 · objmFadeIn 3 | 白光（013，obj_Story_Level_WhiteScreen） | 不动；0.1875 起每 tick +0.0625，加色 63 tick 后淡出 48 tick（16→1 每 3 tick），tick 112 删除 |
+
+17 条新轨迹全部在 600 帧内删除，没有停在未审阅代码；原 221 条绝技对象与 37 关两条的轨迹、members 前 511 项不变。
+
 ### ANIMAL 随机插入（static-derived）
 
 ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 aniInsertRandomObject（`0x403aaa`）、op 27 aniInsertHitRandomObject（`0x403bc1`，命中才插）、op 28 aniInsertHitRandomObjectDisp（`0x403be2`，基点 = 守方解释器对象自己的 x／y ＋位移）都在 `0x403c2b` 调 `0x401390(x, y, code, x范围, y范围, 0, 延迟, 个数)`：偏移 rand(范围) 折进 (−范围/2, 范围/2]，第一只立即出现，之后每只比前一只晚 rand(延迟)＋1（`0x401455` `lea ebp, [eax+ebp+1]`）。月花圓舞 的 64 片花瓣（延迟 6）因此约 220 tick 陆续落下，不是一次撒出。
@@ -144,6 +161,7 @@ ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 an
 - `SkillEffectScriptPlayer._finish_timeline`：有轨迹的普通插入（原 `static`／`fly`）改为 `native`，从插入 tick 起逐帧画整棵树，位置 = 插入点＋轨迹偏移；同一对象的重复插入轮流取种子变体；`open_ended` 对象到片段结束。角度环（aniInsertAngleObject*）与龙卷列（aniInsertTornadoObject）插入时写逐实例角度／半径，轨迹里没有，保留原几何。`_insert_spawner` 按 `0x401390` 放置 op 19／27／28。
 - `PoisonArrowPresentation`：箭矢与命中火花走原生轨迹；受方段画在地图上，舞台偏移（相对舞台目标中心 (320,160)）按精灵缩放缩小——构图是重制的。
 - `MoonDancePresentation`：64 片花瓣与每脉冲一个爆点走原生轨迹，放置按 `0x401390`；爆点基点取守方精灵锚点。
+- `StoryEffectObjects`：剧情 `defProcObjectMove` 对象（`native_track` 按 `符号@关号` 与本关 obj-0xx.obs、对象代码、obj_Data7 取轨迹）每次插入建一个 `TrackSprite`，第 n tick 取轨迹第 n 帧的位移、缩放、加色／减色与 `level/16` 权重，轨迹结束自删；重复插入轮流取种子变体；深度按 obj_Plane（`ActorRuntime.fixed_plane_depth`）；engRANGE（繩子）只画插入线以下的部分。没有轨迹的对象（无原版数据的新关）退回按 obj_Data7 淡出的闪光／加色读法。
 - provenance 写法：`static-derived content/generated/hsl/skills/objcomd_motion.json`、`static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md`。
 
 ## 复现
@@ -157,4 +175,5 @@ ANIMAL 解释器（`0x4038a0`，op 跳表 `0x404f48`／`0x404ee8`）的 op 19 an
 - **未复用轨迹的插入**：角度环、龙卷列、aniInsertRoundRandomObject、aniInsertDistanceObjectFixDelay、aniInsertRandomObjectDelay／FixDelay 的放置仍是重制读法（provisional）；aniInsertHitRandomObjectDisp 在 `SkillEffectScriptPlayer` 里仍以舞台目标中心为基点（原版是守方对象自身位置）。
 - **字布局**：objcomd.txt 的装载器未读，"每 token 一字、块尾补 objmOver" 是 provisional；221 个对象全部正常结束或进入等待，未见越界读。
 - **未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；这些在原指令执行里照跑，只是表中读法不全。
+- **剧情对象**：每个对象只在探针原点跑一次，不等出屏的程序与落点无关；繩子 的 engRANGE 绘制未读，重制按插入线裁切（provisional）；雨（mapobjDropRain）与 mapobjFlash 是 defProcStandObject 过程，不在本包。
 - **声音排程**：`command_sounds` 仍按 objmDelay 之和排（[对象声音包](original_effect_object_sounds.md)），未切到原生执行记下的声音时刻。

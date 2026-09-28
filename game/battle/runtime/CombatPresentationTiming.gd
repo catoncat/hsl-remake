@@ -75,6 +75,32 @@ static var TARGET_PAUSE: float = scaled(OriginalTick.seconds(TARGET_PAUSE_TICKS)
 static var RECOVERY: float = scaled(OriginalTick.seconds(RECOVERY_TICKS))
 static var CLOSING_LIGHTEN: float = scaled(OriginalTick.seconds(CLOSING_LIGHTEN_TICKS))
 
+## defProcAttackFlash 0x401140 (object 178 from 0x401310): the attacker's aniInsertAttackFlash
+## (0x4021df) inserts it with the attacker as parent (+0x88 both ways). Its first call sets
+## engADDCOLOR_MIX (mode |= 0x24000000), level 16, +0x90 = 10, +0x94 = 0x20002; the next 10 calls
+## hold, then one level is lost every 2 calls down to 0 (32 calls); at 0 it sets +0x8c = 1,
+## +0x90 = 12, and 12 calls later clears the parent's +0x88 and deletes itself. The attacker's
+## phase 101 (0x40298a) waits for that +0x88 before the receiver object is inserted.
+const ATTACK_FLASH_LEVEL := 16
+const ATTACK_FLASH_HOLD_TICKS := 10
+const FLASH_LEVEL_TICKS := 2
+const FLASH_TAIL_TICKS := 12
+## The receiver's hit flash (0x40418a, same object and process): 0x4041a4..0x4041db clear the init
+## bit and preset engADDCOLOR_MIX level 9, +0x90 = 6, +0x94 = 0x20002 — no parent to release.
+const HIT_FLASH_LEVEL := 9
+const HIT_FLASH_HOLD_TICKS := 6
+
+
+## Add level of a defProcAttackFlash object `tick` calls after the one that set it up (0 = gone).
+static func flash_level(tick: int, level: int, hold_ticks: int) -> int:
+	return clampi(level - maxi(0, tick - hold_ticks) / FLASH_LEVEL_TICKS, 0, level)
+
+
+## Calls from set-up to the self-delete: hold, the level ramp, the tail (54 for the attack flash).
+static func flash_life_ticks(level: int, hold_ticks: int) -> int:
+	return hold_ticks + FLASH_LEVEL_TICKS * level + FLASH_TAIL_TICKS
+
+
 ## AnimalAttack phase 100 (0x401c20, case 100 at 0x4027ce) on the first shot of an exchange
 ## (object bit 0x200 clear; a counter or extra-strike shot skips to the program). Sub-state 1
 ## draws the object's default shape MAGIC\BALL001.SHP (obj_Animal_Attack 154) at the screen
@@ -196,7 +222,12 @@ static func ordinary(actor: Dictionary, strike: Dictionary = {}, first_shot: boo
 	# Source setup/wait/yield boundaries advance one update per original tick.
 	var dispatch: Dictionary = actor["dispatch"]
 	var opening := OriginalTick.seconds(float(opening_ticks(first_shot)))
-	var duration := opening + OriginalTick.seconds(float(dispatch["complete_updates"]))
+	# Phase 101 holds the attacker's shot until its attack flash deletes itself (0x40298a);
+	# an actor without a flash shape inserts none and hands over at aniOver.
+	var attacker_updates := int(dispatch["complete_updates"])
+	if not (actor.get("flash", {}) as Dictionary).is_empty():
+		attacker_updates = maxi(attacker_updates, int(dispatch["release_update"]) + flash_life_ticks(ATTACK_FLASH_LEVEL, ATTACK_FLASH_HOLD_TICKS))
+	var duration := opening + OriginalTick.seconds(float(attacker_updates))
 	var release_time := opening + OriginalTick.seconds(float(dispatch["release_update"]))
 	var impact_time := duration + TARGET_PAUSE
 	var hold := hurt_hold(bool(strike.get("hit", true)), int(strike.get("damage", 0)))

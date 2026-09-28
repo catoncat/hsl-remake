@@ -552,7 +552,7 @@ func _drawn_despite_rules(event: Dictionary) -> bool:
 	var args: Array = event.get("args", [])
 	var symbol := str(args[0]) if not args.is_empty() else ""
 	var spec: Dictionary = (config.get("story_objects", {}) as Dictionary).get(symbol, {})
-	return StoryEffectObjects.effect_kind(spec, symbol) == "objcomd_track"
+	return StoryEffectObjects.effect_kind(spec, symbol, StoryEffectObjects.scene_level(runtime)) == "objcomd_track"
 
 
 func _apply_event(event: Dictionary) -> void:

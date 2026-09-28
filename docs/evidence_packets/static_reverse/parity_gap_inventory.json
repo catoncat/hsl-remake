@@ -3,11 +3,11 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 92,
-    "sources": 473,
+    "items": 91,
+    "sources": 474,
     "sources_by_kind": {
       "provenance": 202,
-      "sentence": 100,
+      "sentence": 101,
       "scope": 73,
       "matrix": 85,
       "video": 13
@@ -15,15 +15,15 @@
     "layout_timing_modules": 52,
     "items_by_original_status": {
       "read_complete": 25,
-      "read_partial": 47,
-      "unread": 3,
+      "read_partial": 48,
+      "unread": 1,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 17,
       "some_levels": 30,
       "rare": 40,
-      "invisible": 5
+      "invisible": 4
     },
     "items_by_category": {
       "AI 行为": 2,
@@ -37,7 +37,7 @@
       "对白": 2,
       "战斗规则": 12,
       "标题与过场": 4,
-      "特写与施法演出": 9,
+      "特写与施法演出": 8,
       "重制新增（原版没有）": 16,
       "镜头": 2,
       "面板与界面": 9,
@@ -1160,6 +1160,29 @@
       ]
     },
     {
+      "id": "story-effect-objects",
+      "difference": "雨的发射密度、落带与落点帧节拍是读法；绳子 engRANGE 按插入线裁切是读法；闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
+      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 过程与 engRANGE 绘制未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
+        "docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md"
+      ],
+      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；雨发射器仍是读法",
+      "remake_code": [
+        "game/battle/runtime/StoryEffectObjects.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "M",
+      "category": "地图与物件",
+      "sources": [
+        "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|provisional|",
+        "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
+        "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d9253008aa"
+      ]
+    },
+    {
       "id": "town-event-timing",
       "difference": "城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；tePlaySound 已照原版当场放声（lane WORLDTOWN：0x455710→0x42c180，三个 WAV 已导入）；剩 if_wait 位的作用未读、选择／子菜单的菜单读法暂定",
       "original": "0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 分支 0x455710 调 0x42c180 即播不等；消息对象 0x2000 位与子菜单重开未读",
@@ -2164,26 +2187,6 @@
       ]
     },
     {
-      "id": "story-effect-objects",
-      "difference": "雨／闪电／燃树等剧情特效的寿命、密度、速度是读法，运动程序未读",
-      "original": "mapobjDropRain／defProcObjectMove 未读",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md"
-      ],
-      "remake": "StoryEffectObjects 的发射器与闪光读法",
-      "remake_code": [
-        "game/battle/runtime/StoryEffectObjects.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "some_levels",
-      "effort": "M",
-      "category": "地图与物件",
-      "sources": [
-        "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
-        "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|"
-      ]
-    },
-    {
       "id": "cast-lead-phase",
       "difference": "施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播",
       "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8",
@@ -2335,25 +2338,6 @@
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopInit.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/static_reverse/original_random_position.md|provisional|the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule"
-      ]
-    },
-    {
-      "id": "attack-flash-hold",
-      "difference": "切入攻击白闪停 0.12 s 是估值，defProcAttackFlash 与击中闪光对象寿命未读",
-      "original": "defProcAttackFlash、0x401310 寿命未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_tick_counts.md"
-      ],
-      "remake": "BattleCombatCutin 固定 0.12 s",
-      "remake_code": [
-        "game/battle/scene/BattleCombatCutin.gd"
-      ],
-      "original_status": "unread",
-      "visibility": "invisible",
-      "effort": "S",
-      "category": "特写与施法演出",
-      "sources": [
-        "provenance:game/battle/scene/BattleCombatCutin.gd|timing|provisional|"
       ]
     }
   ],
