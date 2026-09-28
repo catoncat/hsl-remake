@@ -4,7 +4,7 @@ extends RefCounted
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_install.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_campaign_actors.md
-##     (a reserve member's re-install keeps its live record, 0x407ec0)
+##     (a reserve or carried member's re-install keeps its live record, 0x407ec0)
 ##   rules: remake-invented (atomic whole-event install; the landing is checked once, at the final cell)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_entry.md
 ##     (blocked landing 0x44fbd0: flood 12, nearest Manhattan, row-major, rand&1 ties)
@@ -295,9 +295,15 @@ static func install_actor(loop: Dictionary, spec: Dictionary, symbol: String, fi
 		# SID_PLAYERn is born inside its construction (0x40805d), before the landing draws.
 		InitialRosterGrowthRules.draw_frame_delay(loop, actor)
 		record["player_growth"] = grown["receipt"]
-		# A carried member is already registered: no template stamina (CampaignCarryRules).
+		# A carried member is already registered: 0x407ec0 copies no template over its record,
+		# so the insert takes the carried record with the ST this entry left it (CampaignCarryRules).
 		var carried: Dictionary = loop.get("campaign_carry_receipt", {}).get("unfielded_stamina", {})
 		if carried.has(id): actor["stamina"] = int(carried[id])
+		var carried_record: Variant = loop.get("campaign_carry_receipt", {}).get(CampaignCarryRules.UNFIELDED, {}).get(id)
+		if carried.has(id) and carried_record is Dictionary:
+			var carried_error := CampaignCarryRules.apply_unfielded_record(loop, actor, carried_record, int(carried[id]))
+			if carried_error != "": return {"ok": false, "reason": "carried_record_" + carried_error}
+			record["carried_record"] = true
 		# A reserve member (registration removed, live record kept) re-installs with its record.
 		var reserve: Dictionary = loop.get("campaign_carry_receipt", {}).get(CampaignCarryRules.RESERVE, {})
 		if reserve.has(id):

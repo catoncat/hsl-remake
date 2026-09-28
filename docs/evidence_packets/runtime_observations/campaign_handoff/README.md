@@ -1,11 +1,11 @@
 # 战役承接与正式战斗强制胜利回执：跨关 carry、续战存档、各关结算流转
 
-> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured; resource-derived: 各关 STORY／WINFAIL token、EVEF 编队与宝箱字; static-derived: WINFAIL080 闸门 opcode、关卡入口 0x4075e0 回满; provisional · status: live · tools: capture_battle_review.gd, capture_campaign_handoff_review.gd, run_battle_sweep_tests.gd, run_campaign_tests.gd · updated: 2026-09-28
 
 ## 结论
 
-- 原版关卡之间 HP/MP 是否回满、金币／物品如何结算、跨关存档流程均未读（provisional）。
-- 重制只承接 `player_controlled` 单位的等级／经验／未用点数／四属性／装备／库存／击杀数与 loop 级金币，在 `BattlePlayLoop.create` 之后、`begin_battle` 之前经 `apply_campaign_carry` 施加，派生数值走 `ProgressionRules.refresh_growth_stats`；下一场景由 `CampaignProgress` 交接并写 `user://campaign_progress.json`（runtime-measured）。
+- 原版每关入口 `0x4075e0` 对全部已注册成员回满 HP／MP、ST 归零（`actKeepPlayerST` 时保留），未上场与阵亡成员照样随队（static-derived，[注册表与交接写回](../../static_reverse/original_campaign_actors.md#证据)）；金币／物品如何结算、跨关存档流程未读（provisional）。
+- 重制承接上一战的 `player_controlled` 单位与未上场的已承接成员的等级／经验／未用点数／四属性／装备／库存／击杀数与 loop 级金币，在 `BattlePlayLoop.create` 之后、`begin_battle` 之前经 `apply_campaign_carry` 施加，派生数值走 `ProgressionRules.refresh_growth_stats`；下一场景由 `CampaignProgress` 交接并写 `user://campaign_progress.json`（runtime-measured）。
 - 各正式战斗在强制胜利夹具下都能从开场走到首次控制、结果页与战役交接；夹具只证明流转，不证明 AI、平衡、节奏或原版等价（runtime-measured）。
 - 与原版的差异归差异清单 `carry-model`、`script-entry-paths`、`winfail-readings`（provisional）。
 
@@ -69,7 +69,7 @@
 
 ## 边界
 
-- 原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；承接策略为重制选择（provisional）。
+- 原版关卡间金币、物品结算与关间剧情／商店未读（provisional）；HP／MP／ST 与名单照注册表读法。
 - 上表「取最近可用格／最近合法格」是当时回执；剧情与战中走位终点现照原版经 `0x44fbd0` 修正后走 `0x4111d0` 寻路链提交停格（[original_script_walk_path](../../static_reverse/original_script_walk_path.md) §结论）。
 - 强制胜利夹具不是自然通关；增援落点、条件成员（咕嚕 008、克羅蒂 009）资格与安装时序、船壳计数条件、对象身份与 native scheduler 均为 provisional。
 - 镜头、走位、对白时钟与结果页文案是重制表现，不作原版视觉依据。

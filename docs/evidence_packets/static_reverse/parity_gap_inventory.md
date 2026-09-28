@@ -14,16 +14,16 @@
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 24 |
-| 读了一部分 | 47 |
+| 已读完只差照做 | 25 |
+| 读了一部分 | 46 |
 | 未读 | 5 |
 | 原版无对应代码 | 17 |
 
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 16 |
-| 部分关卡 | 31 |
-| 少见 | 41 |
+| 部分关卡 | 30 |
+| 少见 | 42 |
 | 看不见 | 5 |
 
 | 建议归入的类 | 条数 |
@@ -251,7 +251,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `carry-model` | 跨关承接用"上一战上场的受控单位"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡；注册被移除但记录保留的成员（53 关 緹娜）以 reserve_units 承接，重装沿用记录（照原版 0x42caf0／0x407ec0） | 原注册表 0x4c4360 装人；「已注册未上场」在原作不可达<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)、[original_campaign_actors.md](../../../docs/evidence_packets/static_reverse/original_campaign_actors.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 读了一部分 | 部分关卡 | M | provenance 2、sentence 3、scope 3、matrix 1 |
+| `carry-model` | carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序 | 注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；已移除注册的记录不经入口<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)、[original_campaign_actors.md](../../../docs/evidence_packets/static_reverse/original_campaign_actors.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 已读完只差照做 | 少见 | S | provenance 2、sentence 3、scope 3、matrix 1 |
 
 ## R6-V2 录屏对账 13 类的去向
 

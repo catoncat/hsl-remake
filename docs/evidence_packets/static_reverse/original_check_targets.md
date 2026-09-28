@@ -83,7 +83,7 @@ token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/
 
 对 30–34 段的 5NN 遭遇这意味着什么（static-derived，anchors `0x4080b0`／`0x42caf0`／`0x42c700`）：`有才產生` 条件安装只问注册表 `0x4c4360[slot]` 是否非零且无 `0x80000000`（[原安装分支](original_player_install.md)）；注册表只被三处写——新游戏初始化 `0x42c869`（槽 0＝雷歐納德 写 800）、安装启用 `0x42cb47`、转职 `0x43493d`——**没有任何调用者写 `0x80000000` 禁用位**，清零只有 `actDeletePlayerCode`（opcode 71，`0x42caf0`）。全部剧本里它只出现两次：WINFAIL053 win 0（`SID_PLAYER1, 0`，序章 緹娜 离队）与 WINFAIL015 event 4（`SID_咕嚕, 1`）；STORY／WINFAIL 029–034 一次都没有（resource-derived，`content/imported/hsl/story_corpus/scripts/`）。因此原作在 31–32（雷歐納德 组）与 33–34（緹娜 组）的分队期间，八名已注册成员**全部**会被 5NN 的九个 `有才產生` 槽装进战场，`actCheckPlayer 1 SID_雷歐納德` 检查的是一个在场的 雷歐納德——「已注册但未上场」这个状态在原作的遭遇战里不可达，-1 路径只会在真正阵亡／注销后出现。
 
-重制的落点：`WinfailConditions.condition_holds` 对 `binding` 且无单位的 token 跳过不计，是 remake rule：它补偿的是重制 carry 模型（carry＝上一战上场的受控单位，[BATTLE_SYSTEMS](../../architecture/BATTLE_SYSTEMS.md#conditional-party-installs-random-encounters) 已声明「carry 代替注册且启用槽表，registered-but-disabled 未建模」）与原作注册表的差异，不是对 opcode 语义的另一种读法。若照 opcode 语义把未上场计为阵亡，重制会在原作不会败北的局面（原作此时 雷歐納德 在场）首回合判负，比原作更严。忠实做法是让遭遇战按注册表（campaign 全体已加入成员）而非 carry 装人，属 campaign 持久化的架构选择。
+重制的落点：`WinfailConditions.condition_holds` 对 `binding` 且无单位的 token 跳过不计，是 remake rule：它补偿的是重制 carry 模型（carry 曾只含上一战上场的受控单位，[BATTLE_SYSTEMS](../../architecture/BATTLE_SYSTEMS.md#conditional-party-installs-random-encounters) 已声明「carry 代替注册且启用槽表，registered-but-disabled 未建模」）与原作注册表的差异，不是对 opcode 语义的另一种读法。若照 opcode 语义把未上场计为阵亡，重制会在原作不会败北的局面（原作此时 雷歐納德 在场）首回合判负，比原作更严。carry 现已照注册表传下未上场的已加入成员（[注册表与交接写回](original_campaign_actors.md#证据)），30–34 段的遭遇战因此装入 雷歐納德；这条规则只对 carry 之外的缺席者起作用。
 
 #### 2. 全灭：原作没有非脚本判负（negative-evidence，有界执行 6 次 `0x44ecb0` 佐证）
 

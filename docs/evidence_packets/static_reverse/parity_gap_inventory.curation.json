@@ -1175,8 +1175,8 @@
     },
     {
       "id": "carry-model",
-      "difference": "跨关承接用\"上一战上场的受控单位\"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡；注册被移除但记录保留的成员（53 关 緹娜）以 reserve_units 承接，重装沿用记录（照原版 0x42caf0／0x407ec0）",
-      "original": "原注册表 0x4c4360 装人；「已注册未上场」在原作不可达",
+      "difference": "carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序",
+      "original": "注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；已移除注册的记录不经入口",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_check_targets.md",
         "docs/evidence_packets/runtime_observations/campaign_handoff/README.md",
@@ -1188,9 +1188,9 @@
         "game/sim/ConditionalPartyRules.gd",
         "game/sim/ScriptActorCreationRules.gd"
       ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "M",
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
       "category": "存档与流程"
     },
     {
@@ -1740,6 +1740,14 @@
     }
   ],
   "sources": {
+    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#7b79afa225": {
+      "item": "carry-model",
+      "text": "金币／物品如何结算、跨关存档流程未读（provisional）。"
+    },
+    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#c5422b8d38": {
+      "item": "carry-model",
+      "text": "原版关卡间金币、物品结算与关间剧情／商店未读（provisional）；"
+    },
     "sentence:docs/evidence_packets/static_reverse/original_script_entry.md#9e4d6087d9": {
       "item": "script-entry-paths",
       "text": "未读：`actInsertStoryObject*` 分支是否经 `0x44fbd0`；"
@@ -3062,14 +3070,6 @@
     "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#2fcd53a808": {
       "item": "item-use-rules",
       "text": "原版 bucket-7 直接查对症药，抽签未读。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d": {
-      "item": "carry-model",
-      "text": "原版关卡之间 HP/MP 是否回满、金币／物品如何结算、跨关存档流程均未读（provisional）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#5548a11867": {
-      "item": "carry-model",
-      "text": "原版关卡间 HP/MP、金币、物品结算与关间剧情／商店未读；"
     },
     "scope:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md|provisional|跟随偏移、效果取值、地图别名的引擎 loader": {
       "item": "script-walk-path"

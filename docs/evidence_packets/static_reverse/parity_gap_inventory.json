@@ -14,15 +14,15 @@
     },
     "layout_timing_modules": 53,
     "items_by_original_status": {
-      "read_complete": 24,
-      "read_partial": 47,
+      "read_complete": 25,
+      "read_partial": 46,
       "unread": 5,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
-      "some_levels": 31,
-      "rare": 41,
+      "some_levels": 30,
+      "rare": 42,
       "invisible": 5
     },
     "items_by_category": {
@@ -919,37 +919,6 @@
       ]
     },
     {
-      "id": "carry-model",
-      "difference": "跨关承接用\"上一战上场的受控单位\"代替原注册槽表：HP／MP 回满、「(有才產生)」条件成员不安装、未上场不算阵亡；注册被移除但记录保留的成员（53 关 緹娜）以 reserve_units 承接，重装沿用记录（照原版 0x42caf0／0x407ec0）",
-      "original": "原注册表 0x4c4360 装人；「已注册未上场」在原作不可达",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_check_targets.md",
-        "docs/evidence_packets/runtime_observations/campaign_handoff/README.md",
-        "docs/evidence_packets/static_reverse/original_campaign_actors.md"
-      ],
-      "remake": "CampaignCarryRules／ConditionalPartyRules",
-      "remake_code": [
-        "game/sim/CampaignCarryRules.gd",
-        "game/sim/ConditionalPartyRules.gd",
-        "game/sim/ScriptActorCreationRules.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "some_levels",
-      "effort": "M",
-      "category": "存档与流程",
-      "sources": [
-        "matrix:actCheckPlayer／actCheckEnemy 目标计数",
-        "provenance:game/sim/CampaignCarryRules.gd|rules|remake-invented|",
-        "provenance:game/sim/ConditionalPartyRules.gd|rules|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合",
-        "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型",
-        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#335cfc522d",
-        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#5548a11867",
-        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
-      ]
-    },
-    {
       "id": "drop-lightning-view",
       "difference": "打人閃電（帕尼西亞城 · 廢墟中的雷雨 LEVEL010 的 WINFAIL event 6）落点在「当时画面」内均匀抽一点：原版用表现层交接扫描时的镜头（25 道里 16 道恰是某角色居中、9 道在滚动途中），重制有窗口时取表现层在行动提交时的镜头（AI 行动此刻镜头停在上一名行动者的演出末尾），无窗口（headless 自动对局）按刚结束行动者居中（0x43bf30 同式）取；原版雷的链与下一名角色的行动并行，链未完时的交接扫描被挡，落雷间隔偶尔 3 次交接（重制固定 2），链内抽取之间也会插进别的对象的全局流抽取（重制连抽）",
       "original": "过程 0x43ca70 已读，镜头字 0x4c091c／0x4c0920 由表现层滚动写",
@@ -1293,6 +1262,37 @@
       "category": "镜头",
       "sources": [
         "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5287ca512d"
+      ]
+    },
+    {
+      "id": "carry-model",
+      "difference": "carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序",
+      "original": "注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；已移除注册的记录不经入口",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_check_targets.md",
+        "docs/evidence_packets/runtime_observations/campaign_handoff/README.md",
+        "docs/evidence_packets/static_reverse/original_campaign_actors.md"
+      ],
+      "remake": "CampaignCarryRules／ConditionalPartyRules",
+      "remake_code": [
+        "game/sim/CampaignCarryRules.gd",
+        "game/sim/ConditionalPartyRules.gd",
+        "game/sim/ScriptActorCreationRules.gd"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "存档与流程",
+      "sources": [
+        "matrix:actCheckPlayer／actCheckEnemy 目标计数",
+        "provenance:game/sim/CampaignCarryRules.gd|rules|remake-invented|",
+        "provenance:game/sim/ConditionalPartyRules.gd|rules|remake-invented|",
+        "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交、出生随机流与入队调度的组合",
+        "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型",
+        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#7b79afa225",
+        "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#c5422b8d38",
+        "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
       ]
     },
     {
