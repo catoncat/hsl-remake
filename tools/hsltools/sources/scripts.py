@@ -108,9 +108,9 @@ def parse_text_metadata(data: bytes, encoding: str | None = None) -> dict[str, A
         # per-tick y bucket (0x43ccf0) — docs/evidence_packets/static_reverse/original_draw_order.md.
         if current_values.get("obj_Process_Code") == "defProcStandObject":
             retained |= {"obj_Attribute"}
-        # A moving background's obj_Score／obj_HitPoint are its camera-parallax ratios
-        # (x/640, y/480; −1 pins it to the view) — docs/evidence_packets/static_reverse/original_map_object_drift.md.
-        if current_values.get("obj_Data9") == "mapobjMoveBG":
+        # A moving background's (and a waterfall's) obj_Score／obj_HitPoint are its camera-parallax
+        # ratios (x/640, y/480; −1 pins it to the view) — docs/evidence_packets/static_reverse/original_map_object_drift.md.
+        if current_values.get("obj_Data9") in ("mapobjMoveBG", "mapobjWaterFall"):
             retained |= {"obj_Score", "obj_HitPoint"}
         # A flashing light's obj_Score／obj_HitPoint are its dim depth and step delay
         # (0x43cee7) — docs/evidence_packets/static_reverse/original_map_object_flash.md.

@@ -1,7 +1,8 @@
 extends RefCounted
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/actor_placement_initialization.md
-##   layout: provisional (world size from the decoded map texture)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (world size = WRD columns／rows × 32, 0x46bbfd／0x46bc44; camera range = world − view)
 
 const SCHEMA := "hsl_map_scene_config.v1"
 
@@ -11,11 +12,17 @@ var logical_viewport_size: Vector2i = Vector2i(640, 480)
 var grid_projection: Dictionary = {}
 
 
-static func from_texture(id: String, texture: Texture2D, viewport_size: Vector2i, projection: Dictionary) -> RefCounted:
+## The WRD loader 0x46bb65 sets the map width／height [0x4c0948]／[0x4c094c] to the header's
+## columns／rows × 32 (0x46bbfd／0x46bc44) and the camera range [0x4c0958]／[0x4c095c] to that
+## minus the view (0 if smaller); the map picture's own size is not used. `map_cells` is the
+## WRD grid; without one (no terrain) the texture size stands in.
+static func from_texture(id: String, texture: Texture2D, viewport_size: Vector2i, projection: Dictionary, map_cells := Vector2i.ZERO) -> RefCounted:
 	var config := new()
 	config.scene_id = id
 	config.logical_viewport_size = viewport_size
-	if texture != null:
+	if map_cells.x > 0 and map_cells.y > 0:
+		config.world_size = map_cells * 32
+	elif texture != null:
 		config.world_size = Vector2i(texture.get_width(), texture.get_height())
 	else:
 		config.world_size = Vector2i.ZERO

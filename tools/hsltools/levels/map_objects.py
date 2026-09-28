@@ -301,12 +301,20 @@ def build_combined_placements(seed: dict) -> list[dict]:
         anchor_x, anchor_y = (int(v) for v in row['placement_xy_candidate'])
         reference_x, reference_y = (int(v) for v in entry['children'][0]['offset_xy_candidate'])
         children = []
+        # 0x46bd67 links every installed child under the one before it; 0x45ef11 walks up to
+        # the first child flagged as chain head (the EVEF top bit), or stays on the child itself.
+        chain_root = None
         for child in entry['children']:
-            if child.get('join_status') != 'joined' or child.get('role_from_process') != 'map_object' or not child.get('shape_resource'):
+            if child.get('join_status') != 'joined':
+                continue
+            offset_x, offset_y = (int(v) for v in child['offset_xy_candidate'])
+            point = [anchor_x + offset_x - reference_x, anchor_y + offset_y - reference_y]
+            if child.get('chain_head') and chain_root is None:
+                chain_root = point
+            if child.get('role_from_process') != 'map_object' or not child.get('shape_resource'):
                 continue
             fields = child.get('object_data_fields', {})
             shape_resource = str(child['shape_resource'])
-            offset_x, offset_y = (int(v) for v in child['offset_xy_candidate'])
             children.append({
                 'child_index': int(child['child_index']),
                 'object_code': int(child['object_code']),
@@ -315,8 +323,9 @@ def build_combined_placements(seed: dict) -> list[dict]:
                 'shape_resource': shape_resource,
                 'shape_resource_id': _basename(shape_resource),
                 'offset_xy_candidate': [offset_x, offset_y],
-                'candidate_x': anchor_x + offset_x - reference_x,
-                'candidate_y': anchor_y + offset_y - reference_y,
+                'candidate_x': point[0],
+                'candidate_y': point[1],
+                'chain_root_xy': chain_root or point,
                 'object_fields': {key: {'value': str(value)} for key, value in fields.items()},
                 'runtime_layer_hint': layer_hint(fields),
                 'presentation_hint': presentation_hint(fields),

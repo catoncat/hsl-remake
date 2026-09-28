@@ -1,6 +1,6 @@
 # 地图物件云漂移（mapobjCloud）与移動背景视差（mapobjMoveBG）
 
-> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x43c260, 0x43c4a0, 0x43ccf0, 0x43ceba, 0x43d13e, 0x43d758, 0x43d76a, 0x45eb9d, 0x45ebdc, 0x45f5f7, 0x45fa1e, 0x4606a9 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 1／2／6／53 关停首次排序后的逐帧坐标、出界回绕与镜头视差; resource-derived: TYPE.H 的 mapobj 编号与各关 OBS 的角度／速度／范围字段 · status: live · functions: 0x43c260, 0x43c4a0, 0x43ccf0, 0x43ce94, 0x43ceba, 0x43d07b, 0x43d13e, 0x43d758, 0x43d76a, 0x45e485, 0x45eb9d, 0x45ebdc, 0x45ef11, 0x45f5f7, 0x45fa1e, 0x4606a9, 0x4684b6, 0x46b6c1, 0x46bb65, 0x46bd67 · tools: hsltools/probes/_map_object_drift.py · updated: 2026-09-28
 
 本包回答：云每 tick 走多少、朝哪、出界后怎么回来、云影是否跟着走；移動背景同三问。EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`。tick 按 [tick 率包](../runtime_observations/original_tick_rate/README.md) 的设计值换算：1 tick ＝ 16 ms ＝ 62.5 tick/s（本机 Wine 录像 19.4 ms/tick，同一 px/tick 在录像里约为下表 px/s 的 0.82 倍）。
 
@@ -70,7 +70,7 @@
 | `0x43c337` | defProcFireSmoke（槽 70 `0x477d44` → `0x43c260`），`0x43c298..0x43c31c` 初始化按 rand(77) 在中心 ±38 撒点 | `0x400000` 或 bit0 清时 `+0x30 = 0xffff`（不画），否则 `+0x30 = +0x32`；其后的淡入淡出与 `0x45ebdc` 上升照走 |
 | `0x43c63f` | defProcDropRain（槽 66 `0x477d34` → `0x43c4a0`），mapobjDropRain（13，`0x43d578`）按 obj_Data4 经 `0x45e307` 生出的雨滴 | 同上：不画，照落 |
 
-重制：`MapObjectDrift.add_scene_held` 登记瀑布与建筑底，每 tick 按 `scene_hidden`（`GameSettings.scene_effects_enabled()` 为假）设不可见；重制把两者画成静止图，所以藏起只是不画。噴人沼氣的煙（`BattlePoisonGasPresentation._smoke_tick`）关时不画、照升照淡；雨滴由 `StoryEffectObjects.insert` 在 場景效果 关时不建雨发射器。
+重制：`MapObjectDrift.add_scene_held` 登记瀑布与建筑底，每 tick 按 `scene_hidden`（`GameSettings.scene_effects_enabled()` 为假）设不可见；建筑底另按 `close_up_hidden`（切入队列在播且不是 `magic:` 效果阶段——同 `sync_cast_depth` 的读法——或状态面板开着）藏起。瀑布的走法见下节。噴人沼氣的煙（`BattlePoisonGasPresentation._smoke_tick`）关时不画、照升照淡；雨滴由 `StoryEffectObjects.insert` 在 場景效果 关时不建雨发射器。
 
 ## 复现
 
@@ -81,4 +81,23 @@
 - 原版每 tick 画一帧，重制按显示帧渲染、按 16 ms 累计 tick；一帧跨多 tick 时云连走多步、移動背景只取末 tick 的镜头。
 - 移動背景与滚镜头对象的执行先后（一 tick 滞后与否）未读；重制取当前镜头。
 - `0x400000` 的仓库窗 `0x4289e0` 不在战斗里，未接；重制的状态面板是否与原状态窗过程 `0x438xxx` 同一窗口按名称对应，未逐帧核。
-- 瀑布的漂移（TYPE.H：角度／速度／X1..Y2 范围）重制未做，瀑布静止画；建筑底的 `0x400000` 藏起未接；撒点雨滴在剧情中途切换 場景效果 不跟随（插入时决定）。
+- 撒点雨滴在剧情中途切换 場景效果 不跟随（插入时决定）。
+- 组合物件在重制里仍按关卡 profile 的 `runtime_layer_hint` 分到前景／背景两个节点，节点内再按 obj_Plane 排桶；原版只有桶，没有这层分组，两者是否在所有关给出同一先后未逐关核。
+- mapobjShadow 的 `0x43ce94` 另测 `[0x4c1b00] & ebp`（ebp 在入口处设定，值未追）后藏起，重制未接。
+- 重制的 engGLASS 着色器按 `(屏幕 + 色)/2` 混合，未模拟 `& 0xf7de` 丢掉的每通道最低位（≤ 1/32 级差）。
+
+## 组合物件、瀑布、engGLASS 与世界尺寸（static-derived，r2 静读；runtime-measured 为同一机器停点读数）
+
+**组合物件**（`0x46be17` → `0x46bd67`）：EVEF 记录码带 `0x80000000` 时读关卡 BIN 尾表 `[count,(code,x,y)…]`，`delta = EVEF xy − 第一子项表内 xy`，每个子项在 `表内 xy + delta` 以模板 `code & 0x7fffffff` 由 `0x45e307` 建出（`0x46bdc1`）；子项码的高位只让新对象 `+0x80 |= 0x40000000`（`0x46bde1`，链头），每个新对象经 `0x45e485(前一个, 新)` 挂在前一个下面（`+0x5c` 父指针）。`0x45eef5` 从对象沿 `+0x5c` 上找第一个带 `0x40000000` 的祖先，`0x45ef11` 反复调用直到没有，得最上层链头（没有就是自己）。子对象的 obj_Plane、obj_Mode 等全来自各自模板，没有按组合改写。导入器此前把高位子项当成嵌套引用丢掉：cmb瀑布（尼布魯瀑布（LEVEL022）与遭遇战 LEVEL570–572）与 cmb海面xx（薩魯司海岸（LEVEL036）与遭遇战 LEVEL558–560）各少一块；现按低 31 位取模板并记 `chain_head`／`chain_root_xy`。
+
+**瀑布**（mapobjWaterFall，TYPE.H 7；跳表项 `0x43d07b`）：初始化（消息带 `0x20000000`）取链头 `0x45ef11` 的 x、y，各夹到 ≥ 0 存 `+0x92`／`+0x90`；自身 x、y 存 `+0x4a`／`+0x48`；两轴卷动偏移 `+0x46`／`+0x44` 清 0；obj_Mode `|= 0x4000000`（engADDCOLOR，同写 `+0xa0`）；`0x4606a9` 取帧宽、高存 `+0x70`／`+0x74`。每 tick（`0x43d13e`）：場景效果 关时 `+0xae = 2`；随后**无论藏否**先算视差——obj_Score ≠ 0 时 `x = (score == −1) ? 镜头x : x0 + trunc((镜头x − 链头x)·score / 640)`，obj_HitPoint 同理 `/480`（`0x43d150..0x43d1e6`）；再经公共倒数（`0x43d1e9`）藏则返回，否则 obj_Data8 ≠ 0 时 `0x45ebdc` 按 obj_Data7 角度的 16.16 速度出整像素 `dx, dy`，`偏移x += dx`，大于宽减宽、小于 0 加宽（高同理，各一次），`x += 偏移x`、`y += 偏移y`（`0x43d23c..0x43d28a`）。结果：图随镜头按 score/640、hp/480 视差走，同时在自身一张图高的周期里向角度方向卷动，链上首尾相接的几块拼成连续水幕。尼布魯瀑布（LEVEL022）三块 瀑布01 表内 (42,0)／(42,500)／(42,1000)、EVEF (411,−500)：点 (411,−500)／(411,0)／(411,500)，模板 240／180、角度 64、速度 0x100000（每 tick 下 16 px）。
+
+整镜像读数（`_enemy_level.round_sort_machine` 停在首次排序，形状装载是桩所以停点时宽高为 0）：三块模式 `0x4000000`、链头 (411,0)、父指针依次相连、score／hp 240／180、每 tick y 偏移 +16；x 随开场镜头从 496 滑到 257（视差）。
+
+**建筑底**（mapobjBuildBottom，TYPE.H 2；`0x43d74c`／`0x43d758`）：`[0x4c1b00] & 0x400000`（攻方特写、状态窗置位）或 場景效果 关时 `+0xae = 2`，不画不走；不测地图魔法位 `0x1000000`。
+
+**engGLASS**：绘制链 `0x46b6c1` 对 `mode & 0x78000000 >> 27` 查 `0x46b691` 的字表（engGLASS `0x40000000` → 8 → 种类 6），跨度种类经 `0x46211c` 分派，种类 6 = `0x4684b6`：`out = ((屏幕 & 0xf7de) + (色 & 0xf7de)) >> 1`，色是跨度 `+0x18`（绘制表 `0x461479` 从对象 `+0x28` 抄来），形状只给覆盖。雲影模板 `obj_Data = 0x2104`（HIRGB2(4,4,4)，注释里另有 0x1082／0x4208 两个备选）；mapobjShadow（1，`0x43ce94`）每 tick 写 `+0x28 = 0x1082` 并 `mode |= 0x40000000`。整镜像读数（第 1 关）：影子 `+0x28 = 0x1082`、雲影 `0x2104`，模式 `0x40000000`。
+
+**世界尺寸**：WRD 装载 `0x46bb65` 读 0x18 字节头（`'WORL'`），`[0x4c0948] = 头 +0xc 列数 × 32`（`0x46bbfd`）、`[0x4c094c] = 头 +0x10 行数 × 32`（`0x46bc44`），镜头范围 `[0x4c0958]／[0x4c095c] = 其减视口`（无符号借位时取 0），云的默认范围与镜头夹紧都用它；地图图片自身尺寸不参与。普查 149 关：139 关图与网格 ×32 相同，LEVEL058／060／063／071／076–079／081／082（王座廳等剧情段）图 960×720 而网格 30×22，原版世界高 704。
+
+重制：`BattleSceneStage` 对组合子物件照 manifest 逐个放（链头也画）；瀑布 `MapObjectDrift.add_waterfall`／`step_waterfall` 照上式、加色画；engGLASS 与影子用平色半混合着色器 `glass_material(+0x28 字)`；`MapSceneConfig.from_texture(…, map_cells)` 取 WRD 网格 ×32。

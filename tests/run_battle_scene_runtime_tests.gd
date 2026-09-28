@@ -99,7 +99,7 @@ func _assert_no_visible_debug_text(presentation: Dictionary, context: String) ->
 
 
 func _test_map_scene_uses_texture_world_size_and_spatial_gate() -> void:
-	var texture := _make_texture(Vector2i(768, 768))
+	var texture := _make_texture(Vector2i(960, 720))
 	var config := MapSceneConfig.from_texture(
 		"first_battle_scene",
 		texture,
@@ -110,9 +110,11 @@ func _test_map_scene_uses_texture_world_size_and_spatial_gate() -> void:
 			"evidence_id": "move_overlay_primary",
 			"evidence_tier": "runtime-measured",
 			"provisional": true,
-		}
+		},
+		Vector2i(30, 22)
 	)
-	_assert_eq(config.world_size, Vector2i(768, 768), "map world size should come from texture dimensions")
+	# 0x46bbfd／0x46bc44: WRD columns／rows × 32, not the picture (levels 58… draw 960×720 over 30×22 cells).
+	_assert_eq(config.world_size, Vector2i(960, 704), "map world size should come from the WRD grid × 32")
 	_assert_eq(config.logical_viewport_size, Vector2i(640, 480), "map scene should keep original logical viewport")
 
 

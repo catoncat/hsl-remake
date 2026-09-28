@@ -26,6 +26,7 @@ const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const WorldMapRuntime = preload("res://game/world/WorldMapRuntime.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const BattleOpeningCoordinator = preload("res://game/battle/scene/BattleScriptCoordinator.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
@@ -853,11 +854,14 @@ func _bootstrap_runtime() -> void:
 	map_backdrop.centered = false
 	map_backdrop.position = Vector2.ZERO
 
+	var terrain_path := BattleScenario.resource_path(first_battle_scenario, "terrain")
+	var map_cells: Vector2i = WrdTerrainTiles.load_tiles(terrain_path).get("map_size", Vector2i.ZERO) if terrain_path != "" else Vector2i.ZERO
 	map_config = MapSceneConfig.from_texture(
 		str(first_battle_scenario.get("id", "battle_scene")),
 		map_texture,
 		logical_viewport_size,
-		BattleScenario.grid_projection(first_battle_scenario)
+		BattleScenario.grid_projection(first_battle_scenario),
+		map_cells
 	)
 	$BattlePresentation.actors_root = actors_root
 	$BattlePresentation.dialogue_manifest = message_text_evidence

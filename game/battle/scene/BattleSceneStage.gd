@@ -13,10 +13,12 @@ extends RefCounted
 ##     (highlight side word 0x40ba20 → colour)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
 ##     (map spell effect phase lifts footprint and posing actors, sync_cast_depth)
-##   layout: provisional (combined-placement child offsets, layer hints; story-scene cast without a
-##     side is lit as a player)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
+##     (combined children 0x46bd67; engGLASS kernel 0x4684b6; waterfall add 0x43d0ea; 0x43d758 hold)
+##   layout: provisional (runtime_layer_hint back／foreground split of the level profiles; story-scene
+##     cast without a side is lit as a player)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
-##     (mapobjCloud drift and mapobjMoveBG parallax, run by MapObjectDrift)
+##     (mapobjCloud drift, mapobjMoveBG／mapobjWaterFall parallax and waterfall scroll, run by MapObjectDrift)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
@@ -276,9 +278,38 @@ func spawn_map_objects() -> void:
 			"mapobjMoveBG":
 				drift.add_background(sprite, anchor_world, MapObjectDrift.field_int(map_object_field_value(record, "obj_Score")),
 					MapObjectDrift.field_int(map_object_field_value(record, "obj_HitPoint")), origin)
-			"mapobjWaterFall", "mapobjBuildBottom":
-				drift.add_scene_held(sprite)
+			"mapobjWaterFall":
+				var root: Array = record.get("chain_root_xy", [anchor_world.x, anchor_world.y])
+				drift.add_waterfall(sprite, anchor_world, Vector2(float(root[0]), float(root[1])),
+					MapObjectDrift.field_int(map_object_field_value(record, "obj_Score")), MapObjectDrift.field_int(map_object_field_value(record, "obj_HitPoint")),
+					MapObjectDrift.field_int(map_object_field_value(record, "obj_Data7")), MapObjectDrift.field_int(map_object_field_value(record, "obj_Data8")),
+					Vector2i(texture.get_size()), origin)
+			"mapobjBuildBottom":
+				drift.add_scene_held(sprite, true)
 		runtime.map_object_records.append(_map_object_record(record, shape_id, texture, placement, candidate_anchor_world, anchor_world, top_left_world, runtime_layer))
+
+
+## engGLASS (mode 0x40000000 → span kind 6 by 0x46b705's table, kernel 0x4684b6 via 0x46211c):
+## every covered pixel becomes ((screen & 0xf7de) + (colour & 0xf7de)) >> 1 — the shape's own
+## pixels are not read, only its coverage; the colour is the object's +0x28 RGB565 word.
+const GLASS_SHADER_CODE := """shader_type canvas_item;
+uniform vec3 glass = vec3(0.0);
+void fragment() {
+	COLOR = vec4(glass, 0.5 * texture(TEXTURE, UV).a);
+}
+"""
+const SHADOW_GLASS_WORD := 0x1082
+static var _glass_shader: Shader = null
+
+
+static func glass_material(word: int) -> ShaderMaterial:
+	if _glass_shader == null:
+		_glass_shader = Shader.new()
+		_glass_shader.code = GLASS_SHADER_CODE
+	var material := ShaderMaterial.new()
+	material.shader = _glass_shader
+	material.set_shader_parameter("glass", Vector3(float((word >> 11) & 31) / 31.0, float((word >> 5) & 63) / 63.0, float(word & 31) / 31.0))
+	return material
 
 
 ## spawn_map_objects: one stand object's sprite — animated／flashing／plain by obj_Data9,
@@ -286,7 +317,8 @@ func spawn_map_objects() -> void:
 func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Texture2D, animation_manifest: Dictionary, candidate_anchor_world: Vector2, anchor_world: Vector2, top_left_world: Vector2, runtime_layer: String) -> Sprite2D:
 	var animated := map_object_field_value(record, "obj_Data9") == "mapobjNextShape"
 	var flashing := map_object_field_value(record, "obj_Data9") == "mapobjFlash"
-	var additive := map_object_field_value(record, "obj_Mode").begins_with("engADDCOLOR")
+	# 0x43d0ea: a waterfall's init ors engADDCOLOR (0x4000000) into its mode.
+	var additive := map_object_field_value(record, "obj_Mode").begins_with("engADDCOLOR") or map_object_field_value(record, "obj_Data9") == "mapobjWaterFall"
 	var glass := map_object_field_value(record, "obj_Mode").begins_with("engGLASS")
 	var sprite: Sprite2D
 	if animated:
@@ -309,12 +341,11 @@ func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Textu
 		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		sprite.material = blend
 	if map_object_field_value(record, "obj_Data9") == "mapobjShadow":
-		# Source shadow token; the alpha is a remake presentation value.
-		sprite.modulate = Color(1, 1, 1, 0.55)
+		# 0x43ce94: a shadow is engGLASS in colour 0x1082 every tick.
+		sprite.material = glass_material(SHADOW_GLASS_WORD)
 	elif glass:
-		# engGLASS (level-1 cloud shadows, opaque black silhouettes in the SHP):
-		# read as a translucent overlay; the alpha is a remake presentation value.
-		sprite.modulate = Color(1, 1, 1, 0.4)
+		# engGLASS in the template's obj_Data colour (+0x28; level 1 雲影 0x2104).
+		sprite.material = glass_material(MapObjectDrift.field_int(map_object_field_value(record, "obj_Data")))
 	# 0x43ccf0: the anchor's row bucket every tick, or obj_Plane fixed with objattrATTACKFLAG.
 	ActorRuntime.apply_object_depth(sprite, anchor_world.y, str(record.get("plane", "")), ActorRuntime.has_attack_flag(map_object_field_value(record, "obj_Attribute")))
 	sprite.set_meta("record_index", record.get("record_index", -1))
@@ -338,7 +369,7 @@ func _map_object_record(record: Dictionary, shape_id: String, texture: Texture2D
 		"candidate_anchor_world": candidate_anchor_world,
 		"render_anchor_world": anchor_world,
 		"anchor_delta_from_candidate": placement.get("anchor_delta_from_candidate", anchor_world - candidate_anchor_world),
-		"anchor_source": str(placement.get("anchor_source", "evef_candidate_xy_provisional")),
+		"anchor_source": str(placement.get("anchor_source", "evef_shp_draw_origin")),
 		"anchor_evidence_ids": placement.get("anchor_evidence_ids", []),
 		"anchor_source_files": placement.get("anchor_source_files", []),
 		"anchor_alignment_note": str(placement.get("anchor_alignment_note", "")),
@@ -368,6 +399,18 @@ func _clouds_hidden() -> bool:
 	return panel is CanvasItem and panel.visible
 
 
+## The building bottom's extra hold (0x43d758: [0x4c1b00] & 0x400000, set by the attack
+## close-up 0x401c20 and the status window 0x43863f): a cut-in clip that is not a map `magic:`
+## effect phase (sync_cast_depth's reading), or the status panel open.
+func _close_up_hidden() -> bool:
+	var presentation := runtime.get_node_or_null("BattlePresentation")
+	if presentation != null and presentation.get("cutin") != null and presentation.cutin.busy() \
+			and not str(presentation.cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:"):
+		return true
+	var panel = runtime.get("status_panel")
+	return panel is CanvasItem and panel.visible
+
+
 ## The runtime's one MapObjectDrift, emptied for a fresh placement. A child of the runtime,
 ## so it runs after the runtime's own _process has moved the camera this frame.
 func _map_object_drift() -> MapObjectDrift:
@@ -381,6 +424,7 @@ func _map_object_drift() -> MapObjectDrift:
 	drift.camera_top_left = func() -> Vector2: return runtime.camera_controller.logical_to_world(Vector2.ZERO) if runtime.camera_controller != null else Vector2.ZERO
 	drift.clouds_hidden = _clouds_hidden
 	drift.scene_hidden = func() -> bool: return not GameSettings.scene_effects_enabled()
+	drift.close_up_hidden = _close_up_hidden
 	return drift
 
 

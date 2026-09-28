@@ -668,14 +668,14 @@
     },
     {
       "id": "stage-placement",
-      "difference": "组合物件子偏移与图层、engGLASS 透明度、世界大小取自贴图是重制读法；云漂移与移動背景视差已照原版（云逐 tick 按角度／速度 16.16 走、出界按地图＋图尺寸逐轴回绕，移動背景随镜头走 obj_Score/640、obj_HitPoint/480），魔法效果／特写／状态面板期间与 場景效果 关时云藏起并停住、相位保留，移動背景每 tick 取镜头；原仓库窗置位不在战斗里，移動背景与滚镜头对象的先后未读",
-      "original": "原完整物件放置公式未恢复；云漂移／回绕与移動背景视差已读完并整镜像实测，藏起条件 [0x4c1b00]&0x1400000 或 [0x477c14] bit0 关（0x43ceba，移動背景不藏）",
+      "difference": "组合物件、engGLASS、瀑布、建筑底与世界尺寸已照原版（组合子项按模板 code & 0x7fffffff 放在表内 xy＋delta、链头也画；engGLASS 与影子按 +0x28 色半混合；瀑布按链头视差＋自身尺寸回绕卷动、加色画；建筑底在特写／状态窗期间藏起；世界尺寸＝WRD 行列×32）；云漂移与移動背景视差已照原版；剩组合物件的前景／背景节点分层（关卡 profile 的 runtime_layer_hint）与原版只按 obj_Plane 排桶是否处处同序未逐关核，影子 0x43ce94 的另一藏起位未追",
+      "original": "0x46bd67 组合安装、0x43d07b／0x43d13e 瀑布、0x43d758 建筑底、0x4684b6 engGLASS 内核、0x46bb65 WRD 尺寸已读；云与移動背景已读完并整镜像实测",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_object_drift.md",
         "docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md",
         "docs/evidence_packets/runtime_observations/remake_notes.md"
       ],
-      "remake": "BattleSceneStage／MapSceneConfig 的读法；MapObjectDrift 按原版走云与移動背景",
+      "remake": "BattleSceneStage 放组合子物件与 engGLASS 着色器；MapObjectDrift 走云、移動背景、瀑布并藏建筑底；MapSceneConfig 取 WRD 网格×32",
       "remake_code": [
         "game/battle/scene/BattleSceneStage.gd",
         "game/battle/runtime/MapSceneConfig.gd",
@@ -1948,9 +1948,6 @@
     },
     "provenance:game/battle/runtime/GrowthCampaignProgress.gd|strings|remake-invented|": {
       "item": "loot-panel"
-    },
-    "provenance:game/battle/runtime/MapSceneConfig.gd|layout|provisional|": {
-      "item": "stage-placement"
     },
     "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|": {
       "item": "story-effect-objects"

@@ -319,7 +319,10 @@ def _role_for_object(obj: dict[str, Any] | None) -> str:
 # (cmb樹和影01 = 0, ...). Child x/y are relative to the first child: the original
 # installer 0x46bd67 places child 0 on the EVEF point and every other child at the
 # same delta (static-derived); the table layout decodes consistently across the
-# level BINs that carry it.
+# level BINs that carry it. Every child is installed as template `code & 0x7fffffff`
+# (0x46bdc1); the top bit marks the chain head (+0x80 |= 0x40000000, 0x46bde1) and each
+# child is linked under the one before it (0x45e485) — the head is what a
+# mapobjWaterFall's parallax measures from (0x45ef11).
 COMBINED_CODE_FLAG = 0x80000000
 EVEF_HEADER_SIZE = 0x10
 EVEF_RECORD_SIZE = 0xD0
@@ -348,13 +351,14 @@ def _combined_objects(level_data: bytes, evef: dict[str, Any], objects: dict[str
         children: list[dict[str, Any]] = []
         for child_index in range(count):
             code, x, y = struct.unpack_from("<3I", tail, offset + 4 + child_index * 12)
-            obj = lookup.get(code)
+            obj = lookup.get(code & ~COMBINED_CODE_FLAG)
             children.append(
                 {
                     "child_index": child_index,
-                    "object_code": code,
+                    "object_code": code & ~COMBINED_CODE_FLAG,
+                    **({"chain_head": True} if code & COMBINED_CODE_FLAG else {}),
                     "offset_xy_candidate": [x, y],
-                    "join_status": "joined" if obj is not None else ("combined_reference" if code & COMBINED_CODE_FLAG else "unmatched"),
+                    "join_status": "joined" if obj is not None else "unmatched",
                     "object_name": obj.get("obj_name") if obj else None,
                     "object_process": obj.get("obj_process_code") if obj else None,
                     "shape_resource": obj.get("obj_shape_name") if obj else None,
