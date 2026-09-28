@@ -19,6 +19,28 @@ if [[ " $* " == *" res://tests/"* && -z "${HSL_RNG_SEED:-}" ]]; then
   export HSL_RNG_SEED=1
 fi
 
+# A fast-clock suite (FAST_CLOCK_SUITES in tools/verify_runner.py) run directly gets the gate's
+# --fixed-fps 60 unless the caller gave --fixed-fps or HSL_TEST_FIXED_FPS=0. On the real clock each
+# headless frame sleeps and animations wait wall seconds: the 128-battle autoplay sweep took
+# 2482–2770 s that way against 671–721 s under --fixed-fps, with the same results.
+if [[ " $* " == *" --script res://tests/"* && " $* " != *" --fixed-fps "* && "${HSL_TEST_FIXED_FPS:-60}" != 0 ]]; then
+  fast_clock="$(sed -n '/^FAST_CLOCK_SUITES = {/,/^}/p' "$ROOT/tools/verify_runner.py" | grep -o '"run_[a-z0-9_]*\.gd"' | tr -d '"' || true)"
+  if sed -n '/^FAST_CLOCK_SUITES = {/,/^}/p' "$ROOT/tools/verify_runner.py" | grep -q '^ *SWEEP_SUITE,'; then
+    fast_clock+=$'\n'"$(sed -n 's/^SWEEP_SUITE = "\(.*\)"$/\1/p' "$ROOT/tools/verify_runner.py")"
+  fi
+  for ((i = 1; i < $#; i++)); do
+    if [[ "${!i}" == --script ]]; then
+      j=$((i + 1))
+      target="${!j#res://tests/}"
+      if grep -qxF -- "$target" <<< "$fast_clock"; then
+        set -- --fixed-fps "${HSL_TEST_FIXED_FPS:-60}" "$@"
+        echo "tools/godot.sh: $target is a fast-clock suite; running with --fixed-fps $2 (HSL_TEST_FIXED_FPS=0 for the real clock)" >&2
+      fi
+      break
+    fi
+  done
+fi
+
 # Headless runs (imports, suites, sweeps) get an isolated HOME under ignored/ so they never read or
 # overwrite the real user directory (campaign_progress.json, memoirs, settings). A 2026-09-27 suite
 # run in the real HOME rewrote a real campaign save. HSL_REAL_HOME=1 opts out (tools/play.sh sets it).

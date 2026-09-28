@@ -39,7 +39,7 @@ python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-t
 
 - [tools/godot.sh](../tools/godot.sh) 严格诊断：进程非零、SCRIPT ERROR／ERROR 或资源泄漏都算失败，不能只看末尾 PASS。
 - 随机种子：无窗口运行默认 `HSL_RNG_SEED=1`（伤害流与进程全局流），两次运行结果行逐字相同；`HSL_RNG_SEED=7` 换种子。
-- **快钟**：`FAST_CLOCK_SUITES`（verify_runner）里的场景套件跑 `--fixed-fps 60`，每步恒 1/60 s、不睡帧。开机后等时间线推进的断言用 `TestSuite.await_condition(tree, 条件, 帧上限)`；等音频释放用 `TestSuite.settle_wall_clock`，`quit` 前最后一次等待用 `TestSuite.settle_audio_before_quit`。上快钟的套件在实时钟（`HSL_TEST_FIXED_FPS=0`）下也要通过。
+- **快钟**：`FAST_CLOCK_SUITES`（verify_runner）里的场景套件跑 `--fixed-fps 60`，每步恒 1/60 s、不睡帧；直跑 `tools/godot.sh --script` 时也自动补上（实时钟下 128 场 autoplay sweep 慢约 4 倍，结果相同）。开机后等时间线推进的断言用 `TestSuite.await_condition(tree, 条件, 帧上限)`；等音频释放用 `TestSuite.settle_wall_clock`，`quit` 前最后一次等待用 `TestSuite.settle_audio_before_quit`。上快钟的套件在实时钟（`HSL_TEST_FIXED_FPS=0`）下也要通过。
 - 规则套件改 loop 的只读配置块（`skill_book`／`ai_profiles`……）用 `TestSuite.own(loop, "ai_profiles")`，就地写共享块会以 `wrote the shared configuration block` 失败（[配置／状态分离](../docs/architecture/BATTLE_CONFIG_STATE.md)）。
 - 读已启动 `BattleSceneRuntime` 的状态用 [support/RuntimeReadback.gd](support/RuntimeReadback.gd) 的静态摘要；写 loop 只经 `scene.apply_loop(loop, "test")`。
 - 自动对局与整章机器人的旋钮（`HSL_AUTOPLAY_BRAIN`、`HSL_AUTOPLAY_HANDOFF`、`HSL_CHAPTER_START`、`HSL_CHAPTER_BUDGET_SECONDS`……）写在 [support/Autoplay.gd](support/Autoplay.gd)、[support/AutoplayBrain.gd](support/AutoplayBrain.gd) 与两个套件文件头。
