@@ -70,6 +70,7 @@ func build_panels() -> void:
 	runtime.item_panel.drop_requested.connect(discard_inventory_item)
 	runtime.item_panel.equipment_requested.connect(change_equipment)
 	runtime.item_panel.hand_return_requested.connect(return_held_item)
+	runtime.item_panel.hand_swap_requested.connect(swap_hand_with_bag)
 	runtime.item_panel.ui_sound_requested.connect(runtime.play_ui_sound)
 	runtime.growth_panel = preload("res://game/battle/scene/BattleGrowthPanel.gd").new()
 	ui.add_child(runtime.growth_panel)
@@ -429,7 +430,8 @@ func discard_inventory_item(item_code: String) -> void:
 		return
 	if runtime.item_panel.operation != "drop" or runtime.item_panel.page != "hand" or runtime.item_panel.held_code != int(item_code):
 		return
-	var next := BattlePlayLoop.discard_item(runtime.play_loop, item_code, runtime.item_panel.selected_index)
+	# held_index -1: the loop's full-bag hand, not a bag row.
+	var next := BattlePlayLoop.discard_hand(runtime.play_loop, int(item_code)) if runtime.item_panel.held_index < 0 else BattlePlayLoop.discard_item(runtime.play_loop, item_code, runtime.item_panel.selected_index)
 	if next == runtime.play_loop:
 		return
 	runtime.apply_loop(next, "discard_item")
@@ -498,6 +500,15 @@ func return_held_item(inventory_index: int, item_code: int) -> void:
 	var held := [panel.selected_index, int(panel.selected_item)] if use_pick else [panel.held_index, panel.held_code]
 	if held != [inventory_index, item_code]:
 		return
+	if not use_pick and inventory_index < 0:
+		# The loop's full-bag hand (0x438868): first empty slot, or 0x438872 keeps hand and window.
+		var returned := BattlePlayLoop.return_hand(runtime.play_loop, item_code)
+		if returned == runtime.play_loop:
+			return
+		runtime.apply_loop(returned, "return_hand")
+		panel.hand_item_returned(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id))
+		rebuild_action_menu_buttons()
+		return
 	var inventory: Array = BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id).get("inventory", [])
 	if inventory_index < 0 or inventory_index >= inventory.size() or int(inventory[inventory_index]) != item_code:
 		return
@@ -512,15 +523,43 @@ func change_equipment(slot: String, inventory_index: int, item_code: int) -> voi
 		return
 	if runtime.item_panel.selected_slot != slot or runtime.item_panel.selected_index != inventory_index or int(runtime.item_panel.selected_item) != item_code:
 		return
-	var old_code := BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)["equipment"], slot)
-	var next := BattlePlayLoop.change_equipment(runtime.play_loop, slot, inventory_index, item_code)
+	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
+	var old_code := BattlePlayLoop.EquipmentRules.equipped_code(actor["equipment"], slot)
+	var next: Dictionary
+	if inventory_index < 0 and item_code > 0:
+		next = BattlePlayLoop.equip_from_hand(runtime.play_loop, slot, item_code) # the loop's full-bag hand
+	elif inventory_index < 0 and not actor.get("inventory", []).has(0):
+		next = BattlePlayLoop.unequip_to_hand(runtime.play_loop, slot, old_code) # full bag: 0x437020 into the hand
+	else:
+		next = BattlePlayLoop.change_equipment(runtime.play_loop, slot, inventory_index, item_code)
 	if next == runtime.play_loop:
 		# 0x436f30 returned -1: the hand keeps its item, no sound.
 		return
 	runtime.apply_loop(next, "change_equipment")
 	# The mode-4／5 window stays up; the piece that came off is in the hand (0x439957／0x4399a0).
-	runtime.item_panel.hand_equipment_changed(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), old_code)
+	runtime.item_panel.hand_equipment_changed(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id), old_code, BattlePlayLoop.held_item_code(runtime.play_loop))
 	rebuild_action_menu_buttons()
+
+
+## The loop's full-bag hand on a bag row (0x438c84): the row's item to the hand, the held piece
+## to slot 8 (or first-empty when the bag has room).
+func swap_hand_with_bag(inventory_index: int, item_code: int, held: int) -> void:
+	var panel = runtime.item_panel
+	if not panel.visible or panel.operation not in ["equip", "drop"] or panel.page != "hand":
+		return
+	if panel.held_index >= 0 or panel.held_code != held or panel.selected_index != inventory_index or int(panel.selected_item) != item_code:
+		return
+	var next := BattlePlayLoop.swap_hand_with_bag(runtime.play_loop, inventory_index, item_code, held)
+	if next == runtime.play_loop:
+		return
+	runtime.apply_loop(next, "swap_hand_with_bag")
+	var unit := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
+	var now_held := BattlePlayLoop.held_item_code(runtime.play_loop)
+	if now_held != 0:
+		panel.hand_swapped(unit, now_held)
+	else:
+		panel.hand_item_returned(unit)
+		rebuild_action_menu_buttons()
 
 
 ## 整理裝備 from the world scroll (and a story scene's actEnterStorageWindow): the screen

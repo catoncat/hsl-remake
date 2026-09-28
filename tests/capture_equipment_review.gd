@@ -84,13 +84,17 @@ func run() -> void:
 		var equipment: Array = BattlePlayLoop.unit(scene.play_loop, "leonard")["equipment"]
 		check(BattlePlayLoop.EquipmentRules.equipped_code(equipment, "accessory2") == accessory and BattlePlayLoop.EquipmentRules.equipped_code(equipment, "accessory1") == 0, "the picked slot takes the accessory")
 		observations["accessory_fixture_code"] = accessory
-	# Full-bag fixture: the rules refuse a standalone unequip; the hand stays empty.
+	# Full-bag fixture: 0x437020 takes the helmet off into the loop's hand; right click cannot put it back (0x438872).
 	BattlePlayLoop.unit_ref(scene.play_loop, "leonard")["inventory"] = [241, 241, 241, 241, 241, 241, 241, 2]
 	scene.item_panel.hand_item_dropped(BattlePlayLoop.unit(scene.play_loop, "leonard"))
-	var full: Dictionary = scene.play_loop.duplicate(true)
+	var helmet := BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(scene.play_loop, "leonard")["equipment"], "head")
 	await click(scene.item_panel.equipment_view.slot_controls["head"])
-	check(scene.item_panel.held_code == 0 and same_state(scene.play_loop, full), "full bag refuses the unequip without mutation")
-	observations["full_bag_unchanged"] = same_state(scene.play_loop, full)
+	check(helmet > 0 and scene.item_panel.held_code == helmet and BattlePlayLoop.held_item_code(scene.play_loop) == helmet, "full bag takes the helmet off into the hand")
+	await click_point(Vector2(320, 240), MOUSE_BUTTON_RIGHT)
+	check(scene.item_panel.visible and scene.item_panel.page == "hand" and BattlePlayLoop.held_item_code(scene.play_loop) == helmet, "a full bag keeps the hand and the window")
+	await click(scene.item_panel.equipment_view.slot_controls["head"])
+	check(BattlePlayLoop.held_item_code(scene.play_loop) == 0 and scene.item_panel.held_code == 0, "the held helmet goes back on")
+	observations["full_bag_hand"] = helmet
 	FileAccess.open(OUT + "receipt.json", FileAccess.WRITE).store_string(JSON.stringify({"fixture": true, "real_control_mouse_events": true, "input_delivery": "Viewport.push_input motion/press/release; no direct button signals or desktop input", "window_position": root.position, "window_size": root.size, "observations": observations, "failures": failures}, "  "))
 	scene.queue_free()
 	await process_frame

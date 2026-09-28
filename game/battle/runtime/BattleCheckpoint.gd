@@ -163,6 +163,8 @@ static func _loop_shape_error(loop: Dictionary) -> String:
 	var terrain_error := BattlePlayLoop.TerrainEdits.state_error(loop)
 	if terrain_error != "": return terrain_error
 	if loop.get(LoopKeys.INTERACTION) not in [Interaction.ACTION_MENU, Interaction.AI_RESOLVING, Interaction.BATTLE_RESULT]: return "unsupported_save_boundary"
+	# The Equip／Drop window's full-bag hand is never part of the save format (the window is open).
+	if loop.has(BattlePlayLoop.BattleLoopInventory.HAND_KEY): return "unsupported_save_boundary"
 	for key in ["turn", "item_revision"]:
 		if not Values.is_integer_in(loop.get(key), 0, Values.MAX_SIGNED): return "invalid_saved_counter"
 	if not DamageRandomStream.valid(loop.get(DamageRandomStream.LOOP_KEY)): return "invalid_saved_damage_rng"

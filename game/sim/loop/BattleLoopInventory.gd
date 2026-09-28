@@ -3,7 +3,9 @@ extends RefCounted
 ## (`resolve_item_use`) and the player's Use, Drop, Give session
 ## (`begin_give` → `confirm_give*` → `finish_give`) and Equip (`change_equipment`:
 ## validate every current-equipment effect, then commit inventory, equipped codes and the
-## refreshed attributes together), plus the equipment screen's projection of a carry into
+## refreshed attributes together) with the full-bag hand of the Equip／Drop window
+## (`unequip_to_hand`, `swap_hand_with_bag`, `equip_from_hand`, `return_hand`, `discard_hand`
+## over HAND_KEY), plus the equipment screen's projection of a carry into
 ## the live battle (`apply_battle_equipment_carry`). Each transaction ends in
 ## BattlePlayLoop.settle_action, which owns the action budget and turn hand-off.
 ## Static functions over the one loop dictionary; BattlePlayLoop forwards to them and
@@ -153,38 +155,181 @@ static func finish_give(loop: Dictionary, revision: int) -> Dictionary:
 static func change_equipment(loop: Dictionary, slot: String, inventory_index: int, expected_code: int) -> Dictionary:
 	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)
+	var committed := _equip(loop, slot, inventory_index, expected_code)
+	if committed.is_empty():
+		return BattlePlayLoop.copy(loop)
+	# Confirmed exchange, not a UI-held item. Preserve this round's queue snapshot.
+	# Native ordinary Equip is free; confirmation/move rollback are remake choices.
+	return BattlePlayLoop.settle_action(committed["loop"], "equip")
+
+
+## One equipment commit for the selected actor: validate every current-equipment effect, run
+## EquipmentRules.replace, then commit inventory, equipped codes and refreshed attributes
+## together. `hand`: the Equip／Drop window's hand swaps with the slot without the bag
+## (0x437020 take-off, 0x436f30 put-on) — replace() runs on a bag holding only the hand's item
+## (the PartyEquipmentRules._prepare reading) and the actor keeps its own bag. {} when refused,
+## else {loop, old_item_code}.
+static func _equip(loop: Dictionary, slot: String, inventory_index: int, expected_code: int, hand: bool = false) -> Dictionary:
 	var id := str(loop.get("selected_unit_id", ""))
 	var actor := BattlePlayLoop.unit_ref(loop, id)
 	if ProgressionRules.refresh_input_error(actor, loop["equipment_items"]) != "":
-		return BattlePlayLoop.copy(loop)
-	if StaminaRules.input_error(actor, loop["equipment_items"]) != "": return BattlePlayLoop.copy(loop)
-	if ExperienceRules.input_error(loop, actor) != "": return BattlePlayLoop.copy(loop)
-	var result := EquipmentRules.replace(actor, slot, inventory_index, expected_code, loop["equipment_items"])
+		return {}
+	if StaminaRules.input_error(actor, loop["equipment_items"]) != "": return {}
+	if ExperienceRules.input_error(loop, actor) != "": return {}
+	var probe := actor
+	if hand:
+		if not InventoryRules.valid(actor.get("inventory")): return {}
+		var scratch: Array = []
+		scratch.resize(InventoryRules.CAPACITY)
+		scratch.fill(0)
+		if expected_code > 0: scratch[0] = expected_code
+		probe = actor.duplicate()
+		probe["inventory"] = scratch
+	var result := EquipmentRules.replace(probe, slot, inventory_index, expected_code, loop["equipment_items"])
 	if not result["ok"]:
-		return BattlePlayLoop.copy(loop)
+		return {}
 	# Native409090 uses range0 for an empty weapon slot: no hostile normal target.
 	# Removing a weapon is a real equip transaction, not a substitute melee attack.
 	var weapon := EquipmentRules.equipped_code(result["equipment"], "weapon")
 	if not loop["weapon_ranges"].has(str(weapon)):
-		return BattlePlayLoop.copy(loop)
+		return {}
 	var next := BattlePlayLoop.copy(loop)
 	var changed := BattlePlayLoop.unit_ref(next, id)
-	changed["inventory"] = result["inventory"]
+	if not hand: changed["inventory"] = result["inventory"]
 	changed["equipment"] = result["equipment"]
 	changed["weapon_code"] = weapon
-	if not StaminaRules.effects(changed, next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if not BattleLoopCombat.attack_count(next, changed)["ok"]: return BattlePlayLoop.copy(loop)
-	if not ExtraActionRules.equipment(changed, next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if not WeaponEffects.effects(changed, next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if not ResourceRecoveryRules.effects(changed, next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if not StatusApplicationRules.modifiers(changed, next["skill_book"], next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if not PositionCapabilities.effects(changed, next["skill_book"], next["equipment_items"])["ok"] or not BattlePlayLoop.weapon_pattern(next, changed)["ok"]: return BattlePlayLoop.copy(loop)
-	if not ExperienceRules.multiplier(changed, next["equipment_items"])["ok"]: return BattlePlayLoop.copy(loop)
-	if ProgressionRules.refresh_input_error(changed, next["equipment_items"]) != "": return BattlePlayLoop.copy(loop)
+	if not StaminaRules.effects(changed, next["equipment_items"])["ok"]: return {}
+	if not BattleLoopCombat.attack_count(next, changed)["ok"]: return {}
+	if not ExtraActionRules.equipment(changed, next["equipment_items"])["ok"]: return {}
+	if not WeaponEffects.effects(changed, next["equipment_items"])["ok"]: return {}
+	if not ResourceRecoveryRules.effects(changed, next["equipment_items"])["ok"]: return {}
+	if not StatusApplicationRules.modifiers(changed, next["skill_book"], next["equipment_items"])["ok"]: return {}
+	if not PositionCapabilities.effects(changed, next["skill_book"], next["equipment_items"])["ok"] or not BattlePlayLoop.weapon_pattern(next, changed)["ok"]: return {}
+	if not ExperienceRules.multiplier(changed, next["equipment_items"])["ok"]: return {}
+	if ProgressionRules.refresh_input_error(changed, next["equipment_items"]) != "": return {}
 	changed.merge(ProgressionRules.refresh_growth_stats(changed, next["equipment_items"]), true)
-	# Confirmed exchange, not a UI-held item. Preserve this round's queue snapshot.
-	# Native ordinary Equip is free; confirmation/move rollback are remake choices.
-	return BattlePlayLoop.settle_action(next, "equip")
+	return {"loop": next, "old_item_code": int(result["old_item_code"])}
+
+
+## Equip／Drop window hand ([0x4c1ce4]) while the bag is full. With room in the bag a take-off
+## still goes to the first empty slot and the window holds it as a draft (change_equipment,
+## return_held_item); only a full bag leaves the piece outside bag and equipment, so the loop
+## keeps it under HAND_KEY as {owner_id, item_code}. The key is absent while the hand is empty,
+## and every other player command is refused while it is present (player_action_valid), so a
+## held piece never meets a turn hand-off or a checkpoint. Bag＋equipment＋hand keep their count
+## except through 丟棄. Each command is free and keeps the window open.
+const HAND_KEY := "held_item"
+
+
+## The selected actor's held item code, 0 when the hand is empty.
+static func held_item_code(loop: Dictionary) -> int:
+	var hand: Variant = loop.get(HAND_KEY, {})
+	if not hand is Dictionary or str(hand.get("owner_id", "")) != str(loop.get("selected_unit_id", "")):
+		return 0
+	return int(hand.get("item_code", 0))
+
+
+## The action gate for a hand command: the hand does not block its own commands; a held item
+## must belong to the selected actor and match `expected_hand` (0: the hand must be empty).
+static func _hand_ready(loop: Dictionary, expected_hand: int) -> bool:
+	var view := loop.duplicate()
+	view.erase(HAND_KEY)
+	if not BattlePlayLoop.player_action_valid(view, "action_menu"):
+		return false
+	if not loop.has(HAND_KEY):
+		return expected_hand == 0
+	return expected_hand > 0 and held_item_code(loop) == expected_hand
+
+
+static func _set_hand(loop: Dictionary, code: int) -> void:
+	if code > 0:
+		loop[HAND_KEY] = {"owner_id": str(loop.get("selected_unit_id", "")), "item_code": code}
+	else:
+		loop.erase(HAND_KEY)
+
+
+static func _bag(loop: Dictionary) -> Array:
+	return BattlePlayLoop.unit_ref(loop, str(loop.get("selected_unit_id", ""))).get("inventory", [])
+
+
+## Empty hand on a worn slot with a full bag (0x439997..0x4399e1): 0x437020 takes the piece off
+## into the hand without looking at the bag. unequip_blocked pieces stay (replace refuses).
+static func unequip_to_hand(loop: Dictionary, slot: String, expected_code: int) -> Dictionary:
+	if expected_code <= 0 or not _hand_ready(loop, 0):
+		return BattlePlayLoop.copy(loop)
+	var bag := _bag(loop)
+	if not InventoryRules.valid(bag) or bag.any(func(code): return int(code) == 0):
+		return BattlePlayLoop.copy(loop)
+	var actor := BattlePlayLoop.unit_ref(loop, str(loop.get("selected_unit_id", "")))
+	if EquipmentRules.equipped_code(actor.get("equipment", []), slot) != expected_code:
+		return BattlePlayLoop.copy(loop)
+	var committed := _equip(loop, slot, -1, 0, true)
+	if committed.is_empty():
+		return BattlePlayLoop.copy(loop)
+	_set_hand(committed["loop"], int(committed["old_item_code"]))
+	return BattlePlayLoop.settle_action(committed["loop"], "equip")
+
+
+## Held item on a worn slot (0x43993e..0x439995): 0x436f30(member, slot, held); a refusal (-1)
+## keeps the hand, otherwise the old piece (or nothing) comes into the hand.
+static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) -> Dictionary:
+	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):
+		return BattlePlayLoop.copy(loop)
+	var committed := _equip(loop, slot, 0, expected_hand, true)
+	if committed.is_empty():
+		return BattlePlayLoop.copy(loop)
+	_set_hand(committed["loop"], int(committed["old_item_code"]))
+	return BattlePlayLoop.settle_action(committed["loop"], "equip")
+
+
+## Held item on a bag row (0x438c84..0x438d5e): a full bag (last slot occupied, 0x436ed0) gives
+## the row's item to the hand, closes its gap (0x436e80) and puts the held item into slot 8;
+## otherwise the held item goes first-empty (0x436e30) and the hand is empty.
+static func swap_hand_with_bag(loop: Dictionary, inventory_index: int, expected_code: int, expected_hand: int) -> Dictionary:
+	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):
+		return BattlePlayLoop.copy(loop)
+	var bag := _bag(loop)
+	if not InventoryRules.valid(bag):
+		return BattlePlayLoop.copy(loop)
+	if int(bag[InventoryRules.CAPACITY - 1]) == 0:
+		return return_hand(loop, expected_hand)
+	var removed := InventoryRules.remove(bag, inventory_index, expected_code)
+	if not removed["ok"]:
+		return BattlePlayLoop.copy(loop)
+	var inserted := InventoryRules.insert(removed["inventory"], expected_hand)
+	if not inserted["ok"]:
+		return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	BattlePlayLoop.unit_ref(next, str(next["selected_unit_id"]))["inventory"] = inserted["inventory"]
+	_set_hand(next, expected_code)
+	return next
+
+
+## Right click with a held item (0x438868): first empty slot (0x436e30) → 0x438882 clears the
+## hand; no room → 0x438872 keeps hand and window (refused, loop unchanged).
+static func return_hand(loop: Dictionary, expected_hand: int) -> Dictionary:
+	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):
+		return BattlePlayLoop.copy(loop)
+	var inserted := InventoryRules.insert(_bag(loop), expected_hand)
+	if not inserted["ok"]:
+		return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	BattlePlayLoop.unit_ref(next, str(next["selected_unit_id"]))["inventory"] = inserted["inventory"]
+	_set_hand(next, 0)
+	next["command_menu"] = BattlePlayLoop.menu_for_unit(next, str(next["selected_unit_id"])) # built while the hand held
+	return next
+
+
+## Mode 5's 丟棄 on the held item (0x43aacb..0x43aae6): only a non-important item (0x40e690)
+## leaves the hand.
+static func discard_hand(loop: Dictionary, expected_hand: int) -> Dictionary:
+	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):
+		return BattlePlayLoop.copy(loop)
+	if InventoryRules.discard_error(expected_hand, loop["equipment_items"]) != "":
+		return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	_set_hand(next, 0)
+	return BattlePlayLoop.settle_action(next, "drop")
 
 
 static func recovery_target_ids(loop: Dictionary) -> Array:

@@ -300,6 +300,8 @@ static func player_action_valid(loop: Dictionary, phase: String, allow_completed
 		return false
 	if phase != "give_session" and not loop.get("give_session", {}).is_empty():
 		return false
+	if loop.has(BattleLoopInventory.HAND_KEY): # only the hand commands run while it holds a piece
+		return false
 	if not allow_completed and bool(loop.get("attacked_this_action", false)):
 		return false
 	var id := str(loop.get("selected_unit_id", ""))
@@ -1213,6 +1215,31 @@ static func finish_give(loop: Dictionary, revision: int) -> Dictionary:
 
 static func change_equipment(loop: Dictionary, slot: String, inventory_index: int, expected_code: int) -> Dictionary:
 	return BattleLoopInventory.change_equipment(loop, slot, inventory_index, expected_code)
+
+
+## Equip／Drop window hand while the bag is full (BattleLoopInventory.HAND_KEY).
+static func held_item_code(loop: Dictionary) -> int:
+	return BattleLoopInventory.held_item_code(loop)
+
+
+static func unequip_to_hand(loop: Dictionary, slot: String, expected_code: int) -> Dictionary:
+	return BattleLoopInventory.unequip_to_hand(loop, slot, expected_code)
+
+
+static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) -> Dictionary:
+	return BattleLoopInventory.equip_from_hand(loop, slot, expected_hand)
+
+
+static func swap_hand_with_bag(loop: Dictionary, inventory_index: int, expected_code: int, expected_hand: int) -> Dictionary:
+	return BattleLoopInventory.swap_hand_with_bag(loop, inventory_index, expected_code, expected_hand)
+
+
+static func return_hand(loop: Dictionary, expected_hand: int) -> Dictionary:
+	return BattleLoopInventory.return_hand(loop, expected_hand)
+
+
+static func discard_hand(loop: Dictionary, expected_hand: int) -> Dictionary:
+	return BattleLoopInventory.discard_hand(loop, expected_hand)
 
 
 static func apply_battle_equipment_carry(loop: Dictionary, carry: Dictionary) -> Dictionary:

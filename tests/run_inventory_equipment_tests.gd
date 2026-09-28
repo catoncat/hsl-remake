@@ -110,6 +110,26 @@ func equipment_cases() -> void:
 	check(BattlePlayLoop.unit(unarmed,"leonard")["weapon_code"]==0 and BattlePlayLoop.unit(unarmed,"leonard")["inventory"]==[241,3,241,246,2,0,0,0], "native range0 permits a real unequip and returns the old weapon to its first free slot")
 	check(not BattlePlayLoop.command_available(unarmed,"attack") and BattlePlayLoop.attack_cells(unarmed).is_empty(), "empty source weapon range disables ordinary selection instead of granting a fake adjacent strike")
 	check(BattlePlayLoop.change_equipment(full,"weapon",-1,0)==full, "unarmed support must not bypass full-bag protection")
+	# Full bag: the Equip／Drop window's hand keeps the piece in the loop (0x437020, 0x438c84, 0x436f30, 0x43aacb, 0x438868).
+	var in_hand := BattlePlayLoop.unequip_to_hand(full, "head", 153)
+	check(BattlePlayLoop.held_item_code(in_hand) == 153 and BattlePlayLoop.EquipmentRules.equipped_code(BattlePlayLoop.unit(in_hand, "leonard")["equipment"], "head") == 0 and BattlePlayLoop.unit(in_hand, "leonard")["inventory"] == BattlePlayLoop.unit(full, "leonard")["inventory"], "full bag takes the helmet off into the hand")
+	check(BattlePlayLoop.unequip_to_hand(original, "head", 153) == original, "with room the take-off stays on the bag path")
+	check(BattlePlayLoop.change_equipment(in_hand, "weapon", 7, 3) == in_hand and BattlePlayLoop.return_hand(in_hand, 153) == in_hand, "a held piece blocks other commands and a full bag keeps it in the hand")
+	var swapped := BattlePlayLoop.swap_hand_with_bag(in_hand, 7, 3, 153)
+	check(BattlePlayLoop.held_item_code(swapped) == 3 and BattlePlayLoop.unit(swapped, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153], "full-bag row pick: the row's item to the hand, the held piece into slot 8")
+	var hand_worn := BattlePlayLoop.equip_from_hand(swapped, "weapon", 3)
+	check(BattlePlayLoop.unit(hand_worn, "leonard")["weapon_code"] == 3 and BattlePlayLoop.held_item_code(hand_worn) == 2 and BattlePlayLoop.unit(hand_worn, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153], "held weapon goes on and the old weapon comes into the hand")
+	check(BattlePlayLoop.equip_from_hand(hand_worn, "head", 2) == hand_worn, "a wrong slot keeps the hand")
+	var hand_dropped := BattlePlayLoop.discard_hand(hand_worn, 2)
+	check(not hand_dropped.has("held_item") and BattlePlayLoop.unit(hand_dropped, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153] and BattlePlayLoop.change_equipment(hand_dropped, "head", 7, 153) != hand_dropped, "丟棄 clears a non-important hand and frees the other commands")
+	var roomy := in_hand.duplicate(true)
+	BattlePlayLoop.unit_ref(roomy, "leonard")["inventory"][7] = 0
+	var hand_back := BattlePlayLoop.return_hand(roomy, 153)
+	check(not hand_back.has("held_item") and BattlePlayLoop.unit(hand_back, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153], "with room the held piece goes back first-empty")
+	var keepsake := full.duplicate(true)
+	BattlePlayLoop.unit_ref(keepsake, "leonard")["inventory"][7] = 281
+	var important_hand := BattlePlayLoop.swap_hand_with_bag(BattlePlayLoop.unequip_to_hand(keepsake, "head", 153), 7, 281, 153)
+	check(BattlePlayLoop.held_item_code(important_hand) == 281 and BattlePlayLoop.discard_hand(important_hand, 281) == important_hand, "丟棄 keeps an important item in the hand")
 	for request in [["head", 1, 3], ["weapon", 0, 3], ["unknown", 1, 3]]:
 		check(BattlePlayLoop.change_equipment(original, request[0], request[1], request[2]) == original, "wrong slot/stale selection fails atomically")
 	for key in ["battle_outcome", "attacked_this_action", "interaction"]:

@@ -32,6 +32,7 @@ signal give_finished(revision: int)
 signal drop_requested(item_code: String)
 signal equipment_requested(slot: String, inventory_index: int, item_code: int)
 signal hand_return_requested(inventory_index: int, item_code: int)
+signal hand_swap_requested(inventory_index: int, item_code: int, held: int)
 ## take_up (399) when an item comes into the hand, put_down (400) when the hand places it.
 signal ui_sound_requested(event: String)
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
@@ -83,6 +84,8 @@ var selected_slot := ""
 var equipment_view: Control
 var target_buttons: Dictionary = {}
 ## Mode 4／5 held slot [0x4c1ce4] as a draft: the real inventory index and code of the held item.
+## held_index -1 with a code is the loop's full-bag hand (BattlePlayLoop.held_item_code): the
+## piece is in neither bag nor equipment.
 var held_index := -1
 var held_code := 0
 ## Mode 4／5 left column 屬性 page (WINDOW21) shown over the bag while an item is held over the board.
@@ -563,11 +566,17 @@ func _drop_icon_button() -> TextureButton:
 
 ## A pick on a WINDOW20 row (0x438c53..0x438de7): empty hand takes the row's item (sound 399; the
 ## rows close its gap, 0x436e80); a held item goes back first-empty — the end of the compacted bag
-## (0x436e30, sound 400), committed through hand_return_requested.
+## (0x436e30, sound 400), committed through hand_return_requested. The loop's full-bag hand
+## trades places with the row instead (0x436ed0 full: row item to the hand, held piece to
+## slot 8), committed through hand_swap_requested.
 func _hand_row(index: int, code: int) -> void:
 	if page != "hand":
 		return
-	if held_code != 0:
+	if held_code != 0 and held_index < 0 and code != 0:
+		selected_item = str(code)
+		selected_index = index
+		hand_swap_requested.emit(index, code, held_code)
+	elif held_code != 0:
 		_return_hand()
 	elif code != 0:
 		_set_hand(index, code)
@@ -592,12 +601,13 @@ func _hand_slot(slot: String) -> void:
 
 
 ## BattleSceneMenus after a committed change: the window stays up on the new unit and the piece
-## that came off (old code) is in the hand, found where the rules put it (first empty).
-func hand_equipment_changed(unit: Dictionary, old_code: int) -> void:
+## that came off (old code) is in the hand, found where the rules put it (first empty) — or,
+## with a full bag, in the loop's hand (`loop_held`).
+func hand_equipment_changed(unit: Dictionary, old_code: int, loop_held := 0) -> void:
 	source_unit = unit.duplicate(true)
-	var index: int = source_unit["inventory"].rfind(old_code) if old_code != 0 else -1
+	var index: int = source_unit["inventory"].rfind(old_code) if old_code != 0 and loop_held == 0 else -1
 	held_index = index
-	held_code = old_code if index >= 0 else 0
+	held_code = loop_held if loop_held != 0 else (old_code if index >= 0 else 0)
 	ui_sound_requested.emit("put_down" if selected_item != "0" else "take_up")
 	_show_hand_window(operation)
 
@@ -612,6 +622,16 @@ func _hand_drop() -> void:
 	selected_item = str(held_code)
 	selected_index = held_index
 	drop_requested.emit(selected_item)
+
+
+## BattleSceneMenus after a committed full-bag row trade: the row's item is the loop's hand
+## (sound 400).
+func hand_swapped(unit: Dictionary, held: int) -> void:
+	source_unit = unit.duplicate(true)
+	held_index = -1
+	held_code = held
+	ui_sound_requested.emit("put_down")
+	_show_hand_window(operation)
 
 
 ## BattleSceneMenus after a committed discard: the hand is empty, the window stays up.

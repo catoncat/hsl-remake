@@ -388,7 +388,7 @@
     },
     {
       "id": "battle-equip-drop-hand",
-      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN），持物移上装备板时左栏改显屬性页已照 0x439a0f（lane HANDWIN2）；持物背包行即按删格收拢显示（0x436e80）、点背包行或右键放回收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；剩：满包时不能把卸下的装备拿在手上（规则拒绝），原版这时的满包互换（点中格物进手、持物放第 8 格）因此不出现；窗内「返回」钮与「道具 n／8」为共用排布",
+      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN），持物移上装备板时左栏改显屬性页已照 0x439a0f（lane HANDWIN2）；持物背包行即按删格收拢显示（0x436e80）、点背包行或右键放回收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；满包时卸下进手、满包互换（点中格物进手、持物放第 8 格）、手持装上／丟棄／放不回则手与窗都留已照原版（lane FULLBAGHAND）；剩：窗内「返回」钮与「道具 n／8」为共用排布",
       "original": "state7 0x444185／state8 0x4441ac → 0x43b4e0 跳表 0x43bef4 mode4／5 同进 0x43b7fd，mode5 另建丟棄钮 0x43b280(0,0) 中心 (285,387)；背包格 0x438c84..0x438de7（0x436ed0 满包判定）、装备板 0x43993e／0x439998、左栏页 0x439a0f、丟棄 0x43aacb 已读；点击位 0x40000 的写入者未追",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_actions.md",
