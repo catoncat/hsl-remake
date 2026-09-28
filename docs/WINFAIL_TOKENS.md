@@ -33,8 +33,8 @@ status 的前导条件链；全部成立才触发（WinfailConditions.condition_
 | `actCheckAnyPlayerArrivePos` | `[x1][y1][x2][y2]` | 任一在场我方单位站在像素矩形覆盖的格 | 3 |
 | `actCheckNextSerialNumber` | `[num]` | 行动计数 0x4c1ad4 的定时器：截止字 0x4c1ad6 为 0 时置为计数＋num，计数到截止成立并清零 | 1 |
 | `actCheckPlayerArriveSysPos` | `[player code][serial]` | code／serial 指定单位站在 actRandomSetSysArrivePos 抽中的系统到达点 | 5 |
-| `actCheckRoundDisp` | `[number]` | 当前回合 ≥ number，与 actCheckRoundNumber 同读法 | 2 |
-| `actDetectRoundDispDisp` | `[num]` | 当前回合 ≥ 建 loop 时的回合基线 + num | 1 |
+| `actCheckRoundDisp` | `[number]` | 基线字 0x4c1bbe 为 0 时首次求值置为回合＋num；回合 ≥ 基线成立并清零 | 2 |
+| `actDetectRoundDispDisp` | `[num]` | 回合 ≥ 基线字＋num（不写基线；基线未设即绝对回合） | 1 |
 
 ## 动作（`APPLIED_ACTIONS`，47 个）
 

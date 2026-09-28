@@ -1,12 +1,13 @@
 # Winfail 解释器的声明边界（claim limits）
 
-> evidence: provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 · status: live · functions: 0x407ec0, 0x42cbd0, 0x42cc10, 0x4348f0, 0x43ede0, 0x446bb0, 0x448840, 0x44e7b0, 0x44e820, 0x44e8d0, 0x44ebf0, 0x44ecb0, 0x44ed70, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0, 0x453b30, 0x458c80 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: provisional; static-derived: 带地址的各条; resource-derived: 脚本结构 · status: live · functions: 0x407ec0, 0x42cbd0, 0x42cc10, 0x4348f0, 0x43d5f5, 0x43ede0, 0x446bb0, 0x448840, 0x44e7b0, 0x44e820, 0x44e8d0, 0x44ebf0, 0x44ecb0, 0x44ed70, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0, 0x453b30, 0x458c80, 0x45e307, 0x45f5f7 · tools: run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 WINFAIL 的段、条件与动作 token 可从脚本读出，各条中给出地址的部分为 static-derived，handler 时序与等价不在任何一条里声明（resource-derived；static-derived）。
 - 重制数据驱动解释器 `game/sim/WinfailScenarioRules.gd` 只保留短 id 列表 `WinfailCompiler.CLAIM_LIMIT_IDS`，`rules_from_seed()` 结果的 `claim_limits` 字段存 id；本表是这些 id 的原文（resource-derived 输入）。
-- 五类读法（«五类读法»一节，static-derived，只读 `hsl01.exe` 反汇编）：条件极性逐条读出，与重制一致（HPLow 对已倒下目标的时机未读）；前缀在原版只有首个检查 token，重制的 AND 读法只在夹具出现（资源里 0 处）；状态槽按首个空槽插入、删最后一份、扫描按槽序，重制已改；插入对象在插入 token 当步创建；同一扫描里胜与负都成立时由先结束的链决定，未读出链的推进次序。
+- 五类读法（«五类读法»一节，static-derived，只读 `hsl01.exe` 反汇编）：条件极性逐条读出，与重制一致（HPLow 对已倒下目标的时机未读）；前缀在原版只有首个检查 token，重制的 AND 读法只在夹具出现（资源里 0 处）；状态槽按首个空槽插入、删最后一份、扫描按槽序，重制已改；插入对象在插入 token 当步创建；同一扫描里胜与负都成立时由先到终点例程的链决定。
+- 两处补读（«回合显示基线与胜负并立»一节，static-derived）：actCheckRoundDisp／actDetectRoundDispDisp 以显示基线字计数，重制已改；胜负并立时胜对象每帧先跑，胜链首拍到 actSetNextPlayLevelEvent 或链尾则胜，否则败，重制已改。
 - 差异：句内标 provisional 的部分是重制读法；差异清单 `winfail-readings`（provisional）。
 
 ## 证据
@@ -32,7 +33,7 @@
 | `random_sys_arrive_pos` | static-derived; provisional | actRandomSetSysArrivePos selects one of the first N pixel pairs with 0x458c80(N), aligns both coordinates to 32 pixels, and actCheckPlayerArriveSysPos compares the resolved actor world position at that alignment; the draw is one rand(N) on the loop's global stream `global_rng` (GlobalRandomStream, the original's words 0x4795d4／0x4795d8); provisional: the global draws before it (the AI decision chain, animation delays) are not yet the original's, so the same clock seed does not pick the original's pair. |
 | `recorded_only_tokens` | provisional | recorded only: presentation tokens (actDelay, walks, scrolls, sounds, shapes), town/big-map flags, actWaitPlayer/actSetWaitRound, insert modifiers, actDeletePlayerCode/actKeepPlayerST carry requests and actDeleteObject/actWalkAndDelete departures; unknown tokens are listed as unsupported, never silently ignored. |
 | `player_total_arrive_counts` | provisional | actCheckPlayerTotalNumber/actCheckAnyPlayerArrivePos count units whose role is player_controlled or friendly_ai. |
-| `round_display` | static-derived | actCheckRoundDisp reads the packed round-display counter and clears its low word after passing; actDetectRoundDispDisp compares the low word with the display baseline plus its signed offset without that reset. The remake maps both to the battle turn and keeps the baseline in the winfail runtime. |
+| `round_display` | static-derived | actCheckRoundDisp arms the display baseline word (round + num) at its first evaluation when it is unset, holds once the round reaches it and clears it; actDetectRoundDispDisp holds once the round reaches baseline + num without a write; a mapobjRoundNumberCounter object sets the baseline to obj_HitPoint + round. The remake keeps the baseline in the winfail runtime («回合显示基线与胜负并立»). |
 | `delete_pos_x_range` | static-derived | actDeletePosPlayerXRange selects exactly x_number quantized pixel cells on the requested process side; the remake commits matching living units through the existing departure ledger. actInsertStoryObjectXRange records the same pixel-derived object positions without creating combat units. |
 | `level_up_star_movie` | static-derived | actInsertLevelUpStar is a native effect/sound request only; the remake records skipped_no_level_up_star_sprite when no dedicated star asset is available. actPlayMovie uses the existing MoviePlayer and records headless skips. |
 
@@ -42,11 +43,31 @@ Only-read disassembly of the same `hsl01.exe` (sha256 `f0b5f835…70f7`); no bou
 
 | 读法 | 原版例程与规则 | 重制 |
 | --- | --- | --- |
-| 条件极性 | The VM `0x450840` loop reads a token (`0x4511e9`), dispatches through `0x4537f4`; a check that does not hold exits through `0x4527c3` with the pc rewound to its own token and return 0, so the scan (`0x44edbf`) rewinds the slot pc and the status stays armed. Per case: `0x23`／`0x26` hold when none of the listed ids is found by `0x44fad0`; `0x24` when `0x44fb90` count < num; `0x25` when `[0x4c1b94]` <= num; `0x27` when `[0x4c1b90]` <= num; `0x28` when the round word `0x4c1bbc` >= num (`0x452510 jl` = not yet); `0x41` fails when `0x44fad0` finds no object (`0x4528a4`), else holds when live HP `+0xd8` <= max(1, max HP `+0xdc` × ratio / 100); `0x43` always holds; `0x71` never | 一致；actCheckPlayerHPLow 的已倒下目标重制仍按 HP 0 成立（provisional）：`0x4528a4` 只在对象已注销时不成立，死亡分支注销与完成扫描的先后未读，而第 3 场 LEVEL003 唯一的胜利路径（事件 0 对漢克斯的 HPLow）要求被击倒的目标仍能成立。`0x5e`／`0x7c` 的基线是首次求值时的计数＋num（全局字 `0x4c1bbe`），重制读成绝对回合，见边界 |
+| 条件极性 | The VM `0x450840` loop reads a token (`0x4511e9`), dispatches through `0x4537f4`; a check that does not hold exits through `0x4527c3` with the pc rewound to its own token and return 0, so the scan (`0x44edbf`) rewinds the slot pc and the status stays armed. Per case: `0x23`／`0x26` hold when none of the listed ids is found by `0x44fad0`; `0x24` when `0x44fb90` count < num; `0x25` when `[0x4c1b94]` <= num; `0x27` when `[0x4c1b90]` <= num; `0x28` when the round word `0x4c1bbc` >= num (`0x452510 jl` = not yet); `0x41` fails when `0x44fad0` finds no object (`0x4528a4`), else holds when live HP `+0xd8` <= max(1, max HP `+0xdc` × ratio / 100); `0x43` always holds; `0x71` never | 一致；actCheckPlayerHPLow 的已倒下目标重制仍按 HP 0 成立（provisional）：`0x4528a4` 只在对象已注销时不成立，死亡分支注销与完成扫描的先后未读，而第 3 场 LEVEL003 唯一的胜利路径（事件 0 对漢克斯的 HPLow）要求被击倒的目标仍能成立。`0x5e`／`0x7c` 的基线字 `0x4c1bbe` 已改照原版，见下节 |
 | AND 前缀 | A holding check exits through `0x452798`／`0x4527a0`: with the story flag `0x4c1b00 & 0x4000000` clear (every scan, guarded in `0x408370`) it returns 1 with the pc just past that one check. The scan (`0x44edf0`) then disarms the slot and starts the chain at that pc, so the prefix is exactly the first token; a second leading check runs in chain mode, where a generic check returns 0 with the pc rewound either way (`0x4527b5`) and never passes — only case `0x72` has its own chain gate | 读法不同但资源无此形：149 份种子 0 个状态有两个以上前导检查，结果链里的检查只有 actCheckEventNotExist（32 处，作闸门）。重制对夹具仍按全部前导检查 AND（`run_winfail_rules_tests` 的夹具断言依赖它） |
 | 插入生命周期 | Status slots: 10 win (`*0x4c1d04`), 10 fail, 20 event (`*0x4c1d0c`), stride `0xb4`, code `-1` = free. `0x44e7b0` (actInsertEventStatus) writes the first free slot without a duplicate check and does nothing when all are taken; `0x44e8d0` (actDeleteEventStatus) frees the last slot holding the code. Object inserts: case `0x12` (actInsertObject) creates the object in the same chain step (`0x407ec0`), stores it as the previous insert (`0x4c1d38`) and places it on a free aligned cell (`0x44fbd0`) | 已改照原版：`WinfailCompiler.status_slot_insert／status_slot_delete` 按首个空槽、无查重、删最后一份（改前查重、删全部）；STORY 初始状态同规则。插入对象：重制在建出单位前不定胜负（`_script_actors_pending`），注册时刻未读，见边界 |
 | 一次性状态消费 | The scan that fires a status writes `-1` into its slot before starting the chain (`0x44ec7d` win, `0x44edfd` event), so the status is consumed at the fire and only an explicit actInsert*Status re-arms it — a self re-inserting chain lands in the first free slot, often its own. The scan also skips the slot when the prefix call changed its code (`0x44edb6`) | 一致（fire 前消费、只经显式插入再武装）；改为消费所扫到的那一份（`status_slot_disarm`），不再删同码的全部份 |
-| 事件顺序 | `0x44ee20` = win scan `0x44ebf0`, fail scan `0x44ecb0`, event walk `0x44ed70`; each walks its slots in index order and starts at most the first holding status. A win chain ends in `0x453a80(1)` → `0x42cc10`, a fail chain in `0x453a80(2)` → `0x42cbd0`; both return at once when `0x4c1b00 & 0x38000000` is already set, so the first chain to finish decides the battle | 已改照原版：事件扫描与胜／负判定按槽序（改前按区段序）。同一扫描胜负同时成立：重制按负先于胜，原版由先结束的链决定，链推进次序（`0x45e307` 对象表）未读，见边界 |
+| 事件顺序 | `0x44ee20` = win scan `0x44ebf0`, fail scan `0x44ecb0`, event walk `0x44ed70`; each walks its slots in index order and starts at most the first holding status. A win chain ends in `0x453a80(1)` → `0x42cc10`, a fail chain in `0x453a80(2)` → `0x42cbd0`; both return at once when `0x4c1b00 & 0x38000000` is already set, so the first chain to finish decides the battle | 已改照原版：事件扫描与胜／负判定按槽序（改前按区段序）。同一扫描胜负同时成立的决定者已改照原版，见下节 |
+
+### static-derived：回合显示基线与胜负并立
+
+Only-read disassembly of the same `hsl01.exe`; no bounded execution. Resource census: the 149 chapter-01 seeds and the LEVEL028 OBS (`obj-028.obs`).
+
+| 读法 | 原版例程与规则 | 重制 |
+| --- | --- | --- |
+| actCheckRoundDisp（case `0x5e`） | `0x452522`: baseline word `0x4c1bbe` (high word of the round dword `0x4c1bbc`); when 0 it is written as `num + round` (u16, `0x452537`). `0x452540 cmp ax, word [0x4c1bbc]; ja 0x4527c3`: not yet while baseline > round (unsigned); otherwise `0x45254d` clears the baseline to 0 and the check holds. A baseline already set is compared as is — num is not read. The battle reset `0x42c640` writes dword `0x4c1bbc = 1` (round 1, baseline 0) | 已改照原版：`WinfailConditions._round_display_reached` 在事件扫描里武装／清零 `winfail_runtime.round_display_baseline`（改前按绝对回合 ≥ num） |
+| actDetectRoundDispDisp（case `0x7c`） | `0x452562..0x45257e`: holds once `baseline + num` (signed) <= round word; no write, so with an unset baseline num is an absolute round | 已改照原版：基线初值 0（改前为开战回合，比原版晚一回合） |
+| 回合计数对象 | The story object with obj_Data9 `mapobjRoundNumberCounter`: its first tick (`0x43d5f5`, init flag) writes the baseline = template `+0x88` (obj_HitPoint) + round; later ticks print `baseline − round` (`0x43d625..0x43d667`, digit width `+0x84` obj_Score). LEVEL028 obj 23 「計數」: obj_HitPoint 12, obj_Score 38 | 已改照原版：导入器保留该对象的 obj_HitPoint／obj_Score；`actInsertStoryObject` 插入时写基线 |
+| 胜负并立的执行次序 | `0x453ac0` creates the status object with `0x45e307(0, 0, 799, 0)`; a zero fourth argument appends it at the tail of its plane list (`0x45e38e..0x45e3ab`), and the win scan `0x44ebf0` runs before the fail scan `0x44ecb0`, so the win object is the earlier node. The frame loop `0x45f5f7` walks each plane list head to tail and calls the process (`0x453b30`), which runs the VM `0x450840` once per tick | 已改照原版：`_terminal_status` 胜、败各取首个成立者再比较（改前一律败先） |
+| 谁先到终点 | `0x42cc10` (victory) and `0x42cbd0` (defeat) return at once when `0x4c1b00 & 0x38000000` is set. Case `0x2b` actSetNextPlayLevelEvent (`0x4528fd`) calls `0x42cc10` itself. Tokens 4／15／26／70／71／98／128／136／137 jump back to the token loop `0x4511e6`／`0x4511e9` within the tick; the other result tokens store the pc and yield. 143 of 151 fail sections have an empty chain, which ends in the first tick | 胜链在首拍内到 actSetNextPlayLevelEvent 或链尾则胜（遭遇战 5xx 与 LEVEL015／031／038／041 的胜链），否则败 |
+
+LEVEL030 and LEVEL028 trigger rounds (R0 = the round event 0 fires):
+
+| 关 | 事件 | 改前 | 改后（原版） |
+| --- | --- | --- | --- |
+| 絕望之谷（LEVEL030） | event 3 actCheckRoundDisp 5 | round ≥ 5 (absolute; fires at once when R0 ≥ 5) | first evaluated in the rescan after event 0 → fires at R0 + 5 |
+| 眾神的宮殿遺址（LEVEL028） | event 1 actDetectRoundDispDisp −2 | round 4, the rescan after event 0 | round 14 (counter baseline 4 + 12 = 16, minus 2) |
+| 眾神的宮殿遺址（LEVEL028） | event 2 actCheckRoundDisp 0 → win_0 | round 4 (won at once) | round 16 |
 
 ## 重制接线
 
@@ -59,6 +80,6 @@ Only-read disassembly of the same `hsl01.exe` (sha256 `f0b5f835…70f7`); no bou
 ## 边界
 
 - 任何一条都不声明原版 handler 时序或等价；evidence 列只反映原句的层级词。
-- 未对齐：actCheckRoundDisp／actDetectRoundDispDisp 的相对基线（第 30 场 LEVEL030 事件 3、第 28 场 LEVEL028 事件 1／2）；STORY 删除留下的空槽被压紧；同一扫描胜负同时成立时的决定者；插入对象的注册时刻；第二个前导检查的链内停滞（资源无此形）。
+- 未对齐：STORY 删除留下的空槽被压紧；插入对象的注册时刻；第二个前导检查的链内停滞（资源无此形）；胜负并立而败链自带等待动作（8 处 actMessage）时重制仍按败先，未逐拍比较；败已定局后胜链余下动作在原版照跑（重制不跑）；`0x42cc10` 内 `0x460989` 的前置检查未读；存档里旧的 `round_display_baseline`（开战回合）会被读成已设基线。
 
 相关包：[Exec Mode 与系统到达点](original_exec_mode_sys_arrive.md)、[FixPos／Fly／PrevInsert](original_fixpos_fly_prev_insert.md)、[回合显示计数](original_round_display.md)、[条件目标](original_check_targets.md)、[玩家模式](original_player_mode.md)、[随机位置](original_random_position.md)、[GetItem／DeletePos](original_getitem_deletepos.md)。

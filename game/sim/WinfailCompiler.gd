@@ -42,8 +42,8 @@ const SUPPORTED_CONDITIONS := [
 	"actCheckAnyPlayerArrivePos",  # 任一在场我方单位站在像素矩形覆盖的格
 	"actCheckNextSerialNumber",  # 行动计数 0x4c1ad4 的定时器：截止字 0x4c1ad6 为 0 时置为计数＋num，计数到截止成立并清零
 	"actCheckPlayerArriveSysPos",  # code／serial 指定单位站在 actRandomSetSysArrivePos 抽中的系统到达点
-	"actCheckRoundDisp",  # 当前回合 ≥ number，与 actCheckRoundNumber 同读法
-	"actDetectRoundDispDisp",  # 当前回合 ≥ 建 loop 时的回合基线 + num
+	"actCheckRoundDisp",  # 基线字 0x4c1bbe 为 0 时首次求值置为回合＋num；回合 ≥ 基线成立并清零
+	"actDetectRoundDispDisp",  # 回合 ≥ 基线字＋num（不写基线；基线未设即绝对回合）
 ]
 ## Condition tokens the result chain itself evaluates when they follow the leading
 ## prefix. static-derived (hsl01.exe 0x450840 case 0x72 ← 0x453b30 status-object tick):
@@ -249,6 +249,7 @@ static func rules_from_seed(seed: Dictionary, cell_size: int = DEFAULT_CELL_SIZE
 		"story_object_terrain": _story_object_terrain(seed),
 		"poison_gas_objects": _process_shape_counts(seed, "defProcPoisonGas"),
 		"drop_lightning_objects": _process_shape_counts(seed, "defProcDropLightn"),
+		"round_counter_objects": _round_counter_objects(seed),
 		"token_counts": token_counts,
 		"unsupported_tokens": unsupported,
 		"fully_supported": unsupported.is_empty(),
@@ -436,6 +437,20 @@ static func _story_object_terrain(seed: Dictionary) -> Dictionary:
 		if TerrainEditRules.EDITS_BY_OBJECT_KIND.has(kind):
 			edits[str(object.get("symbol", ""))] = (TerrainEditRules.EDITS_BY_OBJECT_KIND[kind] as Dictionary).duplicate()
 	return edits
+
+
+static func _round_counter_objects(seed: Dictionary) -> Dictionary:
+	## Resource-derived join: script object symbol → obj_HitPoint (+0x88) of the objects
+	## whose obj_Data9 is mapobjRoundNumberCounter. static-derived (0x43d5f5): the object's
+	## first tick writes the display baseline 0x4c1bbe = +0x88 + round.
+	var result := {}
+	for object_value in seed.get("script_objects", []):
+		if typeof(object_value) != TYPE_DICTIONARY:
+			continue
+		var fields: Dictionary = object_value.get("object_data_fields", {})
+		if str(fields.get("obj_Data9", "")) == "mapobjRoundNumberCounter":
+			result[str(object_value.get("symbol", ""))] = int(str(fields.get("obj_HitPoint", "0")))
+	return result
 
 
 static func _process_shape_counts(seed: Dictionary, process: String) -> Dictionary:

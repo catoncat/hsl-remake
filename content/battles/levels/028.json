@@ -121,10 +121,13 @@
   },
   "sweep_fixture": {
     "mode": "status",
-    "turn": 4,
+    "turn": 16,
+    "event_statuses": [
+      2
+    ],
     "expect_no_outcome": true,
     "expect_win_status": 0,
-    "note": "WINFAIL028 arms win_0 only after event_0 -> event_1 -> event_2 at the round-display transition; never add an initial win override."
+    "note": "WINFAIL028 arms win_0 through event_2 (actCheckRoundDisp 0): in play event_0 inserts the round counter at round 4 (baseline 4 + obj_HitPoint 12 = 16) and event_2 holds at round 16; the fixture arms event_2 alone at round 16. Never add an initial win override."
   },
   "comments": {
     "story_scene": [

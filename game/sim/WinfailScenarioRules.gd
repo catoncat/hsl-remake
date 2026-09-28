@@ -24,7 +24,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/winfail_claim_limits.md
 ##   rules: provisional
-##     (MAX_PASSES bound, fail-before-win on a shared scan — ids in
+##     (MAX_PASSES bound, a fail chain with waiting actions read as ending first — ids in
 ##     docs/evidence_packets/static_reverse/winfail_claim_limits.md)
 ##   rules: remake-invented (party_wiped defeat rule — negative-evidence in original_check_targets.md §R8)
 
@@ -180,7 +180,8 @@ static func _new_winfail_runtime(next: Dictionary, rules: Dictionary, opening: D
 		"previous_insert_id_changes": [],
 		"handoff_counter": 0,
 		"serial_deadline": 0,
-		"round_display_baseline": int(next.get("turn", 1)),
+		# 0x42c640 writes dword 0x4c1bbc = 1: round 1, display baseline word 0 (unset).
+		"round_display_baseline": 0,
 		"deleted_player_codes": [],
 		"job_up_changes": [],
 		"walk_shape_changes": [],
@@ -271,8 +272,8 @@ static func spawned_reinforcement_count(battle: Dictionary, class_id: String) ->
 
 
 static func victory_state(battle: Dictionary, _escape_zone: Array = []) -> Dictionary:
-	## Pure: fail statuses first (shared defeat outcome), then the first armed win
-	## status whose condition chain holds, then the remake party-wipe defeat; `{}`
+	## Pure: the first holding fail／win status (_terminal_status decides a shared
+	## scan), then the remake party-wipe defeat; `{}`
 	## while the battle is ongoing. Attack-context conditions never decide here.
 	var terminal := _terminal_status(battle)
 	var outcome: Dictionary = terminal["outcome"]
@@ -467,7 +468,8 @@ static func _bump_handoff_counter(runtime: Dictionary) -> void:
 
 
 static func _terminal_status(battle: Dictionary, wanted_outcome: Dictionary = {}) -> Dictionary:
-	## {status, outcome}; fail before win; outcome `{}` while ongoing. With
+	## {status, outcome}; the first holding win and fail status of one scan, decided by
+	## _win_chain_first_tick; outcome `{}` while ongoing. With
 	## `wanted_outcome` set (dialogue / board lookups after the loop froze), the
 	## recorded resolution wins, then the first armed status of the matching kind.
 	var rules: Dictionary = battle.get("winfail_script_rules", {})
@@ -484,14 +486,30 @@ static func _terminal_status(battle: Dictionary, wanted_outcome: Dictionary = {}
 		if not status.is_empty():
 			return {"status": status, "outcome": (resolved["outcome"] as Dictionary).duplicate()}
 	if wanted_outcome.is_empty():
-		for kind in ["fail", "win"]:
-			# 0x44ebf0／0x44ecb0 walk the 10 slots in index order (static-derived).
+		var started := {}
+		for kind in ["win", "fail"]:
+			# 0x44ebf0／0x44ecb0 walk the 10 slots in index order and start the first
+			# holding status (static-derived).
 			for code_value in WinfailCompiler.status_slots(battle, kind):
 				var status := WinfailCompiler.status_by_key(rules, "%s_%d" % [kind, int(code_value)]) if int(code_value) != -1 else {}
 				if status.is_empty() or _pending_enemy_count_result(battle, status): continue
 				if not WinfailConditions.conditions_hold(battle, status, "round"):
 					continue
-				return {"status": status, "outcome": outcome_for(status)}
+				started[kind] = status
+				break
+		if started.has("win") and started.has("fail"):
+			# static-derived (0x453ac0 → 0x45e307(…, 799, 0) appends each status object at
+			# the tail of its plane list; 0x45f5f7 ticks head to tail): the win object runs
+			# first each frame, and the first of 0x42cc10／0x42cbd0 to run decides
+			# (0x4c1b00 & 0x38000000). The win decides only when its chain reaches
+			# actSetNextPlayLevelEvent (case 0x2b calls 0x42cc10) or its end within the
+			# first tick; otherwise the fail chain ends first. provisional: a fail chain
+			# with its own waiting actions is still read as ending first.
+			var winner: Dictionary = started["win"] if _win_chain_first_tick(started["win"]) else started["fail"]
+			return {"status": winner, "outcome": outcome_for(winner)}
+		for kind in ["fail", "win"]:
+			if started.has(kind):
+				return {"status": started[kind], "outcome": outcome_for(started[kind])}
 		return {"status": {}, "outcome": {}}
 	var kind := "fail" if BattleOutcome.is_defeat(wanted_outcome) else "win"
 	var armed_now: Array = battle.get("%s_statuses" % kind, [])
@@ -506,6 +524,32 @@ static func _terminal_status(battle: Dictionary, wanted_outcome: Dictionary = {}
 		if outcome_for(status) == wanted_outcome:
 			return {"status": status, "outcome": wanted_outcome.duplicate()}
 	return {"status": {}, "outcome": {}}
+
+
+## Result tokens the VM 0x450840 runs without ending its tick (their case jumps back to
+## the token loop 0x4511e6／0x4511e9; static-derived): every other token yields the frame.
+const NON_YIELDING_RESULT_TOKENS := [
+	"actWalkAndDelete",  # 4
+	"actPlaySound",  # 15
+	"actDeleteFailStatus",  # 26
+	"actSetTownExecEvent",  # 70
+	"actDeletePlayerCode",  # 71
+	"actSetTownExitExecEvent",  # 98
+	"actAddOverScore",  # 128
+	"actBMSetPointEvent",  # 136
+	"actBMSetPointEncounterRatio",  # 137
+]
+
+
+static func _win_chain_first_tick(status: Dictionary) -> bool:
+	## The win chain reaches actSetNextPlayLevelEvent or its end in its first tick.
+	for action_value in status.get("actions", []):
+		var name := str((action_value as Dictionary).get("name", ""))
+		if name == "actSetNextPlayLevelEvent":
+			return true
+		if not NON_YIELDING_RESULT_TOKENS.has(name):
+			return false
+	return true
 
 
 static func _pending_enemy_count_result(battle: Dictionary, status: Dictionary) -> bool:

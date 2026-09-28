@@ -52,13 +52,16 @@ static func condition_holds(battle: Dictionary, name: String, args: Array, conte
 		"actCheckRoundNumber":
 			return args.size() >= 1 and int(battle.get("turn", 1)) >= int(arg(args, 0))
 		"actCheckRoundDisp":
-			return arg(args, 0).is_valid_int() and int(battle.get("turn", 1)) >= int_arg(args, 0)
+			return _round_display_reached(battle, args)
 		"actDetectRoundDispDisp":
+			# static-derived (0x450840 case 0x7c, 0x452562..0x45257e): holds once the
+			# round word reaches the display baseline word 0x4c1bbe + num (signed); no
+			# baseline write. An unset baseline (0) makes num an absolute round.
 			if not arg(args, 0).is_valid_int():
 				return false
 			var runtime: Dictionary = battle.get("winfail_runtime", {})
-			var baseline := int(runtime.get("round_display_baseline", 1))
-			return int(battle.get("turn", 1)) >= baseline + int_arg(args, 0)
+			var baseline := int(runtime.get("round_display_baseline", 0)) & 0xffff
+			return baseline + int_arg(args, 0) <= int(battle.get("turn", 1)) & 0xffff
 		"actCheckEnemyTotalNumber":
 			return args.size() >= 1 and alive_enemy_total(battle) <= int(arg(args, 0))
 		"actCheckEnemyNumber":
@@ -239,6 +242,25 @@ static func _serial_deadline_reached(battle: Dictionary, args: Array) -> bool:
 		deadline = (int_arg(args, 0) + counter) & 0xffff
 	var holds := deadline <= counter
 	runtime["serial_deadline"] = 0 if holds else deadline
+	return holds
+
+
+## The round-display countdown: arms the baseline, holds once the round reaches it.
+static func _round_display_reached(battle: Dictionary, args: Array) -> bool:
+	# static-derived (0x450840 case 0x5e, 0x452522..0x45255d): a zero baseline word
+	# 0x4c1bbe is armed to round + num (u16) at the first evaluation; the check holds
+	# once the round word reaches the baseline (unsigned) and clears it. A baseline
+	# already set (the mapobjRoundNumberCounter object, 0x43d5f5) is used as is. It
+	# writes like actCheckNextSerialNumber and is read only by event scans.
+	if not arg(args, 0).is_valid_int():
+		return false
+	var runtime: Dictionary = battle.get("winfail_runtime", {})
+	var round_word := int(battle.get("turn", 1)) & 0xffff
+	var baseline := int(runtime.get("round_display_baseline", 0)) & 0xffff
+	if baseline == 0:
+		baseline = (int_arg(args, 0) + round_word) & 0xffff
+	var holds := baseline <= round_word
+	runtime["round_display_baseline"] = 0 if holds else baseline
 	return holds
 
 

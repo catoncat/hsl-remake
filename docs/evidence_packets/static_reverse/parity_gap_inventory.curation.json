@@ -1212,12 +1212,12 @@
     },
     {
       "id": "winfail-readings",
-      "difference": "胜负脚本五类读法已对原版：极性逐条读出（HPLow 对已倒下目标的注销时机未读）、状态槽首个空槽插入／删最后一份／按槽序扫描已照原版；剩 RoundDisp 相对基线、同扫描胜负并立的决定者、插入对象注册时刻，AND 前缀只在夹具与原版不同",
-      "original": "扫描 0x44ee20（胜 0x44ebf0／负 0x44ecb0／事件 0x44ed70）、VM 0x450840 检查出口 0x4527a0／0x4527c3、槽 0x44e7b0／0x44e8d0 已读",
+      "difference": "胜负脚本读法已对原版：极性逐条读出（HPLow 对已倒下目标的注销时机未读）、状态槽、RoundDisp 显示基线、同扫描胜负并立（胜链首拍到终点才胜）已照原版；剩插入对象注册时刻、败链自带等待动作时的逐拍比较，AND 前缀只在夹具与原版不同",
+      "original": "扫描 0x44ee20、VM 0x450840（检查出口、case 0x5e／0x7c）、槽 0x44e7b0／0x44e8d0、计数对象 0x43d5f5、对象表 0x45e307／帧循环 0x45f5f7 已读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/winfail_claim_limits.md"
       ],
-      "remake": "Winfail* 解释器；状态槽 WinfailCompiler.status_slots，负先于胜与 AND 前缀仍是重制读法",
+      "remake": "Winfail* 解释器；状态槽、显示基线、胜负并立已照原版，AND 前缀与败链等待时的败先仍是重制读法",
       "remake_code": [
         "game/sim/WinfailScenarioRules.gd",
         "game/sim/WinfailConditions.gd",

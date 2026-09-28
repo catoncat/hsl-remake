@@ -1005,6 +1005,9 @@ func _round_and_x_range_tokens() -> void:
 	], [_command("actInsertEventStatus", [0])])
 	var scenario := {"scenario_rules": {}, "opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "p0", "actor_id": "001"}}}}
 	var round_loop: Dictionary = WinfailScenarioRules.initialize_script_state({"player_unit_id": "p0", "turn": 1, "units": [_unit("p0", "Player001", Vector2i(1, 1), 10, "player_controlled")]}, scenario, round_seed)
+	# Baseline word 0x4c1bbe already armed at round 5 (a first evaluation at round 0 + 5,
+	# or a round counter object); case 0x5e then compares the round with it.
+	round_loop["winfail_runtime"]["round_display_baseline"] = 5
 	round_loop["turn"] = 4
 	round_loop = WinfailScenarioRules.run_event_hooks(round_loop)
 	_assert_eq(round_loop["winfail_runtime"]["fired"].size(), 0, "actCheckRoundDisp is false before round 5")

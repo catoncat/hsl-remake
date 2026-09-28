@@ -350,6 +350,11 @@ static func _act_insert_story_object_x_range(c: Dictionary, _name: String, args:
 static func _act_insert_story_object(c: Dictionary, name: String, args: Array) -> void:
 	(c["runtime"]["presentation_requests"] as Array).append({"key": c["key"], "name": name, "args": args.duplicate()})
 	_apply_story_object_terrain(c["next"], c["key"], args)
+	# static-derived (0x43d5f5): a mapobjRoundNumberCounter object's first tick sets the
+	# display baseline 0x4c1bbe = obj_HitPoint + round (u16).
+	var counters: Dictionary = c["next"].get("winfail_script_rules", {}).get("round_counter_objects", {})
+	if counters.has(_arg(args, 0)):
+		c["runtime"]["round_display_baseline"] = (int(counters[_arg(args, 0)]) + int(c["next"].get("turn", 1))) & 0xffff
 
 
 static func _act_insert_story_object_wait(c: Dictionary, name: String, args: Array) -> void:

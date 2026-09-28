@@ -112,6 +112,10 @@ def parse_text_metadata(data: bytes, encoding: str | None = None) -> dict[str, A
         # (0x43cee7) — docs/evidence_packets/static_reverse/original_map_object_flash.md.
         if current_values.get("obj_Data9") == "mapobjFlash":
             retained |= {"obj_Score", "obj_HitPoint"}
+        # A round counter's obj_HitPoint is its round count and obj_Score its digit width
+        # (0x43d5f5／0x43d652) — docs/evidence_packets/static_reverse/original_round_display.md.
+        if current_values.get("obj_Data9") == "mapobjRoundNumberCounter":
+            retained |= {"obj_Score", "obj_HitPoint"}
         data_fields = {
             key: value
             for key, value in current_values.items()
