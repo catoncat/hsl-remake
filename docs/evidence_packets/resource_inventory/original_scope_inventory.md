@@ -1,6 +1,6 @@
 # Original scope inventory versus remake coverage
 
-> evidence: resource-derived · status: record-only · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-28
+> evidence: resource-derived; provisional: 500 段战斗桩的触发路线 · status: record-only · tools: hsltools/data/scope_inventory.py, hsltools/data/story_token_coverage.py, hsltools/data/winfail_coverage.py, hsltools/levels/battle.py · updated: 2026-09-28
 
 ## 结论
 

@@ -1,6 +1,6 @@
 # 原版裁判批量对照：AI 首轮回放判定与行动种类频率
 
-> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验 · status: record-only · functions: 0x407340, 0x407510, 0x409e40, 0x40bb80, 0x40c3a0, 0x40c570, 0x40c770, 0x40dd80, 0x413740, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x45fc01, 0x45fd4b, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-28
+> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验; provisional: 分布等价只靠频率对拍、重制治疗通道次序 · status: record-only · functions: 0x407340, 0x407510, 0x409e40, 0x40bb80, 0x40c3a0, 0x40c570, 0x40c770, 0x40dd80, 0x413740, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x45fc01, 0x45fd4b, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-28
 
 ## 结论
 

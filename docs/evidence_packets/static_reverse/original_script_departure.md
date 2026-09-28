@@ -1,6 +1,6 @@
 # 脚本离场、角色在场资格与演出游标
 
-> evidence: static-derived · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional: 在场提交与淡出的逐 tick 交错 · status: live · functions: 0x407720, 0x411b90, 0x44cb90, 0x44fad0, 0x44fbd0, 0x450410, 0x450450, 0x453b90, 0x45e3ed · tools: hsltools/probes/departure.py, run_departure_tests.gd · updated: 2026-09-28
 
 ## 结论
 

@@ -1,6 +1,6 @@
 # 原 AI：自救用药与残血敌方机会
 
-> evidence: static-derived · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_support_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional: 无注册药品或无合法伤害动作时跳过优先级 · status: live · functions: 0x40bf70, 0x40c110, 0x40c1d0, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x44fa80 · tools: hsltools/probes/ai_priority.py, run_ai_support_tests.gd · updated: 2026-09-28
 
 ## 结论
 

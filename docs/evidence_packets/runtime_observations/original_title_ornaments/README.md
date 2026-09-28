@@ -1,6 +1,6 @@
 # 原版标题画面的宝珠与书：上下浮动，不跟随选项；点击标题项放 ACCEPT01
 
-> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表；宝珠／书按住计时 10 tick 与读入淡出 0x42dc90(2); runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x424004, 0x4241a0, 0x424360, 0x42c180, 0x42c7e0, 0x42cb60, 0x42cc10, 0x42cc70, 0x42dc90, 0x4477b0, 0x458c80, 0x459990, 0x45e575, 0x45e882, 0x45e9bc, 0x45efce, 0x46098f, 0x460a58 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表；宝珠／书按住计时 10 tick 与读入淡出 0x42dc90(2); runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关; provisional: 星点逐颗落点、Menu_Star Shape_Delay 按 0 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x424004, 0x4241a0, 0x424360, 0x42c180, 0x42c7e0, 0x42cb60, 0x42cc10, 0x42cc70, 0x42dc90, 0x4477b0, 0x458c80, 0x459990, 0x45e575, 0x45e882, 0x45e9bc, 0x45efce, 0x46098f, 0x460a58 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 

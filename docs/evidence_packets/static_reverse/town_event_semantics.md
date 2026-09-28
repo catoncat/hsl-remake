@@ -68,7 +68,7 @@ VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主�
 
 ### static-derived：初始菜单树
 
-TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立（[original_world_town](original_world_town.md)），执行结果与本表一致。生成规则保留为推导记录：`content/world/town_initial_trees.json` 按以下规则生成，每条 entry 带 `source`：
+TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立（`0x454ae0` 清零树缓冲 `[0x4c1d74]` 后调用它）（[original_world_town](original_world_town.md)），执行结果与本表一致。生成规则保留为推导记录：`content/world/town_initial_trees.json` 按以下规则生成，每条 entry 带 `source`：
 
 1. 段头注释里的城镇名归类（如「歐姆村武器店」）；酒館类子项按注释前缀嵌套（「米蘭多酒館老闆」→ 7）。注释不是引擎数据 → provisional。
 2. 排除运行时才出现的节点：TOWNDEF 的 teAddSelfTE／teAddTE 与 PAK 全部 STORY／winfail 的 actAddTE 所加的 children（num=0 时为节点本身）、

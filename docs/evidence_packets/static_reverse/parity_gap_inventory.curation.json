@@ -3181,6 +3181,78 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_skill_targets.md|provisional|敌我 role 适配与 AI 候选策略": {
       "item": "skill-area-policies"
+    },
+    "scope:docs/evidence_packets/resource_inventory/original_scope_inventory.md|provisional|500 段战斗桩的触发路线": {
+      "item": "world-map-rules"
+    },
+    "scope:docs/evidence_packets/runtime_observations/oracle_batch/README.md|provisional|分布等价只靠频率对拍、重制治疗通道次序": {
+      "item": [
+        "ai-skill-buckets",
+        "rng-streams"
+      ]
+    },
+    "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|星点逐颗落点、Menu_Star Shape_Delay 按 0": {
+      "item": "title-ornaments"
+    },
+    "scope:docs/evidence_packets/runtime_observations/presentation_soft_locks/README.md|provisional|收尾淡出与经验时钟、53 关 緹娜 winfail 画面": {
+      "item": "timing-estimates"
+    },
+    "scope:docs/evidence_packets/static_reverse/first_battle_audio.md|provisional|trigger timing, relative volume, overlap, per-cell walk tempo": {
+      "item": [
+        "effect-sound-timing",
+        "settings-volume-mixer"
+      ]
+    },
+    "scope:docs/evidence_packets/static_reverse/initial_battle_initiative.md|provisional|开战出生的全局流种子与创建次序": {
+      "item": "rng-streams"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_ai_priority.md|provisional|无注册药品或无合法伤害动作时跳过优先级": {
+      "item": "ai-skill-buckets"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_ai_skills.md|provisional|威胁选取与有效收益计数": {
+      "item": "ai-skill-buckets"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_campaign_actors.md|provisional|模板坐标、reserve 状态字、HP≤0 重装与名单排序": {
+      "item": "carry-model"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|provisional|□ 墨迹偏移": {
+      "no_visible_effect": "□ 的位置按原版录屏墨迹量得、与录屏一致，只是偏移值未由静态读出"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_level37_tokens.md|negative-evidence|TOWNDEF 转职表无 SID_咕嚕": {
+      "no_visible_effect": "事实说明：原版城镇转职表没有咕嚕，重制同样只经 WINFAIL037 的 token 转成 017"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_level37_tokens.md|provisional|宝石无 AI 时原地等待、复制字段语义与白光合成公式": {
+      "item": "story-effect-objects"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_map_object_drift.md|provisional|藏起条件的重制映射与移動背景取镜头先后": {
+      "item": [
+        "settings-volume-mixer",
+        "dispatcher-scheduling"
+      ]
+    },
+    "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|MAGIC 行若带偷钱／偷物／取消行动位时的受击补接": {
+      "no_visible_effect": "MAGIC.TXT 没有一行带偷钱／偷物／取消行动位，第一章不触发；只影响日后新增数据"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_mobile_jobs.md|provisional|未声明等级的固定 level1、动作位移镜头与残影节奏": {
+      "item": "job-model-gaps"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色": {
+      "item": [
+        "special-object-motion",
+        "effect-motion"
+      ]
+    },
+    "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|同一收据内击杀掉落与 StealItem 的先后": {
+      "item": "dispatcher-scheduling"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_script_departure.md|provisional|在场提交与淡出的逐 tick 交错": {
+      "item": "dispatcher-scheduling"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|negative-evidence|": {
+      "no_visible_effect": "事实说明：原版 AI 不施纯自身增益、PAK 缺闇瑩蝶舞部分帧成员、原文字表无偷窃／再行动／取消行动结果字串，重制按同样事实"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_status_application.md|provisional|异常输入拒绝与状态短演出": {
+      "item": "floater-extra-words"
     }
   }
 }

@@ -50,7 +50,7 @@ from hsltools.sources.tables import blocks
 OUTPUT_JSON = 'content/generated/hsl/development/field_coverage.json'
 OUTPUT_DOC = 'docs/evidence_packets/static_reverse/original_field_coverage.md'
 SCHEMA = 'hsl_original_field_coverage.v1'
-PACKET_UPDATED = '2026-09-27'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
+PACKET_UPDATED = '2026-09-28'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
 
 SEEDS = 'content/generated/hsl/chapter01/'
 TERRAIN = 'content/generated/hsl/static/hsl01/'

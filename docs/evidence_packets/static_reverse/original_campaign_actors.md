@@ -1,6 +1,6 @@
 # 职业：主线角色模板、四种新增职业刷新与学习来源
 
-> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42c7e0, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4348f0, 0x4373f0, 0x437970, 0x437a40, 0x4483c0, 0x448840, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段; provisional: 模板坐标、reserve 状态字、HP≤0 重装与名单排序 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42c7e0, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4348f0, 0x4373f0, 0x437970, 0x437a40, 0x4483c0, 0x448840, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-28
 
 ## 结论
 

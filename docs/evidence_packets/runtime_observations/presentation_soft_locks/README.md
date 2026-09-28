@@ -1,6 +1,6 @@
 # 自动对局暴露的表现层软锁：遗言模板、绝技切入帧、对白头像（数据合同化）
 
-> evidence: runtime-measured; resource-derived · status: live · tools: hsltools/assets/combat_animation.py, hsltools/data/combat_aftermath.py, hsltools/levels/actors.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
+> evidence: runtime-measured; resource-derived; provisional: 收尾淡出与经验时钟、53 关 緹娜 winfail 画面 · status: live · tools: hsltools/assets/combat_animation.py, hsltools/data/combat_aftermath.py, hsltools/levels/actors.py, hsltools/levels/battle.py, run_autoplay_sweep_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 

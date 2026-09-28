@@ -1,6 +1,6 @@
 # 换阵营与不死：actSetPlayerMode、actSetPlayerUndead、HPLow 与击杀结算
 
-> evidence: static-derived; runtime-measured: 原版模拟器 LEVEL003 漢克斯 pmEnemy 后 HP 不刷新 · status: live · functions: 0x407510, 0x4084e0, 0x40a5d0, 0x40ba20, 0x40e2c0, 0x40e2d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f2d0, 0x44f580, 0x44f600, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原版模拟器 LEVEL003 漢克斯 pmEnemy 后 HP 不刷新; provisional: 同一收据内击杀掉落与 StealItem 的先后 · status: live · functions: 0x407510, 0x4084e0, 0x40a5d0, 0x40ba20, 0x40e2c0, 0x40e2d0, 0x40e390, 0x43ede0, 0x4423c0, 0x442720, 0x446bb0, 0x44f2d0, 0x44f580, 0x44f600, 0x44fad0, 0x450710, 0x450840, 0x452885 · tools: run_battle_reward_tests.gd, run_battle_scene_runtime_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 

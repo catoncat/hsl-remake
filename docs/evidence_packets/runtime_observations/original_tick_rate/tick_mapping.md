@@ -60,7 +60,7 @@
 
 ### 处置
 
-`OriginalTick.gd`：`TICK_SECONDS = 0.016`、`TICKS_PER_SECOND = 62.5`、`seconds(n)`／`ticks(s)`／`ticks_from_host_seconds(s)`（÷0.0194）。所有 A 类经它表达；B 类读出的计数写在 [original_tick_counts.md](../../static_reverse/original_tick_counts.md)；未读的保留现值标 provisional 并写函数；C 类删或如实标 remake-invented。PROVENANCE timing 列 remake-invented：36（删五个魔法模块后 33）→ **10**。
+`OriginalTick.gd`：`TICK_SECONDS = 0.016`、`TICKS_PER_SECOND = 62.5`、`seconds(n)`／`ticks(s)`／`ticks_from_host_seconds(s)`（÷0.0194）。所有 A 类经它表达；B 类读出的计数写在 [original_tick_counts.md](../../static_reverse/original_tick_counts.md)；未读的保留现值标 provisional 并写函数；C 类删或如实标 remake-invented。PROVENANCE timing 列 remake-invented：36（删五个魔法模块后 33）→ **10**；其后 29 的 PLAYBACK_SPEED 取 1.0 原速、不再算 remake-invented，36 格内有意保留的由 9 格减为 8 格（见本节末）。
 
 | # | 模块 | 处置 | 旧 → 新（n tick × 16 ms） |
 | --- | --- | --- | --- |

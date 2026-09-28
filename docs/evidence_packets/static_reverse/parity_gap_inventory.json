@@ -4,11 +4,11 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 460,
+    "sources": 480,
     "sources_by_kind": {
       "provenance": 193,
       "sentence": 89,
-      "scope": 80,
+      "scope": 100,
       "matrix": 85,
       "video": 13
     },
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 53,
+    "no_visible_effect_sources": 57,
     "resolved_sources": 20
   },
   "top": [
@@ -563,6 +563,7 @@
         "provenance:game/battle/scene/PoisonArrowPresentation.gd|layout|remake-invented|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色",
         "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、命中趟多段未按段区分",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80",
@@ -721,7 +722,10 @@
         "provenance:game/sim/AISelfPreservation.gd|rules|provisional|",
         "provenance:game/sim/AISkillPlanning.gd|rules|provisional|",
         "provenance:game/sim/AISupportPlanning.gd|rules|provisional|",
+        "scope:docs/evidence_packets/runtime_observations/oracle_batch/README.md|provisional|分布等价只靠频率对拍、重制治疗通道次序",
         "scope:docs/evidence_packets/static_reverse/original_ai_decisions.md|provisional|原函数外的候选过滤",
+        "scope:docs/evidence_packets/static_reverse/original_ai_priority.md|provisional|无注册药品或无合法伤害动作时跳过优先级",
+        "scope:docs/evidence_packets/static_reverse/original_ai_skills.md|provisional|威胁选取与有效收益计数",
         "scope:docs/evidence_packets/static_reverse/original_ai_support.md|provisional|空类别预先跳过、自清毒组合位置、全局 RNG 逐值序列",
         "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟",
         "sentence:docs/evidence_packets/static_reverse/original_actor_traversal.md#42eb9c6e80",
@@ -809,6 +813,7 @@
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleTurnEndCue.gd|strings|remake-invented|docs/OPTIONS.md",
         "provenance:game/sim/StatusCatalog.gd|strings|remake-invented|",
+        "scope:docs/evidence_packets/static_reverse/original_status_application.md|provisional|异常输入拒绝与状态短演出",
         "sentence:docs/evidence_packets/static_reverse/original_ordinary_special.md#8018317ded",
         "video:9"
       ]
@@ -994,6 +999,7 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/effect_motion/README.md|provisional|六团火的随机位置与落光摆动相位",
         "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层",
+        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色",
         "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#4bd2900257",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#c69f8f3f04",
@@ -1164,6 +1170,7 @@
         "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
         "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_level37_tokens.md|provisional|宝石无 AI 时原地等待、复制字段语义与白光合成公式",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d9253008aa"
       ]
     },
@@ -1242,6 +1249,7 @@
       "sources": [
         "provenance:game/world/WorldMapRules.gd|rules|provisional|",
         "provenance:game/world/WorldMapRuntime.gd|rules|provisional|",
+        "scope:docs/evidence_packets/resource_inventory/original_scope_inventory.md|provisional|500 段战斗桩的触发路线",
         "scope:docs/evidence_packets/static_reverse/world_map_data.md|provisional|"
       ]
     },
@@ -1266,6 +1274,7 @@
         "matrix:初始属性与职业派生",
         "matrix:玩家槽1与祭司002",
         "matrix:装备移动力与刷新",
+        "scope:docs/evidence_packets/static_reverse/original_mobile_jobs.md|provisional|未声明等级的固定 level1、动作位移镜头与残影节奏",
         "sentence:docs/evidence_packets/static_reverse/original_growth_lifecycle.md#3d5d239d14",
         "sentence:docs/evidence_packets/static_reverse/original_weapon_effects.md#5bca2d0cb2"
       ]
@@ -1340,6 +1349,7 @@
         "provenance:game/sim/ConditionalPartyRules.gd|rules|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/campaign_handoff/README.md|provisional|",
         "scope:docs/evidence_packets/runtime_observations/gol_road/README.md|provisional|整事件原子提交与入队调度的组合",
+        "scope:docs/evidence_packets/static_reverse/original_campaign_actors.md|provisional|模板坐标、reserve 状态字、HP≤0 重装与名单排序",
         "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型",
         "sentence:docs/evidence_packets/runtime_observations/campaign_handoff/README.md#c5422b8d38",
         "sentence:docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md#f225891ffc"
@@ -1409,6 +1419,7 @@
       "category": "音频",
       "sources": [
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|audio|provisional|",
+        "scope:docs/evidence_packets/static_reverse/first_battle_audio.md|provisional|trigger timing, relative volume, overlap, per-cell walk tempo",
         "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|untracked objects keep the static tables, and the last multi-hit strike's waiter release is not read",
         "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#37f0c15aa3",
         "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#49ae21786e",
@@ -1523,7 +1534,8 @@
       "category": "标题与过场",
       "sources": [
         "provenance:game/title/TitleScreen.gd|layout|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）"
+        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）",
+        "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|星点逐颗落点、Menu_Star Shape_Delay 按 0"
       ]
     },
     {
@@ -1913,7 +1925,9 @@
       "effort": "S",
       "category": "音频",
       "sources": [
-        "provenance:game/settings/GameSettings.gd|rules|provisional|"
+        "provenance:game/settings/GameSettings.gd|rules|provisional|",
+        "scope:docs/evidence_packets/static_reverse/first_battle_audio.md|provisional|trigger timing, relative volume, overlap, per-cell walk tempo",
+        "scope:docs/evidence_packets/static_reverse/original_map_object_drift.md|provisional|藏起条件的重制映射与移動背景取镜头先后"
       ]
     },
     {
@@ -2124,6 +2138,7 @@
       "sources": [
         "matrix:UI/战斗反馈",
         "scope:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md|provisional|rows marked B",
+        "scope:docs/evidence_packets/runtime_observations/presentation_soft_locks/README.md|provisional|收尾淡出与经验时钟、53 关 緹娜 winfail 画面",
         "scope:docs/evidence_packets/static_reverse/original_script_camera_scroll.md|provisional|16 ms 设计值与 19.4 ms 实测的取舍",
         "scope:docs/evidence_packets/static_reverse/original_tick_counts.md|provisional|rows marked 未读",
         "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#6a3f57a6e5",
@@ -2180,6 +2195,9 @@
         "matrix:反击",
         "matrix:移动提交/撤销",
         "matrix:脚本离场／已播游标",
+        "scope:docs/evidence_packets/static_reverse/original_map_object_drift.md|provisional|藏起条件的重制映射与移動背景取镜头先后",
+        "scope:docs/evidence_packets/static_reverse/original_player_mode.md|provisional|同一收据内击杀掉落与 StealItem 的先后",
+        "scope:docs/evidence_packets/static_reverse/original_script_departure.md|provisional|在场提交与淡出的逐 tick 交错",
         "sentence:docs/evidence_packets/static_reverse/original_extra_action.md#baf31c74a3",
         "sentence:docs/evidence_packets/static_reverse/original_extra_attack.md#94d912d8b4",
         "sentence:docs/evidence_packets/static_reverse/original_large_actor.md#3bc365c4a1",
@@ -2231,6 +2249,8 @@
         "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|",
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopInit.gd|rules|remake-invented|",
+        "scope:docs/evidence_packets/runtime_observations/oracle_batch/README.md|provisional|分布等价只靠频率对拍、重制治疗通道次序",
+        "scope:docs/evidence_packets/static_reverse/initial_battle_initiative.md|provisional|开战出生的全局流种子与创建次序",
         "scope:docs/evidence_packets/static_reverse/original_random_position.md|provisional|the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule"
       ]
     }
@@ -2464,6 +2484,10 @@
         "reason": "原版工具边界：回憶錄直进战斗关不安装敌军，只影响取证方法"
       },
       {
+        "source": "scope:docs/evidence_packets/static_reverse/original_dialogue_board.md|provisional|□ 墨迹偏移",
+        "reason": "□ 的位置按原版录屏墨迹量得、与录屏一致，只是偏移值未由静态读出"
+      },
+      {
         "source": "scope:docs/evidence_packets/static_reverse/original_enemy_turn.md|provisional|全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍）",
         "reason": "原版敌人回合裁判（模拟器）自身的取证边界，只影响对照回执，不是重制规则差异"
       },
@@ -2480,12 +2504,24 @@
         "reason": "受伤且未知的敌人未实机采到；条按真实比例、文字印 ??? 由静态读出，重制已照做"
       },
       {
+        "source": "scope:docs/evidence_packets/static_reverse/original_level37_tokens.md|negative-evidence|TOWNDEF 转职表无 SID_咕嚕",
+        "reason": "事实说明：原版城镇转职表没有咕嚕，重制同样只经 WINFAIL037 的 token 转成 017"
+      },
+      {
+        "source": "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|MAGIC 行若带偷钱／偷物／取消行动位时的受击补接",
+        "reason": "MAGIC.TXT 没有一行带偷钱／偷物／取消行动位，第一章不触发；只影响日后新增数据"
+      },
+      {
         "source": "scope:docs/evidence_packets/static_reverse/original_ohm_village.md|negative-evidence|STORY001／WINFAIL001 無增援與撤離勝利",
         "reason": "事实说明：原第一战脚本没有增援与撤离胜利分支，重制同样不做"
       },
       {
         "source": "scope:docs/evidence_packets/static_reverse/original_save_format.md|provisional|replayed story flow, fixture levels / attributes",
         "reason": "原版存档生成器的剧情回放与夹具等级，只影响对照取证"
+      },
+      {
+        "source": "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|negative-evidence|",
+        "reason": "事实说明：原版 AI 不施纯自身增益、PAK 缺闇瑩蝶舞部分帧成员、原文字表无偷窃／再行动／取消行动结果字串，重制按同样事实"
       },
       {
         "source": "scope:docs/evidence_packets/static_reverse/original_tactical_items.md|negative-evidence|item+0xa0 位 0x80 无消耗品来源",

@@ -1,6 +1,6 @@
 # 职业：盗贼 88／翼战士 92 的独立刷新与宿魔刀末击削魔
 
-> evidence: static-derived · status: live · functions: 0x409460, 0x448840, 0x46de70 · tools: hsltools/assets/job_casts.py, hsltools/data/mobile_jobs.py, hsltools/probes/mana_strike.py, hsltools/probes/mobile_jobs.py, hsltools/probes/mobile_motion.py, hsltools/probes/mobile_source.py, run_mobile_jobs_tests.gd · updated: 2026-09-28
+> evidence: static-derived; provisional: 未声明等级的固定 level1、动作位移镜头与残影节奏 · status: live · functions: 0x409460, 0x448840, 0x46de70 · tools: hsltools/assets/job_casts.py, hsltools/data/mobile_jobs.py, hsltools/probes/mana_strike.py, hsltools/probes/mobile_jobs.py, hsltools/probes/mobile_motion.py, hsltools/probes/mobile_source.py, run_mobile_jobs_tests.gd · updated: 2026-09-28
 
 ## 结论
 

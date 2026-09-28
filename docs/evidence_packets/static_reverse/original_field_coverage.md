@@ -1,6 +1,6 @@
 # 原版数据字段覆盖：重制消费了哪些、漏了哪些
 
-> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-27
+> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-28
 
 _本文件由 `hsl generate field_coverage` 逐字节生成；改 [`field_coverage.py`](../../../tools/hsltools/checks/field_coverage.py) 的 `FIELD_NOTES`／`SUSPECTS`，不要手改这里。机读版 [field_coverage.json](../../../content/generated/hsl/development/field_coverage.json)。_
 

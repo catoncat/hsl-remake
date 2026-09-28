@@ -1,6 +1,6 @@
 # 开战先手与行动队列：速度、注册槽、轮次语义
 
-> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn「证据」），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数） · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 第一战模拟器样本的注册槽与队列（original_enemy_turn「证据」），51／52／505 关队列追踪（待机、轮中改速度、阵亡、中途插入、回合计数）; provisional: 开战出生的全局流种子与创建次序 · status: live · functions: 0x407260, 0x407340, 0x4074a0, 0x407510, 0x407540, 0x407660, 0x407720, 0x407990, 0x407ab0, 0x407b70, 0x407cc0, 0x408370, 0x40b910, 0x40e2b0, 0x40e3b0, 0x40e430, 0x40e800, 0x40e870, 0x439f80, 0x448420, 0x458c80 · tools: hsltools/checks/registration_order.py, hsltools/data/first_battle_formation.py, hsltools/probes/_turn_queue_trace.py, run_tests.gd · updated: 2026-09-28
 
 ## 结论
 

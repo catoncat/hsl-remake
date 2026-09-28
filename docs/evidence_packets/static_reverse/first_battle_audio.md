@@ -1,6 +1,6 @@
 # Battle sound sources: actor sounds, footsteps, interface, GAME OVER, level-up, map background sounds
 
-> evidence: static-derived; resource-derived: PLAYERS.TXT sound fields, resource.h／RESOURCE.TXT sound bindings, PAK WAV members; runtime-measured: remake Master-bus recordings · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43ccf0, 0x43de90, 0x43dec0, 0x446ad0, 0x4477b0, 0x459990, 0x459d70, 0x45a0b0, 0x45a330, 0x45a390, 0x46c091 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PLAYERS.TXT sound fields, resource.h／RESOURCE.TXT sound bindings, PAK WAV members; runtime-measured: remake Master-bus recordings; provisional: trigger timing, relative volume, overlap, per-cell walk tempo · status: live · functions: 0x409610, 0x42c180, 0x42c1c0, 0x42c250, 0x42c340, 0x43ccf0, 0x43de90, 0x43dec0, 0x446ad0, 0x4477b0, 0x459990, 0x459d70, 0x45a0b0, 0x45a330, 0x45a390, 0x46c091 · tools: hsltools/assets/actor_audio.py, hsltools/assets/interface_audio.py · updated: 2026-09-28
 
 ## 结论
 
