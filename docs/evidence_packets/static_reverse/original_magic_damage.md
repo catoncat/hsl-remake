@@ -1,6 +1,6 @@
 # 魔法伤害：風刃／幻火原公式、HP 结算与共同技能事务
 
-> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 · status: live · functions: 0x40a7b0, 0x43b3f0, 0x43b4c0, 0x442a90 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 2026-09-24 录屏 474.5–476.0 s 受者条与数字的出现／换值／消失时刻 · status: live · functions: 0x407230, 0x40a7b0, 0x4104d0, 0x423a20, 0x430020, 0x43b3f0, 0x43b4c0, 0x43bf30, 0x442a90 · tools: hsltools/data/skill_book.py, hsltools/probes/magic_damage.py, run_magic_experience_tests.gd, run_skill_resolution_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -8,7 +8,8 @@
 - 原版风火都是单体；damage 字段 12,26／18,32 不是固定伤害也不是均匀含端点抽样（static-derived）。
 - 重制：`SkillResolutionRules` 把风火接入 `NativeMagicRollRules`／`StatusApplicationRules`，PlayLoop 唯一提交；玩家与 AI 同一结算，初始拥有权来自 `content/generated/hsl/skills/initial_book.json`（static-derived；拥有权 resource-derived）。
 - 原版法术受者条是施法例程 `0x442a90` 每个受者调一次的 `0x43b3f0`——与用药同一对小条（BAR_HP4 框、BAR_HP5／BAR_HP6 填充、条旁 cur/max）；条先示命中前 HP 24 tick，`0x40b8d0` 结算的同一 tick 换成命中后 HP 并生成数字，再 40 tick 撤条；击杀先等 30 tick，再多 8（eff_proc_Local）／16（Global）tick；全局只有一个条槽，受者逐个接力（static-derived，见「受者条」）。录屏 21／29／60 tick 与之同序，差值在 19.4 ms/tick 折算误差内。
-- 重制 `MagicImpactPresentation` 照上述画法与计数（static-derived）。
+- 多受者时原版逐人处理：前一人撤条后镜头以战斗步长滑向下一人、到位才往下，Local 在他身上再建一份效果、效果完了才出条；受击态从每人扣血那 tick 起；击杀受者在扣血后 30 tick 标死亡，死亡演出与后续受者并行（static-derived，见「逐受者序列」）。
+- 重制 `MagicImpactPresentation` 照上述画法、计数与逐受者序列（static-derived）。
 
 ## 证据
 
@@ -60,13 +61,27 @@
 | 9／0x1b | `0x442da3`／`0x4430a9` | `0x43b3f0(受者)`（`[0x4c1cc8]` 非 0 即返回，只建一次）；`+0x9c` 减一，到 0：置 `+0x9c = 40`（`0x28`）、`+0x9e = 0`，`0x40b8d0` → `0x40aa80` 扣 HP 并由 `0x40aba0` 生成数字；受者 live HP ≤ 0 时 `0x40e390`、`+0x9c += 16`（`0x442e6f`）／`+= 8`（`0x443143`）、`+0x9e += 30`（`0x44314b`） |
 | 10／0x1c | `0x442e7c`／`0x443181` | `+0x9e` 非 0 先逐 tick 减，到 0 那 tick 给受者置死亡标 `0x8000000`（`0x4431a0`）；之后 `+0x9c` 减到 0：`0x43b4c0` 撤条，`0x4104d0(1)` 取下一受者，有则回 9（Global，镜头滚向它）／0x19（Local，镜头滚向它并在它身上再建一份效果） |
 
+### 逐受者序列
+
+**static-derived**（`r2 -q -c 's 0x442da3; pD 0x160' hsl01.exe`、`s 0x442ef5; pD 0x150`、`s 0x442cef; pD 0xb4`、`s 0x430020; pD 0x60`、`s 0x423a20; pD 0x70`；`[0x4c432c]` 即施法上下文 `0x4c42a0 + 0x8c` 的子状态）
+
+| 步 | 地址 | 做什么 |
+| --- | --- | --- |
+| 取下一受者 | `0x442ea8`／`0x443241` | 撤条后 `0x4104d0(1)` 写 `0x4c1cec`；有下一人：Global 子状态减 1 回 9、Local 减 3 回 0x19，并 `0x430020(受者)` 登记；`+0x9c = 24`；没有：Global 置 0x1d、Local 清 `[0x4c1b00]` 的 0x1000000 并加 1 到 0x1d |
+| 镜头 | `0x442dbd`（Global 子状态 9）／`0x44301e`（Local 0x19） | 每 tick 调 `0x43bf30(受者, 0／0x80000000)`，返回 0 就直接返回——不建条、不减 `+0x9c`；到位那 tick 才往下（战斗步长与容差见 [original_script_camera_scroll.md](original_script_camera_scroll.md)） |
+| Local 重建效果 | `0x44302e..0x443097` | 到位后 `0x409940` 取效果号、`0x415ba0` 放声，子状态进 0x1a（空转），`0x423a20(受者 +4, +8, 效果, 0x4c42a0, 1)` 建效果对象；建成就等它结束时把上下文 `+0x8c` 加 1 进 0x1b，建不成直接进 0x1b；首个受者走的也是 0x19 这一步，所以每个受者一份、前后不重叠 |
+| 条与扣血 | 子状态 9／0x1b | 同「受者条」：条第 24 tick `0x40b8d0` 扣血，`0x40aa80` 的 `0x40b831` 让受伤受者进受击态 `0x407230`——受击姿势从这一 tick 起 |
+| 击杀 | `0x442e5c`／`0x443130` → 0x1c `0x443181..0x4431c8` | `0x40e390` 记击杀，`+0x9e = 30`；之后每 tick 只减 `+0x9e`（`+0x9c` 不动），减到 0 那 tick 给受者 `+0x80 |= 0x8000000`、`+0x9c = 0`、`+0xa8 = 施法者`、`+0xac = 0`；受者自己的过程由此进死亡入口（`0x43ef36`／`0x44347e`，台词、拉伸消散，见 [original_death_disposal.md](original_death_disposal.md)），施法例程接着把 `+0x9c` 的 40＋8／16 减完再撤条、取下一受者，两边各走各的 |
+
+击杀受者的条共 24＋30＋48（Local）／56（Global）tick；死亡标在条内第 54 tick（扣血后第 30 tick）。
+
 条由 `0x43b3f0` 经 `0x43ace0`／`0x43ad30` 建，画法、位置与条旁 cur/max 见 [original_item_use_presentation.md](original_item_use_presentation.md)；条过程 `0x4364e0` 读 live cur/max，所以扣血那 tick 起条就是命中后 HP。条槽 `[0x4c1cc8]` 全局只有一个，受者逐个出条，不会两条同时在场。
 
 ## 重制接线
 
 - `game/sim/SkillResolutionRules.gd` `available`／`prepare`／`resolve`：按稳定 ID 核对定义、初始拥有权、已支持 function／范围、资格、MP／ST 与抗性；非法字段在 RNG 前拒绝；只返回 `{ok, caster_changes, target_changes, receipt}` 提案，不改输入。
 - PlayLoop `_resolve_skill`：玩家特殊技与法师 AI 的唯一资源／HP 提交点；所有目标资格与数值准备好后才抽样；一次提交付款、全目标状态、连续数与最终经验；缺抗性等坏数据以 `scenario_error` 停下，不改用物理攻击。
-- `MagicImpactPresentation`：受者逐个接力；每人用 `BattleItemUsePresentation` 的小条常量与 BAR_HP4..6 画两条，先示前态 HP（不可变收据 `defender_before`）24 tick，第 24 tick 换后态并出实际伤害／闪避数字，再 40 tick 撤条（击杀 +30 再 +8／+16，按技能行 `effect_proc`）（`BEFORE_TICKS`／`AFTER_TICKS`／`KILL_*`，按 16 ms/tick 播放）；之后遗言／淡出 → KILL 连续数 → 最终 EXP → 金币／领取 → 成长／交接。
+- `MagicImpactPresentation`：受者逐个接力；第 2 人起在前一人撤条那 tick 以 `BattleCameraController.scroll_to`（战斗步长）滑向他，滑完才往下；Local 再用 `SkillEffectScriptPlayer.draw` 在他格中心重放施法的效果时间线，条在重放的 impact tick 出（与首个受者相对施法效果的关系相同）；条与数字每帧按镜头重算屏幕位置。`MapHitState.begin` 由接力在每人扣血那 tick 调（`BattlePresentation._present_impact` 对接力法术不再全体同起）；击杀受者扣血后 30 tick `death_released` 放行，`BattleAftermath.advance` 在接力进行中只起已放行的死亡任务，EXP／$ 仍等接力结束。每人用 `BattleItemUsePresentation` 的小条常量与 BAR_HP4..6 画两条，先示前态 HP（不可变收据 `defender_before`）24 tick，第 24 tick 换后态并出实际伤害／闪避数字，再 40 tick 撤条（击杀 +30 再 +8／+16，按技能行 `effect_proc`）（`BEFORE_TICKS`／`AFTER_TICKS`／`KILL_*`，按 16 ms/tick 播放）；之后遗言／淡出 → KILL 连续数 → 最终 EXP → 金币／领取 → 成长／交接。
 - 共享规则能处理注册允许的区域攻击，但风火本身保持单体；多目标支援使用原驱毒范围。
 
 ## 复现
@@ -77,6 +92,9 @@
 
 - 原 PLAYERS 字节与导入表的严格 `--pak` 比较曾不一致，差异未查明，拥有权只按导入表声明。
 - 动态学习、升级解锁、转职、禁用状态与角色模式对拥有权的影响未读。
-- 多受者时原版在两人之间镜头滚向下一受者（Local 还在其身上重建效果），击杀时死亡标在条内第 30 tick 置、条仍留到 +0x9c 减完；这两处重制未做：受者条接力时不滚镜头、不重播效果（效果原点另见 `effect-origin`），死亡演出在全部受者条结束后才开始。
-- 受击态 `0x407230` 的起点：原版在 `0x40aa80` 扣血那 tick（受者第 24 tick），重制 `MapHitState` 在受者条开始时起。
+- 首个受者前的镜头：原版 Global 在效果后、Local 在效果前也各滑一次到首个受者（子状态 9／0x19 对每人同样执行），重制只对第 2 人起滑镜头，首个受者沿用施法效果时的镜头。
+- `0x43bf30` 第二参数 Local 为 0x80000000、Global 为 0，含义未读；重制两边同用战斗步长。
+- Local 重放只画效果时间线的对象与声音，不重做压暗（`[0x4c1b00]` 0x1000000 在 0x19 重新置位）与 OtherBBall1 的镜头轨迹、IconBGSet 波纹；重放的条在 impact tick 出而非等效果对象删除，与首个受者一致。
+- 死亡受者的入口 `0x43eff9` 也调 `0x43bf30(受者)` 等镜头，与施法例程滑向下一受者同帧争镜头时谁先到未读；重制死亡任务不滑镜头。台词窗期间接力照走（原版台词由受者过程 `+0x9c` 轮询关闭，施法例程不等它）。
+- 受者顺序按收据 `affected_targets`；`0x4104d0` 的遍历顺序未与之逐一对照。
 - 氣刃斬与普通交锋公式见 [original_ordinary_special.md](original_ordinary_special.md)；费用见 [original_skill_resources.md](original_skill_resources.md)。

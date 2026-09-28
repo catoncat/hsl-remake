@@ -3,25 +3,25 @@
   "updated": "2026-09-28",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 87,
-    "sources": 457,
+    "items": 86,
+    "sources": 456,
     "sources_by_kind": {
       "provenance": 197,
       "sentence": 91,
-      "scope": 71,
+      "scope": 70,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 49,
     "items_by_original_status": {
       "read_complete": 27,
-      "read_partial": 42,
+      "read_partial": 41,
       "unread": 1,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
-      "some_levels": 31,
+      "some_levels": 30,
       "rare": 36,
       "invisible": 4
     },
@@ -42,7 +42,7 @@
       "镜头": 1,
       "面板与界面": 8,
       "音频": 2,
-      "飘字与数字": 3
+      "飘字与数字": 2
     },
     "in_progress": 0,
     "no_visible_effect_sources": 53,
@@ -51,13 +51,13 @@
   "top": [
     "cast-lead-compositing",
     "dialogue-timing",
+    "effect-origin",
     "growth-window-timing",
     "special-skill-page",
     "cursor-hide-item-icon",
     "dark-screen-fade",
     "drop-lightning-presentation",
     "level-specific-placement",
-    "magic-impact-bar",
     "map-object-flash",
     "npc-level-policy",
     "script-walk-speed",
@@ -65,10 +65,10 @@
     "shop-hand-cursor",
     "battle-equip-drop-hand",
     "bitmap-font",
-    "effect-origin",
     "move-path-overlay",
     "panel-captions",
-    "status-page-extras"
+    "status-page-extras",
+    "wait-cue"
   ],
   "items": [
     {
@@ -113,6 +113,29 @@
       "sources": [
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|timing|remake-invented|"
+      ]
+    },
+    {
+      "id": "effect-origin",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），接力伤害法术（风／火／水）已照做（MAGICSEQ）；剩状态、回复等其余 Local 法术在施法时每个受影响单位同时一份",
+      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移），子状态 0x19 对 0x4104d0(1) 取出的每个受者各走一次，效果结束才出条；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_map_strike.md",
+        "docs/evidence_packets/static_reverse/original_magic_damage.md",
+        "docs/evidence_packets/runtime_observations/effect_motion/README.md"
+      ],
+      "remake": "BattlePresentation 传入各受影响单位的格中心；接力伤害法术的 Local 效果只在首个受者放，MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次",
+      "remake_code": [
+        "game/battle/scene/BattlePresentation.gd",
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/MagicImpactPresentation.gd:_lead"
+      ],
+      "original_status": "read_complete",
+      "visibility": "every_battle",
+      "effort": "S",
+      "category": "特写与施法演出",
+      "sources": [
+        "sentence:docs/evidence_packets/static_reverse/original_map_strike.md#3590ff7a00"
       ]
     },
     {
@@ -242,26 +265,6 @@
       "sources": [
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md"
-      ]
-    },
-    {
-      "id": "magic-impact-bar",
-      "difference": "法术命中受者条已照原版（MAGICBAR）：用药同款小条、示前 HP 24 tick → 扣血同 tick 换后 HP 并出数字 → 40 tick 撤条（击杀 +30 再 +8／+16）、受者逐个接力；剩多受者之间原版镜头滚向下一人（Local 还重建效果）、击杀的死亡标在条内第 30 tick 置，重制接力不滚镜头、死亡演出等全部条结束",
-      "original": "0x442a90 子状态 9／0x1b 每受者 0x43b3f0 建条（单槽 [0x4c1cc8]），+0x9c 24 后 0x40b8d0 扣血并由 0x40aba0 生数字，+0x9c 40（击杀 +0x9e 30、+0x9c 加 16 Global／8 Local）后 0x43b4c0 撤条、0x4104d0 取下一受者",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_magic_damage.md",
-        "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
-      ],
-      "remake": "MagicImpactPresentation 逐受者 start／end，BEFORE_TICKS 24／AFTER_TICKS 40／KILL_WAIT_TICKS 30／KILL_EXTRA_LOCAL 8／KILL_EXTRA_GLOBAL 16，条画法与位置取 BattleItemUsePresentation 常量",
-      "remake_code": [
-        "game/battle/scene/MagicImpactPresentation.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "飘字与数字",
-      "sources": [
-        "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#e5a592a4e4"
       ]
     },
     {
@@ -432,27 +435,6 @@
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|"
-      ]
-    },
-    {
-      "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份",
-      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移）；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份；Local 多受者遍历 0x4c1cec 未读",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_map_strike.md",
-        "docs/evidence_packets/runtime_observations/effect_motion/README.md"
-      ],
-      "remake": "BattlePresentation 传入各受影响单位的格中心；Global 在 clip map_target（cast_center 格中心）放一次",
-      "remake_code": [
-        "game/battle/scene/BattlePresentation.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "特写与施法演出",
-      "sources": [
-        "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）"
       ]
     },
     {

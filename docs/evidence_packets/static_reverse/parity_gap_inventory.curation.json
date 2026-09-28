@@ -381,23 +381,6 @@
       "category": "飘字与数字"
     },
     {
-      "id": "magic-impact-bar",
-      "difference": "法术命中受者条已照原版（MAGICBAR）：用药同款小条、示前 HP 24 tick → 扣血同 tick 换后 HP 并出数字 → 40 tick 撤条（击杀 +30 再 +8／+16）、受者逐个接力；剩多受者之间原版镜头滚向下一人（Local 还重建效果）、击杀的死亡标在条内第 30 tick 置，重制接力不滚镜头、死亡演出等全部条结束",
-      "original": "0x442a90 子状态 9／0x1b 每受者 0x43b3f0 建条（单槽 [0x4c1cc8]），+0x9c 24 后 0x40b8d0 扣血并由 0x40aba0 生数字，+0x9c 40（击杀 +0x9e 30、+0x9c 加 16 Global／8 Local）后 0x43b4c0 撤条、0x4104d0 取下一受者",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_magic_damage.md",
-        "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
-      ],
-      "remake": "MagicImpactPresentation 逐受者 start／end，BEFORE_TICKS 24／AFTER_TICKS 40／KILL_WAIT_TICKS 30／KILL_EXTRA_LOCAL 8／KILL_EXTRA_GLOBAL 16，条画法与位置取 BattleItemUsePresentation 常量",
-      "remake_code": [
-        "game/battle/scene/MagicImpactPresentation.gd"
-      ],
-      "original_status": "read_complete",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "飘字与数字"
-    },
-    {
       "id": "learning-notice",
       "difference": "原版预设已不飘学技提示（与原版一致）；OPT-INFO=公開 时在受者头上飘学技提示，文字与颜色是重制的",
       "original": "原版只在升级窗 WINDOW31（0x437c30，學會魔法）／WINDOW50（0x437ec0，學會特殊技）印学到的技能；交锋回执 0x442720 不飘字，学技路径不放声",
@@ -512,18 +495,20 @@
     },
     {
       "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；剩 Local 多受者时原版是否每人一份未读，重制每个受影响单位一份",
-      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移）；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份；Local 多受者遍历 0x4c1cec 未读",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），接力伤害法术（风／火／水）已照做（MAGICSEQ）；剩状态、回复等其余 Local 法术在施法时每个受影响单位同时一份",
+      "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移），子状态 0x19 对 0x4104d0(1) 取出的每个受者各走一次，效果结束才出条；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_strike.md",
+        "docs/evidence_packets/static_reverse/original_magic_damage.md",
         "docs/evidence_packets/runtime_observations/effect_motion/README.md"
       ],
-      "remake": "BattlePresentation 传入各受影响单位的格中心；Global 在 clip map_target（cast_center 格中心）放一次",
+      "remake": "BattlePresentation 传入各受影响单位的格中心；接力伤害法术的 Local 效果只在首个受者放，MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次",
       "remake_code": [
         "game/battle/scene/BattlePresentation.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/MagicImpactPresentation.gd:_lead"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "every_battle",
       "effort": "S",
       "category": "特写与施法演出"
@@ -3148,10 +3133,6 @@
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {
       "no_visible_effect": "用药三类效果星点的位置、延迟、速度与张由重制按本次用药种子抽取，分布与数量照 0x401390／effProcFlyUp2／effProcCollectFadeShape，只是逐颗落点与原版全局随机流不同"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#e5a592a4e4": {
-      "item": "magic-impact-bar",
-      "text": "这两处重制未做：受者条接力时不滚镜头、不重播效果（效果原点另见 `effect-origin`），死亡演出在全部受者条结束后才开始。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_range_cells.md#a4479738ba": {
       "item": "cast-overlay-rules",
       "text": "绝技态 `0x445060`／`0x445067`（`0x40ba80`→`0x411a30`，在 `test ebx, eax` 成立时）的用途未读。"
@@ -3162,9 +3143,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#de46f1c9bf": {
       "item": "battle-equip-drop-hand",
       "text": "装备板判定旗标 0x40000 的来源未读；"
-    },
-    "scope:docs/evidence_packets/static_reverse/original_map_strike.md|provisional|Local 法术多个受者时是否每人一份特效（0x4c1cec 的遍历未读）": {
-      "item": "effect-origin"
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取": {
       "item": "poison-gas-presentation"
@@ -3186,6 +3164,10 @@
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#86d57e5290": {
       "item": "panel-slide-formula",
       "text": "录屏里加点窗关闭向下（350.25 s）与 `0x43b000`／`0x43b3a0` 自左的起点不符，未读清是哪一个对象，重制按起点原路滑回。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_map_strike.md#3590ff7a00": {
+      "item": "effect-origin",
+      "text": "状态、回复等其余 Local 法术重制未做，仍在施法时每个受影响单位同时一份。"
     }
   }
 }

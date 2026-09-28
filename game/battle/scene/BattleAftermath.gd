@@ -259,10 +259,13 @@ func retains(unit_id: String) -> bool:
 	return false
 
 
-func advance(delta: float, runtime: Node) -> void:
+## `released`: while a spell's receiver relay runs (MagicImpactPresentation.death_released),
+## only a death job whose victim it has marked dead may start; the rest wait.
+func advance(delta: float, runtime: Node, released: Callable = Callable()) -> void:
 	_advance_trailing(delta, runtime)
 	if not busy(): return
 	var job := jobs[cursor]
+	if released.is_valid() and stage in ["queued", "idle"] and not (job["kind"] == "death" and released.call(str(job["unit_id"]))): return
 	if stage == "focus":
 		elapsed += maxf(0.0, delta)
 		var controller = _camera(runtime)

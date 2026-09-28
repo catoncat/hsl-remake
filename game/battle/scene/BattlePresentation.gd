@@ -273,8 +273,13 @@ func refresh(loop: Dictionary, map_config: RefCounted, playable: bool, combat_re
 	_refresh_objective(loop, map_config, playable)
 	_sync_cast_pose()
 	_sync_cutin_words()
-	if playable and combat_ready and not cutin.busy() and not magic_impact.busy() and not has_pending_combat(loop):
-		aftermath.advance(delta, get_parent())
+	# A spell's kill is marked dead 30 ticks after its damage tick (0x4431a0): its death plays
+	# beside the later receivers' bars; the rewards wait for the relay to end.
+	if playable and combat_ready and not cutin.busy() and not has_pending_combat(loop):
+		if not magic_impact.busy():
+			aftermath.advance(delta, get_parent())
+		else:
+			aftermath.advance(delta, get_parent(), magic_impact.death_released)
 		if not aftermath.busy() and not BattlePlayLoop.loot_waiting(loop) and not turn_end_cue.busy(loop) and not item_feedback_busy() and not terminal_growth:
 			_queue_story_dialogue(loop)
 	_update_dialogue_page()
@@ -629,11 +634,12 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	if strike.get("silent_after_defeat", false): return
 	# The magic channel (0x40aa80) puts every receiver it hurt into the map hit state 0x407230:
 	# hit shape and ±1 px shake for 60 ticks, no tint. The close-up's strikes leave the map alone.
+	# The relayed damage spells enter it per receiver on its damage tick (MagicImpactPresentation).
+	if strike.get("magic_key") in magic_impact.KEYS:
+		magic_impact.begin(strike, get_parent(), cutin.clips[0].get("effect_timeline", {}) if not cutin.clips.is_empty() else {})
+		return
 	if strike.has("magic_key"):
 		MapHitState.begin_strike(strike, get_parent(), self, float(Timing.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0)))
-	if strike.get("magic_key") in ["wind", "fire", "water"]:
-		magic_impact.begin(strike, get_parent())
-		return
 	# OPT-INFO (read once per impact): 公開 puts the remake's words back beside the numbers.
 	var public := not GameOptions.is_original("OPT-INFO")
 	if strike.has("status_effects") or strike.has("support_effects") or strike.has("stat_effects"):
