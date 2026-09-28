@@ -72,7 +72,7 @@
 | `0x43c337` | defProcFireSmoke（槽 70 `0x477d44` → `0x43c260`），`0x43c298..0x43c31c` 初始化按 rand(77) 在中心 ±38 撒点 | `0x400000` 或 bit0 清时 `+0x30 = 0xffff`（不画），否则 `+0x30 = +0x32`；其后的淡入淡出与 `0x45ebdc` 上升照走 |
 | `0x43c63f` | defProcDropRain（槽 66 `0x477d34` → `0x43c4a0`），mapobjDropRain（13，`0x43d578`）按 obj_Data4 经 `0x45e307` 生出的雨滴 | 同上：不画，照落 |
 
-重制：`MapObjectDrift.add_scene_held` 登记瀑布与建筑底，每 tick 按 `scene_hidden`（`GameSettings.scene_effects_enabled()` 为假）设不可见；建筑底另按 `close_up_hidden`（切入队列在播且不是 `magic:` 效果阶段——同 `sync_cast_depth` 的读法——或状态面板开着）藏起。瀑布的走法见下节。噴人沼氣的煙（`BattlePoisonGasPresentation._smoke_tick`）关时不画、照升照淡；雨滴由 `StoryEffectObjects.insert` 在 場景效果 关时不建雨发射器。
+重制：`MapObjectDrift.add_scene_held` 登记瀑布与建筑底，每 tick 按 `scene_hidden`（`GameSettings.scene_effects_enabled()` 为假）设不可见；建筑底另按 `close_up_hidden`（切入队列在播且不是 `magic:` 效果阶段——同 `sync_cast_depth` 的读法——或状态面板开着）藏起；影子由 `add_magic_held` 登记，只按 `magic_hidden`（地图魔法效果阶段，见边界）藏起。瀑布的走法见下节。噴人沼氣的煙（`BattlePoisonGasPresentation._smoke_tick`）关时不画、照升照淡；雨滴由 `StoryEffectObjects.insert` 在 場景效果 关时不建雨发射器。
 
 ## 复现
 
@@ -84,8 +84,8 @@
 - 移動背景与滚镜头对象的执行先后（一 tick 滞后与否）未读；重制取当前镜头。
 - `0x400000` 的仓库窗 `0x4289e0` 不在战斗里，未接；重制的状态面板是否与原状态窗过程 `0x438xxx` 同一窗口按名称对应，未逐帧核。
 - 撒点雨滴在剧情中途切换 場景效果 不跟随（插入时决定）。
-- 组合物件在重制里仍按关卡 profile 的 `runtime_layer_hint` 分到前景／背景两个节点，节点内再按 obj_Plane 排桶；原版只有桶，没有这层分组，两者是否在所有关给出同一先后未逐关核。
-- mapobjShadow 的 `0x43ce94` 另测 `[0x4c1b00] & ebp`（ebp 在入口处设定，值未追）后藏起，重制未接。
+- 站立物件的前景／背景节点已逐关核（149 关，静态比每对同桶同平面物件与原版创建序）：原版同桶同平面只按链表序——`0x46be17` 逐 EVEF 记录、组合物件按子序经 `0x45e307` 追加到平面链表尾；旧的 `runtime_layer_hint` 分组在 12 关给出 97 对与原版相反的先后（玩家第 4 场 · 歐姆村 · 獸族的襲擊（LEVEL001）5、玩家第 5 场 · 戈爾山道（LEVEL002）1、寧靜之森（LEVEL007）15、薩魯司海岸（LEVEL036）18、古代神殿遺跡（LEVEL037）4、玩家第 2 场 · 惡夢的終曲（LEVEL052）6、戈爾山道 · 遭遇戰（LEVEL501／502／503）各 1、寧靜之森 · 遭遇戰（LEVEL510／511／512）各 15；96 对因分组，1 对因普通 placement 先于组合子项加入）。现 z 只可能与别的站立物件相同的（行桶或 planeObject1..30 的中段固定平面，且平面不是 planeIcon／planeObject1）一律进前景节点，放置按 (record_index, 子序)，这一类已同序（97 → 25）。剩 25 对全在 planeObject1：玩家第 4 场 · 歐姆村 · 獸族的襲擊（LEVEL001）3，玩家第 5 场 · 戈爾山道（LEVEL002）与戈爾山道 · 遭遇戰（LEVEL501／502／503）各 1（路標影 对 樹03），薩魯司海岸（LEVEL036）18（寶藏 对 海面01 中段固定面）；这一类还与同行 planeObject1 的敌人平局，原版敌人（EVEF defProcEnemy 记录）按记录序与物件穿插，两个节点分不出，仍按 hint。planeObject1 以下（z 0..3，与 MoveOverlay 平局）与 planeObject30 以上也仍按 hint。`0x45f0d1`（移到链表尾）何时被调未读。
+- mapobjShadow（`0x43ce94`）另测 `[0x4c1b00] & ebp`，`ebp` 在入口 `0x43cdd0` 置 `0x1000000`：地图魔法效果阶段 `+0xae = 2`，不画不走；不测 場景效果。重制 `MapObjectDrift.add_magic_held` 登记影子，每 tick 按 `magic_hidden`（`BattleSceneStage.spell_effect_phase`，与 `sync_cast_depth` 同一判定）设不可见。受者条阶段已核：Global（`eff_proc_Global`）状态 9 每 tick 于 `0x442daf` 清位，与重制判定（`magic:` 切入片段播到 complete_tick）一致；Local 逐受者接力时原版到最后一个受者后 `0x44327c` 才清，重制判定在第一段效果播完即落，后续受者条期间影子、云、抬层与压暗已恢复，未对齐（判定共用，改它会一并动 `sync_cast_depth`）。
 - 重制的 engGLASS 着色器按 `(屏幕 + 色)/2` 混合，未模拟 `& 0xf7de` 丢掉的每通道最低位（≤ 1/32 级差）。
 
 ## 组合物件、瀑布、engGLASS 与世界尺寸（static-derived，r2 静读；runtime-measured 为同一机器停点读数）

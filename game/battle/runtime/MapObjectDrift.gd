@@ -13,8 +13,8 @@ extends Node
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##     (obj_Data7／obj_Data8／obj_Score／obj_HitPoint)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
-##     (0x45eb9d／0x45ebdc 16.16 step per tick; 0x43ceba hold on 0x4c1b00 & 0x1400000 or 場景效果 off;
-##     0x43d13e／0x43d758 likewise)
+##     (0x45ebdc 16.16 step; 0x43ceba hold on 0x1400000 or 場景效果 off; 0x43d13e／0x43d758 likewise;
+##     0x43ce94 on 0x1000000)
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (level 1: +265,+265 in 1499 ticks)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
@@ -49,12 +49,17 @@ var scene_hidden: Callable
 ## (0x43d758) tests it before 場景效果 and holds the same way; the map magic bit 0x1000000 is
 ## not tested there.
 var close_up_hidden: Callable
+## True during the map spell effect phase ([0x4c1b00] & 0x1000000): mapobjShadow (0x43ce94, ebp =
+## 0x1000000 since 0x43cdd0) writes the same hold counter then; 場景效果 is not tested there.
+var magic_hidden: Callable
 var clouds: Array[Dictionary] = []
 ## The stand objects held only by 場景效果 (waterfalls, building bottoms); the remake draws
 ## them still, so a hold is just not drawing.
 var scene_held: Array[Node2D] = []
 ## The building bottoms among scene_held, also held by close_up_hidden.
 var close_up_held: Array[Node2D] = []
+## The shadows, held only by magic_hidden; drawn still, so a hold is just not drawing.
+var magic_held: Array[Node2D] = []
 var backgrounds: Array[Dictionary] = []
 ## mapobjWaterFall (0x43d07b init, 0x43d13e tick): camera parallax like a moving background but
 ## measured from its chain root, plus a scroll offset stepped at obj_Data7／obj_Data8 and wrapped
@@ -69,6 +74,7 @@ func clear() -> void:
 	waterfalls.clear()
 	scene_held.clear()
 	close_up_held.clear()
+	magic_held.clear()
 	_clock = 0.0
 
 
@@ -99,6 +105,11 @@ func add_scene_held(sprite: Node2D, on_close_up := false) -> void:
 		and not (on_close_up and close_up_hidden.is_valid() and bool(close_up_hidden.call()))
 
 
+func add_magic_held(sprite: Node2D) -> void:
+	magic_held.append(sprite)
+	sprite.visible = not (magic_hidden.is_valid() and bool(magic_hidden.call()))
+
+
 ## 0x43d07b: x0／y0 = its own point (+0x4a／+0x48); the root (0x45ef11: up the combined chain to
 ## its head, else itself) point clamped to ≥ 0 (+0x92／+0x90); offsets +0x46／+0x44 = 0;
 ## wrap spans = the frame width／height (0x4606a9 → +0x70／+0x74). Also held by 場景效果 off.
@@ -121,7 +132,7 @@ func add_background(sprite: Node2D, point: Vector2, score: int, hit_point: int, 
 ## drawing) keeps its point and fractions and walks on from there the first tick the condition is
 ## gone; a moving background takes the camera of that tick.
 func _process(delta: float) -> void:
-	if clouds.is_empty() and backgrounds.is_empty() and scene_held.is_empty() and waterfalls.is_empty():
+	if clouds.is_empty() and backgrounds.is_empty() and scene_held.is_empty() and waterfalls.is_empty() and magic_held.is_empty():
 		return
 	_clock += delta
 	var steps := floori(_clock / OriginalTick.TICK_SECONDS)
@@ -148,6 +159,10 @@ func _process(delta: float) -> void:
 	for sprite in scene_held:
 		if is_instance_valid(sprite):
 			sprite.visible = not scene_off and not (close_up_off and close_up_held.has(sprite))
+	var magic_off := magic_hidden.is_valid() and bool(magic_hidden.call())
+	for sprite in magic_held:
+		if is_instance_valid(sprite):
+			sprite.visible = not magic_off
 
 
 ## One tick of 0x45ebdc plus the wrap 0x43d7e0..0x43d848: the fraction keeps the low 16

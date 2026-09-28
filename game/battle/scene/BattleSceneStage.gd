@@ -15,8 +15,8 @@ extends RefCounted
 ##     (map spell effect phase lifts footprint and posing actors, sync_cast_depth)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (combined children 0x46bd67; engGLASS kernel 0x4684b6; waterfall add 0x43d0ea; 0x43d758 hold)
-##   layout: provisional (runtime_layer_hint back／foreground split of the level profiles; story-scene
-##     cast without a side is lit as a player)
+##   layout: provisional (runtime_layer_hint split of the level profiles for objects on an actor's
+##     plane, under planeObject1 or over planeObject30; story-scene cast without a side is lit as a player)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_map_object_drift.md
 ##     (mapobjCloud drift, mapobjMoveBG／mapobjWaterFall parallax and waterfall scroll, run by MapObjectDrift)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
@@ -202,7 +202,7 @@ func sync_actor_depth(actor: Node, unit: Dictionary) -> void:
 func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 	var lifted := {}
 	var busy: bool = cutin != null and cutin.busy()
-	var phase: bool = busy and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
+	var phase := spell_effect_phase(cutin)
 	if busy and not phase:
 		lifted[str(cutin.clips[0]["strike"].get("defender_id", ""))] = true
 	if phase:
@@ -220,6 +220,15 @@ func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 		if actor != null:
 			actor.cast_lift = phase and (lifted.has(str(unit["id"])) or actor.is_posing())
 			actor.flying_cap = phase or (busy and not lifted.has(str(unit["id"])))
+
+
+## The map spell effect phase ([0x4c1b00] & 0x1000000): the cast routine 0x442a90 sets it from
+## the cast lead through the effect (states 4／7, 0x17／0x19) and clears it as eff_proc_Global
+## turns to its receivers (state 9, 0x442daf, every tick) or after eff_proc_Local's last receiver
+## (0x44327c). The remake reads it as a map `magic:` clip at the head of the cut-in queue — the
+## one predicate for sync_cast_depth, the building bottom's close-up hold and the shadows' hold.
+static func spell_effect_phase(cutin: Node) -> bool:
+	return cutin != null and cutin.busy() and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
 
 
 ## Lookup order: the scenario's own manifest, then the shared up-title manifest. An
@@ -286,6 +295,8 @@ func spawn_map_objects() -> void:
 					Vector2i(texture.get_size()), origin)
 			"mapobjBuildBottom":
 				drift.add_scene_held(sprite, true)
+			"mapobjShadow":
+				drift.add_magic_held(sprite)
 		runtime.map_object_records.append(_map_object_record(record, shape_id, texture, placement, candidate_anchor_world, anchor_world, top_left_world, runtime_layer))
 
 
@@ -341,7 +352,7 @@ func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Textu
 		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 		sprite.material = blend
 	if map_object_field_value(record, "obj_Data9") == "mapobjShadow":
-		# 0x43ce94: a shadow is engGLASS in colour 0x1082 every tick.
+		# 0x43ce94: a shadow is engGLASS in colour 0x1082 every tick (held by MapObjectDrift.magic_hidden).
 		sprite.material = glass_material(SHADOW_GLASS_WORD)
 	elif glass:
 		# engGLASS in the template's obj_Data colour (+0x28; level 1 雲影 0x2104).
@@ -403,12 +414,21 @@ func _clouds_hidden() -> bool:
 ## close-up 0x401c20 and the status window 0x43863f): a cut-in clip that is not a map `magic:`
 ## effect phase (sync_cast_depth's reading), or the status panel open.
 func _close_up_hidden() -> bool:
-	var presentation := runtime.get_node_or_null("BattlePresentation")
-	if presentation != null and presentation.get("cutin") != null and presentation.cutin.busy() \
-			and not str(presentation.cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:"):
+	var cutin := _cutin()
+	if cutin != null and cutin.busy() and not spell_effect_phase(cutin):
 		return true
 	var panel = runtime.get("status_panel")
 	return panel is CanvasItem and panel.visible
+
+
+## The shadows' hold (0x43ce94: [0x4c1b00] & 0x1000000 → +0xae = 2): the spell effect phase.
+func _magic_hidden() -> bool:
+	return spell_effect_phase(_cutin())
+
+
+func _cutin() -> Node:
+	var presentation := runtime.get_node_or_null("BattlePresentation")
+	return presentation.get("cutin") if presentation != null else null
 
 
 ## The runtime's one MapObjectDrift, emptied for a fresh placement. A child of the runtime,
@@ -425,6 +445,7 @@ func _map_object_drift() -> MapObjectDrift:
 	drift.clouds_hidden = _clouds_hidden
 	drift.scene_hidden = func() -> bool: return not GameSettings.scene_effects_enabled()
 	drift.close_up_hidden = _close_up_hidden
+	drift.magic_hidden = _magic_hidden
 	return drift
 
 
@@ -482,11 +503,14 @@ func map_object_stand_records() -> Array:
 	## to candidate_x/candidate_y by tools/hsltools/levels/map_objects.py; e.g. level 1's
 	## tree/house + shadow pairs). Children take the group's record_index and a
 	## child index so node names stay unique (the first child stands on the EVEF point,
-	## static-derived from the original installer 0x46bd67).
+	## static-derived from the original installer 0x46bd67). Returned in EVEF creation order
+	## (0x46be17 walks the records in order, a combined record's children in child order, and
+	## 0x45e307 appends each to its plane's list), so node order within a layer is list order.
 	var records: Array = []
 	for item in runtime.map_objects_manifest.get("placements", []):
 		if typeof(item) == TYPE_DICTIONARY and str((item as Dictionary).get("role", "")) in STAND_OBJECT_ROLES:
-			records.append(item)
+			records.append((item as Dictionary).duplicate())
+			records[-1]["_creation_rank"] = 0
 	for group_value in runtime.map_objects_manifest.get("combined_placements", []):
 		if typeof(group_value) != TYPE_DICTIONARY:
 			continue
@@ -498,7 +522,10 @@ func map_object_stand_records() -> Array:
 			child["role"] = "map_object"
 			child["record_index"] = int(group.get("record_index", -1))
 			child["combined_symbol"] = str(group.get("symbol", ""))
+			child["_creation_rank"] = 1 + int(child.get("child_index", 0))
 			records.append(child)
+	records.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return [int(a.get("record_index", -1)), int(a["_creation_rank"])] < [int(b.get("record_index", -1)), int(b["_creation_rank"])])
 	return records
 
 
@@ -507,15 +534,36 @@ func _map_object_preview_path(shape_id: String) -> String:
 
 
 func _map_object_runtime_layer(record: Dictionary) -> String:
-	## The level manifest's hint (hsltools.levels.map_objects LAYER_HINTS plus the level
-	## profile's layer_overrides) decides the layer; a manifest without hints falls back
-	## to the obj_plane token.
+	## The original orders only by bucket, then plane, then list order (original_draw_order.md);
+	## the remake's z already carries bucket and plane, and the layer node only breaks z ties.
+	## A stand object whose z can meet only other stand objects' goes to the foreground node,
+	## where map_object_stand_records' creation order is the original's list order. The rest
+	## keep the level manifest's hint (hsltools.levels.map_objects LAYER_HINTS plus the level
+	## profile's layer_overrides; a manifest without hints falls back to the obj_plane token):
+	## y-sorted or mid-band planeIcon／planeObject1 (an actor's plane: which of a tied object
+	## and enemy draws last follows EVEF record order, not a node), the band under planeObject1
+	## (z 0..3, tied with MoveOverlay) and the band over planeObject30.
 	var hint := str(record.get("runtime_layer_hint", ""))
-	if hint == "foreground" or hint == "back" or hint == "backdrop":
+	if hint == "backdrop":
+		return hint
+	if _map_object_ties_only_objects(record):
+		return "foreground"
+	if hint == "foreground" or hint == "back":
 		return hint
 	if map_object_field_value(record, "obj_plane") == "planeObject20":
 		return "foreground"
 	return "back"
+
+
+## _map_object_runtime_layer: the object's z (ActorRuntime.apply_object_depth) is a world-row
+## bucket or a mid fixed plane, on a plane no actor draws on.
+func _map_object_ties_only_objects(record: Dictionary) -> bool:
+	var number := ActorRuntime.plane_number(str(record.get("plane", "")))
+	var plane := number if number >= 0 else ActorRuntime.PLANE_OBJECT1
+	if ActorRuntime.has_attack_flag(map_object_field_value(record, "obj_Attribute")) and number >= 0:
+		if number < ActorRuntime.FIXED_PLANE_LOWEST_BUCKET or number > ActorRuntime.FIXED_PLANE_LOWEST_BUCKET + ActorRuntime.Y_BUCKET_ROWS - 1 + ActorRuntime.FLYING_DEPTH_ROWS:
+			return false
+	return plane != ActorRuntime.PLANE_ICON and plane != ActorRuntime.PLANE_OBJECT1
 
 
 func _map_object_layer_node(runtime_layer: String) -> Node2D:

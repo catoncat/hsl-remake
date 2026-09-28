@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 477,
+    "sources": 478,
     "sources_by_kind": {
       "provenance": 193,
-      "sentence": 87,
+      "sentence": 88,
       "scope": 99,
       "matrix": 85,
       "video": 13
@@ -884,14 +884,14 @@
     },
     {
       "id": "stage-placement",
-      "difference": "组合物件、engGLASS、瀑布、建筑底与世界尺寸已照原版（组合子项按模板 code & 0x7fffffff 放在表内 xy＋delta、链头也画；engGLASS 与影子按 +0x28 色半混合；瀑布按链头视差＋自身尺寸回绕卷动、加色画；建筑底在特写／状态窗期间藏起；世界尺寸＝WRD 行列×32）；云漂移与移動背景视差已照原版；剩组合物件的前景／背景节点分层（关卡 profile 的 runtime_layer_hint）与原版只按 obj_Plane 排桶是否处处同序未逐关核，影子 0x43ce94 的另一藏起位未追",
-      "original": "0x46bd67 组合安装、0x43d07b／0x43d13e 瀑布、0x43d758 建筑底、0x4684b6 engGLASS 内核、0x46bb65 WRD 尺寸已读；云与移動背景已读完并整镜像实测",
+      "difference": "组合物件、engGLASS、瀑布、建筑底与世界尺寸已照原版（组合子项按模板 code & 0x7fffffff 放在表内 xy＋delta、链头也画；engGLASS 与影子按 +0x28 色半混合；瀑布按链头视差＋自身尺寸回绕卷动、加色画；建筑底在特写／状态窗期间藏起；影子在地图魔法效果阶段藏起；世界尺寸＝WRD 行列×32）；云漂移与移動背景视差已照原版；站立物件前景／背景节点已逐关核，z 只与别的站立物件平局的一律按 EVEF 创建序进前景节点（149 关与原版先后相反的同桶同平面配对 97→25）；剩 planeObject1 上可与敌人平局的一类仍按关卡 runtime_layer_hint 分节点（玩家第 4 场 · 歐姆村 · 獸族的襲擊（LEVEL001）3 对，玩家第 5 场 · 戈爾山道（LEVEL002）与戈爾山道 · 遭遇戰（LEVEL501–503）各 1 对，薩魯司海岸（LEVEL036）18 对，共 25 对；原版按记录序与敌人穿插），以及 Local 逐受者接力期间影子、云与抬层在第一段效果播完就恢复（原版到最后一个受者后 0x44327c 才清位）",
+      "original": "0x46bd67 组合安装、0x43d07b／0x43d13e 瀑布、0x43d758 建筑底、0x4684b6 engGLASS 内核、0x46bb65 WRD 尺寸已读；影子 0x43ce94 测 [0x4c1b00] & 0x1000000（ebp 于 0x43cdd0 置）、施法 0x442a90 置清该位（0x442daf／0x44327c）、0x46be17／0x45e307 的创建与链表序已读，0x45f0d1 何时调用未读；云与移動背景已读完并整镜像实测",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_object_drift.md",
         "docs/evidence_packets/runtime_observations/story_scene_001_preview/README.md",
         "docs/evidence_packets/runtime_observations/remake_notes.md"
       ],
-      "remake": "BattleSceneStage 放组合子物件与 engGLASS 着色器；MapObjectDrift 走云、移動背景、瀑布并藏建筑底；MapSceneConfig 取 WRD 网格×32",
+      "remake": "BattleSceneStage 放组合子物件与 engGLASS 着色器、按创建序分前景节点；MapObjectDrift 走云、移動背景、瀑布并藏建筑底与影子；MapSceneConfig 取 WRD 网格×32",
       "remake_code": [
         "game/battle/scene/BattleSceneStage.gd",
         "game/battle/runtime/MapSceneConfig.gd",
@@ -904,7 +904,8 @@
       "sources": [
         "provenance:game/battle/runtime/MapObjectDrift.gd|timing|provisional|",
         "provenance:game/battle/scene/BattleSceneStage.gd|layout|provisional|",
-        "scope:docs/evidence_packets/runtime_observations/remake_notes.md|provisional|"
+        "scope:docs/evidence_packets/runtime_observations/remake_notes.md|provisional|",
+        "sentence:docs/evidence_packets/static_reverse/original_map_object_drift.md#3cc79d8e04"
       ]
     },
     {
