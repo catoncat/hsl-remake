@@ -71,6 +71,7 @@ var modal_panels: Array[Control] = []
 var growth_offered_levels: Dictionary = {}
 var ui_audio: AudioStreamPlayer
 var ui_sounds: Dictionary
+var walk_water_is_walk_rows: Array
 ## The finished battle's fade to black (original_battle_end_flow.md): 0x42cc10／0x42cbd0 end the
 ## level through the screen transition 0x42dc90(2) with no result page. Seconds into it, the
 ## top-layer black rect, and whether the leave already ran.
@@ -222,6 +223,7 @@ func _ready() -> void:
 	menus.build_panels()
 	var interface_audio := _load_json(BattleScenario.resource_path(first_battle_scenario, "interface_audio"))
 	ui_sounds = interface_audio.get("sounds", {})
+	walk_water_is_walk_rows = interface_audio.get("walk_water_is_walk_rows", [])
 	ui_audio = AudioStreamPlayer.new()
 	ui_audio.volume_db = -6.0
 	add_child(ui_audio)
@@ -319,10 +321,8 @@ func _process(delta: float) -> void:
 		$BattlePresentation.selection_cursor.hide()
 		$BattlePresentation.target_vitals.hide()
 	elif interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion() and not ring_camera_return:
-		var pan := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-		if pan == Vector2.ZERO and camera_controller != null:
-			pan = camera_controller.edge_direction(pointer_logical_position, pointer_inside_window and get_window().has_focus())
-		if camera_controller != null and camera_controller.pan(pan, delta, BattleCameraController.EDGE_SCROLL_PIXELS_PER_SECOND):
+		var pan := BattleCameraController.scroll_direction(BattleCameraController.edge_direction(pointer_logical_position, pointer_inside_window and get_window().has_focus()))
+		if camera_controller != null and camera_controller.pan(pan, delta, BattleCameraController.edge_scroll_pixels_per_second()):
 			scene_input.update_pointer_hit(pointer_logical_position)
 		$BattlePresentation.preview_target(play_loop, hovered_unit_id, hovered_grid_cell)
 		overlays.refresh_skill_footprint(hovered_grid_cell)

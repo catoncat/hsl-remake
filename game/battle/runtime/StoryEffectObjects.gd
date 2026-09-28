@@ -13,11 +13,14 @@ extends RefCounted
 ##   defProcEffectProcess1 + frames -> one-shot frame run then free (obj_Effect_FireBomb)
 ##   defProcObjectMove + engZOOM    -> zoomed flash that fades over obj_Data7 ticks (閃電)
 ##   defProcObjectMove + engADDCOLOR* -> additive glow that swells and fades (光環)
+##   defProcObjectMove with a native objcomd track (level 37's 白光／白光2: same symbol, same
+##     obj_Data7, no obj_Mode) -> the 0x4051d0 track per tick: zoom, engADDCOLOR, engMIX level
 ## Anything else keeps the coordinator's plain sprite path.
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##   layout: remake-invented (rain emitter, zoom flash, glow readings of those fields)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##   timing: static-derived content/generated/hsl/skills/objcomd_motion.json
 ##   timing: provisional
 ##     (obj_Data7 read as a flash lifetime, glow swell, rain drop frame cadence and spawn band — the
 ##     mapobjDropRain／defProcObjectMove processes are unread)
@@ -25,6 +28,8 @@ extends RefCounted
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
 ##     (mapobjPlayBGSound loop at full volume, 0 dB)
 
+const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
+const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 ## Object ticks (shape_delay, obj_Data7, 16.16 velocities) are original ticks.
@@ -38,7 +43,7 @@ const FIXED_POINT_ONE := 65536.0
 var _counts: Dictionary = {}
 
 
-static func effect_kind(spec: Dictionary) -> String:
+static func effect_kind(spec: Dictionary, symbol: String = "") -> String:
 	var fields: Dictionary = spec.get("object_fields", {})
 	var data9 := str(fields.get("obj_Data9", ""))
 	var mode := str(fields.get("obj_Mode", ""))
@@ -52,11 +57,23 @@ static func effect_kind(spec: Dictionary) -> String:
 		return "frame_loop"
 	if process == "defProcEffectProcess1" and frames.size() > 1:
 		return "frame_once"
+	if process == "defProcObjectMove" and native_track(spec, symbol) != "":
+		return "objcomd_track"
 	if process == "defProcObjectMove" and mode.begins_with("engZOOM"):
 		return "flash"
 	if process == "defProcObjectMove" and mode.begins_with("engADDCOLOR"):
 		return "glow"
 	return ""
+
+
+## The objcomd_motion object whose native track this story object draws: `symbol` is tracked with the same obj_Data7 program and the spec sets no obj_Mode
+## (the template the probe ran); "" otherwise.
+static func native_track(spec: Dictionary, symbol: String) -> String:
+	var fields: Dictionary = spec.get("object_fields", {})
+	if symbol == "" or fields.has("obj_Mode") or str(spec.get("shape_resource_id", "")) != "BALL001.SHP" or not ObjcomdMotion.tracked(symbol):
+		return ""
+	var row: Dictionary = ObjcomdMotion.packet()["objects"][symbol]
+	return symbol if row.has("level_obs") and str(row["command_code"]) == str(fields.get("obj_Data7", "")) else ""
 
 
 static func zoom_of(spec: Dictionary) -> Vector2:
@@ -83,7 +100,7 @@ static func frame_manifest(spec: Dictionary, frame_ticks: int) -> Dictionary:
 
 
 func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dictionary, symbol: String, anchor: Vector2, source_event_id: String) -> Dictionary:
-	var kind := effect_kind(spec)
+	var kind := effect_kind(spec, symbol)
 	var index := int(_counts.get(symbol, 0)) + 1
 	_counts[symbol] = index
 	var record := {"kind": "story_object_insert", "source_event_id": source_event_id, "symbol": symbol, "anchor_world": anchor, "effect": kind, "instance": index}
@@ -126,6 +143,13 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 			sprite.z_index = EFFECT_Z
 			runtime.world_root.add_child(sprite)
 			record["frame_count"] = sprite.frames.size()
+		"objcomd_track":
+			var sprite := TrackSprite.new()
+			sprite.name = "StoryEffect_%s_%d" % [symbol, index]
+			sprite.configure(str(spec.get("preview", "")), spec.get("draw_origin", [0, 0]), anchor, symbol)
+			sprite.z_index = EFFECT_Z
+			runtime.world_root.add_child(sprite)
+			record["track_frames"] = sprite.frames
 		"flash", "glow":
 			var sprite := FadeSprite.new()
 			sprite.name = "StoryEffect_%s_%d" % [symbol, index]
@@ -191,6 +215,46 @@ class FrameOnce extends Sprite2D:
 		texture = textures[frame_index]
 		var origin: Array = frames[frame_index]["draw_origin"]
 		offset = -Vector2(float(origin[0]), float(origin[1]))
+
+
+class TrackSprite extends Sprite2D:
+	## A story defProcObjectMove object drawn from its native 0x4051d0 track (白光: BALL001
+	## zooming 0.4375 → +0.1875 per tick, full add for 5 ticks, then add weighted 16/16 → 1/16,
+	## one level per 2 ticks, deleted at tick 38). Tick n shows track frame n; the script is
+	## not held (its own actDelay runs alongside).
+	var track := {}
+	var frames := 0
+	var elapsed := 0.0
+
+	func configure(preview: String, origin: Array, anchor: Vector2, symbol: String) -> void:
+		texture = load(preview)
+		centered = false
+		offset = -Vector2(float(origin[0]), float(origin[1]))
+		position = anchor
+		track = ObjcomdMotion.track(symbol, 0)
+		frames = int(track["frames"])
+		var blend := CanvasItemMaterial.new()
+		blend.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		material = blend
+		_show(1)
+
+	func _process(delta: float) -> void:
+		elapsed += delta
+		_show(1 + int(elapsed / OriginalTick.TICK_SECONDS))
+
+	func _show(frame: int) -> void:
+		var drawn: Array = EffectObjectMotion.sprites_at(track, frame)
+		if drawn.is_empty():
+			if frame >= frames:
+				queue_free()
+			else:
+				visible = false
+			return
+		var row: Dictionary = drawn[0]
+		visible = true
+		scale = row["scale"]
+		modulate.a = float(row["alpha"])
+		(material as CanvasItemMaterial).blend_mode = CanvasItemMaterial.BLEND_MODE_ADD if str(row["blend"]) == "add" else CanvasItemMaterial.BLEND_MODE_MIX
 
 
 class FadeSprite extends Sprite2D:

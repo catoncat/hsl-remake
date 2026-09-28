@@ -1,13 +1,14 @@
 # 原版标题画面的宝珠与书：上下浮动，不跟随选项；点击标题项放 ACCEPT01
 
-> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表; runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x4241a0, 0x424360, 0x458c80, 0x45e882, 0x45e9bc · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
+> evidence: static-derived: defProcMainMenuItem 0x424360 每 tick y＝生成 y＋trunc(6·sin(角))、角 +3／256、初角 rand()%255；点击放 RESOURCE 398；菜单首帧低 300 px 以 0x45e882 速度 40 滑回；悬停每 6 tick 撒 Menu_Star、点击加 Menu_Star2；码 10／11 开設定選項／回憶錄列表; runtime-measured: 原版 v1.06 标题画面的宝珠与书只在竖直方向浮动，周期约 1.65 s、上下各约 5 px，位置与鼠标停在哪一项无关 · status: live · functions: 0x415c10, 0x415dc0, 0x416d04, 0x41f5db, 0x423aa0, 0x423b90, 0x423bd0, 0x423cd0, 0x423f00, 0x424004, 0x4241a0, 0x424360, 0x42cc10, 0x42dc90, 0x458c80, 0x45e882, 0x45e9bc, 0x46098f, 0x460a58 · tools: hsl_original_control.py, play_original.sh · updated: 2026-09-28
 
 ## 结论
 
 - 原版：宝珠（Item1）与书（Item2）由 defProcMainMenu `0x423cd0` 建在菜单位置（环左上）＋(33,112)／(207,107)；defProcMainMenuItem `0x424360` 每 tick 令 y＝生成 y＋trunc(6·sin(角·2π/256))、x 不变，字节角每 tick +3，初角各自 rand()%255；点击标题项（三行字与宝珠、书同走 `0x4241a0`）放 ACCEPT01（RESOURCE 398）（static-derived）。实录周期 1.646 s、振幅 5.1–5.2 px、相位差各组不一，与读法一致（runtime-measured）。
 - 原版：菜单（环、三行字、两尊雕像、宝珠、书）首帧低 300 px，state 0 以 `0x45e882` 每 tick min(40, 距离>>3)（至少 2、1 px 内落位）滑回，落位后才收输入；悬停对象每 6 tick 按 32 px 一列撒 4 颗 Menu_Star（788），点击撒 24 颗 Menu_Star2（789）＋16 颗 788，星点随机起始张、竖直上飘、停 6..13＋1 tick 后 16 级加色淡出；点宝珠开 設定選項（792）、点书开读取回憶錄列表（790），窗开期间菜单照画不收输入，窗写回结果后复位或读入（static-derived）。
 - 重制：`game/title/TitleScreen.gd` 按同一生成位置、正弦表截断、每 tick 步进与各自随机初角逐 tick 浮动；点击标题项放 ACCEPT01；滑入、火花节拍与运动、宝珠／书开窗照上述读法（static-derived）。
-- 差异：星点逐颗落点用重制随机流；Menu_Star 未写 Shape_Delay 按 0；宝珠／书开窗前的按住计时与读入回憶錄的淡出未读，见「边界」（provisional）。
+- 原版：宝珠／书点击后主菜单先数按住计时 `+0xa8`＝obj_Data8＝10 tick（state 3 `0x424004`，与三行字的 40 tick 同一套）再开窗；读入回憶錄经 `0x42cc10(1,1)` → `0x42dc90(2)` 淡出，每 2 tick 一级、30 tick 全黑（static-derived）。
+- 差异：星点逐颗落点用重制随机流；Menu_Star 未写 Shape_Delay 按 0；读入时 `0x42c7e0` 的表现未读，见「边界」（provisional）。
 
 ## 证据
 
@@ -24,6 +25,8 @@
 - 悬停与点击火花（`0x4241a0`）：只在碰到的主菜单带 `0x10000`（待输入）时处理；悬停（`0x2000000`）`+0x90` 每 tick −1（首帧置 6），≤0 时复位为 `+0x92`＝6 并以 4 颗调 `0x423aa0(自身, 788, 48, 6, 4)`；点击另调 `0x423aa0(自身, 789, 64, 1, 24)`，再以 16 颗调 788。计数跨悬停不清零。
 - 撒点（`0x423aa0` → `0x415c10`）：列 x 从形状左＋16 起每 32 px 一列、到形状右为止，列中心 y＝形状顶＋16；每列 `count` 颗，dx＝rand()%宽 折成 宽/2−dx（宽 48／64），dy 同法取 2×(高−16)；首颗延迟 0，此后每颗 +rand(抖动)+1（788 抖动 6、789 抖动 1），延迟记 `+0xae`；全局对象数到 900 停撒。
 - 星点运动：global.obs 788 Menu_Star（`MAGIC\EAR24_22.SHP` 起 3 张，Shape_Delay 被注释、Data6 被注释）、789 Menu_Star2（`EAR24_21.SHP` 起 3 张，Shape_Delay 2，Data6 0x8000），planeMenu6、defProcEffectProcess1、Data9 effProcFlyUpShape（TYPE.H 81 → 表 `0x4231b0` → `0x41f5db`）。序言 `0x415dc0` 数完 `+0xae` 才画、置加色与层级 16；`0x41f5db` 起始张＋rand(3) 并定住（`+0x78`＝0x10001），速度＝(rand & 0x1f000)＋Data6（16.16）朝 0xc0 正上，`+0x7c` += 6＋(rand & 7)，把过程改成 16 effProcFlyUp2 并跳过其首帧；之后 `0x416d04` 每 tick 先位移，再 `0x45e575` 数 `+0x7c`，数完置 `0x20000000`，此后 `0x422c9a` 层级每 tick −1、归零删除。
+- 按住计时：`0x424302` 把被点对象 `+0xa8` 交给主菜单；OBJ-000.OBS 的 Item1／Item2 obj_Data8＝10（注释 delay），String1–3 为 40；state 2 `0x423fd8` 见码进 state 3 并清 `0x10000`，state 3 `0x424004` 每 tick 减一、到 0 按码分派（码 10／11 即开窗）。宝珠／书因此在点击后 10 tick 开窗，其间菜单不收输入。
+- 读入淡出：state 5 结果 1 时 `0x42cc10(1,1)` 置 `0x4c1b00 |= 0x90000000` 并调 `0x42dc90(2)` → `0x46098f(2)`：级 1 起、方向 +1、每 2 tick 加一级（`0x460a58`，主循环 `0x42d772` 每 tick 一次），超 16 夹住并停；与離開遊戲（`0x42cb60`）、開始新故事（`0x42cc10(0x33,0x33)`）、戰場記錄（`0x42cc70`）同参数 2。
 - 开窗关窗：码 10 state 4、码 11 state 5，把 `+0xac` 清 0 并把其地址交给窗（`0x423b90` 建 792 于 (0,0)、`0x423bd0` 建 790 于 (0,0) 且 `+0x9c`＝0 读取模式；建失败直接写 2）；菜单此时已清 `0x10000`，照画但不收悬停与点击，宝珠与书照常浮动。state 4（`0x424101`）等 `+0xac` 非零回 state 1；state 5（`0x424117`）非零且为 1 时 `0x42c7e0`、`0x42cc10(1,1)` 读入并进 state 99，否则回 state 1。
 
 **runtime-measured（2026-09-24 原版 v1.06，Wine＋cnc-ddraw 640×480）**
@@ -51,17 +54,16 @@
 
 ## 重制接线
 
-`game/title/TitleScreen.gd`：`ORNAMENT_SPAWN_OFFSETS`＋`ornament_spawn_top_left` 是生成位置，`ornament_offset` 按 `OriginalTick` 的整 tick 数算角与截断偏移，`ornament_phases` 存两件初角；`play_click_sound` 在点击标题项（及重制键盘确认）时放 interface_audio 的 confirm（ACCEPT01，398）。`menu_slide`／`_tick` 逐 tick 滑入，`menu_armed` 落位前与开窗时不收输入；`spawn_sparkles`／`_tick_stars` 照上述撒点与运动画在加色层 `MenuStars`；`open_window` 经 `BattleSystemMenu.open_standalone` 开 設定選項／读取回憶錄列表（不带卷轴），窗返回发 `standalone_closed` 复位，列表选有记录的格确认后 `resume_memoir_record` 入队并淡出。provenance 头写 `static-derived` 本包。标题其余读法见 [menus_ui](../menus_ui/README.md)。
+`game/title/TitleScreen.gd`：`ORNAMENT_SPAWN_OFFSETS`＋`ornament_spawn_top_left` 是生成位置，`ornament_offset` 按 `OriginalTick` 的整 tick 数算角与截断偏移，`ornament_phases` 存两件初角；`play_click_sound` 在点击标题项（及重制键盘确认）时放 interface_audio 的 confirm（ACCEPT01，398）。`menu_slide`／`_tick` 逐 tick 滑入，`menu_armed` 落位前与开窗时不收输入；`spawn_sparkles`／`_tick_stars` 照上述撒点与运动画在加色层 `MenuStars`；`press_window` 数 10 tick 后 `open_window` 经 `BattleSystemMenu.open_standalone` 开 設定選項／读取回憶錄列表（不带卷轴），窗返回发 `standalone_closed` 复位，列表选有记录的格确认后 `resume_memoir_record` 入队并淡出。provenance 头写 `static-derived` 本包。标题其余读法见 [menus_ui](../menus_ui/README.md)。
 
 ## 复现
 
-实录不可再生：原版侧唯一记录。静态部分：`r2 -q -e scr.color=0 -c 'pd 140 @ 0x423cd0; pd 60 @ 0x424360; pd 120 @ 0x4241a0; pd 30 @ 0x45e9bc; px 12 @ 0x42418c; pd 75 @ 0x423aa0; pd 90 @ 0x415c10; pd 25 @ 0x41f5db; pd 50 @ 0x416d04; pd 30 @ 0x423b90; pd 20 @ 0x423bd0; pxw 8 @ 0x4232f0' hsl01.exe`；effProc 号读 PAK 内 `data\TYPE.H`；对象与过程号用 PakReader 读 OBJ-000.OBS、global.obs、PROCESS.DEF。
+实录不可再生：原版侧唯一记录。静态部分：`r2 -q -e scr.color=0 -c 'pd 140 @ 0x423cd0; pd 60 @ 0x424360; pd 120 @ 0x4241a0; pd 30 @ 0x45e9bc; px 12 @ 0x42418c; pd 75 @ 0x423aa0; pd 90 @ 0x415c10; pd 25 @ 0x41f5db; pd 50 @ 0x416d04; pd 30 @ 0x423b90; pd 20 @ 0x423bd0; pxw 8 @ 0x4232f0; pd 80 @ 0x424004; pd 30 @ 0x42cc10; pd 30 @ 0x460989; pd 20 @ 0x460a58' hsl01.exe`；effProc 号读 PAK 内 `data\TYPE.H`；对象与过程号用 PakReader 读 OBJ-000.OBS、global.obs、PROCESS.DEF。
 
 ## 边界
 
 - 实录采样率只有 4–5 帧／秒；书的范围由目测裁切图得到，误差约 ±2 px。静态读法与实录的周期、振幅、相位关系一致，未另做逐帧读数。
 - 星点只照分布、数量与运动，逐颗落点与原版全局随机流不同；Menu_Star 的 Shape_Delay 被注释，按 0 读（obs 缺省值未读）。
 - 撒点的形状矩形用亮起形状（三行字）与宝珠／书贴图，`+0x94`..`+0xa0` 的内缩按 0。
-- 宝珠／书点击后原版先数按住计时 `+0xa8`（state 3）再开窗，这两件的计时值未读，重制点击即开。
-- 读取回憶錄列表沿用战斗内列表（选有记录的格先问確定／取消，重制读法）；读入时 `0x42c7e0` 的表现未读，重制不停留直接按标题淡黑时长淡出。
+- 读取回憶錄列表沿用战斗内列表（选有记录的格先问確定／取消，重制读法）；读入时 `0x42c7e0` 的表现未读，重制不停留直接按 `0x42dc90(2)` 淡出。
 - 点击声只在主菜单处于待输入态时放；重制键盘确认也放同一声，属重制键盘路径。

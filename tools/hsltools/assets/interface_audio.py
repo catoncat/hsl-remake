@@ -17,6 +17,7 @@ from hsltools.sources.tables import digest, TABLES, blocks, parse_table
 ROOT = Path('content/imported/hsl/shared/interface_audio')
 NAMES = Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT')
 HEADER = TABLES / 'resource.h'
+PLAYERS = Path('content/imported/hsl/global/tables/PLAYERS.TXT')
 
 
 def bindings():
@@ -25,7 +26,20 @@ def bindings():
     return {event: {'symbol': symbol, 'resource_id': int(aliases[symbol]), 'source_member': names[aliases[symbol]]}
             for event, symbol in [('confirm', 'sfxAccept'), ('take_up', 'sfxTakeUp'), ('put_down', 'sfxPutDown'), ('use_item', 'sfxUseItem'), ('game_over', 'sfxGameOver'), ('level_up', 'sfxLevelUp'), ('get_treasure', 'sfxGetTreasure'), ('sell_item', 'sfxSellItem'),
                                   ('cast_magic', 'sfxCastMagic'), ('hit_staff', 'sfxHitStaff'), ('hit_sword', 'sfxHitSword'),
-                                  ('hit_bow', 'sfxHitBow'), ('hit_axe', 'sfxHitAxe'), ('hit_spear', 'sfxHitSpear'), ('hit_dagger', 'sfxHitDagger')]}
+                                  ('hit_bow', 'sfxHitBow'), ('hit_axe', 'sfxHitAxe'), ('hit_spear', 'sfxHitSpear'), ('hit_dagger', 'sfxHitDagger'),
+                                  ('walk_water', 'sfxWalkWater'), ('walk_fire', 'sfxWalkFire')]}
+
+
+def walk_water_rows():
+    """PLAYERS.TXT rows with their own sound_walkwater (template +0x12, played by 0x409670 on 0x8000 cells
+    instead of sfxWalkWater). Every such row repeats its sound_walk, so the remake reuses the walk sound."""
+    rows = []
+    for block in PLAYERS.read_bytes().decode('cp950').split('[character]')[1:]:
+        fields = dict(re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+?)\s*$', block, re.M))
+        if 'sound_walkwater' in fields:
+            assert fields['sound_walkwater'] == fields.get('sound_walk'), fields.get('code')
+            rows.append(str(int(fields['code'])))
+    return sorted(rows, key=int)
 
 
 def weapon_hits():
@@ -41,10 +55,11 @@ def weapon_hits():
 
 def check():
     expected = bindings()
-    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
+    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT', PLAYERS]}
     data = json.loads((ROOT / 'manifest.json').read_text())
     assert data['sources'] == sources and set(data['sounds']) == set(expected)
     assert data['weapon_hit_sounds'] == weapon_hits()
+    assert data['walk_water_is_walk_rows'] == walk_water_rows()
     for key, binding in expected.items():
         row = data['sounds'][key]
         assert all(row[field] == value for field, value in binding.items())
@@ -55,7 +70,7 @@ def check():
 
 def build(pak):
     expected = bindings()
-    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT']}
+    sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT', PLAYERS]}
     ROOT.mkdir(parents=True, exist_ok=True)
     packages = find_decoded_paks_packages(pak)
     for key, row in expected.items():
@@ -76,6 +91,7 @@ def build(pak):
         row.update(source_sha256=digest(raw), sha256=digest(audio), profile=profile(audio), res_path='res://' + target.as_posix())
     result = {'schema': 'hsl_interface_audio.v1', 'evidence_tier': 'resource-derived', 'sources': sources, 'sounds': expected,
               'weapon_hit_sounds': weapon_hits(),
+              'walk_water_is_walk_rows': walk_water_rows(),
               'weapon_binding_note': 'ITEM weapon icon category to same-named resource.h hit sound; claw has no same-named alias and explicitly uses character attack audio without a second hit cue. These are remake bindings, not a recovered complete native sound dispatch.',
               'limits': ['Modern playback timing and volume; no claim of complete original interface sound parity.']}
     (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
@@ -85,7 +101,7 @@ def build(pak):
 class InterfaceAudioTask(ScriptCheckTask):
     name = 'interface_audio'
     family = 'assets'
-    inputs = (HEADER.as_posix(), NAMES.as_posix(), (TABLES / 'ITEM.TXT').as_posix())
+    inputs = (HEADER.as_posix(), NAMES.as_posix(), (TABLES / 'ITEM.TXT').as_posix(), PLAYERS.as_posix())
     outputs = (ROOT.as_posix() + '/',)
     replaces = ('tools/hsl_interface_audio.py --check',)
     scripts = ('tools/hsltools/assets/interface_audio.py',)

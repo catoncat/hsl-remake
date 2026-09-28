@@ -35,7 +35,7 @@
 | `player_total_arrive_counts` | provisional | actCheckPlayerTotalNumber/actCheckAnyPlayerArrivePos count units whose role is player_controlled or friendly_ai. |
 | `round_display` | static-derived | actCheckRoundDisp arms the display baseline word (round + num) at its first evaluation when it is unset, holds once the round reaches it and clears it; actDetectRoundDispDisp holds once the round reaches baseline + num without a write; a mapobjRoundNumberCounter object sets the baseline to obj_HitPoint + round. The remake keeps the baseline in the winfail runtime («回合显示基线与胜负并立»). |
 | `delete_pos_x_range` | static-derived | actDeletePosPlayerXRange selects exactly x_number quantized pixel cells on the requested process side; the remake commits matching living units through the existing departure ledger. actInsertStoryObjectXRange records the same pixel-derived object positions without creating combat units. |
-| `level_up_star_movie` | static-derived | actInsertLevelUpStar is a native effect/sound request only; the remake records skipped_no_level_up_star_sprite when no dedicated star asset is available. actPlayMovie uses the existing MoviePlayer and records headless skips. |
+| `level_up_star_movie` | static-derived | actInsertLevelUpStar (case 0x7b, 0x452590) plays a non-zero sound id via 0x42c180, then, when random slot 0 (0x4c28e0) is non-zero, calls 0x408b20(x, y − 48, 3): the LEVEL UP star shower (object 149) centred on the slot. The rule layer keeps the request record; BattleOpeningCoordinator draws LevelUpStars there and plays the sound. actPlayMovie uses the existing MoviePlayer and records headless skips. |
 
 ### static-derived：五类读法
 

@@ -92,7 +92,7 @@
 - 特写片段等最后一个结果数字走完寿命才收（两位红字 54 tick 的淡出尾完整播完），`RESULT_HOLD_TICKS` 40 tick 只作无数字说明行的最低停留；续击时上一镜存活数字在下一镜走完（见 [original_skill_function_bits.md](../../static_reverse/original_skill_function_bits.md) 的 aniShowHitResult 读法）。
 - 无 m_shape 引导的施法者：`0x403128` 前 `+0x90` 数 8 个 call（`0x4030f7..0x403105`），第 9 call 姿势、Cast_Star 与施法音 `0x193` 同刻，重制照此（[original_cast_overlays.md](../../static_reverse/original_cast_overlays.md) §无条带起手序列）；撒星高度 h 用重制站立帧高＋2（`cast-strip-missing`）。
 - 录屏 026 的火球在姿势结束（471.60 s）才开始：效果 VM 阶段 4／7／0x17／0x19 先测施法者姿势位 `0x1000`，置位就让出，效果等姿势放完才开始（static-derived），重制按 `caster_pose_ticks` 同样等待。
-- 脚本 `actInsertLevelUpStar`（WINFAIL，记 `level_up_star_requests`）的星光未接到 `LevelUpStars`。
+- 脚本 `actInsertLevelUpStar`（case 0x7b `0x452590`）与升级浮字是同一 `0x408b20` case 3 调用、同一对象 149，中心取随机槽 0（`actSetPlayerPosToRandom0` 写的角色像素）；重制 `BattleOpeningCoordinator._record_level_up_star` 在该点放 `LevelUpStars`、放音效，玩家第 28 场的胜利演出（WINFAIL028，每名主角各一次）由此演出（static-derived）。
 - 星光与姿势用表现 RNG，原全局随机流不复现。
 - 种类 4 数字淡出的 `T[16−L][dst]` 截断重制不做（Godot 普通 alpha 混合）。
 - 加色内核的进位先漏进相邻通道低位再被饱和掩码补满（低于 1/32 级）、底色是 16 位缓冲，重制按 8 位底色做浮点加法，不复现这两点。

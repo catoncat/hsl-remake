@@ -40,7 +40,7 @@
 | 3 下一个 token | `0x450eea`→`0x4511e9`：不让出，直接取下一 token，直到 Wait 类 token 存 `+0x90` 返回 | — |
 | 4 NPC 出生 | `SID_ENEMY`（`≥ 21`）构造里不调过程；第一次 tick 时敌方过程 `0x43ede0` 在 `0x43eed1` 见调用字 `0x20000000`，清位、`0x43eef6` 调 `0x407cc0`（张延迟、pmEnemy 携带 `0x407c86`），再 `0x43ef26` 调级 `0x40e870` | 张延迟、携带、调级 |
 
-- 随机位置插入 `0x450f55`：构造后直接回 `0x4511e9`，无第 2 步；槽位洗牌 `0x451d0f` 在 opcode 106 token 当时抽（见 [original_random_position](original_random_position.md)），先于其后的插入与出生。
+- 随机位置插入 `0x450f55`：构造后直接回 `0x4511e9`，无第 2 步，`0x45e307` 不抽随机；槽位洗牌 `0x451d0f` 在 opcode 106 token 当时抽，排在预置玩家第 1 tick 构造里的张延迟之后、其后插入的 NPC 出生之前（剧情 VM 从关卡对象第 2 tick 起才跑，见 [original_random_position](original_random_position.md)）。
 - 开场 PLAYERS／EVEF 预置对象不经 `0x44fbd0`（见 [actor_placement_initialization](actor_placement_initialization.md)）；开场剧情里的插入与行走走同一 case 0x12／行走路径，按上表顺序。
 
 ### 出生 `0x407cc0` 内的张延迟

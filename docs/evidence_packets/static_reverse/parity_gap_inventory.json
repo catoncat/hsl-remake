@@ -4,15 +4,15 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 93,
-    "sources": 477,
+    "sources": 475,
     "sources_by_kind": {
-      "provenance": 204,
-      "sentence": 103,
+      "provenance": 203,
+      "sentence": 102,
       "scope": 72,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 53,
+    "layout_timing_modules": 52,
     "items_by_original_status": {
       "read_complete": 25,
       "read_partial": 47,
@@ -633,7 +633,7 @@
         "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组",
         "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|negative-evidence|碰撞、动画时序、飞行物理、对象旗标 0x4000",
         "scope:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md|provisional|锚点量化",
-        "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|重制提示框与分支拼接",
+        "scope:docs/evidence_packets/static_reverse/original_select_insert_event.md|provisional|分支拼接与键盘选行",
         "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/winfail_claim_limits.md|provisional|",
         "sentence:docs/evidence_packets/runtime_observations/second_battle_opening/README.md#24101724eb",
@@ -642,10 +642,10 @@
         "sentence:docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md#f8d341e457",
         "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#2efe0f9e37",
         "sentence:docs/evidence_packets/static_reverse/original_getitem_deletepos.md#f1507bc3bf",
-        "sentence:docs/evidence_packets/static_reverse/original_level37_tokens.md#69931cdf78",
         "sentence:docs/evidence_packets/static_reverse/original_player_mode.md#7d36ad801f",
-        "sentence:docs/evidence_packets/static_reverse/original_random_position.md#901d2f9af5",
         "sentence:docs/evidence_packets/static_reverse/original_round_display.md#9fd18004f1",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#56fcb03ab7",
+        "sentence:docs/evidence_packets/static_reverse/original_select_insert_event.md#6a56b4b3a3",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#1495d62199",
         "sentence:docs/evidence_packets/static_reverse/second_battle_opening_script.md#8c48bcd290"
       ]
@@ -808,15 +808,16 @@
     },
     {
       "id": "highlight-colours",
-      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
-      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标时全场亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／道具目标与选移动格时是否全场亮未拍，按攻击目标帧推定",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000（玩家状态机 0x4442ef／0x444bf0）时亮；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
       ],
-      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮",
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 全场点亮；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:set_highlight",
-        "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights"
+        "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights",
+        "game/battle/scene/BattleSceneStage.gd:story_cast_player_mode"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -916,7 +917,7 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；剩选择期间石纹板隐藏是重制读法",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；战斗侧 actSelectInsertEvent 已改用同一选择窗（lane BATTLESELECT，0x451f2b）；剩选择期间石纹板隐藏是重制读法",
       "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1，mode 1 跳过 +0x134&0xc0000000、mode 2 只留 0x80000000 无 0x40000000（0x4557e5／0x4557fb）；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
@@ -932,7 +933,6 @@
       "effort": "S",
       "category": "城镇与大地图",
       "sources": [
-        "provenance:game/battle/runtime/opening/OpeningSelectPrompt.gd|layout|remake-invented|",
         "provenance:game/world/TownRuntime.gd|layout|provisional|",
         "provenance:game/world/TownRuntime.gd|layout|remake-invented|",
         "provenance:game/world/TownRuntime.gd|strings|remake-invented|",
@@ -1491,7 +1491,7 @@
     },
     {
       "id": "title-ornaments",
-      "difference": "宝珠／书浮动、点击声、菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄已照原版（TITLE2）；剩：Menu_Star 未写 Shape_Delay 按 0、星点逐颗落点用重制随机流、宝珠／书点击后不等按住计时即开窗、回憶錄读入沿用战斗列表的確定／取消且淡出前不停留",
+      "difference": "宝珠／书浮动、点击声、菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄已照原版（TITLE2）；剩：Menu_Star 未写 Shape_Delay 按 0、星点逐颗落点用重制随机流、回憶錄读入沿用战斗列表的確定／取消且淡出前不停留；宝珠／书点击后 10 tick 按住计时再开窗已照原版（TITLE3）",
       "original": "defProcMainMenuItem 0x424360 逐 tick trunc(6·sin) 浮动、初角 rand()%255；点击放 ACCEPT01；0x423cd0 首帧低 300 px、0x45e882 速度 40 滑回；0x4241a0 悬停每 6 tick 撒 788、点击撒 789＋788（0x423aa0／0x415c10，effProcFlyUpShape 0x41f5db）；码 10／11 开設定選項（792，0x423b90）／回憶錄列表（790，0x423bd0(…,0)），窗开期间菜单不收输入",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_title_ornaments/README.md",
@@ -2028,7 +2028,7 @@
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_movies_playback/README.md"
       ],
-      "remake": "TitleScreen／MoviePlayer；原版值悬停不亮起只出火花、離開遊戲亮起停留淡黑后退出、戰場記錄无记录弹消息 12「無存檔記錄」（MENUEXTRAS）；菜单滑入、宝珠開設定選項、书开读取回憶錄已照原版（TITLE2）",
+      "remake": "TitleScreen／MoviePlayer；原版值悬停不亮起只出火花、離開遊戲亮起停留淡黑后退出、戰場記錄无记录弹消息 12「無存檔記錄」（MENUEXTRAS）；菜单滑入、宝珠開設定選項、书开读取回憶錄已照原版（TITLE2）；标题按住计时 obj_Data8（三行字 40、宝珠／书 10 tick）与 0x42dc90(2) 十六级淡出（每 2 tick 一级）照原版（TITLE3）",
       "remake_code": [
         "game/title/TitleScreen.gd",
         "game/title/MoviePlayer.gd"
@@ -2043,8 +2043,7 @@
         "provenance:game/title/TitleScreen.gd|rules|provisional|",
         "provenance:game/title/TitleScreen.gd|rules|remake-invented|",
         "provenance:game/title/TitleScreen.gd|timing|provisional|",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#830f5a56f1",
-        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#9030f7008c"
+        "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#830f5a56f1"
       ]
     },
     {
@@ -2356,7 +2355,7 @@
         "provenance:game/battle/scene/BattleAftermath.gd|strings|remake-invented|",
         "provenance:game/sim/InitialRosterGrowthRules.gd|rules|remake-invented|",
         "provenance:game/sim/loop/BattleLoopInit.gd|rules|remake-invented|",
-        "scope:docs/evidence_packets/static_reverse/original_random_position.md|provisional|the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself"
+        "scope:docs/evidence_packets/static_reverse/original_random_position.md|provisional|the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule"
       ]
     },
     {

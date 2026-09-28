@@ -10,7 +10,7 @@ extends RefCounted
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (focus moves 32→24→12→6→2 px per frame; during an AI walk it follows the path at ≈4 px per tick)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
-##   timing: remake-invented (Home recenter and save restore snap; the ×2 modifier-key scroll rate is not wired)
+##   timing: remake-invented (Home recenter and save restore snap)
 ##
 ## Every write of the battle camera's position goes through this controller: `scroll_to` /
 ## `scroll_to_grid` (the original's per-tick glide; the speed token passes its own step and
@@ -25,6 +25,9 @@ const DEFAULT_CELL_SIZE := Vector2(32.0, 32.0)
 ## applies the request once per frame: 12 px per 16 ms tick.
 const EDGE_SCROLL_PIXELS_PER_TICK := 12.0
 const EDGE_SCROLL_PIXELS_PER_SECOND := EDGE_SCROLL_PIXELS_PER_TICK * OriginalTick.TICKS_PER_SECOND
+## 0x43e4a0 runs its request loop twice while [0x4c6390] & 0x600 — the input poll 0x415910
+## sets 0x200 for DIK 0x2a (left Shift) and 0x400 for DIK 0x36 (right Shift): ±24 px a tick.
+const EDGE_SCROLL_SHIFT_PASSES := 2
 ## 0x43bf30 centring glide: 0x45e80d moves each axis by clamp((target − current) >> 1, ±step)
 ## per tick and lands when both axes are within the tolerance. The step is 32 px (0x43bffa) in
 ## battle and 16 px (0x43c007) while the story phase bit is set; the tolerance is 4 (0x43c030).
@@ -312,6 +315,23 @@ static func edge_direction(point: Vector2, pointer_active: bool) -> Vector2:
 	if not pointer_active or not Rect2(0, 0, 640, 480).has_point(point):
 		return Vector2.ZERO
 	return Vector2(-1 if point.x < 10 else (1 if point.x > 630 else 0), -1 if point.y < 10 else (1 if point.y > 470 else 0))
+
+
+## 0x43e4a0 checks four directions independently, each "arrow bit set or pointer past that
+## edge" → one ±12 px request: an arrow key and the same edge together still request once, an
+## arrow key and the opposite edge cancel, and a diagonal is 12 px on each axis (not normalised).
+## Arrow bits 1／2／4／8 are ←／→／↑／↓. Battle (0x43e570) and the big map (0x4271f1) share it.
+static func scroll_direction(edge: Vector2) -> Vector2:
+	var left := Input.is_action_pressed("ui_left") or edge.x < 0
+	var right := Input.is_action_pressed("ui_right") or edge.x > 0
+	var up := Input.is_action_pressed("ui_up") or edge.y < 0
+	var down := Input.is_action_pressed("ui_down") or edge.y > 0
+	return Vector2(int(right) - int(left), int(down) - int(up))
+
+
+## Edge／arrow scroll speed this frame: doubled while either Shift key is held (0x43e4a0).
+static func edge_scroll_pixels_per_second() -> float:
+	return EDGE_SCROLL_PIXELS_PER_SECOND * (EDGE_SCROLL_SHIFT_PASSES if Input.is_key_pressed(KEY_SHIFT) else 1)
 
 
 func clamped_position(target: Vector2) -> Vector2:

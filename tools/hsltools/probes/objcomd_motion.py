@@ -50,6 +50,10 @@ REVIEWED = em.REVIEWED + [
 # Arrow tracer (毒魔箭 obj_Special19_01, command 17): objmDelay 20, objmSetSpeed 128,0x00200000,
 # objmDelay 10, objmWaitOutScreen.
 ARROW = 'obj_Special19_01'
+# Story-script defProcObjectMove objects run by the same interpreter: level 37's white lights
+# (obj-037.obs codes 17／19, BALL001, obj_Data7 21／62), created at the probe origin.
+STORY_LEVEL_OBS = '@:\\data\\obj-037.obs'
+STORY_OBJECTS = {'obj_Story_Level_WhiteLight': (17, '21'), 'obj_Story_Level_WhiteLight2': (19, '62')}
 
 
 class Machine(em.Machine):
@@ -118,6 +122,7 @@ def execute_packet(exe: Path) -> dict:
     reader = PakReader(exe.parent)
     process_def = reader.read('@:\\data\\PROCESS.DEF')
     level_obs = reader.read('@:\\data\\obj-051.obs')
+    story_obs = reader.read(STORY_LEVEL_OBS)
     defines = em.table_defines(process_def.decode('cp950'))
     for name, value in re.findall(r'^\s*#define\s+(objm\w+)\s+(\d+)', COMMAND_VERBS.read_bytes().decode('cp950'), re.M):
         defines.setdefault(name, int(value))
@@ -159,10 +164,17 @@ def execute_packet(exe: Path) -> dict:
                          'open_ended': any(obj['dead'] is None for obj in runs[0].objects),
                          'variants': variants,
                          'sounds': [[event[0], event[3]] for event in runs[0].events if event[1] == 'sound']}
+    story_templates = em.Templates([obs, story_obs], defines)
+    for name, (code, command) in STORY_OBJECTS.items():
+        machine = run(exe_image, story_templates, sounds, metrics, words, code, em.ORIGIN, 0)
+        objects[name] = {'code': code, 'command_code': command, 'point': list(em.ORIGIN), 'level_obs': STORY_LEVEL_OBS,
+                         'frames': machine.frame, 'open_ended': any(obj['dead'] is None for obj in machine.objects),
+                         'variants': [em.encode_instances(machine, members)],
+                         'sounds': [[event[0], event[3]] for event in machine.events if event[1] == 'sound']}
     from hsltools.probes.effect_motion import digest
     return {'schema': SCHEMA, 'exe_sha256': EXE_SHA, 'native_execution': True, 'evidence_tier': 'static-derived',
             'sources': {'global_obs': digest(obs), 'objcomd': digest(COMMANDS.read_bytes()), 'process_def': digest(process_def),
-                        'obj_051_obs': digest(level_obs)},
+                        'obj_051_obs': digest(level_obs), 'obj_037_obs': digest(story_obs)},
             'frame_limit': FRAME_LIMIT, 'seeds': [[f'{a:#010x}', f'{b:#010x}'] for a, b in map(seed, range(VARIANTS))],
             'reviewed': [[f'{low:#x}', f'{high:#x}', note] for low, high, note in REVIEWED],
             'members': sorted(members, key=members.get), 'objects': objects,
@@ -182,10 +194,13 @@ def check(packet: dict) -> None:
     if packet['sources']['global_obs'] != em.digest(GLOBAL_OBS.read_bytes()) or packet['sources']['objcomd'] != em.digest(COMMANDS.read_bytes()):
         raise ValueError('global.obs／objcomd.txt changed: regenerate objcomd_motion')
     scope = scope_objects()
-    if set(packet['objects']) != set(scope):
+    if set(packet['objects']) != set(scope) | set(STORY_OBJECTS):
         raise ValueError('objcomd motion scope differs from the defProcObjectMove objects of the SPECIAL scripts')
     for name, row in packet['objects'].items():
-        if row['code'] != int(scope[name]['obj_code']) or row['command_code'] != scope[name]['command_code']:
+        if name in STORY_OBJECTS:
+            if (row['code'], row['command_code']) != STORY_OBJECTS[name]:
+                raise ValueError(f'{name}: code／command differ from obj-037.obs')
+        elif row['code'] != int(scope[name]['obj_code']) or row['command_code'] != scope[name]['command_code']:
             raise ValueError(f'{name}: code／command differ from the scope')
         for instances in row['variants']:
             for instance in instances:

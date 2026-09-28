@@ -12,7 +12,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表 | 记录 | 字段 | consumed | passthrough | recorded | unconsumed | dead |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 88 | 0 | 0 | 6 | 8 |
+| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 89 | 0 | 0 | 5 | 8 |
 | [item](#item) ITEM.TXT | \[item] rows | 72 | 67 | 0 | 0 | 0 | 5 |
 | [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 13 | 0 | 0 | 1 | 0 |
 | [special](#special) SPECIAL.TXT | \[special] rows | 13 | 13 | 0 | 0 | 0 | 0 |
@@ -24,12 +24,12 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | [wrd](#wrd) levelNNN.wrd 地形 | WORL header + width×height u32 cells | 9 | 6 | 3 | 0 | 0 | 0 |
 | [actor_record](#actor_record) live actor record（0x1fc） | 201 × 0x1fc records (*0x4c1bc8) | 82 | 79 | 2 | 0 | 1 | 0 |
 | [defines](#defines) EXTRAS.H / ANIMAL.H / TYPE.H #define groups | #define groups by prefix | 17 | 13 | 1 | 0 | 3 | 0 |
-| [story](#story) STORY opcode（ACTION.H act*） | ACTION.H tokens | 139 | 52 | 0 | 22 | 0 | 65 |
+| [story](#story) STORY opcode（ACTION.H act*） | ACTION.H tokens | 139 | 53 | 0 | 22 | 0 | 64 |
 | [winfail](#winfail) WINFAIL opcode | winfail tokens | 120 | 66 | 0 | 53 | 1 | 0 |
 | [town_event](#town_event) TOWNDEF te opcode | te tokens | 46 | 44 | 0 | 0 | 0 | 2 |
 | [animal](#animal) ANIMAL.H ani* opcode（演员程序 + 绝技特效脚本） | ani* opcodes | 36 | 33 | 0 | 0 | 0 | 3 |
 | [effects](#effects) EFFECTS.TXT eff* opcode（法术特效） | \[effect] blocks | 4 | 4 | 0 | 0 | 0 | 0 |
-| **合计** | 17 表 | 742 | 536 | 17 | 75 | 15 | 99 |
+| **合计** | 17 表 | 742 | 538 | 17 | 75 | 14 | 98 |
 
 ## 3. 嫌疑排序
 
@@ -46,7 +46,6 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `obj.obj_X2` | rows 10 | 模板 +0x18（特效 WAV／ObjectMove 参数） |
 | `magic.effect_caster` | rows_nondefault 8 | 施法者侧特效（8 行） |
 | `players.sound_hit` | rows_nondefault 4 | 被击音效（4 行；记录 +0x10 lo 句柄） |
-| `players.sound_walkwater` | rows_nondefault 2 | 水中行走音效（2 行） |
 | `players.sound_shoothit` | rows_nondefault 1 | 射击命中音效（1 行，+0x22） |
 | `players.no_shadow` | rows_nondefault 1 | 不画影子（bit 0x100，1 行） |
 | `players.no_showshape` | rows_nondefault 1 | 不显示形体（bit 0x20，1 行） |
@@ -171,7 +170,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `move_magic_use` | consumed | `game/sim/PositionCapabilityRules.gd:effects` | 非默认行 2；声明行 2 | 移动后可施法（bit 0x400） | — |
 | `carry_item` | consumed | `game/sim/BattleRewardRules.gd:carry` | 非默认行 29；声明行 30 | 掉落表 id | — |
 | `find_no_id` | consumed | `game/sim/AIDecisionRules.gd:select_target` | 非默认行 6；声明行 6 | 排除目标 SID | — |
-| `sound_walkwater` | unconsumed | UNCONSUMED | 非默认行 2；声明行 2 | 水中行走音效（2 行） | 重制无水面行走音 |
+| `sound_walkwater` | consumed | `tools/hsltools/assets/interface_audio.py:walk_water_rows` | 非默认行 2；声明行 2 | 水中行走音效（2 行，均同 sound_walk） | — |
 | `no_paralyze` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免麻痹（bit 0x800） | — |
 | `no_disablemagic` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免封魔（bit 0x1000） | — |
 | `sound_shoothit` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | — |
@@ -461,7 +460,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `name_id` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x4 | +0x04 名字 id | — |
 | `sound_walk_dead` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x8 | +0x08 WAV 句柄对 | — |
 | `sound_miss_attack` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0xc | +0x0c WAV 句柄对 | — |
-| `sound_hit_walkwater` | passthrough | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x10 | +0x10 WAV 句柄对 | 生成器复制；运行时无被击／水行音 |
+| `sound_hit_walkwater` | passthrough | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x10 | +0x10 WAV 句柄对 | 生成器复制；运行时无被击音，水行音走 walk_water_rows |
 | `dead_message` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x14 | +0x14 死亡台词字 | — |
 | `job` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x18 | +0x18 | — |
 | `job_show_name` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x1c | +0x1c | — |
@@ -678,7 +677,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actSetPlayerMode` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 1；op 66 | player_mode_set | — |
 | `actSetPlayerName` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 2；op 89 | player_name_set | — |
 | `actSetPlayerNoAttack` | dead | — | 关 0；出现 0；op 101 | player_no_attack_flag | — |
-| `actSetPlayerPosToRandom0` | dead | — | 关 0；出现 0；op 117 | player_position_random0 | — |
+| `actSetPlayerPosToRandom0` | consumed | `game/battle/runtime/BattleOpeningCoordinator.gd:_ev_player_position_random0` | 关 0；出现 0；op 117 | player_position_random0 | — |
 | `actSetPlayerUndead` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 13；出现 22；op 64 | player_undead_flag | — |
 | `actSetPlayerWalkShape` | dead | — | 关 0；出现 0；op 115 | player_walk_shape | — |
 | `actSetPrevInsertObjectAdjustLevel` | recorded | `game/battle/runtime/BattleOpeningCoordinator.gd:RECORD_ONLY_KINDS` | 关 1；出现 2；op 56 | inserted_object_adjust_level | — |

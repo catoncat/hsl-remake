@@ -1,6 +1,6 @@
 # 麻痺：施加、新行动入口跳过、解除与防护
 
-> evidence: resource-derived; static-derived · status: live · functions: 0x40aa80, 0x40b910, 0x40c230, 0x448840 · tools: hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-28
+> evidence: resource-derived; static-derived · status: live · functions: 0x409310, 0x40aa80, 0x40b910, 0x40c230, 0x40e240, 0x40e2f0, 0x446b90, 0x448840 · tools: hsltools/assets/paralysis_assets.py, hsltools/probes/paralysis.py, run_support_magic_tests.gd · updated: 2026-09-28
 
 ## 结论
 
@@ -20,6 +20,7 @@
 | `0x40a30c` | item 效果 `0x20000000` 清 flag4 与 actor+0x3c | 12 组前段止于 `0x40a31f` |
 | `0x40c230` | 按八槽顺序找第一个匹配异常的恢复道具，返回 1-based 位置，非药品跳过 | 30 组正常返回，无 RNG、无写入 |
 | `0x448840` 与装备应用 | 清旧 working 值，当前装备与非空槽映射的固有能力合并防麻痺，不清已有麻痺 | 24 组 ×2 = 48 正常返回 |
+| 全状态防护 keep_status_good（模板 +0x18c 位 `0x80`） | 唯一读法是 `0x40e2f0(actor, bit)` = `0x40e240` 测 `bit \| 0x80`；`0x40e240` 其余调用者掩码都不含 `0x80`（`0x40e270..0x40e370` 定值、`0x40e590` 为 `0x400`），全 EXE `+0x18c` 直接读写点也无 `0x80`。`0x40e2f0` 的调用者：武器尾部四种随机异常 `0x409395`／`0x4093c8`／`0x4093fb`／`0x40942e`（命中则不抽 `rand(100)`）、法术施加 `0x40ac57`（麻痺）／`0x40ad11`（毒）／`0x40ae52`（禁魔）／`0x40aef3`（弱化）、`0x446b90`（毒）→ 噴人沼氣 `0x43c77d` 与地形毒 `0x441ee7`／`0x4454da`。所以它只做一件事：挡下这四种异常的一切新施加；不治已有异常、不改属性、无其他副作用。ITEM.TXT 只有 144、229 两件带它 | 静态全调用点 |
 
 入口前段只改对象 phase，没有执行毒伤、资源恢复、队列推进或额外行动 latch；已知下游 caller 说明它绕过额外行动查询。
 
@@ -42,5 +43,5 @@
 
 - 完整高位状态 dispatcher、全部 wake／死亡回调未恢复。
 - 命中附带状态的其他来源、弱化／增益与复活不在本包。
-- 全状态防护道具的其他效果未开放。
+- 全状态防护（keep_status_good）已读完全部读者：只免麻痺／毒／禁魔／弱化的新施加（法术、武器尾部、噴人沼氣、地形毒），无其他效果；重制 `StatusApplicationRules`（`IMMUNITY \| 0x80`）、`WeaponEffectRules`（`branch \| 0x80`）、`PoisonGasRules.IMMUNE_MASK = 0x800080` 同此，一致。
 - 大型占地的全空间合同见 [original_large_actor.md](original_large_actor.md)。

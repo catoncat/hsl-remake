@@ -1,14 +1,15 @@
 # 随机位置 winfail 动作：槽位表、洗牌与 107／108／117／121
 
-> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the shuffle rolls' place in the global sequence (they draw 0x458c10 on the global stream, but the global draws before them are not yet the original's), whatever 0x45e307 draws inside itself; runtime-measured: LEVEL037 进关后的洗牌结果（模拟器整镜像，单样本） · status: live · functions: 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-28
+> evidence: static-derived: opcode arguments, dispatch locations, slot table and random insert, the 107／108／117／121 handlers (which of them draw, and from which stream); provisional: the pre-placed NPCs' births relative to the shuffle (their first tick falls on tick 1 or 2 by priority-list order, unread), the global draws before the shuffle inherit the opening roster schedule; runtime-measured: LEVEL037 进关后的洗牌结果（模拟器整镜像，单样本） · status: live · functions: 0x408115, 0x408264, 0x450670, 0x450840, 0x450f2c, 0x450f99, 0x451d0f, 0x451db7, 0x451e64, 0x458c10, 0x458c80, 0x45e307 · tools: run_battle_scene_runtime_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 `actSetRandomPos` 最多存五组像素点并做一次部分洗牌（每槽一次 `0x458c10() & 1`），107／108 把对象放在槽位＋位移处不抽随机，117 把槽 0 设为某对象位置，121 每个对象在全局流上抽 3 次（static-derived）。
-- 重制 `BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时于全局流 `global_rng` 上跑同一洗牌，并把绑定到槽 k 的单位移到洗牌后的位置；开场表现读同一顺序（static-derived 输入）。
+- 重制 `BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时只记下依赖槽位的开场事件，`InitialRosterGrowthRules.prepare` 在玩家出生张延迟之后、NPC 出生之前调 `settle_random_slots` 于全局流 `global_rng` 上跑同一洗牌，并把绑定到槽 k 的单位移到洗牌后的位置；开场表现读同一顺序（static-derived）。
 - 原版古代神殿遺跡 · 守護者之戰（LEVEL037）进关后五个守卫对按插入序落在表项 2、3、0、1、4（第 1、2 对落在 (8,14)／(20,14)），与重制同一遍历在掷骰 1、1、0、0、0 下的结果相同（runtime-measured，单样本）。
 - 洗牌随机源与原版相同：都是全局流 `0x458c10`（重制 `global_rng`），不是伤害流；随机位置插入 `0x450f55` 构造后不经 `0x44fbd0` 落点替代，重制同样保留请求格（static-derived，见 [original_script_entry](original_script_entry.md)）。
-- 差异：洗牌抽取在全局序列中的位置、`0x45e307` 内部的抽取未对齐（provisional）。
+- 洗牌抽取时机（static-derived）：预置单位由占位对象在第 1 tick 构造（`0x408115`→`0x407ec0`），玩家在构造里出生并抽张延迟；关卡对象第 1 tick 只存脚本指针（`0x4081ec`→`0x450670`），剧情 VM 从之后的 tick 才由 `0x408264` 执行，所以 opcode 106 的洗牌在全部预置玩家张延迟之后；107 插入 `0x450f55`→`0x407ec0`→`0x45e307` 不抽随机（`0x45e307` 只复制模板、挂链表），插入的 NPC 在 VM 这一轮跑完后第一次 tick 才出生（张延迟、携带、调级），在洗牌之后。重制按此排：玩家张延迟 → 洗牌 → NPC 出生。
+- 差异：预置 NPC 的出生落在洗牌前还是后取决于优先级链表顺序（未读，重制排在洗牌后）；洗牌之前的全局抽取沿用开场阵容调度（provisional）。
 
 ## 证据
 
@@ -46,7 +47,7 @@
 ## 重制接线
 
 - STORY037 开场：`tools/hsltools/levels/story_scene.py` 把五个有生成模板的 `actInsertObjectRandomPos`（宝石 067、守卫 066）按表序解析并按插入序绑定（`<symbol>/insertN`、`SID_ENEMY06x/N`），serial N 即槽 N-1。
-- 洗牌：`BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时跑一次 `0x451d0f` 的遍历，每次抽 `global_rng`（`GlobalRandomStream`）的一个 `0x458c10() & 1`，先于开场出生；产品从时钟播种，无头运行用 `HSL_RNG_SEED`；顺序随 loop 存档（`opening_story_state.random_slot_order`）；绑定到槽 k 的单位移到洗牌后的位置加插入位移（宝石在守卫下方 32 px），连同 AI home。
+- 洗牌：`BattleLoopInit._load_opening_story_state` 在 PlayLoop 创建时记下 `pending_events`（插入解析成单位 id，按表序预放）；`InitialRosterGrowthRules.prepare` 在玩家张延迟之后调 `BattleLoopInit.settle_random_slots(loop, true)` 跑一次 `0x451d0f` 的遍历，每次抽 `global_rng`（`GlobalRandomStream`）的一个 `0x458c10() & 1`，再做 NPC 出生；产品从时钟播种，无头运行用 `HSL_RNG_SEED`；顺序随 loop 存档（`opening_story_state.random_slot_order`）；绑定到槽 k 的单位移到洗牌后的位置加插入位移（宝石在守卫下方 32 px），连同 AI home。
 - 开场表现 `OpeningStoryObjects._set_random_slots` 读同一顺序；`opening_story_state.object_deletes` 列出开场删除的站立物件（37 的五座雕像、59、77 的），`BattleSceneRuntime.apply_opening_object_deletes` 在每次首次控制入口与存档恢复时隐藏它们。
 
 ## 复现
@@ -55,6 +56,5 @@
 
 ## 边界
 
-- 洗牌抽取在全局序列中的位置：之前的全局抽取尚未与原版一致（provisional）。
-- `0x45e307` 内部是否抽随机本包未读。
+- 预置 NPC 出生与洗牌的先后（优先级链表顺序）未读；洗牌之前的全局抽取沿用开场阵容调度（provisional）。
 - STORY010 的树不在 `object_deletes` 里：之后同锚点的 `actInsertStoryObject` 取代它，而没有开场时剧情对象不会重建。

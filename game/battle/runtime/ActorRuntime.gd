@@ -122,6 +122,9 @@ var _current_sequence_pos: int = 0
 var _motion_tween: Tween = null
 var _frame_tween: Tween = null
 var _walk_audio: AudioStreamPlayer = null
+var _walk_stream: AudioStream = null
+## Stage-supplied terrain footstep choice: Callable(position: Vector2) -> String (WAV path, "" = walk sound).
+var walk_sound_picker: Callable
 var _scripted_walk_audio := false
 var _idle_elapsed := 0.0
 ## Script shape override (STORY actChangeShape/actRestoreShape): a looping frame
@@ -443,16 +446,34 @@ func configure_walk_audio(path: String) -> void:
 	if stream == null:
 		push_error("Missing actor walk sound: %s" % path)
 		return
+	_walk_stream = stream
+	_ensure_walk_audio().stream = stream
+
+
+func _ensure_walk_audio() -> AudioStreamPlayer:
 	if _walk_audio == null:
 		_walk_audio = AudioStreamPlayer.new()
 		_walk_audio.name = "WalkAudio"
 		add_child(_walk_audio)
-	_walk_audio.stream = stream
+	return _walk_audio
 
 
+## Each footstep asks `walk_sound_picker` (the stage's terrain choice, 0x409610) for the
+## WAV under the actor's current position; "" keeps the configured walk sound.
 func _play_walk_sound() -> void:
-	if _walk_audio != null and is_inside_tree():
-		_walk_audio.play()
+	if not is_inside_tree():
+		return
+	var stream := _walk_stream
+	if walk_sound_picker.is_valid():
+		var path := str(walk_sound_picker.call(position))
+		if path != "":
+			stream = load(path) as AudioStream
+	if stream == null:
+		return
+	var player := _ensure_walk_audio()
+	if player.stream != stream:
+		player.stream = stream
+	player.play()
 
 
 func _play_scripted_walk_frame_sound() -> void:

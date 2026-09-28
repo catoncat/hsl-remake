@@ -1,12 +1,14 @@
 # WINFAIL037（level 37）：五个 token、宝石谜题与咕嚕转职
 
-> evidence: static-derived · status: live · functions: 0x407ec0, 0x42c700, 0x42caa0, 0x4348f0, 0x448840, 0x44e820, 0x450840, 0x453b30, 0x45dbe1 · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x4051d0, 0x407ec0, 0x42c700, 0x42caa0, 0x4348f0, 0x448840, 0x44e820, 0x450840, 0x451d0f, 0x451db7, 0x453b30, 0x45dbe1 · tools: hsltools/probes/objcomd_motion.py, run_winfail_rules_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版 WINFAIL037 用到的五个 token 在 `0x450840` 的 case 0x6e／0x71／0x73／0x74／0x76；宝石谜题靠 case 0x72 链闸门判「最后被击中的是否第 5 颗」；`actPlayerJobUpProcess SID_咕嚕` 经 `0x4348f0` 把咕嚕换成 PLAYERS 017 行（邪獸），不改当前 HP／MP（static-derived；resource-derived）。
 - 重制 `WinfailScenarioRules`／`WinfailActions` 实现这五个 token 与链闸门，`scenario_rules.job_up_targets: {"008": "017"}` 经 `JobUpRules.merge_source_template` 合并，咕嚕按 `install_if_carried` 条件安装（static-derived 输入）。
-- 差异：宝石无 AI 时原地等待、白光演出与随机落点未重制、复制字段的完整语义未重建（provisional）。
+- 随机落点已重制：五个守卫对按 `actSetRandomPos` 洗牌后的槽位落点（`BattleLoopInit` 在全局流上洗牌，[随机位置](original_random_position.md)），开场表现读同一顺序；WINFAIL037 的 `actSetPlayerPosToRandom0` 把表现槽 0 设为该角色像素（`0x451db7`）（static-derived）。
+- 白光是 `defProcObjectMove` 对象（obj-037.obs 17「白光」／19「白光2」，BALL001），原指令轨迹由 `0x4051d0` 逐 tick 跑出；重制 `StoryEffectObjects` 按该轨迹画加色缩放与级数淡出（static-derived）。
+- 差异：宝石无 AI 时原地等待、复制字段的完整语义未重建（provisional）。
 
 ## 证据
 
@@ -28,6 +30,19 @@ STORY037 fields five gems `guard067_1..5` (PLAYERS 67, pmMagicAttack, `no_attack
 - Physical attacks on a guardian 066 fire events 38–45 (2096 「攻擊對它們毫無效果」): it revives at 1 HP.
 - The mid-action `actCheckEventNotExist` (events 1–37) is a chain gate (static-derived: `0x450840` case `0x72` inside the status-object tick `0x453b30` ends the chain while any listed event slot still holds its code, `0x44e820`). A struck gem's event has already left the slot table when its chain runs, so the gate asks whether the other four gems of this round were struck earlier. Gem 5 struck while another gem is lit only goes dark; gem 5 struck **last** reaches `actInsertEventStatus 6` (guardians removed, Enemy052 inserted); any other gem struck last reaches `actInsertEventStatus 7`／13／19／25／31／32, which relights the five gems and arms the next round (2102／2103／2104 are Leonard's and Klodi's reset lines, 2104「依照他們出現的順序」). Gem 5 is the last of the five white lights of the opening (`actInsertObjectRandomPos … 4` fills slot 4 last), so 'in order of appearance' ends on it; only the last position is checked. Several gems struck by one area spell: one scan starts one event, and a gated chain never reaches its `actExecWinFailProcess`, so only the lowest struck gem's event fires — the others stay lit (same scan shape as the original).
 - The guardians' AI: 066 are ordinary enemy AI; a gem has no AI declarations and no hostile unit (pmALL shares a bit with everyone), so it waits (`BattleLoopAI.idle_without_strategy`, provisional).
+
+### static-derived：白光（`defProcObjectMove` 原指令轨迹）
+
+STORY037 每个守卫对之前在槽 k 插入 `obj_Story_Level_WhiteLight`（obj-037.obs code 17，`SHAPE`＝`MAGIC\BALL001.SHP`，`planeEffect6`，`obj_Data7 = 21`，无 `obj_Mode`），再 `actDelay 10` 后删石像、插宝石与守护者；WINFAIL037 事件 6 在 (496, 304) 插同一对象，事件 48（咕嚕合体）在 052 与咕嚕的位置各插一次 `obj_Story_Level_WhiteLight2`（code 19，同 BALL001，`obj_Data7 = 62`）。`obj_Data7` 选 objcomd.txt 程序：21 = `objmZoomOutIn 0x1000,0x3000, objmWaitLargerZoom 0x10000`；62 = `objmZoomOutIn 0x1000,0x1000, objmWaitLargerZoom 0x18000, objmStopZoom, objmSetZoomEffect 4, objmDelay 80, objmFadeIn 3`。
+
+`hsltools/probes/objcomd_motion.py` 以 obj-037.obs 模板在 `0x4051d0`（跳表 `0x406bc8`）上逐 tick 执行这两个对象，轨迹写进 `objcomd_motion.json`：
+
+| 对象 | 缩放（16.16） | 模式 | 级数 | 删除 |
+| --- | --- | --- | --- | --- |
+| 白光（21） | tick 1 为 0.4375，每 tick +0.1875，到 tick 37 为 7.1875 | tick 1–5 `engZOOM｜engADDCOLOR`（整幅加色）；tick 6 起加 `engMIX` | 16 起每 2 tick 降 1，到 1 | tick 38 |
+| 白光2（62） | tick 1 为 0.1875，每 tick +0.0625，tick 23 达 1.5625；此后在 1.53–1.59 间每 9 tick 往返 | tick 1–104 整幅加色；tick 105 起加 `engMIX` | 16 起每 3 tick 降 1，到 1 | tick 153 |
+
+两者位置不动、不发声、脚本不等它（插入后紧跟 `actDelay 10`／`actDelay 1`）。加色由 `0x4051d0` 自身写入模式（模板没有 `obj_Mode`）。
 
 ### static-derived：转职 `0x4348f0`
 
@@ -76,6 +91,8 @@ The remake keeps the member's current HP/MP through the shared refresh's clamp (
 
 ## 重制接线
 
+白光：`StoryEffectObjects.effect_kind` 对 `defProcObjectMove`、BALL001、无 `obj_Mode` 且符号与 `obj_Data7` 都和轨迹一致的剧情对象返回 `objcomd_track`，每次插入建一个 `TrackSprite`，第 n tick 取轨迹第 n 帧的缩放、加色与 `level/16` 权重，轨迹结束自删；STORY037 的五个随机槽插入经 `random_slot_event` 解析槽位后走同一路径。WINFAIL037 事件 48 的两次 `actInsertStoryObjectRandomPos obj_Story_Level_WhiteLight2` 及其前面的 `actSetPlayerPosToRandom0` 在过场里仍被画出（`BattleOpeningCoordinator._drawn_despite_rules`：白光不生单位，规则层已记录插入）。同符号同程序的其他关（22、28、59、76、77 的 `obj_Story_Level_WhiteLight`）走同一轨迹；79 关白光换了形状、80 关程序是 13，不套用。
+
 The remake assembles `scenario_rules.job_up_targets: {"008": "017"}` with the generated 017 template in `scenario_rules.job_up_templates` (`hsltools.levels.battle` LEVELS[37]), and both callers run through `JobUpRules.merge_source_template`: the stable unit id, party role, `actor_id`, level, experience and attributes stay; the target's job code, caps, additive PLAYERS layer, capped resists／move point and declared weapon 53 merge in; `job_up_flags |= 0x80000000`, `job_up_target_actor_id = "017"` and a `job_up_history` step are recorded; the shared `ProgressionRules` refresh (0x448840) then derives the 017 form. Only the cinematic departure request for that same registered player is removed. Missing target data is an explicit `unsupported_encountered` reason.
 
 ### 来源头备注
@@ -86,7 +103,7 @@ The remake assembles `scenario_rules.job_up_targets: {"008": "017"}` with the ge
 
 ## 复现
 
-`tools/godot.sh --headless --script res://tests/run_winfail_rules_tests.gd`；`0x4348f0` 反编译 `tools/hsl_exe_decompile.py 0x4348f0`（需本机 EXE）。
+`tools/godot.sh --headless --script res://tests/run_winfail_rules_tests.gd`；白光轨迹 `uv run --with unicorn==2.1.4 --with pillow python tools/hsl.py generate objcomd_motion`（需本机 EXE 与 hsl.pak）；`0x4348f0` 反编译 `tools/hsl_exe_decompile.py 0x4348f0`（需本机 EXE）。
 
 ## 边界
 
@@ -94,4 +111,6 @@ The remake assembles `scenario_rules.job_up_targets: {"008": "017"}` with the ge
 - The vitals reading above is a static read of `0x4348f0`, a bounded read of `0x407ec0` and the probe-verified `0x448840`; no native run of the whole WINFAIL037 event has been observed. Replacement evidence for the remaining doubt: a bounded native probe executing `0x4348f0` then `0x407ec0` on a slot with reduced HP.
 - `job_up_targets` maps only the base row 008 to 017 — the only row 0x4348f0 can reach from a registered 咕嚕; the 017 → 0 chain end is handled as the native no-op.
 - The conditional install is read as 「carried ⇒ installed」; a registered-but-disabled slot is unreachable in the original (no writer sets the `0x80000000` bit, [player install](original_player_install.md)). A launch without a campaign hand-off fields every slot (dev／sweep), so the registered sweep roster of level 37 now includes 咕嚕.
-- `actInsertStoryObjectRandomPos obj_Story_Player8` after the job-up is the cinematic re-insert of the same registered player: the interpreter keeps the unit (the preceding `actDeleteObject SID_咕嚕` departure is withdrawn) and records the insert as unresolved (`obj_Story_Player8` is not a `script_objects` row); the white-light presentation and the random landing are not remade.
+- `actInsertStoryObjectRandomPos obj_Story_Player8` after the job-up is the cinematic re-insert of the same registered player: the interpreter keeps the unit (the preceding `actDeleteObject SID_咕嚕` departure is withdrawn) and records the insert as unresolved (`obj_Story_Player8` is not a `script_objects` row).
+- 白光轨迹以探针原点为创建点、镜头在 (0,0)；对象不移动也不等出屏，落点不影响轨迹。`engMIX｜engADDCOLOR` 按 `level/16` 乘源再加色读（同 [绝技对象](original_objcomd_programs.md)），合成器逐像素公式未在本包核对（provisional）。
+- 其他关的白光只在符号、形状、程序与 37 关模板一致时套用该轨迹；各关 obs 模板的其余字段未逐关比对（provisional）。

@@ -52,6 +52,7 @@
 | 组装 | `hsltools/levels/battle.py` `install_player_mode`／`_apply_object_install`：`player_mode` = PLAYERS mode → Data9 互换 → X1 覆盖；`object_hit_point` 加进 `growth_profile.source.hit_point` 与 `max_hp`／`hp`；`align_birth_hp` 按安装后 mode 取 HP 等级项；`side_swapped`、`shared_record`、`no_showshape`、`dead_message`、`title` |
 | 角色 | 有 pmPlayer 位 → `friendly_ai`，无 → `enemy_ai`；注册槽安装仍 `player_controlled` |
 | 规则 | `game/sim/ActorRoleRules.gd`：`side_mask = player_mode & 0x70000`（无 mode 按角色）、`hostile`（无交集）、`same_side`（有交集）、`counts_as_enemy`／`counts_as_player`、`player_range_selectable`（pmALL 且魔法射程或无 0x800000） |
+| 剧情演员 | `hsltools/levels/story_scene.py` `_object_player_mode` 把同一安装读法写进 `story_actors`／`script_inserted_actors` 条目的 `player_mode`；`BattleSceneStage.story_cast_player_mode` 带进无 PlayLoop 单位的演员视图，高亮按它取阵营色（`0x40ba20` 读记录 +0x28） |
 | 消费者 | `BattlePlayLoop._are_enemies`、`AISkillPlanning`、`AISupportPlanning`、`SkillTargetRules.side_matches`／`area_side_matches`、`ActorTraversalRules`、`WinfailConditions`、`WinfailActions._apply_player_mode`（翻转 `side_swapped`，支持 pmPlayerEnemy、pmNPC、pmMagicAttack）、`JobStatsRules.base_values` |
 | 门／船壳 | 模板 `content/generated/hsl/actors/100.json`／`101.json`；`standing_actor_code`／`standing_actor_inserts`；`BattleLoopAI._idle_without_strategy`；`ActorRuntime.hide_shape`；`game/sim/SharedRecordRules.gd` 在 `BattleLoopScript._resolve_outcome` 开头把同组活船壳 HP 并成一池 |
 

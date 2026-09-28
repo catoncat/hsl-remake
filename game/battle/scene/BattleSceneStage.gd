@@ -20,7 +20,7 @@ extends RefCounted
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
-##     (mapobjPlayBGSound: one map-wide loop per object at full volume, no attenuation or pan)
+##     (mapobjPlayBGSound: map-wide 0 dB loop, no pan; terrain footsteps 0x409610)
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
@@ -36,6 +36,7 @@ const ScriptPresentation = preload("res://game/battle/scene/BattleScriptPresenta
 const ScriptActorsPresentation = preload("res://game/battle/scene/BattleScriptActorPresentation.gd")
 
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 ## map_objects.json placement roles drawn as stand sprites (tools/hsltools/levels/map_objects.py).
 const STAND_OBJECT_ROLES := ["map_object", "static_enemy_object", "treasure_box"]
 
@@ -92,6 +93,30 @@ func _configure_walk_audio(actor: Node, unit: Dictionary) -> void:
 	var sound_path := ActorSpriteKey.audio_binding(unit, "walk", [runtime.actor_audio_manifest, runtime.shared_actor_audio_manifest])
 	if sound_path != "":
 		actor.configure_walk_audio(sound_path)
+	actor.walk_sound_picker = terrain_walk_sound_path.bind(unit)
+
+
+## Footstep by terrain (0x409610): a flying actor (template +0xa0 bit 0, 0x446ad0) keeps its
+## walk sound; otherwise the map word under its pixel position (0x46c091; -1 off the map)
+## & 0x8000 plays the row's own sound_walkwater (template +0x12; rows 39／51 repeat their
+## walk sound) or sfxWalkWater 630 WALK0014, else & 0x400000 plays sfxWalkFire 1835 WALK0021,
+## else the walk sound (word +8). "" means the configured walk sound.
+func terrain_walk_sound_path(world_position: Vector2, unit: Dictionary) -> String:
+	if runtime.map_config == null or bool((unit.get("traversal", {}) as Dictionary).get("flying", false)):
+		return ""
+	var cell: Vector2i = runtime.map_config.world_to_grid(world_position)
+	var word := int((TerrainEditRules.tiles(runtime.play_loop).get(cell, {}) as Dictionary).get("tile_id", 0))
+	var key := ""
+	if word & 0x8000:
+		for row in [ActorSpriteKey.resolve(unit), str(unit.get("actor_id", ""))]:
+			if row.is_valid_int() and runtime.walk_water_is_walk_rows.has(str(int(row))):
+				return ""
+		key = "walk_water"
+	elif word & 0x400000:
+		key = "walk_fire"
+	else:
+		return ""
+	return str((runtime.ui_sounds.get(key, {}) as Dictionary).get("res_path", ""))
 
 
 ## Walk-frame row for a PlayLoop unit: job-up target when imported, else its actor id.
@@ -105,6 +130,9 @@ func frame_key_for_unit(unit: Dictionary) -> String:
 ## map draw the title the battles do. Otherwise just the base row.
 func carried_unit_view(unit_id: String, actor_id: String) -> Dictionary:
 	var view := {"id": unit_id, "actor_id": actor_id}
+	var mode := story_cast_player_mode(unit_id)
+	if mode >= 0:
+		view["player_mode"] = mode
 	var carry: Variant = runtime.campaign_handoff.get("carry", {})
 	if typeof(carry) != TYPE_DICTIONARY:
 		return view
@@ -112,6 +140,19 @@ func carried_unit_view(unit_id: String, actor_id: String) -> Dictionary:
 	if typeof(record) == TYPE_DICTIONARY and str((record as Dictionary).get("actor_id", "")) == actor_id and str((record as Dictionary).get("job_up_target_actor_id", "")) != "":
 		view["job_up_target_actor_id"] = str((record as Dictionary)["job_up_target_actor_id"])
 	return view
+
+
+## The side word a story-cast entry (story_actors／script_inserted_actors) was built with:
+## the object constructor 0x407ec0 writes +0x28 from the PLAYERS mode, obj_Data9 and obj_X1
+## (story_scene.py) whether or not a PlayLoop unit stands behind it. −1 when the entry has none
+## (obj_Story_PlayerN slot installs, which are the player's).
+func story_cast_player_mode(unit_id: String) -> int:
+	var scenario: Dictionary = runtime.first_battle_scenario if "first_battle_scenario" in runtime else {}
+	for key in ["story_actors", "script_inserted_actors"]:
+		for entry in scenario.get(key, []):
+			if typeof(entry) == TYPE_DICTIONARY and str(entry.get("id", "")) == unit_id and entry.has("player_mode"):
+				return int(entry["player_mode"])
+	return -1
 
 
 ## An in-battle job-up (actPlayerJobUpProcess: 咕嚕 008 → 017) or a replayed carry
@@ -131,9 +172,9 @@ func sync_actor_row(actor: Node, unit: Dictionary) -> void:
 		actor.play_state("idle", "0")
 
 
-## The side word 0x40ba20 returns (player_mode & 0x870000), which picks the map highlight colour.
-## A story-scene cast view carries no side; it is lit as a player (provisional: the STORY
-## insert's player mode is not threaded to the view).
+## The side word 0x40ba20 returns (record +0x28 & 0x870000), which picks the map highlight
+## colour. A story-cast view carries its entry's constructed mode (story_cast_player_mode); a
+## view with no mode (a slot install) is lit as a player.
 func highlight_side(unit: Dictionary) -> int:
 	var side := ActorRoleRules.side_mask(unit)
 	if side == 0:

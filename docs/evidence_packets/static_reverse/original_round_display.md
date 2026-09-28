@@ -1,6 +1,6 @@
 # 回合计数、事件扫描形状与攻击上下文；回合显示与 X-Range 动作
 
-> evidence: static-derived · status: live · functions: 0x4074a0, 0x407510, 0x408370, 0x42c180, 0x42c400, 0x42c640, 0x42fff0, 0x430020, 0x44e7b0, 0x44ebf0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x450840, 0x453ac0, 0x453b30, 0x45e307 · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x4074a0, 0x407510, 0x408370, 0x408b20, 0x42c180, 0x42c400, 0x42c640, 0x42fff0, 0x430020, 0x44e7b0, 0x44ebf0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x450840, 0x452590, 0x453ac0, 0x453b30, 0x45e307 · tools: run_winfail_rules_tests.gd · updated: 2026-09-27
 
 ## 结论
 
@@ -28,7 +28,7 @@ content/imported/hsl/global/tables/ACTION.H gives:
 - Case 0x68 (actDeletePosPlayerXRange) rounds the source pixel x and y down to a cell and adds 16, then calls the position selector once per x number cell with process code proc code. Thus the parameters are world pixels, not grid coordinates. The first quantized cell is included and the count covers exactly that many cells; there is no extra geometric endpoint. The remake resolves matching living units into the existing departure ledger.
 - Case 0x69 (actInsertStoryObjectXRange) uses the same pixel-to-cell-center sequence and calls the object installer once for each counted x cell. It is an object/presentation insertion, not a player or enemy unit creation; the remake records each selected position through the existing script-object request path.
 - Case 0x78 (actPlayMovie) loads the fixed END.ANI / END.SND pair and waits using the supplied over-delay. The existing MoviePlayer handles the imported end film; headless or unavailable playback is recorded as an explicit skipped status.
-- Case 0x7b (actInsertLevelUpStar) sends the sound id through the native effect helper and then the effect renderer. It changes no actor, HP, queue, or winfail state, so the remake treats it as presentation-only and records an explicit skipped reason when no dedicated star sprite is available.
+- Case 0x7b (actInsertLevelUpStar, 0x452590): a non-zero sound id goes to 0x42c180; then, when the random-slot dword 0x4c28e0 is non-zero, 0x408b20(x word 0x4c28e2, y word 0x4c28e0 − 48, 3, 0, 0) runs the same case 3 as the LEVEL UP float (0x408545): 0x415c10(x, y, 149, 64, 24, 0, 6, 36) — 36 obj_LevelUp_Star centred on slot 0, which actSetPlayerPosToRandom0 (0x451db7) sets to an actor's pixel. No wait, no actor／HP／queue／winfail change. The remake's BattleOpeningCoordinator._record_level_up_star places LevelUpStars at slot 0 and plays the sound; WinfailActions keeps the rule-side request record.
 
 ### static-derived：回合计数 `0x4c1bbc` 与 `actCheckRoundNumber`
 

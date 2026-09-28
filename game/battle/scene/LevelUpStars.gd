@@ -32,6 +32,9 @@ var stars: Array[Dictionary] = []
 var sprites: Array[Sprite2D] = []
 var ticks := 0.0
 var blend: ShaderMaterial = AdditiveLevelBlend.material()
+## A script-inserted shower (actInsertLevelUpStar) has no BattleAftermath driving it: it
+## advances itself and frees once the last star is gone.
+var self_advance := false
 
 
 ## Draws the 36 stars' parameters from `seed` (0x415c10's loop order: x, y, then the next delay;
@@ -102,6 +105,11 @@ func advance(delta: float) -> bool:
 	if not alive:
 		hide()
 	return alive
+
+
+func _process(delta: float) -> void:
+	if self_advance and not advance(delta):
+		queue_free()
 
 
 ## Trailing-float interface (BattleAftermath._place): the node itself does not rise.

@@ -827,7 +827,12 @@ static func _apply_player_no_attack(next: Dictionary, runtime: Dictionary, key: 
 	var token := _arg(args, 0)
 	var serial := _int_arg(args, 1)
 	var mode := _int_arg(args, 2)
-	var ids := WinfailConditions.units_for_token(next, token, serial)
+	# 0x451514: 0x44fad0(code, serial) finds one record, then the bit 0x2 lands on its
+	# template row ([0x4c1bc8] + [rec+0xa4]*0x1fc + 0xa0) — the bit 0x446b00 reads — so every
+	# unit of that template shares it; no record → nothing.
+	var ids: Array = []
+	if not WinfailConditions.units_for_token(next, token, serial).is_empty():
+		ids = WinfailConditions.units_for_token(next, token)
 	(runtime["no_attack_changes"] as Array).append({"key": key, "actor_token": token, "serial": serial, "mode": mode, "enabled": mode != 0, "unit_ids": ids.duplicate()})
 	for unit_id in ids:
 		var unit := WinfailConditions.unit(next, str(unit_id))

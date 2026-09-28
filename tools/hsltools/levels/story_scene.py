@@ -12,6 +12,7 @@ the tracked content/battles/story_NNN.json byte for byte.
 """
 from __future__ import annotations
 
+import functools
 import json
 from pathlib import Path
 
@@ -218,6 +219,22 @@ def _skip_battle(seed: dict, level: int) -> dict | None:
     }
 
 
+def _object_player_mode(actor_id: str, fields: dict) -> int:
+    """The side word +0x28 an object-built story actor starts with (constructor 0x407ec0:
+    PLAYERS mode, obj_Data9 swap, obj_X1 override); 0x40ba20 reads it back for the map
+    highlight colour, whether or not the actor is a PlayLoop unit."""
+    from hsltools.levels.battle import install_player_mode
+    players, defines = _player_tables()
+    return install_player_mode(actor_id, fields, players, defines)[0]
+
+
+@functools.cache
+def _player_tables() -> tuple[dict, dict]:
+    from hsltools.native.sources import sources
+    players, _, defines = sources()
+    return players, defines
+
+
 def build(level: int) -> dict:
     spec = LEVELS[level]
     seed = json.loads(seed_path(level).read_text(encoding='utf-8'))
@@ -282,6 +299,8 @@ def build(level: int) -> dict:
             'role': 'player' if role == 'player_install' else 'story_npc',
             'evidence': {'placement': 'EVEF record placement candidate', 'identity': 'obj_Data6/obj_Data7 fields', 'tier': 'resource-derived'},
         })
+        if role == 'enemy_object':
+            actors[-1]['player_mode'] = _object_player_mode(source_actor_code or actor_id, fields)
         bindings[f'{token}/{instance}'] = {'unit_id': unit_id, 'actor_id': actor_id, 'coord': _cell(xy), 'placement_xy': xy}
         if source_actor_code is not None:  # lane ch2b
             actors[-1]['source_actor_code'] = source_actor_code
@@ -337,6 +356,7 @@ def build(level: int) -> dict:
                     }
                     bindings[f'{token}/{token_counts[token]}'] = {'unit_id': unit_id, 'actor_id': actor_id, 'insert_xy': xy}
                     inserted.append({'id': unit_id, 'actor_id': actor_id, 'symbol': symbol, 'insert_xy': xy, 'random_slot': slot, 'role': 'script_insert',
+                                     'player_mode': _object_player_mode(actor_id, fields),
                                      'evidence': {'placement': 'STORY actSetRandomPos slot + actInsertObjectRandomPos disp (table order, provisional)',
                                                   'identity': 'object header obj_Data6/obj_Data7', 'tier': 'resource-derived'}})
                     continue
@@ -364,6 +384,7 @@ def build(level: int) -> dict:
                                                        'insert_xy': xy, 'standing_only': True})
                     inserted.append({'id': unit_id, 'actor_id': standing_actor_id, 'symbol': symbol,
                                      'insert_xy': xy, 'role': 'standing_actor_insert',
+                                     'player_mode': _object_player_mode(standing_actor_id, obj.get('object_data_fields', {})),
                                      'evidence': {'placement': 'STORY actInsertObject args', 'identity': 'obj_Data6/obj_Data7 + standing SHP source', 'tier': 'resource-derived'}})
                     continue
                 if not actor_id.isdigit() or not is_walking_shape(shape):
@@ -376,6 +397,7 @@ def build(level: int) -> dict:
                     'object_name': obj.get('object_name'), 'process': obj.get('object_process'),
                 }
                 inserted.append({'id': unit_id, 'actor_id': actor_id, 'symbol': symbol, 'insert_xy': xy, 'role': 'script_insert',
+                                 'player_mode': _object_player_mode(actor_id, obj.get('object_data_fields', {})),
                                  'evidence': {'placement': 'STORY actInsertObject args (off-map pixels)', 'identity': 'object header shape resource', 'tier': 'resource-derived'}})
     for symbol, slot in (spec.get('player_slot_inserts') or {}).items():
         bindings[f"{slot['token']}/1"] = {'unit_id': slot['unit_id'], 'actor_id': slot['actor_id'], 'spawn_on_story_object': symbol}

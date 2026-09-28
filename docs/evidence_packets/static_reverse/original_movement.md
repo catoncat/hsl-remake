@@ -1,12 +1,13 @@
 # 移动：四邻扩展与邻接阻挡代价
 
-> evidence: static-derived · status: live · functions: 0x40eb80, 0x40f200 · tools: hsltools/probes/movement.py, run_ai_navigation_tests.gd · updated: 2026-09-27
+> evidence: static-derived · status: live · functions: 0x40bab0, 0x40eb80, 0x40ed50, 0x40f200, 0x446b30 · tools: hsltools/probes/movement.py, run_ai_navigation_tests.gd · updated: 2026-09-27
 
 ## 结论
 
 - 原版：`0x40f200` 从中心以 `budget+1` 起按上、下、左、右扩展；先登记当前格到达余量，再按 `0x40eb80` 为继续扩展扣邻接代价——前方与两侧（排除来格）有 `0x74000` 类阻挡时 2，否则 1；WRD `0xff000000` 高字节阻止进入但不计入邻接代价（static-derived；58 组扩展＋80 组邻格代价完整返回）。
 - 重制：`game/sim/TacticalGridRules.gd` 共享扩展，玩家移动范围、AI 攻击／法术／支援站位与追击共用；58 组原扩展逐格一致（static-derived 规则；Godot 导航套件对照）。
-- 差异：对象通行资格、盟友穿越、各模式 mask、全部高差、大型占地、原 250 项缓存节流与平分路径顺序未等价；全图最短路线是重制组合（provisional）。
+- 各模式 mask 与高差已等价（static-derived，逐项见下「模式 mask 与高差」表；92 次 `0x40f440`→`0x40f200`→`0x40ed50` 完整返回与重制逐格相同，见 [original_actor_traversal](original_actor_traversal.md)）。
+- 差异：原 250 项缓存节流与平分路径顺序未等价；全图最短路线是重制组合（provisional）；大型占地见 [original_large_actor](original_large_actor.md)。
 
 ## 证据
 
@@ -20,6 +21,21 @@
 - 第一步成本 1；从邻接相关阻挡的格继续前进时该步成本 2；落脚格不付自己的继续扩展费用。
 - 四邻扩展不表示普通角色可斜走；八方向目标距离与大体型占地见 [original_ai_navigation.md](original_ai_navigation.md)。
 - `0x40eb40` 读 WRD 格字，`0x74000` 旗标拒绝进入（`WrdTerrainTiles`）。
+
+### 模式 mask 与高差（static-derived）
+
+`0x40f200`／`0x40ed50` 模式跳转表 `0x40f1c4`（读法见 [original_ai_navigation](original_ai_navigation.md) 证据表）对重制 `ActorTraversalRules`（`MASKS`、`transit_reason`、`height_delta`、`step_cost`），玩家移动范围与 AI 洪泛同走 `TacticalGridRules`：
+
+| 项 | 原版 | 重制 | 结论 |
+| --- | --- | --- | --- |
+| 模式来源 | `0x40bab0`：玩家 2、敌 3、NPC 7，飞行 bit 1 → 6 | `ActorTraversalRules` 按阵营取 2／3／7，飞行 6；friendly_ai 与玩家同侧 | 一致 |
+| 阻挡 mask | 2→`0x64000`、3→`0x54000`、7→`0x34000`、6→`0x4000` | `MASKS = {2: 0x64000, 3: 0x54000, 6: 0x4000, 7: 0x34000}` | 一致 |
+| 同侧穿越 | 自己阵营的占位位不在 mask 里，可经过 | 同 mask 判定，同侧可经过、不可停 | 一致 |
+| 命中 mask 的对象 | 该格对象模板 +0xa0 bit `0x10`（`0x446b30`）才可过 | `traversal.no_block` 对象格可过 | 一致 |
+| 高差禁入 | 非飞行 `\|高差\| ≥ 3` 停 | 非 mode 6 `absi(height_delta) >= 3` → `target_blocked_by_height` | 一致 |
+| 上坡代价 | 先 `预算 −= 上坡差`（下坡不加） | `step_cost` 加 `max(0, 高差)` | 一致 |
+| 邻接代价 | 写入预算后 `−= 0x40eb80`（前方与两侧有 mask 旗 2，否则 1）；飞行只减 1 | 对象邻接附加费按来路方向；飞行无附加 | 一致 |
+| 起点 | 起点格不检查，其高度参与第一步高差；起始高度 128 分支（目标 255 差 16，否则 0） | 同 | 一致 |
 
 ## 重制接线
 
@@ -35,6 +51,6 @@
 
 ## 边界
 
-- 完整对象通行资格、盟友穿越、各模式 mask、所有高差、大型占地未等价。
+- 对象通行资格、盟友穿越、各模式 mask 与高差已等价（上表）；大型占地见 [original_large_actor](original_large_actor.md)。
 - 原 250 项缓存的执行节流与完整平分路径顺序未复刻；所选路线本身是 provisional，成本来源是 static-derived。
 - 剧情走位（忽略角色占用、遵守地形）见 [original_script_walk_path.md](original_script_walk_path.md)。

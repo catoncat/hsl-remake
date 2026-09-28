@@ -25,6 +25,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const BattleRewardRules = preload("res://game/sim/BattleRewardRules.gd")
 const Values = preload("res://game/sim/Values.gd")
+const BattleLoopInit = preload("res://game/sim/loop/BattleLoopInit.gd")
 const POLICY := "source_initial_roster_v1"
 
 
@@ -48,6 +49,9 @@ static func prepare(loop: Dictionary) -> Dictionary:
 		if not born["ok"]: return born
 		actor.merge(born["actor"], true)
 		receipt["players"].append(born["receipt"])
+	# Opcode 106's slot shuffle (0x451d0f) runs on the story VM after the pre-placed players'
+	# births and before the inserts' births (BattleLoopInit.settle_random_slots).
+	BattleLoopInit.settle_random_slots(next, true)
 	for index in range(next["units"].size()):
 		var actor: Dictionary = next["units"][index]
 		if actor["growth_profile"]["allocation"] == "manual": continue

@@ -15,6 +15,7 @@ extends Node
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
 ##   rules: static-derived docs/evidence_packets/static_reverse/second_battle_opening_script.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
 ##   rules: remake-invented
 ##     (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip)
 ##   rules: provisional
@@ -36,9 +37,11 @@ const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const OpeningSelectPrompt = preload("res://game/battle/runtime/opening/OpeningSelectPrompt.gd")
 const OpeningEndCard = preload("res://game/battle/runtime/opening/OpeningEndCard.gd")
+const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
 const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningStoryObjects.gd")
 const OpeningCinematics = preload("res://game/battle/runtime/opening/OpeningCinematics.gd")
 const BattleWinFailBoard = preload("res://game/battle/scene/BattleWinFailBoard.gd")
+const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const UISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
@@ -156,7 +159,7 @@ const RECORD_ONLY_KINDS: Array[String] = [
 	"position_actor_delete_x_range", "position_object_proc_code_change", "system_arrive_position_random",
 	"player_undead_flag", "player_mode_set",
 	"player_exec_mode", "player_fix_position", "player_walk_shape", "player_fly_flag",
-	"player_no_attack_flag", "player_position_random0", "player_name_set", "player_id_change",
+	"player_no_attack_flag", "player_name_set", "player_id_change",
 	"player_code_delete", "player_stamina_keep", "player_level_adjust_all", "player_job_up_process",
 	"item_use", "item_grant", "win_status_disable", "fail_status_disable",
 	"event_status_disable", "win_status_replace", "fail_status_replace", "event_status_replace",
@@ -228,6 +231,7 @@ const EVENT_HANDLERS := {
 	"movie_play": &"_ev_movie_play",
 	"storage_window_enter": &"_ev_storage_window_enter",
 	"level_up_star_insert": &"_ev_level_up_star_insert",
+	"player_position_random0": &"_ev_player_position_random0",
 }
 
 
@@ -536,6 +540,21 @@ func binding_for_token(actor_token: String, instance: String) -> Dictionary:
 	return bindings.get("%s/%s" % [actor_token, instance], {})
 
 
+## A rule-owned random-position token the PlayLoop applied but that also draws: WINFAIL037
+## event 48's 白光2 (actInsertStoryObjectRandomPos of a story object with a native track, no
+## unit) and the actSetPlayerPosToRandom0 that places it (presentation slot 0 only).
+func _drawn_despite_rules(event: Dictionary) -> bool:
+	var kind := str(event.get("kind", ""))
+	if kind == "player_position_random0":
+		return true
+	if kind != "story_object_insert_random_position":
+		return false
+	var args: Array = event.get("args", [])
+	var symbol := str(args[0]) if not args.is_empty() else ""
+	var spec: Dictionary = (config.get("story_objects", {}) as Dictionary).get(symbol, {})
+	return StoryEffectObjects.effect_kind(spec, symbol) == "objcomd_track"
+
+
 func _apply_event(event: Dictionary) -> void:
 	var kind := str(event.get("kind", ""))
 	var args: Array = event.get("args", [])
@@ -545,7 +564,7 @@ func _apply_event(event: Dictionary) -> void:
 	cinematics._set_title_visible(kind == "section_title_resource")
 	if kind != "dialogue_message_id":
 		runtime.opening_overlay.clear_message()
-	if cutscene_mode and bool(event.get("cutscene_skip", false)):
+	if cutscene_mode and bool(event.get("cutscene_skip", false)) and not _drawn_despite_rules(event):
 		# Already applied to the PlayLoop by WinfailScenarioRules (statuses, inserts,
 		# hand-off, carry): keep the chain order, play nothing.
 		story_records.append({"kind": kind, "source_event_id": str(event.get("id", "")), "status": "applied_by_winfail_interpreter"})
@@ -779,6 +798,10 @@ func _ev_level_up_star_insert(event: Dictionary, _kind: String, _args: Array) ->
 	_record_level_up_star(event)
 
 
+func _ev_player_position_random0(event: Dictionary, _kind: String, _args: Array) -> void:
+	story_objects._set_random_slot0_to_actor(event)
+
+
 ## Opens the win／fail board over the scene: in an opening with the labels of the statuses the
 ## script armed so far (its tokens and the loop's), in a winfail chain with the loop's.
 func _show_winfail_board(event: Dictionary) -> void:
@@ -955,10 +978,25 @@ func _on_storage_window_closed(_next_carry: Dictionary, changes: int) -> void:
 
 
 func _record_level_up_star(event: Dictionary) -> void:
-	## The native helper only requests an effect/sound; no dedicated level-up star
-	## sprite is part of the current remake asset contract. Keep the token visible
-	## in records rather than silently dropping a battle event.
-	story_records.append({"kind": "level_up_star_insert", "source_event_id": str(event.get("id", "")), "args": (event.get("args", []) as Array).duplicate(), "status": "skipped_no_level_up_star_sprite"})
+	## actInsertLevelUpStar 123 [sound id] (case 0x7b, 0x452590): a non-zero sound id plays
+	## through 0x42c180; then, when random slot 0 (0x4c28e0, set by actSetPlayerPosToRandom0)
+	## is non-zero, 0x408b20(x, y − 48, 3) scatters the LEVEL UP star shower — the same
+	## obj_LevelUp_Star 149 call the level-up float makes, centred on the slot pixel. No wait.
+	var args: Array = event.get("args", [])
+	var sound := str(args[0]) if not args.is_empty() else ""
+	var sound_status := _play_script_sound(sound) if sound != "" and sound != "0" else "no_sound"
+	var slot: Vector2 = story_objects.random_slot(0)
+	var status := "no_slot0"
+	if slot != Vector2.ZERO and runtime.get("world_root") != null:
+		var stars: Node2D = LevelUpStars.new()
+		stars.name = "ScriptLevelUpStars"
+		stars.position = slot
+		stars.z_index = 4000
+		stars.self_advance = true
+		runtime.world_root.add_child(stars)
+		stars.begin(str(event.get("id", "")).hash())
+		status = "played"
+	story_records.append({"kind": "level_up_star_insert", "source_event_id": str(event.get("id", "")), "args": args.duplicate(), "status": status, "sound_status": sound_status})
 
 
 ## The nine GameClear party slots (defProcClearShowPlayer, original_game_clear.md): each party

@@ -746,8 +746,9 @@ func _run_level_900_choice_branches() -> void:
 	if options.size() == 2:
 		_assert_true(str((options[0] as Dictionary).get("text", "")).begins_with("1.") and str((options[0] as Dictionary).get("event_code", "")) == "0", "選擇一 (message 1113) inserts winfail event 0")
 		_assert_true(str((options[1] as Dictionary).get("text", "")).begins_with("2.") and str((options[1] as Dictionary).get("event_code", "")) == "1", "選擇二 (message 1114) inserts winfail event 1")
-	_assert_eq(str(scene.opening_overlay.body_label.text), "雷歐納德：請選擇", "the dialogue board asks 雷歐納德 to choose")
-	_assert_true(scene.get_node_or_null("UI/StorySelectPrompt/Choice1") != null, "two choice buttons are shown")
+	# Case 0x4f (0x451f2b–0x451fe3) calls only 0x4264a0: no message board beside the select board.
+	_assert_true(not scene.opening_overlay.visible, "the dialogue board is closed while the select board is up")
+	_assert_true(scene.get_node_or_null("UI/StorySelectPrompt/Choice1") != null, "two choice rows are shown")
 	var down := InputEventKey.new()
 	down.keycode = KEY_DOWN
 	down.pressed = true

@@ -80,7 +80,7 @@
 - `BattleAftermath.show_hit_pose`：死亡 job 开始（遗言前）用 `ActorRuntime.set_shape_override` 换 hit 帧，`_dispose` 复原；hit 帧导入 `content/imported/hsl/shared/actor_hit_poses/`（任务 `actor_hit_poses`：61 个走行帧演员键里 59 个有 hit 帧、4 个 hit＝站立帧、作者关的 102／103 无行）。拉伸按 16 tick（0.256 s）。
 - `BattleAftermath.choose_dead_message`（结构 static-derived）＋`dead_message_roll`（remake-invented：交锋序号与受害者 id 的字符串散列奇偶；不消耗战斗 RNG，读档同一句）。替换方案：从 PlayLoop 随机流取一位（更接近原版共用流，但改变之后全部战斗随机结果）。
 - `BattleDialogue`（战斗对白、开场／剧本、城镇、谢幕共用；`BattlePresentation.dialogue_view`、OpeningOverlay、`TownRuntime`、`GameClearScreen` 都实例化它）：溶解开合与逐行擦出为纯视觉，消息、页码与 `visible` 立即切换。
-- `ActorRuntime.set_highlight(kind, on)`：三种来源画法相同——精灵换着色器 `(src + C)/2 + src·10/16`，C 取 `highlight_side`（`BattleSceneStage.highlight_side`＝`side_mask | player_mode & 0x800000`）的阵营色减 5·|p|，脉动字每原版 tick +1 在 −30..30 循环、跨高亮保留。说话人随 `BattleDialogue.set_speaker_actor`；`BattleSceneOverlays.sync_unit_highlights`：`attack_select`（攻击／魔法／绝技／道具选目标）时全场可见单位都亮，行动者＝选命令期间的当前单位；对白、交锋、结果与 AI 回合不点。没有阵营的剧情演员按我方色（provisional）。
+- `ActorRuntime.set_highlight(kind, on)`：三种来源画法相同——精灵换着色器 `(src + C)/2 + src·10/16`，C 取 `highlight_side`（`BattleSceneStage.highlight_side`＝`side_mask | player_mode & 0x800000`）的阵营色减 5·|p|，脉动字每原版 tick +1 在 −30..30 循环、跨高亮保留。说话人随 `BattleDialogue.set_speaker_actor`；`BattleSceneOverlays.sync_unit_highlights`：`attack_select`（攻击／魔法／绝技／道具选目标）时全场可见单位都亮，行动者＝选命令期间的当前单位；对白、交锋、结果与 AI 回合不点。没有 PlayLoop 单位的剧情演员（剧情场景的 EVEF 敌方过程对象与脚本插入对象）按原版取色：`0x40ba20` 读的是对象记录 `+0x28`，剧情演员同样由构造器 `0x407ec0` 写（PLAYERS 模式 → obj_Data9 换边 → obj_X1 覆盖，见 [阵营位](../../static_reverse/original_player_mode_sides.md)），`story_scene.py` 把它写进条目 `player_mode`，`BattleSceneStage.story_cast_player_mode` 带进视图；`obj_Story_PlayerN` 槽位安装的主角不带此字、按我方色（static-derived）。
 - 阵亡以外的 hit 帧（`0x407230` 受击态 60 tick）由 `MapHitState` 接上。
 
 ## 复现
@@ -89,6 +89,6 @@
 
 ## 边界
 
-- 高亮：engGLASS 的像素内核未逐条读，画法 `(dst + C)/2` 由 Wine 帧拟合；选魔法／道具目标与选移动格时是否全场亮未拍（`0x4442ef`／`0x444bf0` 两处写入各对应哪个选格态未分清）；剧情演员的阵营字未接到重制视图（`BattleSceneStage.highlight_side` 对无 PlayLoop 单位的剧情演员按玩家色画，provisional）；阵亡者说遗言时说话人高亮不亮（遗言走构造器、`+0xa8` 是阵亡者本身，是否亮未量，重制不点）。替换证据：engGLASS 内核的静态读、魔法／道具选目标的 Wine 帧。
+- 高亮：engGLASS 的像素内核未逐条读，画法 `(dst + C)/2` 由 Wine 帧拟合；选魔法／道具目标与选移动格时是否全场亮未拍（`0x4442ef`／`0x444bf0` 两处写入各对应哪个选格态未分清）；剧情场景里 `actSetPlayerMode`（`0x450710`）中途改阵营时剧情演员的高亮色不跟（重制视图只取构造时的字）；阵亡者说遗言时说话人高亮不亮（遗言走构造器、`+0xa8` 是阵亡者本身，是否亮未量，重制不点）。替换证据：engGLASS 内核的静态读、魔法／道具选目标的 Wine 帧。
 - 灵魂时长保留静态读出的 16 tick（0.256 s）；录屏量到 0.27–0.32 s，差值在帧率与 tick 抖动量级内。
 - 同一说话人翻页在本段录屏的阵亡片段外才有样本（见 original_dialogue_board）。

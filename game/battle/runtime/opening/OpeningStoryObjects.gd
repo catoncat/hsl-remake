@@ -244,6 +244,23 @@ func _set_random_slots(event: Dictionary) -> void:
 			_random_slots[index] = table[int(order[index])]
 
 
+## actSetPlayerPosToRandom0 117 (0x451db7): slot 0 is zeroed, then set to the found
+## actor's pixel (obj +4／+8); an actor not found leaves (0, 0).
+func _set_random_slot0_to_actor(event: Dictionary) -> void:
+	var bound: Array = _bound_actor(event, 0)
+	var actor: Node2D = bound[1]
+	var point := actor.position if actor != null else Vector2.ZERO
+	if _random_slots.is_empty():
+		_random_slots.append(point)
+	else:
+		_random_slots[0] = point
+
+
+## Slot `index`'s pixel, (0, 0) when unset.
+func random_slot(index: int) -> Vector2:
+	return _random_slots[index] if index >= 0 and index < _random_slots.size() else Vector2.ZERO
+
+
 ## The slot a random-position token names as a synthetic absolute event: `[x, y] + tail`
 ## for camera／delete tokens (slot id first), `[code, x + dx, y + dy]` for inserts
 ## ([code][dx][dy][slot], 0x450f2c). {} when the slot was never set.
@@ -507,8 +524,8 @@ func _insert_story_object(event: Dictionary) -> void:
 	if args.size() < 3 or preview == "" or not ResourceLoader.exists(preview):
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "story_object_insert", "reason": "unbound_story_object"})
 		return
-	if StoryEffectObjects.effect_kind(spec) != "":
-		# Rain controllers, background sounds, fire runs, flashes and glows: one instance
+	if StoryEffectObjects.effect_kind(spec, symbol) != "":
+		# Rain controllers, background sounds, fire runs, flashes, glows and native tracks: one instance
 		# per insert (STORY010 inserts 火01 five times), records kept by the effects object.
 		coordinator.story_records.append(_effects.insert(runtime, coordinator, spec, objects, symbol, _object_world([args[1], args[2]]), str(event.get("id", ""))))
 		return

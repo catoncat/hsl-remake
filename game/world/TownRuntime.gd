@@ -72,6 +72,7 @@ const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
 
 const SUMMARY_SCHEMA := "hsl_town_runtime.v1"
 ## Original frames 03／04 (席達鎮 TownBG06, 兩棲族部落 TownBG14; runtime-measured): TownBG and
@@ -476,39 +477,13 @@ func _show_pending(pending: Dictionary) -> void:
 	_refresh_board()
 
 
-## teSelectInsertEvent／tePlayerSelectInsertEvent (0x454e20 case 0xf／0x1e) open
-## 0x4264a0(picture, 0, rows, &result) = object 704 Event_Select_Window (global.obs: BOARD02,
-## defProcEventSelectWindow 69 → 0x426680). No 0x4000 flag, so the board takes the bottom slot
-## (camera y + 320); x 144 with the speaker's picture at x − 132, else centred (640 − 489) / 2.
-## Each row is object 705 Event_Select_String (0x4264f0): x board + 17 (rows 5–9: board + 37 +
-## width), y board + top + 28·(i mod 5) with top 17 (4 past four rows), width 472 (226 past
-## five), 28 high; FONT.24 white over the 0x8430 shadow (0x412760), the hovered row redrawn in
-## the 0x42c130 pulse green without shadow (0x412680); a click stores the index and plays
-## ACCEPT01 (398). tePlayerSelectInsertEvent appends RESOURCE 312「離開」with event −1, which
-## ends the event (0x455831, phase 0x1e: row event −1 → VM return 1).
-## The board's level (+0x28) climbs 0→16 one step a tick (state 0), rows take a click only at
-## level 16 with no pick yet (0x4265e2), and after a pick it falls 16→0 (state 3) before the
-## index is handed back (0x42692e); the board and its rows draw at level/16.
-const SELECT_BOARD := "BOARD02"
-const SELECT_BOARD_Y := 320.0
-const SELECT_BOARD_X_FACE := 144.0
-const SELECT_BOARD_X_CENTRED := 75.0
-const SELECT_BOARD_WIDTH := 489
-const SELECT_FACE_DX := -132.0
-const SELECT_ROW_INSET := 17
-const SELECT_ROW_PITCH := 28
-const SELECT_ROWS_PER_COLUMN := 5
+## teSelectInsertEvent／tePlayerSelectInsertEvent (0x454e20 case 0xf／0x1e) open the shared
+## object 704 select board (game/common/EventSelectWindow.gd). tePlayerSelectInsertEvent appends
+## RESOURCE 312「離開」with event −1, which ends the event (0x455831, phase 0x1e: row event −1 →
+## VM return 1).
 const SELECT_LEAVE_TEXT := "離開"
-const SELECT_HOVER_HALF := 16
-const SELECT_SOUND := "res://content/imported/hsl/shared/interface_audio/confirm.wav"
-var _select_rows: Array[Label] = []
-var _select_hover := -1
 var _select_clock := 0.0
-const SELECT_FADE_TICKS := 16
 var _select_window: Control = null
-var _select_level := 0.0
-var _select_fading_out := false
-var _select_answer: Callable = Callable()
 var _hover_row: Button = null
 
 
@@ -517,87 +492,23 @@ func _show_select_window(labels: Array[String], portrait_key: String, leave_row:
 	_dialogue.clear_message()
 	current_text = ""
 	current_speaker = ""
-	_select_rows.clear()
-	_select_hover = -1
-	_select_level = 0.0
-	_select_fading_out = false
-	_select_answer = Callable()
 	var face: Texture2D = null
 	if portrait_key != "" and _dialogue._portraits.has(portrait_key):
 		face = load(str(_dialogue._portraits[portrait_key]["res_path"]))
-	var board_at := Vector2(SELECT_BOARD_X_FACE if face != null else SELECT_BOARD_X_CENTRED, SELECT_BOARD_Y)
-	var window := Control.new()
-	window.name = "SelectWindow"
-	window.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	window.modulate.a = 0.0
-	_select_window = window
-	_choice_root.add_child(window)
-	BattleUISkin.board(window, SELECT_BOARD, board_at)
-	if face != null:
-		var picture := TextureRect.new()
-		picture.name = "Picture"
-		picture.position = board_at + Vector2(SELECT_FACE_DX, 0)
-		picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		BattleUISkin.show_shape(picture, face)
-		window.add_child(picture)
-	var texts := labels.duplicate()
-	if leave_row:
-		texts.append(SELECT_LEAVE_TEXT)
-	var count := mini(texts.size(), 2 * SELECT_ROWS_PER_COLUMN)
-	var width := SELECT_BOARD_WIDTH - SELECT_ROW_INSET
-	if count > SELECT_ROWS_PER_COLUMN:
-		width = width / 2 - 10
-	var top := 4 if count > 4 else SELECT_ROW_INSET
-	for index in range(count):
-		var column_x := SELECT_ROW_INSET if index < SELECT_ROWS_PER_COLUMN else SELECT_ROW_INSET + 20 + width
-		var hit := Control.new()
-		hit.name = "Choice%d" % index
-		hit.position = board_at + Vector2(column_x, top + SELECT_ROW_PITCH * (index % SELECT_ROWS_PER_COLUMN))
-		hit.size = Vector2(width, SELECT_ROW_PITCH)
-		hit.clip_contents = true
-		hit.mouse_filter = Control.MOUSE_FILTER_STOP
-		window.add_child(hit)
-		var row := BattleUISkin.text(hit, Vector2.ZERO, BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(width, 24))
-		row.text = texts[index]
-		_select_rows.append(row)
-		hit.mouse_entered.connect(_hover_select.bind(index))
-		hit.mouse_exited.connect(_hover_select.bind(-1))
-		var leave := leave_row and index == texts.size() - 1
-		hit.gui_input.connect(_select_row_input.bind(picks[index] if index < picks.size() else index, leave))
-	set_process(true)
+	_select_window = EventSelectWindow.open(_choice_root, labels, face, picks, SELECT_LEAVE_TEXT if leave_row else "", "SelectWindow", runtime if runtime != null else self)
+	_select_window.answered.connect(_select_answered)
 
 
-func _hover_select(index: int) -> void:
-	_select_hover = index
-	for row_index in range(_select_rows.size()):
-		var row := _select_rows[row_index]
-		if not is_instance_valid(row):
-			continue
-		row.add_theme_color_override("font_color", select_hover_colour() if row_index == index else BattleUISkin.TEXT_WHITE)
-		row.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0) if row_index == index else BattleUISkin.TEXT_SHADOW)
+func _select_answered(pick: int, leave: bool) -> void:
+	if leave:
+		cancel_select()
+	else:
+		choose(pick)
 
 
-func _select_row_input(event: InputEvent, index: int, leave: bool) -> void:
-	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
-		return
-	if _select_level < SELECT_FADE_TICKS or _select_fading_out:
-		return
-	var sound := AudioStreamPlayer.new()
-	sound.stream = load(SELECT_SOUND)
-	sound.finished.connect(sound.queue_free)
-	(runtime if runtime != null else self).add_child(sound)
-	sound.play()
-	_select_fading_out = true
-	_select_answer = cancel_select if leave else choose.bind(index)
-
-
-## The hovered row's colour this tick: 0x42c130 on the 0x42c110 counter, green 255 − 2·|p| with
-## red and blue 0, p stepping once a tick through −16..16.
+## The stone menu rows' hover colour this tick (the select board's 0x42c130 pulse green).
 func select_hover_colour() -> Color:
-	var period := 2 * SELECT_HOVER_HALF + 1
-	var step := int(OriginalTick.ticks(_select_clock)) % period - SELECT_HOVER_HALF
-	return Color8(0, 255 - 2 * absi(step), 0)
+	return EventSelectWindow.pulse_colour(_select_clock)
 
 
 func _process(delta: float) -> void:
@@ -605,20 +516,6 @@ func _process(delta: float) -> void:
 	if is_instance_valid(_hover_row) and _hover_row.is_visible_in_tree():
 		_hover_row.add_theme_color_override("font_hover_color", select_hover_colour())
 		_hover_row.add_theme_color_override("font_hover_pressed_color", select_hover_colour())
-	if mode != "select" or not is_instance_valid(_select_window):
-		return
-	var step := OriginalTick.ticks(delta)
-	_select_level = clampf(_select_level + (-step if _select_fading_out else step), 0.0, SELECT_FADE_TICKS)
-	_select_window.modulate.a = floorf(_select_level) / SELECT_FADE_TICKS
-	if _select_fading_out and _select_level <= 0.0:
-		var answer := _select_answer
-		_select_fading_out = false
-		_select_answer = Callable()
-		if answer.is_valid():
-			answer.call()
-		return
-	if _select_hover >= 0 and _select_hover < _select_rows.size() and is_instance_valid(_select_rows[_select_hover]):
-		_select_rows[_select_hover].add_theme_color_override("font_color", select_hover_colour())
 
 
 func _hover_menu_row(row: Button) -> void:

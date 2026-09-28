@@ -461,20 +461,45 @@ static func _load_opening_timeline(_loop: Dictionary, scenario: Dictionary, inta
 ##   insert that names slot k then lands on the shuffled table entry (STORY037's gems and
 ##   guardians, bound by insert order `<symbol>/insertN`, move with their slot).
 ##   each roll is one raw 0x458c10 draw & 1 on the loop's global stream (`global_rng`),
-##   before the opening's births draw theirs.
-## - the stand objects its actDeletePosObject／actDeleteRandomPosObject remove (the 37 statues
-##   under the guardians, 59's statue under 地劫神, 77's), as anchors for
-##   BattleSceneRuntime.apply_opening_object_deletes. A delete a later actInsertStoryObject
-##   replaces at the same anchor (STORY010's burnt tree) is left out: the replacement story
-##   object is not re-created without the opening either.
+##   drawn when the story VM reaches opcode 106 — tick 2 at the earliest (the level object's
+##   first tick 0x4081ec only stores the script pointer 0x450670; 0x408264 runs the VM
+##   later), after the pre-placed players were born inside their construction on tick 1
+##   (placeholder 0x408115 → 0x407ec0) and before the inserts that follow it are born.
+##   So create only records the slot-dependent events (`pending_events`, inserts resolved to
+##   unit ids); InitialRosterGrowthRules.prepare settles them between the players' frame
+##   delays and the NPC births (`settle_random_slots`).
 static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:
-	var events: Array = intake["opening_events"]
+	var pending: Array = []
+	var inserts := {}
+	for event in intake["opening_events"]:
+		var row: Dictionary = (event as Dictionary).duplicate(true)
+		match str(row.get("kind", "")):
+			"random_position_set", "random_position_object_delete", "position_object_delete", "story_object_insert":
+				pending.append(row)
+			"object_insert_random_position":
+				var args: Array = row.get("args", [])
+				var symbol := str(args[0]) if not args.is_empty() else ""
+				inserts[symbol] = int(inserts.get(symbol, 0)) + 1
+				var binding: Dictionary = scenario.get("opening", {}).get("actor_bindings", {}).get("%s/insert%d" % [symbol, inserts[symbol]], {})
+				row["unit_id"] = str(binding.get("unit_id", ""))
+				pending.append(row)
+	loop["opening_story_state"] = {"policy": "opening_story_state_v1", "random_slot_table": [], "random_slot_order": [], "random_slot_rolls": [], "object_deletes": [], "pending_events": pending}
+	settle_random_slots(loop, false)
+	return ""
+
+
+## Replays the recorded opening events: opcode 106 shuffles (drawing the global stream only
+## when `draw`), inserts land on their shuffled slot, deletes resolve to anchors. With
+## `draw` false (at create) a shuffle keeps table order and the events stay pending.
+static func settle_random_slots(loop: Dictionary, draw: bool) -> void:
+	var state: Dictionary = loop.get("opening_story_state", {})
+	if not state.has("pending_events"):
+		return
 	var table: Array[Vector2i] = []
 	var order: Array = []
 	var rolls: Array = []
 	var deletes: Array = []
-	var inserts := {}
-	for event in events:
+	for event in state["pending_events"]:
 		var args: Array = (event as Dictionary).get("args", [])
 		match str(event.get("kind", "")):
 			"random_position_set":
@@ -484,7 +509,7 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 						table.append(Vector2i(int(str(args[1 + index * 2])), int(str(args[2 + index * 2]))))
 				order = range(table.size())
 				rolls = []
-				for index in range(table.size()):
+				for index in range(table.size() if draw else 0):
 					var roll := GlobalRandomStream.loop_draw(loop, -1) & 1
 					rolls.append(roll)
 					var other := index + 2 if index + 2 < 5 else index + 2 - 5
@@ -505,11 +530,8 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 					var at := Vector2i(int(str(args[1])), int(str(args[2])))
 					deletes = deletes.filter(func(row): return Vector2i(int(row["x"]), int(row["y"])) != at)
 			"object_insert_random_position":
-				var symbol := str(args[0]) if not args.is_empty() else ""
-				inserts[symbol] = int(inserts.get(symbol, 0)) + 1
+				var unit := BattlePlayLoop.unit_ref(loop, str(event.get("unit_id", "")))
 				var slot := int(str(args[3])) if args.size() > 3 else -1
-				var binding: Dictionary = scenario.get("opening", {}).get("actor_bindings", {}).get("%s/insert%d" % [symbol, inserts[symbol]], {})
-				var unit := BattlePlayLoop.unit_ref(loop, str(binding.get("unit_id", "")))
 				if unit.is_empty() or slot < 0 or slot >= order.size():
 					continue
 				var pixel: Vector2i = table[order[slot]] + Vector2i(int(str(args[1])), int(str(args[2])))
@@ -517,8 +539,10 @@ static func _load_opening_story_state(loop: Dictionary, scenario: Dictionary, in
 				if unit.get("ai_home_coord") == unit["coord"]:
 					unit["ai_home_coord"] = cell
 				unit["coord"] = cell
-	loop["opening_story_state"] = {"policy": "opening_story_state_v1", "random_slot_table": table, "random_slot_order": order, "random_slot_rolls": rolls, "object_deletes": deletes}
-	return ""
+	var settled := {"policy": "opening_story_state_v1", "random_slot_table": table, "random_slot_order": order, "random_slot_rolls": rolls, "object_deletes": deletes}
+	if not draw:
+		settled["pending_events"] = state["pending_events"]
+	loop["opening_story_state"] = settled
 
 
 static func _load_script_waits(loop: Dictionary, scenario: Dictionary, intake: Dictionary) -> String:

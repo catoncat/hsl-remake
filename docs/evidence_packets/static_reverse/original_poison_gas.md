@@ -1,6 +1,6 @@
 # 噴人沼氣（defProcPoisonGas）、地形毒与剧情 VM 的 actCheckNextSerialNumber／actUseItem／actInsertStoryObjectWaitPos／actSetPlayerNoAttack
 
-> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 整镜像进 32 关跑 1–3 回合（5 个种子）的喷气时刻、落点、中毒对象与状态字，43 处按抽前随机字逐值重算全对；进 15 关的地形毒 5 处中毒字逐值重算全对; resource-derived: PROCESS.DEF defProcPoisonGas=71、OBJ-032.OBS 码 20、WINFAIL032 event 9、ACTION.H token 值; provisional: 烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取 · status: live · functions: 0x406fe0, 0x407230, 0x407510, 0x407800, 0x409140, 0x409e40, 0x40e240, 0x411c40, 0x42c780, 0x43bf30, 0x43c260, 0x43c760, 0x43c7c0, 0x43f1c6, 0x441eb8, 0x4436f9, 0x4454a5, 0x446ad0, 0x446b00, 0x446b90, 0x44fad0, 0x450390, 0x450840, 0x451514, 0x4525e0, 0x458c80, 0x45e307, 0x45eb9d, 0x45ebdc · tools: hsltools/data/winfail_coverage.py, hsltools/probes/_poison_gas.py · updated: 2026-09-28
 
 ## 结论
 
@@ -63,7 +63,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | `0x5d` actUseItem | 以 `code` `serial` 经 `0x44fad0` 找 actor，`0x450390(code, serial, 0)` 建立使用道具的等待阶段，再调 `0x409e40(actor, item_id)`；道具效果失败时 VM 只前进脚本指针，不把 item id 解释成别的 actor 或目标 |
 | `0x63` actInsertStoryObjectWaitPos | 读 object code、位置数与位置表（世界／像素坐标，不是格），`0x451ecf` 经 `0x458c80` 抽一组，`0x45e307(x, y, object_code, 0)` 安装对象，并把脚本返回指针写入对象等待状态 |
 | `0x64` actCheckNextSerialNumber | 上文的交接计数定时器 |
-| `0x65` actSetPlayerNoAttack | 经 `0x44fad0(code, serial)` 找 player record，在 `PLAYER_TABLE + 0xa0` 清除或设置 bit `0x2`（no-attack，不是 undead bit `0x4`，也不改 mode） |
+| `0x65` actSetPlayerNoAttack | handler `0x451514`：经 `0x44fad0(code, serial)` 找 player record（找不到跳过），取其模板行 `[0x4c1bc8] + [rec+0xa4]×0x1fc`，mode≠0 时 `+0xa0 \|= 2`、否则 `&= ~2`（no-attack，不是 undead bit `0x4`，也不改 mode）。这正是 `0x446b00` 测的同一位（`test byte [tpl+0xa0], 2`），其读者 `0x406ed8`（必中 100）、`0x434d76`（资料面板 ???）、`0x43f413`（NPC 回合即结束）、`0x442646`、`0x44499a` 都看它；写在模板行上，同模板的所有单位共用 |
 
 `0x409e40` 的既有静态范围只覆盖永久道具 253..261 的属性／抗性分支（[original_tactical_items](original_tactical_items.md)）；item 252 的恢复 HP、MP 与清状态字段来自 `ITEM.TXT`（resource-derived）。
 
@@ -87,7 +87,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 - `game/sim/PoisonGasRules.gd`：落点、九格施毒与合并；`game/sim/WinfailConditions.gd`：交接计数定时器（`0x4525e0..0x45260b`）；`game/sim/WinfailActions.gd`：`actInsertStoryObjectWaitPos` 在 loop 的全局流 `global_rng`（`GlobalRandomStream`，原版 `0x4795d4`／`0x4795d8`）抽一次 `rand(count)` 选位置，收据记全局流前后两个字；`game/sim/WinfailCompiler.gd`：OBS 过程识别。
 - `actUseItem` 解析唯一 `[SID, serial]` actor，调 `ItemResolutionRules.prepare`，提交到同一 loop 的 HP／status／inventory，记录 `item_requests`；缺 actor、catalog、inventory 或 item 显式记拒绝原因。
-- `actSetPlayerNoAttack` 写单位字典 `no_attack`：玩家普通攻击命令与直接攻击结算都拒绝，魔法／特殊技是独立能力；AI 单位带同一键时 `BattleLoopAI._ai_take_owned_turn` 在决策前直接结束回合（`0x43f413`，见 [original_ai_navigation](original_ai_navigation.md)「结论」）。
+- `actSetPlayerNoAttack` 找到记录后把同模板（`units_for_token(token)`）的所有单位的 `no_attack` 一起写（照 `0x451514` 写模板行）：玩家普通攻击命令与直接攻击结算都拒绝，魔法／特殊技是独立能力；AI 单位带同一键时 `BattleLoopAI._ai_take_owned_turn` 在决策前直接结束回合（`0x43f413`，见 [original_ai_navigation](original_ai_navigation.md)「结论」）。
 - `game/battle/scene/BattlePoisonGasPresentation.gd`：镜头、烟团、停顿，中毒者经 `shake` → `MapHitState.begin` 换 hit 帧并抖 60 tick；`game/sim/loop/BattlePlayLoop.gd`：地形毒收尾顺序。
 
 ## 复现
@@ -99,5 +99,5 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - 烟对象初始化的 12 次全局流抽取在原版发生于下一 tick，其间可能插进别的对象的抽取；重制在喷气那次结算里紧接连抽。
 - 地形毒（深淵之沼 LEVEL015）的 `0x407230` 受击态：`BattlePresentation._refresh_terrain_poison` 消费 `loop.terrain_poison` 新回执，踩毒者在该收尾的扣血数字出现时换 hit 帧并抖 60 tick（`MapHitState.begin`）。
 - 法术是否在只伤 MP 时进受击态：`0x40aa80` 没有 MP 伤害分支（`param_4 & 2` 是回复 HP，不计受击），见 [original_map_strike.md](original_map_strike.md)。
-- 道具等待时序、安装对象渲染与 packed serial 的完整边界未读；`actSetPlayerNoAttack` 写的位与 NPC 模板 no_attack 位（+0xa0 bit 2）是否同一位未核。
+- 道具等待时序、安装对象渲染与 packed serial 的完整边界未读。`actSetPlayerNoAttack` 与 NPC 模板 no_attack 是同一位（模板 +0xa0 值 `0x2`），剧本设的不攻击单位在 NPC 回合入口同样即结束；全部剧本只有 WINFAIL036 对 克羅蒂 用它（单模板单单位），同模板多单位的写法无实战场景。
 - 552／553／554 关的 OBS 也有噴人沼氣模板，但全部剧本只有 WINFAIL032 插入它。

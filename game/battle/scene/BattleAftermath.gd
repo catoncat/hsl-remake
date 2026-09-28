@@ -8,6 +8,8 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: static-derived docs/evidence_packets/runtime_observations/map_pose_floaters/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/cutin_floaters/README.md
+##   layout: static-derived docs/evidence_packets/static_reverse/original_player_mode.md
+##     (AI killers float their own kill gold, 0x44287b)
 ##     (recording 337.95 KILL 3, 338.37 EXP, 338.97 $, 339.59 LEVEL UP)
 ##   strings: resource-derived content/generated/hsl/combat/aftermath.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_field_coverage.md
@@ -167,13 +169,20 @@ func prepare(receipt: Dictionary, units: Array, message_texts: Dictionary = {}) 
 	var rewards: Dictionary = receipt.get("rewards", {})
 	# 0x442720 case 2 floats *0x4c2c84 once for the action: the drop gold plus what a StealGold
 	# special (竊殺／銀之手) took — 0x40b556..0x40b574 adds the take there on both caster sides.
-	# The float pushes the paid amount (0x44288a), after the gold_x2 doubling (0x442825).
-	var gold := int(rewards.get("gold", 0))
+	# The float pushes the paid amount (0x44288a), after the gold_x2 doubling (0x442825). Both
+	# payment branches (party 0x442837, own record +0x98 0x442856) join at 0x44287b before the
+	# float, so an AI killer's own kill gold (rewards.carried) floats too.
+	var carried: Array = rewards.get("carried", [])
+	var kill_gold := int(rewards.get("gold", 0))
+	for row in carried: kill_gold += int(row["gold"])
+	var gold := kill_gold
 	for effect in receipt.get("gold_effects", []):
 		gold += int(effect.get("paid", effect["amount"]))
 	var gold_owner := ""
 	if gold > 0:
-		gold_owner = str(rewards["kills"][0]["attacker_id"]) if int(rewards.get("gold", 0)) > 0 else str(receipt["attacker_id"])
+		gold_owner = str(receipt["attacker_id"])
+		if kill_gold > 0:
+			gold_owner = str(rewards["kills"][0]["attacker_id"]) if not rewards.get("kills", []).is_empty() else str(carried[0]["unit_id"])
 	# 0x442720 runs once per recipient — the attacker (0x4447d8／0x4416bc), then the countering
 	# target (0x44483c／0x441724): EXP (phase 0), its $ (phase 2), [get-item window, phase 4],
 	# one LEVEL UP whatever the levels gained (phase 6). The recording's 501.48 EXP → 502.05

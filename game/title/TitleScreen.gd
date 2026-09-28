@@ -17,10 +17,10 @@ extends Node2D
 ## it takes input. The original lights no item on hover: the hovered item, gem or book throws
 ## Menu_Star sparkles (object 788) every 6 ticks, a click adds Menu_Star2 (789); OPT-GUIDE＝提示
 ## shows the red lit shape on the hovered item. Clicking the gem opens 設定選項 and the book the
-## 讀取回憶錄 list (BattleSystemMenu.open_standalone); the menu stays drawn and inert until the
+## 讀取回憶錄 list (BattleSystemMenu.open_standalone) after a 10-tick hold; the menu stays drawn and inert until the
 ## window goes back. An arrow key lights the keyboard-selected item (remake keyboard path).
 ## Clicking an item plays ACCEPT01 (RESOURCE 398, defProcMainMenuString 0x4242d6). Confirming an item lights it (the red Title024-026 shape with its white flare), holds
-## CONFIRM_HOLD_SECONDS, then fades to black over FADE_TO_BLACK_SECONDS; the version string
+## CONFIRM_HOLD_TICKS, then fades to black in 16 levels over FADE_DONE_TICKS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
 ## docs/evidence_packets/runtime_observations/menus_ui/README.md). 戰場記錄 with nothing to resume
 ## shows message 12「無存檔記錄」on the BOARD02 message board (0x42404c → 0x4072b0). The title plays the original track
@@ -53,8 +53,10 @@ extends Node2D
 ##     (bob angle +3／tick, 0x424389; slide 0x45e882 speed 40; sparkles 0x4241a0／0x41f5db)
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (開始新故事 click: lit shape from 13.52 s, fade 14.27→14.82 s — 0.75 s hold, 0.55 s fade)
+##   timing: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (hold = obj_Data8, 40／10 ticks, 0x424004; fade 0x42dc90(2): +1 level／2 ticks, 0x460a58)
 ##   timing: provisional
-##     (the same hold／fade for 戰場記錄 and 離開遊戲; the message board reuses the save notice's in／hold／out)
+##     (the message board reuses the save notice's in／hold／out)
 ##     (Menu_Star's unset Shape_Delay taken as 0; memoir load fades without a hold)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
@@ -71,10 +73,19 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const FIRST_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
-## Confirm → black: the lit item holds, then the screen fades (runtime-measured on the user
-## recording: lit at 13.52 s, black ramp 14.27 → 14.82 s). FADE_SECONDS is the whole span.
-const CONFIRM_HOLD_SECONDS := 0.75
-const FADE_TO_BLACK_SECONDS := 0.55
+## Confirm → black (static-derived, menus_ui §1): a click hands the item's obj_Data8 to the
+## menu's hold timer +0xa8 (0x424302); state 3 0x424004 counts it down one a tick and runs the
+## code at 0 — 40 ticks for the three text items, 10 for the gem and the book. The exits fade
+## through 0x42dc90(2) → 0x46098f: level 1 at once, one level every 2 ticks (0x460a58), black
+## (16) after 30 ticks, done at 32. On the 19.4 ms host that is 0.78 s + 0.58 s, matching the
+## recording (lit 13.52 s, black ramp 14.27 → 14.82 s). FADE_SECONDS is the whole span.
+const CONFIRM_HOLD_TICKS := 40
+const WINDOW_HOLD_TICKS := 10
+const FADE_LEVELS := 16
+const FADE_LEVEL_TICKS := 2
+const FADE_DONE_TICKS := 32
+const CONFIRM_HOLD_SECONDS := CONFIRM_HOLD_TICKS * OriginalTick.TICK_SECONDS
+const FADE_TO_BLACK_SECONDS := FADE_DONE_TICKS * OriginalTick.TICK_SECONDS
 const FADE_SECONDS := CONFIRM_HOLD_SECONDS + FADE_TO_BLACK_SECONDS
 ## The version string at the bottom-left corner (runtime-measured: a white fixed-pitch
 ## bitmap font, 8 px advance, ink (3,459)–(41,467)). It is ASCFONT.15 (8×15 half cells, ink
@@ -171,6 +182,9 @@ var intro_player: CanvasLayer
 var menu_slide := MENU_SLIDE_DISTANCE
 ## "" or the window a gem／book click opened ("options" | "memoir").
 var window_open := ""
+## Gem／book clicked: the code waiting out WINDOW_HOLD_TICKS before its window opens; -1 none.
+var window_hold_code := -1
+var _window_hold_left := 0
 ## Code of the title object under the mouse: 0..2 the items, 10 gem, 11 book, -1 none.
 var hover_code := -1
 var _menu_rest: Dictionary = {}
@@ -312,12 +326,18 @@ func _tick() -> void:
 			left = HOVER_SPARK_TICKS
 			spawn_sparkles(hover_code, "hover", HOVER_SPARK_COUNT)
 		_spark_counters[hover_code] = left
+	if window_hold_code >= 0:
+		_window_hold_left -= 1
+		if _window_hold_left <= 0:
+			var code := window_hold_code
+			window_hold_code = -1
+			open_window(code)
 	_tick_stars()
 
 
 ## The menu waits for input: landed, no window up, not leaving (state 2, +0x80 & 0x10000).
 func menu_armed() -> bool:
-	return menu_slide == 0 and window_open == "" and not menu_locked
+	return menu_slide == 0 and window_open == "" and window_hold_code < 0 and not menu_locked
 
 
 func _apply_menu_slide() -> void:
@@ -527,8 +547,14 @@ func _start_transition(action: String, scene_path: String, resume_scenario: Stri
 	if lit_hold:
 		tween.tween_interval(CONFIRM_HOLD_SECONDS)
 	# The music keeps its volume: the original stops it at once on leaving the level (§3.1).
-	tween.tween_property(_fade, "color:a", 1.0, FADE_TO_BLACK_SECONDS)
+	tween.tween_method(_set_fade_level, 0.0, FADE_TO_BLACK_SECONDS, FADE_TO_BLACK_SECONDS)
 	tween.finished.connect(_on_fade_finished.bind(scene_path))
+
+
+## 0x46098f／0x460a58: level 1 at the start, +1 every FADE_LEVEL_TICKS, capped at 16 (black).
+func _set_fade_level(elapsed: float) -> void:
+	var ticks := int(elapsed / OriginalTick.TICK_SECONDS)
+	_fade.color.a = float(mini(FADE_LEVELS, 1 + ticks / FADE_LEVEL_TICKS)) / FADE_LEVELS
 
 
 func _on_fade_finished(scene_path: String) -> void:
@@ -591,6 +617,15 @@ func show_message(text: String) -> void:
 	_message_tween.tween_callback(func() -> void: _message.visible = false)
 
 
+## A gem／book click: the menu stops taking input and counts the item's hold (0x424004) before
+## open_window runs.
+func press_window(code: int) -> void:
+	if not menu_armed() or not WINDOW_OF_CODE.has(code):
+		return
+	window_hold_code = code
+	_window_hold_left = WINDOW_HOLD_TICKS
+
+
 ## Gem (code 10) → 設定選項, book (11) → the 讀取回憶錄 list (0x424037 → 0x423b90／0x423bd0).
 func open_window(code: int) -> Dictionary:
 	if not menu_armed() or not WINDOW_OF_CODE.has(code):
@@ -651,7 +686,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if index >= 0:
 			confirm()
 		elif WINDOW_OF_CODE.has(hover_code):
-			open_window(hover_code)
+			press_window(hover_code)
 
 
 ## defProcMainMenuString 0x4242d6: a click on an item plays ACCEPT01 (RESOURCE 398).

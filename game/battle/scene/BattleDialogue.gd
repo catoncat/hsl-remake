@@ -310,6 +310,16 @@ func portrait_rows() -> Dictionary:
 	return _portraits
 
 
+## The face `show_message` would draw for `actor_id` (scene manifest, else roster face table);
+## null when neither has a row.
+func face_texture(actor_id: String) -> Texture2D:
+	if _portraits.has(actor_id):
+		return load(str(_portraits[actor_id]["res_path"]))
+	if _roster_faces.has(actor_id):
+		return load(str(_roster_faces[actor_id]["res_path"]))
+	return null
+
+
 ## A speaker whose row is not in the manifest is a data error (the level assembler enumerates
 ## every scripted and death-line speaker): it is reported and the line still shows without a
 ## portrait, so the reader can advance instead of waiting on an invisible panel.

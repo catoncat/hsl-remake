@@ -544,6 +544,9 @@ func map_magic() -> void:
 		scene._process(0)
 		check(view.aftermath.reward_label.visible and view.aftermath.reward_label.text=="EXP %d" % receipt["experience"]["gained"], "NPC reward displays the exact committed amount: "+key)
 		scene._process(view.aftermath.REWARD_SECONDS)
+		# The AI killer's own kill gold floats its $ after the EXP (0x44287b joins both branches).
+		scene._process(0)
+		scene._process(view.aftermath.REWARD_SECONDS)
 		check(not view.aftermath.busy(), "NPC map reward completes once without an allocation dialog: "+key)
 		check(scene.play_loop == settled, "map magic aftermath never modifies committed rules: " + key)
 		scene.queue_free()
