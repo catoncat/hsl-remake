@@ -825,12 +825,12 @@
     },
     {
       "id": "script-walk-path",
-      "difference": "寻路链与走完后的位置提交已照原版（开局剧情走位与战中 WINFAIL 走位）；0x413740 两处随机分支取定值",
+      "difference": "已照原版：寻路链、走完后的位置提交与 0x413740 两处随机分支（战中 WINFAIL 走位跳过有单位的格，同距平局与三邻被挡的丢弃抽全局流）；开局演出不抽数，停格取原版开局快照",
       "original": "0x4111d0→0x411080 洪泛 18/16/14/12、行主序最近格、0x410a50 严格下降深搜；0x453b90 走完在所站格 0x411a30 登记（0x4541a1），目的格写入时已经 0x44fbd0；飞行 mode 6 走到 0xff 终点",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_walk_path.md"
       ],
-      "remake": "ScriptWalkPath（game/sim）移植原链逐格求路，随机分支取先到先留／接受；开局演出朝记录的 0x44fbd0 落点寻路，战中 ScriptActorCreationRules 落点后跑同一链提交停格，PlayLoop 与演出停点一致",
+      "remake": "ScriptWalkPath（game/sim）移植原链逐格求路；战中 ScriptActorCreationRules 落点后跑同一链，walk 上下文经 AINavigationRules.nearest_stoppable 抽全局流、跳过有单位的格，记 placements[].walk_draws 并提交停格；开局演出不抽数，朝记录的 0x44fbd0 落点寻路；演出读回执停格，PlayLoop 与演出停点一致",
       "remake_code": [
         "game/sim/ScriptWalkPath.gd",
         "game/battle/runtime/opening/OpeningStoryObjects.gd",
@@ -1984,7 +1984,10 @@
         "cam-script-walk-variants"
       ]
     },
-    "provenance:game/sim/ScriptWalkPath.gd|rules|provisional|": {
+    "provenance:game/sim/ScriptWalkPath.gd|rules|remake-invented|": {
+      "item": "script-walk-path"
+    },
+    "provenance:game/sim/ScriptActorCreationRules.gd|rules|provisional|": {
       "item": "script-walk-path"
     },
     "provenance:game/battle/scene/AnimalCastLead.gd|layout|provisional|": {
@@ -2524,7 +2527,7 @@
     "scope:docs/evidence_packets/static_reverse/original_script_camera_scroll.md|provisional|16 ms 设计值与 19.4 ms 实测的取舍": {
       "item": "timing-estimates"
     },
-    "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|0x413740 随机分支取定值、按键快进（remake-invented）": {
+    "scope:docs/evidence_packets/static_reverse/original_script_walk_path.md|provisional|战中走位抽数与原版 VM 轮／走位 tick 的交错次序、按键快进（remake-invented）": {
       "item": [
         "script-walk-path",
         "script-fast-forward"

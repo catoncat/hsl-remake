@@ -1,14 +1,14 @@
 # 剧情走位：逐格路径、Wait 与并行
 
-> evidence: static-derived; runtime-measured: 原指令实跑五关开局的走位登记格; provisional: 0x413740 随机分支取定值、按键快进（remake-invented） · status: live · functions: 0x407940, 0x40eb40, 0x40ed50, 0x40f200, 0x40f350, 0x40f440, 0x40f560, 0x410730, 0x410a50, 0x411080, 0x4111d0, 0x411a30, 0x411b90, 0x413740, 0x413900, 0x446ad0, 0x44fbd0, 0x44fcf0, 0x44fd90, 0x450840, 0x453b90 · tools: hsltools/levels/battle.py, run_story_object_terrain_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原指令实跑五关开局的走位登记格; provisional: 战中走位抽数与原版 VM 轮／走位 tick 的交错次序、按键快进（remake-invented） · status: live · functions: 0x407940, 0x40eb40, 0x40ed50, 0x40f200, 0x40f350, 0x40f440, 0x40f560, 0x410730, 0x410a50, 0x411080, 0x4111d0, 0x411a30, 0x411b90, 0x413740, 0x413900, 0x446ad0, 0x44fbd0, 0x44fcf0, 0x44fd90, 0x450840, 0x453b90 · tools: hsltools/levels/battle.py, run_story_object_terrain_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：剧情走位 token 经 `0x4111d0 → 0x411080` 依次洪泛半径 18、16、14、12（`0x40f350`，脚本模式不查地图边界，只受 (2r+1)² 缓冲限制）；前三级只把目的格挪到洪泛内曼哈顿最近格（`0x413740` 行主序），末级由 `0x410a50`／`0x410730` 严格下降深搜取路；走完未到目的格再调，`0x410a50` 无路可走即停。非 Wait 变体写完目的格即放行 VM，只有 Wait 变体走完才放行（static-derived，反汇编与反编译读法；60 条走位原指令执行逐格对照）。
 - 重制：`game/sim/ScriptWalkPath.gd` 移植整条链；`BattleOpeningCoordinator` 默认不阻塞，只有 Wait 变体经 `_block_on(unit_id)` 等自己的走位者（static-derived）。
 - 原版走完的位置提交：目的格在写入时已经 `0x44fbd0` 修过；`0x453b90` 走完（到目的格或再调 `0x4111d0` 返回 0）就在所站格 `0x411a30` 登记，不再替代。飞行（`0x446ad0`）走 mode 6，0xff 不挡，走到终点；地面走位者终点 0xff 且四邻无落点时停在链停格（static-derived；原指令实跑 runtime-measured）。
-- 重制：生成器 `script_walk_stop` 让这类地面走位者开局落链停格，演出对记录了 `0x44fbd0` 落点的终点朝落点寻路，PlayLoop 格与演出停点一致（static-derived）。战中 WINFAIL 走位同规则：`ScriptActorCreationRules._place_touched` 取 `0x44fbd0` 落点后从走位起点跑 `ScriptWalkPath.stop_cell`，提交链停格（static-derived）。
-- 差异：`0x413740` 的两处随机分支取定值；按键快进是 remake-invented（provisional，差异清单 `script-walk-path`／`script-fast-forward`）。
+- 重制：生成器 `script_walk_stop` 让这类地面走位者开局落链停格，演出对记录了 `0x44fbd0` 落点的终点朝落点寻路，PlayLoop 格与演出停点一致（static-derived）。战中 WINFAIL 走位同规则：`ScriptActorCreationRules._place_touched` 取 `0x44fbd0` 落点后从走位起点跑 `ScriptWalkPath.stop_cell`，提交链停格；链里每次 `0x413740` 跳过有单位的格，等距平局与三邻被挡的丢弃抽全局流（static-derived）。
+- 差异：开局演出不抽数（`0x413740` 同距留先到、三邻被挡照收），停格取原版开局快照；战中抽数排在该单位落点抽数之后、逐单位，和原版 VM 轮与走位 tick 的交错不一定一致（provisional）；按键快进是 remake-invented（差异清单 `script-walk-path`／`script-fast-forward`）。
 
 ## 证据
 
@@ -49,7 +49,7 @@ SCRIPT_WALK_ROUTES scenarios=199 walks=1817 routed=1375 straight_crossed=167 nea
 | 地址 | 读法 |
 | --- | --- |
 | `0x44fcf0`／`0x44fd90`（`0x44fd43`／`0x44fdf5`） | 目的地取格心后先 `0x44fbd0(obj, &x, &y)`，修好的格才写 +0x4a／+0x48；走位过程只读这两个字 |
-| `0x453b90` sub 0 | `0x407940`（同格另有登记对象）为 0 时 `0x411b90` 撤掉起点格的登记，再调 `0x4111d0` |
+| `0x453b90` sub 0 | 先调 `0x4111d0`（`0x453d71`），这时起点格还带着走位者的登记（建立时 `0x411a30`，`0x407c24`／`0x407dcb`；上次停格 `0x4541a1`；`0x411900` 只记图内格；体型 0 时 `0x40f350` 不撤中心格），`0x413740` 跳过它，`0x40d800` 在该格读到走位者阵营字；返回 0 → sub 7，不撤登记；成功时复制路径，`0x407940`（同格另有登记对象）为 0 才 `0x411b90` 撤掉起点格的登记（`0x453dcb`）；之后 `0x45412d` 再调链时所在格是候选 |
 | `0x453b90` sub 3／6，`0x4540f0..0x4541bf` | 方向码 0：所站格 = 目的格，或 `0x4111d0` 返回 0 → `+4 += +0xa8`、`+8 += +0xac` 临时合成所站像素，`0x407940` 为 0 时 `0x411a30(obj, 0x40ba20(obj))` 在该格登记（`0x4541a1`），sub 加一进 4；否则复制新路径续走 |
 | `0x453b90` sub 4／5／7 | 只改动作帧（`0x446c40`、`0x45e642`、`0x45e660`）与放行 Wait；无第二次落点替代 |
 | `0x411080` 模式 | `0x446ad0` 读 live 记录 +0xa0 bit 0（`0x44c294` 由 PLAYERS `move_fly` 置位）：飞行 mode 6 只看格字 0x4000，地面 mode 1 受高差规则 |
@@ -78,10 +78,10 @@ SCRIPTWALKPATH 记的「雷特停旁格」与「LEVEL019 续走」来自普查�
 ## 重制接线
 
 - provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_script_walk_path.md`：`game/sim/ScriptWalkPath.gd`、`game/battle/runtime/opening/OpeningStoryObjects.gd`、`game/battle/runtime/BattleOpeningCoordinator.gd`、`game/sim/ScriptActorCreationRules.gd`。
-- `ScriptWalkPath.route`：战斗读 PlayLoop tiles，剧情场景读关卡 WRD；`_flood`／`_flood_step` 对应 `0x40f200`／`0x40ed50`，`_nearest` 对应 `0x413740`，`_descend`／`_descend_step` 对应 `0x410a50`／`0x410730`（失败按格与方向记忆，结果不变），`_segment` 对应一次 `0x411080`；不读单位占用（剧情走位是已提交结果的表现）。
+- `ScriptWalkPath.route`：战斗读 PlayLoop tiles，剧情场景读关卡 WRD；`_flood`／`_flood_step` 对应 `0x40f200`／`0x40ed50`，`_nearest` 对应 `0x413740`，`_descend`／`_descend_step` 对应 `0x410a50`／`0x410730`（失败按格与方向记忆，结果不变），`_segment` 对应一次 `0x411080`。`walk` 上下文（全局流、抽数表、有单位的格、`0x40d800` 格字、阵营字）只由战中提交传入：`_nearest` 交给 `AINavigationRules.nearest_stoppable` 比较（行主序、同距 `rand() & 1`、三邻命中 `blocker_mask` 时 `rand(100) < 80` 丢弃；前三级 mask 0，半径 12 用走位者阵营字），第一段（`0x453d71` 的首次 `0x4111d0`）起点格在图内时仍带走位者登记，跳过它，`0x40d800` 在该格读走位者阵营字；之后各段（`0x45412d`）已撤登记，所在格是候选；不传时（开局与演出）不抽数、同距留先到、不丢弃。
 - `BattleScriptActorPresentation` 取 `actWalk*` 第 5 参／`actWalkPrevInsertObject*` 第 3 参为速度。
 - 按键快进（remake-invented）：见差异清单 `script-fast-forward`。
-- 战中位置提交：`game/sim/ScriptActorCreationRules.gd` `_place_touched` 对最后一步是走位的单位，`nearest_landing`（`0x44fbd0`）后调 `ScriptWalkPath.stop_cell`（起点＝该走位的 `from` 格），停格不同且无人占时提交停格并记 `placements[].walk_stop_from`；演出 `_move_actor` 沿同一链走到提交格。
+- 战中位置提交：`game/sim/ScriptActorCreationRules.gd` `_place_touched` 对最后一步是走位的单位，`nearest_landing`（`0x44fbd0`）后调 `ScriptWalkPath.stop_cell`（起点＝该走位的 `from` 格），停格不同且无人占时提交停格并记 `placements[].walk_stop_from`；链跳过事件里站着的与已落位的单位（第一段另跳过走位者自己的起点格），抽数紧接该单位落点抽数、记 `placements[].walk_draws`；演出 `_move_actor` 读回执的提交格（`motion.to`），不抽数，沿链走到该格。
 - 位置提交：`tools/hsltools/levels/battle.py` `script_walk_stop` 是同一条链的 Python 移植，只用于终点 0xff 且 `0x44fbd0` 无落点的走位者（记 `position_source.story_walk_stop_from`）；`OpeningStoryObjects._fixed_destination` 读 `story_endpoint_landing_from` 把该终点换成落点再寻路。
 
 ## 复现
@@ -90,7 +90,8 @@ SCRIPTWALKPATH 记的「雷特停旁格」与「LEVEL019 续走」来自普查�
 
 ## 边界
 
-- `0x413740` 的随机分支：同距候选重制保留先到的一格，三邻被挡的候选重制接受；原版分别以 `0x458c10 & 1`、`rand(100) < 80` 决定。
+- `0x413740` 的随机分支：战中提交照原版以 `0x458c10 & 1`、`rand(100) < 80` 抽全局流；开局演出不抽数（同距留先到、三邻被挡照收），开局停格取原版快照。
+- 战中抽数次序与登记时机：逐单位、先落点后走位，链跳过的有单位格取事件开始时站着的单位加已落位的单位；原版各走位者按 VM 轮与走位 tick 交错调链、撤登记、在停格登记（provisional）。
 - 普查只列目标不可达的走位；它不套 `0x44fbd0`，034_2 与 037_3 仍按原终点列出。
 - 战中走位只对每个单位事件内的最后一步走位跑链；同一事件里更早的走位仍按脚本像素记起点（原版每步各自走链）。链停格被别的单位占着时保留落点（原版照登记，重制不叠格）；3×3 体型保留落点。LEVEL012 城墙弓兵的停格只有静态普查，自动对局没有触发该事件。
-- 大体型演员（记录 +0x2c，`0x411990` 标周围 8 格与 `0x40ecc0` 分支）与单位占用未移植。
+- 大体型演员（记录 +0x2c，`0x411990` 标周围 8 格与 `0x40ecc0` 分支）未移植；洪泛只看地形（`0x40f350` 里的单位格未移植），单位只在 `0x413740` 挑格时跳过。

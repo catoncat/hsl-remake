@@ -13,13 +13,19 @@ extends RefCounted
 ## extra budget after arrival. Cells outside the map read as the previous height with no
 ## flags (0x40eb40); a walk starting outside the map enters it at no height cost unless the
 ## cell is height 0xff (0x40f200 passes 0x80 as the source height).
-## Unit occupancy (0x413740 skips cells with 0x70000) is not read: the chain runs over the
-## terrain only (opening presentation, battle-time commit). The two random branches of 0x413740 (an
-## equal-distance cell replaces the kept one when 0x458c10 is odd; a candidate with three
-## blocked neighbours is dropped when rand(100) < 80) resolve to keep-first and accept.
+## The flood reads the terrain only (0x40f350 mode 1／6 without unit blocks). A battle-time
+## commit passes a `walk` context and 0x413740 runs as the original's: cells holding a unit
+## (0x70000) are skipped, an equal-distance cell replaces the kept one when 0x458c10 is odd,
+## and a candidate with three or more in-map neighbours meeting (mask | 0x4000) is dropped
+## when rand(100) < 80, both drawn on the global stream (0x458c10／0x458c80). Which cells
+## hold a unit is the caller's registration set (ScriptActorCreationRules) plus, for the
+## first 0x4111d0 call only, the walker's own in-map start cell (see _registered). The opening
+## presentation passes none: it draws nothing and keeps the first equal cell and every
+## candidate, walking to the cells the opening snapshot commits.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
-##   rules: provisional (0x413740 random branches fixed keep-first／accept)
+##   rules: remake-invented (the opening presentation walks without draws: first equal cell kept, no candidate dropped)
+const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 const HARD_BLOCK := 0x4000
 const MAX_HEIGHT_STEP := 2
 const OUTSIDE_SOURCE := 0x80
@@ -27,6 +33,10 @@ const RADII: Array[int] = [0x12, 0x10, 0xe, 0xc]
 const MAX_SEGMENTS := 64
 ## 0x410730 direction codes: 1 up, 2 down, 3 left, 4 right.
 const STEP := {1: Vector2i(0, -1), 2: Vector2i(0, 1), 3: Vector2i(-1, 0), 4: Vector2i(1, 0)}
+## No cell: nearest_stoppable's origin skip is not used. The walker's start cell is skipped
+## through `taken` in the first call only (_registered); a later call's flood origin, its
+## registration lifted, stays a 0x413740 candidate.
+const NO_ORIGIN := Vector2i(0x7fffffff, 0x7fffffff)
 
 
 static func cell_of(world: Vector2, cell_size: Vector2) -> Vector2i:
@@ -59,7 +69,10 @@ static func can_step(tiles: Dictionary, map_size: Vector2i, from_cell: Vector2i,
 ## world points the actor walks through after its start (cell centres, the last one the
 ## script's exact target when that cell is reached). Status: `same_cell`, `grid_path`,
 ## `nearest_reachable` (the chain stopped short of the target) or `no_terrain`.
-static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target: Vector2, cell_size: Vector2, flying: bool = false) -> Dictionary:
+## `walk` (battle-time commit): {rng, draws, taken, words, side} — the global stream and the
+## array its draws are recorded in, the cells holding a unit, the 0x40d800 cell words and the
+## walker's side word (the radius-12 scan's mask); empty draws nothing (see the header).
+static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target: Vector2, cell_size: Vector2, flying: bool = false, walk: Dictionary = {}) -> Dictionary:
 	var start_cell := cell_of(start, cell_size)
 	var target_cell := cell_of(target, cell_size)
 	if tiles.is_empty() or map_size.x <= 0 or map_size.y <= 0:
@@ -69,10 +82,10 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 	var cells: Array = [start_cell]
 	var current := start_cell
 	var seen := {start_cell: true}
-	for _segment_index in range(MAX_SEGMENTS):
+	for segment_index in range(MAX_SEGMENTS):
 		if current == target_cell:
 			break
-		var segment := _segment(tiles, map_size, current, target_cell, flying)
+		var segment := _segment(tiles, map_size, current, target_cell, flying, _registered(walk, map_size, start_cell) if segment_index == 0 else walk)
 		if segment.is_empty():
 			break
 		cells.append_array(segment)
@@ -89,23 +102,40 @@ static func route(tiles: Dictionary, map_size: Vector2i, start: Vector2, target:
 	return {"status": "grid_path" if reached else "nearest_reachable", "cells": cells, "points": points}
 
 
+## `walk` for the first 0x4111d0 call (0x453d71): the walker still holds its registration on
+## its start cell (0x411a30 at creation, 0x407c24／0x407dcb, or at its last stop, 0x4541a1;
+## 0x411900 marks in-map cells only), so 0x413740 skips that cell and 0x40d800 reads the
+## walker's side word there. 0x453b90 sub 0 lifts it (0x411b90 at 0x453dcb, when 0x407940 is
+## 0) only after that call succeeds; the later calls (0x45412d) run without it.
+static func _registered(walk: Dictionary, map_size: Vector2i, cell: Vector2i) -> Dictionary:
+	if walk.is_empty() or not _inside(map_size, cell):
+		return walk
+	var first := walk.duplicate()
+	first["taken"] = walk.get("taken", {}).duplicate()
+	first["taken"][cell] = true
+	first["words"] = walk.get("words", {}).duplicate()
+	first["words"][cell] = int(first["words"].get(cell, 0)) | int(walk.get("side", 0))
+	return first
+
+
 ## The cell a walk from `start_cell` to `target_cell` stops on: 0x453b90 registers the cell
 ## the chain ends on (0x411a30 at 0x4541a1), the target when reached, else the nearest
 ## reachable end. Rule side: ScriptActorCreationRules commits battle-time walks with it.
-static func stop_cell(tiles: Dictionary, map_size: Vector2i, start_cell: Vector2i, target_cell: Vector2i, cell_size: int, flying: bool) -> Vector2i:
+static func stop_cell(tiles: Dictionary, map_size: Vector2i, start_cell: Vector2i, target_cell: Vector2i, cell_size: int, flying: bool, walk: Dictionary = {}) -> Vector2i:
 	var size := Vector2(cell_size, cell_size)
-	var result := route(tiles, map_size, cell_centre(start_cell, size), cell_centre(target_cell, size), size, flying)
+	var result := route(tiles, map_size, cell_centre(start_cell, size), cell_centre(target_cell, size), size, flying, walk)
 	return target_cell if result["status"] == "no_terrain" else result["cells"].back()
 
 
 ## One 0x411080 call from `origin`: the cells walked (without `origin`), empty when the
-## call returns 0.
-static func _segment(tiles: Dictionary, map_size: Vector2i, origin: Vector2i, target: Vector2i, flying: bool) -> Array:
+## call returns 0. The wider floods scan with mask 0 (0x413900(dest, 0)), the radius-12 one
+## with the walker's side word.
+static func _segment(tiles: Dictionary, map_size: Vector2i, origin: Vector2i, target: Vector2i, flying: bool, walk: Dictionary = {}) -> Array:
 	var dest: Variant = target
 	var flood := {}
 	for radius in RADII:
 		flood = _flood(tiles, map_size, origin, radius, flying)
-		var nearest: Variant = _nearest(flood, dest)
+		var nearest: Variant = _nearest(flood, dest, walk, int(walk.get("side", 0)) if radius == RADII.back() else 0)
 		if radius == RADII.back():
 			dest = nearest
 		elif nearest != null:
@@ -195,24 +225,36 @@ static func _value(flood: Dictionary, cell: Vector2i) -> int:
 
 
 ## 0x413740 (nearest mode): the flooded cell with the smallest Manhattan distance to `dest`,
-## scanning the buffer row by row, the first of equal cells kept; null when none.
-static func _nearest(flood: Dictionary, dest: Vector2i) -> Variant:
+## scanning the buffer row by row; null when none. Without `walk` the first of equal cells is
+## kept and no candidate is dropped; with it AINavigationRules.nearest_stoppable compares
+## the unoccupied cells (the walker's current cell included after the first call) with the
+## coin and the crowded drop, 0x40d800 counting neighbours that meet blocker_mask(`side`).
+static func _nearest(flood: Dictionary, dest: Vector2i, walk: Dictionary = {}, side: int = 0) -> Variant:
 	var origin: Vector2i = flood["origin"]
 	var radius: int = flood["radius"]
 	var width: int = flood["width"]
 	var values: PackedByteArray = flood["values"]
+	var taken: Dictionary = walk.get("taken", {})
 	var best := 600000
 	var found: Variant = null
+	var cells: Array = []
 	for by in range(width):
 		for bx in range(width):
 			if values[by * width + bx] == 0:
 				continue
 			var cell := Vector2i(origin.x - radius + bx, origin.y - radius + by)
+			if not walk.is_empty():
+				if not taken.has(cell):
+					cells.append(cell)
+				continue
 			var distance := absi(cell.x - dest.x) + absi(cell.y - dest.y)
 			if distance < best:
 				best = distance
 				found = cell
-	return found
+	if walk.is_empty():
+		return found
+	var pick: Dictionary = AINavigationRules.nearest_stoppable(cells, dest, NO_ORIGIN, walk.get("rng"), walk["draws"], walk.get("words", {}), AINavigationRules.blocker_mask(side), flood["map_size"])
+	return pick.get("cell")
 
 
 ## 0x410a50／0x410730: the cells from the flood origin to `dest`, each strictly lower in the

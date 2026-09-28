@@ -10,6 +10,8 @@ extends RefCounted
 ##     (blocked landing 0x44fbd0: flood 12, nearest Manhattan, row-major, rand&1 ties)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
 ##     (a walk commits the cell its 0x453b90 chain stops on, 0x411a30 at 0x4541a1)
+##   rules: provisional (walk draws per unit after its landing draws, skipping standing and placed units;
+##     the original interleaves VM rounds with walker ticks, so its draw and registration order may differ)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (birth: carry 0x407c86 on the global stream, then level adjustment 0x40e92c)
@@ -253,13 +255,19 @@ static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dicti
 		if not landing["ok"]: return landing
 		# The walker 0x453b90 walks the 0x44fbd0-fixed destination along the 0x4111d0 chain and
 		# registers the cell it stops on (0x411a30 at 0x4541a1): a ground walker the chain cannot
-		# bring there stops short; a flying one (mode 6) reaches it. A 3x3 body keeps its landing
-		# (large footprint not ported); an occupied stop cell keeps the landing.
+		# bring there stops short; a flying one (mode 6) reaches it. Its 0x413740 scans skip the
+		# cells `occupants` hold (the first chain call its own start cell too) and draw ties and
+		# crowded drops on the global stream, after this unit's landing draws. A 3x3 body keeps
+		# its landing (large footprint not ported); an occupied stop cell keeps the landing.
 		var walk_stop := Vector2i(-1, -1)
+		var walk := {}
 		if last.has("motion") and int(actor.get("traversal", {}).get("size_type", 0)) == 0:
 			var from_cell: Vector2i = Vector2i(last["motion"]["from"]) / TacticalGridRules.CELL_PIXELS
-			var stop := ScriptWalkPath.stop_cell(TerrainEditRules.tiles(loop), loop["map_size"], from_cell, landing["coord"], TacticalGridRules.CELL_PIXELS, bool(actor.get("traversal", {}).get("flying", false)))
-			if stop != landing["coord"] and not AINavigationRules.SkillTargetRules.Footprint.occupants(occupants).has(stop):
+			var taken: Dictionary = AINavigationRules.SkillTargetRules.Footprint.occupants(occupants)
+			walk = {"rng": GlobalRandomStream.loop_source(loop) if GlobalRandomStream.valid(loop.get(GlobalRandomStream.LOOP_KEY)) else null, "draws": [], "taken": taken,
+				"words": AINavigationRules.neighbour_words({"tiles": loop.get("tiles", {}), "terrain_edits": loop.get("terrain_edits", []), "units": occupants}), "side": AINavigationRules.side_word(actor)}
+			var stop := ScriptWalkPath.stop_cell(TerrainEditRules.tiles(loop), loop["map_size"], from_cell, landing["coord"], TacticalGridRules.CELL_PIXELS, bool(actor.get("traversal", {}).get("flying", false)), walk)
+			if stop != landing["coord"] and not taken.has(stop):
 				walk_stop = landing["coord"]
 				landing["coord"] = stop
 		actor["coord"] = landing["coord"]
@@ -268,6 +276,7 @@ static func _place_touched(loop: Dictionary, runtime: Dictionary, receipt: Dicti
 		occupants.append(actor)
 		receipt["placements"].append({"unit_id": id, "requested": requested, "coord": actor["coord"], "adjusted": requested != actor["coord"], "draws": landing["draws"]})
 		if walk_stop.x >= 0: receipt["placements"].back()["walk_stop_from"] = walk_stop
+		if not walk.is_empty(): receipt["placements"].back()["walk_draws"] = walk["draws"]
 		# The last visual move ends at the committed cell. Earlier cinematic paths
 		# remain source pixels and do not write back to gameplay state.
 		if last.has("motion"): last["motion"]["to"] = TacticalGridRules.cell_pixel(actor["coord"])

@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (198 modules, 133 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (198 modules, 134 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (198)
 
@@ -199,9 +199,9 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ReinforcementGrowthRules](../game/sim/ReinforcementGrowthRules.gd) | static-derived [original_auto_growth.md](../docs/evidence_packets/static_reverse/original_auto_growth.md); static-derived [original_ai_navigation.md](../docs/evidence_packets/static_reverse/original_ai_navigation.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md) | n/a | n/a | n/a | n/a |
 | [RepeatedSpecialRules](../game/sim/RepeatedSpecialRules.gd) | static-derived [original_moon_dance.md](../docs/evidence_packets/static_reverse/original_moon_dance.md) | n/a | n/a | n/a | n/a |
 | [ResourceRecoveryRules](../game/sim/ResourceRecoveryRules.gd) | static-derived [original_resource_recovery.md](../docs/evidence_packets/static_reverse/original_resource_recovery.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md) | n/a | n/a | n/a | n/a |
-| [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | static-derived [original_player_install.md](../docs/evidence_packets/static_reverse/original_player_install.md); static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_script_entry.md](../docs/evidence_packets/static_reverse/original_script_entry.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [_reward_rng_trace.py](../tools/hsltools/probes/_reward_rng_trace.py); resource-derived [winfail051.txt](../content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt) | n/a | n/a | n/a | n/a |
+| [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | static-derived [original_player_install.md](../docs/evidence_packets/static_reverse/original_player_install.md); static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_script_entry.md](../docs/evidence_packets/static_reverse/original_script_entry.md); static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional; static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [_reward_rng_trace.py](../tools/hsltools/probes/_reward_rng_trace.py); resource-derived [winfail051.txt](../content/imported/hsl/chapter01/battle051/source_texts/winfail051.txt) | n/a | n/a | n/a | n/a |
 | [ScriptWaitRules](../game/sim/ScriptWaitRules.gd) | static-derived [original_script_wait.md](../docs/evidence_packets/static_reverse/original_script_wait.md) | n/a | n/a | n/a | n/a |
-| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); provisional | n/a | n/a | n/a | n/a |
+| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | static-derived [original_script_walk_path.md](../docs/evidence_packets/static_reverse/original_script_walk_path.md); remake-invented | n/a | n/a | n/a | n/a |
 | [SharedRecordRules](../game/sim/SharedRecordRules.gd) | static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); provisional | n/a | n/a | n/a | n/a |
 | [SkillResolutionRules](../game/sim/SkillResolutionRules.gd) | static-derived [shared_skill_resolution.md](../docs/evidence_packets/static_reverse/shared_skill_resolution.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_weapon_ranges.md](../docs/evidence_packets/static_reverse/original_weapon_ranges.md); provisional | n/a | n/a | n/a | n/a |
 | [SkillResourceRules](../game/sim/SkillResourceRules.gd) | static-derived [original_skill_resources.md](../docs/evidence_packets/static_reverse/original_skill_resources.md) | n/a | n/a | n/a | n/a |
@@ -272,7 +272,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (133)
+### remake-invented 清单 (134)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -377,6 +377,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ProgressionRules](../game/sim/ProgressionRules.gd) | strings | GROWTH_CHOICES attribute names and effect prose shown by the growth panel |
 | [RangePropagationRules](../game/sim/RangePropagationRules.gd) | rules | map words from WRD movement_flags and FootprintRules.occupants; ACTOR marker for 0x40fc90's hit; local frame unclamped — every battlefield ≥ 20x15, largest record 13x13 |
 | [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | rules | atomic whole-event install; the landing is checked once, at the final cell |
+| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | rules | the opening presentation walks without draws: first equal cell kept, no candidate dropped |
 | [SpecialUtilityRules](../game/sim/SpecialUtilityRules.gd) | rules | queue effects applied as proposals through CoreTurnQueue |
 | [StatusCatalog](../game/sim/StatusCatalog.gd) | strings | name, cure_label, stronger_label: captions for effects the original shows no glyph for |
 | [TerrainEditRules](../game/sim/TerrainEditRules.gd) | rules | edits kept as a loop state list over the shared map, memoised edited copy |
@@ -456,7 +457,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [ActorInitializationRules](../game/sim/ActorInitializationRules.gd) | rules | — | normalisation order of skill book／AI／inventory／equipment inputs is the remake's |
 | [ActorRoleRules](../game/sim/ActorRoleRules.gd) | rules | — | fixture／team fallbacks, role-implied side for units without player_mode |
 | [BattleRewardRules](../game/sim/BattleRewardRules.gd) | rules | — | the drops ahead of a StealItem take in one receipt's collection is remake order, unproven |
-| [ScriptWalkPath](../game/sim/ScriptWalkPath.gd) | rules | — | 0x413740 random branches fixed keep-first／accept |
+| [ScriptActorCreationRules](../game/sim/ScriptActorCreationRules.gd) | rules | — | walk draws per unit after its landing draws, skipping standing and placed units; the original interleaves VM rounds with walker ticks, so its draw and registration order may differ |
 | [SharedRecordRules](../game/sim/SharedRecordRules.gd) | rules | — | only HP is pooled — status, side word and stats stay per unit; a piece left at 0 stays down, the others keep the last positive pool |
 | [SkillResolutionRules](../game/sim/SkillResolutionRules.gd) | rules | — | area policies over the current grid |
 | [SkillTargetRules](../game/sim/SkillTargetRules.gd) | rules | — | battle-role adapter, support same-side as overlap, unsupported effects refused |
@@ -490,7 +491,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 30 | 14 | 0 | 13 | 2 | 59 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 53 | 33 | 33 | 13 | 1 | 133 |
+| remake-invented | 54 | 33 | 33 | 13 | 1 | 134 |
 | n/a | 62 | 116 | 148 | 134 | 166 | 626 |
 
 <!-- provenance:end -->
