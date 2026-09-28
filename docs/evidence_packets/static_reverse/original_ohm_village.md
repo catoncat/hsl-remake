@@ -5,7 +5,7 @@
 ## 结论
 
 - 原版琥（003）是 jobBowMan 83，派生走 `0x448840` 的 job83 分支、cap 96/98/70/88，學技讀 `0x478378` 特技表；村民 061／062 是 jobSwordMan 80＋pmNPCPlayer 0x50000，敵方搜尋 mask 0x20000；弓射程為有符號 coverage，近身負值格不可射；地圖組合物件以第一個子物件對齊 EVEF 點（static-derived）。
-- 重制 `tools/hsltools/data/ohm_village.py` 生成正式戰役中緊接玩家第 3 场 · 逃出克萊恩城（LEVEL053）之後的歐姆村（LEVEL001）18 名戰鬥角色，出生調級走共同 `ReinforcementGrowthRules`／全局流，村民走 friendly_ai，組合物件落點由 `tools/hsltools/levels/map_objects.py` 統一計算（static-derived）。
+- 重制 `tools/hsltools/data/ohm_village.py` 生成玩家第 4 场 · 歐姆村（LEVEL001）的 18 名戰鬥角色，出生調級走共同 `ReinforcementGrowthRules`／全局流，村民走 friendly_ai，組合物件落點由 `tools/hsltools/levels/map_objects.py` 統一計算（static-derived）。
 - 差異：村民完整逃跑／自救 dispatcher、原物件安裝排程與同種子出生結果未恢復（provisional）；STORY001／WINFAIL001 無增援與撤離勝利（negative-evidence），故正式關不加假增援。
 
 ## 证据

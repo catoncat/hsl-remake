@@ -9,9 +9,11 @@
 | 第 1 场 | 棄卒 · 死守與撤離 | LEVEL051 | 雷歐納德＋两名骑士 024、两名士兵 023；战役 start_level |
 | 第 2 场 | 惡夢的終曲 | LEVEL052 | 妖精王与 069 铠甲战士；骑士各带两瓶回復藥 |
 | 第 3 场 | 逃出克萊恩城 | LEVEL053 | 緹娜加入 |
-| （村内） | 歐姆村 | LEVEL001 | 回村，村民场景，无敌人 |
-| 第 4 场 | 戈爾山道 | LEVEL002 | 首个野外战 |
-| 第 5 场 | 盜賊洞窟 · 影牙隊長 | LEVEL003 | 漢克斯第一回合为敌方 |
+| 第 4 场 | 歐姆村 · 獸族的襲擊 | LEVEL001 | 回村后 STORY001 開場接战斗：雷歐納德、琥（003）对獸族 028×6、036×2，村民 061／062 为友军 |
+| 第 5 场 | 戈爾山道 | LEVEL002 | 首个野外战 |
+| 第 6 场 | 盜賊洞窟 · 影牙隊長 | LEVEL003 | 漢克斯第一回合为敌方 |
+
+歐姆村（LEVEL001）是一场战斗，不是无敌人的回村过场：WINFAIL053 胜利段 `actSetNextPlayLevelEvent,1,1` 直接进 LEVEL001；WINFAIL001 胜利条件为 `actCheckEnemyTotalNumber,0`（全灭）或 `actCheckEnemyNumber,SID_ENEMY028,3`（028 剩 3 名时獸族撤退），失败条件为雷歐納德阵亡或村民 061／062 全灭，胜利后 `actSetTownExecEvent,town_歐姆村,9`、无下一关号，回大地图点 1 再去戈爾山道（资源：`content/imported/hsl/chapter01/battle053/source_texts/winfail053.txt`、`content/imported/hsl/chapter01/battle001/source_texts/winfail001.txt`；重制数据 `content/battles/campaign.json` battles["1"] → `content/battles/ohm_village_battle.json`）。
 
 此后按剧情流程走，分支关卡（5xx 遭遇战、73／75／76／78 等）以剧本 next 为准；写汇报时若拿不准是第几场，写「场景名（LEVEL0xx）」并说明它在哪一场之后。
 

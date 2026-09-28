@@ -642,7 +642,7 @@
       1,
       45
     ],
-    "note": "Big-map scene entered after level 1 (歐姆村, bigmap.dat point 1); battles and story scenes pass the world state through with their scripts' town / big-map writes applied. point_level_range: main-range levels 1–45 sit at the bigmap.dat point of the same id (tools/hsltools/data/big_map_flow.py: every N,gameBigMapLevel return and N,5xx,bmpmVisit post-clear write uses the level's own id), so a level in this range whose script sets no next level returns to the map at its own point (WINFAIL001/WINFAIL005 end without one), and actSetNextPlayLevelEvent(N, gameBigMapLevel) returns to point N. Provisional: the level-1 battle is not remade, so its preview card exits here without applying winfail001's outcome."
+    "note": "Big-map scene entered after level 1 (歐姆村, bigmap.dat point 1); battles and story scenes pass the world state through with their scripts' town / big-map writes applied. point_level_range: main-range levels 1–45 sit at the bigmap.dat point of the same id (tools/hsltools/data/big_map_flow.py: every N,gameBigMapLevel return and N,5xx,bmpmVisit post-clear write uses the level's own id), so a level in this range whose script sets no next level returns to the map at its own point (WINFAIL001/WINFAIL005 end without one), and actSetNextPlayLevelEvent(N, gameBigMapLevel) returns to point N. Level 1 is the player's 4th battle (歐姆村 · 獸族的襲擊), entered from WINFAIL053 actSetNextPlayLevelEvent(1,1); winfail001 sets no next level, so its win returns here at point 1."
   },
   "carry_policy": {
     "roles": [

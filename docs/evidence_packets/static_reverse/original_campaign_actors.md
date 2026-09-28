@@ -6,7 +6,7 @@
 
 - 原版 34 个未放置角色模板（含最终章 059／060、古代神殿遺跡（LEVEL037）／禁忌之魂・墳場地下（LEVEL080）的 066／067／068）经 `0x448840` 刷新的结果、推级／配额／出生调整与学习调用已完整执行；新增职业 93／95／96／98 各有独立刷新分支、上限行与学习归属，源 HP 半字按有符号读（static-derived）。
 - 重制由 `tools/hsltools/data/campaign_actors.py` 生成 `content/generated/hsl/actors/0NN.json` 与 `roles/profiles.json`，职业公式入 `content/authored/roles/job_formulas.json`、学习表入 `roles/growth_lifecycle.json`，`game/sim/JobStatsRules.gd`／`LearningRules.gd` 消费（static-derived）。
-- 注册移除不清记录：WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` 只清槽 1 的注册码，緹娜 的 live 记录（索引 2）连同玩家第 3 场 · 逃出克萊恩城（LEVEL053）的等级、经验与学会的魔法留着；玩家第 4 场 · 戈爾山道（LEVEL002）的 `obj_Story_Player2` 重装槽 1 时构造器不复制模板，沿用该记录。重制以 carry 的 `reserve_units` 承接，LEVEL002 重装与之后各关保留（static-derived）。
+- 注册移除不清记录：WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` 只清槽 1 的注册码，緹娜 的 live 记录（索引 2）连同玩家第 3 场 · 逃出克萊恩城（LEVEL053）的等级、经验与学会的魔法留着；玩家第 5 场 · 戈爾山道（LEVEL002）的 `obj_Story_Player2` 重装槽 1 时构造器不复制模板，沿用该记录。重制以 carry 的 `reserve_units` 承接，LEVEL002 重装与之后各关保留（static-derived）。
 - 跨关承接：注册表 `0x4c4360` 只存槽码，状态全在 live 记录；每关入口 `0x4075e0` 对所有已注册槽回满 HP／MP、ST 归零（`actKeepPlayerST` 时保留），阵亡不注销，未上场成员照样随队；重制 carry 照此传下未上场成员、脚本插入沿用其记录，reserve 带走离场时的 HP／MP／ST（static-derived）。
 - 008 源装备 32 的 `range3CellCircle` 由[武器范围](original_weapon_ranges.md)接入：`content/generated/hsl/equipment/items.json` 32 号 `supported: true`，`actors/008.json` 的 `runtime_blockers` 为空，原样初始化不再被拒（resource-derived 生成物）。
 - 已知差异：模板坐标 `[0,0]` 是未放置标记（provisional）。

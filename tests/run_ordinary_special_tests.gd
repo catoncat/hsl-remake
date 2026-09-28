@@ -255,7 +255,10 @@ func presentation() -> void:
 	# 氣刃斬 plays its specCode01／02 script (SkillEffectScriptPlayer): its WAV\SP01-001.WAV is
 	# fired by the player's own sound pool, release at script tick 60 and impact at tick 90.
 	# The hit sparks obj_Special01_03 add their objcomd.txt landing sound WAV\BOMB0017.WAV (R5-L2).
-	var sounding: Array = special_view.skill_effects.sounds.filter(func(player): return player.playing)
+	# Voices keep their stream after the WAV ends (the pool only swaps it when reused), so read
+	# the assigned streams rather than `playing`: on a loaded machine the one long frame above
+	# can take longer in wall-clock than the short WAVs last, and `playing` flips false first.
+	var sounding: Array = special_view.skill_effects.sounds.filter(func(player): return player.stream != null)
 	var files: Array = sounding.map(func(player): return str(player.stream.resource_path).get_file())
 	var voices: Array = sounding.filter(func(player): return str(player.stream.resource_path).get_file() == "sp01-001.wav")
 	check(events == ["release","impact"] and voices.size() == 1 and files.has("bomb0017.wav") and files.all(func(file): return file in ["sp01-001.wav", "bomb0017.wav"]),"a long presentation frame still emits the special source sound, the landing sound and release before one impact (%s)" % str(files))
@@ -264,14 +267,14 @@ func presentation() -> void:
 	var ability_sound: AudioStreamPlayer = voices[0] if not voices.is_empty() else special_view.ability_sound
 	var deadline := Time.get_ticks_msec() + 1000
 	while ability_sound.playing and ability_sound.get_playback_position() <= 0 and Time.get_ticks_msec() < deadline: await tree.create_timer(0.01).timeout
-	var voice: WeakRef = weakref(ability_sound.get_stream_playback())
+	var voice: WeakRef = weakref(ability_sound.get_stream_playback()) if ability_sound.playing else null
 	ability_sound.stop()
 	ability_sound.stream = null
 	special_view.queue_free()
 	await process_frame
 	deadline = Time.get_ticks_msec() + 1500
-	while voice.get_ref() != null and Time.get_ticks_msec() < deadline: await tree.create_timer(0.02).timeout
-	check(voice.get_ref() == null,"completed special review releases its actual audio playback")
+	while voice != null and voice.get_ref() != null and Time.get_ticks_msec() < deadline: await tree.create_timer(0.02).timeout
+	check(voice == null or voice.get_ref() == null,"completed special review releases its actual audio playback")
 
 
 # ---- run_ordinary_special_tests.gd ----

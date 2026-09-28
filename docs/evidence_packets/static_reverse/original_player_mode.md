@@ -41,12 +41,12 @@
 | `0x44f600` | 逐个不同 code（`0x44f2d0` 合并同 code，`0x44f290`／`0x44f39b`）插一件到首个空槽 `0x436e30`；失败则 `0x44f510`／`0x436e80` 丢首个非重要物品再试一次，再失败结束；`0x44f4e0` 清空集合 |
 | 掉落来源 | `0x44f580` 由 `0x441587`、`0x44163e`、`0x441e2a`／`0x441e49`、`0x44469e`、`0x44474d`、`0x4453e9`、`0x445408` 调用；StealItem `0x40b629`→`0x44f2d0`；StealGold `0x40b562..0x40b578` 从队伍扣，不降目标 +0x98 |
 
-**runtime-measured**（原版模拟器，玩家第 5 场 · 盜賊洞窟 · 影牙隊長（LEVEL003））：STORY003 pmEnemy 后漢克斯 L7 50/50 不变（`0x450710` 不刷新）。
+**runtime-measured**（原版模拟器，玩家第 6 场 · 盜賊洞窟 · 影牙隊長（LEVEL003））：STORY003 pmEnemy 后漢克斯 L7 50/50 不变（`0x450710` 不刷新）。
 
 ## 重制接线
 
 - provenance 头 `## provenance: docs/evidence_packets/static_reverse/original_player_mode.md`：`game/sim/loop/BattleLoopCombat.gd`、`game/sim/BattleRewardRules.gd`、`game/sim/WinfailActions.gd`、`game/sim/loop/BattleLoopRewards.gd`、`game/battle/scene/BattleAftermath.gd`。
-- `WinfailActions`：pmPlayer→`player_controlled`、pmNPCPlayer→`friendly_ai`、pmEnemy→`enemy_ai`，同步 `player_commandable`；`actSetPlayerUndead` 写单位 `undead` 并留收据。玩家第 5 场 · 盜賊洞窟 · 影牙隊長（LEVEL003）的漢克斯以 `enemy_ai`、undead 起始，win 段转为受控并清不死。
+- `WinfailActions`：pmPlayer→`player_controlled`、pmNPCPlayer→`friendly_ai`、pmEnemy→`enemy_ai`，同步 `player_commandable`；`actSetPlayerUndead` 写单位 `undead` 并留收据。玩家第 6 场 · 盜賊洞窟 · 影牙隊長（LEVEL003）的漢克斯以 `enemy_ai`、undead 起始，win 段转为受控并清不死。
 - `BattleLoopCombat._undead_revives`：HP 归零的不死目标置 1，收据 `undead_revived`；致死一击仍按击杀结算（连击截断、气力尾、击杀连锁／EXP）。`_attacker_revived`：被反杀的不死攻击者双方不付 EXP（`undead_action_ended`）。
 - `BattleRewardRules`：`undead_kill`（付击杀金钱、不掷背包、不记死亡）、`accrues`／`accrue`（非受控非队伍击杀者的 `carried_gold_gained`）、`gold_multiplier`（ITEM `gold_x2`，230 黃金的聖杯）、`party_recipient`／`pay_party`、`taken`／`hand_over`（AI 接收者的待领物品）；`BattleLoopRewards._apply_gold_effects`、`_commit_rewards`。
 - `BattleAftermath.prepare`：`$` 浮字金额＝`rewards.gold`＋`rewards.carried`（AI 击杀者自得）＋偷钱 `gold_effects`，飘在击杀者头上；`run_combat_aftermath_tests.map_magic` 的敌方法术击杀走 EXP → `$`。
