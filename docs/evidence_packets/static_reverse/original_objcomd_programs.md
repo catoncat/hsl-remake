@@ -1,6 +1,6 @@
 # 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
 
-> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行，剧情对象与命中趟轨迹; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技命中趟对段的同 tick 先后 · status: live · functions: 0x401390, 0x401480, 0x4038a0, 0x403989, 0x403aaa, 0x403bc1, 0x403be2, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x406eb0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-29
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480、ANIMAL 随机插入 0x403c2b 的读法与原指令执行，剧情对象与命中趟轨迹; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字 · status: live · functions: 0x401390, 0x401480, 0x4038a0, 0x403989, 0x403aaa, 0x403bc1, 0x403be2, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x406eb0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45eb9d, 0x45ebdc, 0x45f5f7 · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-29
 
 ## 结论
 
@@ -9,7 +9,7 @@
 - 60 行绝技脚本引用的 221 个 defProcObjectMove 对象全部经原指令逐 tick 执行，连同抛出的子对象写进 `content/generated/hsl/skills/objcomd_motion.json`（509 棵变体树）；重制 `SkillEffectScriptPlayer`、`PoisonArrowPresentation`、`MoonDancePresentation` 按它画（static-derived）。
 - ANIMAL 的 aniInsertRandomObject／aniInsertHitRandomObject／…Disp（op 19／27／28）同样走 `0x401390`，重制随之改为累加延迟（static-derived）。
 - 剧情脚本插入的 defProcObjectMove 对象（12 关 19 个）走同一解释器，与绝技对象合计 240 个写进同一 JSON；重制 `StoryEffectObjects` 按轨迹逐 tick 画（static-derived）。
-- 命中才掷出的子对象另跑命中趟（17 个对象两趟不同，写进 `hit_variants`），重制按该击结算的命中／落空选趟；多段绝技每个 op 72 各结算一段，第 k 个 op 72 的对象取第 k 段的命中（static-derived；同 tick 先后 provisional）。
+- 命中才掷出的子对象另跑命中趟（17 个对象两趟不同，写进 `hit_variants`），重制按该击结算的命中／落空选趟；多段绝技每个 op 72 各结算一段，对象按它读 `[0x4c1418]` 那一 tick 已结算的最后一段选趟（static-derived，守方先于对象跑，见「命中趟」）。
 - 差异：随机样本用至多 4 个种子变体代替共享流、出屏判定按首个插入点、角度环／龙卷列等模式插入仍用重制几何、objcomd.txt 字布局（provisional，见边界）。
 
 ## 证据
@@ -169,7 +169,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 | 殘影亂斬（magicCode15／31） | Special30_05、56_05 | 38 个（560／561） | 42→71 |
 | 血之宴（magicCode26） | Special50_01 | 1 个（621） | 35→54 |
 
-多段绝技（守方 `aniProcessHitMissMulti`）每个 op 72 经 `0x4047e9` 结算一段、各写一次 `[0x4c1418]`（先清 0，本段无变化改 200），带 op 72 的主对象都由不看命中的插入放出，命中趟不改段数；重制按 op 72 的执行 tick 排序，第 k 个对象画第 k 段的命中／落空趟（子对象在同一 tick 读到的是本段还是上一段的判定未读，provisional）。慌雨斬 与 無想冥殺 的 4 个种子变体各有命中趟；殘影亂斬 的 Special30_01..04 在命中趟里子对象出现顺序与落空趟不同（命中火花先建），落空趟的淡出子对象（401）仍在。
+多段绝技（守方 `aniProcessHitMissMulti`）每个 op 72 经 `0x4047e9` 结算一段、各写一次 `[0x4c1418]`（先清 0，本段无变化改 200），带 op 72 的主对象都由不看命中的插入放出，命中趟不改段数；帧循环 `0x45f5f7` 先跑守方（planeEffect3）再跑这些对象（planeEffect4 或同 plane 链尾），所以对象在 tick t 读到的是 t 及以前最后结算的一段；读字在程序第一个命中声那一帧（抛子对象紧接在它之前）。多数对象 op 72 后 2 帧读字、守方空闲时下一 tick 就结算，读到本段；守方正忙（殘影亂斬 的 Special30_03 在上一段 3 tick 节拍内）时读到上一段。慌雨斬 与 無想冥殺 的 4 个种子变体各有命中趟；殘影亂斬 的 Special30_01..04 在命中趟里子对象出现顺序与落空趟不同（命中火花先建），落空趟的淡出子对象（401）仍在。
 
 多段绝技的判定读法：`aniProcessHitMissMulti`（`0x4047c7`）等 `0x4c6f68` 非零才减一并落入单击结算体 `0x4047e9`，结算体每次先写 `[0x4c1418]=0`（`0x404803`），本段没有造成 HP／MP 变化（`0x4c6f74`／`0x4c6f78` 与 ebp 均为 0）时改写 200（`0x4048d6`）——命中判定每段改写一次，命中率 `0x4c6f58` 只由守方插入 `0x406eb0` 写一次。
 
@@ -208,5 +208,5 @@ effect_motion 为效果对象补镜头与震屏模型后（`REVIEWED` 新增 `0x
 - **字布局**：objcomd.txt 的装载器未读，"每 token 一字、块尾补 objmOver" 是 provisional；221 个对象全部正常结束或进入等待，未见越界读。
 - **未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；这些在原指令执行里照跑，只是表中读法不全。
 - **剧情对象**：每个对象只在探针原点跑一次，不等出屏的程序与落点无关；繩子 的 engRANGE 绘制未读，重制按插入线裁切（provisional）；雨（mapobjDropRain）与 mapobjFlash 是 defProcStandObject 过程，不在本包。
-- **命中趟**：重制整段片段按该击结算的命中／落空选趟，多段绝技未按段区分（原版每段改写 `[0x4c1418]`，逐段结算时刻仍按脚本游标，见[对象声音包](original_effect_object_sounds.md)）；原版进入第一段结算前 `[0x4c1418]` 保留上一击的值，这段窗口未建模。無想冥殺 的 Special06_06 由 aniInsertAngleObject 插入、按图案几何画，命中趟的 10 个子对象不画（provisional）。命中趟比落空趟长的对象仍在攻方收页／拆场处截断。
+- **命中趟**：多段绝技按读字 tick 已结算的段选趟（见[对象声音包](original_effect_object_sounds.md)§边界「多段结算时刻」）；首段结算前 `[0x4c1418]` 是整次的掷骰，重制取整次命中（provisional）。無想冥殺 的 Special06_06 由 aniInsertAngleObject 插入、按图案几何画，命中趟的 10 个子对象不画（provisional）。命中趟比落空趟长的对象仍在攻方收页／拆场处截断。
 - **声音排程**：`command_sounds` 仍按 objmDelay 之和排（[对象声音包](original_effect_object_sounds.md)），未切到原生执行记下的声音时刻。

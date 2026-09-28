@@ -474,7 +474,7 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），命中时按命中趟画命中才掷出的子对象（慌雨斬／星辰落牙破／殘影亂斬／血之宴），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何（無想冥殺 环的命中火花因此不画）、多段绝技已按对象程序的 op 72 逐段结算（规则层每段各自命中／伤害／HP 封顶／经验，每段出自己的数字，第 k 个 op 72 的对象画第 k 段的命中趟；同 tick 先后、末击 waiter 释放、命中火花读的是哪一段的 [0x4c1418] 未读）",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），命中时按命中趟画命中才掷出的子对象（慌雨斬／星辰落牙破／殘影亂斬／血之宴），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列等模式插入仍是重制几何（無想冥殺 环的命中火花因此不画）、多段绝技已按对象程序的 op 72 逐段结算（规则层每段各自命中／伤害／HP 封顶／经验，每段出自己的数字，对象按读 [0x4c1418] 那一 tick 已结算的段画命中趟，末击数字以守方为 waiter、释放后才回脚本；剩首段前的命中字按整次、只改 MP 的末击按 3 tick）",
       "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json，落空趟 variants＋17 个对象的命中趟 hit_variants，命中才掷出 0x405434／0x405495 比较 [0x4c1418]＜[0x4c6f58]，多段时 0x403e9e 进相位 18，0x4047af 每 tick 读 0x4c6f68 双字、非零减一经 0x4047e9 调 0x40b8f0 结算一击（每段自己的命中掷骰、伤害、封顶与 0x40a5d0 经验，返回值累加 0x4c13f0／0x4c2c7c）并每段改写 [0x4c1418]，19 个对象的 op 71／72 帧记在 multi_hit）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
@@ -1432,7 +1432,7 @@
     },
     {
       "id": "effect-sound-timing",
-      "difference": "特效声音已按原生执行记录排程（角度环／龙卷等图案插入也按记录，無想冥殺 的环声落在片段内）、混音照原版 9 通道满则丢新声；剩无轨迹对象仍按静态表，9 个声部只给特效播放器用、不与其它声音共用，多段绝技里命中才放的对象声（objmPlayHitSound）仍按整次是否有段命中放、未按段区分",
+      "difference": "特效声音已按原生执行记录排程（角度环／龙卷等图案插入也按记录，無想冥殺 的环声落在片段内）、混音照原版 9 通道满则丢新声；剩无轨迹对象仍按静态表，9 个声部只给特效播放器用、不与其它声音共用，多段绝技里命中才放的对象声（objmPlayHitSound）已按读字那一 tick 已结算的段放（0x45f5f7 守方先于对象）",
       "original": "对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
@@ -2490,7 +2490,7 @@
     "scope:docs/evidence_packets/static_reverse/original_check_targets.md|provisional|重制 carry 模型": {
       "item": "carry-model"
     },
-    "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|untracked objects keep the static tables, the last multi-hit strike's waiter release and which strike a hit-only throw reads are not read": {
+    "scope:docs/evidence_packets/static_reverse/original_effect_object_sounds.md|provisional|untracked objects keep the static tables, the hit word before the first multi-hit strike and an MP-only last strike": {
       "item": "effect-sound-timing"
     },
     "scope:docs/evidence_packets/static_reverse/original_enemy_turn.md|provisional|全局流的样本起点（来自模拟器时钟桩）、玩家回合结束从 +0x8c=0x10000 起跑（不经待機菜单输入）、call／other 两类动作从不产出、抽取点对照表 SITE_MAP（逐站点反汇编对照，未逐值对拍）": {
@@ -2706,7 +2706,7 @@
     "provenance:game/battle/scene/MoonDancePresentation.gd|layout|provisional|": {
       "item": "special-object-motion"
     },
-    "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技命中趟对段的同 tick 先后": {
+    "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字": {
       "item": "special-object-motion"
     },
     "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d9253008aa": {

@@ -87,7 +87,8 @@ const RESULT_HOLD_TICKS := 40
 ## Flight time of an off-stage object when no aniProcessHitMiss follows in its phase.
 const FLIGHT_TICKS := 30
 ## Phase 18 of aniProcessHitMissMulti: a strike's check tick to the next check (sub-states
-## 0 → 1 → 3 → 0: 0x4047d5, 0x4045d5, 0x4045c7).
+## 0 → 1 → 3 → 0: 0x4047d5, 0x4045d5, 0x4045c7) when the strike's numbers do not hold the
+## defender (every strike but the last, and a last strike that spawns no number).
 const MULTI_HIT_STRIKE_TICKS := 3
 ## An untracked effCode object (its effProc* program stopped at an unreviewed callee in the
 ## native probe — effect_motion.json `unrestored`) stays at least this long and no longer than
@@ -218,22 +219,26 @@ static func fixed16(token: String) -> float:
 	return float(number(token)) / 65536.0
 
 
-func compile_row(skill_id: String, hit: bool, seed: int, strike_hits: Array = []) -> Dictionary:
+func compile_row(skill_id: String, hit: bool, seed: int, strike_hits: Array = [], last_strike: Dictionary = {}) -> Dictionary:
 	var row: Dictionary = scripts[skill_id]
 	if str(row["channel"]) == "magic":
 		return compile_effect(row["actions"][row["effect_code"]], seed, manifest, row)
-	return compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], hit, seed, manifest, strike_hits)
+	return compile(row["actions"][row["attack_code"]], row["actions"][row["defense_code"]], hit, seed, manifest, strike_hits, last_strike)
 
 
 ## The tick timeline of one attack script followed by one defense script. Pure: the same
 ## inputs and seed give the same events; nothing is drawn or played here. `strike_hits`: the
 ## per-strike hits of a multi-hit receipt (MultiHitSpecialRules `hit_segments`), in settlement
-## order; the defense object whose op 72 queued strike k draws strike k's hit run.
-static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: int, data: Dictionary, strike_hits: Array = []) -> Dictionary:
+## order; an object's hit run and hit-only sounds follow the strike [0x4c1418] holds when its
+## program reads the word (strike_word_hit). `last_strike`: {"damage", "experience"} of the
+## receipt — the last strike's HP change and the shot's summed experience — which decide
+## whether the last strike's number holds the defender (_last_strike_ticks); empty keeps the
+## three-tick cadence.
+static func compile(attack_lines: Array, defense_lines: Array, hit: bool, seed: int, data: Dictionary, strike_hits: Array = [], last_strike: Dictionary = {}) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
 	var timeline := {"kind": "special", "events": [], "release_tick": 0, "impact_tick": -1, "result_tick": -1, "darken_tick": 0, "complete_tick": 0,
-		"hit": hit, "strike_hits": strike_hits, "sound_cues": [],
+		"hit": hit, "strike_hits": strike_hits, "last_strike": last_strike, "strike_ticks": [], "sound_cues": [],
 		"hit_ticks": [], "result_ticks": [], "attack_background": "", "defense_background": "",
 		"double_page_tick": -1, "no_dark_bg": false, "show_attacker": false, "xy_disp": Vector2.ZERO, "empty_attack": false,
 		"unimplemented": [], "skipped_objects": [], "instructions": 0}
@@ -306,8 +311,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 ## 0x4c6f68 — the settle counter 0x4c6f68 and the pending counter 0x4c6f6a. Zero: back to the
 ## script (0x4047b8 clears phase and sub-state). Settle counter non-zero: one strike settles
 ## (0x4047d5: 0x4c6f68--, then the single-strike body 0x4047e9) and the next tick (sub-state 1,
-## 0x4045d5) spawns its numbers (0x4084e0; the last strike's with the defender as waiter),
-## sub-state 3 resets to 0 a tick later, so the next check comes three ticks after a strike.
+## 0x4045d5) spawns its numbers (0x4084e0), sub-state 3 resets to 0 a tick later, so the next
+## check comes three ticks after a strike. The last strike (settle counter 0 at 0x4045fb)
+## spawns its number with the defender as waiter and skips the sub-state increment while the
+## number lives (0x404795／0x40473a); the number bumps it (0x4088fa) — _last_strike_ticks.
 ## The counters count from the defender insert (0x406ecc clears them): each defense object's
 ## objmInitMultiHitData (op 71, 0x4c6f6a++; a program's first word, counted at creation by
 ## 0x40524d before any insertion delay) and objmSetMultiHitData (op 72, 0x4c6f6a--,
@@ -315,8 +322,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 ## strike appends a hit mark and a result mark (its numbers); the next cursor is the check that
 ## reads both counters zero. Without an op 72 among the objects the strike settles at the
 ## cursor. A counter no program brings back to zero ends the wait once no op is left (the
-## original would hold until the teardown). An op on the tick of a check counts on that tick,
-## and the last strike's waiter release is not read (provisional).
+## original would hold until the teardown). The frame loop 0x45f5f7 runs the planes in order,
+## each list in creation order (0x45e307 appends): the defender (object 155, planeEffect3 =
+## 46) runs before its script's objects (planeEffect4 = 47, or later on plane 46), so an op
+## executed on tick t counts at the check of t + 1.
 static func _multi_hit_wait(timeline: Dictionary, cursor: int) -> int:
 	var ops: Array = timeline.get("multi_hit_ops", []).duplicate()
 	if not ops.any(func(op): return int(op[1]) == 72):
@@ -328,7 +337,7 @@ static func _multi_hit_wait(timeline: Dictionary, cursor: int) -> int:
 	var index := 0
 	var tick := cursor + 1
 	while true:
-		while index < ops.size() and int(ops[index][0]) <= tick:
+		while index < ops.size() and int(ops[index][0]) < tick:
 			if int(ops[index][1]) == 71:
 				pending += 1
 			else:
@@ -337,14 +346,51 @@ static func _multi_hit_wait(timeline: Dictionary, cursor: int) -> int:
 			index += 1
 		if settle > 0:
 			timeline["hit_ticks"].append(tick)
+			timeline["strike_ticks"].append(tick)
 			timeline["result_ticks"].append(tick + 1)
 			settle -= 1
-			tick += MULTI_HIT_STRIKE_TICKS
+			var last := settle == 0 and not ops.slice(index).any(func(op): return int(op[1]) == 72)
+			tick += _last_strike_ticks(timeline["last_strike"]) if last else MULTI_HIT_STRIKE_TICKS
 			continue
 		if pending == 0 or index >= ops.size():
 			break
 		tick += 1
 	return tick
+
+
+## Ticks from the last strike's check to the check that returns to the script. Sub-state 1
+## (0x4045d5) spawns the number the tick after the strike; with both change words zero and
+## the shot's experience [0x4c13f0] (0x40485d, cleared at the page open 0x40438c) non-zero it
+## spawns none and steps on (0x404772): the three-tick cadence. Otherwise the number — red
+## kind 0 for an HP loss, green kind 2 for a gain, MISS kind 5 when nothing changed and no
+## experience was gained — takes the defender as waiter and bumps its sub-state at release
+## (0x4088f4: +0x28 < 9 for kind 0, Timing.damage_number_release_ticks; 0x4086ea for the
+## other kinds, 32 ticks after the hold); the number (planeMenu2 = 51) runs after the
+## defender, which sees sub-state 3 a tick later, resets it (0x4045c7) and checks the next
+## tick. The MP number (kind 3) of an MP change is not in the receipt and keeps the cadence.
+static func _last_strike_ticks(last_strike: Dictionary) -> int:
+	if last_strike.is_empty():
+		return MULTI_HIT_STRIKE_TICKS
+	var damage := int(last_strike.get("damage", 0))
+	if damage == 0 and int(last_strike.get("experience", 0)) != 0:
+		return MULTI_HIT_STRIKE_TICKS
+	var release := Timing.damage_number_release_ticks(damage) if damage > 0 else ResultNumberFloater.hidden_ticks(0) + Timing.SHOW_NUMBER_RELEASE_TICKS
+	return 1 + release + 2
+
+
+## Whether [0x4c1418] reads as a hit on `tick`: every multi-hit strike rewrites it as it settles
+## (0x404803 clears it, 0x4048d6 writes 200 when the strike changed nothing), in the defender's
+## run, before the objects of that tick (0x45f5f7 plane order), so a read on tick t sees the
+## last strike settled on or before t; before the first strike, or on a shot without one, the
+## word keeps the shot's roll (`hit`).
+static func strike_word_hit(timeline: Dictionary, tick: int) -> bool:
+	var strikes: Array = timeline.get("strike_ticks", [])
+	var hits: Array = timeline.get("strike_hits", [])
+	var index := -1
+	for rank in range(mini(strikes.size(), hits.size())):
+		if int(strikes[rank]) <= tick:
+			index = rank
+	return bool(hits[index]) if index >= 0 else bool(timeline["hit"])
 
 
 ## The patterned multi-object inserts (line, ring, oval, tornado); false for any other op.
@@ -412,17 +458,15 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event["variant"] = order % ObjcomdMotion.variants(name)
 		event["anchored"] = false
 		event["open_ended"] = ObjcomdMotion.open_ended(name)
-		# The settled strike's hit picks the hit run (hit-only throws, 0x405434／0x405495).
-		event["hit"] = bool(timeline["hit"])
-	# A multi-hit defense object follows the strike its op 72 queued: strikes settle in op 72
-	# order (0x4047d5), each rewriting [0x4c1418] (0x404803; 200 at 0x4048d6 when it changed
-	# nothing). Which strike's word an instance's hit-only throw reads within the same tick is
-	# not read (provisional).
-	var queued: Array = timeline["events"].filter(func(event): return event.has("strike_tick"))
-	queued.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]) or (int(a["strike_tick"]) == int(b["strike_tick"]) and int(a["order"]) < int(b["order"])))
-	var strike_hits: Array = timeline.get("strike_hits", [])
-	for rank in range(mini(queued.size(), strike_hits.size())):
-		queued[rank]["hit"] = bool(strike_hits[rank])
+		# The hit-only throws (0x405434／0x405495) and objmPlayHitSound (0x4059f3) read
+		# [0x4c1418] < [0x4c6f58] on the frame the program plays its first hit-only sound
+		# (the throws run just before it, e.g. objcomd code 79: op 72, objmDelay 1, throws,
+		# sounds); the word then holds the strike settled last (strike_word_hit).
+		var read := ObjcomdMotion.hit_read_frame(name, int(event["variant"]))
+		event["hit"] = strike_word_hit(timeline, int(event["tick"]) + maxi(read, 0))
+	timeline["events"] = timeline["events"].filter(func(event): return not event.get("hit_only", false) or strike_word_hit(timeline, int(event["tick"])))
+	for event in timeline["events"]:
+		event.erase("hit_only")
 	for event in timeline["events"]:
 		if event.get("source", "") == "objcomd":
 			event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(str(event["object"]), bool(event["hit"]))
@@ -464,6 +508,7 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 	timeline["events"] = kept
 	timeline.erase("multi_hit_ops")
 	timeline.erase("last_strike_tick")
+	timeline.erase("last_strike")
 	timeline["darken_tick"] = darken
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
@@ -653,9 +698,7 @@ static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String
 	elif phase != "effect" and ObjcomdMotion.tracked(object_name):
 		timeline["sound_order"][object_name] = order + 1
 		for sound in ObjcomdMotion.sounds(object_name, order):
-			if bool(sound[2]) and not bool(timeline["hit"]):
-				continue
-			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
+			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0]), "hit_only": bool(sound[2])})
 		if phase == "defense":
 			for op in ObjcomdMotion.multi_hits(object_name, order):
 				if not timeline.has("multi_hit_ops"):
@@ -677,14 +720,14 @@ static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String
 					timeline["sound_cues"].append(key)
 					cues.append({"member": str(sound["member"]), "tick": at})
 		for sound in object.get("command_sounds", []):
-			if bool(sound["hit_only"]) and not bool(timeline["hit"]):
-				continue
-			cues.append({"member": str(sound["member"]), "tick": tick + int(sound["delay_ticks"])})
+			cues.append({"member": str(sound["member"]), "tick": tick + int(sound["delay_ticks"]), "hit_only": bool(sound["hit_only"])})
 	for cue in cues:
 		if not data["sounds"].has(cue["member"]):
 			push_error("skill_effects manifest has no sound " + str(cue["member"]))
 			continue
-		timeline["events"].append({"tick": int(cue["tick"]), "kind": "sound", "member": str(cue["member"]), "phase": phase})
+		var event := {"tick": int(cue["tick"]), "kind": "sound", "member": str(cue["member"]), "phase": phase}
+		if cue.get("hit_only", false): event["hit_only"] = true
+		timeline["events"].append(event)
 
 
 ## Presenter entry: compiles the row's timeline once per clip (seeded from the receipt, never
@@ -694,8 +737,11 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		var strike: Dictionary = clip["strike"]
 		var skill_id := str(strike.get("skill_id", ""))
 		var seed := hash(skill_id + str(strike.get("attacker_id", "")) + str(strike.get("defender_id", "")) + str(strike.get("hit_roll", strike.get("native_damage_roll", ""))))
-		var strike_hits: Array = strike.get("hit_segments", []).map(func(part): return bool(part["hit"]))
-		clip["effect_timeline"] = compile_row(skill_id, bool(strike["hit"]), seed, strike_hits)
+		var parts: Array = strike.get("hit_segments", [])
+		var strike_hits: Array = parts.map(func(part): return bool(part["hit"]))
+		var last_strike := {} if parts.is_empty() else {"damage": int(parts.back()["actual_damage"]),
+			"experience": parts.reduce(func(sum, part): return sum + int(part.get("experience_points", 0)), 0)}
+		clip["effect_timeline"] = compile_row(skill_id, bool(strike["hit"]), seed, strike_hits, last_strike)
 	if str(clip["effect_timeline"]["kind"]) == "effect":
 		return _present_effect(host, clip, elapsed)
 	return _present_special(host, clip, elapsed)

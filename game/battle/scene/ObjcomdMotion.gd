@@ -54,6 +54,17 @@ static func sounds(object_name: String, variant: int = 0) -> Array:
 	return row["sounds"]
 
 
+## The frame the variant's program reads the hit word [0x4c1418]: its first objmPlayHitSound
+## (0x4059cf), the hit-only throws (0x405434／0x405495) running on the same frame just before
+## it; -1 for a program that plays no hit-only sound.
+static func hit_read_frame(object_name: String, variant: int = 0) -> int:
+	var read := -1
+	for sound in sounds(object_name, variant):
+		if bool(sound[2]) and (read < 0 or int(sound[0]) < read):
+			read = int(sound[0])
+	return read
+
+
 ## The decoded tree of one variant, in EffectObjectMotion.track's shape plus its `members`
 ## table, for EffectObjectMotion.sprites_at. `hit`: the hit run (hit roll [0x4c1418] under the
 ## hit rate [0x4c6f58]), whose hit-only throws (0x405434／0x405495) the miss run lacks; objects
