@@ -466,7 +466,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WinfailCompiler](../game/sim/WinfailCompiler.gd) | rules | — | AND-combined condition prefix, fixture only — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
 | [WinfailConditions](../game/sim/WinfailConditions.gd) | rules | — | AND over multi-check prefixes, fixture only — winfail_claim_limits.md |
 | [WinfailScenarioRules](../game/sim/WinfailScenarioRules.gd) | rules | — | MAX_PASSES bound, a fail chain with waiting actions read as ending first — ids in docs/evidence_packets/static_reverse/winfail_claim_limits.md |
-| [BattleLoopAI](../game/sim/loop/BattleLoopAI.gd) | rules | — | target／route composition, stable-id call cleanup, dying-path category walk over the chosen foe, not the 0x43f79b loop; level-37 gems wait — docs/architecture/BATTLE_SYSTEMS.md#ai |
+| [BattleLoopAI](../game/sim/loop/BattleLoopAI.gd) | rules | — | target／route composition, stable-id call cleanup; level-37 gems wait — docs/architecture/BATTLE_SYSTEMS.md#ai |
 | [BattleLoopScript](../game/sim/loop/BattleLoopScript.gd) | rules | — | reinforcement spawn-cell fill order and nearest-legal landing, outcome commit ordering — docs/architecture/BATTLE_SYSTEMS.md#winfailscenariorulesgd |
 | [GameClearScreen](../game/title/GameClearScreen.gd) | timing | — | STORYOVER actDelay unit and key-ended pauses, original_game_clear_epilogue.md |
 | [GameOverScreen](../game/title/GameOverScreen.gd) | timing | — | 0.6 s fade-out |

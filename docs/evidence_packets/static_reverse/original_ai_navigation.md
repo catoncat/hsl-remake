@@ -9,7 +9,7 @@
 - 重制：`game/sim/AINavigationRules.gd`（`approach_home`／`approach_point`／`attack_stations`／`attack_station`／`target_in_range`）、`game/sim/loop/BattleLoopAI.gd`、`game/sim/ActorInitializationRules.gd` 复刻上述链；第一战原版第 1 回合 12 个 AI 落点全部落在重制可产出集合内（见 [battle_051_ai_moves](../runtime_observations/battle_051_ai_moves/README.md)）。
 - 追击精化的洪泛就是移动洪泛：`0x4111a0` 传末参 0，`0x411080` 取 `0x40f440`（受地图边界）与行动者 `0x40bab0` 模式（P 2／E 3／N 7，飞行 6），每步代价＝上坡差＋`0x40eb80` 的 1／2、高差 ≥3 与敌方占位（mask）挡；洪泛按上下左右深度优先、每格存最大余量；候选按缓冲逐行扫描、像素曼哈顿距离取最近，某一级无候选则目标点不变；目标点是持有目标的像素位置，不是射程格。`no_attack` 单位（模板 +0xa0 bit 2）在 `0x43f413` 直接结束回合，不追击不施法；追击选中的格不可能是自身格（有单位跳过），`0x410a50` 自身格返回 0 只出现在站位＝自身格且打不到时，回合结束（static-derived，反汇编读法）。原版裁判喂原版抽签回放：玩家第 1 场 · 棄卒（LEVEL051）r1 32 种子 352/352、第 1 场与第 2 场 · 惡夢的終曲（LEVEL052）开场 32 种子 894/896 一致（其余 2 行落点一致、目标标签归口径）（runtime-measured）。
 - 重制：`AINavigationRules.native_flood`／`_native_step`／`native_candidates` 逐步移植 `0x40f200`／`0x40ed50`／`0x413740`；`BattleLoopAI._ai_take_owned_turn` 对 `no_attack` 单位直接待机。
-- 差异：中心平分的双候选随机流与原全局 RNG 顺序未等价；3×3 行动者的精化仍用移动包络（provisional）；原版 +0x80 bit 0x10000 时站位走不动改重进优先级链未复刻。
+- 差异：中心平分的双候选随机流与原全局 RNG 顺序未等价；3×3 行动者的精化仍用移动包络（provisional）；+0x80 bit 0x10000（`0x43f523` 每回合置位，`0x440ff6`／`0x441318`／`0x441f41` 清）只在跳过锁定的残血 state 0xb 进站位时还在，站位走不动重进优先级链已照原版（[original_ai_priority](original_ai_priority.md)）。
 
 ## 证据
 
@@ -99,7 +99,7 @@ L051+L052 开场 (--align): AI_REPLAY_CHECK_PASS levels=2 runs=64 rows=896 agree
 ## 边界
 
 - 原生洪泛移植没有逐格原指令对照（静态读法＋整局回放一致）；3×3 行动者的精化洪泛未移植。
-- `0x410a50` 自身格：重制把站位即自身格当原地攻击，到站复查不中即结束回合，与原版 `0x441eb8` 同果；+0x80 bit 0x10000 时原版重进优先级链未复刻。
+- `0x410a50` 自身格：重制把站位即自身格当原地攻击，到站复查不中即结束回合，与原版 `0x441eb8` 同果；+0x80 bit 0x10000 只在残血 state 0xb 进站位时还在，此时原版重进优先级链，重制同（[original_ai_priority](original_ai_priority.md)）。
 - `0x43feba` 与 `0x410a50`（自身格）尚无有界原指令执行。
 - 不喂抽签的落点分布差属于抽取结构（持有目标比例、随机流），见差异清单 `ai-first-battle-moves`。
 - 中心平分的双候选流与原全局 RNG 顺序未等价。

@@ -1,6 +1,6 @@
 # 原 AI：目标选择与普通／魔法／特殊技类别
 
-> evidence: static-derived; runtime-measured: 原版裁判不喂抽签分布; provisional: 原函数外的候选过滤 · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40bf70, 0x40c110, 0x40c570, 0x40c620, 0x40d4e0, 0x42c780, 0x43f695, 0x43f79b, 0x43fa29, 0x43fd60, 0x440db1, 0x441002, 0x458c10, 0x458c80, 0x45ec32 · tools: hsltools/data/ai_profiles.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai.py, run_ai_decision_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 原版裁判不喂抽签分布; provisional: 原函数外的候选过滤 · status: live · functions: 0x40ba20, 0x40bb80, 0x40bee0, 0x40bf70, 0x40c110, 0x40c570, 0x40c620, 0x40d4e0, 0x42c780, 0x43f695, 0x43f79b, 0x43fa29, 0x43fd60, 0x440db1, 0x441002, 0x458c10, 0x458c80, 0x45ec32 · tools: hsltools/data/ai_profiles.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai.py, run_ai_decision_tests.gd · updated: 2026-09-29
 
 ## 结论
 
@@ -45,12 +45,12 @@
 | 2 链首掷 | `0x440db5` | `rand(99)+1` 一次 | 每次进入 `0x440db1`（含选中项失败返回） |
 | 3 链逐项 | 位 2 `+0x1d8`、位 1 `+0x1d4`、位 4 `+0x1dc`、位 8 `+0x1e0`、位 0x10 `+0x1e4` | 未尝试且 r ≤ 门槛：选中，`0x441035` 写状态；否则在 `0x440ddf`／`0x440e1b`／`0x440e57`／`0x440e93`／`0x440ecf` 重掷 `rand(99)+1` | 已尝试位跳过不抽；每项只试一次 |
 | 4a 自身 HP | `0x43fa29` | `0x40d4e0`（`0x40d500` `rand(100)+1`）→ `0x40c110`（`0x40c138` `rand(18)`） | 不需回复回 `0x440db1`；需要时 `0x43fa7e` → `0x40c570` |
-| 4b 残血敌方 | `0x43f79b` | `0x40bf70` 方域内每个合格对象 `0x40c061` `rand(18)`；找到后 `0x40d4e0` 一次，每个找到的 `0x40c570`（`0x40c58d`，再掷 `0x40c5b3`／`0x40c5f8`） | 普通类别 `0x409090`／`0x40d8b0` 有站位即持有进攻（state 0xb），否则 `0x43f994` 续扫；扫完回 `0x440db1` |
+| 4b 残血敌方 | `0x43f79b` | `0x40bf70` 方域内每个合格对象 `0x40c061` `rand(18)`（每次调用都重掷）；找到后 `0x43f7bf` `0x40d4e0` 一次、全部候选共用；每名候选 `0x43f824` `0x40c570` 一次（`0x40c58d` 无条件抽，再掷 `0x40c5b3`／`0x40c5f8`；列表取行动者自身 `0x40dd60`／`0x40e1f0`） | 只试掷中的一类：普通＝`0x409090` 有武器且 `0x40d8b0` 返回该候选 → +0x88、+0x8c＝0xb0000（state 0xb）；魔法 `0x43f8f6` `0x40d340(…,1)`、特技 `0x43f873` `0x40df70(…,1)` 非 0 → +0x8e＝0xd／0x14；不成立 `0x43f994` 从候选之后续扫；扫尽 `0x43f9a6` 从 0 号重扫只问普通（`0x43fa13`）；仍无 `0x43fa04` +0x8c＝0x10001 → `0x43f774` 回 `0x440db1`（+0x98 保留）；−1 置 +0x80 0x200／0x400，下帧 `0x43f77f` 续算同一候选 |
 | 5 锁定 | `0x441002` | 不抽；末值 r（最后一次重掷或首掷，恒为新掷）> `+0x1e8` → `0x441022` 重扫 `0x40bb80`（`0x40bd4f` 掷） | 链全部未中、`0x440ef1` 定点守卫之后（守卫 `0x440f88` 也可重扫） |
 | 6 进攻 | `0x43fd60` | 持有失效 `0x43fd98` 重扫；`0x43fdc9` `0x40d4e0`（`0x40d500`）→ `0x43fe0c` `0x40c570`（`0x40c58d` 起） | 魔法／特殊技分支再抽 `0x40c7f8`／`0x40c842`／`0x40de0c`／`0x40de56`，落空侧移 `0x43ff32` |
 | 7 追击 | `0x440d7f` 之后 | `0x413740` 同距 `0x41385d` `&1`、`0x413890` `rand(100)` | 见 [original_ai_navigation.md](original_ai_navigation.md) |
 
-重制对照：获取（1）与进攻类别掷（6 的 `0x40c570`）同结构；链（2～4）在无回复手段且无残血机会时整段不抽（`BattleLoopAI._select_ai_priority` 起始 attempted＝3），辅助三项只在有可用辅助时抽；锁定只在已持有目标时新抽 `rand(99)+1`（`_ai_lock_check`）；`0x40d4e0` 只在有魔法时、排在类别掷之后抽。省掉的抽取都在不可能出手的分支里；原版末值 r 每次都是某一格失败后的新掷，`P(重扫)=(99−ai_lock)/99` 两边相同；同一串 `0x40bd4f` 掷两边选中同一目标（下段逐种子对照）。
+重制对照：获取（1）与进攻类别掷（6 的 `0x40c570`）同结构；链（2～4）在无回复手段且无残血机会时整段不抽（`BattleLoopAI._select_ai_priority` 起始 attempted＝3），辅助三项只在有可用辅助时抽；锁定只在已持有目标时新抽 `rand(99)+1`（`_ai_lock_check`）；state 0xa 的 `0x40d4e0` 只在有魔法时、排在类别掷之后抽，残血检查找到候选后在循环外抽一次（与原版同位）。省掉的抽取都在不可能出手的分支里；原版末值 r 每次都是某一格失败后的新掷，`P(重扫)=(99−ai_lock)/99` 两边相同；同一串 `0x40bd4f` 掷两边选中同一目标（下段逐种子对照）。
 
 **runtime-measured：不喂抽签的盯谁分布**（原版 `_enemy_level.py batch --mix 20 --turns 1`，重制 `export_enemy_turns.gd --seed s`，同一局面）：
 

@@ -184,7 +184,8 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	# Offense walks the 0x40d4e0 (first, fallback) pair: 0x40d340 through 0x40c770 for MAGIC,
 	# 0x40df70 through 0x40dd80 for SPECIAL (same rand(32)%count start and per-node use_ratio roll,
 	# no bucket 3/4 weighting). Support callers pass the native bucket (heal 1/2, buff 5, cure 7).
-	# The single native 0x40d4e0 draw precedes 0x40c570; here each channel draws its own order.
+	# The dying check passes the pair it drew once before its candidate loop (0x43f7bf);
+	# without one the order is drawn here.
 	var order := AISkillDecisionRules.area_order(int(plan["area_flag"]), rng) if requested_buckets.is_empty() else {"order": requested_buckets}
 	decision["bucket_order"] = order
 	for bucket in order["order"]:

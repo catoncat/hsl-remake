@@ -1006,11 +1006,12 @@
     },
     {
       "id": "ai-first-battle-moves",
-      "difference": "第一关 AI 走位：普通追击精化（R7-AI51）、同速行动顺序、精化候选的 0x40d800 过滤（R7-NPC），以及持有目标（按注册槽序扫描、被排除的对象照样计分只在比较处退回、锁定对本回合新取目标也生效、保留不看可达、定点守卫前置于锁定）、普通类别逐槽换目标与 state 0xa 类别只掷一次、站位半格偏置排序、武器站位与出手按地形射程、法术分支只问行动者自身可用性并取覆盖最多的施放中心、法术落空后的 11% 侧移、第 52 关两名 069 出场为敌方（lane AI-PRIO）已照原版；原版裁判对第 3、6、10、51、52 关开场与第 51 关 r1／first_control 局面按充分混合的种子比较各单位盯谁、打谁、施不施法，规则类分歧为 0，随机类按 32 种子分布对照；追击精化的洪泛（0x40f440／0x40ed50 移动模式、高差、0x40eb80 代价、深度优先与逐行候选）、no_attack 单位回合入口即结束（0x43f413）、追击目标点取持有目标位置、站位＝自身格走不动即结束回合（0x410a50 返回 0 → 0x441eb8）已照原版；喂原版抽签回放第 1 场 r1 与第 1／2 场开场各 32 种子落点逐行一致（352/352、894/896，另 2 行落点一致目标归口径）；一次行动的随机数消费表已读出（original_ai_decisions.md）：重制省掉的链上抽取都在不可能出手的分支、锁定末值两边都是新掷，掷值到目标的对应两边相同，第 1 场 r1 023_2 盯谁 200 种子 96:104 对原版 17:15（p=0.59，32 种子的 10:22 是抽样偏差）；剩余＝逐值对拍不齐（只要求分布等价）、第 2 场 ally024_2 盯 069_1 偏多（p=0.003）来自此前行动者落点改变候选数（enemy021_5／021_6 落点 p≈0.02～0.04，追击精化层）、3×3 行动者的精化仍用移动包络、+0x80 bit 0x10000 时站位走不动重进优先级链未复刻",
-      "original": "单个决策函数已逐组原生核对；追击 0x4111a0、站位 0x40d8b0／0x413390、过滤 0x40d800、注册顺序 0x407660／0x4c34c0、目标扫描 0x40bb80（find_no_id 退回 0x40bd4f 前后）、锁定 0x441002、保留 0x43f55f、定点守卫 0x440ef1、类别掷 0x43fe0c、武器覆盖 0x40fa80／0x40fb20 与到站复查 0x441311、法术分支 0x40c570／0x40d340／0x40df70／0x40c9a0／0x40cca0、11% 侧移 0x43ff1f..0x44003c、069 换边 0x407ec0 已读并接入；精化洪泛 0x40f440／0x40ed50（模式跳转表 0x40f1c4）与 0x411080 参数、no_attack 入口 0x43f412 已读并接入；录屏对照见 battle_051_ai_moves，裁判对照见 original_enemy_turn §11",
+      "difference": "第一关 AI 走位：普通追击精化（R7-AI51）、同速行动顺序、精化候选的 0x40d800 过滤（R7-NPC），以及持有目标（按注册槽序扫描、被排除的对象照样计分只在比较处退回、锁定对本回合新取目标也生效、保留不看可达、定点守卫前置于锁定）、普通类别逐槽换目标与 state 0xa 类别只掷一次、站位半格偏置排序、武器站位与出手按地形射程、法术分支只问行动者自身可用性并取覆盖最多的施放中心、法术落空后的 11% 侧移、第 52 关两名 069 出场为敌方（lane AI-PRIO）已照原版；原版裁判对第 3、6、10、51、52 关开场与第 51 关 r1／first_control 局面按充分混合的种子比较各单位盯谁、打谁、施不施法，规则类分歧为 0，随机类按 32 种子分布对照；追击精化的洪泛（0x40f440／0x40ed50 移动模式、高差、0x40eb80 代价、深度优先与逐行候选）、no_attack 单位回合入口即结束（0x43f413）、追击目标点取持有目标位置、站位＝自身格走不动即结束回合（0x410a50 返回 0 → 0x441eb8）已照原版；喂原版抽签回放第 1 场 r1 与第 1／2 场开场各 32 种子落点逐行一致（352/352、894/896，另 2 行落点一致目标归口径）；一次行动的随机数消费表已读出（original_ai_decisions.md）：重制省掉的链上抽取都在不可能出手的分支、锁定末值两边都是新掷，掷值到目标的对应两边相同，第 1 场 r1 023_2 盯谁 200 种子 96:104 对原版 17:15（p=0.59，32 种子的 10:22 是抽样偏差）；残血优先路径 0x43f79b 循环已照原版（lane AIDYING：0x40d4e0 循环外一次、逐候选一次 0x40c570 按行动者自身列表、只试掷中的一类、失败从候选后续扫、扫尽从 0 号只问普通重扫、仍无则 0x43fa04 回链首保留已尝试位；原版裁判第 1 场压残血两盘面各 32 种子，残血路径打谁、用什么规则类分歧 0，随机类最小 p＝0.11）；+0x80 位 0x10000 由 0x43f523 每回合置位、0x440ff6／0x441318／0x441f41 清除，残血路径 state 0xb 站位落在自身格且够不着（0x410a50 返回 0 → 0x440d01）时见此位回链首不结束回合，已照原版；同路径的 0x440da1 追击失败不可达（0x40d8b0 已在候选上找到站位）；剩余＝逐值对拍不齐（只要求分布等价）、第 2 场 ally024_2 盯 069_1 偏多（p=0.003）来自此前行动者落点改变候选数（enemy021_5／021_6 落点 p≈0.02～0.04，追击精化层）、3×3 行动者的精化仍用移动包络",
+      "original": "单个决策函数已逐组原生核对；追击 0x4111a0、站位 0x40d8b0／0x413390、过滤 0x40d800、注册顺序 0x407660／0x4c34c0、目标扫描 0x40bb80（find_no_id 退回 0x40bd4f 前后）、锁定 0x441002、保留 0x43f55f、定点守卫 0x440ef1、类别掷 0x43fe0c、武器覆盖 0x40fa80／0x40fb20 与到站复查 0x441311、法术分支 0x40c570／0x40d340／0x40df70／0x40c9a0／0x40cca0、11% 侧移 0x43ff1f..0x44003c、069 换边 0x407ec0 已读并接入；精化洪泛 0x40f440／0x40ed50（模式跳转表 0x40f1c4）与 0x411080 参数、no_attack 入口 0x43f412 已读并接入；残血循环 0x43f79b..0x43fa24、state 1 回链 0x43f774、0x10000 置位 0x43f523 与站位重进 0x440d01 已读并接入（original_ai_priority）；录屏对照见 battle_051_ai_moves，裁判对照见 original_enemy_turn §11",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_navigation.md",
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
+        "docs/evidence_packets/static_reverse/original_ai_priority.md",
         "docs/evidence_packets/static_reverse/original_enemy_turn.md",
         "docs/evidence_packets/runtime_observations/battle_051_ai_moves/README.md"
       ],
@@ -1027,8 +1028,8 @@
     },
     {
       "id": "ai-skill-buckets",
-      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝原版 0x40d4e0 在选通道前只抽一次、两通道共用，重制每个通道各抽一次；桶 5 驱散行的目标掩码 0x40c2d0 未模拟；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）；AI 施放范围与效果区域仍平铺；濒死路径对选中的对象按类别轮转，原版逐个换下一名濒死候选（0x43f79b 循环）；移动施法的威胁对象取 8 格内最近的敌人（确定取法），原版经 0x40bb80 抽",
-      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，0x40d4e0 共用抽取与 0x40c2d0 掩码已读未接入",
+      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 5 驱散行的目标掩码 0x40c2d0 未模拟；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）；移动施法的威胁对象取 8 格内最近的敌人（确定取法），原版经 0x40bb80 抽",
+      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码已读未接入",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
         "docs/evidence_packets/static_reverse/original_ai_skills.md",
@@ -1222,8 +1223,8 @@
     },
     {
       "id": "item-use-rules",
-      "difference": "AI 用药 0x4406af 入口的触发上下文、0x40c570 无法术时是否抽数未读；死亡／隐藏对象的格字映射未读",
-      "original": "范围 0x40f440(user,1／大体型2,4)：模式4 泛洪（掩码 0x24000，大体型每格过 0x40ecc0 3×3 检查），含自己，只收 pmPlayer 且非 no_attack；满值照用并消耗一件（0x409e40 夹紧、0x444aba 清暂持）；AI 取药不比药效（0x40c1d0／0x40c230）；剧情 actUseItem 只调 0x409e40，不查持有与收益、不动背包（0x451669）",
+      "difference": "AI 用药 0x4406af 入口的触发上下文未读；死亡／隐藏对象的格字映射未读",
+      "original": "范围 0x40f440(user,1／大体型2,4)：模式4 泛洪（掩码 0x24000，大体型每格过 0x40ecc0 3×3 检查），含自己，只收 pmPlayer 且非 no_attack；满值照用并消耗一件（0x409e40 夹紧、0x444aba 清暂持）；AI 取药不比药效（0x40c1d0／0x40c230）；0x40c570 无法术也在 0x40c58d 无条件抽 rand(99)；剧情 actUseItem 只调 0x409e40，不查持有与收益、不动背包（0x451669）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_actions.md",
         "docs/evidence_packets/static_reverse/original_tactical_items.md",
@@ -3206,7 +3207,7 @@
     "scope:docs/evidence_packets/static_reverse/initial_battle_initiative.md|provisional|开战出生的全局流种子与创建次序": {
       "item": "rng-streams"
     },
-    "scope:docs/evidence_packets/static_reverse/original_ai_priority.md|provisional|无注册药品或无合法伤害动作时跳过优先级": {
+    "scope:docs/evidence_packets/static_reverse/original_ai_priority.md|provisional|无注册药品时跳过自身 HP 检查": {
       "item": "ai-skill-buckets"
     },
     "scope:docs/evidence_packets/static_reverse/original_ai_skills.md|provisional|威胁选取与有效收益计数": {

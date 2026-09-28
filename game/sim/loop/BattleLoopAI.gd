@@ -20,8 +20,7 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_ai_support.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_fixpos_fly_prev_insert.md
 ##   rules: provisional
-##     (target／route composition, stable-id call cleanup, dying-path category walk over the chosen foe, not the 0x43f79b
-##     loop; level-37 gems wait — docs/architecture/BATTLE_SYSTEMS.md#ai)
+##     (target／route composition, stable-id call cleanup; level-37 gems wait — docs/architecture/BATTLE_SYSTEMS.md#ai)
 ##   rules: remake-invented (paralysis_skip and candidate_filters receipts)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_level37_tokens.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
@@ -50,6 +49,7 @@ const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
 const AICallRules = preload("res://game/sim/AICallRules.gd")
 const AIPriorityRules = preload("res://game/sim/AIPriorityRules.gd")
 const AISkillPlanning = preload("res://game/sim/AISkillPlanning.gd")
+const AISkillDecisionRules = preload("res://game/sim/AISkillDecisionRules.gd")
 const AISelfPreservation = preload("res://game/sim/AISelfPreservation.gd")
 const AISupportPlanning = preload("res://game/sim/AISupportPlanning.gd")
 const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
@@ -231,8 +231,10 @@ static func _ai_wait_round(_loop: Dictionary, next: Dictionary, turn: Dictionary
 	return _finish_ai_call(next, turn["actor_id"], action, turn["prepared"], turn["adoption"])
 
 
-## Self-HP item, self／ally spell and ally item priorities commit here; "dying" and
-## "ordinary" fall through to the target phases with the selected priority recorded.
+## Self-HP item, self／ally spell, ally item and dying-foe priorities commit here;
+## "ordinary" falls through to the target phases with the selected priority recorded. A
+## dying-foe check that settled on a candidate wrote it as the held target +0x88 (0x43f96c／
+## 0x43f8ba／0x43f939／0x43fa13, no broadcast) even when the chain then went on.
 static func _ai_priority_action(loop: Dictionary, next: Dictionary, turn: Dictionary) -> Dictionary:
 	var actor_id: String = turn["actor_id"]
 	var actor: Dictionary = turn["actor"]
@@ -242,6 +244,18 @@ static func _ai_priority_action(loop: Dictionary, next: Dictionary, turn: Dictio
 	var priority := _select_ai_priority(next, actor_id, prepared, turn["source"])
 	decision["priority"] = priority
 	turn["priority"] = priority
+	if priority.has("held_index"):
+		turn["adoption"] = _held_target_write(turn["adoption"], int(priority["held_index"]), false)
+		decision["call_target"]["adoption"] = turn["adoption"]
+	if priority["kind"] == "dying":
+		var dying: Dictionary = priority["dying"]
+		var target: Dictionary = next["units"][int(priority["index"])]
+		if int(dying["category"]) == 0: return _ai_station_attack(next, turn, target, prepared["physical"][target["id"]], dying["station"])
+		action = execute_ai_skill_choice(next, actor_id, dying["intent"], turn["source"])
+		if action.is_empty(): return _ai_rejected_step(loop, "prepared_ai_skill_changed")
+		action["ai_decision"] = decision
+		action["ai_skill_decision"] = dying["skill_decision"]
+		return _finish_ai_call(next, actor_id, action, prepared, turn["adoption"])
 	if priority["kind"] == "use_item":
 		var slot := int(priority["item_slot"])
 		var effect := BattleLoopInventory.resolve_item_use(next, actor_id, actor_id, str(int(actor["inventory"][slot])), slot)
@@ -338,8 +352,7 @@ static func _ai_fixed_guard(_loop: Dictionary, next: Dictionary, turn: Dictionar
 ## Without a held target the turn ends (state 0xa entry 0x43fd60: +0x88 zero → 0x441eb8).
 ## With a target, records `target_index`.
 static func _ai_no_target_action(_loop: Dictionary, next: Dictionary, turn: Dictionary) -> Dictionary:
-	var priority: Dictionary = turn["priority"]
-	var target_index := int(priority["index"]) if priority["kind"] == "dying" else int(turn["adoption"]["index"])
+	var target_index := int(turn["adoption"]["index"])
 	if target_index >= 0:
 		turn["target_index"] = target_index
 		return {}
@@ -347,9 +360,8 @@ static func _ai_no_target_action(_loop: Dictionary, next: Dictionary, turn: Dict
 	return _finish_ai_call(next, turn["actor_id"], turn["action"], turn["prepared"], turn["adoption"])
 
 
-## Offense against the held target. The dying priority keeps the remake's category walk
-## over its chosen foe. State 0xa (0x43fd60..0x4400a2) draws the category once (0x40c570
-## at 0x43fe0c) and has no category cycle. The categories on offer are the actor's own
+## Offense against the held target. State 0xa (0x43fd60..0x4400a2) draws the category once
+## (0x40c570 at 0x43fe0c) and has no category cycle. The categories on offer are the actor's own
 ## (0x40dd60／0x40e1f0: an affordable MAGIC／SPECIAL row in bucket 3 or 4, 0x40c620), not
 ## the held target's: the cast itself (0x40d340／0x40df70 with flag 0, AISkillPlanning.
 ## choose_any) takes the best coverage anywhere in reach. A special that finds no cast falls
@@ -361,23 +373,9 @@ static func _ai_no_target_action(_loop: Dictionary, next: Dictionary, turn: Dict
 static func _ai_offense(loop: Dictionary, next: Dictionary, turn: Dictionary) -> Dictionary:
 	var actor: Dictionary = turn["actor"]
 	var prepared: Dictionary = turn["prepared"]
-	var priority: Dictionary = turn["priority"]
 	var decision: Dictionary = turn["decision"]
 	var source: Variant = turn["source"]
 	var target: Dictionary = next["units"][int(turn["target_index"])]
-	var choice: Dictionary = prepared["physical"].get(target["id"], {})
-	var skills: Dictionary = prepared["offensive_skills"] if priority["kind"] == "dying" else prepared["skills"]
-	var magic: Dictionary = skills["magic"].get(target["id"], {})
-	var special: Dictionary = skills["special"].get(target["id"], {})
-	if priority["kind"] == "dying":
-		if choice.is_empty() and magic.is_empty() and special.is_empty(): return {}
-		var dying_selection := AIDecisionRules.select_action(prepared["profile"], int(actor["status_flags"]), not magic.is_empty(), not special.is_empty(), source)
-		decision["action_selection"] = dying_selection
-		for kind in dying_selection["order"]:
-			if kind == 0 and not choice.is_empty(): return _ai_station_attack(next, turn, target, choice)
-			var step := _ai_skill_attempt(loop, next, turn, magic if kind == 1 else special if kind == 2 else {})
-			if not step.is_empty(): return step
-		return {}
 	var any_magic: Dictionary = prepared["any_skills"]["magic"]
 	var any_special: Dictionary = prepared["any_skills"]["special"]
 	var action_selection := AIDecisionRules.select_action(prepared["profile"], int(actor["status_flags"]), bool(any_magic["available"]), bool(any_special["available"]), source)
@@ -487,15 +485,16 @@ static func _ai_station_switch(prepared: Dictionary, held_index: int, units: Arr
 ## or reposition roll, and the strike through the shared exchange seam. After the walk the
 ## held target is tested again from the station with the actor's own weapon coverage
 ## (0x441311..0x441369); a miss (the range flood is not symmetric, walls cut one way)
-## ends the turn on the station without a strike (0x441eb8).
-static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dictionary, choice: Dictionary) -> Dictionary:
+## ends the turn on the station without a strike (0x441eb8). `station`: the walk the dying
+## check already settled (_ai_dying_station), {} to settle it here.
+static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dictionary, choice: Dictionary, station: Dictionary = {}) -> Dictionary:
 	var actor_id: String = turn["actor_id"]
 	var actor: Dictionary = turn["actor"]
 	var decision: Dictionary = turn["decision"]
 	var origin: Vector2i = actor["coord"]
 	var routes: Dictionary = turn["prepared"]["envelope"]["reachable_by_coord"]
 	var foes_adjacent := AINavigationRules.adjacent_blockers(origin, AINavigationRules.search_mask(actor), AINavigationRules.neighbour_words(next), next["map_size"])
-	var station := AINavigationRules.attack_station(choice, origin, foes_adjacent, turn["source"])
+	if station.is_empty(): station = AINavigationRules.attack_station(choice, origin, foes_adjacent, turn["source"])
 	decision["attack_station"] = {"to": station["to"], "reason": station["reason"], "order": station["order"], "draws": station["draws"], "foes_adjacent": foes_adjacent, "roll": station["roll"], "source": "0x40d8b0 / 0x413390 / 0x440b2c state 0xb sub 0"}
 	var destination: Vector2i = station["to"]
 	BattlePlayLoop.set_unit_coord(next, actor_id, destination)
@@ -516,14 +515,13 @@ static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dicti
 	return _finish_ai_call(next, actor_id, action, turn["prepared"], turn["adoption"])
 
 
-## One skill channel's cast (0x40d340／0x40df70 through the plan's bucket walk); {} when the
-## plan is missing or its walk accepts nothing. With `held_id` the plan is the channel's
-## held-target-free plan (state 0xa, flag 0: AISkillPlanning.choose_any); without it the
-## per-target plan of the dying priority (AISkillPlanning.choose).
-static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictionary, skill_choice: Dictionary, held_id: String = "") -> Dictionary:
+## State 0xa's cast in one skill channel (0x40d340／0x40df70 with flag 0 through the channel's
+## held-target-free plan, AISkillPlanning.choose_any); {} when the plan is missing or its walk
+## accepts nothing.
+static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictionary, skill_choice: Dictionary, held_id: String) -> Dictionary:
 	if skill_choice.is_empty(): return {}
 	var decision: Dictionary = turn["decision"]
-	var selected_skill := AISkillPlanning.choose_any(skill_choice, held_id, turn["source"]) if held_id != "" else AISkillPlanning.choose(skill_choice, turn["source"])
+	var selected_skill := AISkillPlanning.choose_any(skill_choice, held_id, turn["source"])
 	if not decision.has("skill_attempts"): decision["skill_attempts"] = []
 	decision["skill_attempts"].append(selected_skill["decision"])
 	if selected_skill["intent"].is_empty(): return {}
@@ -583,8 +581,11 @@ static func execute_ai_support_item(loop: Dictionary, actor_id: String, intent: 
 static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Dictionary, rng: Variant) -> Dictionary:
 	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	var support_roll := -1
+	# A check that cannot act is marked tried before the chain rolls: no healing means, or no
+	# foe in the find square with a station or an offensive cast (opportunity_ids) — the dying
+	# check can then settle nothing and would only re-enter the chain (draw structure only).
 	var attempted := (2 if int(prepared["healing_slot"]) < 0 and prepared["self_support"]["healing"].is_empty() else 0) | (1 if prepared["opportunity_ids"].is_empty() else 0)
-	var result := {"kind": "ordinary", "index": -1, "checks": [], "scans": [],
+	var result := {"kind": "ordinary", "index": -1, "checks": [], "scans": [], "dying_checks": [],
 		"composition_policy": "self HP and dying-foe checks, existing self cure, then owned ally support before offense; full native dispatcher remains separate"}
 	while attempted != 3:
 		var phase := AIPriorityRules.choose_check(prepared["profile"], attempted, rng)
@@ -601,26 +602,104 @@ static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Di
 				result.merge(self_choice, true)
 				if self_choice["kind"] != "ordinary": return result
 		else:
-			# 0x40bf70 walks the object array 0x4c34c0 like 0x40bb80 (registry order).
-			var layout: Array = prepared["registry"]
-			var scan_rows := AIDecisionRules.registry_rows(prepared["priority_rows"], layout)
-			var owner_slot: int = layout.find(prepared["owner_index"]) if not layout.is_empty() else int(prepared["owner_index"])
-			var cursor := 0
-			while cursor < scan_rows.size():
-				var scan := AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(prepared["profile"]["find_range"]), int(prepared["profile"]["find_no_id"]), cursor, rng)
-				result["scans"].append(scan)
-				if scan["index"] < 0: break
-				var found: int = int(layout[int(scan["index"])]) if not layout.is_empty() else int(scan["index"])
-				if prepared["opportunity_ids"].has(loop["units"][found]["id"]):
-					result["kind"] = "dying"
-					result["index"] = found
-					return result
-				# Resume AFTER a low-HP object with no legal attack, never stall on it.
-				cursor = int(scan["native_index"])
+			var dying := _ai_dying_scan(loop, actor, prepared, rng, result["scans"])
+			result["dying_checks"].append(dying)
+			if int(dying["held_index"]) >= 0: result["held_index"] = int(dying["held_index"])
+			if dying["outcome"] == "act":
+				result.merge({"kind": "dying", "index": dying["index"], "dying": dying}, true)
+				return result
+			# Nothing settled (0x43fa04: +0x8c = 0x10001, 0x43f774 → 0x440db1) or the station walk
+			# could not move (0x440d01 with +0x80 bit 0x10000, set at 0x43f523 each turn and only
+			# cleared at 0x440ff6／0x441318／0x441f41): back to the chain head, +0x98 kept, so the
+			# next pass re-rolls only the checks not yet tried.
 	result.merge(AISelfPreservation.choose_cure(prepared["self_support"], actor, rng), true)
 	if result["kind"] == "ordinary":
 		result.merge(AISupportPlanning.choose(prepared["ally_support"], actor, prepared["profile"], loop["units"], rng, support_roll), true)
 	return result
+
+
+## The dying-foe check, state 1 sub 0 (0x43f79b..0x43fa24). 0x40bf70 finds the first low-HP
+## object in the find square (none: straight back to the chain, 0x43f7b8); 0x40d4e0 is drawn
+## once (0x43f7bf) and its (first, fallback) bucket pair serves every candidate. Each
+## candidate rolls the category once (0x40c570 over the actor's own MAGIC／SPECIAL lists
+## 0x40dd60／0x40e1f0, 0x43f824) and tries only that category: ordinary — armed (0x409090)
+## and 0x40d8b0 from its slot returns the candidate itself (a station on it) → state 0xb;
+## magic／special — the channel's per-target cast (0x40d340／0x40df70 with flag 1,
+## AISkillPlanning.choose with the shared pair). A failed try resumes the scan after it
+## (0x43f994, thresholds re-drawn). With every candidate spent the scan restarts from slot 0
+## (0x43f9a6) asking the ordinary category alone, no category roll (0x43f9c2..0x43fa13).
+## -1 from 0x40d340／0x40df70 is the move-cast search 0x40cca0 out of its per-frame cell
+## budget ([0x476b10], resume flag [0x4c1a40]): +0x80 0x200／0x400 re-enters the same cast next
+## frame (0x43f77f); the remake plans in one step, so it has no counterpart. `outcome` "act"
+## (category 0 with `station`, or 1／2 with `intent`), "reenter" (station walk cannot move) or
+## "none"; `held_index` is the candidate written to +0x88, -1 when none was.
+static func _ai_dying_scan(loop: Dictionary, actor: Dictionary, prepared: Dictionary, rng: Variant, scans: Array) -> Dictionary:
+	var profile: Dictionary = prepared["profile"]
+	# 0x40bf70 walks the object array 0x4c34c0 like 0x40bb80 (registry order).
+	var layout: Array = prepared["registry"]
+	var scan_rows := AIDecisionRules.registry_rows(prepared["priority_rows"], layout)
+	var owner_slot: int = layout.find(prepared["owner_index"]) if not layout.is_empty() else int(prepared["owner_index"])
+	var receipt := {"outcome": "none", "index": -1, "held_index": -1, "category": -1, "candidates": [], "second_pass": [], "source": "0x43f79b..0x43fa24"}
+	var scan := AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), 0, rng)
+	scans.append(scan)
+	if int(scan["index"]) < 0: return receipt
+	var buckets := AISkillDecisionRules.area_order(int(profile.get("ai_magic_multi_first", 0)), rng)
+	receipt["bucket_order"] = buckets
+	var armed: bool = not bool(prepared["candidate_filters"]["unarmed"])
+	var any_skills: Dictionary = prepared["any_skills"]
+	while int(scan["index"]) >= 0:
+		var found: int = int(layout[int(scan["index"])]) if not layout.is_empty() else int(scan["index"])
+		var target: Dictionary = loop["units"][found]
+		var selection := AIDecisionRules.select_action(profile, int(actor["status_flags"]), bool(any_skills["magic"]["available"]), bool(any_skills["special"]["available"]), rng)
+		var kind := int(selection["kind"])
+		var entry := {"target_id": str(target["id"]), "category": kind, "draws": selection["draws"]}
+		receipt["candidates"].append(entry)
+		if kind == 0:
+			if armed and _ai_station_switch(prepared, found, loop["units"]) == found: return _ai_dying_station(loop, actor, prepared, found, rng, receipt)
+			entry["failure"] = "unarmed" if not armed else "no_station"
+		else:
+			var plan: Dictionary = prepared["offensive_skills"]["magic" if kind == 1 else "special"].get(target["id"], {})
+			if plan.is_empty():
+				entry["failure"] = "no_cast"
+			else:
+				var selected := AISkillPlanning.choose(plan, rng, buckets["order"])
+				entry["skill_decision"] = selected["decision"]
+				if not selected["intent"].is_empty():
+					receipt.merge({"outcome": "act", "index": found, "held_index": found, "category": kind, "intent": selected["intent"], "skill_decision": selected["decision"]}, true)
+					return receipt
+				entry["failure"] = "no_cast"
+		scan = AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), int(scan["native_index"]), rng)
+		scans.append(scan)
+	scan = AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), 0, rng)
+	scans.append(scan)
+	while int(scan["index"]) >= 0:
+		var found: int = int(layout[int(scan["index"])]) if not layout.is_empty() else int(scan["index"])
+		receipt["second_pass"].append(str(loop["units"][found]["id"]))
+		if armed and _ai_station_switch(prepared, found, loop["units"]) == found: return _ai_dying_station(loop, actor, prepared, found, rng, receipt)
+		scan = AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), int(scan["native_index"]), rng)
+		scans.append(scan)
+	return receipt
+
+
+## The ordinary category settled on candidate `found`: +0x88 = it, +0x8c = 0xb0000, and state
+## 0xb sub 0 (0x440b2c..0x440d11) walks. Its station order and reposition roll are drawn here
+## (AINavigationRules.attack_station). A first station on the actor's own cell out of weapon
+## reach there (0x40fb20 flag 1 cuts one way next to walls) sends 0x410a50 to the cell it
+## stands on, which returns 0 (0x410a97 → 0x411072); with bit 0x10000 still set 0x440d01
+## re-enters the chain (0x440db1) instead of ending the turn (0x441eb8).
+static func _ai_dying_station(loop: Dictionary, actor: Dictionary, prepared: Dictionary, found: int, rng: Variant, receipt: Dictionary) -> Dictionary:
+	var target: Dictionary = loop["units"][found]
+	var choice: Dictionary = prepared["physical"][target["id"]]
+	var origin: Vector2i = actor["coord"]
+	var foes_adjacent := AINavigationRules.adjacent_blockers(origin, AINavigationRules.search_mask(actor), AINavigationRules.neighbour_words(loop), loop["map_size"])
+	var station := AINavigationRules.attack_station(choice, origin, foes_adjacent, rng)
+	receipt.merge({"index": found, "held_index": found, "category": 0, "station": station}, true)
+	var terrain: Dictionary = prepared.get("weapon_terrain", {})
+	if station["to"] == origin and not terrain.is_empty() and not AINavigationRules.target_in_range(loop, actor, target, terrain):
+		receipt.merge({"outcome": "reenter", "reason": "station_walk_cannot_move", "reenter_source": "0x440cf1 / 0x440d01"}, true)
+		return receipt
+	receipt["outcome"] = "act"
+	return receipt
 
 
 ## Preflight physical option for one target (no RNG): the native attack stations
