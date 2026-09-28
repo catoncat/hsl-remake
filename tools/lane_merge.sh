@@ -148,6 +148,16 @@ case "${cmd}" in
         tools/verify.sh ${extra} "$@" >"${log}" 2>&1
     fi
     ec=$?
+    # The fast gate skips the deep suites: when the changes since main are on the story chain (the paths and token
+    # walk affected uses to select the story-mode explorer; affected mode runs it itself, --deep already has it), the
+    # explorer runs after a passing fast gate. publish reads the log's last line, so the pass line is repeated.
+    if [ "${ec}" = 0 ] && [ "${mode}" = fast ] && [ -z "${extra}" ]; then
+      pass="$(tail -1 "${log}")"
+      env HOME="${GATE_HOME}" PYTHONDONTWRITEBYTECODE=1 python3 tools/verify_runner.py story-guard --since main >>"${log}" 2>&1
+      ec=$?
+      grep '^STORY_EXPLORER_GUARD ' "${log}" | tail -1
+      [ "${ec}" != 0 ] || echo "${pass}" >>"${log}"
+    fi
     set -e
     grep -E "_FAIL|FAILED" "${log}" | head -5 || true
     echo "LANE_GATE head=${head} mode=${mode} exit=${ec} $(tail -1 "${log}")"

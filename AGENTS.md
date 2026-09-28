@@ -216,7 +216,7 @@ lane 这一侧：
 | --- | --- |
 | lane（实现期间） | 命中的定向测试：`tools/godot.sh --headless --script res://tests/run_all.gd -- run_x_tests.gd`（规则套件）／`--script res://tests/run_x_tests.gd`（场景套件）／`python3 tools/hsl.py check <family>` |
 | lane（收尾一次） | `tools/lane_verify.sh affected <基线>`（命中的注册表检查、Python 测试与 Godot 套件）；只改文档时 `python3 tools/hsl.py check docs`＋`python3 tools/hsl_docs_check.py`＋`git diff --check` |
-| 负责人（合并树） | `tools/lane_merge.sh gate`，默认 **AUTO 三档**：①自上一个过了门禁的提交以来只改了 `*.md` → **docs 档**（空白、链接、工具引用，秒级）；②改动不碰 OUTCOME_PATHS（规则、战斗数据、harness、verify 工具；资源导入工具 `tools/hsltools/assets/` 不算）→ **affected 档**（`lane_verify.sh affected main`，1–3 分钟；改了 `project.godot` 另跑两个预设的场景冒烟；affected 推迟了 Godot 套件时自动改跑快门）；③碰了 OUTCOME_PATHS → **快门**（含 128 场自动对局）。`--fast`／`--deep`／`--affected` 可强制。2026-09-26 一个 Tab 快捷键跑了两遍自动对局——界面改动永远不该为自动对局买单 |
+| 负责人（合并树） | `tools/lane_merge.sh gate`，默认 **AUTO 三档**：①自上一个过了门禁的提交以来只改了 `*.md` → **docs 档**（空白、链接、工具引用，秒级）；②改动不碰 OUTCOME_PATHS（规则、战斗数据、harness、verify 工具；资源导入工具 `tools/hsltools/assets/` 不算）→ **affected 档**（`lane_verify.sh affected main`，1–3 分钟；改了 `project.godot` 另跑两个预设的场景冒烟；affected 推迟了 Godot 套件时自动改跑快门）；③碰了 OUTCOME_PATHS → **快门**（含 128 场自动对局）。改动落在剧情链上（affected 选中剧情探索器的同一判据）时，affected 档自带探索器，快门档通过后再跑一次探索器（`STORY_EXPLORER_GUARD` 行）。`--fast`／`--deep`／`--affected` 可强制。2026-09-26 一个 Tab 快捷键跑了两遍自动对局——界面改动永远不该为自动对局买单 |
 | 负责人（发布前） | 深门只在发布前对合并树跑一次；结果文件（`results.json`／`chapter.json`）只由负责人在阶段收口重生成一次 |
 
 - 自动对局 regen-and-compare 只对胜负／死局／脚本错误判失败，计数漂移只打印，合并者顺手提交；预计会翻转胜负的 lane（改规则、战斗数据或指挥官）收尾前自己跑一次 128 场 sweep 并提交重写的 `results.json`，报告列出翻转场次。

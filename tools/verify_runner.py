@@ -21,8 +21,13 @@ Sub-commands (all run from the repository root, all exit non-zero on any failure
                  files that import a changed tools/ module, `bash -n` on changed tools/*.sh,
                  and the Godot suites that are changed or reference a changed game/ or
                  tests/support/ script (res:// path or class_name, also through
-                 tests/support/), the sweep for a changed battle scenario; one Godot
-                 process at a time
+                 tests/support/), the sweep for a changed battle scenario, the story-mode
+                 explorer (deep call: --fixed-fps, 40-minute timeout) for a change on the
+                 story chain (STORY_PATHS or its token walk); one Godot process at a time
+  story-guard --since REF
+                 what tools/lane_merge.sh gate runs after a fast gate: the story-mode
+                 explorer when affected would select it for the paths changed since REF,
+                 one STORY_EXPLORER_GUARD ran=<0|1> reason=<path> line last
   promote-timings
                  copy the last godot run's per-rule-suite seconds
                  (ignored/rule-suite-timings.json, from run_all.gd's RULE_SUITE_TIMING
@@ -82,6 +87,15 @@ DEEP_TIMEOUT_SECONDS = 2400
 # the two equal); HSL_CHAPTER_BUDGET_SECONDS=0 runs unbounded.
 CHAPTER_BUDGET_SECONDS = 600
 DEEP_SUITE_ENV = {"run_chapter_autoplay_tests.gd": {"HSL_CHAPTER_BUDGET_SECONDS": str(CHAPTER_BUDGET_SECONDS)}}
+# The one deep suite affected selects: a change on the story chain runs the explorer (TOWNMAP
+# 786dd28cd and WORLDTOWN e6f68f70b each blocked the walk to GameClear and passed the fast and
+# affected gates). Hit by these paths (world map and town runtime, world data, the imported
+# STORY／WINFAIL／TOWNDEF scripts and world-map tables, the level chain, the walk itself) and by
+# the token walk over the game/ scripts it references (directly or through tests/support/).
+STORY_EXPLORER_SUITE = "run_story_mode_explorer_tests.gd"
+STORY_PATHS = re.compile(r"^(game/world/|content/world/|content/imported/hsl/(story_corpus|chapter01)/scripts/"
+                         r"|content/imported/hsl/global/world_map/[^/]+\.json$|content/battles/(campaign|story_\d+)\.json$"
+                         r"|tests/support/StoryExplorer\.gd$)")
 # Developer entry points that are not gate suites.
 GODOT_SUITE_EXCLUDE = {"run_first_battle_playthrough.gd"} | DEEP_SUITES
 # tests/run_all.gd discovers the rule suites by this first line and runs them in-process.
@@ -387,6 +401,18 @@ def cmd_godot(args) -> int:
     return code
 
 
+def deep_suite_job(suite: str, fixed_fps: int) -> tuple[str, list[str], dict[str, str]]:
+    """The deep tier's call for one DEEP_SUITES file (fresh HOME, --fixed-fps, DEEP_SUITE_ENV);
+    run it with DEEP_TIMEOUT_SECONDS (suite_timeout)."""
+    import shutil
+    shutil.rmtree(GATE_HOMES / suite, ignore_errors=True)
+    return godot_suite_job(suite, suite, DEEP_SUITE_ENV.get(suite, {}), (), fixed_fps)
+
+
+def suite_timeout(name: str) -> int:
+    return DEEP_TIMEOUT_SECONDS if name in DEEP_SUITES else 1800
+
+
 def cmd_deep(args) -> int:
     # The deep tier: every DEEP_SUITES file present, each its own process and HOME, run
     # after the fast gate by tools/verify.sh --deep. A missing suite is a failure (the
@@ -395,13 +421,9 @@ def cmd_deep(args) -> int:
     if missing:
         print(f"DEEP_SUITES_FAIL missing {', '.join(missing)}", flush=True)
         return 1
-    import shutil
     fixed_fps = fixed_fps_setting()
     print("DEEP_SUITES_RNG_SEED seed=%s source=%s" % rng_seed_setting(), flush=True)
-    jobs = []
-    for suite in sorted(DEEP_SUITES):
-        shutil.rmtree(GATE_HOMES / suite, ignore_errors=True)
-        jobs.append(godot_suite_job(suite, suite, DEEP_SUITE_ENV.get(suite, {}), (), fixed_fps))
+    jobs = [deep_suite_job(suite, fixed_fps) for suite in sorted(DEEP_SUITES)]
 
     def summary(name: str, output: str, seconds: float) -> str:
         pass_lines = [line for line in output.splitlines() if re.match(r"^[A-Z0-9_]+_PASS\b", line)]
@@ -435,11 +457,14 @@ def affected_godot_suites(changed: list[str], requested: list[str]) -> tuple[dic
     """({suite: reason}, {sweep level key: reason}, [deep suites skipped]) for the changed paths.
     A suite is hit when it is itself changed, or references a changed .gd directly or through
     tests/support/ (res:// path or class_name); a changed battle scenario hits the sweep for its
-    levels. Game-to-game references are not followed (that graph reaches every suite)."""
+    levels; a change on the story chain (STORY_PATHS) hits the story-mode explorer, the one deep suite
+    that takes part (the token walk reaches it too). Game-to-game references are not followed (that
+    graph reaches every suite)."""
     tests = ROOT / "tests"
-    suites = {path.name: path.read_text(encoding="utf-8", errors="replace") for path in sorted(tests.glob("run_*.gd")) if path.name not in GODOT_SUITE_EXCLUDE | {RULE_SUITE_RUNNER}}
+    exclude = (GODOT_SUITE_EXCLUDE - {STORY_EXPLORER_SUITE}) | {RULE_SUITE_RUNNER}
+    suites = {path.name: path.read_text(encoding="utf-8", errors="replace") for path in sorted(tests.glob("run_*.gd")) if path.name not in exclude}
     hits: dict[str, str] = {name: "requested" for name in requested}
-    deep = sorted(Path(path).name for path in changed if path.startswith("tests/") and Path(path).name in DEEP_SUITES)
+    deep = sorted(Path(path).name for path in changed if path.startswith("tests/") and Path(path).name in DEEP_SUITES - {STORY_EXPLORER_SUITE})
     origin: dict[str, str] = {}
     for path in changed:
         if not path.endswith((".gd", ".tscn")):
@@ -473,6 +498,10 @@ def affected_godot_suites(changed: list[str], requested: list[str]) -> tuple[dic
     for path in changed:
         if path.startswith("game/battle/scene/") and path.endswith(".gd") and SCENE_CONTRACT_SUITE in suites:
             hits.setdefault(SCENE_CONTRACT_SUITE, f"{path} (scene contract)")
+            break
+    for path in changed:
+        if STORY_PATHS.match(path) and STORY_EXPLORER_SUITE in suites:
+            hits.setdefault(STORY_EXPLORER_SUITE, f"{path} (story chain)")
             break
     campaign = json.loads((BATTLES / "campaign.json").read_text(encoding="utf-8")).get("battles", {})
     levels: dict[str, str] = {}
@@ -574,7 +603,7 @@ def cmd_affected(args) -> int:
         rule, scene, levels = [], [], {}
     if rule:
         jobs.append(godot_suite_job(RULE_SUITE_RUNNER, RULE_SUITE_RUNNER, {}, tuple(rule), fixed_fps))
-    jobs.extend(godot_suite_job(name, name, {}, (), fixed_fps) for name in scene)
+    jobs.extend(deep_suite_job(name, fixed_fps) if name in DEEP_SUITES else godot_suite_job(name, name, {}, (), fixed_fps) for name in scene)
     if levels:
         jobs.append(godot_suite_job(f"{SWEEP_SUITE}#levels", SWEEP_SUITE, {"HSL_SWEEP_LEVELS": ",".join(levels)}, (), fixed_fps))
     if jobs:
@@ -598,7 +627,7 @@ def cmd_affected(args) -> int:
             body = [f"{line}  <- {name}" for line in pass_lines[:-1]] if name == RULE_SUITE_RUNNER else []
             return "\n".join(body + [f"{pass_lines[-1] if pass_lines else '(no PASS line)'}  <- {name} {seconds:.0f}s"])
 
-        if run_parallel("GODOT_SUITES", jobs, 1, summary) != 0:
+        if run_parallel("GODOT_SUITES", jobs, 1, summary, suite_timeout) != 0:
             failed.append("godot")
     godot_count = len(rule) + len(scene) + (1 if levels else 0)
     seconds = time.monotonic() - started
@@ -608,6 +637,23 @@ def cmd_affected(args) -> int:
         return 1
     print(f"LANE_AFFECTED_PASS {tail}", flush=True)
     return 0
+
+
+def cmd_story_guard(args) -> int:
+    # tools/lane_merge.sh gate after a fast gate (which skips the deep suites): the explorer runs
+    # when affected would select it for the same changes; affected mode selects it itself.
+    from hsl import changed_since
+    hits, _levels, _deep = affected_godot_suites(changed_since(args.since), [])
+    reason = hits.get(STORY_EXPLORER_SUITE)
+    code = 0
+    if reason:
+        def summary(name: str, output: str, seconds: float) -> str:
+            pass_lines = [line for line in output.splitlines() if re.match(r"^[A-Z0-9_]+_PASS\b", line)]
+            return f"{pass_lines[-1] if pass_lines else '(no PASS line)'}  <- {name} {seconds:.0f}s"
+        name, argv, env = deep_suite_job(STORY_EXPLORER_SUITE, fixed_fps_setting())
+        code = run_parallel("STORY_EXPLORER_GUARD", [(name, argv, env)], 1, summary, suite_timeout)
+    print(f"STORY_EXPLORER_GUARD ran={1 if reason else 0} reason={(reason or 'none').split()[0]}", flush=True)
+    return code
 
 
 def current_rule_suites() -> set[str]:
@@ -667,6 +713,9 @@ def main(argv: list[str]) -> int:
     p.add_argument("--max-scene-suites", type=int, default=12, help="above this many hit scene suites, defer the Godot stage to the fast gate")
     p.add_argument("suites", nargs="*", help="extra tests/run_*.gd suites to run")
     p.set_defaults(handler=cmd_affected)
+    p = sub.add_parser("story-guard", help="tools/lane_merge.sh gate after a fast gate: the story-mode explorer when affected would select it")
+    p.add_argument("--since", required=True)
+    p.set_defaults(handler=cmd_story_guard)
     p = sub.add_parser("promote-timings")
     p.add_argument("--missing", action="store_true", help="measure and add only the rule suites tests/support/suite_timings.json lacks")
     p.set_defaults(handler=cmd_promote_timings)

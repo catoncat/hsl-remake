@@ -34,7 +34,7 @@ tools/doctor.sh             # 只读环境与仓库检查
 tools/doctor.sh --original  # 加查 Wine、原作和采样 helper
 tools/verify.sh             # 完整非 GUI 验证：快门（默认，热缓存并行）／--full（另证冷克隆导入）／--deep（快门＋长端到端套件）
 tools/verify_slot.sh        # verify.sh 开头 source：全机最多 2 个 verify 同跑（/private/tmp/hsl-verify-slots 两个 mkdir 槽）；HSL_VERIFY_PRIORITY=1（lane_merge.sh gate）用负责人专用槽，其余共用另一槽，排队时每 30 s 打 VERIFY_WAIT
-tools/verify_runner.py      # 门禁背后的并行 runner：python-tests / checks（＝ hsl check --all）/ godot / deep / affected（lane 定向，见下行）/ promote-timings（run_all 分片耗时 → tests/support/suite_timings.json）
+tools/verify_runner.py      # 门禁背后的并行 runner：python-tests / checks（＝ hsl check --all）/ godot / deep / affected（lane 定向，见下行）/ story-guard（合并门快门档之后：改动落在剧情链上时跑剧情探索器）/ promote-timings（run_all 分片耗时 → tests/support/suite_timings.json）
 python3 tools/hsl.py list|check|generate|affected   # 生成器／检查器注册表的唯一 CLI（见下节）
 tools/play.sh               # 先导入并检查资源，再运行正式游戏
 tools/playtest.sh [N]       # 人工验收：独立存档、标题「戰場記錄」直进验收关 N、日志留 ~/hsl-playtest/logs（docs/PLAYTEST.md）
@@ -208,7 +208,7 @@ python3 tools/hsl_payload_inspector.py \
 
 ```sh
 tools/godot_cache_seed.sh SRC|--auto [DST]  # 从另一份 checkout 克隆 .godot 与 *.import；godot.sh 缺 .godot/imported 时自动 --auto（取最近成功导入的工作树），手动很少需要
-tools/lane_verify.sh affected BASE [SUITE...]  # lane 工作期间：hsl affected --since BASE --check ＋ 改动命中的 test_hsl_*.py ＋ 命中的 Godot 套件（套件自身改了，或经 res:// 路径／class_name 直接或经 tests/support 引用了改动的 game/、tests/support 脚本；改了战斗场景只扫那几关；一次一个 Godot 进程；命中场景套件超过 12 个时改提示跑 fast）＋ 改动 .sh 的 bash -n；环境内置（PYTHONDONTWRITEBYTECODE、HSL_VERIFY_JOBS=3；不设 HOME：Godot 套件本就各自独立 HOME），全日志 ignored/lane-verify/，终端只出结果行与失败块，末行 LANE_VERIFY_PASS|FAIL
+tools/lane_verify.sh affected BASE [SUITE...]  # lane 工作期间：hsl affected --since BASE --check ＋ 改动命中的 test_hsl_*.py ＋ 命中的 Godot 套件（套件自身改了，或经 res:// 路径／class_name 直接或经 tests/support 引用了改动的 game/、tests/support 脚本；改了战斗场景只扫那几关；改到剧情链——`game/world/`、`content/world/`、`content/imported/hsl` 下的 STORY／WINFAIL／TOWNDEF 剧本与大地图表、`content/battles/campaign.json`，或探索器经 token walk 引用的脚本——另跑剧情探索器，调用与超时同深门；一次一个 Godot 进程；命中场景套件超过 12 个时改提示跑 fast）＋ 改动 .sh 的 bash -n；环境内置（PYTHONDONTWRITEBYTECODE、HSL_VERIFY_JOBS=3；不设 HOME：Godot 套件本就各自独立 HOME），全日志 ignored/lane-verify/，终端只出结果行与失败块，末行 LANE_VERIFY_PASS|FAIL
 tools/lane_verify.sh fast  # lane 报告前那一次快门（同一环境，排 verify 共享槽）
 tools/lane_merge.sh merge|gate|publish [--dry-run]|cleanup  # 负责人合并 lane：合进 pipeline-line（只有生成物冲突时自动重生成）→ 合并树门禁 → 门禁过了才快进 main／presentation-line → 删已合并 worktree；连续几次 merge 只跑一次 gate＝合并火车。publish 先对全部目标预检，任一目标工作树有与将落地文件同名的未跟踪文件（LANE_PUBLISH_FAIL untracked=）、改过这些文件（dirty=）或不能快进（not-ff）就一个都不快进、非零退出；--dry-run 只跑预检；merge 的 git merge／generate／commit 失败各打 LANE_MERGE_FAIL merge|generate|commit
 python3 tools/hsl_docs_check.py    # 文档显式链接、图片、标题锚点；不联网
