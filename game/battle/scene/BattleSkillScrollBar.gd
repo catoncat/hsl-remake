@@ -7,6 +7,9 @@ extends TextureRect
 ## pass). Track y 22–242 of the bar (+0x6c = 16+6, +0x74 = 264−22). 0x445d70: height
 ## ⌊⌊9·65536/n⌋·220/65536⌋, top 22 + ⌊220·pos/n⌋, pos in [0, n−9]. 0x445860: n ≤ 9 hides
 ## all four objects and ignores the keys. The owner moves its rows on `scrolled`.
+## The 獲得物品 list (0x414c00 → 0x446060(win, 760, 151, 152, 153, width−24, …, 5 rows)) hangs the
+## same arrows and thumb on template 760 VScroll_Bar06 WIN06BAR (24×220): `trough`／`rows` pick
+## it, the down arrow and the track end follow the trough height (h−21, h−22).
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#5
@@ -17,6 +20,7 @@ const BAR_DX := 200
 const VISIBLE_ROWS := 9
 const ARROW_UP_AT := Vector2(5, 5)
 const ARROW_DOWN_AT := Vector2(5, 243)
+const ARROW_DOWN_FROM_FOOT := 264 - 243
 const THUMB_X := 5
 const THUMB_WIDTH := 14
 const THUMB_FOOT := 2
@@ -29,6 +33,8 @@ const ARROW_HELD_SHADER := "shader_type canvas_item;\nvoid fragment() { COLOR.rg
 const NO_DRAG := -1
 var count := 0
 var pos := 0
+var visible_rows := VISIBLE_ROWS
+var track_length := TRACK_LENGTH
 var thumb: Control
 var _thumb_foot: TextureRect
 var _held_arrow: TextureRect
@@ -36,11 +42,15 @@ var _drag_grab := NO_DRAG
 
 
 ## `list_at`: the WINDOW20 board's position in the parent.
-func _init(list_at: Vector2 = Vector2.ZERO) -> void:
+## `trough`／`rows`／`bar_dx`: the 獲得物品 list passes WIN06BAR, 5 and 351 (WINDOW90 width − 24).
+func _init(list_at: Vector2 = Vector2.ZERO, trough: String = "WIN02BAR", rows: int = VISIBLE_ROWS, bar_dx: int = BAR_DX) -> void:
 	name = "ScrollBar"
-	texture = load(BattleUISkin.ROOT + "WIN02BAR.SHP.png")
+	texture = load(BattleUISkin.ROOT + trough + ".SHP.png")
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	position = list_at + Vector2(BAR_DX, 0)
+	position = list_at + Vector2(bar_dx, 0)
+	visible_rows = rows
+	var height := texture.get_height()
+	track_length = height - 2 * TRACK_TOP
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	gui_input.connect(_trough_input)
 	thumb = Control.new()
@@ -53,7 +63,7 @@ func _init(list_at: Vector2 = Vector2.ZERO) -> void:
 	held.shader = Shader.new()
 	held.shader.code = ARROW_HELD_SHADER
 	for step in [-1, 1]:
-		var arrow := BattleUISkin.asset(self, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else ARROW_DOWN_AT)
+		var arrow := BattleUISkin.asset(self, "BAR_UP" if step < 0 else "BAR_DOWN", ARROW_UP_AT if step < 0 else Vector2(ARROW_DOWN_AT.x, height - ARROW_DOWN_FROM_FOOT))
 		arrow.mouse_filter = Control.MOUSE_FILTER_STOP
 		arrow.gui_input.connect(_arrow_input.bind(arrow, step, held))
 	hide()
@@ -69,15 +79,22 @@ func reset(rows: int) -> void:
 
 
 ## Moves the list to row `to` (clamped) and puts the thumb where 0x445d70 does.
-func scroll_to(to: int) -> void:
-	pos = clampi(to, 0, maxi(0, count - VISIBLE_ROWS))
-	visible = count > VISIBLE_ROWS
+func scroll_to(to: int, announce: bool = true) -> void:
+	pos = clampi(to, 0, maxi(0, count - visible_rows))
+	visible = count > visible_rows
 	if visible:
-		var height := (VISIBLE_ROWS * THUMB_SCALE / count) * TRACK_LENGTH / THUMB_SCALE
-		thumb.position = Vector2(THUMB_X, TRACK_TOP + TRACK_LENGTH * pos / count)
+		var height := (visible_rows * THUMB_SCALE / count) * track_length / THUMB_SCALE
+		thumb.position = Vector2(THUMB_X, TRACK_TOP + track_length * pos / count)
 		thumb.size = Vector2(THUMB_WIDTH, height)
 		_thumb_foot.position.y = height - THUMB_FOOT
-	scrolled.emit(pos)
+	if announce: scrolled.emit(pos)
+
+
+## A list whose length changed under the bar (the 獲得物品 pool after a take): keeps the row,
+## clamped, without re-announcing it.
+func resize(rows: int) -> void:
+	count = rows
+	scroll_to(pos, false)
 
 
 ## With the bar up, a new press of ↑／↓ moves one row and PgUp／PgDn nine (0x445f00 key masks
@@ -85,7 +102,7 @@ func scroll_to(to: int) -> void:
 ## WM_MOUSEWHEEL case.
 func handle_key(event: InputEvent) -> bool:
 	if not (visible and event is InputEventKey and event.pressed and not event.echo): return false
-	var step: int = {KEY_UP: -1, KEY_DOWN: 1, KEY_PAGEUP: -VISIBLE_ROWS, KEY_PAGEDOWN: VISIBLE_ROWS}.get(event.keycode, 0)
+	var step: int = {KEY_UP: -1, KEY_DOWN: 1, KEY_PAGEUP: -visible_rows, KEY_PAGEDOWN: visible_rows}.get(event.keycode, 0)
 	if step == 0: return false
 	scroll_to(pos + step)
 	get_viewport().set_input_as_handled()
@@ -118,13 +135,13 @@ func _release_arrow() -> void:
 func _trough_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			if event.position.y < thumb.position.y: scroll_to(pos - VISIBLE_ROWS)
-			elif event.position.y > thumb.position.y + thumb.size.y: scroll_to(pos + VISIBLE_ROWS)
+			if event.position.y < thumb.position.y: scroll_to(pos - visible_rows)
+			elif event.position.y > thumb.position.y + thumb.size.y: scroll_to(pos + visible_rows)
 			_drag_grab = int(event.position.y - thumb.position.y)
 		elif _drag_grab != NO_DRAG:
 			_drag_grab = NO_DRAG
 			scroll_to(pos)
 	elif event is InputEventMouseMotion and _drag_grab != NO_DRAG:
-		var top := clampi(int(event.position.y) - _drag_grab, TRACK_TOP, TRACK_TOP + TRACK_LENGTH)
-		scroll_to((top - TRACK_TOP + TRACK_LENGTH / (2 * count)) * count / TRACK_LENGTH)
-		thumb.position.y = mini(top, TRACK_TOP + TRACK_LENGTH - int(thumb.size.y) - 1)
+		var top := clampi(int(event.position.y) - _drag_grab, TRACK_TOP, TRACK_TOP + track_length)
+		scroll_to((top - TRACK_TOP + track_length / (2 * count)) * count / track_length)
+		thumb.position.y = mini(top, TRACK_TOP + track_length - int(thumb.size.y) - 1)

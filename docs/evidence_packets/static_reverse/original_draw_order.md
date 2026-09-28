@@ -5,13 +5,13 @@
 ## 结论
 
 - 原版按 32 px 格行给单位和非 ATTACKFLAG 的站立物件排深度桶，行号小的先画；同桶内 plane 小者先画、同 plane 按建立顺序；飞行单位桶号 +10；ATTACKFLAG 物件固定在 `obj_Plane`（static-derived）。
-- 重制 `ActorRuntime.depth_index` 以脚点像素 y 作 z_index、飞行单位 +320，地图物件以 EVEF 锚点 y 同域排序（`BattleSceneStage`）；脚点被北侧建筑盖住的 14 名单位中 11 名原版同样被盖，雷特（飞行）原版不被盖，重制已照做（static-derived）。
+- 重制 `ActorRuntime.depth_index` 照原版算行桶：`clamp(((y+16)>>5) − 镜头顶行, 0, 19) + 4`，飞行 +10，z = (桶 + 镜头顶行)·32 + plane（玩家 planeIcon 3、敌人 planeObject1 4），同桶 plane 小者先、同 plane 按节点顺序；站立物件以锚点行桶 + obj_Plane 同域排序（`ActorRuntime.stand_object_z`）；脚点被北侧建筑盖住的 14 名单位中 11 名原版同样被盖，雷特（飞行）原版不被盖，重制已照做（static-derived）。
 - 过程不改 +0xc 的物件停在 `obj_Plane` 桶：defProcObjectMove（`0x4051d0`）整段只读不写自身 +0xc。第 53 战开场的 繩子（planeObject1 = 桶 4）因此画在 緹娜 下面——她下绳时桶号 10..19，只有她站在视口最上一格行时才与绳子同桶（static-derived）。
-- 重制 `ActorRuntime.fixed_plane_depth` 照此给 defProcObjectMove 物件定 z：planeObject1 及以下压在全部单位下、planeObject31 以上压在全部单位上、planeEffect* 起用 `EFFECT_Z`；改前繩子 z = 锚点 y + 241 = 705，盖住下绳途中脚点 y < 705 的 緹娜（static-derived）。
+- 重制 `ActorRuntime.apply_object_depth` 给 defProcObjectMove 物件与带 ATTACKFLAG 的站立物件定固定 plane：planeObject1 以下压在全部单位下，planeObject1..30 = 当前视口的同号桶（`refresh_fixed_planes` 每帧按镜头顶行换算，随镜头滚动与单位交错），planeObject31 以上压在全部未抬起单位上，planeEffect* 起用 `EFFECT_Z`；繩子 = 桶 4，下绳的 緹娜 桶 10..19 画在其上（static-derived）。
 - 单位过程算完行桶与飞行 +10 后还有两段全局状态分支（static-derived）：①`[0x4c1b00] & 0x1400000`（战斗特写或状态窗／仓库窗打开期间、或魔法效果阶段）时，桶号超过 22 的飞行单位若不在施法脚印里就压回 22；②`& 0x1000000`（魔法效果阶段）时，飞行单位先压回 22，再给施法脚印内的单位和摆着施法姿势的单位 +23——施法者与目标在效果放完前画在全部 y 排序的单位与站立物件上面。
-- 重制 `BattleSceneStage.sync_cast_depth` 在地图 `magic:` 切入播放期间，给效果格内的单位与施法姿势中的单位置 `ActorRuntime.cast_lift`，z 抬到 `CAST_LIFT_Z` 带（全部脚点 y 之上、planeObject31 固定带之下，带内仍按脚点先后）（static-derived）。
+- 重制 `BattleSceneStage.sync_cast_depth` 在地图 `magic:` 切入播放期间，给效果格内的单位与施法姿势中的单位置 `ActorRuntime.cast_lift`（桶 +23，z 进 `CAST_LIFT_Z` 带：全部行桶 z 之上、planeObject31 固定带之下，带内按桶与 plane），并给全部飞行单位置 `flying_cap`；其他切入（攻方特写，对应 0x400000）期间目标格外的飞行单位置 `flying_cap`（桶 > 22 压回 22）（static-derived）。
 - 同桶先后：`0x461479` 对象 +0 带 `0x80000000` 时挂桶头，否则挂桶尾；单位（初始化 `or 0x2c000000`）与站立物件都不带这一位，所以同桶按第二遍遍历顺序——plane 小者先画，同 plane 按链表顺序（static-derived）。
-- 差异：像素 y 代替 32 px 桶、同桶先后、planeObject2..30 的固定 plane（相机相对行）、站立物件的 ATTACKFLAG 固定 plane、飞行单位封顶 22 未建模（provisional）。
+- 差异：站立物件锚点行桶不按视口夹紧（只影响锚点在视口外的物件）、抬起桶 27..46 与 planeObject24..40 不交错、状态窗／仓库窗期间的飞行封顶未建模（provisional）。
 
 ## 证据
 
@@ -86,10 +86,10 @@
 
 ## 重制接线
 
-- `game/battle/runtime/ActorRuntime.gd` `depth_index(foot_y, flying)`：z_index = 脚点 y，飞行单位加 `FLYING_DEPTH_ROWS × 32 = 320`。地图物件的 z_index 是其 EVEF 锚点 y（`game/battle/scene/BattleSceneStage.gd`），与单位同一个深度域。
-- `ActorRuntime.depth_index(foot_y, flying, lifted)`：`lifted` 为真时 z = `CAST_LIFT_Z`（2400）+ 脚点 y / 2，封在 3899 以下——全部脚点 y 之上、planeObject31 固定带之下，带内仍按脚点先后。`BattleSceneStage.sync_cast_depth` 每帧（`BattleSceneRuntime._process` 在 `BattlePresentation.refresh` 之后）判断切入队首是否地图 `magic:` 片段（对应位 `0x1000000` 的阶段），是则给 `SkillTargetRules.effect_cells(施法中心)` 格内的单位与 `is_posing()`（use_magic 姿势 = +0x80 位 `0x1000`）的单位置 `cast_lift`，否则全清。
+- `game/battle/runtime/ActorRuntime.gd` `depth_bucket(foot_y, flying, lifted, capped)`：原版桶号，`clamp(((y+16)>>5) − view_top_row, 0, 19) + 4`，飞行 +10，`capped` 且飞行桶 > 22 压回 22，`lifted` +23。`depth_index(…, plane)`：未抬起 z = `bucket_z(桶, plane)` = (桶 + view_top_row)·32 + plane（`BUCKET_Z` 32，plane 夹到 0..31），即世界行桶；`view_top_row`（camera_y >> 5）由 `BattleSceneRuntime.sync_view_depth` 在镜头推进后、单位 `_process` 之前每帧写入。`stand_object_z(anchor_y, plane)`：站立物件的世界行桶 z，与单位同域；`BattleSceneStage` 地图物件、`MapObjectDrift` 云影、剧情物件与特效循环帧都用它。
+- `lifted` 为真时 z = `CAST_LIFT_Z`（2700）+ (桶 − 27)·32 + plane，封在 3899 以下——全部世界行桶 z（≤ 2698，60 行地图最低处飞行单位 (60 + 18)·32 + 31 仍在带下）之上、planeObject31 固定带之下，CASTBUCKET 的施法阴影在 `CAST_LIFT_Z − 1`。`BattleSceneStage.sync_cast_depth` 每帧（`BattleSceneRuntime._process` 在 `BattlePresentation.refresh` 之后）判断切入队首：地图 `magic:` 片段（位 `0x1000000` 的阶段）给 `SkillTargetRules.effect_cells(施法中心)` 格内的单位与 `is_posing()`（use_magic 姿势 = +0x80 位 `0x1000`）的单位置 `cast_lift`、全部单位置 `flying_cap`；其他切入（攻方特写，位 `0x400000`）给目标格以外的单位置 `flying_cap`；无切入全清。
 - `BattleSceneStage.sync_actor_depth` 在生成节点时和每次同步 loop 时，从 PlayLoop 单位的 `traversal.flying` 写 `flying_depth`；`actSetPlayerFly` 在战中改飞行时随之更新。全游戏所有飞行单位共用，不按关卡处理。
-- `ActorRuntime.fixed_plane_depth(plane, fallback_z)`：plane 编号 ≤ 4（planeBG*、planeIcon、planeObject1）给 z 0..4（地图底图 z 0 之上、所有脚点 y 之下）；> 33（planeObject31 起）给 3900 + 编号；planeEffect* 及以后给 4000（= `StoryEffectObjects.EFFECT_Z`）；5..33 返回调用方原 z。`game/battle/runtime/opening/OpeningStoryObjects.gd` 的普通精灵路径对 `process == defProcObjectMove` 的剧情物件改用它（engRANGE 绳子展开后同样覆盖）。
+- `ActorRuntime.fixed_plane_depth(plane, fallback_z)`：plane 编号 < 4（planeBG*、planeIcon）给 z 0..3（地图底图 z 0 之上、所有行桶之下）；4..33（planeObject1..30）给 `bucket_z(编号, 编号)`；> 33 给 3900 + 编号；planeEffect* 及以后给 4000（= `StoryEffectObjects.EFFECT_Z`）。`apply_object_depth(node, anchor_y, plane, fixed)`：`fixed`（defProcObjectMove，或 obj_Attribute 带 objattrATTACKFLAG）用固定 plane，4..33 的节点进组 `fixed_plane_depth`，`refresh_fixed_planes` 每帧按镜头顶行重算；否则 `stand_object_z`。站立物件的 `plane` 与 `obj_Attribute` 由种子（`tools/hsltools/levels/seed.py`）与地图物件清单（`map_objects.py`）从 OBS 模板带出。玩家单位 `depth_plane` = planeIcon 3，其余 planeObject1 4（`sync_actor_depth`，[自动成长](original_auto_growth.md) 的出生顺序读法）。
 - 重制截图：`ignored/ropez/after_053_slide1.png`、`after_053_slide2.png`（下绳途中，人在绳前），对照 `after_051.png`、`after_002.png`（地图物件与单位叠画不变）。
 - provenance 写法：`static-derived docs/evidence_packets/static_reverse/original_draw_order.md`（`ActorRuntime.gd`）。
 
@@ -99,13 +99,10 @@
 
 ## 边界
 
-- 重制用像素 y，原版用 32 px 桶（provisional）。锚点落在单位同一格行内时（`锚点 y ∈ [行·32+16, 行·32+48)`），原版改按 plane／建立顺序决定先后，重制仍按像素决定。14 名都不在这种同桶情形。
-- ATTACKFLAG 物件的固定 plane（云、火、背景、39 关岩石2）重制仍按锚点 y 排序：地图物件的 obj_Attribute 导入器没保留，本包未逐一核对。
-- planeObject2..30 的固定 plane 与 y 桶的比较取决于镜头行（桶 = 视口相对行），重制未建模，这类物件仍用锚点 y。
+- 站立物件的行桶用世界行、不按视口夹紧（provisional）：锚点在视口上方或下方 19 行以外的物件，原版夹到桶 4／23，重制保持世界行；只影响锚点在视口外而图像伸进视口的高物件。
 - defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；重制对它们维持原有 z（效果类多为 EFFECT_Z）。
-- 固定桶 4 的物件与视口最上一格行的单位同桶时，原版按 plane 链表让玩家先画、物件在上；重制把 planeObject1 物件一律压在单位下。
-- 飞行单位封顶 22（特写、状态窗、仓库窗、魔法效果阶段）未建模：桶号是视口相对行，封顶只在飞行单位离视口顶 ≥ 8 行时生效，重制像素域没有镜头行；重制特写与窗口是全屏覆盖层。
+- 飞行单位封顶 22：重制在切入（特写）与魔法效果阶段封顶；状态窗、仓库窗期间的封顶未建模（重制窗口是全屏覆盖层）；攻方特写的脚印取目标格（provisional）。
 - 重制效果阶段取切入队首的 `magic:` 片段整段（provisional）；原版从状态 4（镜头滚向目标）到状态 9（镜头回施法者）。
 - 单位记录 +0x2c 非 0（大体型）时原版按 3×3 查脚印，重制只查单位所在格；`0x43db60`（`[0x4c1b2c]` 非 0 时对脚印内单位）与字节 +0x34 未读。
 - 原版抬起后的桶 27..45 与 planeObject24..40 固定 plane 物件交错，重制把抬起的单位一律放在 planeObject31 固定带之下。
-- 同一桶内的建立顺序与 `0x45f0d1`（移到本 plane 链表尾）的调用时机未建模。
+- 同一桶同一 plane 内重制按 Godot 节点顺序（单位层与物件层分属不同父节点），原版按建立顺序；`0x45f0d1`（移到本 plane 链表尾）的调用时机未建模。

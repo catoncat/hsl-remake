@@ -159,6 +159,7 @@ def build_placements(seed: dict) -> list[dict]:
             'join': {'status': 'joined'},
             'runtime_layer_hint': layer_hint(fields),
             'presentation_hint': presentation_hint(fields),
+            **({'plane': row['plane']} if row.get('plane') else {}),
         })
     overrides = layer_overrides(int(seed['level']))
     for placement in result:
@@ -319,6 +320,7 @@ def build_combined_placements(seed: dict) -> list[dict]:
                 'object_fields': {key: {'value': str(value)} for key, value in fields.items()},
                 'runtime_layer_hint': layer_hint(fields),
                 'presentation_hint': presentation_hint(fields),
+                **({'plane': child['plane']} if child.get('plane') else {}),
             })
         result.append({
             'record_index': int(row['record_index']),

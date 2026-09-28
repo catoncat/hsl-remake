@@ -64,16 +64,23 @@ const MISS_HOLD_TICKS := 40
 ## (0x460a06) blends the full-screen black shape at level 1 → 16, one level per tick, over the
 ## held hurt pose — 16 ticks; when the pending flag clears it hides the defender, leaves the
 ## cut-in (0x42c3f0(0)) and requests 0x42dca0(1) = 0x4609c0(1): level 16 → 1 over the map,
-## another 16 ticks; only then does the parent sequence advance. A shot with a counter or
-## extra strike still to come (bit 0x200 set by 0x403860, target alive) skips both halves.
+## another 16 ticks; only then does the parent sequence advance. The frame body 0x42d600 runs
+## the objects (0x45f5f7) before 0x460a06, so level 1 is drawn on phase 101's first tick, the
+## lighten starts on tick 16 (no hold between) and sub-state 2 (0x404ac8 → 0x404d90) hands over
+## on tick 32 — `complete`. 0x460989 only reads the pending flag [0x4bbb5a]. A shot with a
+## counter or extra strike still to come (bit 0x200 set by 0x403860, target alive) skips both
+## halves: sub-state 0 (0x404b23) sets sub-state 2 (0x404b55) and sub-state 2 hands over on
+## the next tick — one tick after the recovery point.
 const RECOVERY_TICKS := 16
 const CLOSING_LIGHTEN_TICKS := 16
+const HANDOVER_TICKS := 1
 const TRANSITION_LEVELS := 16
 ## Schedule values live on the cut-in's scaled clock (elapsed × PLAYBACK_SPEED), so a
 ## visible tick count is multiplied by PLAYBACK_SPEED to keep its wall-clock length.
 static var TARGET_PAUSE: float = scaled(OriginalTick.seconds(TARGET_PAUSE_TICKS))
 static var RECOVERY: float = scaled(OriginalTick.seconds(RECOVERY_TICKS))
 static var CLOSING_LIGHTEN: float = scaled(OriginalTick.seconds(CLOSING_LIGHTEN_TICKS))
+static var HANDOVER: float = scaled(OriginalTick.seconds(HANDOVER_TICKS))
 
 ## defProcAttackFlash 0x401140 (object 178 from 0x401310): the attacker's aniInsertAttackFlash
 ## (0x4021df) inserts it with the attacker as parent (+0x88 both ways). Its first call sets
@@ -108,10 +115,13 @@ static func flash_life_ticks(level: int, hold_ticks: int) -> int:
 ## 0x1000 stepped by 0x401060 until ≥ 0xd0001 — 24 draws; then sets zoom 0x120000 (18.0),
 ## restores the attacker's frame (+0x30 = +0x32), builds the identity-strip text (0x436490
 ## mode 3) and draws the same shape with the level-blend mode 0x28000000 at level +0x28 =
-## 16 → 1, one level per 2 ticks (+0x94 = 0x20002) — 32 draws. No sound call.
+## 16 → 1, one level per 2 ticks (+0x94 = 0x20002) — 32 draws. No sound call. Sub-state 2
+## (0x4027ee) spends one more tick: it reads the transition pending flag 0x460989 (always 0
+## here — the previous exchange's defender hands over only after it clears) and sets phase 0.
 const OPENING_ZOOM_TICKS := 24
 const OPENING_OVERLAY_TICKS := 32
-const OPENING_TICKS := OPENING_ZOOM_TICKS + OPENING_OVERLAY_TICKS
+const OPENING_WAIT_TICKS := 1
+const OPENING_TICKS := OPENING_ZOOM_TICKS + OPENING_OVERLAY_TICKS + OPENING_WAIT_TICKS
 const OPENING_ZOOM_START := 0x1000
 const OPENING_ZOOM_LIMIT := 0xd0001
 const OPENING_OVERLAY_ZOOM := 0x120000
@@ -234,4 +244,4 @@ static func ordinary(actor: Dictionary, strike: Dictionary = {}, first_shot: boo
 	var closing := closes_exchange(strike, last_shot)
 	var darkened := impact_time + hold + (RECOVERY if closing else 0.0)
 	return {"opening": opening, "release": release_time, "target": duration, "impact": impact_time,
-		"recovery": impact_time + hold, "darkened": darkened, "complete": darkened + (CLOSING_LIGHTEN if closing else 0.0)}
+		"recovery": impact_time + hold, "darkened": darkened, "complete": darkened + (CLOSING_LIGHTEN if closing else HANDOVER)}

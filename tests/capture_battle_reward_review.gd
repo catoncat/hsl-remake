@@ -146,7 +146,7 @@ func full_inventory() -> void:
 	await click(panel.slots[3])
 	check(panel.holding() and RuntimeReadback.first_empty_slot(panel) < 0, "full bag: the lifted item leaves its slot")
 	await key(KEY_ESCAPE)
-	check(scene.play_loop == before and not panel.holding(), "Esc puts a lifted bag item back")
+	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 246] and not panel.holding(), "Esc puts a lifted bag item back first-empty (0x436e80 then 0x436e30)")
 	await click(panel.finish_button)
 	for _attempt in range(400): # the LEVEL UP float plays before the growth window
 		if scene.growth_panel.visible: break

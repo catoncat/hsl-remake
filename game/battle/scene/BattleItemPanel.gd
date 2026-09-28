@@ -31,6 +31,7 @@ signal give_requested(target_id: String, index: int, code: int, target_index: in
 signal give_finished(revision: int)
 signal drop_requested(item_code: String)
 signal equipment_requested(slot: String, inventory_index: int, item_code: int)
+signal hand_return_requested(inventory_index: int, item_code: int)
 ## take_up (399) when an item comes into the hand, put_down (400) when the hand places it.
 signal ui_sound_requested(event: String)
 const EquipmentRules = preload("res://game/sim/EquipmentRules.gd")
@@ -45,6 +46,9 @@ const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleMagicPanel = preload("res://game/battle/scene/BattleMagicPanel.gd")
+const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
+const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
+const StatusEffectRules = preload("res://game/sim/StatusEffectRules.gd")
 ## 使用／交換 window (mode 6／7), runtime-measured on 玩家第 2 场 · 惡夢的終曲（LEVEL052）
 ## (menus_ui/README.md#7): WINDOW20 (12,174), rows from (20,182) every 32 px, the item icon
 ## anchored at (row x+24, row y+8) → 回復藥 texture (25,173+32i), the FONT.24 name cell at row
@@ -81,6 +85,9 @@ var target_buttons: Dictionary = {}
 ## Mode 4／5 held slot [0x4c1ce4] as a draft: the real inventory index and code of the held item.
 var held_index := -1
 var held_code := 0
+## Mode 4／5 left column 屬性 page (WINDOW21) shown over the bag while an item is held over the board.
+var attribute_page: Control
+var _attribute_shown := false
 var drop_button: TextureButton
 const DROP_BUTTON_CENTRE := Vector2(285, 387)
 var give_revision := -1
@@ -372,6 +379,7 @@ func _hold_selected_item() -> void:
 func _process(delta: float) -> void:
 	if visible and is_instance_valid(held_icon):
 		_follow_pointer()
+	if visible: _update_attribute_page()
 	_pulse_clock += delta
 	if visible and is_instance_valid(hover_caption):
 		hover_caption.add_theme_color_override("font_color", _hover_colour())
@@ -434,6 +442,9 @@ func _place_give_item(target_index: int, return_code: int) -> void:
 ## The held slot is [0x4c1ce4]; here it is a draft over the real inventory (`held_index`), and
 ## every change that reaches the rules is one PlayLoop command, refreshed back into the window.
 func _show_hand_window(command: String) -> void:
+	# 0x43ac10 builds the root with +0x94 = 4, so a fresh window starts on 屬性 until the pointer
+	# is off the board; rebuilds after a change keep the page.
+	if page != "hand": _attribute_shown = true
 	_clear_page()
 	operation = command
 	page = "hand"
@@ -480,9 +491,38 @@ func _show_hand_window(command: String) -> void:
 	capacity.visible = back.visible
 	if operation == "drop":
 		drop_button = _drop_icon_button()
+	_build_attribute_page()
 	if held_code != 0:
 		selected_item = str(held_code)
 		_hold_selected_item()
+
+
+## 0x439a0f..0x439a35 (WINDOW30 procedure, root flag 0x4000): each tick the pointer is off the
+## board the left column goes to 道具 (root +0x94 = 1); an item held over the board turns it to
+## 屬性 (+0x94 = 4: WINDOW21 and its nine live values, 0x448840 after every change). Over the
+## board with an empty hand the page stays as it was.
+func _build_attribute_page() -> void:
+	attribute_page = Control.new()
+	attribute_page.name = "AttributePage"
+	attribute_page.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	attribute_page.visible = _attribute_shown
+	page_root.add_child(attribute_page)
+	BattleUISkin.asset(attribute_page, "WINDOW21", BattleGrowthPanel.LEFT)
+	var profile := CoreCombatRules.combat_profile_from_unit(source_unit)
+	var live: Dictionary = StatusEffectRules.weakened_attributes(source_unit) if source_unit.get("status_counters") is Dictionary else profile
+	var values := [int(live["str"]), int(live["dex"]), int(live["mind"]), int(live["con"]), int(profile["live_attack_damage"]), int(profile["live_defense"]), "%d%%" % int(profile["live_magic_attack"]), int(source_unit["live_speed"]), int(source_unit["move_point"])]
+	for index in range(values.size()):
+		var value := BattleUISkin.text(attribute_page, Vector2(BattleGrowthPanel.ATTRIBUTE_VALUE_X if index < 4 else BattleGrowthPanel.DERIVED_VALUE_X, BattleGrowthPanel.LEFT.y + 8 + index * BattleGrowthPanel.ROW_HEIGHT), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(60, BattleGrowthPanel.GLYPH_ROW))
+		value.name = "Attribute_%d" % index
+		value.text = str(values[index])
+
+
+func _update_attribute_page() -> void:
+	if page != "hand" or not is_instance_valid(attribute_page): return
+	var over_board := Rect2(BattleEquipmentView.BOARD_AT, Vector2(376, 168)).has_point(page_root.get_local_mouse_position())
+	if not over_board: _attribute_shown = false
+	elif held_code != 0: _attribute_shown = true
+	attribute_page.visible = _attribute_shown
 
 
 ## Name colour of a hand-window row (0x434d10 bag rows, 0x4c1cf8 == 1 in 裝備): a consumable, or
@@ -521,14 +561,14 @@ func _drop_icon_button() -> TextureButton:
 	return button
 
 
-## A pick on a WINDOW20 row (0x438c53..0x438de7): empty hand takes the row's item (sound 399);
-## a held item goes back first-empty (sound 400). The real inventory is untouched either way.
+## A pick on a WINDOW20 row (0x438c53..0x438de7): empty hand takes the row's item (sound 399; the
+## rows close its gap, 0x436e80); a held item goes back first-empty — the end of the compacted bag
+## (0x436e30, sound 400), committed through hand_return_requested.
 func _hand_row(index: int, code: int) -> void:
 	if page != "hand":
 		return
 	if held_code != 0:
-		_set_hand(-1, 0)
-		ui_sound_requested.emit("put_down")
+		_return_hand()
 	elif code != 0:
 		_set_hand(index, code)
 		ui_sound_requested.emit("take_up")
@@ -582,6 +622,18 @@ func hand_item_dropped(unit: Dictionary) -> void:
 	_show_hand_window(operation)
 
 
+func _return_hand() -> void:
+	selected_item = str(held_code)
+	selected_index = held_index
+	hand_return_requested.emit(held_index, held_code)
+
+
+## BattleSceneMenus after a committed put-back: the hand is empty, the item is last in the bag.
+func hand_item_returned(unit: Dictionary) -> void:
+	hand_item_dropped(unit)
+	ui_sound_requested.emit("put_down")
+
+
 func _set_hand(index: int, code: int) -> void:
 	held_index = index
 	held_code = code
@@ -622,7 +674,7 @@ func cancel() -> void:
 		BattlePanelMotion.attach(self).slide_in()
 	elif page == "hand" and held_code != 0:
 		# 0x438868: right click puts the held item back (first empty) and keeps the window.
-		_set_hand(-1, 0)
+		_return_hand()
 	elif page in ["inventory", "hand"]:
 		# 0x43896b → root 3 → parent 76→77, 0x444c19 writes 3: the item sub-menu reopens.
 		_show_commands()

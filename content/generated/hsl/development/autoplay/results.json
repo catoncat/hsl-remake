@@ -968,7 +968,7 @@
         "move": 3,
         "wait": 0,
         "offense_finished": 0,
-        "ai_steps": 17,
+        "ai_steps": 21,
         "loot_deferred": 0,
         "scene_phases": 1
       },

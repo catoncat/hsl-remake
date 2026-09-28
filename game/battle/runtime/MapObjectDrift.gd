@@ -20,6 +20,7 @@ extends Node
 ##     (0x1400000 read as a busy cut-in queue or the open status panel; scroll order not read)
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 
 ## 0x4a35fc／0x4a39fc: 256-step cos／sin tables, each entry round(·65536).
 const ANGLE_STEPS := 256
@@ -125,8 +126,10 @@ func _draw_cloud(cloud: Dictionary) -> void:
 	var sprite: Node2D = cloud["sprite"]
 	var origin: Vector2i = cloud["origin"]
 	sprite.position = Vector2(int(cloud["x"]) - origin.x, int(cloud["y"]) - origin.y)
-	# The remake orders stand objects by their point's y (BattleSceneStage).
-	sprite.z_index = int(cloud["y"])
+	# A y-sorted stand object's bucket follows its point (0x43ccf0); an ATTACKFLAG one keeps
+	# its fixed obj_Plane depth (ActorRuntime.apply_object_depth).
+	if not sprite.has_meta("depth_plane"):
+		sprite.z_index = ActorRuntime.stand_object_z(float(cloud["y"]), int(sprite.get_meta("stand_plane", ActorRuntime.PLANE_OBJECT1)))
 
 
 ## 0x43d4c1: x = x0 + trunc((camX − x0)·score / 640) (−1: camX; 0: stays), y alike / 480.

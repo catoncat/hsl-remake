@@ -513,14 +513,17 @@ func _test_job_up_reconfigures_actor_frames() -> void:
 func _test_actor_depth_follows_visible_position() -> void:
 	var actor := ActorRuntime.new()
 	root.add_child(actor)
+	# Depth buckets are 32 px rows (0x4300f0): a planeObject20 tree anchored at y 576 is row 18.
+	ActorRuntime.view_top_row = 0
+	var tree_z := ActorRuntime.stand_object_z(576, ActorRuntime.plane_number("planeObject20"))
 	actor.position = Vector2(288, 540)
 	actor._process(0)
-	_assert_true(actor.z_index < 576, "actor behind a tree must remain behind its anchor depth")
+	_assert_true(actor.z_index < tree_z, "actor behind a tree must remain behind its anchor depth")
 	actor.move_along([Vector2(288, 604)], 0.4)
 	actor._motion_tween.pause()
-	actor._motion_tween.custom_step(0.3)
+	actor._motion_tween.custom_step(0.35)
 	actor._process(0)
-	_assert_true(actor.z_index > 576, "walking in front of the tree must update draw depth before arrival")
+	_assert_true(actor.z_index > tree_z, "walking in front of the tree must update draw depth before arrival")
 	actor.queue_free()
 	# A flyer's depth is 10 rows deeper (original 0x43f31e／0x443849): standing one row
 	# north of the tree anchor it draws over the tree; the ablation (ground) stays behind.
@@ -529,8 +532,8 @@ func _test_actor_depth_follows_visible_position() -> void:
 	flyer.position = Vector2(288, 540)
 	flyer.flying_depth = true
 	flyer._process(0)
-	_assert_eq(flyer.z_index, 540 + ActorRuntime.FLYING_DEPTH_ROWS * 32, "a flying actor draws 10 rows deeper")
-	_assert_true(flyer.z_index > 576 and ActorRuntime.depth_index(540, false) < 576, "a flyer north of the tree draws over it, a walker behind it")
+	_assert_eq(flyer.z_index, ActorRuntime.bucket_z(ActorRuntime.depth_bucket(540, false) + ActorRuntime.FLYING_DEPTH_ROWS, ActorRuntime.PLANE_ICON), "a flying actor draws 10 rows deeper")
+	_assert_true(flyer.z_index > tree_z and ActorRuntime.depth_index(540, false) < tree_z, "a flyer north of the tree draws over it, a walker behind it")
 	flyer.queue_free()
 	await process_frame
 

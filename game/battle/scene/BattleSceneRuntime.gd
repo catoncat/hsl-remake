@@ -269,6 +269,7 @@ func _notification(what: int) -> void:
 
 func _process(delta: float) -> void:
 	advance_camera(delta)
+	sync_view_depth()
 	stamp_presentation_view()
 	ai_move_preview.tick(delta)
 	if overlays != null: overlays.sync_unit_highlights()
@@ -1168,6 +1169,15 @@ func stamp_presentation_view() -> void:
 		return
 	var origin: Vector2 = map_config.grid_projection.get("origin", Vector2.ZERO)
 	BattlePlayLoop.stamp_presentation_view(play_loop, Vector2i((camera_controller.logical_to_world(Vector2.ZERO) - origin).floor()))
+
+
+## The draw-depth buckets are view-relative rows (0x4300f0): after the view moves, before the
+## actors update, stamp the view top row and re-band the fixed-plane objects.
+func sync_view_depth() -> void:
+	if not is_inside_tree():
+		return  # a scene stepped after leaving the tree (defeat → GAME OVER handoff) has no view
+	var top: float = camera_controller.logical_to_world(Vector2.ZERO).y if camera_controller != null else 0.0
+	ActorRuntime.refresh_fixed_planes(get_tree(), top)
 
 
 ## Steps a running camera glide; a moved view refreshes the pointer hit and menu anchor.

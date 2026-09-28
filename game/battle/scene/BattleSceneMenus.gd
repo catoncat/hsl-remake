@@ -69,6 +69,7 @@ func build_panels() -> void:
 	runtime.item_panel.give_finished.connect(_finish_give_session)
 	runtime.item_panel.drop_requested.connect(discard_inventory_item)
 	runtime.item_panel.equipment_requested.connect(change_equipment)
+	runtime.item_panel.hand_return_requested.connect(return_held_item)
 	runtime.item_panel.ui_sound_requested.connect(runtime.play_ui_sound)
 	runtime.growth_panel = preload("res://game/battle/scene/BattleGrowthPanel.gd").new()
 	ui.add_child(runtime.growth_panel)
@@ -487,6 +488,19 @@ func _finish_give_session(revision: int) -> void:
 		runtime.resume_turn_presentation()
 	else:
 		rebuild_action_menu_buttons()
+
+
+## Mode 4／5: the held bag item goes back first-empty (0x436e30 after 0x436e80 closed its gap).
+func return_held_item(inventory_index: int, item_code: int) -> void:
+	if not runtime.item_panel.visible or runtime.item_panel.operation not in ["equip", "drop"] or runtime.item_panel.page != "hand":
+		return
+	if runtime.item_panel.held_index != inventory_index or runtime.item_panel.held_code != item_code:
+		return
+	var next := BattlePlayLoop.return_held_item(runtime.play_loop, inventory_index, item_code)
+	if next == runtime.play_loop:
+		return
+	runtime.apply_loop(next, "return_held_item")
+	runtime.item_panel.hand_item_returned(BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id))
 
 
 func change_equipment(slot: String, inventory_index: int, item_code: int) -> void:

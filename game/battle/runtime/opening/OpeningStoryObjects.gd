@@ -58,6 +58,10 @@ var _last_walk: Dictionary = {}
 ## Each walker's path buffer (+0x4c) as the cell steps of its first 0x4111d0 segment, by
 ## unit id: what 0x44ff50 copies into a follower.
 var _path_buffers: Dictionary = {}
+## Units whose +0x80 still carries 0x1800 from actMoveDispWait (unit_id → speed arg): only
+## actRestoreShape clears it (0x450329 is the one story write of ~0x1800), so a later walk
+## of that unit keeps its pose, stays silent and loops frames at the move rate too.
+var _move_disp_held: Dictionary = {}
 var _story_objects: Dictionary = {}
 ## Effect readings of inserted objects (rain, flashes, fire runs...); see StoryEffectObjects.
 var _effects: RefCounted = StoryEffectObjects.new()
@@ -474,6 +478,12 @@ func _walk_follow(event: Dictionary, blocking: bool) -> void:
 	## enters 0x453b90 state 0x32 at sub 1 (+0x8c = 0x320001) with +0x50 = VM: 0x43bf30
 	## centres on the follower first (0x453de6) and sub 3／6 follow the walk (0x454039),
 	## the camera of actWalkWait; the plain form (+0x50 = 0) leaves the camera alone.
+	## 0x44ff50 writes the destination straight to +0x4a／+0x48 without the landing fix
+	## 0x44fbd0 that 0x44fcf0／0x44fd90／0x4501f0 call, so the follower's walk target skips
+	## _fixed_destination. The copied table is whatever +0x4c holds when the token runs: a
+	## leader still at sub 0 (walk issued, not yet ticked) hands over its previous table;
+	## chapter 1 puts actDelay 1 between the leader's actWalk and the follow (STORY058／060),
+	## so the leader has routed by then and _path_buffers holds its current first segment.
 	var args: Array = event.get("args", [])
 	var follower := _bound_actor(event, 0)
 	var leader := _bound_actor(event, 2)
@@ -487,7 +497,7 @@ func _walk_follow(event: Dictionary, blocking: bool) -> void:
 	var target: Vector2 = _motion_end(leader_actor) + offset
 	var unit_id := str(follower[0])
 	var start_walk := func() -> void:
-		_move_actor(follower_actor, unit_id, _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4), 0, _path_buffers.get(str(leader[0]), []))
+		_move_actor(follower_actor, unit_id, _motion_end(follower_actor), target, str(event.get("id", "")), str(event.get("source_token", "")), _speed_arg(args, 4), 0, _path_buffers.get(str(leader[0]), []), false)
 		if blocking:
 			_camera_follows_last_walk()
 			coordinator._block_on(unit_id)
@@ -539,14 +549,17 @@ func _insert_story_object(event: Dictionary) -> void:
 	var origin: Array = spec.get("draw_origin", [0, 0])
 	var anchor := _object_world([args[1], args[2]])
 	sprite.position = anchor - Vector2(float(origin[0]), float(origin[1]))
-	sprite.z_index = int(anchor.y)
 	sprite.visible = true
 	var record := {"kind": "story_object_insert", "source_event_id": str(event.get("id", "")), "symbol": symbol, "anchor_world": anchor}
-	if str(spec.get("process", "")) == "defProcObjectMove":
-		# 0x4051d0 never rewrites the object's depth: it stays on obj_Plane instead of
-		# the y buckets (original_draw_order.md) — STORY053's 繩子 on planeObject1 draws
-		# under 緹娜 sliding down it.
-		sprite.z_index = ActorRuntime.fixed_plane_depth(str(spec.get("plane", "")), sprite.z_index)
+	# 0x4051d0 never rewrites the object's depth: a defProcObjectMove object stays on its
+	# obj_Plane bucket (original_draw_order.md) — STORY053's 繩子 on planeObject1 draws under
+	# 緹娜 sliding down it; an ATTACKFLAG stand object keeps obj_Plane too; the rest take the
+	# anchor's row bucket.
+	var attribute_field = (spec.get("object_fields", {}) as Dictionary).get("obj_Attribute", {})
+	var attribute := str((attribute_field as Dictionary).get("value", "")) if attribute_field is Dictionary else ""
+	var fixed := str(spec.get("process", "")) == "defProcObjectMove" or ActorRuntime.has_attack_flag(attribute)
+	ActorRuntime.apply_object_depth(sprite, anchor.y, str(spec.get("plane", "")), fixed)
+	if fixed:
 		record["z_index"] = sprite.z_index
 	coordinator.story_records.append(record)
 
@@ -586,6 +599,7 @@ func _restore_shape(event: Dictionary) -> void:
 		coordinator.skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "actor_shape_restore", "reason": "unbound_actor"})
 		return
 	actor.clear_shape_override()
+	_move_disp_held.erase(str(bound[0]))
 	# 0x4502f0 with count 0 writes unconditionally: +0x90 = 0xffff, so the idle path reloads
 	# the stand group from its first frame with delay 10 (0x446c40(…, 0, 10)); +0x80 &= ~0x1800
 	# drops the keep-pose hold (clear_shape_override clears _override_held); +0x8c = 0 would
@@ -616,6 +630,7 @@ func _move_disp(event: Dictionary) -> void:
 		var cell_size: Vector2 = runtime.map_config.grid_projection["cell_size"] if runtime.map_config != null else Vector2(32, 32)
 		var moved := start + delta
 		var target := Vector2(floorf(moved.x / cell_size.x), floorf(moved.y / cell_size.y)) * cell_size + cell_size * 0.5
+		_move_disp_held[unit_id] = speed_arg
 		_move_actor(actor, unit_id, start, target, str(event.get("id", "")), str(event.get("source_token", "")), speed_arg, move_disp_frame_ticks(int(speed_arg)))
 		_camera_follows_last_walk()
 		coordinator._block_on(unit_id)
@@ -702,10 +717,15 @@ func _camera_follows_last_walk() -> void:
 ## cell along ScriptWalkPath.route over the scene terrain (the original path buffer),
 ## never straight through walls; the duration follows the walked length.
 ## `copied_steps` (actWalkFollow) replays a leader's path buffer from `start` first.
-func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0, copied_steps: Array = []) -> void:
+## `fix_destination` false is actWalkFollow (0x44ff50 skips the landing fix 0x44fbd0). A unit
+## still holding 0x1800 from actMoveDispWait walks in the keep pose whatever the token.
+func _move_actor(actor: Node, unit_id: String, start: Vector2, target: Vector2, source_event_id: String, source_token: String, speed_arg: float = 0.0, keep_pose_frame_ticks: int = 0, copied_steps: Array = [], fix_destination: bool = true) -> void:
 	var speed: float = coordinator.walk_pixels_per_tick(int(speed_arg))
 	var terrain := _walk_terrain()
-	target = _fixed_destination(unit_id, target, terrain["cell_size"])
+	if fix_destination:
+		target = _fixed_destination(unit_id, target, terrain["cell_size"])
+	if keep_pose_frame_ticks <= 0 and _move_disp_held.has(unit_id):
+		keep_pose_frame_ticks = move_disp_frame_ticks(int(speed_arg))
 	var flies := _unit_flies(unit_id)
 	var route: Dictionary = _copied_route(terrain, start, target, copied_steps, flies) if not copied_steps.is_empty() else ScriptWalkPath.route(terrain["tiles"], terrain["map_size"], start, target, terrain["cell_size"], flies)
 	_path_buffers[unit_id] = copied_steps if not copied_steps.is_empty() else _first_segment_steps(terrain, start, target, flies)

@@ -229,8 +229,8 @@
     },
     {
       "id": "loot-panel",
-      "difference": "獲得物品窗五钮已照原版（lane LOOTHAND：重要物不可从池拾、丟棄只丢手上一件、倉庫存进队伍倉庫、交换换出物进手、空手点背包格拿起、離開剩余进倉庫）；剩重制读法：滚动箭头、持物时禁用「離開」、拿起的背包物点列表或别的格回原格（原版入池／交换）、Esc 放回原格；胜利结束时带不走的奖励池先重开领取窗（分队关卡提示原因）",
-      "original": "原版獲得物品窗 0x43a640 三钮 Data6=6/7/8、0x414c00 列表点击、0x44ef70／0x44f100 入仓库表、0x42aad0 離開剩余入表已读（static-derived）；五钮按下未经原版实拍",
+      "difference": "獲得物品窗五钮已照原版（lane LOOTHAND）；持物点背包行照 0x438c84（未满包放首空格、满包才互换）与待领列表的 0x446060 滚动条（WIN06BAR，五行）已照原版（lane HANDWIN2）；拿起的背包物即按删格收拢显示（0x436e80），点列表入池（0x44f2d0）、点背包行或 Esc／右键放收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；剩：持物时禁用「離開」（重制读法）；滚动条键掩码未读、不接键；胜利结束时带不走的奖励池先重开领取窗（分队关卡提示原因）",
+      "original": "原版獲得物品窗 0x43a640 三钮 Data6=6/7/8、0x414c00 列表点击与 0x446060(760,151–153,5 行) 滚动条、0x438c84／0x436ed0 背包格持物分支、0x44ef70／0x44f100 入仓库表、0x42aad0 離開剩余入表已读（static-derived）；五钮按下未经原版实拍",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_getitem_window.md",
         "docs/evidence_packets/static_reverse/battle_reward_inputs.md"
@@ -531,13 +531,13 @@
     },
     {
       "id": "closeup-object-timing",
-      "difference": "特写里攻守对象的部分子状态与结束后的屏幕过渡长度未读，时长是估值（RECOVERY provisional）",
-      "original": "守方 0x4038a0 已读；攻方子状态 5–9 与屏幕过渡 0x46098f／0x460989 未读",
+      "difference": "ANIMAL.TXT loader 的 token 编译、隐式结束符与 m/s 资源选择未读（特写攻守对象计时与收尾过渡已读并照做）",
+      "original": "守方 0x4038a0、屏幕过渡 0x46098f／0x4609c0（变暗 16＋变亮 16、无停留、子 0 起第 33 tick 交接；0x460989 读挂起标志）、攻方 phase 100 子 2（1 tick）与施法对象子状态 5–9 已读；ANIMAL.TXT loader 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/animal_program_execution.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "CombatPresentationTiming 的 RECOVERY 估值",
+      "remake": "tools/hsltools/assets/animal_programs.py 自行解析 ANIMAL.TXT；CombatPresentationTiming 的 RECOVERY／CLOSING_LIGHTEN 16／16、续击交接 1 tick、开场 57 tick 均为读数",
       "remake_code": [
         "game/battle/runtime/CombatPresentationTiming.gd"
       ],
@@ -582,15 +582,16 @@
     },
     {
       "id": "draw-depth-states",
-      "difference": "单位与建筑的遮挡顺序：魔法效果阶段施法者与脚印内单位 +23 已照做；飞行单位封顶 22、32 px 同桶先后、planeObject2..30 固定 plane 与站立物件 ATTACKFLAG 未建模",
+      "difference": "单位与建筑的遮挡顺序：32 px 视口相对行桶、同桶 plane 先后、飞行 +10 与封顶 22、抬升 +23、planeObject1..30 固定 plane 随镜头交错、站立物件 ATTACKFLAG 已照做；站立物件锚点不按视口夹紧、抬升桶与 planeObject24..40 不交错、状态窗／仓库窗期间的封顶未建模",
       "original": "32 px 行排序、同桶先后、两段全局状态分支（0x400000 特写／窗口、0x1000000 魔法效果阶段）已读；其余效果过程是否改 +0xc 未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_draw_order.md"
       ],
-      "remake": "ActorRuntime.depth_index 按像素行排序，魔法切入期间 cast_lift 抬起脚印内与施法姿势单位；fixed_plane_depth 只覆盖最低／最高固定 plane",
+      "remake": "ActorRuntime.depth_index 按视口相对行桶 + plane 编码 z，切入期间封顶飞行单位、魔法切入抬起脚印内与施法姿势单位；apply_object_depth 给站立／剧情物件行桶或固定 plane，refresh_fixed_planes 每帧随镜头换算",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:depth_index",
-        "game/battle/runtime/ActorRuntime.gd:fixed_plane_depth",
+        "game/battle/runtime/ActorRuntime.gd:apply_object_depth",
+        "game/battle/runtime/ActorRuntime.gd:refresh_fixed_planes",
         "game/battle/scene/BattleSceneStage.gd:sync_cast_depth"
       ],
       "original_status": "read_partial",
@@ -823,16 +824,16 @@
     },
     {
       "id": "script-walk-speed",
-      "difference": "actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；无脚本形态时到位即停帧、0x1800 走完后的去向未读；剧情走步声按相对帧 0／3；插播恢复语义暂定",
-      "original": "0x4501f0 目标格心、+0x80 |= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1",
+      "difference": "actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；0x1800 到位后仍置位、只由 actRestoreShape（0x450329）清，其间后续走位同样保形，重制照做；Wait 期间 VM 不执行别的 token，无插播；剧情走步声按相对帧 0／3",
+      "original": "0x4501f0 目标格心、+0x80 |= 0x1800、状态 0x32；寻路链 0x4111d0 不读 +0x80（同 actWalk 路线）；0x1000 跳过换向形态 0x446c40 与走步声 0x409610；两位同置每 tick 调 0x45e5a6，延迟按速度 6／4／2／1；0x454262 到位写 +0x8c = 0 并放行 VM、不动 +0x80；全 EXE 唯一同清 0x1800 的写入点 0x450329（0x4502f0 帧数 0）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "_move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧",
+      "remake": "_move_disp 目标格心化后走 ScriptWalkPath.route；move_along keep_pose_frame_ticks 保形、无声、每 7／5／2／3 tick 一帧；_move_disp_held 记到 actRestoreShape，其间 _move_actor 一律保形",
       "remake_code": [
         "game/battle/runtime/opening/OpeningStoryObjects.gd:_move_disp"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "some_levels",
       "effort": "S",
       "category": "剧情走位"
@@ -1256,13 +1257,13 @@
     },
     {
       "id": "battle-equip-drop-hand",
-      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN：拿起、点槽装上旧装备进手、空手卸下进手、丟棄钮只清非重要持物、右键先放回再关窗）；剩重制读法：持物是草稿，提交前背包不删格；满包时不能把卸下的装备拿在手上（规则拒绝）；满包持物点格的互换顺序未做；持物移上装备板时左窗改显属性未做；窗内「返回」钮与「道具 n／8」为共用排布",
-      "original": "state7 0x444185／state8 0x4441ac → 0x43b4e0 跳表 0x43bef4 mode4／5 同进 0x43b7fd，mode5 另建丟棄钮 0x43b280(0,0) 中心 (285,387)；背包格 0x438c84..0x438de7、装备板 0x43993e／0x439998、丟棄 0x43aacb 已读；装备板判定旗标 0x40000 来源未追",
+      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN），持物移上装备板时左栏改显屬性页已照 0x439a0f（lane HANDWIN2）；持物背包行即按删格收拢显示（0x436e80）、点背包行或右键放回收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；剩：满包时不能把卸下的装备拿在手上（规则拒绝），原版这时的满包互换（点中格物进手、持物放第 8 格）因此不出现；窗内「返回」钮与「道具 n／8」为共用排布",
+      "original": "state7 0x444185／state8 0x4441ac → 0x43b4e0 跳表 0x43bef4 mode4／5 同进 0x43b7fd，mode5 另建丟棄钮 0x43b280(0,0) 中心 (285,387)；背包格 0x438c84..0x438de7（0x436ed0 满包判定）、装备板 0x43993e／0x439998、左栏页 0x439a0f、丟棄 0x43aacb 已读；点击位 0x40000 的写入者未追",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_actions.md",
         "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
       ],
-      "remake": "BattleItemPanel 持物窗（held_index／held_code 草稿），装上／卸下／丢弃各提交一次 PlayLoop 命令，提交后窗不关",
+      "remake": "BattleItemPanel 持物窗（held_index／held_code 记所持格），装上／卸下／丢弃／放回各提交一次 PlayLoop 命令，提交后窗不关",
       "remake_code": [
         "game/battle/scene/BattleItemPanel.gd",
         "game/battle/scene/BattleSceneMenus.gd",
@@ -1520,12 +1521,12 @@
     },
     {
       "id": "cam-script-walk-variants",
-      "difference": "剧情行走镜头与 actWalkFollow(Wait) 的走法已照原版（跟随者复制领队首段路径缓冲、按基准像素偏移、不足处再算路）；剩跟随者目的格重制仍经落点修正（原版 0x44ff50 不调 0x44fbd0）、领队未开走即跟随时原版复制旧缓冲",
+      "difference": "剧情行走镜头与 actWalkFollow(Wait) 已照原版（跟随者复制领队路径缓冲、按基准像素偏移、不足处再算路、目的格不经落点修正）；领队未过 sub 0 即被跟随时原版复制旧表、重制复制本次首段，第一章两处用例都隔 actDelay 1，不可见",
       "original": "0x44ff50 置 +0x8c = 0x320001（状态 0x32 sub 1）、复制领队 +0x4c 路径缓冲（0x65 dword 方向码，1 上 2 下 3 左 4 右，0 结束）、目的 = 领队目的 + (跟随者 − 领队) +4／+8、+0x50 = Wait 时 VM；sub 3／6 从 +0x9c 索引 0 逐格取码，码 0 未到目的格再调 0x4111d0（0x45412d）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_script_camera_scroll.md"
       ],
-      "remake": "OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；_copied_route 按领队首段步序从跟随者格逐格平移（不查地形），终点不在目的格时 ScriptWalkPath.route 续算",
+      "remake": "OpeningStoryObjects._walk_follow：Wait 形式先居中到跟随者再开走并跟随；目的格 fix_destination = false 不经 _fixed_destination；_copied_route 按领队首段步序从跟随者格逐格平移（不查地形），终点不在目的格时 ScriptWalkPath.route 续算",
       "remake_code": [
         "game/battle/runtime/opening/OpeningStoryObjects.gd:_walk_follow",
         "game/battle/runtime/opening/OpeningStoryObjects.gd:_copied_route"
@@ -2071,9 +2072,6 @@
       "no_visible_effect": "整事件原子安装：失败时不留半个事件，正常路径与原版同样安装全部单位"
     },
     "provenance:game/battle/scene/BattleLootPanel.gd|layout|remake-invented|": {
-      "item": "loot-panel"
-    },
-    "provenance:game/battle/scene/BattleLootPanel.gd|rules|remake-invented|": {
       "item": "loot-panel"
     },
     "provenance:game/battle/scene/BattleMovementPreview.gd|layout|remake-invented|": {
@@ -2626,10 +2624,6 @@
       "item": "timing-estimates",
       "text": "未读的保留现值标 provisional 并写函数；"
     },
-    "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#9bca1a0d51": {
-      "item": "closeup-object-timing",
-      "text": "守方 AnimalDefense `0x4038a0` 中立 32 tick、命中停留 68 ＋ 10×位数 tick、落空 56 tick，之后是未读长度的屏幕过渡（`0x46098f`）——`CombatPresentationTiming` 的 TARGET_PAUSE／hurt_hold 已 static-derived，RECOVERY 仍 provisional；"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_ai_decisions.md#283487b0af": {
       "item": "ai-skill-buckets",
       "text": "原桶的全部技能与评分仍未复原；"
@@ -2678,17 +2672,9 @@
       "item": "item-use-rules",
       "text": "剧情 `actUseItem` 只调 `0x409e40`，是否删除库存未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#1e230aa201": {
-      "item": "closeup-object-timing",
-      "text": "未读"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72": {
       "item": "special-object-motion",
       "text": "§9：攻方收页在重制里取 `release_tick`，原版还等本对象插入的攻击闪光（`+0x88`）归零，闪光寿命未读；"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#47534c85f0": {
-      "no_visible_effect": "守方对象与帧体同 tick 先后，差异 ±1 tick（16 ms）",
-      "text": "守方对象与帧体在同一 tick 的先后未读（±1 tick）。"
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#76ea25becd": {
       "no_visible_effect": "数字对象与守方对象同 tick 处理顺序，差异 ±1 tick（16 ms）",
@@ -3065,10 +3051,6 @@
       "item": "cast-lead-compositing",
       "text": "等待期间屏幕底图未读（重制显示未压暗的地图，provisional）。"
     },
-    "sentence:docs/evidence_packets/runtime_observations/menus_ui/README.md#e05315f081": {
-      "item": "cast-lead-phase",
-      "text": "绝技（kind 2，`0x441d06` 插入，`0x4c1408` = 攻方 EFFECTS 程序）：不置压暗位，进子状态 8（`0x403199`）：`+0xa0 = 10`、`+0x28 = 16`、`0x4c6f70 = 0x20002`、`+0x84 = 0`，子状态 9（`0x4031c7`）与子状态 4 同形——`+0x84` 计 16 个 call、`+0xa0` 倒数 10 个 call，然后见 `0x4c1408` 非零：调 `0x4607f9`（参数含 (320,240)，未读）后以它为程序指针进 phase 103（`0x403272`，−1 则 phase 101 结束）。"
-    },
     "sentence:docs/evidence_packets/static_reverse/native_presentation_helpers.md#08d3771dce": {
       "no_visible_effect": "菜单悬停与展开的可见行为已按原函数执行对照接入；事件位来自哪种输入只影响命名",
       "text": "事件位 `0x02000000`／`0x20000000` 由哪种输入产生未读，不把它们命名为已证明的 hover-enter／leave。"
@@ -3088,10 +3070,6 @@
     "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#88c3799049": {
       "item": "closeup-object-timing",
       "text": "ANIMAL.TXT loader 的 token 编译、隐式结束符、m/s 资源选择与缺省未读（线索：入口对 `0x4c1b6c` 表记录与多个通道字段的选择）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md#d003b16b63": {
-      "item": "closeup-object-timing",
-      "text": "守方 AnimalDefense `0x4038a0` 读出（[tick 计数包 §6](../../static_reverse/original_tick_counts.md#6-普攻切入的守方对象-defprocanimaldefense0x4038a0slot-23受击停留)），TARGET_PAUSE／hurt_hold 落 A，RECOVERY 仍 B（屏幕过渡 `0x46098f` 未读）"
     },
     "sentence:docs/evidence_packets/static_reverse/original_ai_calls.md#2b2ea0eb84": {
       "item": "ai-first-battle-moves",
@@ -3152,10 +3130,6 @@
     "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d": {
       "item": "unimplemented-abilities",
       "text": "原版死亡与战斗结束时的全局状态清理调用者未读。"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_getitem_window.md#31b216cb50": {
-      "item": "loot-panel",
-      "text": "手持背包物点待领列表（原版 `0x44f2d0` 放入池）与点别的背包格（原版交换）重制未做，回原格；"
     },
     "sentence:docs/evidence_packets/static_reverse/original_weapon_ranges.md#d25c396c21": {
       "item": "weapon-range-semantics",

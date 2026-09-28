@@ -88,6 +88,20 @@ static func discard_item(loop: Dictionary, item_code: String, inventory_index: i
 	return BattlePlayLoop.settle_action(next, "drop")
 
 
+## Equip／Drop window (mode 4／5): the held bag item goes back (0x438868 right click, 0x438c84 a
+## bag row) — 0x436e80 closed its gap when it was lifted, 0x436e30 puts it first-empty. Free.
+static func return_held_item(loop: Dictionary, inventory_index: int, expected_code: int) -> Dictionary:
+	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
+		return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	var actor := BattlePlayLoop.unit_ref(next, str(next.get("selected_unit_id", "")))
+	var put := InventoryRules.put_back(actor.get("inventory", []), inventory_index, expected_code)
+	if not put["ok"]:
+		return BattlePlayLoop.copy(loop)
+	actor["inventory"] = put["inventory"]
+	return next
+
+
 static func begin_give(loop: Dictionary) -> Dictionary:
 	if not BattlePlayLoop.player_action_valid(loop, "action_menu"):
 		return BattlePlayLoop.copy(loop)

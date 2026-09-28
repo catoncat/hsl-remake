@@ -153,7 +153,7 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 			sprite.configure(frame_manifest(spec, frame_ticks), anchor)
 			if not str(fields.get("obj_Mode", "")).begins_with("engADDCOLOR"):
 				sprite.material = null
-			sprite.z_index = int(anchor.y) + 1
+			ActorRuntime.apply_object_depth(sprite, anchor.y, str(spec.get("plane", "")), false)
 			runtime.world_root.add_child(sprite)
 		"frame_once":
 			var sprite := FrameOnce.new()
@@ -168,7 +168,8 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 			var key := native_track(spec, symbol, level)
 			sprite.configure(spec, anchor, key, index - 1)
 			# 0x4051d0 never rewrites the depth: obj_Plane (planeObject1 繩子 under 緹娜, planeEffect* over every actor).
-			sprite.z_index = ActorRuntime.fixed_plane_depth(str(spec.get("plane", "")), EFFECT_Z)
+			sprite.z_index = EFFECT_Z
+			ActorRuntime.apply_object_depth(sprite, anchor.y, str(spec.get("plane", "")), true)
 			runtime.world_root.add_child(sprite)
 			record["track"] = key
 			record["track_frames"] = sprite.frames

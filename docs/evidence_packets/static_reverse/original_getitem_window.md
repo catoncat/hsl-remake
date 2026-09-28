@@ -1,13 +1,13 @@
 # 獲得物品窗：战利品拾取的绘制、输入与三个按钮
 
-> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x414c00, 0x42aad0, 0x430710, 0x436d70, 0x436e30, 0x438160, 0x43a640, 0x43b4e0, 0x442720, 0x44ef70, 0x44f100, 0x44f2d0, 0x44f430, 0x44f4d0 · tools: capture_battle_reward_review.gd, run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: 窗体资源、文字表与音效表; runtime-measured: 录像 16 段四帧对照 · status: live · functions: 0x414c00, 0x42aad0, 0x430710, 0x436d70, 0x436e30, 0x436e80, 0x436ed0, 0x438160, 0x43a640, 0x43b4e0, 0x442720, 0x44ef70, 0x44f100, 0x44f2d0, 0x44f430, 0x44f4d0 · tools: capture_battle_reward_review.gd, run_battle_reward_tests.gd, run_presentation_contract_tests.gd · updated: 2026-09-28
 
 ## 结论
 
 - 原版：击杀后金钱浮字之后、升級判定之前，玩家击杀者且待领池非空时打开状态窗 mode 0xb；接收者固定为击杀者；左栏背包 8 格、右栏 WINDOW90 待领 5 行、下方 丟棄／倉庫／離開；手持一次一件，重要物品不能从池拾起；离开时剩余全部进队伍仓库，不丢物（static-derived；录像 16 段四帧 runtime-measured）。
-- 五钮原版语义（static-derived，`0x43a640` 按钮 Data6 与 `0x414c00` 列表点击）：重要物品行空手点不拾（`0x40e690`）；丟棄只丢手上一件、重要物与空手无效；倉庫把手上一件按重要／普通加入队伍仓库表（`0x44ef70`／`0x44f100`），空手无效；手持点有物背包格为交换、格物进手；空手点背包格拾起该物（`0x436e80`，录像 `frame_019`）；離開只在空手有效，池中剩余全部入仓库表（`0x42aad0`）。
-- 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制；拾取经 `claim_reward`，丟棄经 `discard_reward`，倉庫与離開经 `store_reward`（写入 `PartyStorageRules` 的队伍倉庫 `party_storage`），五钮语义与原版相同（static-derived）。
-- 差异：拿起的背包物点待领列表或别的背包格时回到原格（原版前者放入池、后者交换）；Esc／右键放回原格（原版放首空格）（provisional）；字号 24／15 已按原版 FONT.24／FONT.15 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。
+- 五钮原版语义（static-derived，`0x43a640` 按钮 Data6 与 `0x414c00` 列表点击）：重要物品行空手点不拾（`0x40e690`）；丟棄只丢手上一件、重要物与空手无效；倉庫把手上一件按重要／普通加入队伍仓库表（`0x44ef70`／`0x44f100`），空手无效；手持点背包任一行：未满包放首空格，满包才与点中格交换、格物进手（`0x438c84`／`0x436ed0`）；空手点背包格拾起该物（`0x436e80`，录像 `frame_019`）；離開只在空手有效，池中剩余全部入仓库表（`0x42aad0`）。
+- 重制：`game/battle/scene/BattleLootPanel.gd` 与 `BattleSettlementController.gd` 同坐标、同资源绘制；拾取经 `claim_reward`，丟棄经 `discard_reward`，倉庫与離開经 `store_reward`（写入 `PartyStorageRules` 的队伍倉庫 `party_storage`），拿起的背包物放回经 `return_reward_item`、入池经 `pool_reward_item`，五钮语义与原版相同（static-derived）。
+- 差异：持物时「離開」禁用为重制读法；拿起的背包物与原版同样即刻按删格收拢显示（`0x436e80`），点列表入池（`0x44f2d0`），点背包行或 Esc／右键放收拢后的首空格（`0x436e30`）；字号 24／15 已按原版 FONT.24／FONT.15 位图画，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库。
 
 ## 证据
 
@@ -29,7 +29,7 @@
 
 无 Prev／Next、成员选择与存档按钮。
 
-待领列表 `0x414c00`（与商店窗同函数）：顶缘 +0x9a = 43，行距 +0x98 = 32，滚动起点 `*0x4c1a5c = 0`，滚动条 `0x446060` 范围 = 池计数。坐标以 (252,168) 为 (x,y)：
+待领列表 `0x414c00`（与商店窗同函数）：顶缘 +0x9a = 43，行距 +0x98 = 32，滚动起点 `*0x4c1a5c = 0`；首帧 `0x446060(win, 760, 151, 152, 153, 宽−24, 0, 0, 0, 5, 0x414af0)` 挂滚动条——箭头／滑块模板 151–153 与技能页同，槽换模板 760 VScroll_Bar06（WIN06BAR 24×220），落 WINDOW90＋(351,0)，五行，`0x445d70(bar, 池计数, 5, 0, 0)` 定滑块；键掩码 `0x445f00(bar, 0x8000000, 0x10000000, 0x40000, 0x80000)` 与技能页（4／8／0x800／0x1000）不同，对应键未读。坐标以 (252,168) 为 (x,y)：
 
 | 元素 | 位置 | 内容 |
 | --- | --- | --- |
@@ -45,7 +45,7 @@
 | 状态 | 点待领列表 | 点背包格 | 右键／Esc |
 | --- | --- | --- | --- |
 | 空手 | 有物且 `0x40e690(code)==0` → 拿起，`0x44f430(idx,1)` 池中 −1，音 399 TAKEUP01；重要物品不能拾 | 有物 → 拾起（`0x436e80`），音 399 | 关闭，被 `0x400` 挡住 |
-| 手持 | `0x44f2d0(held,1)` 放回池，音 400 PUT00003 | 空格放入（`0x436e30`）；有物则交换，格物进手，音 400 | `0x436e30(actor, held)` 放入首空格，音 400 |
+| 手持 | `0x44f2d0(held,1)` 放回池，音 400 PUT00003 | `0x438c84`：`0x436ed0` 读末格 +0x154，空（未满包）→ 不论点哪行都 `0x436e30` 放首空格；有物（满包）→ 点中格物进手、`0x436e80` 删格收拢、持物放首空格（第 8 格）；音 400 | `0x436e30(actor, held)` 放入首空格，音 400 |
 
 三个按钮 `0x43a640`（defProcStatusButton）：标签 15 号小字画在 `(中心x − 21 + (42 − len·8)/2, 中心y + 13)`，白 `0xffff`／悬停黄 `0xffef`，阴影 0x8430，点击音 398 ACCEPT01。
 
@@ -72,9 +72,10 @@
 | 坐标、资源、字号级 | 同坐标同资源；字号 24／15 用原版 FONT.24／FONT.15 位图（默认字体，见 [original_font_script/README.md](original_font_script/README.md) §各窗字库） |
 | 行 = 名字 + 数量 | 逐件实例按 code 归并显示；拾起取该 code 首个实例 |
 | 重要物品不能拾 | `BattleLootPanel` 行点击跳过 `important` 物（规则层 `claim_reward` 不设限，供非界面路线） |
-| 手持点有物格交换进手 | `claim_reward(slot,code)` 把格物换入池同一条目，控制器随即 `hold_entry` 把它放到手上 |
-| 空手点背包格拾起 | `BattleLootPanel._lift`：格内显示清空、物品随游标；落地由丟棄／倉庫提交，点列表或别的格回原格（重制读法） |
-| 右键／Esc 手持放首空格；空手不关 | 池来源同（`quick_place`）；背包来源回原格 |
+| 手持点背包行 | 未满包：`claim_reward(slot=-1)` 放首空格；满包：`claim_reward(slot,code)` 删格收拢后放首空格、格物换入池同一条目，控制器随即 `hold_entry` 把它放到手上（与原版同序） |
+| 空手点背包格拾起 | `BattleLootPanel._lift`：背包行即按删格收拢重排、物品随游标；规则层的删格与持物去向同一次提交——丟棄／倉庫、点背包任一行或 Esc／右键 `return_reward_item`（删格后首空格＝末尾）、点列表 `pool_reward_item`（删格后入池） |
+| 滚动 | `BattleSkillScrollBar(LIST_AT, "WIN06BAR", 5, 351)`：同一套箭头、滑块、槽点翻页与拖动；池 ≤ 5 种不出现 |
+| 右键／Esc 手持放首空格；空手不关 | `quick_place`：池来源 `claim_reward(slot=-1)`，背包来源 `return_reward_item`（收拢后的首空格） |
 | 丟棄只丢一件 | `BattlePlayLoop.discard_reward`：池条目或背包格一件，重要物拒，记 `settlement.abandoned` |
 | 倉庫 | `BattlePlayLoop.store_reward`：同上两种来源，`PartyStorageRules.put` 入 `loop.party_storage`（重要表／普通表、同种叠数），记 `settlement.stored`；随 `CampaignCarryRules` 的 loop 键带出战斗 |
 | 離開：剩余进仓库 | `BattleSettlementController._finish`：逐件 `store_reward` 后 `finish_rewards` 关闭；池空后无可重开的待领物 |
@@ -86,6 +87,7 @@
 
 ## 边界
 
-- 录像未覆盖重要物品行、红字行、满包、滚动、丟棄／倉庫按下与離開后仓库；五钮语义为 static-derived，未经原版实拍。
-- 手持背包物点待领列表（原版 `0x44f2d0` 放入池）与点别的背包格（原版交换）重制未做，回原格；需背包→池命令。
+- 录像未覆盖重要物品行、红字行、满包、滚动、丟棄／倉庫按下与離開后仓库；五钮语义与滚动条为 static-derived，未经原版实拍。
+- 手持背包物：规则层不存「手」，拿起的删格与持物去向在去向确定时一次提交；窗内无别的出口（離開在持物时禁用），可见结果与原版拿起即删同。
+- 滚动条的键掩码 0x8000000／0x10000000／0x40000／0x80000 对应哪几个键未读，重制待领列表的滚动条不接键；槽高 220 的下箭头 y 199、轨道 22–198 按 WIN02BAR（264：243、22–242）同式推得，未逐行读 `0x446060` 的高度换算。
 - 原版队伍仓库表的读取窗口不在本包，见 [original_storage_window.md](original_storage_window.md)。

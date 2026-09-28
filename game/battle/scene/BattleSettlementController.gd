@@ -25,6 +25,8 @@ func _ready() -> void:
 	panel.finish_requested.connect(_finish)
 	panel.discard_requested.connect(_hand_command.bind("discard_reward"))
 	panel.store_requested.connect(_hand_command.bind("store_reward"))
+	panel.return_requested.connect(_hand_command.bind("return_reward_item"))
+	panel.pool_requested.connect(_hand_command.bind("pool_reward_item"))
 	panel.cue_requested.connect(runtime.play_ui_sound)
 	runtime.status_panel.save_requested.connect(save_battle)
 	runtime.status_panel.load_requested.connect(load_battle)
@@ -105,14 +107,20 @@ func _claim(request: Dictionary) -> void:
 	if returned != 0: panel.hold_entry(request["entry_id"])
 
 
-## 丟棄／倉庫 on the held item (BattlePlayLoop.discard_reward／store_reward).
+## 丟棄／倉庫／back／pool on the held item (BattlePlayLoop.discard_reward／store_reward／
+## return_reward_item／pool_reward_item).
 func _hand_command(request: Dictionary, command: String) -> void:
 	if not panel.accepts(request): return
 	var next: Dictionary
-	if command == "store_reward": next = BattlePlayLoop.store_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
-	else: next = BattlePlayLoop.discard_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+	match command:
+		"store_reward": next = BattlePlayLoop.store_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+		"discard_reward": next = BattlePlayLoop.discard_reward(runtime.play_loop, request["sequence"], request["revision"], request["entry_id"], request["recipient_id"], request["slot"], request["expected_code"])
+		"return_reward_item": next = BattlePlayLoop.return_reward_item(runtime.play_loop, request["sequence"], request["revision"], request["recipient_id"], request["slot"], request["expected_code"])
+		_: next = BattlePlayLoop.pool_reward_item(runtime.play_loop, request["sequence"], request["revision"], request["recipient_id"], request["slot"], request["expected_code"])
 	if next == runtime.play_loop: return
 	runtime.apply_loop(next, command)
+	# 400 PUT00003: the held item lands back in the bag or the pool.
+	if command in ["return_reward_item", "pool_reward_item"]: runtime.play_ui_sound("put_down")
 	_refresh_panel()
 
 

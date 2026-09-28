@@ -2,6 +2,7 @@ extends RefCounted
 ## Battle loop settlement: the once-per-exchange reward commit (`commit_rewards`: shared
 ## gold, instantiated pending loot, death de-duplication, kill tallies), the pending-loot
 ## interaction (`loot_waiting`, `claim_reward`, `discard_reward`, `store_reward`,
+## `return_reward_item`, `pool_reward_item`,
 ## `finish_rewards`, `reopen_rewards`), the
 ## enemy installation carry roll (`initial_carry`), the completed-action experience award
 ## with its level-up learning (`award_experience`) and the player's manual growth
@@ -18,7 +19,7 @@ extends RefCounted
 ##   rules: runtime-measured tools/hsltools/probes/_reward_rng_trace.py
 ##     (carry and drops draw the global stream 0x458c10)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
-##     (丟棄 drops the one held item, 倉庫 puts it into the party storage)
+##     (丟棄／倉庫 take the one held item; a lifted bag item goes back first-empty or pools)
 ##   rules: remake-invented
 ##     (claim／defer／abandon interaction, sequence／revision guards —
 ##     docs/architecture/BATTLE_SYSTEMS.md#rewards-and-checkpoints)
@@ -236,6 +237,33 @@ static func store_reward(loop: Dictionary, sequence: int, revision: int, entry_i
 	next[PartyStorageRules.LOOP_KEY] = put["storage"]
 	if not next["settlement"].get("stored") is Array: next["settlement"]["stored"] = []
 	next["settlement"]["stored"].append(item)
+	next["settlement"]["revision"] += 1
+	next["item_revision"] += 1
+	return next
+
+
+## A bag item lifted in the get-item window (0x436e80 closed its gap) put back into the bag from a
+## bag row or Esc／right click: first empty slot, the end of the compacted bag (0x436e30).
+static func return_reward_item(loop: Dictionary, sequence: int, revision: int, recipient_id: String, slot: int, expected_code: int) -> Dictionary:
+	if not _claim_current(loop, sequence, revision) or not loot_recipients(loop).has(recipient_id): return BattlePlayLoop.copy(loop)
+	var put := InventoryRules.put_back(BattlePlayLoop.unit_ref(loop, recipient_id)["inventory"], slot, expected_code)
+	if not put["ok"]: return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	BattlePlayLoop.unit_ref(next, recipient_id)["inventory"] = put["inventory"]
+	next["settlement"]["revision"] += 1
+	next["item_revision"] += 1
+	return next
+
+
+## A lifted bag item dropped on the loot list goes into the pending pool (0x44f2d0), after the bag
+## closed its gap (0x436e80).
+static func pool_reward_item(loop: Dictionary, sequence: int, revision: int, recipient_id: String, slot: int, expected_code: int) -> Dictionary:
+	if not _claim_current(loop, sequence, revision): return BattlePlayLoop.copy(loop)
+	var next := BattlePlayLoop.copy(loop)
+	var item := _lift(next, "", recipient_id, slot, expected_code)
+	if item.is_empty(): return BattlePlayLoop.copy(loop)
+	item["id"] = "%d:%d:%s:%d:backpack" % [sequence, revision, recipient_id, slot]
+	next["settlement"]["pending"].append(item)
 	next["settlement"]["revision"] += 1
 	next["item_revision"] += 1
 	return next

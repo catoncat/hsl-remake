@@ -285,7 +285,8 @@ func run() -> void:
 				counts[phase] += 1
 				if phase == "opening":
 					var zoom_stage: bool = cutin.elapsed < cutin.OriginalTick.seconds(cutin.Timing.OPENING_ZOOM_TICKS)
-					check(cutin.opening_ball.visible and not cutin.defender_sprite.visible and not cutin.clips[0]["release_emitted"], "the opening ball plays before the attacker's program")
+					var wait_tick: bool = cutin.elapsed >= cutin.OriginalTick.seconds(cutin.Timing.OPENING_ZOOM_TICKS + cutin.Timing.OPENING_OVERLAY_TICKS)
+					check(cutin.opening_ball.visible != wait_tick and not cutin.defender_sprite.visible and not cutin.clips[0]["release_emitted"], "the opening ball plays before the attacker's program; phase 100 sub-state 2 (0x4027ee) waits one tick without it")
 					check(zoom_stage == (cutin.opening_ball.material != null) and zoom_stage == (not cutin.attacker_sprite.visible) and zoom_stage == (not cutin.vitals.visible), "the zoom draws are additive with the attacker and board hidden; the overlay fades over the restored attacker and the board")
 					check(zoom_stage == (not cutin.scenery.visible) and zoom_stage == (not cutin.background.visible), "the zoom grows over the battlefield map; the close-up backdrop returns with the overlay (camera_panel_motion §5)")
 					if not zoom_stage:
@@ -306,12 +307,12 @@ func run() -> void:
 			# Receiver budgets are AnimalDefense ticks at 16 ms: 32-tick neutral pause (0.512 s);
 			# a one-digit hit holds 40 ＋ 37 ＋ 1 = 78 ticks (1.248 s), a miss 15 ＋ 1 ＋ 40 = 56 (0.896 s).
 			check(counts["target_pause"] >= fps * 0.5 and counts["hurt"] >= fps * (1.2 if hit else 0.85), "receiver stages cannot collapse into a single display frame")
-			# Opening 24 ＋ 32 = 56 ticks (0.896 s); closing darken 16 (0.256 s) and lighten 16 ticks.
+			# Opening 24 ＋ 32 ＋ 1 = 57 ticks (0.912 s); closing darken 16 (0.256 s) and lighten 16 ticks.
 			check(counts["opening"] >= fps * 0.85 and counts["recovery"] >= fps * 0.2 and counts["closing"] >= fps * 0.2, "the first-shot opening and the last-shot transition play their tick budgets")
 			check(cutin.Timing.hurt_hold_ticks(hit, 5) == (78 if hit else 56), "the hurt hold follows the defender object's counters: 40 ticks to the number plus its release on a hit, the 150 px slide plus 40 on a miss")
 			check(cutin.Timing.OPENING_ZOOM_RAMP.size() == 24 and cutin.Timing.OPENING_ZOOM_RAMP[0] == 0x1000 and cutin.Timing.OPENING_ZOOM_RAMP[23] == 0xc4000 and cutin.Timing.opening_overlay_level(0) == 16 and cutin.Timing.opening_overlay_level(31) == 1, "the 0x401060 ramp draws 24 zooms from 1/16 to 12.25 and the overlay level walks 16 → 1 over 32 ticks")
 			var mid := cutin.Timing.ordinary(cutin.manifest["actors"]["001"], {"hit": hit, "damage": 5, "defender_hp_after": 17}, false, false)
-			check(float(mid["opening"]) == 0.0 and mid["recovery"] == mid["darkened"] and mid["darkened"] == mid["complete"], "a shot inside an exchange (counter or extra strike pending) skips the opening and the transition")
+			check(float(mid["opening"]) == 0.0 and mid["recovery"] == mid["darkened"] and is_equal_approx(float(mid["complete"]), float(mid["darkened"]) + cutin.Timing.HANDOVER), "a shot inside an exchange (counter or extra strike pending) skips the opening and the transition and hands over one tick later (0x404b23 sub-state 0 → sub-state 2 at 0x404b55)")
 			var kill := cutin.Timing.ordinary(cutin.manifest["actors"]["001"], {"hit": true, "damage": 5, "defender_hp_after": 0}, false, false)
 			check(float(kill["complete"]) - float(kill["recovery"]) > 0.5, "a killing blow closes the exchange with the transition even when more strikes were queued")
 			check(actor == before[0] and defender == before[1], "presentation must not mutate combat truth")
@@ -798,8 +799,13 @@ func inventory_contracts() -> void:
 	scene.item_panel.menu.get_node("DropCommand").pressed.emit()
 	scene.item_panel.rows.get_child(0).pressed.emit()
 	scene.item_panel.cancel()
+	# 0x436e80 then 0x436e30: the cancelled pick goes back first-empty, the end of the compacted bag.
+	var put_back: Dictionary = scene.play_loop.duplicate(true)
+	var bag_before: Array = BattlePlayLoop.unit(before, "leonard")["inventory"].filter(func(code): return int(code) != 0)
+	var bag_after: Array = BattlePlayLoop.unit(put_back, "leonard")["inventory"].filter(func(code): return int(code) != 0)
+	check(bag_after == bag_before.slice(1) + bag_before.slice(0, 1), "a cancelled drop pick goes back to the end of the bag")
 	scene.menus.discard_inventory_item("241")
-	check(scene.play_loop == before, "cancelled discard callback cannot consume an item")
+	check(scene.play_loop == put_back, "cancelled discard callback cannot consume an item")
 	scene.item_panel.rows.get_child(0).pressed.emit()
 	scene.item_panel.drop_button.pressed.emit()
 	check(BattlePlayLoop.unit(scene.play_loop, "leonard")["inventory"].count(241) == 2, "discard updates the real inventory")

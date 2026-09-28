@@ -1140,6 +1140,14 @@ static func store_reward(loop: Dictionary, sequence: int, revision: int, entry_i
 	return BattleLoopRewards.store_reward(loop, sequence, revision, entry_id, recipient_id, slot, expected_code)
 
 
+static func return_reward_item(loop: Dictionary, sequence: int, revision: int, recipient_id: String, slot: int, expected_code: int) -> Dictionary:
+	return BattleLoopRewards.return_reward_item(loop, sequence, revision, recipient_id, slot, expected_code)
+
+
+static func pool_reward_item(loop: Dictionary, sequence: int, revision: int, recipient_id: String, slot: int, expected_code: int) -> Dictionary:
+	return BattleLoopRewards.pool_reward_item(loop, sequence, revision, recipient_id, slot, expected_code)
+
+
 static func reopen_rewards(loop: Dictionary) -> Dictionary:
 	return BattleLoopRewards.reopen_rewards(loop)
 
@@ -1177,6 +1185,10 @@ static func use_item(loop: Dictionary, item_code: String, target_id: String = ""
 
 static func discard_item(loop: Dictionary, item_code: String, inventory_index: int = -1) -> Dictionary:
 	return BattleLoopInventory.discard_item(loop, item_code, inventory_index)
+
+
+static func return_held_item(loop: Dictionary, inventory_index: int, expected_code: int) -> Dictionary:
+	return BattleLoopInventory.return_held_item(loop, inventory_index, expected_code)
 
 
 static func recovery_target_ids(loop: Dictionary) -> Array:

@@ -5,8 +5,8 @@ extends Node2D
 ##   layout: resource-derived content/generated/hsl/chapter01/battle080_seed.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/actor_shp_draw_origin.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
-##   layout: provisional (pixel foot Y instead of the original's 32 px row buckets;
-##     fixed planes planeObject2..30 compare against a camera-relative row — unmodelled)
+##     (view-relative 32 px row buckets 0x4300f0, same bucket by plane 0x461479, flying +10／cap 22, lift +23)
+##   layout: provisional (stand objects unclamped; no lift／planeObject24..40 interleave; no window cap)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (map-actor highlight: side colour 0x407cc0, engGLASS＋engADDCOLOR_MIX level 10 at 0x43dcb9)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
@@ -37,26 +37,44 @@ const WALK_CELL_TICKS := 8
 const IDLE_FRAMES_PER_SECOND := OriginalTick.TICKS_PER_SECOND / IDLE_FRAME_TICKS
 const WALK_CELL_SECONDS := OriginalTick.TICK_SECONDS * WALK_CELL_TICKS
 const WALK_FRAME_SECONDS := OriginalTick.TICK_SECONDS * WALK_FRAME_TICKS
-## Draw depth: the original sorts actors and stand objects into per-frame buckets by the
-## foot row (0x4300f0), and a flying actor's bucket is 10 rows deeper (enemy 0x43f31e,
-## player 0x443849: +10 when 0x446ad0 reads the flying bit), so a flyer draws over the
-## roofs and trees just south of it. The remake's depth is the foot Y in pixels; a
-## flyer adds the same 10 rows.
+## Draw depth (original_draw_order.md): the original sorts actors and y-sorted stand objects
+## into per-frame buckets by the 32 px row relative to the view top, 0x4300f0(y) =
+## clamp(((y + 16) >> 5) − (camera_y >> 5), 0, 19) + 4, and draws buckets low to high; inside a
+## bucket 0x461479 appends in the plane-list walk order, so the smaller plane draws first
+## (players on planeIcon 3 before enemies on planeObject1 4), then creation order. A flying
+## actor's bucket is 10 deeper (enemy 0x43f31e, player 0x443849). Objects that keep obj_Plane
+## as their bucket (defProcObjectMove 0x4051d0, stand objects with objattrATTACKFLAG 0x43ccf0)
+## sit at that bucket, so planeObject2..30 interleave with the rows as the view scrolls.
+## The remake's z is (bucket + view_top_row) · BUCKET_Z + plane: a world-row bucket every
+## y-sorted node shares, the plane in the low bits, creation order left to tree order.
 const FLYING_DEPTH_ROWS := 10
+const BUCKET_Z := 32
+const PLANE_ICON := 3
+const PLANE_OBJECT1 := 4
 ## Lowest y-sorted bucket (0x4300f0 clamps a row to 0..19, + 4 = planeObject1).
 const FIXED_PLANE_LOWEST_BUCKET := 4
-## Remake z bands for fixed-plane objects: under every foot y (over the map backdrop at
-## z 0), over every foot y, and planeEffect* and later at StoryEffectObjects.EFFECT_Z.
+const Y_BUCKET_ROWS := 20
+## Flying cap (steps 2／3 of the unit process): while [0x4c1b00] & 0x1400000 a flying bucket
+## over 22 comes back to 22 (outside the footprint; in the spell effect phase always).
+const FLYING_CAP_BUCKET := 22
+## Remake z bands for fixed-plane objects: planes under planeObject1 under every y bucket (over
+## the map backdrop at z 0), planeObject31.. over every unlifted bucket, and planeEffect* and
+## later at StoryEffectObjects.EFFECT_Z.
 const FIXED_PLANE_BELOW_Z := 0
 const FIXED_PLANE_ABOVE_Z := 3900
 const FIXED_PLANE_EFFECT_Z := 4000
 const CELL_PIXELS := 32
+## Nodes whose z is a fixed plane between planeObject1 and planeObject30: re-banded every frame.
+const FIXED_PLANE_GROUP := "fixed_plane_depth"
 ## While a map spell's effect plays ([0x4c1b00] & 0x1000000, set and cleared only by the cast
 ## routine 0x442a90), a unit inside the target footprint (0x410670 reads *0x4c1b4c) or in the
 ## use_magic pose (+0x80 & 0x1000, set by 0x4071e0) draws 23 buckets deeper — over every
-## y-sorted unit and stand object (enemy 0x43f375, player 0x4438a4). The remake lifts such an
-## actor into a band over every foot y and under FIXED_PLANE_ABOVE_Z, keeping foot order.
-const CAST_LIFT_Z := 2400
+## y-sorted unit and stand object (enemy 0x43f375, player 0x4438a4). The remake puts the lifted
+## buckets 27..46 in their own band over every world-row z and under FIXED_PLANE_ABOVE_Z.
+const CAST_LIFT_BUCKETS := 23
+const CAST_LIFT_Z := 2700
+## camera_y >> 5 of 0x4300f0, set every frame by the battle runtime before actors update.
+static var view_top_row := 0
 ## The map-actor highlight (static-derived, 0x43db70 → 0x43dcb9; frames in
 ## docs/evidence_packets/runtime_observations/dialogue_death/README.md §5). The original lights
 ## an actor when its +0x80 has 0x100 (the dialogue board sets it on the speaker every tick,
@@ -111,6 +129,10 @@ var last_path: Array[Vector2] = []
 var flying_depth := false
 ## Set by BattleSceneStage.sync_cast_depth for the map spell effect phase (CAST_LIFT_Z).
 var cast_lift := false
+## Set by BattleSceneStage.sync_cast_depth while [0x4c1b00] & 0x1400000 caps a flyer at 22.
+var flying_cap := false
+## The plane list the actor's object sits on (BattleSceneStage.sync_actor_depth): same-bucket order.
+var depth_plane := PLANE_ICON
 
 var _sprite: Sprite2D = null
 var _frame_textures: Dictionary = {}
@@ -242,7 +264,7 @@ func _process(delta: float) -> void:
 		_apply_highlight()
 	# Match the map objects' native anchor-depth domain, including during a walk.
 	# A constant zero put every actor behind every tree, even after walking in front.
-	z_index = depth_index(position.y, flying_depth, cast_lift)
+	z_index = depth_index(position.y, flying_depth, cast_lift, flying_cap, depth_plane)
 	if is_posing():
 		_magic_pose_ticks += OriginalTick.ticks(maxf(delta, 0.0))
 		_apply_magic_pose_frame()
@@ -267,11 +289,73 @@ func _process(delta: float) -> void:
 		_apply_frame_index(_current_sequence[_current_sequence_pos])
 
 
-## z_index for a foot at world Y (the map objects' z_index is their EVEF anchor Y).
-static func depth_index(foot_y: float, flying: bool, lifted: bool = false) -> int:
+## The actor's bucket (0x4300f0 on the foot, then the unit process's five steps): flying +10;
+## capped flying over 22 → 22; lifted +23.
+static func depth_bucket(foot_y: float, flying: bool, lifted: bool = false, capped: bool = false) -> int:
+	var bucket := clampi(((roundi(foot_y) + CELL_PIXELS / 2) >> 5) - view_top_row, 0, Y_BUCKET_ROWS - 1) + FIXED_PLANE_LOWEST_BUCKET
+	if flying:
+		bucket += FLYING_DEPTH_ROWS
+		if capped and bucket > FLYING_CAP_BUCKET:
+			bucket = FLYING_CAP_BUCKET
 	if lifted:
-		return clampi(CAST_LIFT_Z + roundi(foot_y) / 2, CAST_LIFT_Z, FIXED_PLANE_ABOVE_Z - 1)
-	return clampi(roundi(foot_y) + (FLYING_DEPTH_ROWS * CELL_PIXELS if flying else 0), -4096, 4080)
+		bucket += CAST_LIFT_BUCKETS
+	return bucket
+
+
+## z of a view-relative bucket holding an object of the given plane (world-row band).
+static func bucket_z(bucket: int, plane: int) -> int:
+	return (bucket + view_top_row) * BUCKET_Z + clampi(plane, 0, BUCKET_Z - 1)
+
+
+## z_index for an actor's foot at world Y (players planeIcon, others planeObject1).
+static func depth_index(foot_y: float, flying: bool, lifted: bool = false, capped: bool = false, plane: int = PLANE_ICON) -> int:
+	var bucket := depth_bucket(foot_y, flying, lifted, capped)
+	if lifted:
+		var band := bucket - CAST_LIFT_BUCKETS - FIXED_PLANE_LOWEST_BUCKET
+		return clampi(CAST_LIFT_Z + band * BUCKET_Z + clampi(plane, 0, BUCKET_Z - 1), CAST_LIFT_Z, FIXED_PLANE_ABOVE_Z - 1)
+	return clampi(bucket_z(bucket, plane), -4096, CAST_LIFT_Z - 2)
+
+
+## z of a y-sorted stand object (0x43ccf0 without ATTACKFLAG: +0xc = 0x4300f0(anchor y)) in the
+## world-row band; the view clamp is left out (it only matters for an anchor off the view).
+static func stand_object_z(anchor_y: float, plane: int) -> int:
+	return clampi((((roundi(anchor_y) + CELL_PIXELS / 2) >> 5) + FIXED_PLANE_LOWEST_BUCKET) * BUCKET_Z + clampi(plane, 0, BUCKET_Z - 1), -4096, CAST_LIFT_Z - 2)
+
+
+## Sets a map／story object's depth: a fixed obj_Plane bucket (fixed = defProcObjectMove, or a
+## stand object with objattrATTACKFLAG) or the anchor's row bucket; fixed planes between
+## planeObject1 and planeObject30 join FIXED_PLANE_GROUP so refresh_fixed_planes re-bands them.
+static func apply_object_depth(node: CanvasItem, anchor_y: float, plane: String, fixed: bool) -> void:
+	var number := plane_number(plane)
+	if node.is_in_group(FIXED_PLANE_GROUP):
+		node.remove_from_group(FIXED_PLANE_GROUP)
+	if not fixed or number < 0:
+		node.remove_meta("depth_plane")
+		node.set_meta("stand_plane", number if number >= 0 else PLANE_OBJECT1)
+		node.z_index = stand_object_z(anchor_y, int(node.get_meta("stand_plane")))
+		return
+	node.set_meta("depth_plane", number)
+	node.z_index = fixed_plane_depth(plane, node.z_index)
+	if number >= FIXED_PLANE_LOWEST_BUCKET and number <= FIXED_PLANE_LOWEST_BUCKET + Y_BUCKET_ROWS - 1 + FLYING_DEPTH_ROWS:
+		node.add_to_group(FIXED_PLANE_GROUP)
+
+
+## Per frame, after the view moves: the view top row, then every mid fixed plane's world band.
+static func refresh_fixed_planes(tree: SceneTree, view_top_y: float) -> void:
+	view_top_row = int(floor(view_top_y)) >> 5
+	if tree == null:
+		return
+	for node in tree.get_nodes_in_group(FIXED_PLANE_GROUP):
+		var number := int(node.get_meta("depth_plane", PLANE_OBJECT1))
+		(node as CanvasItem).z_index = bucket_z(number, number)
+
+
+## True when a stand object's obj_Attribute holds objattrATTACKFLAG (0x10000).
+static func has_attack_flag(attribute: String) -> bool:
+	for token in attribute.split("|"):
+		if token.strip_edges() == "objattrATTACKFLAG":
+			return true
+	return false
 
 
 ## PROCESS.DEF plane numbers: planeBG3..BG1 = 0..2, planeIcon = 3, planeObject1..40 =
@@ -293,18 +377,18 @@ static func plane_number(plane: String) -> int:
 
 ## z for an object whose process never rewrites its depth (+0xc keeps obj_Plane; e.g.
 ## defProcObjectMove 0x4051d0). Units and y-sorted stand objects take depth buckets
-## 4..23 (+10 flying), so planes up to planeObject1 draw under all of them and planes
-## above planeObject30 over all of them. Planes in between compare against a
-## camera-relative row; unmodelled, the caller's fallback z is kept.
+## 4..23 (+10 flying), so planes under planeObject1 draw under all of them and planes
+## above planeObject30 over all of them; planeObject1..30 are the bucket of that number in
+## the current view (apply_object_depth keeps them re-banded as the view scrolls).
 static func fixed_plane_depth(plane: String, fallback_z: int) -> int:
 	var number := plane_number(plane)
 	if number < 0:
 		return fallback_z
-	if number <= FIXED_PLANE_LOWEST_BUCKET:
+	if number < FIXED_PLANE_LOWEST_BUCKET:
 		return FIXED_PLANE_BELOW_Z + number
-	if number > FIXED_PLANE_LOWEST_BUCKET + 19 + FLYING_DEPTH_ROWS:
+	if number > FIXED_PLANE_LOWEST_BUCKET + Y_BUCKET_ROWS - 1 + FLYING_DEPTH_ROWS:
 		return FIXED_PLANE_ABOVE_Z + number if number < 44 else FIXED_PLANE_EFFECT_Z
-	return fallback_z
+	return bucket_z(number, number)
 
 
 func configure_from_manifest(next_unit_id: String, manifest_entry: Dictionary) -> void:

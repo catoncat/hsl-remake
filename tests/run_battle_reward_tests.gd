@@ -146,6 +146,12 @@ func hand_command_cases() -> void:
 	check(BattlePlayLoop.discard_reward(loop, 1, 0, important_id) == loop, "丟棄 refuses an important held item")
 	var dropped := BattlePlayLoop.discard_reward(loop, 1, 0, "", "leonard", 0, 241)
 	check(BattlePlayLoop.unit(dropped, "leonard")["inventory"] == [241, 241, 246, 0, 0, 0, 0, 0] and dropped["settlement"]["abandoned"].size() == 1 and dropped["settlement"]["pending"].size() == 2, "丟棄 drops only the one lifted bag item")
+	# 0x436e80 closes the lifted slot's gap; 0x436e30 puts it back first-empty, 0x44f2d0 pools it.
+	var returned := BattlePlayLoop.return_reward_item(dropped, 1, 1, "leonard", 0, 241)
+	check(BattlePlayLoop.unit(returned, "leonard")["inventory"] == [241, 246, 241, 0, 0, 0, 0, 0] and returned["settlement"]["pending"] == dropped["settlement"]["pending"], "a lifted bag item goes back to the end of the compacted bag")
+	var pooled := BattlePlayLoop.pool_reward_item(dropped, 1, 1, "leonard", 0, 241)
+	check(BattlePlayLoop.unit(pooled, "leonard")["inventory"] == [241, 246, 0, 0, 0, 0, 0, 0] and pooled["settlement"]["pending"].size() == 3 and int(pooled["settlement"]["pending"][2]["code"]) == 241, "a lifted bag item dropped on the list joins the pool")
+	check(BattlePlayLoop.pool_reward_item(dropped, 1, 0, "leonard", 0, 241) == dropped, "stale pool request does nothing")
 	var stored := BattlePlayLoop.store_reward(dropped, 1, 1, "", "leonard", 2, 246)
 	check(BattlePlayLoop.unit(stored, "leonard")["inventory"] == [241, 241, 0, 0, 0, 0, 0, 0] and stored["party_storage"]["normal"] == [{"code": 246, "qty": 1}], "倉庫 puts the lifted bag item into the party storage")
 	check(BattlePlayLoop.store_reward(stored, 1, 1, important_id) == stored, "stale store does nothing")

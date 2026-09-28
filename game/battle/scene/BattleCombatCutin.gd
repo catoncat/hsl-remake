@@ -696,6 +696,10 @@ func _show_hit_flash(clip: Dictionary, tick: float) -> void:
 ## 0x28000000, level 16 → 1 every 2 ticks) over the restored attacker and the strip.
 func _show_opening(tick: float) -> void:
 	var index := int(tick)
+	if index >= Timing.OPENING_ZOOM_TICKS + Timing.OPENING_OVERLAY_TICKS:
+		# Sub-state 2 (0x4027ee): the ball is no longer drawn; the attacker waits one tick.
+		opening_ball.hide()
+		return
 	opening_ball.show()
 	if index < Timing.OPENING_ZOOM_TICKS:
 		opening_ball.material = opening_add_material

@@ -183,18 +183,26 @@ func highlight_side(unit: Dictionary) -> int:
 
 
 ## A flying unit draws 10 rows deeper (ActorRuntime.FLYING_DEPTH_ROWS); the flag is the
-## PlayLoop unit's traversal, which actSetPlayerFly can change mid-battle.
+## PlayLoop unit's traversal, which actSetPlayerFly can change mid-battle. Players sit on the
+## planeIcon list, enemies on planeObject1 (original_auto_growth.md), which orders a shared bucket.
 func sync_actor_depth(actor: Node, unit: Dictionary) -> void:
 	actor.flying_depth = bool((unit.get("traversal", {}) as Dictionary).get("flying", false))
+	var side := ActorRoleRules.side_mask(unit)
+	actor.depth_plane = ActorRuntime.PLANE_ICON if side == 0 or (side & ActorRoleRules.SIDE_PLAYER) != 0 else ActorRuntime.PLANE_OBJECT1
 
 
 ## The map spell effect phase ([0x4c1b00] & 0x1000000, cast routine 0x442a90, magic and
 ## support magic alike) lifts the actors inside the cast's effect cells (the footprint 0x4100e0
 ## writes to *0x4c1b4c, read by 0x410670) and any actor in the use_magic pose
 ## (ActorRuntime.CAST_LIFT_Z). The remake's phase is a map `magic:` clip on the cut-in queue.
+## Any cut-in (the attack close-up sets 0x400000) caps a flyer outside the footprint at bucket
+## 22; the spell effect phase caps every flyer (steps 2／3); an attack's footprint is its target.
 func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 	var lifted := {}
-	var phase: bool = cutin != null and cutin.busy() and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
+	var busy: bool = cutin != null and cutin.busy()
+	var phase: bool = busy and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
+	if busy and not phase:
+		lifted[str(cutin.clips[0]["strike"].get("defender_id", ""))] = true
 	if phase:
 		var strike: Dictionary = cutin.clips[0]["strike"]
 		var caster := BattlePlayLoop.unit(loop, str(strike.get("attacker_id", "")))
@@ -209,6 +217,7 @@ func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 		var actor = runtime.actor_node_for_unit(str(unit["id"]))
 		if actor != null:
 			actor.cast_lift = phase and (lifted.has(str(unit["id"])) or actor.is_posing())
+			actor.flying_cap = phase or (busy and not lifted.has(str(unit["id"])))
 
 
 ## Lookup order: the scenario's own manifest, then the shared up-title manifest. An
@@ -304,7 +313,8 @@ func _new_map_object_sprite(record: Dictionary, shape_id: String, texture: Textu
 		# engGLASS (level-1 cloud shadows, opaque black silhouettes in the SHP):
 		# read as a translucent overlay; the alpha is a remake presentation value.
 		sprite.modulate = Color(1, 1, 1, 0.4)
-	sprite.z_index = int(anchor_world.y)
+	# 0x43ccf0: the anchor's row bucket every tick, or obj_Plane fixed with objattrATTACKFLAG.
+	ActorRuntime.apply_object_depth(sprite, anchor_world.y, str(record.get("plane", "")), ActorRuntime.has_attack_flag(map_object_field_value(record, "obj_Attribute")))
 	sprite.set_meta("record_index", record.get("record_index", -1))
 	sprite.set_meta("shape_resource_id", shape_id)
 	sprite.set_meta("candidate_anchor_world", candidate_anchor_world)

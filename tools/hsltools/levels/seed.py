@@ -360,6 +360,7 @@ def _combined_objects(level_data: bytes, evef: dict[str, Any], objects: dict[str
                     "shape_resource": obj.get("obj_shape_name") if obj else None,
                     "role_from_process": _role_for_object(obj),
                     "object_data_fields": obj.get("obj_data_fields", {}) if obj else {},
+                    **({"plane": obj.get("obj_plane")} if obj and obj.get("obj_process_code") == "defProcStandObject" else {}),
                 }
             )
         result.append({"index": index, "symbol": names.get(index), "table_offset": offset, "child_count": count, "children": children})
@@ -451,6 +452,9 @@ def _placements(evef: dict[str, Any], objects: dict[str, Any], combined: list[di
             "role_from_process": _role_for_object(obj),
             "object_data_fields": obj.get("obj_data_fields", {}) if obj else {},
         }
+        if obj is not None and obj.get("obj_process_code") == "defProcStandObject":
+            # obj_Plane: the stand object's plane list (same-bucket order), with ATTACKFLAG its bucket.
+            placement["plane"] = obj.get("obj_plane")
         if obj is not None and obj.get("obj_process_code") == "defProcTreasureBox":
             # The eight per-instance EVEF override words (record offsets 0x10..0x2C) are
             # the chest's item codes; the original copy compacts the non-zero words

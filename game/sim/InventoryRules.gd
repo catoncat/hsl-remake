@@ -50,6 +50,15 @@ static func remove(slots: Array, index: int, expected_code: int) -> Dictionary:
 	return {"ok": true, "inventory": next, "item_code": expected_code}
 
 
+## A lifted item put back: 0x436e80 already closed its gap, 0x436e30 puts it in the first empty
+## slot — the end of the compacted bag.
+static func put_back(slots: Array, index: int, expected_code: int) -> Dictionary:
+	var removed := remove(slots, index, expected_code)
+	if not removed["ok"]:
+		return removed
+	return insert(removed["inventory"], expected_code)
+
+
 ## ITEM.important -> item+0xa0 bit 27 -> 0x40e690 -> discard guards.
 ## This restriction applies to discarding, not ordinary transfer or equipment.
 static func discard_error(code: int, catalog: Dictionary) -> String:
