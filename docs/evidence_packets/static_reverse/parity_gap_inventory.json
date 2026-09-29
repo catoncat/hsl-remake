@@ -4,18 +4,18 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 477,
+    "sources": 476,
     "sources_by_kind": {
       "provenance": 193,
-      "sentence": 87,
+      "sentence": 86,
       "scope": 99,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 48,
     "items_by_original_status": {
-      "read_complete": 28,
-      "read_partial": 40,
+      "read_complete": 29,
+      "read_partial": 39,
       "unread": 1,
       "no_original_code": 17
     },
@@ -1496,6 +1496,30 @@
       ]
     },
     {
+      "id": "panel-slide-formula",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，状态页与道具页右窗 WINDOW30（装备栏容器尺寸为 0）整块不滑，獲得物品待领列表的说明框在滑动途中按落点判悬停、关窗即消失（原版按滑动中的窗矩形判、关窗滑出途中照画）",
+      "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
+      "original_evidence": [
+        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
+      ],
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照，根窗列表分支的滑入期间不画、獲得物品待领列表的照画；压暗 0→8",
+      "remake_code": [
+        "game/battle/scene/BattlePanelMotion.gd:part_side",
+        "game/battle/scene/BattlePanelMotion.gd:sides_of",
+        "game/battle/scene/BattlePanelMotion.gd:slide_in_step",
+        "game/battle/scene/BattlePanelMotion.gd:shade_step"
+      ],
+      "original_status": "read_complete",
+      "visibility": "rare",
+      "effort": "S",
+      "category": "面板与界面",
+      "sources": [
+        "provenance:game/battle/scene/BattlePanelMotion.gd|layout|remake-invented|",
+        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#783af6efe3",
+        "video:2"
+      ]
+    },
+    {
       "id": "shape-override-cadence",
       "difference": "演员走动中收到 actRestoreShape：原版 0x4502f0 无条件写 +0x8c = 0，行走就地结束；重制只恢复站立形，走位照走",
       "original": "0x4502f0 帧数 0 分支：+0x90 = 0xffff、+0x80 &= ~0x1800、+0x8c = 0，不看演员状态（static-derived）；走动中收到 actChangeShape 不生效已照原版",
@@ -1830,31 +1854,6 @@
         "provenance:game/battle/runtime/opening/OpeningEndCard.gd|rules|remake-invented|",
         "provenance:game/battle/runtime/opening/OpeningEndCard.gd|strings|remake-invented|",
         "provenance:game/common/CampaignProgress.gd|rules|remake-invented|"
-      ]
-    },
-    {
-      "id": "panel-slide-formula",
-      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级）；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，说明框 WINDOW50 随右侧滑动（录屏里最后一帧直接出现），升级窗加减钮起点未读、加点窗关闭方向（录屏向下）未对上",
-      "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK 自左，均 380 px）；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
-      ],
-      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；压暗 0→8",
-      "remake_code": [
-        "game/battle/scene/BattlePanelMotion.gd:part_side",
-        "game/battle/scene/BattlePanelMotion.gd:sides_of",
-        "game/battle/scene/BattlePanelMotion.gd:slide_in_step",
-        "game/battle/scene/BattlePanelMotion.gd:shade_step"
-      ],
-      "original_status": "read_partial",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "provenance:game/battle/scene/BattlePanelMotion.gd|layout|remake-invented|",
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#5dc53ce3f3",
-        "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#86d57e5290",
-        "video:2"
       ]
     },
     {

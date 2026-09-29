@@ -121,6 +121,7 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	description_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	BattleUISkin.board(description_box, "WINDOW50", Vector2.ZERO)
 	description_box.hide()
+	BattleUISkin.in_place(description_box)
 	add_child(description_box)
 	hand_icon = TextureRect.new()
 	# GameCursor hides the sceptre while this held item shows (0x430310).
@@ -175,7 +176,7 @@ func _rebuild_bag() -> void:
 			BattleUISkin.anchored_asset(icon, str(_catalog[str(code)]["icon"]), Vector2(24, 8))
 			var label := BattleUISkin.text(icon, Vector2(48, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(160, BAG_ROW))
 			label.text = str(_catalog[str(code)]["name"])
-			button.mouse_entered.connect(_show_description.bind(code, label))
+			button.mouse_entered.connect(_show_description.bind(code, label, true))
 			button.mouse_exited.connect(_hide_description.bind(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
@@ -241,7 +242,7 @@ func _rebuild_rows() -> void:
 		var count := BattleUISkin.text(button, Vector2(COUNT_RIGHT - 8 - 84, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(84, LIST_ROW))
 		count.text = str(group["entry_ids"].size())
 		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		button.mouse_entered.connect(_show_description.bind(code, label))
+		button.mouse_entered.connect(_show_description.bind(code, label, false))
 		button.mouse_exited.connect(_hide_description.bind(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
@@ -405,7 +406,10 @@ func _request(extra: Dictionary) -> Dictionary:
 	return result
 
 
-func _show_description(code: int, label: Label) -> void:
+## `held`: a bag row (root-window list branch, drawn once landed) versus a pending-list row
+## (0x414c00 draws the box at 0x4150ab in every state, mid-slide included).
+func _show_description(code: int, label: Label, held: bool) -> void:
+	BattleUISkin.in_place(description_box, held)
 	label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
 	for child in description_box.get_children():
 		if child is Label: description_box.remove_child(child); child.queue_free()

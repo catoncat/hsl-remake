@@ -167,6 +167,7 @@ func _ready() -> void:
 	page_detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UISkin.board(page_detail, "WINDOW50", Vector2.ZERO)
 	page_detail.hide()
+	UISkin.in_place(page_detail)
 	add_child(page_detail)
 	vitals = BattleVitals.new()
 	vitals.position = Vector2(0, 14)

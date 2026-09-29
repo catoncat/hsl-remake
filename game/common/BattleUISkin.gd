@@ -90,6 +90,20 @@ static func show_shape(rect: TextureRect, shape: Texture2D) -> void:
 	rect.size = shape.get_size() if shape != null else Vector2.ZERO
 
 
+## Marks a hover description box (WINDOW50): 0x436d70 draws it straight to the screen at a
+## fixed spot (camera + (252,349)) with no window object of its own, so BattlePanelMotion never
+## slides it and leaves it out of the close snapshot. `held`: drawn by a root-window list branch,
+## which calls 0x436d70 only once its window has landed (+0x8c == 1), so it stays undrawn until
+## the open slide lands; false for the 獲得物品 pending list (0x414c00 calls it at 0x4150ab in
+## every state), whose box shows at its fixed spot mid-slide.
+const IN_PLACE_META := &"panel_in_place"
+
+
+static func in_place(box: CanvasItem, held := true) -> CanvasItem:
+	box.set_meta(IN_PLACE_META, held)
+	return box
+
+
 static func clear_panel(parent: Control) -> ColorRect:
 	parent.size = Vector2(640, 480)
 	var shade := ColorRect.new()

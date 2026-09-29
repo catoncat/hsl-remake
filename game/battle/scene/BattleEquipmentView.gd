@@ -57,6 +57,7 @@ func _ready() -> void:
 	detail_box.name = "Description"
 	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	detail_box.hide()
+	BattleUISkin.in_place(detail_box)
 	add_child(detail_box)
 	BattleUISkin.board(detail_box, "WINDOW50", DETAIL_BOARD_AT)
 	var scroll := ScrollContainer.new()

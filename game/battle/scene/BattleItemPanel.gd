@@ -225,6 +225,7 @@ func _list_frame() -> void:
 	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	BattleUISkin.board(detail_box, "WINDOW50", Vector2.ZERO)
 	detail_box.hide()
+	BattleUISkin.in_place(detail_box)
 	page_root.add_child(detail_box)
 	# Eight fixed 32 px bag rows (the status page's 道具 page geometry); the window never scrolls.
 	rows = Control.new()

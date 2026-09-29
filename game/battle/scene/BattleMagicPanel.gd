@@ -115,6 +115,7 @@ func _ready() -> void:
 	description_box.size = DESCRIPTION_SIZE
 	description_box.name = "Description"
 	description_box.hide()
+	BattleUISkin.in_place(description_box)
 	vitals = BattleVitals.new()
 	vitals.position = Vector2(0, 14)
 	add_child(vitals)

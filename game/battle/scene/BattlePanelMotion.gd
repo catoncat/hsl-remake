@@ -6,7 +6,8 @@ extends Node
 ## sub-window starts SLIDE_DISTANCE (380) px off its landing point on one axis — the top strip
 ## (templates 130／131 and the 145／146／147 bars) from above, WINDOW20 from the left, WINDOW30／
 ## 31／50／90 from the right, the `$:` WINDOW40 and every button (y 387 from y 767) from below,
-## the growth window's WINDOW41 and BT_OK from the left; every part starts together and steps
+## the growth window's WINDOW41, BT_OK and the eight BT_ADD＋／－ (0x43bd3e: x 37·col − 221 to
+## 37·col + 159) from the left; every part starts together and steps
 ## each tick by 0x45e882(cur, target, 40) (`slide_in_step`: within 1 px lands, else min(40,
 ## distance >> 3), at least 2 — 380 px in 33 ticks). On close a snapshot of the last frame's
 ## parts slides back to the start points by 0x45e80d(cur, start, 4, 20) on the one moving axis
@@ -14,6 +15,11 @@ extends Node
 ## already hidden. The Controls keep their positions: the slide rewrites only the parts'
 ## RenderingServer draw transforms, so layout, hit testing and every input rule stay the
 ## panel's own (a click during the slide lands where the part is going).
+## A hover description box (BattleUISkin.in_place: 0x436d70 draws WINDOW50 at camera + (252,349),
+## no window object) never slides and is left out of the close snapshot; a held one (root-window
+## list branches, drawn only at +0x8c == 1) stays undrawn while the open slide runs and shows in
+## place when it lands, an unheld one (the 獲得物品 pending list, 0x4150ab in every state) shows
+## in place mid-slide.
 ## The page's black shade (`shades_of`) is the root window's full-screen black shape
 ## (0x4385d3..0x43862c): level +0xae from 0, one level per 3 ticks (+0x84／+0x86 = 3, 0x43828d)
 ## up to BattleUISkin.PANEL_SHADE_LEVEL (8 of 16, drawn half-blended, 0x40000000) while the
@@ -64,6 +70,8 @@ var _shade_wait := 0
 var _shade_life := 0
 var _shades: Array[ColorRect] = []
 var _shade_ghost: ColorRect
+## In-place boxes of the panel; the held ones stay undrawn while the open slide runs (restored when it lands).
+var _held: Array = []
 
 
 static func attach(target: Control) -> Node:
@@ -112,6 +120,10 @@ static func side_of(rect: Rect2) -> String:
 static func part_side(part: Control) -> String:
 	if part.get_script() == BattleVitals:
 		return "top"
+	if part is TextureButton and (part as TextureButton).texture_normal != null:
+		var shape := (part as TextureButton).texture_normal.resource_path.get_file()
+		if shape.begins_with("BT_ADD") or shape.begins_with("BT_OK"):
+			return "left"
 	var key := str(part.name)
 	if key.begins_with("Button_") or key.begins_with("Page_") or key.begins_with("Caption_"):
 		return "bottom"
@@ -177,11 +189,11 @@ static func slide_out_step(travelled: int) -> int:
 
 ## The panel's drawn parts: its visible Control children, a child that covers most of the
 ## screen replaced by its own visible Control children (a bare backdrop contributes none and
-## neither slides nor joins the close snapshot).
+## neither slides nor joins the close snapshot); an in-place box is never a part.
 func parts_of(root: Control) -> Array[Control]:
 	var parts: Array[Control] = []
 	for child in root.get_children():
-		if not (child is Control) or not (child as Control).visible:
+		if not (child is Control) or not (child as Control).visible or child.has_meta(BattleUISkin.IN_PLACE_META):
 			continue
 		var rect := (child as Control).get_global_rect()
 		if rect.size == Vector2.ZERO:
@@ -189,7 +201,7 @@ func parts_of(root: Control) -> Array[Control]:
 		if _screen_wide(rect):
 			# A screen-wide backdrop (the page's shade) stays put; a wrapper opens one level.
 			for inner in child.get_children():
-				if inner is Control and (inner as Control).visible and (inner as Control).get_global_rect().size != Vector2.ZERO and not _screen_wide((inner as Control).get_global_rect()):
+				if inner is Control and (inner as Control).visible and not inner.has_meta(BattleUISkin.IN_PLACE_META) and (inner as Control).get_global_rect().size != Vector2.ZERO and not _screen_wide((inner as Control).get_global_rect()):
 					parts.append(inner)
 		else:
 			parts.append(child)
@@ -259,6 +271,9 @@ func _begin_open() -> void:
 		return
 	opened_count += 1
 	slide_remaining = SLIDE_DISTANCE
+	for node in panel.find_children("*", "CanvasItem", true, false):
+		if node.has_meta(BattleUISkin.IN_PLACE_META):
+			_held.append(node)
 	_clock = 0.0
 	_apply_parts()
 	set_process(true)
@@ -416,6 +431,10 @@ func _apply_parts() -> void:
 			var xform: Transform2D = item.get_transform()
 			xform.origin += part["direction"] * float(slide_remaining)
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), xform)
+	for item in _held:
+		if is_instance_valid(item):
+			var held := bool(item.get_meta(BattleUISkin.IN_PLACE_META, true))
+			RenderingServer.canvas_item_set_modulate(item.get_canvas_item(), Color(item.modulate, 0.0) if held else item.modulate)
 
 
 func _restore_parts() -> void:
@@ -425,6 +444,10 @@ func _restore_parts() -> void:
 		var item: Variant = part["item"]
 		if is_instance_valid(item):
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), item.get_transform())
+	for item in _held:
+		if is_instance_valid(item):
+			RenderingServer.canvas_item_set_modulate(item.get_canvas_item(), item.modulate)
+	_held.clear()
 
 
 func _free_ghost() -> void:

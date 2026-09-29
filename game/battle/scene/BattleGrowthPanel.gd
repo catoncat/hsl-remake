@@ -103,8 +103,10 @@ func _message_box(resource: String, at: Vector2) -> Control:
 	box.position = at
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(box)
-	if resource == "WINDOW31": BattleUISkin.asset(box, resource, Vector2.ZERO)
-	else: BattleUISkin.board(box, resource, Vector2.ZERO)
+	var board := BattleUISkin.asset(box, resource, Vector2.ZERO) if resource == "WINDOW31" else BattleUISkin.board(box, resource, Vector2.ZERO)
+	# The box is a window object of its own (0x43aec0／0x43af10, from the right): sized to its
+	# board it slides as one part.
+	box.size = board.texture.get_size()
 	box.hide()
 	return box
 
