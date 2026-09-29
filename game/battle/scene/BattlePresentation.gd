@@ -131,6 +131,7 @@ func _ready() -> void:
 	attack_cue = preload("res://game/battle/scene/BattleAttackCue.gd").new()
 	attack_cue.hide()
 	add_child(attack_cue)
+	cutin.cast_caption_held.connect(attack_cue.hold_caption)
 	item_use = preload("res://game/battle/scene/BattleItemUsePresentation.gd").new()
 	item_use.name = "ItemUse"
 	item_use.view = self

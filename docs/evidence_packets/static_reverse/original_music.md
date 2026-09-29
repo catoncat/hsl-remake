@@ -218,7 +218,7 @@ obj-998.obs 的其余物件：5 MessageBox、10 GameClear BOSS（OVERBG01.SHP）
 
 ## 重制接线
 
-- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。音量照 §5：Master 总线＝音效音量线性增益（0 静音）；Music 总线＝§5 流曲线（0 档 −24 dB）并汇入 Master；影片声走 Movie 总线，取音效音量的流曲线；`music_starts()` 在音乐音量 0 时让各放乐点（`BattleOpeningCoordinator.play_music_stream`、`WorldMapRuntime`、`TitleScreen`、`GameClearScreen`）不停不换。滑杆照原版 18 档（0..17）：左右键一档，存 档／17，换算成原版字节为 档×15 封顶 255（`GameSettings.original_level`）；点槽取最近档（原版 defProcScrollBar `0x445860` 水平分支：点滑块旁朝点击方向走一档 `0x445bbd`／`0x445be9`，点滑块抓住、按住拖动 `0x445a79–0x445b1a`，松手经 `0x445d70` 取整到档；重制未照做），旧设置文件的值读入时取最近档。
+- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。音量照 §5：Master 总线＝音效音量线性增益（0 静音）；Music 总线＝§5 流曲线（0 档 −24 dB）并汇入 Master；影片声走 Movie 总线，取音效音量的流曲线；`music_starts()` 在音乐音量 0 时让各放乐点（`BattleOpeningCoordinator.play_music_stream`、`WorldMapRuntime`、`TitleScreen`、`GameClearScreen`）不停不换。滑杆照原版 18 档（0..17）：左右键一档，存 档／17，换算成原版字节为 档×15 封顶 255（`GameSettings.original_level`）；点槽照原版 defProcScrollBar `0x445860` 水平分支：点滑块旁朝点击方向走一档（`0x445bbd`／`0x445be9`），同一下按住即抓住滑块（`0x445c09`），拖动时档＝⌊(滑块 − 槽左 + ⌊轨长/36⌋)·18/轨长⌋ 即时生效（`0x445a79–0x445b1a`），松手经 `0x445d70` 取整到档（`BattleSystemMenu.press_option_groove`／`drag_option`／`release_option`）；音效音量的 RESOURCE 398 试听照 `0x4245c0` 只在标志不含 `0x3a000000` 时放，即松手与点箭头，走一档与拖动不放；重制不画滑杆箭头，左右键一档并放试听代之。旧设置文件的值读入时取最近档，非零值至少 1 档（`GameSettings._stored_volume`）。
 - `BattleOpeningCoordinator`／`OpeningCinematics` 按剧本放乐动作换曲，`BattleSceneRuntime` 读「戰場記錄」时先停乐再放所读关卡的表内曲目（§3.1）。
 - `TitleScreen`、`WorldMapRuntime`、`TownRuntime`、`GameClearScreen` 分别放标题、大地图、城镇与通关尾声的曲目（§3.2、§3.5）。
 

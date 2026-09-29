@@ -554,9 +554,12 @@ func skill_effect_contracts() -> void:
 			timeline = cutin.clips[0]["effect_timeline"]
 			if cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("skill_effects/frames/")): objects_seen = true
 			if cutin.scenery.visible or cutin.vitals.visible or cutin.attacker_sprite.visible or cutin.defender_sprite.visible or cutin.stage.size != Vector2(640, 480) or cutin.result.visible: map_shot = false
-		# An effect_caster adds its wait: N + 2 calls, and Local's one call before the caster glide
-		# (no battle camera here, so the glides themselves take no time).
-		var caster_wait := 0 if not timeline.has("caster") else int(timeline["caster"]["ticks"]) + int(cutin.skill_effects.CASTER_HANDOFF_TICKS) + (0 if bool(timeline["global"]) else int(cutin.skill_effects.CASTER_LOCAL_START_TICKS))
+		# An effect_caster adds its wait: N + 2 calls — the call that builds the caster object
+		# (0x442f77) and the one that finds +0x9e at 0 and sets 0x19／7 (0x442fe2／0x442cd0), around
+		# the N calls that count +0x9e down (0x442fc7) — and Local's one call more before the lead
+		# (0x14 sets 0x15 and returns, 0x442f35). No battle camera here, so the state 0 glide to the
+		# caster, the Global glide to the effect centre and the receiver glides take no time.
+		var caster_wait := 0 if not timeline.has("caster") else int(timeline["caster"]["ticks"]) + 2 + (0 if bool(timeline["global"]) else 1)
 		var expected := int(ceil(cutin.Timing.CAST_LEAD_IN / cutin.Timing.PLAYBACK_SPEED / TICK)) + caster_wait + int(timeline["complete_tick"])
 		check(not cutin.busy() and frames < 6000 and absi(frames - expected) <= 2, "%s completes at its cast lead + effect_caster wait + complete_tick (frames=%d expected=%d)" % [skill_id, frames, expected])
 		check(events == ["release", "impact"] and objects_seen and map_shot, "%s fires one release then one impact, draws its script objects on the map shot without a name caption (%s %s %s)" % [skill_id, str(events), str(objects_seen), str(map_shot)])

@@ -989,14 +989,16 @@ static func clip_closing_tick(timeline: Dictionary, spawns: Array) -> int:
 
 
 ## A MAGIC script on the tactical map (MAGIC.TXT eff_proc_Local): no backdrop or close-up
-## actors; the cast lead's shadow darkens the map (level 8／16 through the effect). First the caster's ANIMAL m_action cast
+## actors; the cast lead's shadow darkens the map (level 8／16 through the effect). First the camera glides to the
+## caster (state 0, _caster_glide), then the caster's ANIMAL m_action cast
 ## lead (AnimalCastLead through the host, `cast_lead(clip, "magic")` — banner, insets and
 ## portrait from the m_shape strip over the shadowed map, tick-driven) when the caster has an
 ## imported strip, else the 預備動作-off lead (AnimalCastLead.skipped, 8 shadow calls); as it ends
 ## the caster poses (`released`), Cast_Star bursts over it and sfx 0x193 sounds, and the
 ## script waits out the pose (`caster_pose_ticks`, 8n + 40), then plays at every affected
 ## position (once at the cursor cell centre `map_target` for eff_proc_Global: 0x442b58 sets
-## 0x4c2c70／0x4c2c74 to (column×32+16, row×32+16) and 0x442d81 builds one interpreter there) with `impact` at its last cue; the
+## 0x4c2c70／0x4c2c74 to (column×32+16, row×32+16) and 0x442d81 builds one interpreter there once the camera
+## has glided to that centre, _effect_centre_glide) with `impact` at its last cue; the
 ## effect carries no name caption. Real seconds, 62.5 ticks/s, after the lead.
 func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	var timeline: Dictionary = clip["effect_timeline"]
@@ -1005,19 +1007,25 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	host.stage.size = Vector2(640, 480)
 	host.scenery.visible = false
 	host.vitals.visible = false
-	# A spell with an effect_caster (0x4098e0 non-zero): Local spends one more call (0x14 → 0x15,
-	# whose 0x43bf30 arrives at once and builds the lead, 0x442f18). The glide to the caster before
-	# it is state 0's (0x442ad1, every spell), which the remake models for these rows only — the
-	# other spells still start without it (provisional, cast-lead-phase). The clip's clock below
-	# starts after both.
+	# The whole effect plays over the live map: the cut-in's close-up backdrop and result stay
+	# off from the first frame, so state 0's glide shows the map sliding and the AI's name
+	# caption (BattleAttackCue, a lower CanvasLayer) stays visible under this layer.
+	host.background.visible = false
+	host.result.visible = false
+	# State 0 (0x442ad1), every spell: the camera glides to the caster first (_caster_glide), the
+	# AI's name caption still up while it glides; a spell with an effect_caster (0x4098e0
+	# non-zero) then spends one more Local call (0x14 → 0x15, whose 0x43bf30 arrives at once and
+	# builds the lead, 0x442f18). The clip's clock below starts after both.
 	var caster: Dictionary = timeline.get("caster", {})
-	if not caster.is_empty():
-		if not clip.has("caster_glide"):
-			clip["caster_glide"] = (0.0 if bool(timeline["global"]) else Timing.scaled(OriginalTick.seconds(CASTER_LOCAL_START_TICKS))) + _caster_glide(host, clip)
-		if elapsed < float(clip["caster_glide"]):
-			clear()
-			return false
-		elapsed -= float(clip["caster_glide"])
+	if not clip.has("caster_glide"):
+		clip["camera_glide"] = _caster_glide(host, clip)
+		clip["caster_glide"] = float(clip["camera_glide"]) + (Timing.scaled(OriginalTick.seconds(CASTER_LOCAL_START_TICKS)) if not caster.is_empty() and not bool(timeline["global"]) else 0.0)
+	# The arrival call still draws the caption before the VM leaves state 0: K + 1 calls.
+	_hold_caption(host, clip, elapsed < float(clip["camera_glide"]) + Timing.scaled(OriginalTick.seconds(1)))
+	if elapsed < float(clip["caster_glide"]):
+		clear()
+		return false
+	elapsed -= float(clip["caster_glide"])
 	# Every map spell builds the cast lead object 154 kind 1 (0x442a90 → 0x406d20 on each branch:
 	# 0x442f26, 0x442c6c, 0x442cea); a caster with no lead frames takes the 預備動作-off jump
 	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
@@ -1025,8 +1033,7 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# (0x4030f7); from sub-state 5's call the effect phase holds it at 8 (host.begin_spell_phase).
 	var lead_call := int(elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
 	# The spell's name captions the AI lead-in's range (BattleAttackCue.caption), not the effect:
-	# the original's effect states (0x7a, 0x4419f8) draw no text.
-	host.result.visible = false
+	# the original's effect states (0x7a, 0x4419f8) draw no text (result hidden above).
 	show()
 	# A caster without an imported strip plays the 預備動作-off lead (the same 0x401ec4 jump);
 	# with 預備動作 off the host hands out that lead for a caster with a strip too (0x401e74
@@ -1094,12 +1101,12 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 			return false
 	# eff_proc_Local's state 0x19 glides the camera to each receiver before it builds the effect
 	# there, the first included (0x44301e: 0x43bf30 every tick, returning until it reports
-	# arrival; a receiver inside the tolerance does not move it). Global's first glide follows
-	# its effect (state 9, MagicImpactPresentation), except after an effect_caster, whose wait
-	# ends gliding to the effect centre.
+	# arrival; a receiver inside the tolerance does not move it). eff_proc_Global glides to the
+	# effect centre first (_effect_centre_glide, from wait_end, or from glide_at after an
+	# effect_caster); its receivers' glides follow its effect (state 9, MagicImpactPresentation).
 	if not clip.has("first_glide"):
 		if bool(timeline["global"]):
-			clip["first_glide"] = 0.0 if caster.is_empty() else _effect_centre_glide(host, clip)
+			clip["first_glide"] = _effect_centre_glide(host, clip)
 		else:
 			clip["first_glide"] = _first_receiver_glide(host, clip)
 	var effect_start: float = wait_end + float(clip["first_glide"])
@@ -1148,26 +1155,50 @@ func _first_receiver_glide(host: CanvasLayer, clip: Dictionary) -> float:
 	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
 
 
-## State 0's glide to the caster (0x442ad1 → 0x43bf30(caster, 0), every spell) at the battle step,
-## started now — supplied ahead for effect_caster rows only; the camera position is kept first,
-## since the clip's logical positions were laid before it moves.
+## State 0's glide to the caster, every spell (0x442ad1: 0x43bf30(caster, 0) at 0x442ae7 each call,
+## returning at 0x442af3 until it reports arrival; the arrival call sets Global 1 (0x44316f) or
+## Local 0x14 (0x442bf1), which run on the next call) at the battle step, started now. The camera
+## position is kept first, since the clip's logical positions were laid before it moves. Its
+## scaled seconds are the calls that return 0 — the arrival call is the clip's tick 0, as the AI
+## lead-in's camera stage counts it — so a camera already on the caster (the unit the player
+## just picked, the AI's own camera stage) adds nothing.
 func _caster_glide(host: CanvasLayer, clip: Dictionary) -> float:
 	var controller: RefCounted = host.battle_camera()
 	if controller == null or controller.camera == null:
 		return 0.0
 	clip["cast_camera"] = controller.camera.position
 	var world: Vector2 = controller.logical_to_world(clip["map_caster"])
-	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+	return _unarrived_seconds(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
 
 
-## eff_proc_Global's glide to the effect centre after an effect_caster wait (0x442cba: 0x43bf30
-## on the pseudo-object 0x4c3860, whose +4／+8 hold the target cell), started now.
+## eff_proc_Global's glide to the effect centre state 0 noted (the pseudo-object 0x4c3860, whose
+## +4／+8 = 0x4c3864／0x4c3868 hold the target cell's centre, 0x442b5d／0x442b6d), started now:
+## state 7 calls 0x43bf30 on it (0x442d10) after the pose and builds the effect on the arrival
+## call (0x442d81); after an effect_caster wait the call that finds +0x9e at 0 glides first
+## (0x442cba) and state 7, a call after the arrival, finds the camera there. Scaled seconds of
+## the calls that return 0.
 func _effect_centre_glide(host: CanvasLayer, clip: Dictionary) -> float:
 	var controller: RefCounted = host.battle_camera()
 	if controller == null or controller.camera == null or not clip.has("cast_camera"):
 		return 0.0
 	var world: Vector2 = controller.logical_to_world(clip["map_target"] - _view_shift(host, clip))
-	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+	return _unarrived_seconds(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+
+
+## A 0x43bf30 glide of `seconds` (BattleCameraController.scroll_to: its ticks with the arrival one,
+## 0 for a target within the tolerance) as the scaled seconds of its calls that return 0.
+static func _unarrived_seconds(seconds: float) -> float:
+	return Timing.scaled(OriginalTick.seconds(maxi(roundi(OriginalTick.ticks(seconds)) - 1, 0)))
+
+
+## The AI's name caption (BattleAttackCue.caption) stays up while state 0 glides: the AI target
+## state 0x441947 draws it every call before it runs the cast VM, until the VM leaves state 0
+## (then 0x4419f8 runs the VM alone). The player's cast state 0x7a draws none (the cue holds no
+## caption for a player's strike).
+func _hold_caption(host: CanvasLayer, clip: Dictionary, held: bool) -> void:
+	if held != bool(clip.get("caption_held", false)) and host.has_signal("cast_caption_held"):
+		clip["caption_held"] = held
+		host.cast_caption_held.emit(held)
 
 
 ## The effect_caster object at the caster's cell, `since` scaled seconds after it was built

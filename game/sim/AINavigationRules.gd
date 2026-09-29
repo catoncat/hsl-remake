@@ -437,30 +437,73 @@ static func native_candidates(flood: Dictionary, context: Dictionary, origin: Ve
 	return cells
 
 
-static func nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i) -> Dictionary:
+static func nearest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i, farthest := false) -> Dictionary:
 	## 0x413900 over one flood, row-major: the stoppable cell nearest (Manhattan) to
 	## `target`; the actor's own cell holds a unit and is skipped like any occupied cell
 	## (mask 0x70000). A strictly nearer cell, or an equal one whose rand() & 1 is set, is
 	## then filtered by 0x40d800 (see approach_point); a skipped cell leaves the held best.
+	## `farthest` is mode 1 (farthest_stoppable); both draw at 0x41385d／0x413890.
 	cells.sort_custom(func(a, b): return a.y < b.y or (a.y == b.y and a.x < b.x))
 	var best := {}
+	var held := 0 if farthest else 600000
 	var considered := 0
 	var skipped := 0
 	for cell in cells:
 		if cell == origin: continue
 		considered += 1
 		var distance := TacticalGridRules.manhattan(cell, target)
-		if not best.is_empty():
-			if distance > int(best["distance"]): continue
-			if distance == int(best["distance"]) and AIDecisionRules.recorded_draw(2, rng, draws) == 0: continue
+		if distance == held:
+			if AIDecisionRules.recorded_draw(2, rng, draws) == 0: continue
+		elif (distance < held) == farthest: continue
 		if adjacent_blockers(cell, mask, cell_words, map_size) >= CROWDED_NEIGHBOURS and AIDecisionRules.recorded_draw(100, rng, draws) < CROWDED_SKIP_BELOW:
 			skipped += 1
 			continue
 		best = {"cell": cell, "distance": distance}
+		held = distance
 	if best.is_empty(): return {}
 	best["candidates"] = considered
 	best["crowded_skips"] = skipped
 	return best
+
+
+## 0x413930 → 0x413740 with mode 1: the same row-major scan, candidates, coin and crowded
+## drop as nearest_stoppable, the held distance starting at 0 instead of 600000
+## (0x4137cc..0x4137d3) and only a strictly farther cell replacing it (0x413876). A cell at
+## the held distance draws the coin first (0x41385d), even before any cell was kept.
+static func farthest_stoppable(cells: Array, target: Vector2i, origin: Vector2i, rng: Variant, draws: Array, cell_words: Dictionary, mask: int, map_size: Vector2i) -> Dictionary:
+	return nearest_stoppable(cells, target, origin, rng, draws, cell_words, mask, map_size, true)
+
+
+## The self-cast flee's inputs, read once per actor turn on the pre-move board: 0x40cca0's
+## flood 0x40f440(actor, move, mode) (0x40cd4c..0x40cda8: flying 6, else the 0x40bab0 mode)
+## as native_candidates (the actor's own registered cell skipped), the 0x40d800 words and
+## the mask of the actor's side word 0x40ba20 (0x40ce0c／0x40d11c). A 3×3 actor keeps the
+## movement envelope as its flood, as approach_point does (provisional).
+static func flee_field(loop: Dictionary, actor: Dictionary, envelope: Dictionary) -> Dictionary:
+	var origin: Vector2i = actor["coord"]
+	var context := TacticalGridRules.Traversal.prepare(actor, loop["units"], TerrainEditRules.tiles(loop), {}, loop["map_size"])
+	if not context["ok"]: return {"ok": false, "reason": context["reason"]}
+	var cells: Array = envelope["reachable_by_coord"].keys()
+	if int(context["radius"]) == 0: cells = native_candidates(native_flood(context, origin, int(actor["move_point"])), context, origin)
+	return {"ok": true, "origin": origin, "cells": cells, "words": neighbour_words(loop), "mask": blocker_mask(side_word(actor)),
+		"map_size": loop["map_size"], "routes": envelope["reachable_by_coord"]}
+
+
+## 0x40cca0's flee (0x40cdf0..0x40ce63, 0x40d104..0x40d173): farthest_stoppable from the
+## threat's cell, then 0x410a50 from the actor to it. No threat, no cell or no path
+## (0x40ce64／0x40d174 → 0x40d17e) returns the actor's own position: it casts in place.
+static func flee(field: Dictionary, threat: Variant, rng: Variant) -> Dictionary:
+	var origin: Vector2i = field["origin"]
+	var result := {"to": origin, "path": [], "cost": 0, "draws": [], "reason": "no_threat", "source": "0x413930 → 0x413740(1, …), 0x410a50"}
+	if not threat is Vector2i: return result
+	var pick := farthest_stoppable(field["cells"].duplicate(), threat, origin, rng, result["draws"], field["words"], int(field["mask"]), field["map_size"])
+	result["reason"] = "no_cell"
+	if pick.is_empty(): return result
+	result.merge({"pick": pick["cell"], "distance": pick["distance"], "candidates": pick["candidates"], "crowded_skips": pick["crowded_skips"], "reason": "no_path"}, true)
+	if not field["routes"].has(pick["cell"]): return result
+	var route: Dictionary = field["routes"][pick["cell"]]
+	result.merge({"to": pick["cell"], "path": route["path"], "cost": int(route["cost"]), "reason": "farthest_from_threat"}, true)
+	return result
 
 
 ## The weapon terrain the AI's attack reads, once per actor turn: the attacker's RANGE rows,

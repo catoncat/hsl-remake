@@ -33,6 +33,7 @@ func run() -> void:
 	script_anchor_cases()
 	pursuit_walk_cases()
 	crowded_filter_cases()
+	self_cast_flee_cases()
 	attack_station_cases()
 	terrain_range_cases()
 	print("AI_NAVIGATION_TESTS_", "PASS" if failures.is_empty() else "FAIL", " checks=", checks)
@@ -468,6 +469,46 @@ func crowded_filter_cases() -> void:
 	var level_draws: Array = []
 	var level: Dictionary = AINavigationRules.nearest_stoppable(cells.duplicate(), Vector2i(2, 1), Vector2i(5, 5), func(bound): return 0, level_draws, words, 0x4000, size)
 	check(level["cell"] == Vector2i(2, 2) and level_draws.is_empty(), "a shrinking level (side 0) counts only hard-blocked cells, so one 0x4000 neighbour draws nothing")
+	# 0x413740 mode 1 (0x413930): same scan, held distance starts at 0, a strictly farther cell wins.
+	var far_draws: Array = []
+	var far: Dictionary = AINavigationRules.farthest_stoppable([Vector2i(4, 0), Vector2i(2, 2), Vector2i(0, 5)], Vector2i(2, 1), Vector2i(5, 5), func(_bound): return 0, far_draws, words, 0x64000, size)
+	check(far["cell"] == Vector2i(0, 5) and int(far["candidates"]) == 3 and far_draws.is_empty(), "0x413740 mode 1: the farthest cell from the threat, nearer ones never draw: %s" % str(far))
+	var tie_kept: Dictionary = AINavigationRules.farthest_stoppable([Vector2i(0, 2), Vector2i(4, 0)], Vector2i(2, 1), Vector2i(5, 5), func(_bound): return 0, [], words, 0x64000, size)
+	var tie_moved: Dictionary = AINavigationRules.farthest_stoppable([Vector2i(0, 2), Vector2i(4, 0)], Vector2i(2, 1), Vector2i(5, 5), func(_bound): return 1, [], words, 0x64000, size)
+	check(tie_kept["cell"] == Vector2i(4, 0) and tie_moved["cell"] == Vector2i(0, 2), "0x413740 mode 1: an equal distance replaces the held cell on rand() & 1, row-major order")
+	var held_zero: Dictionary = AINavigationRules.farthest_stoppable([Vector2i(2, 1)], Vector2i(2, 1), Vector2i(5, 5), func(_bound): return 0, [], words, 0x64000, size)
+	check(held_zero.is_empty(), "0x413740 mode 1: distance 0 equals the initial held 0, so it draws the coin before anything is kept")
+	var far_crowded: Dictionary = AINavigationRules.farthest_stoppable([Vector2i(2, 2)], Vector2i(2, 1), Vector2i(5, 5), func(bound): return 79 if bound == 100 else 0, [], words, 0x64000, size)
+	check(far_crowded.is_empty(), "0x413740 mode 1 keeps the 0x40d800 crowded drop")
+
+
+func self_cast_flee_cases() -> void:
+	# 0x40cca0 with the actor as cast target: 0x40bb80 threat, 0x413930 farthest cell, 0x410a50.
+	var size := Vector2i(8, 8)
+	var origin := Vector2i(3, 3)
+	var routes := {Vector2i(2, 3): {"path": [Vector2i(2, 3)], "cost": 1}, Vector2i(4, 3): {"path": [Vector2i(4, 3)], "cost": 1}, Vector2i(3, 5): {"path": [Vector2i(3, 4), Vector2i(3, 5)], "cost": 2}}
+	var field := {"ok": true, "origin": origin, "cells": [origin, Vector2i(2, 3), Vector2i(4, 3), Vector2i(3, 5), Vector2i(0, 7)], "words": {}, "mask": 0x64000, "map_size": size, "routes": routes, "range0": {"heal0": true}}
+	var never := func(_bound): return 0
+	var none: Dictionary = AINavigationRules.flee(field, null, never)
+	check(none["to"] == origin and none["reason"] == "no_threat", "no threat (0x40ce64 → 0x40d17e): the actor casts in place")
+	var unreachable: Dictionary = AINavigationRules.flee(field, Vector2i(3, 0), never)
+	check(unreachable["to"] == origin and unreachable["pick"] == Vector2i(0, 7) and unreachable["reason"] == "no_path", "0x410a50 failing on the farthest cell (0x40d17e): the actor casts in place")
+	var reachable := field.duplicate()
+	reachable["cells"] = [origin, Vector2i(2, 3), Vector2i(4, 3), Vector2i(3, 5)]
+	var own := {"skill_id": "heal0", "target_id": "a", "primary_target_id": "a", "center_is_primary": true, "destination": origin, "score": 1, "movement_cost": 0, "path": []}
+	var plan := {"primary_target_id": "a", "channel": "special", "skills": [], "threat": Vector2i(3, 0), "origin": origin, "flee": reachable}
+	var range0: Dictionary = AISkillPlanning.cast_station(plan, {"skill_id": "heal0", "intents": [own]}, never, {})
+	check(range0["intent"]["destination"] == Vector2i(3, 5) and range0["intent"]["target_id"] == "a" and range0["intent"]["path"] == [Vector2i(3, 4), Vector2i(3, 5)] and range0["decision"]["flee_branch"].begins_with("0x40cdd9"), "effect range 0 on the actor (0x40cdd3 → 0x40cdd9): flee to the farthest reachable cell, then cast on itself: %s" % str(range0["intent"]))
+	var single := func(cell: Vector2i, score: int) -> Dictionary: return {"skill_id": "heal1", "target_id": "a", "primary_target_id": "a", "center_is_primary": true, "destination": cell, "score": score, "movement_cost": 1, "path": [cell]}
+	var one: Dictionary = AISkillPlanning.cast_station(plan, {"skill_id": "heal1", "intents": [single.call(Vector2i(2, 3), 1), single.call(Vector2i(4, 3), 1)]}, never, {})
+	check(one["intent"]["destination"] == Vector2i(3, 5) and one["decision"]["flee_branch"].begins_with("0x40d0ed"), "highest coverage 1 on the actor (0x40d0ed): flee instead of the farthest station")
+	var two: Dictionary = AISkillPlanning.cast_station(plan, {"skill_id": "heal1", "intents": [single.call(Vector2i(2, 3), 2), single.call(Vector2i(4, 3), 2)]}, never, {})
+	check(not two["decision"].has("flee_branch") and two["intent"]["destination"] in [Vector2i(2, 3), Vector2i(4, 3)], "highest coverage 2: the ordinary farthest-station pick (0x40d1a8), no flee")
+	var fixed := plan.duplicate()
+	fixed["channel"] = "magic"
+	fixed["threat_scan"] = {"move_magic_use": false}
+	var in_place: Dictionary = AISkillPlanning.cast_station(fixed, {"skill_id": "heal0", "intents": [own]}, never, {})
+	check(in_place["intent"]["destination"] == origin and not in_place["decision"].has("flee_branch"), "MAGIC without move_magic_use never enters 0x40cca0: cast in place")
 
 
 func attack_station_cases() -> void:

@@ -57,12 +57,12 @@
   "items": [
     {
       "id": "panel-slide-formula",
-      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位，獲得物品待领列表的说明框滑入滑出途中按行的当前矩形判悬停照画；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边；獲得物品待领列表按行矩形而非窗矩形加 mouse_y 定行，残影行名颜色与透明处压暗定在关窗那一帧；重制滑入途中也受理领取与背包拿起（原版落位后才接），滑入途中点待领行按落点矩形命中（原版按行当前画的位置）",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位，獲得物品待领列表的说明框滑入滑出途中按行的当前矩形判悬停照画，领取与背包拿起等落位才接、滑入途中点待领行按行当前画的位置命中；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边；獲得物品待领列表按行矩形而非窗矩形加 mouse_y 定行，残影行名颜色与透明处压暗定在关窗那一帧",
       "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画，且滑动途中按 drawn_offset 给的当前偏移判悬停（BattleLootPanel.drawn_hover），落位后面板持有落点下的行到光标离开，关窗时先清面板自己的框与行色、快照上方放说明框副本照画；窗显示中重建（拿起、领取、换领取人）后 rescan 按当前剩余距离重新登记部件、遮罩沿用当前级数；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画，且滑动途中按 drawn_offset 给的当前偏移判悬停（BattleLootPanel.drawn_hover）与点待领行，领取与背包拿起等 BattleLootPanel.landed，落位后面板持有落点下的行到光标离开，关窗时先清面板自己的框与行色、快照上方放说明框副本照画；窗显示中重建（拿起、领取、换领取人）后 rescan 按当前剩余距离重新登记部件、遮罩沿用当前级数；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
       "remake_code": [
         "game/battle/scene/BattlePanelMotion.gd:part_side",
         "game/battle/scene/BattlePanelMotion.gd:sides_of",
@@ -72,6 +72,7 @@
         "game/battle/scene/BattlePanelMotion.gd:drawn_offset",
         "game/battle/scene/BattlePanelMotion.gd:rescan",
         "game/battle/scene/BattleLootPanel.gd:drawn_hover",
+        "game/battle/scene/BattleLootPanel.gd:landed",
         "game/common/BattleUISkin.gd:in_place"
       ],
       "original_status": "read_complete",
@@ -407,13 +408,13 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 与子状态 6 已照原版（RELAYSHADE／RELAYSHADE2：效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Global 状态 7 滑向效果中心（0x442d10 调 0x43bf30 到状态 0 记下的 0x4c3864／0x4c3868）未做、起点少算这段滑行；状态 0（0x442ad1）的镜头滑向施法者只给有施法者特效（effect_caster）的 8 行补上，其余魔法起手仍缺这段，两类不对称；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
-      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8、清位后 9 call 淡出；效果 VM 置位后等施法者姿势位（0x442c89 等）；特写脚印 0x410670 读 0x4100e0 选目标时写的 *0x4c1b4c",
+      "difference": "施法引导子状态 5 与子状态 6 与镜头已照原版（RELAYSHADE／RELAYSHADE2／CASTCAMERA：施法 VM 状态 0 每个魔法先滑镜到施法者、期间 AI 名字幕照画，Global 建效果前滑向效果中心、到位计入效果起点，效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Local 首个受者滑镜 `_first_receiver_glide` 仍把到位那 1 call 算进去（原版状态 0x19 在 `0x44301e` 到位的同一次调用里 `0x443087` 建效果，应按返回 0 的调用数计）；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
+      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8、清位后 9 call 淡出；效果 VM 置位后等施法者姿势位（0x442c89 等）；状态 0 镜头到施法者（0x442ae7／0x442af3）与 Global 状态 7 滑向效果中心（0x442d10 → 0x442d81 建效果）已读；特写脚印 0x410670 读 0x4100e0 选目标时写的 *0x4c1b4c",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；引导段黑层 min(call+1, 8)/16，子状态 5 那 call（spell_phase_begun）BattleCombatCutin.begin_spell_phase 置位、位在期间黑层 8/16，效果片段走到脚本末（script_end_tick）清位，Local 由接力撑到最后一人撤条（每人的条在其脚本末出），清位后按地图时钟从起始级淡出（有引导 7..0、无引导 8..0，首帧画起始级）；效果起点＝posing call 末＋max(子状态 5 的 1 call, caster_pose_ticks)；BattleSceneStage._spell_footprint 给法术的特写与效果阶段同取效果格",
+      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；引导段黑层 min(call+1, 8)/16，子状态 5 那 call（spell_phase_begun）BattleCombatCutin.begin_spell_phase 置位、位在期间黑层 8/16，效果片段走到脚本末（script_end_tick）清位，Local 由接力撑到最后一人撤条（每人的条在其脚本末出），清位后按地图时钟从起始级淡出（有引导 7..0、无引导 8..0，首帧画起始级）；效果起点＝posing call 末＋max(子状态 5 的 1 call, caster_pose_ticks)；SkillEffectScriptPlayer._caster_glide（每个魔法，返回 0 的调用数）与 _effect_centre_glide（每个 Global 魔法）；BattleSceneStage._spell_footprint 给法术的特写与效果阶段同取效果格",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd",
@@ -1041,8 +1042,8 @@
     },
     {
       "id": "ai-skill-buckets",
-      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 3／4／5 行的目标掩码 0x40c2d0（0x40d38d..0x40d3a5）未模拟；残血路径的魔法／特技挑行顺序未模拟：原版 0x40d340 先在 0x40c770 按（桶, 掩码）挑行、再判落点，落空换备用桶一次（0x40d494 → 0x40d3bc），特技 0x40df70／0x40dd80 同形，重制先按目标预筛再挑，原版裁判残血对照的「规则类分歧 0」不覆盖这一点；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支未做：本人分支 +0xc 为 0 时 0x40cdd9（0x40cddf 调 0x40bb80 取威胁 → 0x40ba20 → 0x40ce22 调 0x413930 → 0x410a50），一般分支最高覆盖 1 且目标本人时 0x40d0ed（0x40d0f3 取威胁 → 0x40d132 调 0x413930 → 0x40d148 调 0x410a50）；重制的自身目标分两处、都不同于这两条分支：自救回复／净化（AISelfPreservation）总是原地施放，援助检查找不到友军退到施法者本人（0x43fce1..0x43fd46）时经 AISkillPlanning.choose 挑站位、仍可能移动施法",
-      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码（桶 3／4／5，0x40d38d..0x40d3a5）已读未接入，残血挑行 0x40d340 → 0x40c770 与备用桶 0x40d494 → 0x40d3bc 已读未接入，移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT）",
+      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 3／4／5 行的目标掩码 0x40c2d0（0x40d38d..0x40d3a5）未模拟；残血路径的魔法／特技挑行顺序未模拟：原版 0x40d340 先在 0x40c770 按（桶, 掩码）挑行、再判落点，落空换备用桶一次（0x40d494 → 0x40d3bc），特技 0x40df70／0x40dd80 同形，重制先按目标预筛再挑，原版裁判残血对照的「规则类分歧 0」不覆盖这一点；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支已照原版（lane AISELFMOVE）：本人分支 +0xc（效果范围序号）为 0 时 0x40cdd9、一般分支最高覆盖 1 时 0x40d0ed，都先 0x40bb80 取威胁，再经 0x413930（0x413740 模式 1，移动泛洪里离威胁最远的可停格，同距掷 &1、拥挤格 rand(100)<80 跳过）与 0x410a50 走过去、对自己施放，无威胁／无格／走不到时原地施放；自救回复／净化（AISelfPreservation）与援助检查退到施法者本人（0x43fce1..0x43fd46）都走这两条；剩余＝3×3 行动者的逃离泛洪沿用移动包络（provisional）",
+      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码（桶 3／4／5，0x40d38d..0x40d3a5）已读未接入，残血挑行 0x40d340 → 0x40c770 与备用桶 0x40d494 → 0x40d3bc 已读未接入，移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT），自施法逃离 0x40cdd9／0x40d0ed → 0x413930／0x413740(1) → 0x410a50 已读并接入（lane AISELFMOVE）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
         "docs/evidence_packets/static_reverse/original_ai_skills.md",
@@ -1054,7 +1055,8 @@
       "remake_code": [
         "game/sim/AISkillPlanning.gd",
         "game/sim/AISelfPreservation.gd",
-        "game/sim/AISupportPlanning.gd"
+        "game/sim/AISupportPlanning.gd",
+        "game/sim/AINavigationRules.gd"
       ],
       "original_status": "read_partial",
       "visibility": "every_battle",
@@ -1610,16 +1612,19 @@
     },
     {
       "id": "settings-volume-mixer",
-      "difference": "音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）与 18 档滑杆（档×15 封顶 255）；場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain，剧情中途切换即藏即现、关着照走）；剩点槽：原版点滑块旁朝点击方向走一档、按住拖动、松手取整（defProcScrollBar 0x445860 水平分支），重制直接跳最近档；音效音量滑杆松手或点箭头时的 RESOURCE 398 试听未做（0x4245c0 只在标志不含 0x3a000000 时放，拖动与翻档不放）",
+      "difference": "音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）与 18 档滑杆（档×15 封顶 255；点槽照 defProcScrollBar 0x445860 水平分支：点滑块旁朝点击方向走一档、点滑块抓住拖动、松手取整，音效音量松手时放 RESOURCE 398 试听）；場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain，剧情中途切换即藏即现、关着照走）",
       "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者：mapobjCloud 0x43cecd、mapobjWaterFall 0x43d13e、mapobjBuildBottom（及类型越界默认分支）0x43d758、defProcFireSmoke 0x43c337（过程 0x43c260）与 defProcDropRain 0x43c63f（过程 0x43c4a0）关时 +0x30 = 0xffff 不画但照走，云／瀑布／建筑底不画不走；音效音量 0x4245c0 → [0x477c20]＝档×15 封顶 255 → 0x458220 waveOutSetVolume(v×0x01000100)，放声门槛 0x42c180、影片声 0x42df6f；音樂音量 0x424630 → [0x477c24] → 0x459e60 → 0x459d70 SetVolume((⌊60v/255⌋−60)×40)",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_music.md",
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_map_object_drift.md"
       ],
-      "remake": "GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；音量存 档／17、字节 original_level＝档×15 封顶 255，BattleSystemMenu.adjust_option 左右一档；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）、StoryRainEmitter._process 与 BattlePoisonGasPresentation._smoke_tick 读",
+      "remake": "GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；音量存 档／17、字节 original_level＝档×15 封顶 255，BattleSystemMenu.adjust_option 左右一档（代箭头，音效音量放 398 试听）、press_option_groove／drag_option／release_option 点槽拖动取整；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）、StoryRainEmitter._process 与 BattlePoisonGasPresentation._smoke_tick 读",
       "remake_code": [
-        "game/settings/GameSettings.gd"
+        "game/settings/GameSettings.gd",
+        "game/battle/scene/BattleSystemMenu.gd:press_option_groove",
+        "game/battle/scene/BattleSystemMenu.gd:drag_option",
+        "game/battle/scene/BattleSystemMenu.gd:release_option"
       ],
       "original_status": "read_partial",
       "visibility": "rare",
@@ -2630,11 +2635,8 @@
       "item": "effect-sound-timing",
       "text": "缩放 16→8（每 tick 0.5，16）→1（每 tick 0.234，30）、动画等待（`0x45e5a6`，未读，按 0）、倒数 40 → `0x415d40`"
     },
-    "scope:docs/evidence_packets/static_reverse/original_caster_effect.md|provisional|施法者对象在施法结束时随片段一起清掉（原版对象自走到删）；0x415ba0 开头两个调用未读；重制的状态 0 滑镜只给有施法者特效的 8 行补上": {
-      "item": [
-        "unconsumed-display-flags",
-        "cast-lead-phase"
-      ]
+    "scope:docs/evidence_packets/static_reverse/original_caster_effect.md|provisional|施法者对象在施法结束时随片段一起清掉（原版对象自走到删）；0x415ba0 开头两个调用未读": {
+      "item": "unconsumed-display-flags"
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72": {
       "item": "special-object-motion",
@@ -2853,9 +2855,6 @@
     },
     "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|": {
       "item": "drop-lightning-presentation"
-    },
-    "provenance:game/settings/GameSettings.gd|rules|provisional|": {
-      "item": "settings-volume-mixer"
     },
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|layout|provisional|": {
       "item": "ai-item-use-presentation"

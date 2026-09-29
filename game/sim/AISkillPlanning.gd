@@ -18,6 +18,7 @@ const RangePropagationRules = preload("res://game/sim/RangePropagationRules.gd")
 const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
 const AIDecisionRules = preload("res://game/sim/AIDecisionRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
+const AINavigationRules = preload("res://game/sim/AINavigationRules.gd")
 
 
 static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: String, fields_by_id: Dictionary, envelope: Dictionary) -> Dictionary:
@@ -239,7 +240,19 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 			skill = members[int(selected["index"])]
 			break
 	if skill.is_empty(): return {"intent": {}, "decision": decision}
+	return cast_station(plan, skill, rng, decision)
+
+
+## The move-cast search 0x40cca0 for the picked row: where the actor stands and the intent
+## it casts. A plan carrying `flee` (AINavigationRules.flee_field plus `range0`, the owned
+## rows whose effect range is range0Cell) targets the actor itself (0x40cdab): a range0Cell
+## row flees at once (0x40cdd3 falls through, 0x40cdd9..0x40ce63), another flees when the
+## highest coverage is 1 (0x40d0d8..0x40d0e7 → 0x40d0ed), both after the 0x40bb80 scan.
+static func cast_station(plan: Dictionary, skill: Dictionary, rng: Variant, decision: Dictionary) -> Dictionary:
 	var intents: Array = skill["intents"]
+	var flee: Dictionary = plan.get("flee", {})
+	if moves_to_cast(plan) and not flee.is_empty() and flee["range0"].has(str(skill["skill_id"])):
+		return _flee(plan, skill, rng, decision, "0x40cdd9 (effect range 0)")
 	# 0x40cca0 never scans the actor's own cell (0x40cf34 skips an occupied word, test 0x74000):
 	# the stations are the best cells away from it, even when the own cell covers more. With
 	# none ([0x4c1a00] 0: 0x40d0d2 → 0x40d31b, no threat scan) 0x40d340 casts from its own
@@ -276,6 +289,9 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 		destinations.append(intent["destination"])
 		distinct.append(intent)
 	decision["center_tie_draws"] = center_draws
+	if moving and not flee.is_empty() and best == 1:
+		decision["coverage"] = best
+		return _flee(plan, skill, rng, decision, "0x40d0ed (highest coverage 1)")
 	# 0x40d340 (MAGIC) and 0x40df70 (SPECIAL, push 1 at 0x40e030 → 0x40cca0 at 0x40e03d) share
 	# the move search: the threat scan after the stations, then the farthest one from it.
 	var index := 0
@@ -293,6 +309,18 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	decision["threat"] = found["coord"]
 	decision["skill_id"] = skill["skill_id"]
 	return {"intent": distinct[index], "decision": decision}
+
+
+## The self-cast flee: 0x40bb80(actor, 3, 0, 8), then AINavigationRules.flee; the actor casts
+## on itself where it lands (its own cell when the flee finds nothing).
+static func _flee(plan: Dictionary, skill: Dictionary, rng: Variant, decision: Dictionary, branch: String) -> Dictionary:
+	var found := threat(plan, rng)
+	found["source"] = "0x40bb80(actor, 3, 0, 8) at 0x40cddf／0x40d0f3"
+	var fled := AINavigationRules.flee(plan["flee"], found["coord"], rng)
+	var primary := str(plan["primary_target_id"])
+	decision.merge({"threat_scan": found, "threat": found["coord"], "flee": fled, "flee_branch": branch, "skill_id": skill["skill_id"]}, true)
+	return {"intent": {"skill_id": skill["skill_id"], "target_id": primary, "primary_target_id": primary, "center_is_primary": true,
+		"destination": fled["to"], "path": fled["path"], "movement_cost": int(fled["cost"])}, "decision": decision}
 
 
 ## State 0xa's skill cast (0x43fea7 → 0x40d340, 0x43fe3e → 0x40df70, both with flag 0): the

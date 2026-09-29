@@ -36,6 +36,8 @@ var captions_public := false
 var skill_effects: SkillEffectScriptPlayer
 signal impact(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
 signal released(strike: Dictionary, attacker: Dictionary, defender: Dictionary, counter: bool)
+## A map spell's state-0 glide to the caster starts／ends (SkillEffectScriptPlayer._hold_caption).
+signal cast_caption_held(held: bool)
 const Timing = preload("res://game/battle/runtime/CombatPresentationTiming.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")

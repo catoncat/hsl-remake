@@ -16,18 +16,21 @@ extends RefCounted
 ## stream's DirectSound volume (0x424630 → 0x459e60 → 0x459d70): (⌊60v/255⌋ − 60) × 40
 ## hundredths of a dB, so the Music bus runs 0 dB down to −24 dB at 0 (not silent) and sends
 ## into Master. Both sliders have 18 tiers (0x446270 count 18): the byte is tier × 15 capped at 255
-## (0x4245c0／0x424630), so a stored volume is tier／17 and anything else reads as the nearest tier. Film soundtracks take the same stream curve from 音效音量 (0x42df6f → 0x45c5f0
-## → 0x45a330), on the Movie bus. Both sliders act at once on what is playing; at 音樂音量 0
+## (0x4245c0／0x424630), so a stored volume is tier／17 and anything else reads as the nearest tier
+## (a non-zero value at least tier 1: a file from before the tiers keeps a quiet choice audible).
+## Film soundtracks take the same stream curve from 音效音量 (0x42df6f → 0x45c5f0 → 0x45a330), on
+## the Movie bus. Both sliders act at once on what is playing; at 音樂音量 0
 ## a new track does not start (PlayMusic 0x42c250), see music_starts().
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md
 ##     (預備動作 = [0x477c14] bit1, default on)
-##   rules: static-derived docs/evidence_packets/static_reverse/original_music.md (§5 volume curves)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_music.md (§5 volume curves;
+##     scroll bar 0x445860: step 0x445bbd／0x445be9, drag 0x445a79, snap 0x445d70,
+##     398 preview 0x4245c0)
 ##   rules: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (sliders: 18 tiers, byte = tier × 15 capped at 255, 0x4245c0／0x424630)
-##   rules: provisional (a groove click takes the nearest tier: the slider control's click reading
-##     is not read)
-##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
+##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice;
+##     an older settings file's volume reads as its nearest tier, non-zero at least tier 1)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
@@ -173,6 +176,12 @@ static func music_starts() -> bool:
 	return original_level(float(get_value("music_volume"))) > 0
 
 
+## A stored volume as its tier's value: the nearest tier, a non-zero value at least tier 1.
+static func _stored_volume(value: float) -> float:
+	var tier := volume_tier(value)
+	return tier_value(maxi(tier, 1) if value > 0.0 else tier)
+
+
 static func _normalized(settings: Dictionary) -> Dictionary:
 	var preset := str(settings.get("preset", DEFAULTS["preset"]))
 	var presentation := {}
@@ -184,8 +193,8 @@ static func _normalized(settings: Dictionary) -> Dictionary:
 	return {
 		"scene_effects": bool(settings.get("scene_effects", DEFAULTS["scene_effects"])),
 		"ready_action": bool(settings.get("ready_action", DEFAULTS["ready_action"])),
-		"sfx_volume": tier_value(volume_tier(float(settings.get("sfx_volume", DEFAULTS["sfx_volume"])))),
-		"music_volume": tier_value(volume_tier(float(settings.get("music_volume", DEFAULTS["music_volume"])))),
+		"sfx_volume": _stored_volume(float(settings.get("sfx_volume", DEFAULTS["sfx_volume"]))),
+		"music_volume": _stored_volume(float(settings.get("music_volume", DEFAULTS["music_volume"]))),
 		"preset": preset if preset in PRESETS else str(DEFAULTS["preset"]),
 		"presentation": presentation,
 	}

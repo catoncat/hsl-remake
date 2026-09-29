@@ -970,10 +970,12 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 		skills[channel] = prepared["targets"]
 		offensive_skills[channel] = prepared["offensive_targets"]
 		any_skills[channel] = prepared["any_target"]
-	var self_support := AISelfPreservation.prepare(loop, actor)
+	var self_support := AISelfPreservation.prepare(loop, actor, envelope, profile)
 	if not self_support["ok"]: return self_support
 	var ally_support := AISupportPlanning.prepare(loop, actor, envelope, rows, work["owner_index"], profile, int(work["healing_index"]))
 	if not ally_support["ok"]: return ally_support
+	var buff_flee := AISelfPreservation.attach_buff_flee(loop, actor, envelope, self_support, ally_support)
+	if not buff_flee["ok"]: return buff_flee
 	ally_support["registry"] = work["registry"]
 	var physical := {}
 	var station_foes: Array = work["hostile"].duplicate()

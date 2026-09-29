@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (201 modules, 134 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (201 modules, 134 remake-invented cells, 58 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (201)
 
@@ -133,7 +133,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [GameOptions](../game/settings/GameOptions.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
-| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
+| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
@@ -329,7 +329,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleStatusPanel](../game/battle/scene/BattleStatusPanel.gd) | layout | OPT-INFO=公開: permanent-gain row and tooltips; OPT-GUIDE=提示: save／load／pending-loot／back buttons; OPT-GROWTH: growth button [OPTIONS.md](../docs/OPTIONS.md) |
 | [BattleStatusPanel](../game/battle/scene/BattleStatusPanel.gd) | strings | tooltip prose and captions |
 | [BattleStatusPanel](../game/battle/scene/BattleStatusPanel.gd) | strings | OPT-INFO=公開: the page never masks, every unit reads as known [OPTIONS.md](../docs/OPTIONS.md) |
-| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | rules | memoir overwrite／load confirm, OPT-GUIDE＝提示 only |
+| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | rules | memoir overwrite／load confirm, OPT-GUIDE＝提示 only; left／right keys step a slider one tier and play the 398 preview in place of the undrawn arrows |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | layout | 重製選項 entry under Title039 [remake_options.json](../content/authored/options/remake_options.json) |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | layout | the confirm question line under the scroll, OPT-GUIDE＝提示 only |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | strings | memoir file label; confirm questions and hints — OPT-GUIDE＝提示 only |
@@ -357,7 +357,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [DebugPause](../game/debug/DebugPause.gd) | strings | 「停格中」badge |
 | [DebugPause](../game/debug/DebugPause.gd) | timing | one step = one process frame |
 | [GameOptions](../game/settings/GameOptions.gd) | rules | option registry, value order code default < campaign option_defaults < player choice, presets, HSL_OPTIONS_PRESET seam [OPTIONS.md](../docs/OPTIONS.md) |
-| [GameSettings](../game/settings/GameSettings.gd) | rules | preset／presentation keys hold the 重製選項 choice [OPTIONS.md](../docs/OPTIONS.md) |
+| [GameSettings](../game/settings/GameSettings.gd) | rules | preset／presentation keys hold the 重製選項 choice; an older settings file's volume reads as its nearest tier, non-zero at least tier 1 [OPTIONS.md](../docs/OPTIONS.md) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | rules | Tab opens and closes 重製選項 over any screen and holds the game with the tree pause while it is up; the original binds no key to Tab [OPTIONS.md](../docs/OPTIONS.md) |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | layout | page layout [remake_options.json](../content/authored/options/remake_options.json) |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | strings | option names, value labels, descriptions, preset buttons [remake_options.json](../content/authored/options/remake_options.json) |
@@ -416,7 +416,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (59)
+### provisional 疑点 (58)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -451,7 +451,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleUISkin](../game/common/BattleUISkin.gd) | layout | — | set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart read |
 | [MenuStars](../game/common/MenuStars.gd) | rules | — | per-star offsets and delays use the remake RNG, not the original global rand stream |
 | [MenuStars](../game/common/MenuStars.gd) | timing | — | Menu_Star's unset Shape_Delay taken as 0 |
-| [GameSettings](../game/settings/GameSettings.gd) | rules | — | a groove click takes the nearest tier: the slider control's click reading is not read |
 | [AIDecisionRules](../game/sim/AIDecisionRules.gd) | rules | — | stable-id adapter |
 | [AINavigationRules](../game/sim/AINavigationRules.gd) | rules | — | shortest-path tie-breaks, guard routes, a 3×3 actor's refinement flood are remake composition; approach_goals (candidate_filters receipt only) use flat RANGE offsets |
 | [AISelfPreservation](../game/sim/AISelfPreservation.gd) | rules | — | supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order |
@@ -491,7 +490,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 30 | 14 | 0 | 13 | 2 | 59 |
+| provisional | 29 | 14 | 0 | 13 | 2 | 58 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 55 | 32 | 33 | 13 | 1 | 134 |

@@ -165,13 +165,19 @@ func _run_scroll_and_items() -> void:
 	menu.hover_at(Vector2(142 + 200, 90 + 249))
 	_assert_eq(menu.summary().get("options_selected", -1), 3, "hovering the fourth row selects 音樂音量")
 	result = menu.adjust_option(0, 0.52)
-	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 9.0 / 17.0), "a groove click sets 音樂音量 to the nearest tier: %s" % GameSettings.get_value("music_volume"))
+	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 16.0 / 17.0), "a groove press left of the knob lowers 音樂音量 one tier (0x445bbd): %s" % GameSettings.get_value("music_volume"))
 	var music_index := AudioServer.get_bus_index("Music")
 	_assert_true(music_index > 0, "the Music bus exists")
-	_assert_true(is_equal_approx(AudioServer.get_bus_volume_db(music_index), -11.6), "音樂音量 tier 9 (v 135) is the 0x459d70 stream volume (⌊60·135/255⌋ − 60) × 40 = −1160: %s" % AudioServer.get_bus_volume_db(music_index))
+	_assert_true(is_equal_approx(AudioServer.get_bus_volume_db(music_index), -1.6), "音樂音量 tier 16 (v 240) is the 0x459d70 stream volume (⌊60·240/255⌋ − 60) × 40 = −160: %s" % AudioServer.get_bus_volume_db(music_index))
 	_assert_eq(scene.get_node("BattleMusic").bus, "Music", "battle music sits on the Music bus")
 	GameSettings._cache = {}
-	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 9.0 / 17.0), "settings reload from disk")
+	_assert_true(is_equal_approx(float(GameSettings.get_value("music_volume")), 16.0 / 17.0), "settings reload from disk")
+	# 0x445c09 holds the knob; 0x445a79: tier ⌊(knob − left + ⌊track/36⌋)·18/track⌋ (track 132·18/17).
+	menu.press_option_groove(menu._knob_x(menu.options_rows[3]))
+	menu.drag_option(180.0 + 4.2)
+	_assert_true(GameSettings.original_level(float(GameSettings.get_value("music_volume"))) == 0 and is_equal_approx(music_knob.position.x, 180.0 + 4.2 - 14.0), "a held knob 4.2 px into the groove is tier 0 and drawn where dragged")
+	menu.release_option()
+	_assert_eq(music_knob.position.x, 180.0 - 14.0, "the release snaps the knob to its tier (0x445d70)")
 	# 場景效果 off: story effect objects are recorded but not drawn (sounds still play).
 	GameSettings.set_value("scene_effects", false)
 	var flash_spec := {"process": "defProcObjectMove", "object_fields": {"obj_Mode": "engZOOM"}}

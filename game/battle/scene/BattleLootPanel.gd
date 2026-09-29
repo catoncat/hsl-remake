@@ -90,6 +90,16 @@ func _input(event: InputEvent) -> void:
 		if visible and not _drawn and _drawn_row >= 0 and _drawn_row < rows.size() and is_instance_valid(rows[_drawn_row]) and not Rect2(rows[_drawn_row].position, rows[_drawn_row].size).has_point(_pointer):
 			if is_instance_valid(_drawn_box): _drawn_box.hide()
 			_forget_drawn_row()
+	elif visible and _drawn and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Sliding in, a pending row answers where it is drawn (0x414c00 takes clicks in every
+		# state, on the window's rect of the last tick); the rows' Controls do not.
+		var point := get_global_transform_with_canvas().affine_inverse() * (event as InputEventMouseButton).position
+		var hit := _drawn_row_at(point)
+		var covered := hit >= 0
+		for row in rows:
+			if is_instance_valid(row) and Rect2(row.position, row.size).has_point(point): covered = true
+		if covered: get_viewport().set_input_as_handled()
+		if hit >= 0 and _scroll + hit < _groups.size(): _press_row(_groups[_scroll + hit])
 
 
 func close() -> void:
@@ -106,6 +116,31 @@ func accepts(request: Dictionary) -> bool:
 
 func holding() -> bool:
 	return not _hand.is_empty()
+
+
+## The window has landed (BattlePanelMotion has no open slide left). The root window's right-click
+## claim (case 1 0x438811) and the bag rows (mode 2 page 1, 0x438b9c: this window's +0x8c == 1
+## at 0x438c16／0x438c1d, else the click at 0x438c78–0x438c84 is skipped) wait for it; the pending
+## list takes clicks in every state (0x414c00).
+func landed() -> bool:
+	var motion := _motion()
+	return motion == null or not motion.opening()
+
+
+func _motion() -> Node:
+	for child in get_children(true):
+		if child.has_method("rescan"): return child
+	return null
+
+
+## Pending row under `point` where BattlePanelMotion draws it this tick (−1: none).
+func _drawn_row_at(point: Vector2) -> int:
+	var motion := _motion()
+	for index in rows.size():
+		if not is_instance_valid(rows[index]): continue
+		var offset: Variant = motion.drawn_offset(rows[index]) if motion != null else Vector2.ZERO
+		if offset is Vector2 and Rect2(rows[index].position + offset, rows[index].size).has_point(point): return index
+	return -1
 
 
 func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: int, recipient_id: String = "", consumables: Dictionary = {}) -> void:
@@ -206,7 +241,7 @@ func _rebuild_bag() -> void:
 			button.mouse_exited.connect(_hide_description.bind(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
-			if not visible or epoch != _epoch: return
+			if not visible or epoch != _epoch or not landed(): return
 			if not holding():
 				if code > 0: _lift(index, code)
 			elif _hand.has("slot"): return_requested.emit(_hand_request())
@@ -277,10 +312,9 @@ func _rebuild_rows() -> void:
 		button.mouse_exited.connect(func(): if not _drawn: _hide_description(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
+			# Sliding in, `_input` answers presses on the rows' rects and where they are drawn.
 			if not visible or epoch != _epoch: return
-			if _hand.has("slot"): pool_requested.emit(_hand_request())
-			elif holding(): cancel()
-			elif not bool(_catalog[str(group["code"])]["important"]): _take(group))
+			_press_row(group))
 		rows.append(button)
 	if scroll_bar != null: scroll_bar.resize(_groups.size())
 	if hand_icon != null: move_child(hand_icon, get_child_count() - 1)
@@ -367,6 +401,14 @@ func _bag_full() -> bool:
 	return not actor.is_empty() and int(actor["inventory"][7]) != 0
 
 
+## A click on a pending row: a lifted bag item goes to the pool, a held pool item back, an empty
+## hand takes one of the row (not an important item).
+func _press_row(group: Dictionary) -> void:
+	if _hand.has("slot"): pool_requested.emit(_hand_request())
+	elif holding(): cancel()
+	elif not bool(_catalog[str(group["code"])]["important"]): _take(group)
+
+
 func _take(group: Dictionary) -> void:
 	_grab({"entry_id": str(group["entry_ids"][0]), "code": int(group["code"])})
 	cue_requested.emit("take_up")
@@ -418,6 +460,7 @@ func handle_key(event: InputEvent) -> bool:
 
 ## Original right click / Esc while holding (0x438160 root case 1): drop into the first free bag slot.
 func quick_place() -> void:
+	if not landed(): return
 	if _hand.has("slot"): return_requested.emit(_hand_request())
 	elif holding(): _place(-1, 0)
 

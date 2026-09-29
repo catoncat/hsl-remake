@@ -89,6 +89,9 @@ var duration := 0.0
 var caption := ""
 var caption_label: Label
 var caption_layer: CanvasLayer
+## The caption past the cue: the cast VM's state 0 glide back to the caster runs inside the AI
+## target state 0x441947, which draws the caption each call first (hold_caption).
+var caption_held := false
 
 static var _cos_table: PackedInt64Array = PackedInt64Array()
 static var _sin_table: PackedInt64Array = PackedInt64Array()
@@ -121,7 +124,12 @@ func _notification(what: int) -> void:
 
 func _sync_caption() -> void:
 	if caption_layer != null:
-		caption_layer.visible = is_visible_in_tree() and caption != "" and stage() in ["range", "cursor", "target"]
+		caption_layer.visible = caption != "" and (caption_held or (is_visible_in_tree() and stage() in ["range", "cursor", "target"]))
+
+
+func hold_caption(held: bool) -> void:
+	caption_held = held
+	_sync_caption()
 
 
 ## Whether a settled exchange opens with this map lead-in: only when the AI acted. The
@@ -140,6 +148,7 @@ func skip(exchange_sequence: int) -> void:
 	elapsed = 0.0
 	duration = 0.0
 	caption = ""
+	caption_held = false
 	cast = false
 	camera_ticks = 0
 	camera_controller = null
@@ -193,6 +202,7 @@ func begin(exchange_sequence: int, strike: Dictionary, cells: Array, origin: Vec
 		camera_ticks = BattleCameraController.scroll_ticks(camera_controller.camera.position, camera_controller.scroll_target, BattleCameraController.BATTLE_SCROLL_STEP) - 1
 	duration = OriginalTick.seconds(camera_ticks + range_ticks + glide.size() + target_ticks)
 	caption = str(strike.get("magic_name", strike.get("skill_name", ""))) if cast else ""
+	caption_held = false
 	if caption_label != null:
 		caption_label.text = caption
 	show()

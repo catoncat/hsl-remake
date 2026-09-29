@@ -27,7 +27,8 @@ extends Control
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (opened 0x4082ab; list 0x425842; 確定 0x4259fb／0x42605a; row 0x425140 40-tick hold, messages 9–12)
-##   rules: remake-invented (memoir overwrite／load confirm, OPT-GUIDE＝提示 only)
+##   rules: remake-invented (memoir overwrite／load confirm, OPT-GUIDE＝提示 only; left／right keys
+##     step a slider one tier and play the 398 preview in place of the undrawn arrows)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
 ##     (scroll rests at (190,67))
@@ -125,8 +126,18 @@ const MEMOIR_HOVER_SPARKS := 3
 const MEMOIR_CLICK_SPARKS := 6
 const MEMOIR_CLICK_JITTER := 2
 ## 0x423aa0 drops the stars inside the row object's box +0x94／+0x98／+0x9c／+0xa0, which a row
-## starts at 4／−4／386／22: x + 4 .. x + 386, y − 4 .. y + 22. Hit testing keeps the 390x26 row.
+## starts at 4／−4／386／22, less the draw origin of the row's shape [esi+0x32] (0x4606a9): object
+## 791 LoadGame Item draws TITLE031.SHP, origin (0, 0) (GLOBAL.OBS), so x + 4 .. x + 386,
+## y − 4 .. y + 22. Hit testing keeps the 390x26 row.
 const MEMOIR_SPARK_BOX := Rect2(4, -4, 382, 26)
+## 音效音量／音樂音量 are defProcScrollBar 0x445860 horizontal bars (Option Scroll 793, 18 tiers,
+## 0x446270). A left press on the groove left of the knob steps one tier down (0x445bbd, callback
+## 0x20000000), right of it one up (0x445be9, 0x10000000), on the knob nothing; the same press
+## then holds the knob (0x445c09, grab = pointer − knob). Held, the knob follows the pointer inside
+## the groove and the tier is ⌊(knob − groove left + ⌊track/36⌋)·18/track⌋ (0x445a79–0x445b1a,
+## 0x8000000, applied at once); the release snaps the knob to its tier (0x445b1f → 0x445d70,
+## 0x4000000). The remake's track is the gem's travel stretched to 18 tier widths.
+const VOLUME_TIERS := 18
 const MenuStars = preload("res://game/common/MenuStars.gd")
 const OriginalFade = preload("res://game/common/OriginalFade.gd")
 const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
@@ -140,6 +151,11 @@ var memoir_layout: Dictionary = {}
 var options_rows: Array = []
 var options_groove: Dictionary = {}
 var options_selected := 0
+## The slider row a groove press holds (-1: none), pointer − knob centre at the press, and the held
+## knob centre (panel x), drawn where the pointer puts it until the release.
+var _option_hold := -1
+var _option_grab := 0.0
+var _option_knob_x := 0.0
 var selected := 0
 var confirm_selected := 1 # 取消 by default
 var memoir_selected := 0
@@ -157,6 +173,7 @@ var _memoir_clock := 0.0
 var _memoir_hold := -1 # ticks left before the clicked slot acts, -1 idle
 var _memoir_hold_clock := 0.0
 var _memoir_busy := 0.0 # seconds the list ignores input after a message
+var _memoir_closing_row := -1 # the list's +0x98 once a row is clicked while it slides out, -1 unset
 ## defProcMemoir 0x424a60 checks neither Esc nor the right button while the list slides in. The
 ## rows still take the mouse meanwhile (whether the original's rows do is not read).
 var _memoir_opening := false
@@ -562,7 +579,7 @@ func _memoir_tick() -> void:
 	if _stars == null:
 		return
 	var row := memoir_slot_at(_mouse_logical)
-	if row >= 0 and _memoir_hold < 0 and _memoir_busy <= 0.0:
+	if row >= 0 and _memoir_hold < 0 and _memoir_busy <= 0.0 and _memoir_closing_row < 0:
 		var left := int(_memoir_spark_left.get(row, MEMOIR_SPARK_TICKS)) - 1
 		if left <= 0:
 			left = MEMOIR_SPARK_TICKS
@@ -682,11 +699,19 @@ func select_option(index: int) -> void:
 	_options_cursor.position = Vector2(12.0, float(options_rows[options_selected].get("center_y_in_panel", 0)) - 15.0)
 
 
-func _knob_x(row: Dictionary) -> float:
+## Knob centre travel (panel x, left..right) of the 設定選項 grooves.
+func _knob_span() -> Vector2:
 	var groove_x: Array = options_groove.get("x", [162, 330])
 	var margin := float(options_groove.get("knob_margin", 18))
-	var left := float(groove_x[0]) + margin
-	var right := float(groove_x[1]) - margin
+	return Vector2(float(groove_x[0]) + margin, float(groove_x[1]) - margin)
+
+
+func _knob_x(row: Dictionary) -> float:
+	var span := _knob_span()
+	var left := span.x
+	var right := span.y
+	if _option_hold >= 0 and _option_hold < options_rows.size() and str(options_rows[_option_hold].get("id", "")) == str(row.get("id", "")):
+		return _option_knob_x
 	match str(row.get("kind", "")):
 		"toggle":
 			return right if bool(GameSettings.get_value(str(row.get("id", "")))) else left
@@ -707,13 +732,16 @@ func _refresh_options() -> void:
 
 
 func _show_options() -> void:
+	_option_hold = -1
 	_lit.visible = false
 	_refresh_options()
 	_options_box.visible = true
 	phase = "options"
 
 
-## Left/Right (or a click on the groove) change the selected row; Enter flips a toggle.
+## Left/Right (or a click on the groove) change the selected row; Enter flips a toggle. On a
+## slider `fraction` is a groove press at that share of the knob's travel: one tier toward it
+## unless it lands on the knob (_groove_step).
 func adjust_option(direction: int, fraction: float = -1.0) -> Dictionary:
 	if phase != "options":
 		return {"ok": false, "reason": phase}
@@ -734,9 +762,13 @@ func adjust_option(direction: int, fraction: float = -1.0) -> Dictionary:
 			result["status"] = "set"
 			result["value"] = next
 		"slider":
-			# One tier of 18 per Left／Right; a groove click lands on the nearest tier (GameSettings).
+			# One tier of 18 per Left／Right or groove press beside the knob (0x445bbd／0x445be9).
 			var current := GameSettings.volume_tier(float(GameSettings.get_value(id)))
-			var next := fraction if fraction >= 0.0 else GameSettings.tier_value(current + direction)
+			var step := direction
+			if fraction >= 0.0:
+				var span := _knob_span()
+				step = _groove_step(row, lerpf(span.x, span.y, fraction))
+			var next := GameSettings.tier_value(current + step)
 			result["value"] = float(GameSettings.set_value(id, next).get(id, next))
 			result["status"] = "set"
 		_:
@@ -745,6 +777,61 @@ func adjust_option(direction: int, fraction: float = -1.0) -> Dictionary:
 	_refresh_options()
 	last_result = result
 	return result
+
+
+## −1／+1 for a groove press at panel x `local_x` left／right of the slider row's knob (the gem's
+## drawn box), 0 on it.
+func _groove_step(row: Dictionary, local_x: float) -> int:
+	var gem: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(str(options_groove.get("knob", "cursor_gem")), {})
+	var origin: Array = gem.get("draw_origin", [14, 14])
+	var knob: TextureRect = _options_knobs.get(str(row.get("id", "")))
+	var width := float(knob.texture.get_width()) if knob != null and knob.texture != null else 2.0 * float(origin[0])
+	var left := _knob_x(row) - float(origin[0])
+	return -1 if local_x < left else (1 if local_x >= left + width else 0)
+
+
+## A left press on the selected slider's groove at panel x `local_x`: a step beside the knob, then
+## the knob is held until the release (0x445c09).
+func press_option_groove(local_x: float) -> Dictionary:
+	var row: Dictionary = options_rows[options_selected]
+	var result := adjust_option(_groove_step(row, local_x))
+	_option_knob_x = _knob_x(row)
+	_option_grab = local_x - _option_knob_x
+	_option_hold = options_selected
+	return result
+
+
+## The held knob follows the pointer (panel x) inside the groove; the tier under it applies at once
+## (0x445a79–0x445b1a).
+func drag_option(local_x: float) -> void:
+	if _option_hold < 0:
+		return
+	var span := _knob_span()
+	_option_knob_x = clampf(local_x - _option_grab, span.x, span.y)
+	var track := (span.y - span.x) * VOLUME_TIERS / GameSettings.VOLUME_TOP_TIER
+	var tier := clampi(floori((_option_knob_x - span.x + floorf(track / (2 * VOLUME_TIERS))) * VOLUME_TIERS / track), 0, GameSettings.VOLUME_TOP_TIER)
+	var id := str(options_rows[_option_hold].get("id", ""))
+	if tier != GameSettings.volume_tier(float(GameSettings.get_value(id))):
+		GameSettings.set_value(id, GameSettings.tier_value(tier))
+	_refresh_options()
+
+
+## The release snaps the held knob to its tier (0x445b1f → 0x445d70) and previews 音效音量.
+func release_option() -> void:
+	if _option_hold < 0:
+		return
+	var id := str(options_rows[_option_hold].get("id", ""))
+	_option_hold = -1
+	_refresh_options()
+	_preview_volume(id)
+
+
+## 音效音量's callback 0x4245c0 plays RESOURCE 398 (ACCEPT01, 0x4477b0 → 0x459990 → 0x42c180) only
+## when the scroll bar's flags miss 0x3a000000: on the release and the 795／796 arrows, not on a
+## groove step or the drag. The remake draws no arrows; Left／Right stand in for them.
+func _preview_volume(id: String) -> void:
+	if id == "sfx_volume" and runtime != null and runtime.has_method("play_ui_sound"):
+		runtime.play_ui_sound("confirm")
 
 
 ## The 重製選項 page takes the place of the Title039 panel until it goes back.
@@ -769,7 +856,7 @@ func _slot_top(slot: int) -> float:
 
 
 ## Memoir row (0x425140 object, 390x26) under a logical point, or -1; rows keep lighting up
-## under the mouse while the list slides out.
+## under the mouse while the list slides out, until one is clicked.
 func memoir_slot_at(logical: Vector2) -> int:
 	if phase != "memoir" and phase != "memoir_closing":
 		return -1
@@ -806,9 +893,10 @@ func _hover_memoir(slot: int) -> void:
 ## 0x425140: only the row under the mouse pulses green (0x42c130, test 0x10000 at 0x425173) over a
 ## dark-green shadow, the rest are white; after a keyboard move the selected row pulses instead.
 ## Through the 40-tick hold, the message board and the 20 ticks after it, and the load fade, the
-## clicked row stays lit whatever the mouse does (0x42530e／0x424c82).
+## clicked row stays lit whatever the mouse does (0x42530e／0x424c82); so does a row clicked while
+## the list slides out.
 func _paint_memoir_rows() -> void:
-	var inert := _memoir_hold >= 0 or _memoir_busy > 0.0 or phase == "loading"
+	var inert := _memoir_hold >= 0 or _memoir_busy > 0.0 or _memoir_closing_row >= 0 or phase == "loading"
 	var lit := memoir_selected if _memoir_keyboard or inert else memoir_slot_at(_mouse_logical)
 	for slot in range(_memoir_rows.size()):
 		var hovered := slot == lit
@@ -843,6 +931,7 @@ func _show_memoir_list(mode: String) -> void:
 	BattleUISkin.show_shape(_memoir_heading, load(str(entry.get("texture", ""))))
 	_refresh_memoir_rows()
 	_memoir_keyboard = false
+	_memoir_closing_row = -1
 	_lit.visible = false
 	if not _memoir_box.visible:
 		_memoir_spark_left.clear()
@@ -1181,6 +1270,9 @@ func handle_input(event: InputEvent) -> bool:
 	if phase in ["memoir", "memoir_closing"] and event is InputEventMouseMotion:
 		# Kept for the rows' hover even while the list ignores input or slides out.
 		_mouse_logical = _logical(event.position)
+	if phase == "memoir_closing" and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_click_closing_memoir(memoir_slot_at(_logical(event.position)))
+		return true
 	if phase in ["opening", "closing", "memoir_closing", "loading"]:
 		return true
 	if phase == "memoir" and (_memoir_hold >= 0 or _memoir_busy > 0.0):
@@ -1188,6 +1280,13 @@ func handle_input(event: InputEvent) -> bool:
 	if phase == "remake_options":
 		_remake_page.handle_input(event, _logical(event.position) if event is InputEventMouse else Vector2.ZERO)
 		return true
+	if _option_hold >= 0 and phase == "options":
+		if event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+			drag_option(_logical(event.position).x - _options_panel.position.x)
+			return true
+		if event is InputEventMouseMotion or (event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+			release_option()
+			return true
 	if event is InputEventMouseMotion:
 		hover_at(_logical(event.position))
 		return true
@@ -1230,7 +1329,9 @@ func _handle_click(event: InputEventMouseButton) -> void:
 					select_option(row)
 					var groove_x: Array = options_groove.get("x", [162, 330])
 					var local_x := logical.x - _options_panel.position.x
-					if local_x >= float(groove_x[0]) and local_x <= float(groove_x[1]):
+					if local_x >= float(groove_x[0]) and local_x <= float(groove_x[1]) and str(options_rows[row].get("kind", "")) == "slider":
+						press_option_groove(local_x)
+					elif local_x >= float(groove_x[0]) and local_x <= float(groove_x[1]):
 						var margin := float(options_groove.get("knob_margin", 18))
 						adjust_option(0, clampf((local_x - float(groove_x[0]) - margin) / (float(groove_x[1]) - float(groove_x[0]) - 2.0 * margin), 0.0, 1.0))
 					else:
@@ -1266,14 +1367,16 @@ func _handle_key(event: InputEventKey) -> void:
 			if phase == "confirm":
 				confirm_selected = 0
 				_show_confirm_lit(confirm_selected)
-			elif phase == "options":
+			elif phase == "options" and _option_hold < 0:
 				adjust_option(-1)
+				_preview_volume(str(options_rows[options_selected].get("id", "")) if options_selected < options_rows.size() else "")
 		KEY_RIGHT, KEY_D:
 			if phase == "confirm":
 				confirm_selected = 1
 				_show_confirm_lit(confirm_selected)
-			elif phase == "options":
+			elif phase == "options" and _option_hold < 0:
 				adjust_option(1)
+				_preview_volume(str(options_rows[options_selected].get("id", "")) if options_selected < options_rows.size() else "")
 		KEY_ENTER, KEY_SPACE, KEY_Z:
 			match phase:
 				"menu":
@@ -1308,6 +1411,7 @@ func _back() -> void:
 			phase = "memoir_closing"
 			_slide(MEMOIR_SLIDE_OFFSET, 0, _memoir_slid_out, _memoir_box)
 		"options":
+			_option_hold = -1
 			if standalone != "":
 				_close_standalone()
 				return
@@ -1318,6 +1422,22 @@ func _back() -> void:
 			_close_remake_options()
 		"menu":
 			close()
+
+
+## While the list proc 0x424a60 is in state 3 (sliding out) the row proc 0x425140 still takes one
+## click (0x425366–0x4253be): ACCEPT01, the list's +0x98 = the row, the click stars; no hold,
+## save or load follows. With +0x98 set every row returns early (0x42530e／0x425315), so later
+## clicks, hover stars and the 0x10000 highlight all stop on the clicked row until state 1
+## (0x424c82) resets it to −1.
+func _click_closing_memoir(slot: int) -> void:
+	if slot < 0 or _memoir_closing_row >= 0:
+		return
+	_hover_memoir(slot)
+	_memoir_closing_row = slot
+	if runtime != null and runtime.has_method("play_ui_sound"):
+		runtime.play_ui_sound("confirm")
+	_stars.spawn(_memoir_row_rect(slot), "click", MEMOIR_CLICK_SPARKS, -1, MEMOIR_CLICK_JITTER)
+	_stars.spawn(_memoir_row_rect(slot), "hover", MEMOIR_CLICK_SPARKS)
 
 
 func _memoir_slid_out() -> void:
