@@ -35,7 +35,8 @@ from pathlib import Path
 
 root, out, ref = Path(sys.argv[1]), Path(sys.argv[2]).resolve(), sys.argv[3]
 sys.path.insert(0, str(root / 'tools'))
-from hsltools.original_content import classify  # noqa: E402
+from hsltools.original_content import PUBLISHED_EXE_DATA, classify  # noqa: E402
+from hsltools.assets.demo_actor_art import DemoActorArtTask  # noqa: E402
 
 # docs/internal/ and docs/audits/ are our process docs (lane briefs, time log, round log, audits); public docs
 # may not link them (tools/hsl_docs_check.py PRIVATE_DOCS keeps the two lists in step).
@@ -47,7 +48,8 @@ PUBLIC_IGNORE = '''
 # Original-derived content (NOTICE.md): imported locally from the player's own copy with
 # `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
 # content/generated/hsl/original_derived_manifest.json by `python3 tools/hsl.py check original_derived_manifest`.
-/content/imported/
+/content/imported/**
+!/content/imported/**/
 /content/battles/*
 !/content/battles/levels/
 !/content/battles/campaign.json
@@ -56,7 +58,11 @@ PUBLIC_IGNORE = '''
 !/content/generated/hsl/original_derived_manifest.json
 !/content/generated/hsl/remake_music/**
 !/content/generated/hsl/development/autoplay/**
-'''
+''' + ''.join(f'!/{path}\n' for path in PUBLISHED_EXE_DATA)  # EXE-derived rule data, published (class C)
+# Placeholder art bootstrap recolours from original frames (class A, hsltools.assets.demo_actor_art): one glob
+# per output directory and extension, so a modder's own files elsewhere under content/authored/ stay visible.
+PUBLIC_IGNORE += '# Placeholder art recoloured from original frames by bootstrap, never committed.\n' + ''.join(sorted(
+    {f"/{path.rsplit('/', 1)[0]}/*.{path.rsplit('.', 1)[1]}\n" for path in DemoActorArtTask.outputs}))
 
 sha = subprocess.run(['git', 'rev-parse', ref], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
 listing = subprocess.run(['git', 'ls-tree', '-r', '-l', '-z', ref], cwd=root, capture_output=True, check=True).stdout

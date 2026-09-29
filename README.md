@@ -28,7 +28,7 @@ tools/doctor.sh
 tools/play.sh
 ```
 
-第一次运行会先从原版数据生成游戏要用的表格、素材和关卡文件（`python3 tools/hsl.py bootstrap`，十几分钟，中断了下次接着做），再开游戏；之后直接开。有几份从原版程序本身读出的数据还不能这样生成，缺了它们战斗里的范围格、指令菜单和招式特效画不出来，见 [MODDING「现在做不到的」](docs/MODDING.md#现在做不到的需要先改代码或工具)。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
+第一次运行会先从原版数据生成游戏要用的表格、素材和关卡文件（`python3 tools/hsl.py bootstrap`，约十分钟，中断了下次接着做），再开游戏；之后直接开。只能从原版程序本身读出的几份规则数据（招式动作表、范围格配色、指令菜单布局、秘密商人货单）随仓库提供，Steam 版不带那个程序也不影响。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
 
 ## 文档
 

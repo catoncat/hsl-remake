@@ -1,5 +1,5 @@
-"""The original-derived manifest (hsltools.original_content.MANIFEST): every tracked A-class file
-as path + hash + the registry task whose outputs cover it ('' when no generator owns it). A PNG is
+"""The original-derived manifest (hsltools.original_content.MANIFEST): every tracked A-class file and
+the published EXE-derived rule data (original_content.PUBLISHED_EXE_DATA) as path + hash + the registry task whose outputs cover it ('' when no generator owns it). A PNG is
 hashed by its decoded pixels (`rgba_sha256`: SHA-256 of b'<width>x<height>\n' + the RGBA bytes), every
 other file by its bytes (`sha256`): a player's importer may encode the same image with different PNG
 chunks / zlib settings than the tracked file (docs/internal/OPEN_SOURCE_PLAN.md §8).
@@ -28,12 +28,14 @@ OUTPUT = original_content.MANIFEST_RELATIVE
 
 
 def tracked_original_derived(ctx: Context) -> list[str]:
-    """Tracked A-class paths ([] outside a git checkout or in the public repository)."""
+    """Tracked paths the manifest lists ([] outside a git checkout or in the public repository, which
+    tracks the published EXE-derived data but no A-class file)."""
     result = subprocess.run(['git', 'ls-files', '-z'], cwd=ctx.root, capture_output=True, check=False)
     if result.returncode != 0:
         return []
     paths = [name.decode() for name in result.stdout.split(b'\0') if name]
-    return sorted(path for path in paths if original_content.classify(path)[0] == 'A')
+    listed = sorted(path for path in paths if original_content.in_manifest(path))
+    return listed if any(original_content.classify(path)[0] == 'A' for path in listed) else []
 
 
 def owners(paths: list[str]) -> dict[str, str]:

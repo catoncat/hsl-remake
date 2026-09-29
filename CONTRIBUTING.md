@@ -49,11 +49,12 @@
 
 ```sh
 git diff --cached --name-only --diff-filter=AM \
-  | grep -E '^(content/(imported|generated|battles)/|legal-assets/.|original-assets/|asset-dumps/.)|\.(pak|exe|dll|sav|shp|wav|mov|mp4|avi|bik)$' \
-  | grep -v -e '^legal-assets/README.md$' -e '^asset-dumps/README.md$' -e '^content/generated/hsl/remake_music/'
+  | grep -E '^(content/(imported|generated|battles)/|content/authored/actors/.*\.png$|legal-assets/.|original-assets/|asset-dumps/.)|\.(pak|exe|dll|sav|shp|wav|mov|mp4|avi|bik)$' \
+  | grep -v -e '^legal-assets/README.md$' -e '^asset-dumps/README.md$' -e '^content/generated/hsl/remake_music/' \
+  | grep -v -e '^content/generated/hsl/skills/(effect_motion|objcomd_motion)\.json$' -e '^content/generated/hsl/static/hsl01/secret_man_goods\.json$' -e '^content/imported/hsl/shared/command_menu/native_layout\.json$' -e '^content/imported/hsl/shared/range_cells/manifest\.json$'
 ```
 
-有输出就停下核对：`content/` 生成层由本地导入产生，不入公开仓库；重制配乐 `content/generated/hsl/remake_music/` 例外。截图同理——原版截图、录像帧、原版帧换色图都不提交。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
+有输出就停下核对：`content/` 生成层和 bootstrap 写进 `content/authored/actors/` 的示范角色换色图由本地导入产生，不入公开仓库；重制配乐 `content/generated/hsl/remake_music/` 例外；从原版程序读出的五份规则数据（`hsltools.original_content.PUBLISHED_EXE_DATA`，见 [NOTICE](NOTICE.md)）也例外，改了它们照常提交。截图同理——原版截图、录像帧、原版帧换色图都不提交。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
 
 ## 6. Windows 与 Linux
 

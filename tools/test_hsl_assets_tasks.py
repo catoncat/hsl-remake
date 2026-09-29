@@ -46,6 +46,8 @@ class AssetsFamilyTests(unittest.TestCase):
     def test_generate_is_not_generatable_without_the_original_archive(self):
         ctx = registry.Context(original_exe=Path('/nonexistent/hsl01.exe'))
         for task in family_tasks():
+            if task.name == 'demo_actor_art':
+                continue  # recolours frames already imported; the archive is not among its inputs
             if isinstance(task, registry.ScriptCheckTask):
                 with self.subTest(task=task.name), self.assertRaises(registry.NotGeneratable):
                     task.generate(ctx)

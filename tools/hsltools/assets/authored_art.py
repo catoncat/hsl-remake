@@ -43,6 +43,7 @@ from PIL import Image
 from hsltools.checks import CheckTask
 from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context
+from hsltools.sources.shp import png_sha256
 
 ART = 'content/authored/actors'
 SCHEMA = 'hsl_authored_actor_art.v1'
@@ -156,7 +157,9 @@ def combat_row(art: str, base: dict) -> dict | None:
         width, height = _png(path)
         if not (0 <= anchor[0] <= width and 0 <= anchor[1] <= height):
             raise ValueError(f'{_rel(path)}: cutin.anchor {anchor} lies outside the {width}x{height} image')
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        # The PNG is its own source member; both hashes are its pixel hash, so a look drawn from the
+        # player's import (hsltools.assets.demo_actor_art) by another PNG encoder yields the same row.
+        digest = png_sha256(path)
         frames.append({'res_path': 'res://' + _rel(path), 'draw_origin': list(anchor), 'source_member': _rel(path), 'sha256': digest, 'png_sha256': digest})
     row = {'frames': frames}
     for key in PROGRAM_KEYS:

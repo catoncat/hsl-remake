@@ -6,6 +6,8 @@
 
 本仓库不含《幻世錄》（The Legend of Fancy Realm，1998）的任何原版资源、程序或其派生文件：没有可执行文件、数据包（PAK）、图像、声音、音乐（含原版 18 首曲目）、影片、剧本文本或存档，也没有由它们解码、转换、换色或截取得到的文件。原版截图与录像帧留在维护者的私有档案，公开文档里的画面换成重制版截图或文字描述。
 
+例外只有一类：探针从原版程序里读出的规则**数值**——招式动作表（`content/generated/hsl/skills/effect_motion.json`、`objcomd_motion.json`）、秘密商人货单（`content/generated/hsl/static/hsl01/secret_man_goods.json`）、指令菜单布局（`content/imported/hsl/shared/command_menu/native_layout.json`）、范围格的配色与几何（`content/imported/hsl/shared/range_cells/manifest.json`）——作为探针结果随仓库发布。它们只有数字、坐标、成员名与编号，不含任何像素、音频或文字图像。
+
 要运行或构建本项目，玩家需自备正版：Steam《幻世錄 重製版》（app 4030150）内含 1998 年經典版目录 `GAME-PAK/`。本项目只提供从你本机这份正版导入资源的工具（路径由 `HSL_ORIGINAL_DIR` 指定，见 [CONTRIBUTING](CONTRIBUTING.md)），不提供、不链接任何原版文件的下载；`python3 tools/hsl_steam_classic.py fetch` 只打印 DepotDownloader 命令，Steam 账号由玩家本人登录。
 
 ## 权利归属

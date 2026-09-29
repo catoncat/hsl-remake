@@ -42,7 +42,7 @@ python3 tools/hsl.py check original_derived_manifest          # 逐文件比对�
 tools/play.sh                                 # 没导入过会先跑 bootstrap，再导入 Godot 资源、开游戏；Windows 用 powershell -ExecutionPolicy Bypass -File tools\play.ps1
 ```
 
-`bootstrap` 以原版派生文件清单（`content/generated/hsl/original_derived_manifest.json`，每个文件记着由哪个任务生成）为准：有文件缺席的任务按先上游后下游的顺序生成，文件齐全的任务跳过；`--dry-run` 只数不写。最后一行是 `HSL_BOOTSTRAP_PASS|FAIL generated=… skipped=… original_missing=… no_generator=… failed=… differ=…`。`original_missing` 是要用到 Steam 版不带的东西（原版程序 `hsl01.exe`、原版录像或存档）的任务，`no_generator` 是只有检查器、或输入来自仓库外工具的证据文件，这两类只列出、不算失败；`differ` 是生成出来但和清单哈希不一致的任务（原版字库 `original_bitmap_font` 按仓库里实际用到的字排版，改过文字就会不同，不影响游戏；缺示范角色 102／103 的占位图时，头像表 `roster_portraits`、受击／施法姿势清单和 `scope_inventory` 也少了这两人或第 200 关）；`failed` 非零时 `tools/play.sh` 下次启动会再补一次。只想重做某一族，照旧 `python3 tools/hsl.py generate <任务或族>`。
+`bootstrap` 以原版派生文件清单（`content/generated/hsl/original_derived_manifest.json`，每个文件记着由哪个任务生成）为准：有文件缺席的任务按先上游后下游的顺序生成，文件齐全的任务跳过；`--dry-run` 只数不写。最后一行是 `HSL_BOOTSTRAP_PASS|FAIL generated=… skipped=… original_missing=… no_generator=… failed=… differ=…`。`original_missing` 是要用到 Steam 版不带的东西（原版程序 `hsl01.exe`、原版录像或存档）的任务，`no_generator` 是只有检查器、或输入来自仓库外工具的证据文件，这两类只列出、不算失败；`differ` 是生成出来但和清单哈希不一致的任务（原版字库 `original_bitmap_font` 按导入后内容里实际用到的字排版：改过文字就会不同，公开检出里少了几份没有生成途径的证据文本，字集也会差几个字；不影响游戏）；`failed` 非零时 `tools/play.sh` 下次启动会再补一次。只想重做某一族，照旧 `python3 tools/hsl.py generate <任务或族>`。
 
 **没有原版的时候**：凡是读写原版派生文件的任务都会报 `SKIP original-absent`，只有文档和纯代码的检查会真正跑出 PASS；`tools/verify.sh` 会跳过 Godot 导入和场景套件。游戏本身开不起来，因为关卡 JSON 和素材都是生成物。注意 SKIP 只是跳过，不等于通过。
 
@@ -178,5 +178,4 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 ## 现在做不到的（需要先改代码或工具）
 
-- 游戏要读、但只能从原版程序 `hsl01.exe` 读出的几份数据：招式动作表（`content/generated/hsl/skills/effect_motion.json`、`objcomd_motion.json`，招式特效 `skill_effects` 由它们生成）、范围格配色 `range_cells`、指令菜单布局 `native_layout.json`、秘密商人货单 `secret_man_goods.json`。Steam 版不带 `hsl01.exe`，`bootstrap` 生成不了（记 `original_missing`／`no_generator`），公开仓库也还没收录。缺了它们，第一章的仗照样能打完，但范围格、指令菜单和招式特效画不出来，战斗中不断报脚本错误；酒馆神秘男子的交易事件会中止。示范角色 102／103 的占位图（由 003／004 换色而来）同样没有生成任务，公开仓库也不带：缺了它们，头像表里没有这两人，龍脊隘口（LEVEL200）组不出来（`authored_level:200` 记 `original_missing`），第一章不受影响。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。

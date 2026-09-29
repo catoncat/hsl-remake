@@ -5,7 +5,9 @@ them where they are not (docs/internal/OPEN_SOURCE_PLAN.md).
   A  original-derived: decoded assets, original text / source files, saves, EXE-derived tables,
      screenshots / recordings / renders of the original game, recoloured original frames
   B  remake-original: code, docs, remake-composed music, tests, authored sequel data
-  C  grey: evidence-packet prose / data dumps that may quote original strings or disassembly
+  C  grey: evidence-packet prose / data dumps that may quote original strings or disassembly, and the
+     rule data read out of hsl01.exe that the game needs (PUBLISHED_EXE_DATA: numbers, coordinates,
+     member names; the Steam copy carries no hsl01.exe, so a player could not produce them)
 
 The public repository carries B and processed C only; a player imports A from their own copy
 (tools/hsl.py generate, HSL_ORIGINAL_DIR). While A is absent `hsl check` reports every task that
@@ -28,6 +30,19 @@ MEDIA = ('.png', '.jpg', '.jpeg', '.webp', '.gif', '.mp4', '.wav', '.ogg', '.bmp
 # Top-level directories whose contents are all original-derived (a declared task path naming one
 # of these directories is A even when the directory itself is not a tracked file).
 A_DIRECTORIES = ('content/imported/', 'content/generated/', 'content/battles/')
+# Rule data only hsl01.exe holds (CONTRIBUTING: EXE-derived rule data is published as the probe results and
+# run records in the repository): the effect-object / ObjComd motion tracks, the range-cell colour ramps
+# and frame timers, the command-menu layout tables and the secret man's goods. Class C, exported with the
+# public repository; the original-derived manifest keeps listing them (owner and hash) so a public
+# checkout proves them unchanged. Everything these tasks draw from the PAK (the range-cell border
+# sheets) stays A and is imported by `hsl bootstrap`.
+PUBLISHED_EXE_DATA = (
+    'content/generated/hsl/skills/effect_motion.json',
+    'content/generated/hsl/skills/objcomd_motion.json',
+    'content/generated/hsl/static/hsl01/secret_man_goods.json',
+    'content/imported/hsl/shared/command_menu/native_layout.json',
+    'content/imported/hsl/shared/range_cells/manifest.json',
+)
 
 
 def classify(path: str) -> tuple[str, str]:
@@ -36,6 +51,8 @@ def classify(path: str) -> tuple[str, str]:
     ext = Path(low).suffix
     if path == MANIFEST_RELATIVE:
         return 'B', 'original-derived manifest (paths + SHA-256 only)'
+    if path in PUBLISHED_EXE_DATA:
+        return 'C', 'EXE-derived rule data (published)'
     if path.startswith('content/generated/hsl/remake_music/'):
         return 'B', 'remake-composed music (tools/compose_*.py)'
     if path.startswith('content/generated/hsl/development/autoplay/'):
@@ -71,6 +88,11 @@ def classify(path: str) -> tuple[str, str]:
     if path.startswith(('game/', 'tests/', 'tools/')):
         return 'B', path.split('/')[0] + '/'
     return 'B', 'docs, root files, authored sequel data, schema'
+
+
+def in_manifest(path: str) -> bool:
+    """A tracked file the original-derived manifest lists: class A, or published EXE-derived data."""
+    return path in PUBLISHED_EXE_DATA or classify(path)[0] == 'A'
 
 
 def is_original_derived(path: str) -> bool:

@@ -44,7 +44,8 @@ tools/*.exe
 # Original-derived content (NOTICE.md): imported locally from the player's own copy with
 # `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
 # content/generated/hsl/original_derived_manifest.json by `python3 tools/hsl.py check original_derived_manifest`.
-/content/imported/
+/content/imported/**
+!/content/imported/**/
 /content/battles/*
 !/content/battles/levels/
 !/content/battles/campaign.json
@@ -53,3 +54,15 @@ tools/*.exe
 !/content/generated/hsl/original_derived_manifest.json
 !/content/generated/hsl/remake_music/**
 !/content/generated/hsl/development/autoplay/**
+!/content/generated/hsl/skills/effect_motion.json
+!/content/generated/hsl/skills/objcomd_motion.json
+!/content/generated/hsl/static/hsl01/secret_man_goods.json
+!/content/imported/hsl/shared/command_menu/native_layout.json
+!/content/imported/hsl/shared/range_cells/manifest.json
+# Placeholder art recoloured from original frames by bootstrap, never committed.
+/content/authored/actors/102/*.png
+/content/authored/actors/102/cutin/*.png
+/content/authored/actors/102/walk/*.png
+/content/authored/actors/103/*.png
+/content/authored/actors/103/cutin/*.png
+/content/authored/actors/103/walk/*.png

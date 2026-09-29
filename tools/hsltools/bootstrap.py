@@ -10,8 +10,10 @@ an input written later in the run was not there yet gets another round, as long 
 progress. Whether a task runs depends on existence only; hashes are compared for the tasks this run
 generated (settle, in main) and by `hsl check original_derived_manifest` afterwards.
 
-Manifest entries without a task (screenshots and other evidence of the original, the placeholder art of
-the demo actors) have no generator; they are counted in the summary, never imported here. A task that
+Manifest entries without a task (screenshots and other evidence of the original) have no generator; they
+are counted in the summary, never imported here. The placeholder art of the demo actors is generated
+(demo_actor_art, a recolour of imported frames) and the rule data read out of hsl01.exe ships with the
+repository (original_content.PUBLISHED_EXE_DATA). A task that
 needs an input the player's copy does not have (the documented hsl01.exe, a memory dump) is counted as
 original_missing, a pure checker or a task whose declared input no task writes (an output of the
 chapter-one payload inspector) as no_generator, and a task whose input waits on either inherits its

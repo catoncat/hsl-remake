@@ -1,0 +1,509 @@
+{
+  "schema": "hsl_range_cells.v1",
+  "evidence_tier": "static-derived; resource-derived; runtime-measured",
+  "exe_sha256": "f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7",
+  "cell_px": 32,
+  "fill": {
+    "source_member": "@:\\shape\\ICONBOX.SHP",
+    "source_sha256": "955f257a4eed4940fe72aa011c4a06b01b1f40f72afb669149c1d3f2886cc5c8",
+    "blit_mode": 6,
+    "blend": "dst = ((dst & 0xf7de) + (colour & 0xf7de)) >> 1 (RGB565 50/50 average, span case 6 at 0x4684b6; draw flag 0x40000000)",
+    "godot_equivalent": "ramp colour at alpha 0.5 over the whole cell"
+  },
+  "pulse": {
+    "counter_addresses": {
+      "move": "0x4c1a7c",
+      "attack": "0x4c1a80",
+      "skill": "0x4c1a84"
+    },
+    "sequence": "after each drawn tick: index += 1, and when index >= 0 and ramp[index] == 0 (past the ninth entry) index = 1 - index; the drawn entry is ramp[abs(index)], so the darkest entry shows on two consecutive ticks (0x411442-0x41145e)",
+    "period_ticks": 17,
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      -8,
+      -7,
+      -6,
+      -5,
+      -4,
+      -3,
+      -2,
+      -1
+    ]
+  },
+  "border": {
+    "draw_offset_px": [
+      0,
+      0
+    ],
+    "frame_order": "I_rect<palette>1 … I_rect<palette>8 left to right",
+    "frame_ticks_note": "the delay word reloads from the next word (8) and the frame wraps at the count word (8): 64 ticks a lap"
+  },
+  "tick_evidence": "docs/evidence_packets/runtime_observations/original_tick_rate/README.md",
+  "runtime_check": "docs/evidence_packets/static_reverse/original_range_cells.md#runtime-measured",
+  "palettes": {
+    "move": {
+      "drawer": "0x411200",
+      "ramp_address": "0x476be4",
+      "ramp_rgb565": [
+        "0x529f",
+        "0x4a5f",
+        "0x423e",
+        "0x421e",
+        "0x39fd",
+        "0x31bc",
+        "0x319c",
+        "0x297b",
+        "0x295a"
+      ],
+      "ramp_rgb": [
+        [
+          82,
+          80,
+          255
+        ],
+        [
+          74,
+          72,
+          255
+        ],
+        [
+          65,
+          68,
+          246
+        ],
+        [
+          65,
+          64,
+          246
+        ],
+        [
+          57,
+          60,
+          238
+        ],
+        [
+          49,
+          52,
+          230
+        ],
+        [
+          49,
+          48,
+          230
+        ],
+        [
+          41,
+          44,
+          222
+        ],
+        [
+          41,
+          40,
+          213
+        ]
+      ],
+      "frame_timer_address": "0x476bf8",
+      "frame_ticks": 8,
+      "frame_count": 8,
+      "initial_delay": 8,
+      "initial_frame": 0,
+      "border_sheet": "res://content/imported/hsl/shared/range_cells/range_border_move.png",
+      "border_sheet_sha256": "68e9e8b5d32f6a4e5e1fccd01a53b83961cad1adfa3a13ee2f75e541c068b365",
+      "border_frames": [
+        {
+          "source_member": "@:\\shape\\I_rect11.shp",
+          "source_sha256": "94331d42ceb746fce2fa288caa141717e21390119af3430817d7ad64ea7792ad"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect12.shp",
+          "source_sha256": "b7e6b6a7f4f96fe5177504cfa31fa8a09722f099f70d913e091d06a15173e976"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect13.shp",
+          "source_sha256": "1eb3197fe66048d41b44cce398052c33165d043684fa375f4ff77acfa73a8c39"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect14.shp",
+          "source_sha256": "b297a84bcd656cbac83f51bc25fd61d083f602b7052681f51c9d787577c326f4"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect15.shp",
+          "source_sha256": "a1762e9eb03717d4ae797354100827f6932f1ec26743de21855282aa29e7bc17"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect16.shp",
+          "source_sha256": "fb73e5cde72ddc271ac23a2811ec87e898fb730a293db438293ad979a2172931"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect17.shp",
+          "source_sha256": "1870f427457ca8b2befd0080bd5080632b9d3d542314b0eb4816a3f0b898380e"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect18.shp",
+          "source_sha256": "b9d0e762467ea70db3c9dd943f580e2a9703aa04bf0067dcaecf3adc40e4b8a7"
+        }
+      ]
+    },
+    "attack": {
+      "drawer": "0x411480",
+      "ramp_address": "0x476c00",
+      "ramp_rgb565": [
+        "0xfa8a",
+        "0xfa49",
+        "0xf228",
+        "0xf208",
+        "0xe9e7",
+        "0xe1a6",
+        "0xe186",
+        "0xd965",
+        "0xd145"
+      ],
+      "ramp_rgb": [
+        [
+          255,
+          80,
+          82
+        ],
+        [
+          255,
+          72,
+          74
+        ],
+        [
+          246,
+          68,
+          65
+        ],
+        [
+          246,
+          64,
+          65
+        ],
+        [
+          238,
+          60,
+          57
+        ],
+        [
+          230,
+          52,
+          49
+        ],
+        [
+          230,
+          48,
+          49
+        ],
+        [
+          222,
+          44,
+          41
+        ],
+        [
+          213,
+          40,
+          41
+        ]
+      ],
+      "frame_timer_address": "0x476c14",
+      "frame_ticks": 8,
+      "frame_count": 8,
+      "initial_delay": 8,
+      "initial_frame": 0,
+      "border_sheet": "res://content/imported/hsl/shared/range_cells/range_border_attack.png",
+      "border_sheet_sha256": "151fa6803e93a56821b495640dc9f0ad9176e8fcb021632eb02d108da1f3dd21",
+      "border_frames": [
+        {
+          "source_member": "@:\\shape\\I_rect21.shp",
+          "source_sha256": "5a52a3238c4516eff281eacd425738e1f7baff8e40dde64f67a704077861c750"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect22.shp",
+          "source_sha256": "a1750c6dd0a250a06395f8ffe87b91c20f9f43d033604950757c0d1ed946cb42"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect23.shp",
+          "source_sha256": "d2d46e7495d6d9bd55c6a1fa6148fdd574a3d56268ea2cfee3ccb2feaf4e3275"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect24.shp",
+          "source_sha256": "ca5c6a250e129e31cac029d2c8fb6208a2d432e9eb23b90c259b66a362489f44"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect25.shp",
+          "source_sha256": "997b2e815ef5feccc00eb59c4fc58db18df3d175765ef919670855e82fcfd188"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect26.shp",
+          "source_sha256": "132f4c646c21ed5aca92714e5fc0df50e2cf46b8712667cbb4c86875fe797571"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect27.shp",
+          "source_sha256": "7c1d7fae29a0b514c53ee6dd6bd74a79d0941d1cb864e405579bb94bd1a7c25b"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect28.shp",
+          "source_sha256": "c1d079514eb4c0b587704b4057510e97e13df8c69208c2c8be237ca2705fcc5c"
+        }
+      ]
+    },
+    "magic": {
+      "drawer": "0x4116a0 palette 0",
+      "ramp_address": "0x476c1c",
+      "ramp_rgb565": [
+        "0xffea",
+        "0xffc9",
+        "0xf7a8",
+        "0xf788",
+        "0xef47",
+        "0xe726",
+        "0xe706",
+        "0xdee5",
+        "0xd6a5"
+      ],
+      "ramp_rgb": [
+        [
+          255,
+          255,
+          82
+        ],
+        [
+          255,
+          250,
+          74
+        ],
+        [
+          246,
+          246,
+          65
+        ],
+        [
+          246,
+          242,
+          65
+        ],
+        [
+          238,
+          234,
+          57
+        ],
+        [
+          230,
+          230,
+          49
+        ],
+        [
+          230,
+          226,
+          49
+        ],
+        [
+          222,
+          222,
+          41
+        ],
+        [
+          213,
+          214,
+          41
+        ]
+      ],
+      "frame_timer_address": "0x476c44",
+      "frame_ticks": 8,
+      "frame_count": 8,
+      "initial_delay": 8,
+      "initial_frame": 0,
+      "border_sheet": "res://content/imported/hsl/shared/range_cells/range_border_magic.png",
+      "border_sheet_sha256": "4fb589fcb83b5b4d1795d5502e250f19c003957280b23f40fe18a9ffe321eb26",
+      "border_frames": [
+        {
+          "source_member": "@:\\shape\\I_rect31.shp",
+          "source_sha256": "5562539e3c9d6f216635fcbe5bd1cc64b027859c44dd4d4ba28569c0bf0ea30d"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect32.shp",
+          "source_sha256": "d0218dd930365261fb1da1e69b2ed591e6689565eac6aec09a43f19ccb5dc0df"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect33.shp",
+          "source_sha256": "36e26c31766feaed1fa791d28bd10236a2e66879bd6de06e9236484e4f234334"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect34.shp",
+          "source_sha256": "cfe5ff688f09b6906d6c343ffb3583036ffd416ea2cf6ecb31a40019050c8558"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect35.shp",
+          "source_sha256": "59803d587abc2e0d68c2023e904102976b84da2c7d2e1f03bcbb64a26bd0fb57"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect36.shp",
+          "source_sha256": "712e137774bc1d3bf2d55681dc7881d8830a68cd399cf81db997b3f49e9ecf96"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect37.shp",
+          "source_sha256": "2f9caca4971cbe43afb87394a68bd020b732467393ecc6be9b1be9d74a087051"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect38.shp",
+          "source_sha256": "d9dff75e88abcb2ca3609915fbbd7782a3e4766b7a06c2277149c5ccda265dd7"
+        }
+      ]
+    },
+    "special": {
+      "drawer": "0x4116a0 palette 1",
+      "ramp_address": "0x476c30",
+      "ramp_rgb565": [
+        "0x6ef7",
+        "0x6eb7",
+        "0x6696",
+        "0x5e75",
+        "0x5e55",
+        "0x5614",
+        "0x55f4",
+        "0x4dd3",
+        "0x45b2"
+      ],
+      "ramp_rgb": [
+        [
+          106,
+          222,
+          189
+        ],
+        [
+          106,
+          214,
+          189
+        ],
+        [
+          98,
+          210,
+          180
+        ],
+        [
+          90,
+          206,
+          172
+        ],
+        [
+          90,
+          202,
+          172
+        ],
+        [
+          82,
+          194,
+          164
+        ],
+        [
+          82,
+          190,
+          164
+        ],
+        [
+          74,
+          186,
+          156
+        ],
+        [
+          65,
+          182,
+          148
+        ]
+      ],
+      "frame_timer_address": "0x476c44",
+      "frame_ticks": 8,
+      "frame_count": 8,
+      "initial_delay": 8,
+      "initial_frame": 0,
+      "border_sheet": "res://content/imported/hsl/shared/range_cells/range_border_special.png",
+      "border_sheet_sha256": "600573e6810916ed76fd8c8f808f2241da42fe05f5e053b08b6acb245e410d35",
+      "border_frames": [
+        {
+          "source_member": "@:\\shape\\I_rect41.shp",
+          "source_sha256": "50d2df6c968e683ab0f41007bfc627ddadaa226b0cfe42535c4d94cad10f94be"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect42.shp",
+          "source_sha256": "8b1d6fe374103344685f719f53f409559eac67a0006ea8a79d919dc04366d0d0"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect43.shp",
+          "source_sha256": "7ec10ecd8629531ca4a6d9cc06851941687c4420da6eafc7dd48254dbc4806bf"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect44.shp",
+          "source_sha256": "6ed31046254c0b1859d149db7d970994972e9863b535f1b0b842e4d025092453"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect45.shp",
+          "source_sha256": "0b0de0a5ffbb46f489af435fbcb1e350fd6c0b909f7635cd399b4fcfcbbc5014"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect46.shp",
+          "source_sha256": "80c62ce9572852408f892797c620f8d38b6d69071a0a795359bf0da9a7e2160b"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect47.shp",
+          "source_sha256": "aa50764bb3a29bfc2b556a570e950d180596ec618efed8de87ed48158ed78301"
+        },
+        {
+          "source_member": "@:\\shape\\I_rect48.shp",
+          "source_sha256": "b3b0b9adefa3d93689b1775c85a55166d3a83c4c9e54f6f4302aba7954729841"
+        }
+      ]
+    }
+  },
+  "cursor": {
+    "drawer": "0x430230",
+    "frame_timer_address": "0x4784f4",
+    "frame_ticks": 8,
+    "frame_count": 8,
+    "initial_delay": 8,
+    "initial_frame": 0,
+    "border_sheet": "res://content/imported/hsl/shared/range_cells/range_border_cursor.png",
+    "border_sheet_sha256": "431c407b49027eeee2279fcae89a3285d58a5febbfb549adbe1784453a8c17c8",
+    "border_frames": [
+      {
+        "source_member": "@:\\shape\\I_rect01.shp",
+        "source_sha256": "bf51dcc4fa39ba7b7a62921ea7ffa797cd695784f8513aa9dcfa618e2441d92d"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect02.shp",
+        "source_sha256": "d5a68c5c29df22229399b787e84c1b23d3e65ad4d2094e5806499e7152ff96c3"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect03.shp",
+        "source_sha256": "cb6b26a030d2bbc55940bef6c32e793b02444563a6a25eb0b9627442715f21a7"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect04.shp",
+        "source_sha256": "82b6a4f08110e5783c3b8900091335965374908c772d493c9fdaae56585d161e"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect05.shp",
+        "source_sha256": "289a21a044e693cb6f7c1015f6d39096dcd0aad357cc9bb755cbcb2d691226ae"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect06.shp",
+        "source_sha256": "82b6a4f08110e5783c3b8900091335965374908c772d493c9fdaae56585d161e"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect07.shp",
+        "source_sha256": "cb6b26a030d2bbc55940bef6c32e793b02444563a6a25eb0b9627442715f21a7"
+      },
+      {
+        "source_member": "@:\\shape\\I_rect08.shp",
+        "source_sha256": "d5a68c5c29df22229399b787e84c1b23d3e65ad4d2094e5806499e7152ff96c3"
+      }
+    ]
+  }
+}

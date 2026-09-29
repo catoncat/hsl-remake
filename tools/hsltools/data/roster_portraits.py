@@ -10,8 +10,8 @@ sequel character needs a row here or the panel fails on it; the imported rows ar
 unchanged (byte-identical `actors` entries), only the table's home moves.
 
 A portrait that the original-derived manifest lists (the demo actors' placeholder art, recoloured
-original frames) and this checkout lacks — the public repository ships none — drops that row with a
-note instead of failing: the chapter-one rows still reach the panels, and
+original frames: the public repository ships none, hsltools.assets.demo_actor_art draws it from the
+player's import, before this task) and this checkout lacks drops that row with a note instead of failing: the chapter-one rows still reach the panels, and
 `hsl check original_derived_manifest` reports the table as differing from the manifest. Any other
 missing portrait is an authoring error and fails.
 """
@@ -65,7 +65,7 @@ def build() -> dict:
 class RosterPortraitsTask(GeneratedFilesTask):
     name = 'roster_portraits'
     family = 'roles'
-    inputs = (IMPORTED, AUTHORED_CHARACTERS)
+    inputs = (IMPORTED, AUTHORED_CHARACTERS, 'content/authored/actors/')
     outputs = (OUTPUT,)
     replaces = ()  # born as a registry task
     scripts = ('tools/hsltools/data/roster_portraits.py', 'tools/hsltools/sources/tables.py')

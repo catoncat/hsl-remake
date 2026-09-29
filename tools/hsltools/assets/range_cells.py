@@ -7,6 +7,8 @@ palette 0 = magic, 1 = special) each paint every marked 32 px cell twice per tic
 a 50／50 RGB565 average — with a colour taken from a nine-entry ramp by a per-tick triangle
 counter (0..8, −8..−1: 17 ticks a cycle), then the opaque border frame ``I_rect<palette><1..8>``,
 advancing one frame every 8 ticks. The ramps and the two 8s live in .data next to each other.
+manifest.json is published EXE-derived data (hsltools.original_content.PUBLISHED_EXE_DATA); the
+border sheets are PAK art, so without hsl01.exe generate rebuilds only the sheets (build_sheets).
 Evidence packet: docs/evidence_packets/static_reverse/original_range_cells.md.
 """
 from __future__ import annotations
@@ -54,11 +56,7 @@ def _read_ramp(base: int, mapped: bytearray, address: int) -> list[int]:
         offset += 2
 
 
-def build(pak: Path, exe: Path) -> None:
-    from PIL import Image
-
-    raw_exe = exe.read_bytes()
-    base, mapped = image(raw_exe)
+def _reader(pak: Path):
     packages = find_decoded_paks_packages(pak)
 
     def read(member: str) -> bytes:
@@ -67,7 +65,51 @@ def build(pak: Path, exe: Path) -> None:
             raise ValueError('missing or ambiguous resource: ' + member)
         package, record = matches[0]
         return read_paks_record_bytes(package['path'], record, data_end_offset=int(package['paks']['candidate_index_offset']))
+    return read
 
+
+def _border_sheet(read, name: str, decade: int) -> list[dict]:
+    """Writes range_border_<name>.png from the PAK's I_rect<decade>1..8 frames (only when its pixels
+    differ); returns the frames' source rows."""
+    from PIL import Image
+
+    sheet = Image.new('RGBA', (CELL * FRAME_COUNT, CELL))
+    frames = []
+    for index in range(FRAME_COUNT):
+        member = f'@:\\shape\\I_rect{decade}{index + 1}.shp'
+        payload = read(member)
+        shp = parse_shp(payload)
+        if (int(shp['width']), int(shp['height'])) != (CELL, CELL):
+            raise ValueError(member + ' is not a 32×32 frame')
+        tile = Image.new('RGBA', (CELL, CELL))
+        tile.putdata([(*rgb565_to_rgb(value), 255) if value is not None else (0, 0, 0, 0) for value in shp_pixel_values(payload, shp)])
+        sheet.paste(tile, (CELL * index, 0))
+        frames.append({'source_member': member, 'source_sha256': hashlib.sha256(payload).hexdigest()})
+    path = _sheet_path(name)
+    if not (path.is_file() and Image.open(path).convert('RGBA').tobytes() == sheet.tobytes()):
+        sheet.save(path)
+    return frames
+
+
+def build_sheets(pak: Path) -> None:
+    """Without hsl01.exe: the border sheets from the PAK, against the tracked manifest.json (the EXE
+    ramps and frame timers are published data; the sheets are PAK art the player imports)."""
+    manifest = json.loads((OUT / 'manifest.json').read_text())
+    if manifest.get('schema') != SCHEMA or manifest.get('exe_sha256') != EXE_SHA:
+        raise ValueError(f'{OUT / "manifest.json"}: not the {SCHEMA} manifest of the documented EXE')
+    read = _reader(pak)
+    for name, spec, row in [*((name, PALETTES[name], manifest['palettes'][name]) for name in PALETTES), ('cursor', CURSOR, manifest['cursor'])]:
+        if _border_sheet(read, name, spec['decade']) != row['border_frames']:
+            raise ValueError(f'{name}: the PAK border frames are not the ones manifest.json records')
+        if png_sha256(_sheet_path(name)) != row['border_sheet_sha256']:
+            raise ValueError(f'{name}: border sheet pixels differ from manifest.json')
+    print('RANGE_CELLS_SHEETS_IMPORTED', len(PALETTES) + 1)
+
+
+def build(pak: Path, exe: Path) -> None:
+    raw_exe = exe.read_bytes()
+    base, mapped = image(raw_exe)
+    read = _reader(pak)
     OUT.mkdir(parents=True, exist_ok=True)
     fill = read('@:\\shape\\ICONBOX.SHP')
     fill_shp = parse_shp(fill)
@@ -76,21 +118,8 @@ def build(pak: Path, exe: Path) -> None:
         raise ValueError('ICONBOX.SHP is not the solid 32×32 block the drawers blend')
     def frames_of(name: str, spec: dict) -> dict:
         delay, reload, frame, count = struct.unpack_from('<HHHH', mapped, spec['timer'] - base)
-        sheet = Image.new('RGBA', (CELL * FRAME_COUNT, CELL))
-        frames = []
-        for index in range(FRAME_COUNT):
-            member = f'@:\\shape\\I_rect{spec["decade"]}{index + 1}.shp'
-            payload = read(member)
-            shp = parse_shp(payload)
-            if (int(shp['width']), int(shp['height'])) != (CELL, CELL):
-                raise ValueError(member + ' is not a 32×32 frame')
-            tile = Image.new('RGBA', (CELL, CELL))
-            tile.putdata([(*rgb565_to_rgb(value), 255) if value is not None else (0, 0, 0, 0) for value in shp_pixel_values(payload, shp)])
-            sheet.paste(tile, (CELL * index, 0))
-            frames.append({'source_member': member, 'source_sha256': hashlib.sha256(payload).hexdigest()})
+        frames = _border_sheet(read, name, spec['decade'])
         path = _sheet_path(name)
-        if not (path.is_file() and Image.open(path).convert('RGBA').tobytes() == sheet.tobytes()):
-            sheet.save(path)
         return {
             'drawer': spec['drawer'],
             'frame_timer_address': hex(spec['timer']),
@@ -187,9 +216,12 @@ class RangeCellsTask(ScriptCheckTask):
         check()
 
     def build(self, ctx: Context) -> None:
-        if not ctx.original_exe.is_file():
+        if ctx.original_exe.is_file():
+            build(original_archive(ctx), ctx.original_exe)
+        elif (OUT / 'manifest.json').is_file():
+            build_sheets(original_archive(ctx))
+        else:
             raise NotGeneratable(f'{self.name}: original EXE not found at {ctx.original_exe} (the colour ramps are read from hsl01.exe)')
-        build(original_archive(ctx), ctx.original_exe)
 
 
 def tasks() -> list[RangeCellsTask]:
