@@ -1146,13 +1146,16 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 
 
 ## eff_proc_Local's glide to the first receiver (state 0x19, 0x44301e) at the battle step,
-## started now; its scaled seconds, 0 when the receiver is already within the tolerance.
+## started now; its scaled seconds: the calls 0x43bf30 returns 0. The call it reports arrival
+## builds the effect (0x443087) in that same call, so that call is not waited for; a camera
+## already on the receiver reports it at once (the 0x80000000 flag then reads [0x4c1b1c],
+## 0x43bfd8..0x43bfe7, which is 1 between frames).
 func _first_receiver_glide(host: CanvasLayer, clip: Dictionary) -> float:
 	var controller: RefCounted = host.battle_camera()
 	if controller == null or controller.camera == null or not clip.has("cast_camera") or not clip["strike"].has("magic_key"):
 		return 0.0
 	var world: Vector2 = controller.logical_to_world(clip["affected_positions"][0] - _view_shift(host, clip))
-	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+	return _unarrived_seconds(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
 
 
 ## State 0's glide to the caster, every spell (0x442ad1: 0x43bf30(caster, 0) at 0x442ae7 each call,
@@ -1230,11 +1233,16 @@ func _view_shift(host: CanvasLayer, clip: Dictionary) -> Vector2:
 ## units (host.show_effect_ripple) from its first call until the effect phase ends: the object
 ## only deletes itself — and clears the ripple bit 0x400000 of [0x4c1cc0] (0x41d761) — once
 ## [0x4c1b00] & 0x1000000 is clear (host.spell_phase: Global's state 9 entry, as the script
-## reaches op 0).
+## reaches op 0). Its colour change (obj_Data6: IconBGSet1／FireBGSet red, WaterBGSet blue)
+## tints the map and the plain stand objects (host.show_effect_tint, EffectObjectMotion.tint_at)
+## over the same span; the first such object keeps it (a later creation call finds [0x4c1cc0]
+## set and jumps to 0x416bcc without taking over).
 func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bool) -> void:
 	var timeline: Dictionary = clip["effect_timeline"]
 	var offset := Vector2.ZERO
 	var ripple := {}
+	var tint := Color(0, 0, 0, 0)
+	var tint_from := INF
 	for event in timeline["events"]:
 		if event["kind"] != "object" or event.get("motion", "") != "native" or event.get("source", "") == "objcomd" or tick < float(event["tick"]):
 			continue
@@ -1243,7 +1251,11 @@ func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bo
 		var params := EffectObjectMotion.ripple_at(str(event["object"]), frame)
 		if not params.is_empty():
 			ripple = params
+		if EffectObjectMotion.TINT_TARGET.has(str(event["object"])) and float(event["tick"]) < tint_from:
+			tint_from = float(event["tick"])
+			tint = EffectObjectMotion.tint_at(str(event["object"]), frame)
 	host.show_effect_ripple({} if complete or not host.spell_phase else ripple)
+	host.show_effect_tint(Color(0, 0, 0, 0) if complete or not host.spell_phase else tint)
 	var camera: RefCounted = host.battle_camera()
 	if camera == null or camera.camera == null or clip.get("camera_returned", false) or (offset == Vector2.ZERO and not clip.has("effect_camera_base")):
 		return

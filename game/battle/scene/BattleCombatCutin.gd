@@ -126,6 +126,12 @@ var transition_shade: ColorRect
 ## full-view rect last in the battle World that redraws the map and units already drawn with
 ## 0x461687's per-row x offsets. Built on first use; hidden every frame unless re-shown.
 var effect_ripple: ColorRect
+## The map spell's colour change (effProcIconBGSet, SkillEffectScriptPlayer._effect_view): the
+## material the map backdrop and the plain stand objects draw with while it shows, the nodes
+## that carry it, and whether this frame asked for it (a frame without a request restores them).
+var effect_tint_material: ShaderMaterial
+var _effect_tinted: Array = []
+var _effect_tint_requested := false
 ## The cast shadow (shade_map): the level 0..8 this frame and its black rect in the battle World.
 var map_shadow_level := 0
 var map_shadow: ColorRect
@@ -160,6 +166,16 @@ uniform float offsets[480];
 void fragment() {
 	int row = clamp(int(SCREEN_UV.y * 480.0), 0, 479);
 	COLOR = texture(screen_texture, SCREEN_UV - vec2(offsets[row] / 640.0, 0.0));
+}
+"""
+## Draw kind 2 (0x46ac63, mode 0x10000000 through 0x46b691): each drawn pixel of the shape
+## becomes ((pixel & 0xf7de) + (colour & 0xf7de)) >> 1 — the half mix of the shape's own pixel
+## and the colour, over whatever the screen held. `tint` is the colour with each channel's
+## lowest bit already dropped; the pixel's is not.
+const EFFECT_TINT_SHADER := """shader_type canvas_item;
+uniform vec3 tint = vec3(0.0);
+void fragment() {
+	COLOR.rgb = (COLOR.rgb + tint) * 0.5;
 }
 """
 
@@ -601,6 +617,55 @@ func _complete_clip() -> void:
 			number.free()
 
 
+## Shows this frame's colour change (EffectObjectMotion.tint_at: RGB565 channels, alpha 0 for
+## none). The original sets mode 0x10000000 and colour +0x28 on the map it draws (0x430370:
+## the object itself, or every tile through 0x46bf6f) and, at the stand-object procedure's
+## tail (0x43d853), on each stand object whose mode lacks engADDCOLOR (0x4000000), clearing
+## engMIX; the mode comes back from +0xa0 the next tick (0x43ce53). Units and effect objects
+## never read it. The remake gives the map backdrop, the backdrop-layer pictures and the
+## stand-object sprites drawn plain (no material of their own) the half-mix material; the
+## glass, additive and animated ones keep theirs.
+func show_effect_tint(colour: Color) -> void:
+	var world: Node = get_parent().get_parent().get_node_or_null("World") if get_parent() != null and get_parent().get_parent() != null else null
+	if colour.a <= 0.0 or world == null:
+		_restore_effect_tint()
+		return
+	_effect_tint_requested = true
+	if effect_tint_material == null:
+		var shader := Shader.new()
+		shader.code = EFFECT_TINT_SHADER
+		effect_tint_material = ShaderMaterial.new()
+		effect_tint_material.shader = shader
+	var r := int(colour.r) & 0x1e
+	var g := int(colour.g) & 0x3e
+	var b := int(colour.b) & 0x1e
+	effect_tint_material.set_shader_parameter("tint", Vector3(float(r) / 31.0, float(g) / 63.0, float(b) / 31.0))
+	var targets: Array = [world.get_node_or_null("MapBackdrop")]
+	for child in world.get_children():
+		if child.get_meta("runtime_layer", "") == "backdrop":
+			targets.append(child)
+	for layer_name in ["MapObjectsBack", "MapObjectsForeground"]:
+		var layer: Node = world.get_node_or_null(layer_name)
+		if layer == null: continue
+		# Only defProcStandObject reads the tint (0x43d853); chests (0x415730) and level 12's
+		# hull pieces (enemy process 0x443330) share the layer but do not.
+		for child in layer.get_children():
+			if str(child.get_meta("process_code", "")) == "defProcStandObject":
+				targets.append(child)
+	for node in targets:
+		if node is CanvasItem and (node.material == null or node.material == effect_tint_material):
+			node.material = effect_tint_material
+			if not _effect_tinted.has(node):
+				_effect_tinted.append(node)
+
+
+func _restore_effect_tint() -> void:
+	for node in _effect_tinted:
+		if is_instance_valid(node) and node.material == effect_tint_material:
+			node.material = null
+	_effect_tinted.clear()
+
+
 func _process(delta: float) -> void:
 	var map_delta := delta
 	delta *= pace
@@ -608,6 +673,9 @@ func _process(delta: float) -> void:
 		presenter.hide()
 	if effect_ripple != null:
 		effect_ripple.hide()
+	if not _effect_tint_requested and not _effect_tinted.is_empty():
+		_restore_effect_tint()
+	_effect_tint_requested = false
 	map_shadow_level = 0
 	if map_shadow != null:
 		map_shadow.hide()

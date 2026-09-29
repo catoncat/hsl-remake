@@ -152,6 +152,30 @@ static func ripple_at(object_name: String, frame: int) -> Dictionary:
 		"amplitude": mini(int(row[5]) + calls, int(RIPPLE_AMPLITUDE_CAP.get(object_name, int(row[5]))))}
 
 
+## effProcIconBGSet's colour change (obj_Data6, change color mode: 1 → red +0xa1 = 0xff,
+## 2 → blue +0xa3 = 0xff; global.obs: IconBGSet1 1, FireBGSet 1, WaterBGSet 2) as the map draws
+## it at `frame`. The creation call (0x41d77c) writes [0x4c1cc0] = 0x10000000 and colour
+## [0x4c1cc4] = 0 and zeroes the +0x95..+0x97 components; every later call (0x41d5b8) raises
+## each by 12 capped at its +0xa1..+0xa3 target and packs them RGB565 into [0x4c1cc4]. The map
+## (0x430370 → 0x46bf6f) and the stand objects (0x43d853) read both in the process pass, on
+## lower planes than planeEffect2, so frame f shows call f − 1's colour: none at the creation
+## frame, black the frame after. Returns the RGB565 channels (0..31, 0..63, 0..31) with alpha 1,
+## or a zero Color when the object has no colour change or has not been created.
+const TINT_TARGET := {"obj_Effect_IconBGSet1": [0xff, 0, 0], "obj_Effect_FireBGSet": [0xff, 0, 0], "obj_Effect_WaterBGSet": [0, 0, 0xff]}
+const TINT_STEP := 12
+
+
+static func tint_at(object_name: String, frame: int) -> Color:
+	if not TINT_TARGET.has(object_name) or frame < 1:
+		return Color(0, 0, 0, 0)
+	var target: Array = TINT_TARGET[object_name]
+	var calls := frame - 1
+	var r := mini(TINT_STEP * calls, int(target[0]))
+	var g := mini(TINT_STEP * calls, int(target[1]))
+	var b := mini(TINT_STEP * calls, int(target[2]))
+	return Color(float(r >> 3), float(g >> 2), float(b >> 3), 1.0)
+
+
 ## 0x461687's per-row x offsets for one frame (`phase` already advanced by the frame step):
 ## every `rows_per_step` rows the running phase adds `row_phase_step`; offset =
 ## sin[phase] × amplitude >> 16 (table 0x4a39fc = 65536·sin(2π i/256)); a running phase of

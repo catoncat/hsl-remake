@@ -408,7 +408,7 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 与子状态 6 与镜头已照原版（RELAYSHADE／RELAYSHADE2／CASTCAMERA：施法 VM 状态 0 每个魔法先滑镜到施法者、期间 AI 名字幕照画，Global 建效果前滑向效果中心、到位计入效果起点，效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Local 首个受者滑镜 `_first_receiver_glide` 仍把到位那 1 call 算进去（原版状态 0x19 在 `0x44301e` 到位的同一次调用里 `0x443087` 建效果，应按返回 0 的调用数计）；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
+      "difference": "施法引导子状态 5 与子状态 6 与镜头已照原版（RELAYSHADE／RELAYSHADE2／CASTCAMERA：施法 VM 状态 0 每个魔法先滑镜到施法者、期间 AI 名字幕照画，Global 建效果前滑向效果中心、到位计入效果起点，效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读；Global 首受者血条起点减 1 以「清相位 tick＝状态 9 进入调用」为前提（op 0 到状态 9 的同帧调度未读，若晚 1 tick 则重制早 1 tick）",
       "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8、清位后 9 call 淡出；效果 VM 置位后等施法者姿势位（0x442c89 等）；状态 0 镜头到施法者（0x442ae7／0x442af3）与 Global 状态 7 滑向效果中心（0x442d10 → 0x442d81 建效果）已读；特写脚印 0x410670 读 0x4100e0 选目标时写的 *0x4c1b4c",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
@@ -448,12 +448,12 @@
     },
     {
       "id": "effect-motion",
-      "difference": "法术效果对象全部按原生轨迹运动，OtherBBall1 的镜头跟随与 FireBGSet／IconBGSet1 的屏幕波纹也已照做；随机程序用至多 4 个种子变体代替共享随机流，画到 hsl.pak 缺失的帧时按系列循环；effProcIconBGSet 的整屏换色（obj_Data6 change color mode，[0x4c1cc0] 0x10000000）未画",
-      "original": "effProc* 程序已逐 tick 原指令执行（144／144 对象、84／84 程序）；合成形状 0x460541＋0x45f141 旋转、自绘 0x4607f9、屏幕波纹 0x46164b／0x461687、镜头跟随 0x43bf30 已读并接入探针；波纹由对象自删 0x41d761 清 [0x4c1cc0] 关闭，自删条件 [0x4c1b00] & 0x1000000 清（施法例程 0x442a90）",
+      "difference": "法术效果对象全部按原生轨迹运动，OtherBBall1 的镜头跟随、FireBGSet／IconBGSet1 的屏幕波纹与 effProcIconBGSet 的整屏换色（WaterBGSet 蓝、FireBGSet／IconBGSet1 红，每 call 各分量 +12）也已照做；随机程序用至多 4 个种子变体代替共享随机流，画到 hsl.pak 缺失的帧时按系列循环；换色只挂在无自带材质的站立物件（原版 engGLASS 物件此时按普通复制画）、清相位当 tick 即还原（原版地图可能多染若干帧，帧数随 plane 先后未读实）、形状像素的最低位损失未模拟",
+      "original": "effProc* 程序已逐 tick 原指令执行（144／144 对象、84／84 程序）；合成形状 0x460541＋0x45f141 旋转、自绘 0x4607f9、屏幕波纹 0x46164b／0x461687、镜头跟随 0x43bf30 已读并接入探针；换色渐变 0x41d5b8、读者地图 0x430370→0x46bf6f 与站立物件 0x43d853、合成种类 2 内核 0x46ac63（形状像素与颜色各半）已读；波纹与换色由对象自删 0x41d761 清 [0x4c1cc0]／[0x4c1cc4] 关闭，自删条件 [0x4c1b00] & 0x1000000 清（施法例程 0x442a90）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；SkillEffectScriptPlayer._effect_view 按 camera 行移动战场镜头（效果脚本走到 op 0 交回，Global 首受术者滑镜接替）、按 ripple 参数由 BattleCombatCutin.show_effect_ripple 给地图与单位逐行位移，效果阶段结束时关",
+      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；SkillEffectScriptPlayer._effect_view 按 camera 行移动战场镜头（效果脚本走到 op 0 交回，Global 首受术者滑镜接替）、按 ripple 参数由 BattleCombatCutin.show_effect_ripple 给地图与单位逐行位移、按 EffectObjectMotion.tint_at 由 BattleCombatCutin.show_effect_tint 给地图底图与普通站立物件挂半混合材质，效果阶段结束时关",
       "remake_code": [
         "game/battle/scene/EffectObjectMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -2763,7 +2763,7 @@
     "scope:docs/evidence_packets/runtime_observations/effect_motion/README.md|provisional|六团火的随机位置与落光摆动相位": {
       "item": "effect-motion"
     },
-    "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层": {
+    "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层、换色只挂在无自带材质的物件且清相位当 tick 即还原": {
       "item": "effect-motion"
     },
     "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#4bd2900257": {

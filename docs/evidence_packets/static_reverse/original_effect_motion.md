@@ -1,13 +1,13 @@
 # 法术特效的运动：effProc* 程序逐 tick 原指令执行
 
-> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 原版录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d20, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x41d6a1, 0x41d761, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x43bf30, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f141, 0x45f4b9, 0x45f5f7, 0x45fc01, 0x4602d4, 0x460541, 0x4606a9, 0x46075b, 0x4607f9, 0x46163a, 0x46164b, 0x461687, 0x461982, 0x46b691, 0x46be92, 0x46bede · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-28
+> evidence: static-derived: 0x415dc0 效果对象过程、effProc* 跳表 0x4231b0、0x45f5f7 帧循环、0x4237f7 效果脚本解释器、0x401220／0x4010c0 残影的读法与原指令执行; runtime-measured: 2026-09-24 原版录屏 471.7–474.6 s 幻火与原生轨迹的对照; provisional: 种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层、换色只挂在无自带材质的物件且清相位当 tick 即还原 · status: live · functions: 0x4010c0, 0x401140, 0x401220, 0x401290, 0x401310, 0x401c20, 0x401dc0, 0x402180, 0x4021df, 0x4038a0, 0x407ec0, 0x415c10, 0x415d20, 0x415d40, 0x415d70, 0x415d90, 0x415dc0, 0x416095, 0x41618a, 0x4162e6, 0x416409, 0x41d5b8, 0x41d68f, 0x41d6a1, 0x41d761, 0x41d77c, 0x423873, 0x423951, 0x423a20, 0x42dc50, 0x42dcb0, 0x430370, 0x43bf30, 0x43ccf0, 0x43d853, 0x442da3, 0x44301e, 0x446be0, 0x450710, 0x458c10, 0x458c80, 0x45e307, 0x45e3ed, 0x45e575, 0x45e5a6, 0x45e785, 0x45eb75, 0x45eb9d, 0x45ebdc, 0x45f141, 0x45f4b9, 0x45f5f7, 0x45fc01, 0x4602d4, 0x460541, 0x4606a9, 0x46075b, 0x4607f9, 0x461479, 0x46163a, 0x46164b, 0x461687, 0x461982, 0x46ac63, 0x46b691, 0x46b6c1, 0x46be92, 0x46bede, 0x46bf36, 0x46bf6f · tools: hsltools/assets/skill_effects.py, hsltools/levels/battle.py, hsltools/probes/effect_motion.py, run_battle_scene_runtime_tests.gd, run_skill_effect_script_tests.gd, run_support_magic_tests.gd · updated: 2026-09-29
 
 ## 结论
 
 - 原版每个效果对象由自己的 effProc* 程序每 tick 改位置、换帧、改混合层级与缩放，许多程序还会抛出子对象（火花、子弹、残影）；效果对象一律加法混合（static-derived）。
 - 39 行法术引用的 144 个效果对象全部连同子对象逐 tick 原指令执行（84 个 effProc 程序全部复原；四个运行时助手见 §四个运行时助手），得到 `content/generated/hsl/skills/effect_motion.json`；重制 `game/battle/scene/EffectObjectMotion.gd`／`SkillEffectScriptPlayer.gd` 按它逐帧画整棵树（static-derived）。
 - 幻火（effCode23）的独立 Python 模型与原生轨迹逐样本相等，与原版录屏节拍一致（[runtime 包](../runtime_observations/effect_motion/README.md)）；幻火是一团光从目标头顶 88 px 处摇摆落下，不是从施法者飞向目标（runtime-measured）。
-- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）与屏幕波纹（FireBGSet／IconBGSet1）已记入轨迹并由重制画出（见「重制接线」），效果后镜头滑回与波纹层位是重制读法，逐条见边界（provisional）；声音排程已切到原生结果（[特效对象声音](original_effect_object_sounds.md) §4）。
+- 差异：种子变体代替共享随机流、±1 帧、缺帧循环是重制读法；镜头跟随（OtherBBall1）、屏幕波纹（FireBGSet／IconBGSet1）与全屏换色（WaterBGSet 蓝，FireBGSet／IconBGSet1 红）已由重制画出（见「重制接线」），效果后镜头滑回与波纹层位是重制读法，逐条见边界（provisional）；声音排程已切到原生结果（[特效对象声音](original_effect_object_sounds.md) §4）。
 
 ## 证据
 
@@ -93,6 +93,22 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 **波纹的开与关**（static-derived，`effProcIconBGSet` `0x41d68f..0x41d819`）：obj_Data5（change X mode）选参数——1（IconBGSet1）每 call `0x46164b(−1, 24＋[+0x9e], 4, 4, 幅)`、2（FireBGSet）`0x46164b(−1, 4＋[+0x9e], 4, 1, 幅)`，幅＝`+0x92` 自增前的值、分别封顶 4（`0x41d716`）／24（`0x41d6c4`）；相位参数是 `0x415dc0` 的 ebp＝−1，所以相位不重置、每 call 加帧相位步；`+0x9e` 在 `0x41d708` 写回原值，行相位步不变。创建那 call（`+0x8c`＝0，`0x41d77c`）若 `[0x4c1cc0]` 已非零就不接管；否则写 `[0x4c1cc0]`＝0x10000000（换色，obj_Data6）并在 obj_Data5 非零时再或 0x400000（波纹位，地图物件过程 `0x43d888` 据此给物件模式加 0x400000，由 `0x46170c` 按行表 `0x4bfcc4` 画）。每 call 末 `+0x7c`（obj_Shape_Delay 30000）减一，仍为正且 `[0x4c1b00] & 0x1000000`（魔法效果阶段，施法例程 `0x442a90` 置／清）才留下；否则 `0x41d761` 把 `[0x4c1cc0]`／`[0x4c1cc4]` 清零并自删——波纹与换色就在这里关。`0x46163a` 的三处调用（`0x43cd64`／`0x43d2c6`／`0x43d34f`）在地图物件过程里，是带自身波纹参数的物件自用，与法术效果无关。探针没有置 0x1000000，所以对象第二 call 就删、`ripple` 只记到第一 call。
 
+**换色的渐变、读者与合成**（static-derived）：
+
+| 地址 | 读法 |
+| --- | --- |
+| global.obs | 三个 BGSet 对象的 obj_Data5／obj_Data6：IconBGSet1（280，魔燒焚燼 effCode25）1／1，WaterBGSet（351，極零裂凍破 effCode11）0／2，FireBGSet（361，怒炎魔獄燋 effCode26）2／1；obj_Shape_Delay 都是 30000 |
+| `0x41d77c` 创建 call | `[0x4c1cc0]` 已非零 → 跳 `0x416bcc` 经 `0x45e3ed` 删除本对象，不接管；否则 obj_Data6（`+0xa0`）＝1 写目标 `+0xa1..+0xa3`＝ff,00,00（红），＝2 写 00,00,ff（蓝）；`[0x4c1cc0]`＝0x10000000、`[0x4c1cc4]`＝0，`mov dword [esi+0x94], 0` 把当前分量 `+0x95..+0x97` 清零；obj_Data5 非零再或 0x400000 |
+| `0x41d5ac..0x41d64c` 此后每 call | 仅 `+0xa0` 非零：每个分量 c＝min(c＋12, 目标) 写回，`[0x4c1cc4]`＝`(r & ~7) << 8 | (g & ~3) << 3 | b >> 3`（RGB565）；随后才是波纹（`0x41d651`）与 `+0x7c` 倒数；红从第 21 call 起到 5 位满格 31 |
+| 读者（`/x c01c4c00`、`/x c41c4c00`） | 只有三处：`0x42c65b` 关卡初始化清零；`0x4303cf..0x430406` 地图背景过程 `0x430370`（过程表第 1 格 `0x477c30`）——自身 `+0xac` 非零时把模式与颜色抄给自己，否则 `0x46bf6f(0x14, 0xf, 3, [0x4c1cc0], [0x4c1cc4])` 以 `0x46bf36` 逐块画 22×17 张地图块，经 `0x461479` 用绘制块 `0x4c099c`（模式 +0、颜色 +0x28）排进显示表，`0x46bf6f` 只有这一个调用点；`0x43d853..0x43d890` 站立物件过程 `0x43ccf0` 的尾部——模式不带 engADDCOLOR（0x4000000）且 `[esp+0x1c]`＝0（云 `0x43cede` 与隐形计时分支 `0x43d638` 置 1）的物件：模式＝(模式 & ~engMIX) | 0x10000000、`+0x28`＝颜色 |
+| 恢复 | 站立物件的模式每 tick 从 `+0xa0` 重取（`0x43ce4b..0x43ce67`），所以换色恰好持续到全局被清（engGLASS 物件恢复玻璃模式后 `+0x28` 里的换色颜色是否还被玻璃内核读到，未读）；单位（`0x443330` 等）与效果对象（`0x415dc0`，一律加法）不读这两个全局；engGLASS（0x40000000）物件变成 0x50000000 → 种类 0 普通复制；云由 `[esp+0x1c]`＝1 跳过尾段（`0x43cede`／`0x43d638`）；阴影在魔法效果阶段不画只读到部分分支（static-derived，推断） |
+| 合成 | `0x461479` 在 555 像素格式下把模式 0x50800000 各位的 `+0x28` 颜色转成 555；模式分派 `0x46b6c1`：`(模式 & 0x78000000) >> 27` 查字表 `0x46b691`＝[0,1,2,3,4,5,0,0,6,6,0,…]，0x10000000 → 种类 2；行内跳表 `0x46211c` 的种类 2 是 `0x46ac63`：**输出＝((形状像素 & 0xf7de)＋(颜色 & 0xf7de)) >> 1**——形状自身像素与颜色各半，覆盖屏幕原有像素（对照 engGLASS 种类 6 `0x4684b6` 是屏幕与颜色各半）|
+| 时序 | 地图与站立物件在 `0x45f5f7` 的过程遍历里读全局，平面都低于 planeEffect2，所以第 f 帧显示第 f−1 call 的颜色：创建帧不变，下一帧颜色 0（地图压暗一半），此后每帧 +12 |
+
+r2（`r2 -q -e scr.color=0 -c '…' hsl01.exe`）：`pd 120 @ 0x41d560; pd 110 @ 0x41d68f`（渐变与创建）；`/x c01c4c00; /x c41c4c00`（读者）；`pd 30 @ 0x4303b0; pd 40 @ 0x43d820; pd 10 @ 0x43ce4b`（地图与站立物件）；`pd 80 @ 0x46bf6f; pd 20 @ 0x46bf36; pd 60 @ 0x461479`（地图块提交）；`pxh 32 @ 0x46b691; pd 80 @ 0x46b6b0; pxw 64 @ 0x46211c; pd 130 @ 0x46ac63`（合成内核）；`pxw 64 @ 0x477c00`（过程表）。
+
+**受者滑镜到位的那一 call**（static-derived，`pd 12 @ 0x44300a; pd 45 @ 0x442d9a; pd 50 @ 0x43bf30; pd 6 @ 0x43bfed`）：`0x43bf30` 在走完最后一步的那次调用返回 1；旗带 0x80000000 且镜头正好在目标上时，返回 `[0x4c1b1c]` 非零（帧间为 1 是推断：只读到 `0x42d280` 清零与若干置 1 分支），即立即到位。Local 状态 0x19 在 `0x44301e` 调用 `0x43bf30(受者, 0x80000000)`，到位那次调用就在 `0x443087` 建效果——首受者的等待只计返回 0 的调用。Global 状态 9（`0x442da3`）的进入调用同时清魔法效果位（`0x442daf`）并在 `0x442dbd` 走滑镜第一步，到位那次调用跑 `0x43b3f0`（血条）——首受者的血条落在清相位 tick＋步数−1；之后的受者由状态 10 在去掉前一组血条（`0x43b4c0`）的那次调用切到 9／0x19，滑镜从下一次调用起，落在去血条 tick＋max(步数, 1)——镜头已在容差内时下一次调用即报到位，重制 `_lead` 照此取至少 1。
+
 复原状态（原先未复原的 13 个对象）：
 
 | 对象 | 程序 | 卡在 | 现状 |
@@ -129,6 +145,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - `game/battle/scene/EffectObjectMotion.gd` 读原生轨迹并给出某帧的精灵（成员、偏移、加法／减法／普通、层级透明度、缩放）；`SkillEffectScriptPlayer.compile_effect` 给有轨迹的对象标 `native`，同一对象重复插入时轮换种子变体，寿命 = 所选变体的轨迹帧数，合成形状按 `angle` 列旋转（`sprites_at` 的 `rotation`），`_draw_native` 在插入 tick 起逐帧画整棵树；effInsertRandomObject 改为 §2 的折叠偏移与累加延迟。
 - 镜头跟随：`SkillEffectScriptPlayer._effect_view` 在效果播放中逐帧取 `EffectObjectMotion.camera_at`（`camera` 行的镜头相对起点），把战场镜头放到效果开始时的位置＋该量（`clamped_position` 夹在地图内，同 `0x46bede`），效果精灵按镜头实际移动量反向平移（原版效果对象固定在地图上）；效果脚本走到 op 0（`script_end_tick`）即交回镜头、起步滑回效果前位置；OtherBBall1 只在 Global 法术里，此时接力的首受术者滑镜（原版状态 9 `0x442dbd` 的 `0x43bf30`）从当前镜头位置接替。
 - 屏幕波纹：同一函数取 `EffectObjectMotion.ripple_at`（首 call 参数＋上文外推），`ripple_rows` 照 `0x461687` 算 480 行位移表，`BattleCombatCutin.show_effect_ripple` 把一块读屏幕纹理的全屏 ColorRect 放在战场 World 最末（地图、物件、单位之后，界面之前）逐行横移；从对象第一 call 起到剪辑结束（效果阶段结束）关。
+- 全屏换色：同一函数取最早建立的 BGSet 对象的 `EffectObjectMotion.tint_at`（上表渐变与一帧滞后，返回 RGB565 分量），`BattleCombatCutin.show_effect_tint` 给地图底图 MapBackdrop、backdrop 层图片与没有自带材质的站立物件挂半混合材质（(像素＋颜色)/2，颜色去掉各分量最低位）；效果阶段结束（`spell_phase` 清，受者血条开始的前提）即还原，某帧没有请求也还原；波纹照旧。Local 首受者滑镜（`_first_receiver_glide`）按 `_unarrived_seconds` 计，Global 首受者的血条起点（`MagicImpactPresentation._lead` 的 `first_call`）扣掉进入调用。
 - `skill_effects` 导入同时收下轨迹画到的成员（新导入 53 张子对象帧；hsl.pak 没有的 11 个列入 `missing_members`，与原有缺帧一样按系列循环，provisional）。
 - 定向测试：`run_skill_effect_script_tests`（`native_motion_tracks`／`native_motion_drawing`／`effect_random_insertion`、改写的旧断言）、`run_support_magic_tests`（创建帧不画）、`run_battle_scene_runtime_tests._test_local_spell_layers`（風刃按原生存活区间取样）。消融：`tracked()` 恒假 → 2291 条失败；延迟改回独立随机 → 40 个种子的顺序断言失败；轨迹帧 +1 → "创建 tick 不画"失败。
 - `game/battle/scene/EffectObjectMotion.gd` layout：native execution of 0x415dc0／0x4010c0 and the effProc* jump table 0x4231b0: positions, members, draw modes, levels, zooms; frame model of 0x45f5f7 — docs/evidence_packets/static_reverse/original_effect_motion.md
@@ -143,7 +160,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 - **随机样本**：每个根对象至多 4 个种子变体，重复插入轮换；原版所有实例共用一条 RNG 流，变体只是分布里的样本。
 - **镜头跟随与屏幕波纹**：效果后镜头在 op 0 交回，Global 首受术者滑镜随即接替、与原版相同；滑回效果前位置只在无人接替时可见，是重制替代；波纹只加在地图与单位层（原版按物件模式 0x400000 逐个画，效果对象自己是否带该位未读）；超过探针第一 call 的参数按上文读法外推。
-- **换色**：effProcIconBGSet 的 obj_Data6（change color mode）写 `[0x4c1cc0]` 0x10000000 与颜色 `[0x4c1cc4]`（`+0xa1..0xa3` 渐变），重制未画。
+- **换色**：已画（上文读法）。重制替代：只挂在无自带材质的站立物件上——原版 engGLASS 物件此时按普通复制画、重制仍按玻璃画，加法与动画物件两边都不染；同层的宝箱（`0x415730`）与第 12 关船壳（敌人过程 `0x443330`）不读全局、重制按 process_code 只染 defProcStandObject；清相位那 tick 原版地图可能先于清位读全局、多染若干帧（取决于跑 `0x442a90` 的对象与地图的 plane 先后，未读实，provisional），重制当 tick 还原；形状像素去最低位（& 0xf7de）未模拟；Godot 混合不是 RGB565 逐位运算。
 - **合成形状的画法**：重制把合成槽画成源 SHP 加 Sprite 旋转（先缩放后旋转）；原版先转位图再缩放，只在非等比缩放时有差，旋转取样的像素误差不证明。
 - **特效原点**：已读（[地图普攻与受击包 §1](original_map_strike.md#1-结论)）：eff_proc_Local 取目标对象 `(+4, +8)`（`0x443087`），即目标格中心、无 y 偏移；eff_proc_Global 取光标格中心（`0x442d81`）。录屏"高约 14 px"量的是脚下，换算到锚点约 2 px。
 - **±1 帧**：真实平面链顺序与探针不同时，子对象首帧可能早／晚一帧；有插入延迟的对象在原版里首个可见帧比根对象早一帧（创建帧的跳画位在等待期间已清）。

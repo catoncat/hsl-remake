@@ -171,7 +171,7 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 			cutin.spell_phase_held = true
 			_holding = true
 	if global and not entries.is_empty() and not _await_clear:
-		_lead(entries[0], 0)
+		_lead(entries[0], 0, true)
 	elapsed = 0.0
 	_process(0.0)
 
@@ -179,12 +179,22 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 ## A receiver's lead — the first Global one's on state 9's entry (the clear), a later one's on the
 ## tick the previous bars went (0x43b4c0 → 0x4104d0(1)): the 0x43bf30 glide to it at the battle
 ## step (none when already within its tolerance), then (a later Local one) the effect replay;
-## its bars start when the glide lands, or at the replay's script end (op 0).
-func _lead(entry: Dictionary, at: int) -> void:
+## its bars start when the glide lands, or at the replay's script end (op 0). The call 0x43bf30
+## reports arrival runs 0x43b3f0 (bars) or 0x443087 (replay) in that same call. State 9's entry
+## call is the clear (0x442daf) and already the glide's first call (0x442dbd), so the first
+## Global receiver's lands `at` + steps − 1 (`first_call`); a later receiver's state is switched
+## in the call that removed the previous bars and its glide starts the call after, landing at
+## `at` + steps — at least `at` + 1, since a camera already within tolerance reports arrival on
+## that next call.
+func _lead(entry: Dictionary, at: int, first_call := false) -> void:
 	var controller = _camera()
 	var glide := 0
 	if controller != null:
 		glide = ceili(OriginalTick.ticks(controller.scroll_to(BattleCameraController.focus_centre(controller.grid_cell_center_world(entry["coord"])), BattleCameraController.BATTLE_SCROLL_STEP)))
+		if first_call:
+			glide = maxi(glide - 1, 0)
+		else:
+			glide = maxi(glide, 1)
 	entry["glide_end"] = at + glide
 	var replay := 0
 	if not _replay.is_empty():
@@ -273,7 +283,7 @@ func _process(delta: float) -> void:
 	var tick := int(OriginalTick.ticks(elapsed))
 	if _await_clear and not cutin.spell_phase:
 		_await_clear = false
-		_lead(entries[0], tick)
+		_lead(entries[0], tick, true)
 	for index in range(1, entries.size()):
 		var previous: int = entries[index - 1]["end"]
 		if int(entries[index]["start"]) < 0 and previous >= 0 and tick >= previous:
