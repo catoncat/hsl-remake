@@ -19,10 +19,12 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## effInsertRandomObject placement and accumulating delays follow the interpreter 0x423873.
 ## A special object (defProcObjectMove) plays its objcomd.txt program's native track
 ## (ObjcomdMotion, objcomd_motion.json) the same way, displaced from its insertion point.
+## The ANIMAL random, distance and round inserts place and time their objects as the
+## interpreter 0x4038a0 does (spawners 0x401390／0x401480／0x401560, 0x403ddb).
 ## The tick clock (60/s), the other object lifetimes (shape_number × (shape_delay + 1) ticks;
 ## untracked effect objects at least EFFECT_MIN_LIFETIME_TICKS then an EFFECT_FADE_TICKS alpha
 ## tail), flights of the special objects without a track inserted outside the 640×320 stage towards
-## the target centre, the ANIMAL random／angle／round／tornado geometry and the magic impact mark (the
+## the target centre, the ANIMAL angle／tornado geometry and the magic impact mark (the
 ## script's last insertion or sound cue) are provisional remake readings recorded in
 ## skill_effects/manifest.json (`policy`, `replacement_evidence`); the effProc* programs listed
 ## unrestored are not restored; an object's own sounds are — a
@@ -30,6 +32,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ## provenance:
 ##   layout: static-derived content/generated/hsl/skills/effect_motion.json
 ##   layout: static-derived content/generated/hsl/skills/objcomd_motion.json
+##   layout: static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md
 ##   layout: resource-derived content/imported/hsl/shared/skill_effects/manifest.json
 ##   layout: resource-derived content/imported/hsl/global/tables/ANIMAL.H
 ##   layout: resource-derived content/imported/hsl/global/tables/effects.h
@@ -37,7 +40,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#施法引导的合成
 ##   layout: provisional
-##     (ANIMAL random／angle／round／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
+##     (ANIMAL angle／tornado geometry, off-stage flights, static hold of the objects effect_motion.json
 ##     lists unrestored, eff_proc_Global at screen centre — manifest policy)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   strings: resource-derived content/generated/hsl/skills/special_effect_scripts.json
@@ -50,6 +53,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md
 ##   timing: provisional
 ##     (lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue;
 ##     EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored)
@@ -286,15 +290,26 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 			_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor)
 		"aniInsertRandomObject", "aniInsertHitRandomObject":
 			if hit or op == "aniInsertRandomObject":
-				_insert_spawner(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor)
+				_insert_spawner(timeline, data, rng, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), Vector2i(number(args[3]), number(args[4])), 0, number(args[5]), false, number(args[6]), cursor)
 		"aniInsertHitRandomObjectDisp":
 			if hit:
-				_insert_spawner(timeline, data, rng, phase, args, TARGET_CENTRE + Vector2(number(args[1]), number(args[2])), cursor)
-		"aniInsertRandomObjectDelay":
-			_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), false, number(args[7]))
-		"aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
-			if hit or op == "aniInsertRandomObjectFixDelay":
-				_insert_random(timeline, data, rng, phase, args, Vector2(number(args[1]), number(args[2])), cursor, number(args[5]), number(args[6]), true, number(args[7]))
+				# 0x403be2: the base is the defender object's own x／y — the neutral shot anchor
+				# here, moved onto the defender's drawn point at this tick by _place_on_defender.
+				var base: Vector2 = CutinLayout.SHOT_ANCHOR + timeline["xy_disp"]
+				var first: int = timeline["events"].size()
+				_insert_spawner(timeline, data, rng, phase, str(args[0]), base + Vector2(number(args[1]), number(args[2])), Vector2i(number(args[3]), number(args[4])), 0, number(args[5]), false, number(args[6]), cursor)
+				for index in range(first, timeline["events"].size()):
+					if timeline["events"][index]["kind"] == "object":
+						timeline["events"][index]["defender_base"] = base
+						timeline["events"][index]["defender_tick"] = cursor
+		"aniInsertRandomObjectDelay", "aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
+			if hit or op != "aniInsertHitRandomObjectFixDelay":
+				_insert_spawner(timeline, data, rng, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), Vector2i(number(args[3]), number(args[4])), number(args[5]), number(args[6]), op != "aniInsertRandomObjectDelay", number(args[7]), cursor)
+		"aniInsertRoundRandomObject":
+			_insert_round(timeline, data, phase, args, cursor)
+			# 0x403e90 stores the pointer and leaves the interpreter (0x404ba6): the next
+			# instruction runs on the next tick.
+			cursor += 1
 		"aniInsertSpecialBG":
 			timeline[phase + "_background"] = str(args[0])
 		"aniProcessHitMiss":
@@ -405,13 +420,16 @@ static func strike_word_hit(timeline: Dictionary, tick: int) -> bool:
 	return bool(hits[index]) if index >= 0 else bool(timeline["hit"])
 
 
-## The patterned multi-object inserts (line, ring, oval, tornado); false for any other op.
+## The patterned multi-object inserts (line, ring, tornado); false for any other op.
+## aniInsertDistanceObjectFixDelay [code][x][y][x disp][y disp][base delay][delay][number]
+## (op 25 → 0x403ad7 → 0x401560): object k at the point + k × disp, created at once with
+## insertion delay base + k × delay (_insert_delay); no random draw.
 static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: String, op: String, args: Array, cursor: int) -> bool:
 	match op:
 		"aniInsertDistanceObjectFixDelay":
 			var step := Vector2(number(args[3]), number(args[4]))
 			for index in range(number(args[7])):
-				_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + step * index, cursor + number(args[5]) + number(args[6]) * index)
+				_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + step * index, cursor + _insert_delay(number(args[5]) + number(args[6]) * index), cursor)
 		"aniInsertAngleObject", "aniInsertAngleObjectMakeShape":
 			var count := number(args[3])
 			for index in range(count):
@@ -425,13 +443,6 @@ static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: Strin
 					event["fixed_frame"] = index
 				else:
 					event["rotation"] = angle
-		"aniInsertRoundRandomObject":
-			var radius := fixed16(args[3])
-			var radii := Vector2(radius / float(1 << number(args[4])), radius / float(1 << number(args[5])))
-			var count := number(args[8])
-			for index in range(count):
-				var angle := TAU * (number(args[7]) / 256.0 + index / float(maxi(count, 1)))
-				_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + Vector2(cos(angle) * radii.x, sin(angle) * radii.y), cursor + number(args[6]) * index)
 		"aniInsertTornadoObject":
 			for index in range(number(args[10])):
 				var centre := Vector2(number(args[1]), number(args[2]) + number(args[3]) * index)
@@ -638,30 +649,64 @@ static func _fold(rng: RandomNumberGenerator, span: int) -> int:
 	return half - value if value > half else value
 
 
-## aniInsertRandomObject／aniInsertHitRandomObject／aniInsertHitRandomObjectDisp [code][x][y]
-## [x range][y range][delay][number] as the ANIMAL interpreter runs them (ops 19／27／28 →
-## 0x403c2b → spawner 0x401390 with base delay 0): each object at the point plus rand(range)
-## folded into (−range/2, range/2] (x then y), the first at once and every next one
-## rand(delay) + 1 ticks after the previous (+0xae accumulates, 0x401455) — 月花圓舞's 64 petals
-## fall over about 220 ticks, not in one burst. The draws come from the clip's presentation RNG.
-static func _insert_spawner(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int) -> void:
+## The ANIMAL random inserts as the interpreter runs them, all creating their objects at once
+## with an insertion delay (+0xae): aniInsertRandomObject／aniInsertHitRandomObject／
+## aniInsertHitRandomObjectDisp [code][x][y][x range][y range][delay][number] (ops 19／27／28 →
+## 0x403c2b → spawner 0x401390, base delay 0), aniInsertRandomObjectDelay [code][x][y]
+## [x range][y range][base delay][delay][number] (op 23, 0x403b25 → 0x401390) and
+## aniInsertRandomObjectFixDelay／aniInsertHitRandomObjectFixDelay with the same words (ops
+## 24／29, 0x403b73／0x403c3b → 0x401480; 29 and 27／28 only on a hit, [0x4c1418] < +0xa6, no
+## draw on a miss). Each object at the point plus rand(range) folded into (−range/2, range/2]
+## (x then y); the first gets the base delay, every next one rand(delay) + 1 more (0x401455;
+## 3 draws an object) or, for 0x401480, a fixed `delay` more (2 draws an object); each starts
+## as _insert_delay reads its delay. 月花圓舞's 64 petals fall over about 220 ticks, not in one
+## burst. The draws come from the clip's presentation RNG.
+static func _insert_spawner(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, code: String, centre: Vector2, span: Vector2i, base_delay: int, delay: int, fixed_step: bool, count: int, cursor: int) -> void:
 	var first: int = timeline["events"].size()
-	var wait := 0
-	for _index in range(number(args[6])):
-		var offset := Vector2(_fold(rng, number(args[3])), _fold(rng, number(args[4])))
-		_insert(timeline, data, phase, str(args[0]), centre + offset, cursor + wait, cursor)
-		wait += _rand(rng, number(args[5])) + 1
+	var wait := base_delay
+	for _index in range(count):
+		var offset := Vector2(_fold(rng, span.x), _fold(rng, span.y))
+		_insert(timeline, data, phase, code, centre + offset, cursor + _insert_delay(wait), cursor)
+		wait += delay if fixed_step else _rand(rng, delay) + 1
 	_mark_random(timeline, first)
 
 
-static func _insert_random(timeline: Dictionary, data: Dictionary, rng: RandomNumberGenerator, phase: String, args: Array, centre: Vector2, cursor: int, base_delay: int, delay: int, fixed_delay: bool, count: int) -> void:
-	var first: int = timeline["events"].size()
-	var spread := Vector2(number(args[3]), number(args[4]))
+## aniInsertRoundRandomObject [code][x][y][radius][x shr][y shr][delay][start angle][number]
+## (op 26, 0x403ddb; no random draw despite the name): number objects (0 counts as 1) round
+## the point, the angle (16.16, 256 a turn) from the start angle in steps of 0x1000000 ／
+## number; 0x45ea2b takes each offset as trunc(|cos／sin table| × radius ／ 2^32) with the
+## table's sign (radius 16.16), then shifts it right by x shr／y shr (arithmetic). Object k
+## is created at once with insertion delay k × delay (_insert_delay).
+static func _insert_round(timeline: Dictionary, data: Dictionary, phase: String, args: Array, cursor: int) -> void:
+	var count := number(args[8])
+	if count == 0:
+		count = 1
+	var radius := number(args[3])
+	var step: int = 0x1000000 / count
+	var angle := number(args[7]) << 16
+	var shifts := Vector2i(number(args[4]) & 31, number(args[5]) & 31)
 	for index in range(count):
-		var offset := Vector2(rng.randf_range(-spread.x / 2.0, spread.x / 2.0), rng.randf_range(-spread.y / 2.0, spread.y / 2.0)).round()
-		var wait := base_delay + (delay * index if fixed_delay else rng.randi_range(0, maxi(delay, 0)))
-		_insert(timeline, data, phase, str(args[0]), centre + offset, cursor + wait, cursor)
-	_mark_random(timeline, first)
+		var turn := TAU * float((angle >> 16) & 0xff) / 256.0
+		var offset := Vector2i(_polar(roundi(65536.0 * cos(turn)), radius), _polar(roundi(65536.0 * sin(turn)), radius))
+		offset = Vector2i(offset.x >> shifts.x, offset.y >> shifts.y)
+		_insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])) + Vector2(offset), cursor + _insert_delay(number(args[6]) * index), cursor)
+		angle += step
+
+
+## The tick after its creation an object inserted with delay `delay` (+0xae) starts its
+## program: defProcObjectMove's first call (0x405294..0x4052a2) decrements +0xae before
+## testing it against 0, so delays 0 and 1 both run on the creation call and d ≥ 1 runs d − 1
+## ticks later. A program opening with objmRandomDelay adds its draw to +0xae first
+## (0x40525b..0x405287); its native track already holds that wait, not merged here (no object
+## the ANIMAL inserts place opens so).
+static func _insert_delay(delay: int) -> int:
+	return maxi(delay - 1, 0)
+
+
+## 0x45ea2b's product: |table| × radius >> 16 >> 16, negated for a negative table entry.
+static func _polar(entry: int, radius: int) -> int:
+	var magnitude := ((absi(entry) * radius) >> 16) >> 16
+	return -magnitude if entry < 0 else magnitude
 
 
 ## Tags the events a random insert (0x401390) appended from `first` on: which of them the
@@ -854,15 +899,12 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 		var hurt: bool = hit and bool(clip["impact_emitted"])
 		var hurt_frame: int = int(host.manifest["actors"].get(clip["defender"], {}).get("hurt_frame", 0))
 		_stand(host, host.defender_sprite, clip["defender"], hurt_frame if hurt else 0, clip["defender_unit"])
-		host.defender_sprite.position = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
-		# The same defender object 0x4038a0: knock-back on a hit, dodge slide on a miss, from the roll.
-		var defender_row: Dictionary = host.manifest.get("actors", {}).get(clip["defender"], {})
-		if clip["impact_emitted"] and not defender_row.is_empty():
-			host.defender_sprite.position.x += CutinLayout.reaction_x(defender_row, hit, script_tick - float(timeline["impact_tick"]), CutinLayout.side_swapped(clip["defender_unit"]))
+		host.defender_sprite.position = _defender_point(host, clip, script_tick)
 		host.defender_sprite.modulate = Color.WHITE
 		if double_page and _stand(host, host.attacker_sprite, clip["attacker"], 0, clip["attacker_unit"]):
 			host.attacker_sprite.position = Vector2(160, CutinLayout.SHOT_ANCHOR.y)
 			host.attacker_sprite.show()
+	_place_on_defender(host, clip)
 	draw(clip, script_tick / TICKS_PER_SECOND, [Vector2.ZERO])
 	var shown := script_tick >= float(timeline["result_tick"])
 	host.result.visible = shown
@@ -872,6 +914,32 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	if script_tick >= float(timeline["darken_tick"]):
 		host._show_closing_darken(script_tick - float(timeline["darken_tick"]))
 	return false
+
+
+## The defender object 0x4038a0's drawn point at script tick `tick`: its shot anchor (x 480
+## from aniDoublePageMode) plus aniSetXYDisp, knock-back on a hit and the dodge slide on a
+## miss from the impact on.
+func _defender_point(host: CanvasLayer, clip: Dictionary, tick: float) -> Vector2:
+	var timeline: Dictionary = clip["effect_timeline"]
+	var double_page := int(timeline["double_page_tick"]) >= 0 and tick >= float(timeline["double_page_tick"])
+	var point: Vector2 = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
+	var row: Dictionary = host.manifest.get("actors", {}).get(clip["defender"], {})
+	if tick >= float(timeline["impact_tick"]) and not row.is_empty():
+		point.x += CutinLayout.reaction_x(row, bool(clip["strike"]["hit"]), tick - float(timeline["impact_tick"]), CutinLayout.side_swapped(clip["defender_unit"]))
+	return point
+
+
+## aniInsertHitRandomObjectDisp (0x403be2) reads the defender object's own x／y when it runs:
+## its objects move from the neutral anchor they were compiled at onto the defender's drawn
+## point at the insert tick, once per clip.
+func _place_on_defender(host: CanvasLayer, clip: Dictionary) -> void:
+	if clip.get("defender_placed", false):
+		return
+	clip["defender_placed"] = true
+	for event in clip["effect_timeline"]["events"]:
+		if event.has("defender_base"):
+			event["position"] += _defender_point(host, clip, float(event["defender_tick"])) - (event["defender_base"] as Vector2)
+			event.erase("defender_base")
 
 
 ## The numbers of a special shot, timed from its first result mark. A multi-hit receipt's

@@ -452,14 +452,14 @@ func geometry_and_flags() -> void:
 	check(flowers["no_dark_bg"] and flowers["double_page_tick"] == 30 + 26, "aniNoSpecialDarkBG and the double page after the empty attack lead + 26")
 	var stars: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5)  # 星辰落牙破
 	# 0x45f5f7 runs the defender (plane 46) before the stars (plane 47): an op 72 on tick t counts at t + 1.
-	check(stars["hit_ticks"] == [106, 117, 129, 141, 154, 166] and stars["impact_tick"] == 106, "aniProcessHitMissMulti settles one strike per recorded objmSetMultiHitData of the obj_Special24_02 stars, a tick after the op: %s" % [stars["hit_ticks"]])
+	check(stars["hit_ticks"] == [105, 116, 128, 140, 152, 164] and stars["impact_tick"] == 105, "aniProcessHitMissMulti settles one strike per recorded objmSetMultiHitData of the obj_Special24_02 stars, a tick after the op: %s" % [stars["hit_ticks"]])
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
 	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
-	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 166 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 160 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
+	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 164 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 160 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
 	# The last strike's number holds the defender (0x40478d with the defender as waiter, bumped at
-	# release 0x4088fa): a 12 spawns at 167, releases 27 + 20 ticks later, the check comes 2 after.
+	# release 0x4088fa): a 12 spawns at 165, releases 27 + 20 ticks later, the check comes 2 after.
 	var held: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5, [], {"damage": 12, "experience": 3})
-	check(held["complete_tick"] == 166 + 1 + 47 + 2 + 160 + 16, "the last strike's red number holds the wait until it releases the defender: %d" % held["complete_tick"])
+	check(held["complete_tick"] == 164 + 1 + 47 + 2 + 160 + 16, "the last strike's red number holds the wait until it releases the defender: %d" % held["complete_tick"])
 	var split: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5, [true, false, true, false, false, true])
 	var star_runs: Array = split["events"].filter(func(event): return event.has("strike_tick"))
 	star_runs.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]))
