@@ -3,25 +3,25 @@
   "updated": "2026-09-29",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 86,
-    "sources": 476,
+    "items": 87,
+    "sources": 477,
     "sources_by_kind": {
       "provenance": 193,
       "sentence": 86,
-      "scope": 99,
+      "scope": 100,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 48,
+    "layout_timing_modules": 49,
     "items_by_original_status": {
       "read_complete": 29,
-      "read_partial": 39,
+      "read_partial": 40,
       "unread": 1,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 16,
-      "some_levels": 30,
+      "some_levels": 31,
       "rare": 36,
       "invisible": 4
     },
@@ -30,7 +30,7 @@
       "光标与字体": 3,
       "剧情走位": 4,
       "原版调度与随机流": 3,
-      "地图与物件": 7,
+      "地图与物件": 8,
       "地图人物演出": 6,
       "城镇与大地图": 6,
       "存档与流程": 1,
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 57,
+    "no_visible_effect_sources": 58,
     "resolved_sources": 20
   },
   "top": [
@@ -800,7 +800,7 @@
         "provenance:game/battle/runtime/ActorRuntime.gd|layout|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_draw_order.md|provisional|站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶",
         "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#0ad5773b45",
-        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a"
+        "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#de927b7b5f"
       ]
     },
     {
@@ -1156,15 +1156,17 @@
     },
     {
       "id": "story-effect-objects",
-      "difference": "雨的发射密度、落带与落点帧节拍是读法；绳子 engRANGE 按插入线裁切是读法；闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
-      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 过程与 engRANGE 绘制未读",
+      "difference": "绳子 engRANGE 按插入线裁切是读法；雨（降雨BOSS 计时与雨滴的密度、落带、落速、角度、寿命、淡入淡出、落下中的深度）与闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
+      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 0x43d578 与 defProcDropRain 0x43c4a0 已读；engRANGE 绘制未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
+        "docs/evidence_packets/static_reverse/original_story_rain.md",
         "docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md"
       ],
-      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；雨发射器仍是读法",
+      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；StoryRainEmitter 逐 tick 走降雨BOSS 与雨滴；繩子按插入线裁切",
       "remake_code": [
-        "game/battle/runtime/StoryEffectObjects.gd"
+        "game/battle/runtime/StoryEffectObjects.gd",
+        "game/battle/runtime/StoryRainEmitter.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1172,10 +1174,28 @@
       "category": "地图与物件",
       "sources": [
         "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|provisional|",
-        "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
-        "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_level37_tokens.md|provisional|宝石无 AI 时原地等待、复制字段语义与白光合成公式",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d9253008aa"
+      ]
+    },
+    {
+      "id": "story-rain-water-wave",
+      "difference": "雨滴落在水上时原版在落点生 obj_Water_Wave1／2 两个水波对象，重制不生不画；另有三处雨的读法未定：落下中恒桶 5 来自栈残值推导未实测，淡出中的雨滴与其后首颗下落雨滴的深度槽取前一对象残值（未读，重制按桶 5），400 对象上限重制只数本发射器雨滴；雨用自有随机状态（种子 10）而非原版全局流，是为不挪动 PlayLoop global_rng 的有意偏离",
+      "original": "落地那 tick 0x43dec0 测落点地形字 & 0x8000，水上 0x45e307 生模板 698／699，深度抄雨滴；水波对象自己的过程与画法未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_story_rain.md"
+      ],
+      "remake": "StoryRainEmitter 不查落点地形；两模板没有任何关卡导入",
+      "remake_code": [
+        "game/battle/runtime/StoryRainEmitter.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "M",
+      "category": "地图与物件",
+      "sources": [
+        "provenance:game/battle/runtime/StoryRainEmitter.gd|layout|provisional|",
+        "scope:docs/evidence_packets/static_reverse/original_story_rain.md|provisional|落水水波模板 698／699 未导入不画、400 对象上限只数雨滴、每 tick 第一滴的陈旧栈字取自前一滴"
       ]
     },
     {
@@ -2355,6 +2375,10 @@
       {
         "source": "matrix:逐单位击杀金钱覆盖（EVEF 实例字 0）",
         "reason": "覆盖值只在 53 关且同值，玩家不可见"
+      },
+      {
+        "source": "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
+        "reason": "回退闪光只给没有原生 objcomd 轨迹的新关卡数据对象；现有各关 defProcObjectMove 对象都有原生轨迹，不走回退"
       },
       {
         "source": "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|",

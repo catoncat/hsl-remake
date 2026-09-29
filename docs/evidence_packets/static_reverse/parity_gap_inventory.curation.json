@@ -654,15 +654,33 @@
     },
     {
       "id": "story-effect-objects",
-      "difference": "雨的发射密度、落带与落点帧节拍是读法；绳子 engRANGE 按插入线裁切是读法；闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
-      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 过程与 engRANGE 绘制未读",
+      "difference": "绳子 engRANGE 按插入线裁切是读法；雨（降雨BOSS 计时与雨滴的密度、落带、落速、角度、寿命、淡入淡出、落下中的深度）与闪电／光环／白光圈等 defProcObjectMove 剧情对象已照原版程序逐 tick 画",
+      "original": "defProcObjectMove 剧情对象 19 个已原指令执行（程序 5／7／13／21／62／149／150／151）；mapobjDropRain 0x43d578 与 defProcDropRain 0x43c4a0 已读；engRANGE 绘制未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
+        "docs/evidence_packets/static_reverse/original_story_rain.md",
         "docs/evidence_packets/runtime_observations/story_scene_010_preview/README.md"
       ],
-      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；雨发射器仍是读法",
+      "remake": "StoryEffectObjects 按 objcomd_motion 轨迹画剧情对象；StoryRainEmitter 逐 tick 走降雨BOSS 与雨滴；繩子按插入线裁切",
       "remake_code": [
-        "game/battle/runtime/StoryEffectObjects.gd"
+        "game/battle/runtime/StoryEffectObjects.gd",
+        "game/battle/runtime/StoryRainEmitter.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "M",
+      "category": "地图与物件"
+    },
+    {
+      "id": "story-rain-water-wave",
+      "difference": "雨滴落在水上时原版在落点生 obj_Water_Wave1／2 两个水波对象，重制不生不画；另有三处雨的读法未定：落下中恒桶 5 来自栈残值推导未实测，淡出中的雨滴与其后首颗下落雨滴的深度槽取前一对象残值（未读，重制按桶 5），400 对象上限重制只数本发射器雨滴；雨用自有随机状态（种子 10）而非原版全局流，是为不挪动 PlayLoop global_rng 的有意偏离",
+      "original": "落地那 tick 0x43dec0 测落点地形字 & 0x8000，水上 0x45e307 生模板 698／699，深度抄雨滴；水波对象自己的过程与画法未读",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_story_rain.md"
+      ],
+      "remake": "StoryRainEmitter 不查落点地形；两模板没有任何关卡导入",
+      "remake_code": [
+        "game/battle/runtime/StoryRainEmitter.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
@@ -1956,12 +1974,9 @@
       "item": "loot-panel"
     },
     "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|": {
-      "item": "story-effect-objects"
+      "no_visible_effect": "回退闪光只给没有原生 objcomd 轨迹的新关卡数据对象；现有各关 defProcObjectMove 对象都有原生轨迹，不走回退"
     },
     "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|provisional|": {
-      "item": "story-effect-objects"
-    },
-    "provenance:game/battle/runtime/StoryEffectObjects.gd|timing|provisional|": {
       "item": "story-effect-objects"
     },
     "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|": {
@@ -2611,10 +2626,6 @@
       "item": "draw-depth-states",
       "text": "`0x43db60`（`[0x4c1b2c]` 非 0 时对脚印内单位）与字节 +0x34 未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#bd9b3b702a": {
-      "item": "draw-depth-states",
-      "text": "defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_effect_object_sounds.md#37f0c15aa3": {
       "item": "effect-sound-timing",
       "text": "相 1 倒数（起值来自相 0 的局部量，未读清，按 1）→ `0x415d90`；"
@@ -3243,6 +3254,16 @@
     "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#560156ba1f": {
       "item": "effect-origin",
       "text": "`0x43bf30` 第二参数 Local 为 0x80000000、Global 为 0，含义未读；"
+    },
+    "provenance:game/battle/runtime/StoryRainEmitter.gd|layout|provisional|": {
+      "item": "story-rain-water-wave"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_story_rain.md|provisional|落水水波模板 698／699 未导入不画、400 对象上限只数雨滴、每 tick 第一滴的陈旧栈字取自前一滴": {
+      "item": "story-rain-water-wave"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#de927b7b5f": {
+      "item": "draw-depth-states",
+      "text": "defProcEffectProcess1／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
     }
   }
 }

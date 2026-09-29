@@ -100,7 +100,7 @@
 ## 边界
 
 - 站立物件的行桶用世界行、不按视口夹紧（provisional）：锚点在视口上方或下方 19 行以外的物件，原版夹到桶 4／23，重制保持世界行；只影响锚点在视口外而图像伸进视口的高物件。
-- defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；重制对它们维持原有 z（效果类多为 EFFECT_Z）。
+- defProcEffectProcess1／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；重制对它们维持原有 z（效果类多为 EFFECT_Z）。defProcDropRain 每 tick 写 `max(0x4300f0(槽), 5)`，见 [original_story_rain.md](original_story_rain.md)。
 - 飞行单位封顶 22：重制在切入（特写）与魔法效果阶段封顶；状态窗、仓库窗期间的封顶未建模（重制窗口是全屏覆盖层）；特写脚印：普攻取目标格（provisional），法术取效果格（`0x410670` 读 `0x4100e0` 选目标时写的 `*0x4c1b4c`，与效果阶段同一份），绝技仍按守方。
 - 效果阶段：子状态 5 那 call 置位（原版子状态 5 交回后状态 4／7／0x17／0x19 置位），照原版。Global 在效果脚本走到 op 0 时清（状态 9 入口，先于滑镜与出条），Local 每个受术者的条等其效果脚本走到 op 0 才出、最后一人撤条后清，照原版（见 [original_cast_overlays.md](original_cast_overlays.md) 边界）。
 - 单位记录 +0x2c 非 0（大体型）时原版按 3×3 查脚印，重制只查单位所在格；`0x43db60`（`[0x4c1b2c]` 非 0 时对脚印内单位）与字节 +0x34 未读。

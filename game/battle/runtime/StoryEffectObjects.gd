@@ -7,7 +7,7 @@ extends RefCounted
 ## root and free themselves; the coordinator keeps the records (story_records).
 ##
 ## Readings (data-driven from the story_objects spec):
-##   obj_Data9 mapobjDropRain      -> RainEmitter (drops = the obj_Data4 object's frames)
+##   obj_Data9 mapobjDropRain      -> StoryRainEmitter (0x43d578 timer, 0x43c4a0 drops of the obj_Data4 object)
 ##   obj_Data9 mapobjPlayBGSound   -> looping background WAV named by obj_Data2
 ##   obj_Data9 mapobjNextShape     -> looping frame run (火01), additive when engADDCOLOR
 ##   defProcEffectProcess1 + frames -> one-shot frame run then free (obj_Effect_FireBomb)
@@ -22,13 +22,11 @@ extends RefCounted
 ##   layout: resource-derived content/imported/hsl/chapter01/map_objects.json
 ##   layout: static-derived content/generated/hsl/skills/objcomd_motion.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md
-##   layout: remake-invented (rain emitter; flash／glow fallback for defProcObjectMove objects without a native track)
+##   layout: remake-invented (flash／glow fallback for defProcObjectMove objects without a native track)
 ##   layout: provisional
 ##     (engRANGE blit read as a clip at the insert line — the blit is unread)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: static-derived content/generated/hsl/skills/objcomd_motion.json
-##   timing: provisional
-##     (rain drop frame cadence and spawn band — the mapobjDropRain process is unread)
 ##   audio: resource-derived content/imported/hsl/chapter01/scripts
 ##   audio: static-derived docs/evidence_packets/static_reverse/first_battle_audio.md
 ##     (mapobjPlayBGSound loop at full volume, 0 dB)
@@ -38,6 +36,7 @@ const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const StoryRainEmitter = preload("res://game/battle/runtime/StoryRainEmitter.gd")
 ## Object ticks (shape_delay, obj_Data7, 16.16 velocities) are original ticks.
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const TICK_SECONDS := OriginalTick.TICK_SECONDS
@@ -47,6 +46,8 @@ const EFFECT_Z := 4000
 const FIXED_POINT_ONE := 65536.0
 
 var _counts: Dictionary = {}
+## One random state for every rain boss of the scene (the original's bosses share one stream).
+var _rain_stream: Dictionary = StoryRainEmitter.new_stream()
 
 
 static func effect_kind(spec: Dictionary, symbol: String = "", level: int = 0) -> String:
@@ -137,13 +138,16 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 			if drop_spec.is_empty():
 				record["status"] = "rain_object_unbound"
 			else:
-				var emitter := RainEmitter.new()
+				var emitter := StoryRainEmitter.new()
 				emitter.name = "StoryEffect_%s_%d" % [symbol, index]
-				emitter.configure(runtime.camera, drop_spec, str(fields.get("obj_Data3", "")))
-				emitter.z_index = EFFECT_Z
+				emitter.configure(drop_spec, str(fields.get("obj_Data3", "")), _rain_stream)
+				emitter.camera_top_left = func() -> Vector2: return _view_top_left(runtime)
+				var stage = runtime.get("stage")
+				if stage != null and stage.has_method("_close_up_hidden"):
+					emitter.close_up_hidden = Callable(stage, "_close_up_hidden")
 				runtime.world_root.add_child(emitter)
 				record["drop_symbol"] = str(fields.get("obj_Data4", ""))
-				record["drops_per_tick"] = emitter.drops_per_tick
+				record["spawn_interval_ticks"] = [emitter.interval_low, emitter.interval_high]
 		"background_sound":
 			record["resource"] = str(fields.get("obj_Data2", ""))
 			record["status"] = _start_background_sound(coordinator, str(fields.get("obj_Data2", "")), symbol, index)
@@ -184,6 +188,15 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 		_:
 			record["status"] = "no_effect_reading"
 	return record
+
+
+## The camera's top-left in map pixels ([0x4c091c]／[0x4c0920]).
+static func _view_top_left(runtime: Node) -> Vector2:
+	var controller = runtime.get("camera_controller")
+	if controller != null:
+		return controller.logical_to_world(Vector2.ZERO)
+	var camera: Camera2D = runtime.get("camera")
+	return camera.position - Vector2(StoryRainEmitter.VIEW_CENTRE) if camera != null else Vector2.ZERO
 
 
 func _start_background_sound(coordinator: Node, resource_token: String, symbol: String, index: int) -> String:
@@ -328,77 +341,3 @@ class FadeSprite extends Sprite2D:
 			scale = base_scale * (1.0 + 0.5 * t)
 		if t >= 1.0:
 			queue_free()
-
-
-class RainEmitter extends Node2D:
-	## mapobjDropRain: keeps a pool of falling drop sprites over the camera's view. The
-	## drop object's obj_Data3 / obj_Data4 read as 16.16 velocities per tick (7.5, 9.5
-	## px for level 10's 雨), cycling its frame run while falling; the boss object's
-	## obj_Data3 low word reads as drops spawned per tick. Density, spawn band and the
-	## fall distance are remake choices.
-	const TICK_SECONDS := OriginalTick.TICK_SECONDS
-	const FIXED_POINT_ONE := 65536.0
-	var camera: Camera2D
-	var textures: Array[Texture2D] = []
-	var origins: Array = []
-	var velocity := Vector2(0.0, 300.0)
-	var drops_per_tick := 2
-	var drops: Array[Sprite2D] = []
-	var _spawn_accumulator := 0.0
-	var _rng := RandomNumberGenerator.new()
-	const MAX_DROPS := 180
-	const VIEW_HALF := Vector2(340.0, 260.0)
-	## A drop cycles its frames every DEFAULT_FRAME_TICKS (its own shape_delay is not exported).
-	const FRAME_SECONDS := OriginalTick.TICK_SECONDS * DEFAULT_FRAME_TICKS
-
-	func configure(camera_node: Camera2D, drop_spec: Dictionary, boss_data3: String) -> void:
-		camera = camera_node
-		_rng.seed = 10
-		for frame in drop_spec.get("frames", [drop_spec.get("preview", "")]):
-			textures.append(load(str(frame)))
-		origins = drop_spec.get("frame_draw_origins", [drop_spec.get("draw_origin", [0, 0])])
-		var fields: Dictionary = drop_spec.get("object_fields", {})
-		var vx := _fixed_field(str(fields.get("obj_Data3", "")))
-		var vy := _fixed_field(str(fields.get("obj_Data4", "")))
-		if vy > 0.0:
-			velocity = Vector2(vx, vy) / TICK_SECONDS
-		var per_tick := boss_data3.hex_to_int() & 0xFFFF if boss_data3.begins_with("0x") else boss_data3.to_int()
-		drops_per_tick = clampi(per_tick, 1, 6)
-
-	static func _fixed_field(token: String) -> float:
-		if token == "":
-			return 0.0
-		return float(token.hex_to_int() if token.begins_with("0x") else token.to_int()) / FIXED_POINT_ONE
-
-	func _process(delta: float) -> void:
-		if camera == null or textures.is_empty():
-			return
-		var center: Vector2 = camera.position
-		_spawn_accumulator += delta / TICK_SECONDS * float(drops_per_tick)
-		while _spawn_accumulator >= 1.0 and drops.size() < MAX_DROPS:
-			_spawn_accumulator -= 1.0
-			var drop := Sprite2D.new()
-			drop.centered = false
-			drop.texture = textures[0]
-			drop.position = Vector2(center.x + _rng.randf_range(-VIEW_HALF.x - 120.0, VIEW_HALF.x), center.y - VIEW_HALF.y - _rng.randf_range(0.0, 80.0))
-			drop.set_meta("frame", 0)
-			drop.set_meta("elapsed", 0.0)
-			add_child(drop)
-			drops.append(drop)
-		var alive: Array[Sprite2D] = []
-		for drop in drops:
-			drop.position += velocity * delta
-			var elapsed := float(drop.get_meta("elapsed")) + delta
-			if elapsed >= FRAME_SECONDS:
-				elapsed -= FRAME_SECONDS
-				var frame := (int(drop.get_meta("frame")) + 1) % textures.size()
-				drop.set_meta("frame", frame)
-				drop.texture = textures[frame]
-				var origin: Array = origins[frame] if frame < origins.size() else origins[0]
-				drop.offset = -Vector2(float(origin[0]), float(origin[1]))
-			drop.set_meta("elapsed", elapsed)
-			if drop.position.y > center.y + VIEW_HALF.y + 40.0 or drop.position.x > center.x + VIEW_HALF.x + 80.0:
-				drop.queue_free()
-			else:
-				alive.append(drop)
-		drops = alive
