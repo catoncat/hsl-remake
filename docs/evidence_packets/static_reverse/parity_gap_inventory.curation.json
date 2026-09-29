@@ -540,12 +540,12 @@
     },
     {
       "id": "highlight-colours",
-      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击、魔法、绝技目标与选用药／交付格时全场亮、选格与绝技选目标里左键误点一次即熄到该态结束（绝技此后只亮光标处效果覆盖里的受者），选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标、用药／交付选格与选移动格只有静态读法，未录原版帧；技能页滑出（原版 0x77）期间重制已按 attack_select 全场亮，原版到 0x78→0x79 才置 0x200000",
-      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000 时亮；置位只有玩家状态机两处：分派 0x443a00 字节表 0x445758 → 指针表 0x445694，state 0x50 第 16 项 0x4442e4 在 0x4442ef 置，state 104／112 第 27／32 项 0x4448f4／0x444bc7 落到 0x444be4 在 0x444bf0 置，105／113 每次左键在查格前清（0x444947／0x444c40），校验不过停在原态不再置；选定魔法 0x78（第 37 项 0x444e58，0x444ebc）与绝技 0x97（第 41 项 0x44500f，0x44507a／0x445094）同样跳共用尾部 0x444be1 → 0x444be4 进 0x79／0x98 → 0x444bf0 置位，0x79 只在取消时清（0x444f9a），0x98 每次左键在枚举受者前清（0x44510f），没有受者留在 0x98；魔法／绝技每 tick 由 0x4104d0 枚举光标处 0x4100e0 覆盖里的单位，在 0x444f5d／0x4451d2 给每个受者置 +0x80 |= 0x100（ebp，0x44395a），在全局位之下是冗余的，只在 0x98 左键清位后决定谁亮；选移动格不置；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单与技能页的行动者（0x443990 在状态分派前置位，技能页滑出与取消回环也亮）、选攻击、魔法、绝技目标与选用药／交付格时全场亮（技能页滑出期间不亮）、选格与绝技选目标里左键误点一次即熄到该态结束（绝技此后只亮光标处效果覆盖里的受者），选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标、用药／交付选格与选移动格只有静态读法，未录原版帧",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000 时亮；置位只有玩家状态机两处：分派 0x443a00 字节表 0x445758 → 指针表 0x445694，state 0x50 第 16 项 0x4442e4 在 0x4442ef 置，state 104／112 第 27／32 项 0x4448f4／0x444bc7 落到 0x444be4 在 0x444bf0 置，105／113 每次左键在查格前清（0x444947／0x444c40），校验不过停在原态不再置；选定魔法 0x78（第 37 项 0x444e58，0x444ebc）与绝技 0x97（第 41 项 0x44500f，0x44507a／0x445094）同样跳共用尾部 0x444be1 → 0x444be4 进 0x79／0x98 → 0x444bf0 置位，0x79 只在取消时清（0x444f9a），0x98 每次左键在枚举受者前清（0x44510f），没有受者留在 0x98；魔法／绝技每 tick 由 0x4104d0 枚举光标处 0x4100e0 覆盖里的单位，在 0x444f5d／0x4451d2 给每个受者置 +0x80 |= 0x100（ebp，0x44395a），在全局位之下是冗余的，只在 0x98 左键清位后决定谁亮；选移动格不置；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮；行动者：0x443990 在状态分派前按 0x407540 置 +0x80|=0x100（0x44370e 清、0x443908 置 [esp+0x24]、0x100000 时 0x443943 跳走），魔法页 0x77／绝技页 0x96 同走 0x4447a7",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
       ],
-      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select（攻击／魔法／绝技选目标）与道具选格（BattleSceneMenus.item_pick_lit：进选格置、每次左键先清）期间全场点亮，绝技选目标在 BattleSceneMenus.special_pick_lit 被左键清掉后只点 BattlePlayLoop.magic_target_ids_at_coord（光标格的受者，与施法结算同源）；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select（攻击／魔法／绝技选目标；BattleSceneMenus.cast_pick_hold 未清时除外）与道具选格（BattleSceneMenus.item_pick_lit：进选格置、每次左键先清）期间全场点亮，绝技选目标在 BattleSceneMenus.special_pick_lit 被左键清掉后只点 BattlePlayLoop.magic_target_ids_at_coord（光标格的受者，与施法结算同源）；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:set_highlight",
         "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights",
@@ -679,7 +679,7 @@
     },
     {
       "id": "stage-placement",
-      "difference": "组合物件、engGLASS、瀑布、建筑底与世界尺寸已照原版（组合子项按模板 code & 0x7fffffff 放在表内 xy＋delta、链头也画；engGLASS 与影子按 +0x28 色半混合；瀑布按链头视差＋自身尺寸回绕卷动、加色画；建筑底在特写／状态窗期间藏起；影子在地图魔法效果阶段藏起；世界尺寸＝WRD 行列×32）；云漂移与移動背景视差已照原版；站立物件前景／背景节点已逐关核，z 只与别的站立物件平局的一律按 EVEF 创建序进前景节点（149 关与原版先后相反的同桶同平面配对 97→25）；剩 planeObject1 上可与敌人平局的一类仍按关卡 runtime_layer_hint 分节点（玩家第 4 场 · 歐姆村 · 獸族的襲擊（LEVEL001）3 对，玩家第 5 场 · 戈爾山道（LEVEL002）与戈爾山道 · 遭遇戰（LEVEL501–503）各 1 对，薩魯司海岸（LEVEL036）18 对，共 25 对；原版按记录序与敌人穿插），以及 Local 逐受者接力期间影子、云与抬层在第一段效果播完就恢复（原版到最后一个受者后 0x44327c 才清位）",
+      "difference": "组合物件、engGLASS、瀑布、建筑底与世界尺寸已照原版（组合子项按模板 code & 0x7fffffff 放在表内 xy＋delta、链头也画；engGLASS 与影子按 +0x28 色半混合；瀑布按链头视差＋自身尺寸回绕卷动、加色画；建筑底在特写／状态窗期间藏起；影子在地图魔法效果阶段藏起；世界尺寸＝WRD 行列×32）；云漂移与移動背景视差已照原版；站立物件前景／背景节点已逐关核，z 只与别的站立物件平局的一律按 EVEF 创建序进前景节点（149 关与原版先后相反的同桶同平面配对 97→25）；剩 planeObject1 上可与敌人平局的一类仍按关卡 runtime_layer_hint 分节点（玩家第 4 场 · 歐姆村 · 獸族的襲擊（LEVEL001）3 对，玩家第 5 场 · 戈爾山道（LEVEL002）与戈爾山道 · 遭遇戰（LEVEL501–503）各 1 对，薩魯司海岸（LEVEL036）18 对，共 25 对；原版按记录序与敌人穿插）",
       "original": "0x46bd67 组合安装、0x43d07b／0x43d13e 瀑布、0x43d758 建筑底、0x4684b6 engGLASS 内核、0x46bb65 WRD 尺寸已读；影子 0x43ce94 测 [0x4c1b00] & 0x1000000（ebp 于 0x43cdd0 置）、施法 0x442a90 置清该位（0x442daf／0x44327c）、0x46be17／0x45e307 的创建与链表序已读，0x45f0d1 何时调用未读；云与移動背景已读完并整镜像实测",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_object_drift.md",
@@ -1633,7 +1633,7 @@
     },
     {
       "id": "ai-item-use-presentation",
-      "difference": "用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；引导射程格按 0x40bab0 阵营模式泛洪、玩家选格按模式4（ITEMPICKLIGHT、ITEMUSERULES）；剩三类效果对象的加色层级混合按近似、小条 y 上限按地图高未逐关核对",
+      "difference": "用药演出已照原版（ITEMFX、ITEMFX2；玩家选目标是地图选格、确认后范围格／光标／身份栏原地消失，HEALTAIL、ITEMTARGET）：AI 先引导（镜头、射程格 12 tick、光标滑到受药者、受药者亮 12 tick），再姿势＋用药音＋Show_Magic_Star 星点／闪光与气力／永久／临时加成三类 0x401390 星点，之后目标下方 HP／MP 小条（条右印 cur/max）与数字；引导射程格按 0x40bab0 阵营模式泛洪、玩家选格按模式4（ITEMPICKLIGHT、ITEMUSERULES）；剩三类效果对象的加色层级混合按近似",
       "original": "AI 低字 7–14（0x440132，表 0x4422a0）：0x40f440(user, 体型 1／2, 0x40bab0(user)) 标射程（地面模式 2／3／7，不清中心）、射程 12 tick、滑行、目标停留 12 tick，0x4071e0＋0x409e40（sfxUseItem 402、0x408b20 按效果种类生成 Show_Magic_Star 与 0x401390 的 396／397／398 星点，首个带等待），0x43b3f0 小条＋位 0x100 的 cur/max 文字（0x4365f0 → 0x411d70），末个数字第 32 tick 放行，0x43b4c0 撤条；玩家 0x69／0x6a／108 同一套无引导",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_item_use_presentation.md"
@@ -3089,7 +3089,7 @@
       "no_visible_effect": "±1 tick 的同帧处理先后，16 ms 以内",
       "text": "数字对象与守方对象同 tick 先后未读（±1 tick）。"
     },
-    "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子；小条 y 上限的 [0x4c094c] 按地图高": {
+    "scope:docs/evidence_packets/static_reverse/original_item_use_presentation.md|provisional|0x401390 三类效果对象的加色＋engMIX 按\"加色 × 层级/16\"画、随机数用重制种子": {
       "item": "ai-item-use-presentation"
     },
     "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|": {

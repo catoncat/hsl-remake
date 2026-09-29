@@ -176,6 +176,10 @@ static func footprint_palette(selected_attack: String) -> String:
 			return "attack"
 
 
+## The skill page's own states (original 0x77 magic／0x96 special, both the tail 0x4447a7): the actor still lights.
+const SKILL_PAGE_STATES := [Interaction.MAGIC_SELECT, Interaction.SPECIAL_SELECT]
+
+
 ## The shared map-actor highlight (ActorRuntime.set_highlight), recomputed every frame from
 ## the runtime's state (the dialogue board lights speakers itself). Target selection: every
 ## actor on the field lights in its side colour while the player picks an attack target or an
@@ -192,11 +196,19 @@ static func footprint_palette(selected_attack: String) -> String:
 ## BattlePlayLoop.magic_target_ids_at_coord) is redundant under it. 0x79 clears it only on
 ## cancel (0x444f9a); 0x98 clears it on every left press before the recipients are enumerated
 ## (0x44510f) and a press with none stays in 0x98, so from then on only the recipients at the
-## cursor light (BattleSceneMenus.special_pick_lit). The move pick never sets it. Actor: the unit
-## whose command the player is choosing (action menu, move or target
-## selection; Wine frame: only the acting unit lit at the action menu), not while a dialogue,
-## exchange or AI turn is on. The AI's turn sets neither (no 0x200000 writer outside the
-## player machine, no +0x80 0x100 writer in the enemy process).
+## cursor light (BattleSceneMenus.special_pick_lit). The move pick never sets it. The skill
+## page's slide-out after a row click (the unit waits in 0x77／0x96, the tail 0x4447a7) does not set
+## it either: the whole field lights only when 0x78／0x97 advances into 0x79／0x98 through 0x444be1 →
+## 0x444bf0, so it stays dark while BattleSceneMenus.cast_pick_hold is up. Actor: the unit
+## whose command the player is choosing (action menu, skill page, move or target selection;
+## Wine frame: only the acting unit lit at the action menu), not while a dialogue, exchange or
+## AI turn is on. The player process sets it before the state dispatch (0x4439b4／0x443a00), so
+## the state never matters: when 0x407540 returns this unit (0x44395f), [esp+0x24] — cleared
+## each tick at 0x44370e, set at 0x443908 while 0x4c1b00 & 0x4000000 is clear — is nonzero and
+## 0x100000 is clear (else 0x443943 jumps to 0x4447b6), 0x443990 ors +0x80 with 0x100 (ebp,
+## 0x44395a). So the actor lights through the open page and its slide-out (0x77／0x96), the
+## 0x78／0x97 tick, and a cancel's 0x64 and state 0 until the ring is back. The AI's turn sets neither
+## (no 0x200000 writer outside the player machine, no +0x80 0x100 writer in the enemy process).
 func sync_unit_highlights() -> void:
 	if runtime.actors_root == null: return
 	var view: Node = runtime.get_node_or_null("BattlePresentation")
@@ -207,10 +219,11 @@ func sync_unit_highlights() -> void:
 	if view != null and not runtime.play_loop.is_empty() and not opening:
 		var busy: bool = view.dialogue_active() or view.combat_busy(runtime.play_loop) or view.battle_finished
 		var item_pick: bool = runtime.menus != null and runtime.menus.item_pick_lit
-		targeting = not busy and not runtime.ai_playback_active and (runtime.interaction_state == Interaction.ATTACK_SELECT or item_pick)
+		var cast_hold: bool = runtime.menus != null and runtime.menus.cast_pick_hold
+		targeting = not busy and not runtime.ai_playback_active and not cast_hold and (runtime.interaction_state == Interaction.ATTACK_SELECT or item_pick)
 		if targeting and not item_pick and runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "special" and runtime.menus != null and not runtime.menus.special_pick_lit:
 			recipients = [] if runtime.hovered_grid_cell == Interaction.NO_CELL else BattlePlayLoop.magic_target_ids_at_coord(runtime.play_loop, runtime.hovered_grid_cell)
-		if not busy and not runtime.ai_playback_active and runtime.interaction_state in Interaction.PLAYER_CONTROL:
+		if not busy and not runtime.ai_playback_active and (runtime.interaction_state in Interaction.PLAYER_CONTROL or runtime.interaction_state in SKILL_PAGE_STATES):
 			actor_id = runtime.selected_unit_id
 	for actor in runtime.actors_root.get_children():
 		if not actor.has_method("set_highlight"): continue
