@@ -9,6 +9,7 @@ const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -120,6 +121,12 @@ func equipment_cases() -> void:
 	var hand_worn := BattlePlayLoop.equip_from_hand(swapped, "weapon", 3)
 	check(BattlePlayLoop.unit(hand_worn, "leonard")["weapon_code"] == 3 and BattlePlayLoop.held_item_code(hand_worn) == 2 and BattlePlayLoop.unit(hand_worn, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153], "held weapon goes on and the old weapon comes into the hand")
 	check(BattlePlayLoop.equip_from_hand(hand_worn, "head", 2) == hand_worn, "a wrong slot keeps the hand")
+	# 整理裝備: 0x436f30 writes a loose hand into the slot without a bag check; the old piece comes to the hand.
+	var loose := {"loose": true, "code": 3}
+	var arranged := PartyEquipmentRules.hand_action(full, {}, loose, "equip", {"unit_id": "leonard", "slot": "weapon"}, {})
+	check(arranged["ok"] and BattlePlayLoop.unit(arranged["loop"], "leonard")["weapon_code"] == 3 and arranged["hand"] == {"loose": true, "code": 2} and BattlePlayLoop.unit(arranged["loop"], "leonard")["inventory"] == BattlePlayLoop.unit(full, "leonard")["inventory"], "full bag: a loose hand goes on and the old weapon comes into the hand")
+	var misfit := PartyEquipmentRules.hand_action(full, {}, loose, "equip", {"unit_id": "leonard", "slot": "head"}, {})
+	check(not misfit["ok"] and misfit["loop"] == full and misfit["hand"] == loose, "a wrong slot keeps the loose hand (0x436f30 returns -1)")
 	var hand_dropped := BattlePlayLoop.discard_hand(hand_worn, 2)
 	check(not hand_dropped.has("held_item") and BattlePlayLoop.unit(hand_dropped, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153] and BattlePlayLoop.change_equipment(hand_dropped, "head", 7, 153) != hand_dropped, "丟棄 clears a non-important hand and frees the other commands")
 	var roomy := in_hand.duplicate(true)

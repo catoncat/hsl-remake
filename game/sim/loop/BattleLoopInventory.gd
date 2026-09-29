@@ -270,7 +270,7 @@ static func unequip_to_hand(loop: Dictionary, slot: String, expected_code: int) 
 	return BattlePlayLoop.settle_action(committed["loop"], "equip")
 
 
-## Held item on a worn slot (0x43993e..0x439995): 0x436f30(member, slot, held); a refusal (-1)
+## Held item on a worn slot (0x43993e..0x439995): 0x436f30(member, held, slot); a refusal (-1)
 ## keeps the hand, otherwise the old piece (or nothing) comes into the hand.
 static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) -> Dictionary:
 	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):

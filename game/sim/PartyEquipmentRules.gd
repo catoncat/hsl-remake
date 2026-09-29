@@ -110,9 +110,23 @@ static func change(loop: Dictionary, unit_id: String, slot: String, inventory_in
 	return {"ok": true, "loop": prepared["loop"], "error": ""}
 
 
-## `to_hand`: the window's take-off (0x437020) clears the slot and hands back the piece without
-## looking at the bag, so the bag takes no part — replace() runs on an empty bag and the member
-## keeps its own.
+## The window's slot setter 0x436f30(member, hand code, slot) with a loose hand: the job
+## (0x4464f0 → ITEM +0xa8), the slot type (ITEM +8 via the table at 0x437004) and the old piece's
+## +0xa4 bit 1 lock are checked; -1 leaves everything as is, otherwise the code is written into the
+## slot and the old one (0 when the slot was empty) returned for the hand. The bag is never looked
+## at, so a full bag does not matter. Same checks as change() (_prepare in hand mode).
+## {ok, loop, old, error}; on failure loop is the input untouched.
+static func equip_from_hand(loop: Dictionary, unit_id: String, slot: String, code: int) -> Dictionary:
+	var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), slot)
+	var prepared := _prepare(loop, unit_id, slot, -1, code, true)
+	if not prepared["ok"]:
+		return {"ok": false, "loop": loop, "old": 0, "error": str(prepared.get("reason", "rejected"))}
+	return {"ok": true, "loop": prepared["loop"], "old": old, "error": ""}
+
+
+## `to_hand`: the window's take-off (0x437020) and hand setter (0x436f30) move pieces between the
+## slot and the hand without looking at the bag, so the bag takes no part — replace() runs on a bag
+## holding only the hand's code (none for a take-off) and the member keeps its own.
 static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_index: int, expected_code: int, to_hand: bool = false) -> Dictionary:
 	var actor := _live_unit(loop, unit_id).duplicate(true)
 	if actor.is_empty() or str(actor.get("battle_actor_role", "")) != ROLE_PLAYER:
@@ -131,6 +145,9 @@ static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_
 		var empty: Array = []
 		empty.resize(InventoryRules.CAPACITY)
 		empty.fill(0)
+		if expected_code > 0:
+			empty[0] = expected_code
+			inventory_index = 0
 		actor["inventory"] = empty
 	var result := EquipmentRules.replace(actor, slot, inventory_index, expected_code, items)
 	if to_hand and result["ok"]:
@@ -223,7 +240,8 @@ static func place_hand(loop: Dictionary, hand: Dictionary, unit_id: String, slot
 ##   retrieve {index}       empty hand takes one of list row `index`; important rows stay (0x4154cd)
 ##   drop                   丟棄: a non-important hand is thrown away (0x42a7e2)
 ##   use {unit_id}          使用: 0x409e40(member, hand, 0, 1) — a non-zero return spends the hand (_use_stored)
-##   equip {unit_id, slot}  the hand onto an equipment slot (0x436f30 via change()); the old piece onto the hand
+##   equip {unit_id, slot}  the hand onto an equipment slot (0x436f30): a loose／other member's item through
+##                          equip_from_hand (no bag slot needed), a held own-bag item through change(); the old piece onto the hand
 ##   lift {unit_id, slot}   empty hand takes a bag item out, the bag closes up (0x436e80)
 ##   unequip {unit_id, slot} empty hand takes a worn piece off onto the hand (0x437020; no bag slot needed)
 ##   back {unit_id}         right click: the hand into the member's first empty slot (remake reading, see below)
@@ -272,17 +290,18 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 			return {"ok": true, "loop": used["loop"], "storage": storage, "hand": {}, "reason": ""}
 		"equip":
 			var unit_id := str(args.get("unit_id", ""))
-			var working := loop
-			var index := int(hand.get("slot", -1))
 			if bool(hand.get("loose", false)) or str(hand.get("unit_id", "")) != unit_id:
-				var placed := place_hand(loop, hand, unit_id, -1)
-				if not placed["ok"]:
-					refused["reason"] = placed["reason"]
+				# 0x436f30 straight from the hand: no bag slot needed; an item held in another member's
+				# bag leaves it first (the original lifts with 0x436e80, so its hand is always loose).
+				var lifted := remove_hand(loop, hand)
+				var worn := equip_from_hand(lifted["loop"], unit_id, str(args.get("slot", "")), code) if lifted["ok"] else {"ok": false, "error": lifted["reason"]}
+				refused["reason"] = worn["error"]
+				if not worn["ok"]:
 					return refused
-				working = placed["loop"]
-				index = int(placed["slot"])
-			var old := EquipmentRules.equipped_code(_live_unit(working, unit_id).get("equipment", []), str(args.get("slot", "")))
-			var changed := change(working, unit_id, str(args.get("slot", "")), index, code)
+				return {"ok": true, "loop": worn["loop"], "storage": storage, "hand": {"loose": true, "code": worn["old"]} if int(worn["old"]) > 0 else {}, "reason": ""}
+			var index := int(hand.get("slot", -1))
+			var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), str(args.get("slot", "")))
+			var changed := change(loop, unit_id, str(args.get("slot", "")), index, code)
 			refused["reason"] = changed["error"]
 			if not changed["ok"]:
 				return refused

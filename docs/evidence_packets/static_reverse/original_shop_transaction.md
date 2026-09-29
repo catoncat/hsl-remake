@@ -6,7 +6,7 @@
 
 - 原版商店是共用状态窗 `0x414c00` 的商店分支（窗口标志 `*0x4c1cbc & 2`、子模式 `word [win+0xa2] != 6`）。空手点货行：够钱即扣款、物品写进手持槽 `0x4c1ce4`（音 399），不弹消息、不减货表；玩家再点背包格，物品进首空格（满包时与所点格互换）（static-derived；runtime-measured）；持物时右键／Esc 不动作（根态 `0x428dc7` 只在手持为 0 时关窗，见 [original_storage_window](original_storage_window.md)「结论」）（static-derived）。
 - 手上有物点货表即卖出：重要物拒收（607），否则半价入账（static-derived）。手上的物品不论来自背包拿起、卸下、买入还是倉庫，都在同一个手持槽里，都能卖。
-- 拿起背包物即离包，其后各格前移（`0x436e80`）；裝備页空手点槽卸下进手（`0x437020`），手持点槽装上时旧装备进手（`0x436f30`）（static-derived）。
+- 拿起背包物即离包，其后各格前移（`0x436e80`）；裝備页空手点槽卸下进手（`0x437020`），手持点槽装上时旧装备进手（`0x436f30`，不查背包，满包也直接装上）（static-derived）。
 - 重制照做：`TownShopScreen` 点货行走 `TownRuntime.shop_pick`（只扣款、手持散件），点背包格走 `shop_hand place`，右键 `back`（放回所显示成员首空格，重制读法）；拿起走 `hand_action lift`，卸下走 `unequip`（满包也进手，不占背包），装上后旧件进手；散件点货表走 `shop_sell_hand`。不弹「買下」消息。
 - 共用状态窗的持物音效（static-derived）：进手 399（货表／倉庫列表取出 `0x415559`、背包格拿起 `0x4292c3`、空手卸下 `0x429eb5`），放下 400（背包格 `0x42929d`、装上 `0x429e6d`、放入倉庫列表 `0x415452`），卖出 2563 sfxSellItem（`0x415435`）；重制照放，拒绝时不放。
 - 差异：持物时右键／Esc 重制放回首空格（原版不动作）；脚本购物 `TownRuntime.shop_buy` 一步入首空格（autoplay 用，不经窗口）（provisional）。
@@ -20,6 +20,7 @@
 | 放下 | `0x42923b` 背包格点击（手持）：`0x436ed0` 第 8 格有物 → 所点格与手持互换；否则 `0x436e30` 手持物进首空格 |
 | 拿起 | `0x436e80(成员, 格)`：`rep movsd` 把 格+1..7 前移一格，`[+0x154]`（第 8 格）清零 |
 | 卸下／装上 | `0x437020` 空手点槽卸下进手（音 399）；`0x436f30` 手持点槽装上、旧装备进手，返回 −1 时不能装、手持不变 |
+| 装上 setter | 调用处 `0x429e18-0x429e24`：`0x436f30(成员 ebx, [0x4c1ce4], 槽 ebp)`；`0x436f4f-0x436f8e` 职业：成员 `+0xa4` 索引的角色记录（`[0x4c1bc8]`，步长 0x1fc）`+0x18` 为 1000 跳过，否则 `0x4464f0(职业)` 为 −1 或 ITEM `+0xa8` 无该位 → −1；`0x436f90-0x436f97` 槽 >5 → −1；跳表 `0x437004` 按槽比 ITEM `+8` 类型（槽 0–3 → 2／3／4／5，槽 4／5 → 6），不符 → −1；`0x436fca-0x436fe7` 取旧 code `[角色记录+0xec+槽*4]`，旧件 ITEM `+0xa4 & 2`（卸下锁）→ −1；`0x436ff3` 写入手持 code，返回旧 code（槽空为 0）。全身只读上述字段，不读背包格、不查空位。`0x429e2c` 返回 −1 跳 `0x429ed1`（无音无字、手持不变）；否则 `0x429e3f` 返回值写回 `0x4c1ce4`（槽原空则手变空）、`0x448840` 刷新、`0x434d10`、音 400。原版拿起即离包收拢（`0x436e80`），手持永远是散件 |
 | 卖出价 | `fcn.00414ab0(code) = ITEM[+0x9c] * 0x32 / 100`（`0x414ac9-0x414ae2`，有符号除法；价格非负即 floor(price/2)）；`0x41541a call`、`0x415428 add`、`0x41542f` 写回金币，音 2563 |
 | 音效 | 全 EXE `push 0x18f`／`0x190`／`0xa03` 中属状态窗的七处：`0x415559`（列表取出 399）、`0x415452`（放入倉庫 400）、`0x415435`（卖出 2563），`0x4292c3`／`0x42929d`（背包格拿起 399／放下 400），`0x429eb5`／`0x429e6d`（卸下 399／装上 400）；均经 `0x4477b0`→`0x459990`→`0x42c180`；持物时右键／Esc 原版不动作（根态 `0x428dc7`），没有放回也没有音；`0x44f63a`／`0x44f652` 两处 `0x436e30` 调用属非玩家击杀者收待领池的 `0x44f600`，与状态窗无关 |
 | 拒收 | `0x4153b1 call 0x40e690`：`(ITEM[+0xa0] & 0x08000000) != 0`（`important` 置位）→ `0x4153c2` 消息 607「抱歉, 本店不收購此物品。」，不成交 |
@@ -37,7 +38,7 @@ runtime-measured（`level06_pre_battle` 回憶錄只读进 席達鎮 道具店�
 ## 重制接线
 
 - `game/world/TownShopScreen.gd`：点货行 `buy_requested` → `TownRuntime.shop_pick` → `WorldPartyRules.pay_for_hand`，回 `show_state(…, {loose, code})`；拿起 `hand_requested("lift")`；空手点槽 `hand_requested("unequip")`；散件点货表 `sell_hand_requested` → `TownRuntime.shop_sell_hand` → `WorldPartyRules.sell_hand`（607 时保留手持）。音效：请求时排队（`HAND_SOUNDS`），宿主提交（`show_state`／`show_loop`／无消息的 `show_carry`）时放 `ItemSound`，`refuse` 或出消息板时丢弃；卖出音是 `interface_audio/sell_item.wav`（sfxSellItem）。
-- `game/sim/PartyEquipmentRules.hand_action`：`lift`、`unequip`，`equip` 把旧件取到手持（`_lift_last`）；整理裝備（`PartyEquipmentScreen`）同走。
+- `game/sim/PartyEquipmentRules.hand_action`：`lift`、`unequip`；`equip` 对散件／他人背包物走 `equip_from_hand`（`0x436f30`：`_prepare` 手持模式与 `change()` 同一套校验，不占背包，旧件进手；他人背包物先离包），手持本成员背包物走 `change`＋`_lift_last`；整理裝備（`PartyEquipmentScreen`）同走。
 - provenance：`TownShopScreen` 头注释 static-derived 本包与 [original_storage_window](original_storage_window.md)。
 
 ## 复现
@@ -47,6 +48,9 @@ EXE="$HSL_ORIGINAL_DIR/hsl01.exe"
 r2 -q -e scr.color=0 -c "s 0x415498; pd 60" "$EXE"   # 空手点行：读行／重要／读价／扣款／手持槽／音 399
 r2 -q -e scr.color=0 -c "s 0x415611; pd 8" "$EXE"    # 消息 606
 r2 -q -e scr.color=0 -c "s 0x436e80; pd 20" "$EXE"   # 拿起：其后格前移、第 8 格清零
+r2 -q -e scr.color=0 -c "s 0x436f30; pd 70" "$EXE"   # 装上 setter：职业／槽类型／旧件锁，写槽、返回旧 code，不读背包
+r2 -q -e scr.color=0 -c "pxw 24 @ 0x437004" "$EXE"   # 槽→类型跳表（槽 4／5 同为 6）
+r2 -q -e scr.color=0 -c "s 0x429e18; pd 28" "$EXE"   # 调用处：−1 手不变；否则返回值写手持、0x448840、音 400
 r2 -q -e scr.color=0 -c "s 0x414ab0; pd 17" "$EXE"   # 卖出价 price*50/100
 r2 -q -e scr.color=0 -c "s 0x4153a2; pd 16" "$EXE"   # 拒收：0x40e690 → 消息 607
 ```

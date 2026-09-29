@@ -126,8 +126,9 @@ func bag_entries() -> Array:
 	return out
 
 
-## The held item's kind picks its slot (0x436f30); accessories go to the first empty accessory
-## slot (accessory1 when both hold one).
+## Remake reading: the held item's kind picks its slot (the original passes the hovered slot and
+## 0x436f30 refuses a mismatch with −1); accessories go to the first empty accessory slot
+## (accessory1 when both hold one).
 static func _slot_for(unit: Dictionary, kind: int) -> String:
 	if kind != 6:
 		return EquipmentRules.SLOTS[kind - 2]

@@ -502,8 +502,8 @@ func show_member(next_unit_id: String) -> void:
 		_rebuild()
 
 
-## Mode 0, 裝備 page: a click on equipment slot `slot` — a held bag item goes on (its kind picks
-## the slot, 0x436f30), an empty hand takes the slot's item off (0x437020).
+## Mode 0, 裝備 page: a click on equipment slot `slot` — a held item goes on (0x436f30, slot from
+## _slot_for_hand), an empty hand takes the slot's item off (0x437020).
 func click_equipment(slot: String) -> void:
 	if page != PAGE_EQUIP or message_visible() or unit_id == "":
 		return
@@ -520,8 +520,9 @@ func refuse(reason: String) -> void:
 	_pending_sound = ""
 
 
-## The held item's kind picks its slot (0x436f30); accessories go to the clicked accessory slot
-## when it is one, else the first empty accessory slot.
+## Remake reading: the held item's kind picks its slot (the original passes the hovered slot,
+## 0x429766, and 0x436f30 refuses a mismatch with −1); accessories go to the clicked accessory
+## slot when it is one, else the first empty accessory slot.
 func _slot_for_hand(clicked: String) -> String:
 	var kind := int((_items.get(str(int(_hand.get("code", 0))), {}) as Dictionary).get("type_code", 0))
 	if kind >= 2 and kind <= 5:
