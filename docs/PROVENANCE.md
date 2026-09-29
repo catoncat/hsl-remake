@@ -437,7 +437,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleDropLightningPresentation](../game/battle/scene/BattleDropLightningPresentation.gd) | layout | — | planeEffect6 drawn over planeEffect2 |
 | [BattleItemUsePresentation](../game/battle/scene/BattleItemUsePresentation.gd) | layout | — | bar y cap at map height − 36 |
 | [BattleSceneMenus](../game/battle/scene/BattleSceneMenus.gd) | timing | — | that ordering is a static reading; a lost battle offers no window — the conservative choice |
-| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／item target and move selection follow the attack frame; not captured |
+| [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／special target, the special pick's recipients after a press, item target and move selection follow the static read and the attack frame; not captured |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | layout | — | runtime_layer_hint split of the level profiles for objects on an actor's plane, under planeObject1 or over planeObject30; story-scene cast without a side is lit as a player |
 | [BattleScriptCoordinator](../game/battle/scene/BattleScriptCoordinator.gd) | rules | — | re-arming may pick another registered instance |
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | layout | — | up to four RNG seed variants stand in for the one shared stream; a member hsl.pak lacks cycles the series' existing members like the untracked player |

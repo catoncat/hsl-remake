@@ -19,7 +19,8 @@ extends RefCounted
 ##     (Wine frames: acting unit lit at the action menu, every actor at attack targeting)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/dialogue_death/README.md
 ##     (0x4c1b00 & 0x200000 written only by the player state machine, read by the actor draw 0x43dcc4)
-##   timing: provisional (magic／item target and move selection follow the attack frame; not captured)
+##   timing: provisional (magic／special target, the special pick's recipients after a press,
+##     item target and move selection follow the static read and the attack frame; not captured)
 
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
@@ -184,10 +185,15 @@ static func footprint_palette(selected_attack: String) -> String:
 ## on every left press of the pick before the cell is checked (0x444947／0x444c40) and on
 ## cancel (Use 0x444a67, Give 0x444d46; a rejected press stays in 105／113 unlit —
 ## BattleSceneMenus.item_pick_lit), and the actor draw 0x43dcc4 lights
-## every actor on it (Wine frame: allies blue, enemies pink after 攻擊). The move pick and the
-## magic／special target states 0x79／0x98 (0x444ec1／0x445099) never set it; the remake's
-## magic／special picks share attack_select and still light (parity inventory
-## highlight-colours). Actor: the unit whose command the player is choosing (action menu, move or target
+## every actor on it (Wine frame: allies blue, enemies pink after 攻擊). The magic／special
+## target states 0x79／0x98 are entered through the same tail (0x78 at 0x444ebc, 0x97 at
+## 0x44507a／0x445094 → 0x444be1 → 0x444bf0), so both light the whole field too; their per-tick
+## recipient light (0x4104d0 from 0x444f5d／0x4451d2, +0x80 |= 0x100 —
+## BattlePlayLoop.magic_target_ids_at_coord) is redundant under it. 0x79 clears it only on
+## cancel (0x444f9a); 0x98 clears it on every left press before the recipients are enumerated
+## (0x44510f) and a press with none stays in 0x98, so from then on only the recipients at the
+## cursor light (BattleSceneMenus.special_pick_lit). The move pick never sets it. Actor: the unit
+## whose command the player is choosing (action menu, move or target
 ## selection; Wine frame: only the acting unit lit at the action menu), not while a dialogue,
 ## exchange or AI turn is on. The AI's turn sets neither (no 0x200000 writer outside the
 ## player machine, no +0x80 0x100 writer in the enemy process).
@@ -195,16 +201,19 @@ func sync_unit_highlights() -> void:
 	if runtime.actors_root == null: return
 	var view: Node = runtime.get_node_or_null("BattlePresentation")
 	var targeting := false
+	var recipients: Variant = null
 	var actor_id := ""
 	var opening: bool = runtime.opening_coordinator != null and runtime.opening_coordinator.active
 	if view != null and not runtime.play_loop.is_empty() and not opening:
 		var busy: bool = view.dialogue_active() or view.combat_busy(runtime.play_loop) or view.battle_finished
 		var item_pick: bool = runtime.menus != null and runtime.menus.item_pick_lit
 		targeting = not busy and not runtime.ai_playback_active and (runtime.interaction_state == Interaction.ATTACK_SELECT or item_pick)
+		if targeting and not item_pick and runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "special" and runtime.menus != null and not runtime.menus.special_pick_lit:
+			recipients = [] if runtime.hovered_grid_cell == Interaction.NO_CELL else BattlePlayLoop.magic_target_ids_at_coord(runtime.play_loop, runtime.hovered_grid_cell)
 		if not busy and not runtime.ai_playback_active and runtime.interaction_state in Interaction.PLAYER_CONTROL:
 			actor_id = runtime.selected_unit_id
 	for actor in runtime.actors_root.get_children():
 		if not actor.has_method("set_highlight"): continue
 		var id: String = actor.unit_id
-		actor.set_highlight("target", targeting and id != "" and actor.visible)
+		actor.set_highlight("target", targeting and id != "" and actor.visible and (recipients == null or recipients.has(id)))
 		actor.set_highlight("actor", id != "" and id == actor_id)

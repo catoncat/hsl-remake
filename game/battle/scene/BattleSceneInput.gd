@@ -154,6 +154,8 @@ func handle_pointer_left_pressed(logical_position: Vector2) -> void:
 		runtime.move_selected_actor_to_grid(runtime.hovered_grid_cell)
 		return
 	if runtime.interaction_state == Interaction.ATTACK_SELECT:
+		if runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "special":
+			runtime.menus.special_pick_lit = false
 		if runtime.play_loop.get(LoopKeys.SELECTED_ATTACK) == "magic":
 			runtime.attack_selected_coord(runtime.hovered_grid_cell)
 		elif runtime.hovered_unit_id != "":

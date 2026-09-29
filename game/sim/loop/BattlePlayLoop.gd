@@ -577,19 +577,32 @@ static func attack_coord(loop: Dictionary, coord: Vector2i, rng: Variant = null)
 
 
 static func magic_target_id_at_coord(loop: Dictionary, coord: Vector2i) -> String:
+	var ids := magic_target_ids_at_coord(loop, coord)
+	return "" if ids.is_empty() else str(ids[0])
+
+
+## Read-only: the ids the selected magic／special would reach if cast at `coord` now — every
+## living unit of the skill's side whose footprint overlaps the effect cells, the unit on
+## `coord` first, then roster order ([] outside the cast range). The original's 0x4104d0
+## enumeration over the 0x4100e0 coverage (original_skill_targets.md); the magic／special
+## target states 0x79／0x98 mark these each tick (0x444f5d／0x4451d2), which decides who is lit
+## only after a 0x98 left press has cleared the whole-field light (0x44510f).
+static func magic_target_ids_at_coord(loop: Dictionary, coord: Vector2i) -> Array:
 	var actor := unit_ref(loop, str(loop.get("selected_unit_id", "")))
 	var id := str(loop.get("selected_skill_id", ""))
-	if actor.is_empty() or loop.get("selected_attack") not in ["magic", "special"] or not loop["skill_book"]["skills"].has(id): return ""
+	if actor.is_empty() or loop.get("selected_attack") not in ["magic", "special"] or not loop["skill_book"]["skills"].has(id): return []
 	var fields := skill_fields(loop, id)
 	var terrain := skill_terrain(loop)
-	if not SkillTargetRules.cells(actor["coord"], fields, loop["skill_target_data"], loop["map_size"], terrain).has(coord): return ""
+	if not SkillTargetRules.cells(actor["coord"], fields, loop["skill_target_data"], loop["map_size"], terrain).has(coord): return []
 	var footprint := SkillTargetRules.effect_cells(coord, fields, loop["skill_target_data"], loop["map_size"], actor["coord"], terrain)
-	var fallback := ""
+	var ids: Array = []
+	var centre := ""
 	for target in loop["units"]:
 		if not Presence.living(target) or not Footprint.overlaps(target, footprint) or not SkillTargetRules.side_matches(actor, target, fields, loop["skill_target_data"]): continue
-		if Footprint.contains(target,coord): return str(target["id"])
-		if fallback == "": fallback = str(target["id"])
-	return fallback
+		if centre == "" and Footprint.contains(target, coord): centre = str(target["id"])
+		else: ids.append(str(target["id"]))
+	if centre != "": ids.push_front(centre)
+	return ids
 
 
 ## test hook

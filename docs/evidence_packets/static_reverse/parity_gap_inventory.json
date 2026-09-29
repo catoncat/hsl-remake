@@ -248,15 +248,16 @@
     },
     {
       "id": "highlight-colours",
-      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击目标与选用药／交付格时全场亮、选格里左键误点一次即熄到选格结束，选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标时重制仍全场亮（与攻击共用 attack_select），原版不亮",
-      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000 时亮；置位只有玩家状态机两处：分派 0x443a00 字节表 0x445758 → 指针表 0x445694，state 0x50 第 16 项 0x4442e4 在 0x4442ef 置，state 104／112 第 27／32 项 0x4448f4／0x444bc7 落到 0x444be4 在 0x444bf0 置，105／113 每次左键在查格前清（0x444947／0x444c40），校验不过停在原态不再置；魔法 0x79（0x444ec1）、绝技 0x98（0x445099）、选移动格不置；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
+      "difference": "高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单的行动者、选攻击、魔法、绝技目标与选用药／交付格时全场亮、选格与绝技选目标里左键误点一次即熄到该态结束（绝技此后只亮光标处效果覆盖里的受者），选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标、用药／交付选格与选移动格只有静态读法，未录原版帧；技能页滑出（原版 0x77）期间重制已按 attack_select 全场亮，原版到 0x78→0x79 才置 0x200000",
+      "original": "0x43dcb9：+0x80 & 0x100（说话人，0x4145e7）或 0x4c1b00 & 0x200000 时亮；置位只有玩家状态机两处：分派 0x443a00 字节表 0x445758 → 指针表 0x445694，state 0x50 第 16 项 0x4442e4 在 0x4442ef 置，state 104／112 第 27／32 项 0x4448f4／0x444bc7 落到 0x444be4 在 0x444bf0 置，105／113 每次左键在查格前清（0x444947／0x444c40），校验不过停在原态不再置；选定魔法 0x78（第 37 项 0x444e58，0x444ebc）与绝技 0x97（第 41 项 0x44500f，0x44507a／0x445094）同样跳共用尾部 0x444be1 → 0x444be4 进 0x79／0x98 → 0x444bf0 置位，0x79 只在取消时清（0x444f9a），0x98 每次左键在枚举受者前清（0x44510f），没有受者留在 0x98；魔法／绝技每 tick 由 0x4104d0 枚举光标处 0x4100e0 覆盖里的单位，在 0x444f5d／0x4451d2 给每个受者置 +0x80 |= 0x100（ebp，0x44395a），在全局位之下是冗余的，只在 0x98 左键清位后决定谁亮；选移动格不置；颜色 0x407cc0 按侧字（0x40ba20 读记录 +0x28，剧情演员同由构造器 0x407ec0 写）；Wine 帧：行动菜单只亮行动者、选攻击目标全场亮",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/dialogue_death/README.md"
       ],
-      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select 与道具选格（BattleSceneMenus.item_pick_lit：进选格置、每次左键先清）期间全场点亮；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
+      "remake": "ActorRuntime.set_highlight 着色器；BattleSceneOverlays.sync_unit_highlights 在 attack_select（攻击／魔法／绝技选目标）与道具选格（BattleSceneMenus.item_pick_lit：进选格置、每次左键先清）期间全场点亮，绝技选目标在 BattleSceneMenus.special_pick_lit 被左键清掉后只点 BattlePlayLoop.magic_target_ids_at_coord（光标格的受者，与施法结算同源）；剧情演员取 story_scene.py 写入的 player_mode（BattleSceneStage.story_cast_player_mode）",
       "remake_code": [
         "game/battle/runtime/ActorRuntime.gd:set_highlight",
         "game/battle/scene/BattleSceneOverlays.gd:sync_unit_highlights",
+        "game/sim/loop/BattlePlayLoop.gd:magic_target_ids_at_coord",
         "game/battle/scene/BattleSceneStage.gd:story_cast_player_mode"
       ],
       "original_status": "read_complete",

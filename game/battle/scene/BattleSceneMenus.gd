@@ -205,6 +205,7 @@ func _choose_magic(skill_id: String) -> void:
 	if next == runtime.play_loop: return
 	runtime.apply_loop(next, "choose_magic")
 	runtime.mirror_interaction()
+	special_pick_lit = next.get(LoopKeys.SELECTED_ATTACK) == "special"
 	runtime.magic_panel.hide()
 	set_action_menu_visible(false)
 	# A row click puts the page into its slide-out (window state 1→2, 0x42946d／0x438f8e); the
@@ -220,6 +221,12 @@ func _choose_magic(skill_id: String) -> void:
 ## right-click cancel until the action ring comes back (see cancel_magic): no overlay, cursor or
 ## identity strip, and pointer clicks are ignored.
 var cast_pick_hold := false
+## The special pick's whole-field light (0x4c1b00 & 0x200000, set on entering 0x98 at 0x444bf0
+## via 0x44507a／0x445094 → 0x444be1): every left press of the pick clears it before the
+## recipients are enumerated (0x44510f), and a press with none stays in 0x98 without setting it
+## again, so after it only the recipients at the cursor light (0x4451d2;
+## BattleSceneOverlays.sync_unit_highlights). Magic's 0x79 clears it only on cancel (0x444f9a).
+var special_pick_lit := false
 var _cast_pick_clock := 0.0
 var _cast_pick_cancelled := false
 
