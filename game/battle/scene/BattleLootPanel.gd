@@ -31,8 +31,11 @@ const LIST_TOP := 51
 const LIST_ROW := 32
 const VISIBLE_ROWS := 5
 const COUNT_RIGHT := 332
-## Description WINDOW50 at (252,390): 15 px lines from (x+8, y+12), row 16, centred in 360 px.
-const DESCRIPTION_AT := Vector2(252, 390)
+## Description WINDOW50 at (249,390): 0x436d70 draws it at camera + (252,349), y + 41 with
+## [0x4c1cbc] bit 0 and x − 3 without bit 1 (0x436dbd..0x436dcb); in battle 0x43b4e0 zeroes the
+## flags (0x43b4ea) and the 獲得物品 mode sets bit 0 alone (0x43bda4). 15 px lines from (x+8, y+12),
+## row 16, centred in 360 px.
+const DESCRIPTION_AT := Vector2(249, 390)
 ## `$:` WINDOW40 at (20,442); nine-cell amount ends at x=208. Buttons BCMD08/15/14 centred at y=429.
 const GOLD_AT := Vector2(20, 442)
 const BUTTON_CENTRES := {"drop": 285, "storage": 346, "exit": 468}

@@ -57,17 +57,19 @@
   "items": [
     {
       "id": "panel-slide-formula",
-      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，状态页与道具页右窗 WINDOW30（装备栏容器尺寸为 0）整块不滑，獲得物品待领列表的说明框在滑动途中按落点判悬停、关窗即消失（原版按滑动中的窗矩形判、关窗滑出途中照画）",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，獲得物品待领列表的说明框在滑动途中按落点判悬停、关窗即消失（原版按滑动中的窗矩形判、关窗滑出途中照画）",
       "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照，根窗列表分支的滑入期间不画、獲得物品待领列表的照画；压暗 0→8",
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
       "remake_code": [
         "game/battle/scene/BattlePanelMotion.gd:part_side",
         "game/battle/scene/BattlePanelMotion.gd:sides_of",
         "game/battle/scene/BattlePanelMotion.gd:slide_in_step",
-        "game/battle/scene/BattlePanelMotion.gd:shade_step"
+        "game/battle/scene/BattlePanelMotion.gd:shade_step",
+        "game/battle/scene/BattlePanelMotion.gd:parts_of",
+        "game/common/BattleUISkin.gd:in_place"
       ],
       "original_status": "read_complete",
       "visibility": "rare",
@@ -3140,10 +3142,6 @@
     "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#3109d30b93": {
       "item": "ai-move-preview-timing",
       "text": "范围消失后约 0.18 s 才起步的来源未读（`ai-move-preview-timing`）。"
-    },
-    "sentence:docs/evidence_packets/runtime_observations/camera_panel_motion/README.md#783af6efe3": {
-      "item": "panel-slide-formula",
-      "text": "原版 `0x43ae70` 自右 380 滑入，重制未复刻（要滑需把装备栏改成以板为原点的容器）。"
     },
     "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|negative-evidence|044-M0002.SHP 不在 hsl.pak": {
       "item": "cast-strip-missing"

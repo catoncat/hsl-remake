@@ -92,6 +92,13 @@ const PAGE_STATUS := 4
 const PAGE_STORAGE := 7
 const PAGE_EQUIP := 10
 const PAGE_TRADE := 11
+## Description WINDOW50: 0x436d70 draws it at camera + (252,349), y + 41 with [0x4c1cbc] bit 0 and
+## x − 3 unless bit 1 is set (0x436dbd..0x436dcb). 0x42ab40 sets bit 0 (0x42ab4b); the shop
+## (0x45686e passes mode 1) also ors in bit 1 (0x42ab9f), so its box stays at x 252 — frames 10／22
+## show the left edge at x 252. 整理裝備／倉庫 (mode 0, 0x425e89) jumps 0x42ab8c → 0x42acfe past
+## 0x42ab9f, so bit 0 alone puts its box at (249,390); frames 15–17／23／24 have no hover box, not observed.
+const SHOP_DESCRIPTION_AT := Vector2(252, 390)
+const ARRANGE_DESCRIPTION_AT := Vector2(249, 390)
 
 ## Frames 08／12 (weapon and armour shops): every price's glyphs end at x 594 — ten pixels
 ## right of the loot window's count column (BattleLootPanel.COUNT_RIGHT, x 584); the cell ends there.
@@ -669,7 +676,7 @@ func _rebuild() -> void:
 			_status_button(spec[0], spec[1], spec[2], spec[3])
 	description_box = Control.new()
 	description_box.name = "Description"
-	description_box.position = BattleLootPanel.DESCRIPTION_AT
+	description_box.position = SHOP_DESCRIPTION_AT if mode == MODE_SHOP else ARRANGE_DESCRIPTION_AT
 	description_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	BattleUISkin.board(description_box, "WINDOW50", Vector2.ZERO)
 	description_box.hide()

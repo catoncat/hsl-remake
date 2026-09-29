@@ -94,7 +94,7 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 ## 重制接线
 
 - `game/world/PartyEquipmentScreen.gd`：`open` 是大地图卷轴「整理裝備」与剧情 57／81、winfail 045／078 的 `actEnterStorageWindow` 共同入口；关窗把新队伍写回 hand-off carry 与 `user://campaign_progress.json`，其余顶层字段（金币、`pending_rewards`、`initialization_rng`）原样保留，携带的伤害随机流 `damage_rng` 进沙盒并取回沙盒的（使用 从它抽样）；来源场景缺失时 `unknown_source_scenario` 只可关闭，无 carry 时 `no_party`。
-- `game/world/TownShopScreen.gd` MODE_ARRANGE：窗体、按钮条与按页显隐；左板 狀態＝WINDOW21 九行、裝備＝背包 8 格、魔法／特殊技＝WINDOW20 列表；右板六槽每页都显示，悬停出 WINDOW50 说明 (252,390)。
+- `game/world/TownShopScreen.gd` MODE_ARRANGE：窗体、按钮条与按页显隐；左板 狀態＝WINDOW21 九行、裝備＝背包 8 格、魔法／特殊技＝WINDOW20 列表；右板六槽每页都显示，悬停出 WINDOW50 说明 (249,390)：`0x436d70` 在镜头＋(252,349) 画框，`[0x4c1cbc]` bit 0 时 y＋41、bit 1 未置时 x−3；模式 0（`0x425e89` push 0）在 `0x42ab8c` 跳 `0x42acfe`，只有 `0x42ab4b` 置的 bit 0（static-derived；原版帧 15–17、23、24 无悬停框，未实测）。商店（模式 1，`0x45686e`）另在 `0x42ab9f` 或上 bit 1，框在 (252,390)（原版帧 10、22）。
 - `game/sim/PartyStorageRules.gd`：`hsl_party_storage.v1` 两表（important／normal，[{code, qty}]），`put` 同 code 叠数、`take` 拒重要物；存在 carry.loop.party_storage，`CampaignCarryRules` 的 loop 键让它随 carry 跨场与存档，旧 carry 读作空。
 - `PartyEquipmentRules.hand_action`：place（满包互换，换出物成散件手持）／store／retrieve（须空手）／drop（拒重要）／use（`_use_stored`：`ItemUseRules.prepare` 的 HP／MP／气力／解状态＋`ItemResolutionRules.draw_permanent` 抽样与 `refresh_growth_stats`，不跑临时攻防；返回 0 拒用、手持不变而抽样保留；成功耗一件、清手持、放 402 `use_item.wav`）／equip（外来或散件先放进该成员背包再 `change`，换下的旧件进手）／lift（拿起即离包，`0x436e80`）／unequip（空手卸下进手、不占背包，`0x437020`；`unequip_blocked` 拒）／back（放回当前成员首空格；满包时散件留在手上）。
 - `TownShopScreen.gd`：换人不清手持；商店六钮都可按，当前页画暗；裝備 页（10）右板六槽、倉庫 页（7）WINDOW90 列表（数量右对齐）；手势发 `hand_requested`，整理裝備由 `PartyEquipmentScreen` 结算、商店由 `TownRuntime.shop_hand` 结算后写回 carry；商店散件点货表由 `TownRuntime.shop_sell_hand` 卖出。

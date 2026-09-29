@@ -16,10 +16,12 @@ extends Node
 ## RenderingServer draw transforms, so layout, hit testing and every input rule stay the
 ## panel's own (a click during the slide lands where the part is going).
 ## A hover description box (BattleUISkin.in_place: 0x436d70 draws WINDOW50 at camera + (252,349),
-## no window object) never slides and is left out of the close snapshot; a held one (root-window
+## no window object) never slides and is left out of the close snapshot (the snapshot is drawn
+## again without any in-place box when one shows: the root-window list boxes stop drawing in
+## state 2, the pending list's box still draws in the original — see the packet's boundary); a held one (root-window
 ## list branches, drawn only at +0x8c == 1) stays undrawn while the open slide runs and shows in
-## place when it lands, an unheld one (the 獲得物品 pending list, 0x4150ab in every state) shows
-## in place mid-slide.
+## place when it lands — one a page rebuilt mid-slide brings in too (rescanned every tick) —, an
+## unheld one (the 獲得物品 pending list, 0x4150ab in every state) shows in place mid-slide.
 ## The page's black shade (`shades_of`) is the root window's full-screen black shape
 ## (0x4385d3..0x43862c): level +0xae from 0, one level per 3 ticks (+0x84／+0x86 = 3, 0x43828d)
 ## up to BattleUISkin.PANEL_SHADE_LEVEL (8 of 16, drawn half-blended, 0x40000000) while the
@@ -70,7 +72,8 @@ var _shade_wait := 0
 var _shade_life := 0
 var _shades: Array[ColorRect] = []
 var _shade_ghost: ColorRect
-## In-place boxes of the panel; the held ones stay undrawn while the open slide runs (restored when it lands).
+## In-place boxes met during the open slide (rescanned every tick); the held ones stay undrawn
+## while it runs and all are restored when it lands.
 var _held: Array = []
 
 
@@ -271,9 +274,6 @@ func _begin_open() -> void:
 		return
 	opened_count += 1
 	slide_remaining = SLIDE_DISTANCE
-	for node in panel.find_children("*", "CanvasItem", true, false):
-		if node.has_meta(BattleUISkin.IN_PLACE_META):
-			_held.append(node)
 	_clock = 0.0
 	_apply_parts()
 	set_process(true)
@@ -327,7 +327,7 @@ func _begin_close() -> void:
 	_begin_shade_out()
 	if was_opening or DisplayServer.get_name() == "headless" or not is_inside_tree():
 		return
-	var image := get_viewport().get_texture().get_image()
+	var image := _snapshot()
 	if image == null or image.is_empty():
 		return
 	var scale := Vector2(image.get_size()) / VIEW
@@ -364,6 +364,42 @@ func _begin_close() -> void:
 	panel.get_parent().add_child(_ghost)
 	_clock = 0.0
 	set_process(true)
+
+
+## The in-place boxes under the panel.
+func _in_place_boxes() -> Array:
+	return panel.find_children("*", "CanvasItem", true, false).filter(func(node): return node.has_meta(BattleUISkin.IN_PLACE_META))
+
+
+## The last frame for the close snapshot. The original stops drawing every in-place box in
+## state 2 (the root window's list branches need +0x8c == 1), so when one is up the frame is
+## drawn once more, unpresented, with the panel as it was and no in-place box (nor the page's
+## own shade: the shade fade stands in for it). RenderingServer visibility only: no node
+## visibility changes, so no signal or input rule sees it.
+func _snapshot() -> Image:
+	var boxes := _in_place_boxes().filter(_shown_in_panel)
+	if boxes.is_empty():
+		return get_viewport().get_texture().get_image()
+	boxes.append_array(shades_of(panel))
+	RenderingServer.canvas_item_set_visible(panel.get_canvas_item(), true)
+	for item in boxes:
+		RenderingServer.canvas_item_set_visible(item.get_canvas_item(), false)
+	RenderingServer.force_draw(false)
+	var image := get_viewport().get_texture().get_image()
+	for item in boxes:
+		RenderingServer.canvas_item_set_visible(item.get_canvas_item(), item.visible)
+	RenderingServer.canvas_item_set_visible(panel.get_canvas_item(), panel.visible)
+	return image
+
+
+## Visible up to the panel (the panel itself may already be hidden).
+func _shown_in_panel(item: CanvasItem) -> bool:
+	var node: Node = item
+	while node != null and node != panel:
+		if node is CanvasItem and not (node as CanvasItem).visible:
+			return false
+		node = node.get_parent()
+	return node == panel
 
 
 func _process(delta: float) -> void:
@@ -431,6 +467,9 @@ func _apply_parts() -> void:
 			var xform: Transform2D = item.get_transform()
 			xform.origin += part["direction"] * float(slide_remaining)
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), xform)
+	for item in _in_place_boxes():
+		if not _held.has(item):
+			_held.append(item)
 	for item in _held:
 		if is_instance_valid(item):
 			var held := bool(item.get_meta(BattleUISkin.IN_PLACE_META, true))

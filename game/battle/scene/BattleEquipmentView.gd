@@ -52,9 +52,15 @@ const DETAIL_SIZE := Vector2(355, 70)
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	BattleUISkin.board(self, "WINDOW30", BOARD_AT)
+	# WINDOW30 is a window object of its own (0x43ae70, from the right): the view sits on the
+	# board and takes its size, so BattlePanelMotion slides it as one part; children keep their
+	# screen positions (board-local = screen − BOARD_AT).
+	position = BOARD_AT
+	size = BattleUISkin.board(self, "WINDOW30", Vector2.ZERO).texture.get_size()
 	detail_box = Control.new()
 	detail_box.name = "Description"
+	# Screen-origin layer for the in-place WINDOW50 (0x436d70 draws it at a fixed screen point).
+	detail_box.position = -BOARD_AT
 	detail_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	detail_box.hide()
 	BattleUISkin.in_place(detail_box)
@@ -77,7 +83,7 @@ func _ready() -> void:
 		var row := floori(index / 2.0)
 		var at := BOARD_AT + Vector2(SLOT_LEFTS[column], LABEL_ROW_CENTERS[row] - SLOT_SIZE.y / 2.0)
 		var area := Control.new()
-		area.position = at
+		area.position = at - BOARD_AT
 		area.size = SLOT_SIZE
 		area.mouse_filter = Control.MOUSE_FILTER_PASS
 		area.set_meta("equipment_slot", slot)
