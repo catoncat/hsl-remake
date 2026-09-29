@@ -134,11 +134,15 @@ static func memoir_path(slot: int) -> String:
 	return "user://memoir_%02d.json" % slot
 
 
-static func save_memoir(slot: int, record: Dictionary, label: String) -> bool:
+## place and level are the 回憶錄 row's point name and 等級 (optional fields: a memoir saved
+## before them has neither and its row shows memoir_label and level 00).
+static func save_memoir(slot: int, record: Dictionary, label: String, place: String = "", level: int = 0) -> bool:
 	if slot < 0 or slot >= MEMOIR_SLOTS or record.is_empty():
 		return false
 	var copy := record.duplicate(true)
 	copy["memoir_label"] = label
+	copy["memoir_place"] = place
+	copy["memoir_level"] = level
 	return save_progress(copy, memoir_path(slot))
 
 
@@ -159,9 +163,11 @@ static func memoir_entries() -> Array:
 	for slot in range(MEMOIR_SLOTS):
 		var record := load_memoir(slot)
 		if record.is_empty():
-			entries.append({"slot": slot, "empty": true, "label": "", "saved_at_unix": 0, "play_seconds": 0.0})
+			entries.append({"slot": slot, "empty": true, "label": "", "place": "", "level": 0, "saved_at_unix": 0, "play_seconds": 0.0})
 		else:
-			entries.append({"slot": slot, "empty": false, "label": str(record.get("memoir_label", "")),
+			var label := str(record.get("memoir_label", ""))
+			var place := str(record.get("memoir_place", ""))
+			entries.append({"slot": slot, "empty": false, "label": label, "place": place if place != "" else label, "level": int(record.get("memoir_level", 0)),
 				"saved_at_unix": int(record.get("saved_at_unix", 0)), "play_seconds": float(record.get("play_seconds", 0.0))})
 	return entries
 

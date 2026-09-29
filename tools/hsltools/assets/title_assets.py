@@ -92,8 +92,8 @@ REFERENCE_LAYOUT = {
                         'note': 'Title061 (128x47, 確定|取消) over the centre of the open system scroll with no question text: template match on the 2026-09-24 recording at 582.0 s (儲存戰場記錄, mean diff 17.1) and 592.5 s (回主選單, 9.5), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
     'world_panel': {'top_left': [190, 67], 'evidence_tier': 'provisional',
                     'note': 'Title051 (257x345, the between-battle variant: 整理裝備／儲存回憶錄／讀取回憶錄／讀取戰場記錄／設定選項／回主選單) is not shown in any recording; the remake reuses the in-battle scroll position'},
-    'memoir_list': {'top_left': [87, 44], 'evidence_tier': 'provisional',
-                    'note': 'Title031 (466x392, 回憶錄 with eight slot bands) is not shown in any recording; centred on the 640x480 frame'},
+    'memoir_list': {'top_left': [87, 44], 'evidence_tier': 'static-derived',
+                    'note': 'Title031 (466x392, 回憶錄 with eight slot bands): defProcMemoir 0x424a60 centres it on the 640x480 frame and starts it at x + 640, sliding in and out at 40 px per tick (0x45e882／0x45e91e); docs/evidence_packets/runtime_observations/menus_ui/README.md §3'},
     'options_panel': {'top_left': [142, 90], 'evidence_tier': 'runtime-measured',
                       'note': 'Title039 (355x299, 設定選項: 場景效果 off/on, 預備動作 off/on, 音效音量 min/max, 音樂音量 min/max) centred on the 640x480 frame: template match on the 2026-09-24 recording at 588.0 s (mean diff 21.4), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
 }
@@ -130,16 +130,20 @@ WORLD_ITEMS = [
     {'id': 'options', 'label': '設定選項', 'glyphs_in_shape': '设定选项', 'lit': 'world_lit_options', 'lit_offset_in_panel': [54, 222], 'text_center_y_in_panel': 240},
     {'id': 'main_menu', 'label': '回主選單', 'glyphs_in_shape': '回主选单', 'lit': 'world_lit_main_menu', 'lit_offset_in_panel': [53, 268], 'text_center_y_in_panel': 286},
 ]
-# 回憶錄 list geometry inside Title031 (resource-derived: the eight dark slot bands span
-# x 63-407 at y 80-107, 114-140, ... pitch 33). The mode heading (Title032 讀取回憶錄 /
-# Title033 儲存回憶錄, 188x34) replaces the baked 回憶錄 title (provisional placement).
+# 回憶錄 list geometry inside Title031 (static-derived, defProcMemoir 0x424a60): slot row i is an
+# object 791 at (37, 82 + 33 i), 390x26, its text drawn at the row origin in FONT.24 (0x425140);
+# the mode heading (Title032 讀取回憶錄 / Title033 儲存回憶錄) sits at (148, 29) over the baked
+# 回憶錄 title. Row text (0x424f00): the header's point name padded with spaces to 18 Big5 bytes,
+# ' 等級', the level as two digits, ' ', the play clock (0x42d090 mode 1: hours right-aligned in
+# three columns, ':', minutes as two digits); an empty or unreadable slot shows empty_text centred.
 MEMOIR_LIST = {
     'slots': 8,
-    'slot_band_x': [63, 407],
-    'slot_first_top': 80,
-    'slot_height': 28,
+    'row_origin': [37, 82],
+    'row_size': [390, 26],
     'slot_pitch': 33,
-    'heading_offset': [139, 28],
+    'heading_offset': [148, 29],
+    'name_bytes': 18,
+    'empty_text': '\u25ba 無記錄 \u25c4',
 }
 
 # System-menu items: lit shapes Title042-047 registered on the baked glyph rows of Title041
@@ -372,7 +376,7 @@ def build(pak: Path) -> dict:
             'item semantics are the remake reading of the labels: 開始新故事 = new campaign, 戰場記錄 = continue the saved campaign position, 離開遊戲 = quit',
             'the GAME OVER screen (Title011/012) is drawn on defeat when the player leaves for the title: no recording shows it, so its text position, fade timing and dismissal input are remake readings (provisional); its GAMEOVER.WAV cue (interface_audio sfxGameOver, resource 628) is static-derived: defProcGameOverBOSS 0x42aea0 plays it on its first frame',
             'the in-battle system menu (Title041-047) opens on Esc during the player action phase and scrolls in from the bottom edge (remake timing); its handler and the exact scroll speed are not located in the EXE (provisional); 讀取回憶錄 is read as "resume the saved campaign position" and 設定選項 is not remade yet',
-            'the between-battle scroll (Title051-057) and the 回憶錄 list (Title031-033) are not shown in any recording: their positions, the eight-slot memoir model (user://memoir_N.json) and the slot labels are remake readings (provisional); 整理裝備 and the world variant of 讀取戰場記錄 are not remade yet',
+            'the between-battle scroll (Title051-057) is not shown in any recording: its position is a remake reading (provisional); the 回憶錄 list (Title031-033) position, row geometry, row text and empty-slot text are static-derived (defProcMemoir 0x424a60, rows 0x424f00／0x425140, menus_ui README §3); the memoir files (user://memoir_N.json) are the remake store; 整理裝備 and the world variant of 讀取戰場記錄 are not remade yet',
             'the GameClear sequence (level 998) runs as defProcClearBOSS orders it, in 16 ms ticks: a 96-tick fade-in, Over001 / Over002 / workteam scrolled from y 500 at 0.5 px/tick, the nine party slots at 1 px/tick with their status sheets, 240 ticks before the credits, and input only once the credits rest (static-derived, docs/evidence_packets/static_reverse/original_game_clear.md; manifest.game_clear); the credits are the workteam shape itself, no runtime credit strings exist; no recording of the original GameClear exists',
             'the 設定選項 panel (Title039) sits at (142,90) on the 2026-09-24 recording (588.0 s, runtime-measured); the gem knob, the row semantics (場景效果 = story effect objects such as rain/lightning/fire; 音效／音樂音量 = SFX/music buses) and the key bindings are remake readings (provisional); 預備動作 is the original cast-lead switch (READYACTION 2026-09-27: GameSettings.ready_action, 0x477c14 bit 1)',
         ],

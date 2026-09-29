@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (199 modules, 134 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (199 modules, 134 remake-invented cells, 57 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (199)
 
@@ -87,7 +87,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleSkillScrollBar](../game/battle/scene/BattleSkillScrollBar.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | n/a | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#5` | n/a |
 | [BattleStaminaBar](../game/battle/scene/BattleStaminaBar.gd) | n/a | static-derived [original_stamina.md](../docs/evidence_packets/static_reverse/original_stamina.md); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json) | n/a | static-derived [original_stamina.md](../docs/evidence_packets/static_reverse/original_stamina.md) | n/a |
 | [BattleStatusPanel](../game/battle/scene/BattleStatusPanel.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V05`; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V05`; static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md); remake-invented; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a |
-| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#05`; remake-invented [remake_options.json](../content/authored/options/remake_options.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional; remake-invented | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); remake-invented | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); remake-invented | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
+| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#05`; remake-invented [remake_options.json](../content/authored/options/remake_options.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); static-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); remake-invented | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); remake-invented | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
 | [BattleTreasurePresentation](../game/battle/scene/BattleTreasurePresentation.gd) | static-derived [original_treasure.md](../docs/evidence_packets/static_reverse/original_treasure.md) | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); remake-invented | remake-invented | remake-invented | static-derived [original_treasure.md](../docs/evidence_packets/static_reverse/original_treasure.md); remake-invented |
 | [BattleTurnEndCue](../game/battle/scene/BattleTurnEndCue.gd) | n/a | static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); remake-invented | remake-invented; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | static-derived [original_resource_recovery.md](../docs/evidence_packets/static_reverse/original_resource_recovery.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md) | n/a |
 | [BattleVitals](../game/battle/scene/BattleVitals.gd) | n/a | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#V05`; runtime-measured [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) `#7`; resource-derived [portraits/manifest.json](../content/imported/hsl/chapter01/portraits/manifest.json); static-derived [original_stamina.md](../docs/evidence_packets/static_reverse/original_stamina.md); static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md); runtime-measured [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) `#runtime-measured` | resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); static-derived [original_field_coverage.md](../docs/evidence_packets/static_reverse/original_field_coverage.md); static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md); runtime-measured [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) `#runtime-measured`; resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT) | n/a | n/a |
@@ -329,7 +329,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleStatusPanel](../game/battle/scene/BattleStatusPanel.gd) | strings | OPT-INFO=公開: the page never masks, every unit reads as known [OPTIONS.md](../docs/OPTIONS.md) |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | layout | 重製選項 entry under Title039 [remake_options.json](../content/authored/options/remake_options.json) |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | layout | the confirm question line under the scroll, OPT-GUIDE＝提示 only |
-| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | strings | memoir labels; confirm questions and hints — OPT-GUIDE＝提示 only |
+| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | strings | memoir file label; confirm questions and hints — OPT-GUIDE＝提示 only |
 | [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | timing | 1.6 s hint line, OPT-GUIDE＝提示 only |
 | [BattleTreasurePresentation](../game/battle/scene/BattleTreasurePresentation.gd) | layout | discovery caption and hover hint, OPT-TREASURE=全部畫出 only |
 | [BattleTreasurePresentation](../game/battle/scene/BattleTreasurePresentation.gd) | strings | discovery text and hover hint, OPT-TREASURE=全部畫出 only |
@@ -414,7 +414,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (59)
+### provisional 疑点 (57)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -438,8 +438,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleSceneOverlays](../game/battle/scene/BattleSceneOverlays.gd) | timing | — | magic／item target and move selection follow the attack frame; not captured |
 | [BattleSceneStage](../game/battle/scene/BattleSceneStage.gd) | layout | — | runtime_layer_hint split of the level profiles for objects on an actor's plane, under planeObject1 or over planeObject30; story-scene cast without a side is lit as a player |
 | [BattleScriptCoordinator](../game/battle/scene/BattleScriptCoordinator.gd) | rules | — | re-arming may pick another registered instance |
-| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | rules | — | 確定／取消 on the other battle items, memoir slot confirm |
-| [BattleSystemMenu](../game/battle/scene/BattleSystemMenu.gd) | layout | — | memoir list position |
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | layout | — | up to four RNG seed variants stand in for the one shared stream; a member hsl.pak lacks cycles the series' existing members like the untracked player |
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | timing | — | ±1 frame where the original plane-list order differs from the probe's |
 | [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | layout | — | petal／burst offsets from a target-seeded RNG; seed variants stand in for the shared stream |
@@ -484,12 +482,12 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 31 | 72 | 41 | 10 | 29 | 183 |
-| static-derived | 256 | 113 | 19 | 116 | 25 | 529 |
+| resource-derived | 31 | 72 | 42 | 10 | 29 | 184 |
+| static-derived | 256 | 114 | 19 | 116 | 25 | 530 |
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 30 | 15 | 0 | 12 | 2 | 59 |
+| provisional | 29 | 14 | 0 | 12 | 2 | 57 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 54 | 33 | 33 | 13 | 1 | 134 |

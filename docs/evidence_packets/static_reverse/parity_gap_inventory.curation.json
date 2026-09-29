@@ -247,17 +247,19 @@
     },
     {
       "id": "memoir-list",
-      "difference": "回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、槽标签与「空的回憶錄」提示是重制值；战斗卷轴 儲存戰場記錄 以外各项与选格读取前的確定／取消是重制读法",
-      "original": "战斗卷轴过程 0x4253f0 项 2 调 0x423bd0(…, 0) 开 Title031 读取列表（与大地图卷轴项 2 同一调用），Wine 帧已拍；列表过程的逐槽布局与标签格式未读",
+      "difference": "回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、行布局、行文字、空档、悬停、点击后的存读与红字消息已照原版；剩余：列表自右侧滑入／滑出未做，点击时的 Menu_Star 788／789 火花未画，大地图 讀取戰場記錄 无记录时重制跳过確定改出提示行（原版照问、確定后出消息 12）",
+      "original": "defProcMemoir 0x424a60 居中、x＋640 起滑、抬头 (148,29)；行 0x424f00 拼「点名补足 18 字节＋ 等級NN＋时钟 0x42d090」，空档 RESOURCE.TXT 314；行过程 0x425140 悬停 0x42c130 绿脉冲、点击 ACCEPT01＋40 tick 后 0x42ec00／0x42ec10 直接存读，消息 9／10／11／12，板关后 20 tick 收输入；两卷轴確定框 0x423c90 只从 0x4259fb／0x42605a 两处进（战斗 儲存／讀取戰場記錄／回主選單，大地图 讀取戰場記錄／回主選單）",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_storage_window.md"
       ],
-      "remake": "BattleSystemMenu 的读法",
+      "remake": "BattleSystemMenu 照读值画列表与行，OPT-GUIDE＝原版 点击停 40 tick 后直接存读并出原版消息；OPT-GUIDE＝提示 保留问句与提示行",
       "remake_code": [
-        "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list"
+        "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list",
+        "game/battle/scene/BattleSystemMenu.gd:finish_memoir_hold",
+        "game/battle/scene/BattleSystemMenu.gd:memoir_row_text"
       ],
-      "original_status": "read_partial",
+      "original_status": "read_complete",
       "visibility": "rare",
       "effort": "S",
       "category": "面板与界面"
@@ -2153,14 +2155,8 @@
     "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|": {
       "item": "panel-captions"
     },
-    "provenance:game/battle/scene/BattleSystemMenu.gd|layout|provisional|": {
-      "item": "memoir-list"
-    },
     "provenance:game/battle/scene/BattleSystemMenu.gd|layout|remake-invented|": {
       "item": "panel-captions"
-    },
-    "provenance:game/battle/scene/BattleSystemMenu.gd|rules|provisional|": {
-      "item": "memoir-list"
     },
     "provenance:game/battle/scene/BattleSystemMenu.gd|strings|remake-invented|": {
       "item": "panel-captions"

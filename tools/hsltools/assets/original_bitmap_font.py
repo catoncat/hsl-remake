@@ -62,6 +62,9 @@ FACES = {
 # the minus sign of a stat change as the ASCII hyphen, the selection pointer as the arrow, the
 # sub-page mark of 重製選項 › as the ASCII greater-than.
 ALIASES = {'・': '‧', '−': '-', '▶': '→', '›': '>'}
+# Half glyphs below 0x20 the original draws (resource-derived, ASCFONT.24／ASCFONT.15 atlas row):
+# 0x10 ► and 0x11 ◄ frame the 回憶錄 empty-slot text (RESOURCE.TXT item 314, bytes 10 20 B5 4C B0 4F BF FD 20 11, drawn by hsl01.exe 0x424f00).
+CONTROL_HALF = {'\u25ba': '\x10', '\u25c4': '\x11'}
 HALF_FIRST, HALF_END = 0x20, 0x7F
 HALF_ROW = 128  # half glyphs 0x00-0x7f kept on the atlas row (the draw loop takes bytes < 0xa1; text uses 0x20-0x7e)
 # Scanned for used characters: runtime content, minus the tables that list every character.
@@ -166,7 +169,7 @@ def used_chars(root: Path) -> set[str]:
 def atlas_chars(root: Path) -> tuple[list[str], list[str]]:
     """(the used characters the fonts draw, sorted; the used characters they cannot draw)."""
     mapped = glyph_map(root)
-    used = used_chars(root) - {alias for alias, target in ALIASES.items() if ord(target) < 0x80}
+    used = used_chars(root) - {alias for alias, target in ALIASES.items() if ord(target) < 0x80} - CONTROL_HALF.keys()
     return sorted(used & mapped.keys()), sorted(used - mapped.keys())
 
 
@@ -201,7 +204,7 @@ def table_payload(root: Path, chars: list[str], atlases: dict[str, bytes]) -> di
         'loader': 'game/text/OriginalBitmapFont.gd',
         'faces': {name: face_record(name, atlases.get(name, b''), len(chars)) for name in FACES},
         'half_range': [HALF_FIRST, HALF_END],
-        'half_aliases': {alias: target for alias, target in ALIASES.items() if ord(target) < 0x80},
+        'half_aliases': {**{alias: target for alias, target in ALIASES.items() if ord(target) < 0x80}, **CONTROL_HALF},
         'aliases_tier': 'remake-invented',
         'chars': ''.join(chars),
         'slots': [mapped[char] for char in chars],
