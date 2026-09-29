@@ -57,12 +57,12 @@
   "items": [
     {
       "id": "panel-slide-formula",
-      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位，獲得物品待领列表的说明框滑入滑出途中按行的当前矩形判悬停照画；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边；獲得物品待领列表按行矩形而非窗矩形加 mouse_y 定行，残影行名颜色与透明处压暗定在关窗那一帧，窗可见时整窗重建的新部件直接落位、黑底直接 8 级",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位，獲得物品待领列表的说明框滑入滑出途中按行的当前矩形判悬停照画；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边；獲得物品待领列表按行矩形而非窗矩形加 mouse_y 定行，残影行名颜色与透明处压暗定在关窗那一帧；重制滑入途中也受理领取与背包拿起（原版落位后才接），滑入途中点待领行按落点矩形命中（原版按行当前画的位置）",
       "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画，且滑动途中按 drawn_offset 给的当前偏移判悬停（BattleLootPanel.drawn_hover），关窗时快照上方放说明框副本照画；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画，且滑动途中按 drawn_offset 给的当前偏移判悬停（BattleLootPanel.drawn_hover），落位后面板持有落点下的行到光标离开，关窗时先清面板自己的框与行色、快照上方放说明框副本照画；窗显示中重建（拿起、领取、换领取人）后 rescan 按当前剩余距离重新登记部件、遮罩沿用当前级数；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
       "remake_code": [
         "game/battle/scene/BattlePanelMotion.gd:part_side",
         "game/battle/scene/BattlePanelMotion.gd:sides_of",
@@ -70,6 +70,7 @@
         "game/battle/scene/BattlePanelMotion.gd:shade_step",
         "game/battle/scene/BattlePanelMotion.gd:parts_of",
         "game/battle/scene/BattlePanelMotion.gd:drawn_offset",
+        "game/battle/scene/BattlePanelMotion.gd:rescan",
         "game/battle/scene/BattleLootPanel.gd:drawn_hover",
         "game/common/BattleUISkin.gd:in_place"
       ],

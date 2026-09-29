@@ -67,7 +67,9 @@ var _pointer := Vector2.ZERO
 ## BattlePanelMotion draws the pending list off its Controls (open slide, close snapshot): the
 ## rows' own enter／exit signals wait and `drawn_hover` places the hover.
 var _drawn := false
-## The pending row `drawn_hover` last described (−1: none) and the box it used.
+## The pending row `drawn_hover` last described (−1: none) and the box it used. Landed, the panel
+## keeps it until the pointer leaves that row (`_input`): a row that shows up under a still
+## pointer gets no enter, so it would get no exit either.
 var _drawn_row := -1
 var _drawn_box: Control
 
@@ -78,13 +80,16 @@ func _ready() -> void:
 	hide()
 
 
-## The held item is drawn at the cursor (0x414c00 draws it after the window). Motion is read from the
+## The held item is drawn at the cursor (the cursor process draws it at the mouse, 0x4304d5 → 0x430310, with no window offset). Motion is read from the
 ## input stream so pushed test input and the real pointer both move it; the pointer is kept while
 ## hidden too, for the close slide's `drawn_hover`.
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_pointer = get_global_transform_with_canvas().affine_inverse() * event.position
 		if visible and hand_icon != null and hand_icon.visible: hand_icon.position = _pointer - hand_icon.get_meta("origin", Vector2.ZERO)
+		if visible and not _drawn and _drawn_row >= 0 and _drawn_row < rows.size() and is_instance_valid(rows[_drawn_row]) and not Rect2(rows[_drawn_row].position, rows[_drawn_row].size).has_point(_pointer):
+			if is_instance_valid(_drawn_box): _drawn_box.hide()
+			_forget_drawn_row()
 
 
 func close() -> void:
@@ -111,6 +116,8 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	_actors = actors.duplicate(true)
 	_catalog = catalog
 	_consumables = consumables
+	# Shown already (a claim, a new recipient): the rebuilt parts carry on the window's motion.
+	var shown := visible
 	var available: Array = _actors.map(func(actor): return str(actor["id"]))
 	_recipient = recipient_id if available.has(recipient_id) else ("" if available.is_empty() else str(available[0]))
 	_hand = {}
@@ -118,6 +125,7 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	for child in get_children(): remove_child(child); child.queue_free()
 	hand_icon = null
 	description_box = null
+	vitals = null # built last: the row rebuilds leave the motion to the end of the build
 	rows.clear()
 	scroll_bar = null
 	slots.clear()
@@ -145,7 +153,15 @@ func show_rewards(state: Dictionary, actors: Array, catalog: Dictionary, gold: i
 	add_child(vitals)
 	var actor := _actor()
 	if not actor.is_empty(): vitals.show_unit(actor)
+	if shown: _rejoin_motion()
 	show()
+
+
+## BattlePanelMotion (an internal child the settlement controller attaches): parts rebuilt while
+## the window shows join its open slide where it is and the new shade keeps its level.
+func _rejoin_motion() -> void:
+	for child in get_children(true):
+		if child.has_method("rescan"): child.rescan()
 
 
 func _actor() -> Dictionary:
@@ -198,6 +214,7 @@ func _rebuild_bag() -> void:
 			else: _place(-1, 0))
 		slots.append(button)
 	if hand_icon != null: move_child(hand_icon, get_child_count() - 1)
+	if visible and vitals != null: _rejoin_motion()
 
 
 func _build_list() -> void:
@@ -267,6 +284,7 @@ func _rebuild_rows() -> void:
 		rows.append(button)
 	if scroll_bar != null: scroll_bar.resize(_groups.size())
 	if hand_icon != null: move_child(hand_icon, get_child_count() - 1)
+	if visible and vitals != null: _rejoin_motion()
 
 
 func _build_gold(gold: int) -> void:
@@ -445,9 +463,15 @@ func _describe(box: Control, code: int) -> void:
 ## in the close state 2 too. BattlePanelMotion calls this every tick while it draws the rows off
 ## their Controls: `offset_of(row)` is where a row is drawn (null: not drawn), `box` the box to
 ## fill (null: the panel's own; the close snapshot passes its copy). `drawn` false: the rows are
-## on their Controls again (or gone with the window) and their own signals take over.
+## on their Controls again (or gone with the window) and their own signals take over for the
+## next row entered. Hidden, the panel's own box and row colours are cleared here: the rows'
+## exits come after the window's visibility_changed (with `_drawn` already set) and are dropped.
 func drawn_hover(offset_of: Callable, box: Control, drawn: bool) -> void:
 	_drawn = drawn
+	if not visible:
+		if description_box != null: description_box.hide()
+		for row in rows:
+			if is_instance_valid(row): _hide_label(row.get_meta("label"))
 	if box == null: box = description_box
 	var hovered := -1
 	for index in rows.size():
@@ -455,32 +479,32 @@ func drawn_hover(offset_of: Callable, box: Control, drawn: bool) -> void:
 		var offset: Variant = offset_of.call(rows[index]) if drawn else (Vector2.ZERO if visible else null)
 		if offset is Vector2 and Rect2(rows[index].position + offset, rows[index].size).has_point(_pointer): hovered = index
 	if hovered == _drawn_row and (hovered < 0 or (box == _drawn_box and is_instance_valid(box) and box.visible)):
-		if not drawn: _drawn_row = -1
 		return
 	if _drawn_row >= 0 and is_instance_valid(_drawn_box): _drawn_box.hide()
 	_forget_drawn_row()
 	if hovered >= 0 and box != null:
 		var row: Button = rows[hovered]
 		if box == description_box: BattleUISkin.in_place(description_box, false)
-		(row.get_meta("label") as Label).add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
+		if visible: (row.get_meta("label") as Label).add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
 		_describe(box, int(row.get_meta("item_code")))
 		_drawn_row = hovered
 		_drawn_box = box
-	# Handed back: the rows' signals own the hover from here (the pointer is on the row it entered).
-	if not drawn: _drawn_row = -1
 
 
 ## The drawn hover's row goes back to its own colour (its box stays for the caller).
 func _forget_drawn_row() -> void:
 	if _drawn_row >= 0 and _drawn_row < rows.size() and is_instance_valid(rows[_drawn_row]):
-		var label: Label = rows[_drawn_row].get_meta("label")
-		label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
+		_hide_label(rows[_drawn_row].get_meta("label"))
 	_drawn_row = -1
 
 
 func _hide_description(label: Label) -> void:
-	label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
+	_hide_label(label)
 	description_box.hide()
+
+
+func _hide_label(label: Label) -> void:
+	label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
 
 
 func _description_lines(code: int) -> Array:

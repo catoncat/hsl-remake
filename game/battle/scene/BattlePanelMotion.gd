@@ -25,6 +25,10 @@ extends Node
 ## state (0x415601, 0x4304ac): a panel with `drawn_hover` is told each tick where its parts are
 ## drawn (`drawn_offset`: the open slide's offset, then the close snapshot piece's), and on close
 ## gets a copy of its in-place box above the pieces to describe the row under the pointer.
+## A page that rebuilds while it shows (the 獲得物品 window on a pick-up, a claim or a new
+## recipient: the original refreshes the one window object's rows, 0x414c00 state carried on)
+## calls `rescan`: its new parts join the open slide at the distance still to go and its new
+## shade takes the current level. A held item drawn at the cursor is never a part.
 ## The page's black shade (`shades_of`) is the root window's full-screen black shape
 ## (0x4385d3..0x43862c): level +0xae from 0, one level per 3 ticks (+0x84／+0x86 = 3, 0x43828d)
 ## up to BattleUISkin.PANEL_SHADE_LEVEL (8 of 16, drawn half-blended, 0x40000000) while the
@@ -53,6 +57,8 @@ const SLIDE_OUT_STEP := 20
 const SIDE_DIRECTIONS := {"top": Vector2.UP, "bottom": Vector2.DOWN, "left": Vector2.LEFT, "right": Vector2.RIGHT}
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const SHADE_TICKS_PER_LEVEL := 3
+## GameCursor.HELD_GROUP: the item a page draws at the cursor (the cursor process draws it at the mouse, 0x4304d5 → 0x430310, with no window offset).
+const HELD_GROUP := "game_cursor_held_items"
 
 var panel: Control
 ## [{item: CanvasItem, side: String, direction: Vector2}]
@@ -199,11 +205,11 @@ static func slide_out_step(travelled: int) -> int:
 
 ## The panel's drawn parts: its visible Control children, a child that covers most of the
 ## screen replaced by its own visible Control children (a bare backdrop contributes none and
-## neither slides nor joins the close snapshot); an in-place box is never a part.
+## neither slides nor joins the close snapshot); an in-place box or a held item is never a part.
 func parts_of(root: Control) -> Array[Control]:
 	var parts: Array[Control] = []
 	for child in root.get_children():
-		if not (child is Control) or not (child as Control).visible or child.has_meta(BattleUISkin.IN_PLACE_META):
+		if not (child is Control) or not (child as Control).visible or child.has_meta(BattleUISkin.IN_PLACE_META) or child.is_in_group(HELD_GROUP):
 			continue
 		var rect := (child as Control).get_global_rect()
 		if rect.size == Vector2.ZERO:
@@ -211,7 +217,7 @@ func parts_of(root: Control) -> Array[Control]:
 		if _screen_wide(rect):
 			# A screen-wide backdrop (the page's shade) stays put; a wrapper opens one level.
 			for inner in child.get_children():
-				if inner is Control and (inner as Control).visible and not inner.has_meta(BattleUISkin.IN_PLACE_META) and (inner as Control).get_global_rect().size != Vector2.ZERO and not _screen_wide((inner as Control).get_global_rect()):
+				if inner is Control and (inner as Control).visible and not inner.has_meta(BattleUISkin.IN_PLACE_META) and not inner.is_in_group(HELD_GROUP) and (inner as Control).get_global_rect().size != Vector2.ZERO and not _screen_wide((inner as Control).get_global_rect()):
 					parts.append(inner)
 		else:
 			parts.append(child)
@@ -273,10 +279,7 @@ func _begin_open() -> void:
 	_free_ghost()
 	_parts.clear()
 	_begin_shade_in()
-	var parts := parts_of(panel)
-	var sides := sides_of(parts)
-	for index in parts.size():
-		_parts.append({"item": parts[index], "side": sides[index], "direction": SIDE_DIRECTIONS[sides[index]]})
+	_register_parts()
 	if _parts.is_empty():
 		_drawn_hover(false)
 		return
@@ -286,6 +289,34 @@ func _begin_open() -> void:
 	_drawn_hover(true)
 	_apply_parts()
 	set_process(true)
+
+
+## The page rebuilt its parts while it shows: mid open slide the parts drawn now are the slide's
+## parts at the distance still to go (a freed part drops out, a new one joins where the others
+## are); the shade drawn now takes the current level (a fresh ColorRect starts at the full 8).
+func rescan() -> void:
+	if panel == null or not panel.visible:
+		return
+	if opening():
+		var remaining := slide_remaining
+		_restore_parts()
+		_parts.clear()
+		_register_parts()
+		if _parts.is_empty():
+			_drawn_hover(false)
+		else:
+			slide_remaining = remaining
+			_apply_parts()
+	if not _shades.is_empty():
+		_shades = shades_of(panel)
+		_apply_shade()
+
+
+func _register_parts() -> void:
+	var parts := parts_of(panel)
+	var sides := sides_of(parts)
+	for index in parts.size():
+		_parts.append({"item": parts[index], "side": sides[index], "direction": SIDE_DIRECTIONS[sides[index]]})
 
 
 func _begin_shade_in() -> void:
