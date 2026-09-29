@@ -985,7 +985,7 @@
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_effect_motion.md"
       ],
-      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；SkillEffectScriptPlayer._effect_view 按 camera 行移动战场镜头（结束滑回效果前位置）、按 ripple 参数由 BattleCombatCutin.show_effect_ripple 给地图与单位逐行位移，效果阶段结束时关",
+      "remake": "EffectObjectMotion 回放原生轨迹（合成形状按 angle 列旋转、自绘伪实例、重复插入轮换种子变体）；SkillEffectScriptPlayer._effect_view 按 camera 行移动战场镜头（效果脚本走到 op 0 交回，Global 首受术者滑镜接替）、按 ripple 参数由 BattleCombatCutin.show_effect_ripple 给地图与单位逐行位移，效果阶段结束时关",
       "remake_code": [
         "game/battle/scene/EffectObjectMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -2099,17 +2099,19 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 与子状态 6 的停级 8／8 call 淡出已照原版（RELAYSHADE：效果晚 1 tick 起，黑层跟魔法效果阶段位，Global 在效果脚本走到 op 0 时清、Local 在最后一人撤条且最后一段效果脚本走完后清）；剩残影先后与原版差 ±1 call 处、放招 tick 置位比原版早 ±1 tick、Local 的条在 impact tick 出而原版等脚本走完，Local 清位随之仍早（单受术者 min(脚本尾巴, 条时长)，多受术者逐人累计）",
-      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8",
+      "difference": "施法引导子状态 5 与子状态 6 已照原版（RELAYSHADE／RELAYSHADE2：效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Global 状态 7 滑向效果中心（0x442d10 调 0x43bf30 到状态 0 记下的 0x4c3864／0x4c3868）未做、起点少算这段滑行；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
+      "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8、清位后 9 call 淡出；效果 VM 置位后等施法者姿势位（0x442c89 等）；特写脚印 0x410670 读 0x4100e0 选目标时写的 *0x4c1b4c",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；引导段黑层 min(call+1, 8)/16，放招时 BattleCombatCutin.begin_spell_phase 置位、位在期间黑层 8/16，效果片段走到脚本末（script_end_tick）清位，Local 由接力撑到最后一人撤条且最后一段效果脚本走完，清位后按地图时钟 7..0 淡出；效果起点加子状态 5 的 1 call",
+      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；引导段黑层 min(call+1, 8)/16，子状态 5 那 call（spell_phase_begun）BattleCombatCutin.begin_spell_phase 置位、位在期间黑层 8/16，效果片段走到脚本末（script_end_tick）清位，Local 由接力撑到最后一人撤条（每人的条在其脚本末出），清位后按地图时钟从起始级淡出（有引导 7..0、无引导 8..0，首帧画起始级）；效果起点＝posing call 末＋max(子状态 5 的 1 call, caster_pose_ticks)；BattleSceneStage._spell_footprint 给法术的特写与效果阶段同取效果格",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd"
+        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/MagicImpactPresentation.gd",
+        "game/battle/scene/BattleSceneStage.gd"
       ],
       "original_status": "read_complete",
       "visibility": "invisible",

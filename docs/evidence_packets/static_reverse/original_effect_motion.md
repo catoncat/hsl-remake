@@ -127,7 +127,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 重制接线
 
 - `game/battle/scene/EffectObjectMotion.gd` 读原生轨迹并给出某帧的精灵（成员、偏移、加法／减法／普通、层级透明度、缩放）；`SkillEffectScriptPlayer.compile_effect` 给有轨迹的对象标 `native`，同一对象重复插入时轮换种子变体，寿命 = 所选变体的轨迹帧数，合成形状按 `angle` 列旋转（`sprites_at` 的 `rotation`），`_draw_native` 在插入 tick 起逐帧画整棵树；effInsertRandomObject 改为 §2 的折叠偏移与累加延迟。
-- 镜头跟随：`SkillEffectScriptPlayer._effect_view` 在效果播放中逐帧取 `EffectObjectMotion.camera_at`（`camera` 行的镜头相对起点），把战场镜头放到效果开始时的位置＋该量（`clamped_position` 夹在地图内，同 `0x46bede`），效果精灵按镜头实际移动量反向平移（原版效果对象固定在地图上）；剪辑结束时以战斗步长滑回效果前位置。
+- 镜头跟随：`SkillEffectScriptPlayer._effect_view` 在效果播放中逐帧取 `EffectObjectMotion.camera_at`（`camera` 行的镜头相对起点），把战场镜头放到效果开始时的位置＋该量（`clamped_position` 夹在地图内，同 `0x46bede`），效果精灵按镜头实际移动量反向平移（原版效果对象固定在地图上）；效果脚本走到 op 0（`script_end_tick`）即交回镜头、起步滑回效果前位置；OtherBBall1 只在 Global 法术里，此时接力的首受术者滑镜（原版状态 9 `0x442dbd` 的 `0x43bf30`）从当前镜头位置接替。
 - 屏幕波纹：同一函数取 `EffectObjectMotion.ripple_at`（首 call 参数＋上文外推），`ripple_rows` 照 `0x461687` 算 480 行位移表，`BattleCombatCutin.show_effect_ripple` 把一块读屏幕纹理的全屏 ColorRect 放在战场 World 最末（地图、物件、单位之后，界面之前）逐行横移；从对象第一 call 起到剪辑结束（效果阶段结束）关。
 - `skill_effects` 导入同时收下轨迹画到的成员（新导入 53 张子对象帧；hsl.pak 没有的 11 个列入 `missing_members`，与原有缺帧一样按系列循环，provisional）。
 - 定向测试：`run_skill_effect_script_tests`（`native_motion_tracks`／`native_motion_drawing`／`effect_random_insertion`、改写的旧断言）、`run_support_magic_tests`（创建帧不画）、`run_battle_scene_runtime_tests._test_local_spell_layers`（風刃按原生存活区间取样）。消融：`tracked()` 恒假 → 2291 条失败；延迟改回独立随机 → 40 个种子的顺序断言失败；轨迹帧 +1 → "创建 tick 不画"失败。
@@ -142,7 +142,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 ## 边界
 
 - **随机样本**：每个根对象至多 4 个种子变体，重复插入轮换；原版所有实例共用一条 RNG 流，变体只是分布里的样本。
-- **镜头跟随与屏幕波纹**：效果后镜头滑回效果前位置是重制替代（原版由施法例程 `0x442a90` 滚回施法者）；波纹只加在地图与单位层（原版按物件模式 0x400000 逐个画，效果对象自己是否带该位未读）；超过探针第一 call 的参数按上文读法外推。
+- **镜头跟随与屏幕波纹**：效果后镜头在 op 0 交回，Global 首受术者滑镜随即接替、与原版相同；滑回效果前位置只在无人接替时可见，是重制替代；波纹只加在地图与单位层（原版按物件模式 0x400000 逐个画，效果对象自己是否带该位未读）；超过探针第一 call 的参数按上文读法外推。
 - **换色**：effProcIconBGSet 的 obj_Data6（change color mode）写 `[0x4c1cc0]` 0x10000000 与颜色 `[0x4c1cc4]`（`+0xa1..0xa3` 渐变），重制未画。
 - **合成形状的画法**：重制把合成槽画成源 SHP 加 Sprite 旋转（先缩放后旋转）；原版先转位图再缩放，只在非等比缩放时有差，旋转取样的像素误差不证明。
 - **特效原点**：已读（[地图普攻与受击包 §1](original_map_strike.md#1-结论)）：eff_proc_Local 取目标对象 `(+4, +8)`（`0x443087`），即目标格中心、无 y 偏移；eff_proc_Global 取光标格中心（`0x442d81`）。录屏"高约 14 px"量的是脚下，换算到锚点约 2 px。

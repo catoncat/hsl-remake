@@ -21,8 +21,9 @@ extends Node2D
 ## receiver; eff_proc_Local clears it after the last receiver's bars go (0x443271), no earlier
 ## than the last effect's script end; the cast shadow then fades (BattleCombatCutin
 ## end_spell_phase). Before every later receiver eff_proc_Local builds the spell's effect on
-## that receiver again (0x443087 → 0x423a20 at its (+4, +8)) and its bars start once the effect
-## is done — the remake starts them at the replay's impact tick, as for the first receiver. A
+## that receiver again (0x443087 → 0x423a20 at its (+4, +8)); every receiver's bars, the first
+## included, start once its effect script reaches op 0 (state 0x1a waits at 0x443091, the state
+## word stepped only by op 0 — the timeline's `script_end_tick`), not at its last cue. A
 ## hurt receiver enters the map hit state 0x407230 on its damage tick (0x40b8d0 → 0x40aa80 →
 ## 0x40b831); a killed one is marked dead (+0x80 |= 0x8000000, 0x4431a0) 30 ticks later, and
 ## its death (last words, stretch) runs beside the rest of the bars (`death_released`).
@@ -79,7 +80,7 @@ var captions: Callable
 ## The combat cut-in holding the spell effect phase (BattlePresentation); null when standalone.
 var cutin: Node
 ## eff_proc_Local: this relay holds the cut-in's spell phase until the last receiver's bars go
-## and the last replay's script has ended.
+## (they start after its effect script's op 0).
 var _holding := false
 ## eff_proc_Global: the first receiver's lead waits for the effect script's op 0, when the clip
 ## clears the cut-in's spell phase (state 9's entry).
@@ -154,12 +155,14 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 			amount.hide()
 		var hp_after := int(hit.get("defender_hp_after", unit["hp"]))
 		var life := BAR_TICKS + (KILL_WAIT_TICKS + (KILL_EXTRA_GLOBAL if global else KILL_EXTRA_LOCAL) if hp_after <= 0 else 0)
-		# The first Local receiver's bars start at once (its glide ran before the effect); the
-		# first Global one's and every later one's when its lead is laid (_lead).
+		# The first Local receiver's bars start at its effect script's op 0 (its glide ran before
+		# the effect; the relay begins at the effect's last cue, `impact_tick`); the first Global
+		# one's and every later one's when its lead is laid (_lead).
 		var first := entries.is_empty() and not global
+		var wait := maxi(0, _script_end() - int(_replay.get("impact_tick", 0))) if first and not _replay.is_empty() else 0
 		entries.append({"panel": panel, "bars": bars, "amount": amount, "actor": weakref(actor), "hit": bool(hit["hit"]),
 			"hp_after": hp_after, "unit_id": str(hit["defender_id"]), "outcome": hit, "coord": unit.get("coord", Vector2i.ZERO),
-			"bar_world": bar_world, "start": 0 if first else -1, "end": life if first else -1, "life": life,
+			"bar_world": bar_world, "start": wait if first else -1, "end": wait + life if first else -1, "life": life,
 			"float_ticks": amount.life_ticks() if amount != null else 0})
 	if cutin != null and cutin.spell_phase and not entries.is_empty():
 		if global:
@@ -176,7 +179,7 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 ## A receiver's lead — the first Global one's on state 9's entry (the clear), a later one's on the
 ## tick the previous bars went (0x43b4c0 → 0x4104d0(1)): the 0x43bf30 glide to it at the battle
 ## step (none when already within its tolerance), then (a later Local one) the effect replay;
-## its bars start when the glide lands, or at the replay's impact tick.
+## its bars start when the glide lands, or at the replay's script end (op 0).
 func _lead(entry: Dictionary, at: int) -> void:
 	var controller = _camera()
 	var glide := 0
@@ -187,7 +190,7 @@ func _lead(entry: Dictionary, at: int) -> void:
 	if not _replay.is_empty():
 		entry["effect_start"] = at + glide
 		entry["effect_clip"] = {"effect_timeline": _replay}
-		replay = int(_replay.get("impact_tick", 0))
+		replay = _script_end()
 	entry["start"] = at + glide + replay
 	entry["end"] = int(entry["start"]) + int(entry["life"])
 
@@ -224,7 +227,7 @@ func total_seconds() -> float:
 	var last := 0
 	var previous_end := int(OriginalTick.ticks(elapsed)) if _await_clear else 0
 	for entry in entries:
-		var start := int(entry["start"]) if int(entry["start"]) >= 0 else previous_end + int(_replay.get("impact_tick", 0))
+		var start := int(entry["start"]) if int(entry["start"]) >= 0 else previous_end + _script_end()
 		previous_end = start + int(entry["life"])
 		last = maxi(last, maxi(previous_end, start + NUMBER_TICKS + int(entry["float_ticks"])))
 		if entry.has("effect_start"):
@@ -275,7 +278,7 @@ func _process(delta: float) -> void:
 		var previous: int = entries[index - 1]["end"]
 		if int(entries[index]["start"]) < 0 and previous >= 0 and tick >= previous:
 			_lead(entries[index], previous)
-	if _holding and int(entries[-1]["end"]) >= 0 and tick >= _release_tick(entries[-1]):
+	if _holding and int(entries[-1]["end"]) >= 0 and tick >= int(entries[-1]["end"]):
 		_release_phase()
 	if elapsed >= total_seconds():
 		finish()
@@ -329,13 +332,9 @@ func _effect_player() -> SkillEffectScriptPlayer:
 	return _effect
 
 
-## eff_proc_Local's clear (0x443271): the last receiver's bars gone and, for a replay, its
-## script at op 0; the first receiver's own clip is waited for by release_spell_phase.
-func _release_tick(entry: Dictionary) -> int:
-	var at := int(entry["end"])
-	if entry.has("effect_start"):
-		at = maxi(at, int(entry["effect_start"]) + int(_replay.get("script_end_tick", _replay.get("complete_tick", 0))))
-	return at
+## The replayed effect's op 0 (0x4239ac steps state 0x1a on), where its receiver's bars start.
+func _script_end() -> int:
+	return int(_replay.get("script_end_tick", _replay.get("complete_tick", 0)))
 
 
 func _release_phase() -> void:

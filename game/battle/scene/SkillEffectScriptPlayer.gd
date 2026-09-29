@@ -75,8 +75,9 @@ const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.g
 const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
-## Object 154's sub-state 5 (0x403089): the one call after the lead that hands the flow back to
-## the effect VM (0x40309e) before its states 4／7／0x17／0x19 run.
+## Object 154's sub-state 5 (0x403089): the one call after the posing call; it hands the flow
+## back to the effect VM (0x40309e), whose states 4／7／0x17／0x19 set the effect phase and then
+## wait only on the caster's pose bit — in parallel with the pose, not after it.
 const SUB_STATE_5_TICKS := 1
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
@@ -909,23 +910,32 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# 0x442f26, 0x442c6c, 0x442cea); a caster with no lead frames takes the 預備動作-off jump
 	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
 	# shadowed whether or not the spell deals damage: level min(call + 1, 8) while +0x90 counts
-	# (0x4030f7); from the release the effect phase holds it at 8 (host.begin_spell_phase).
+	# (0x4030f7); from sub-state 5's call the effect phase holds it at 8 (host.begin_spell_phase).
 	var lead_call := int(elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
 	# The spell's name captions the AI lead-in's range (BattleAttackCue.caption), not the effect:
 	# the original's effect states (0x7a, 0x4419f8) draw no text.
 	host.result.visible = false
 	show()
-	# A caster without an imported strip plays the 預備動作-off lead (the same 0x401ec4 jump).
+	# A caster without an imported strip plays the 預備動作-off lead (the same 0x401ec4 jump);
+	# with 預備動作 off the host hands out that lead for a caster with a strip too (0x401e74
+	# tests only [0x477c14] & 2), so both take the skipped timing: posing on the 9th call,
+	# shadow fade 8..0.
 	var lead: Dictionary = host.cast_lead(clip, "magic")
-	if lead.is_empty():
+	var skipped := lead.is_empty() or bool(lead.get("skipped", false))
+	if skipped:
 		lead = AnimalCastLead.skipped(true)
 	var lead_end: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"])))
-	# The lead's last call poses the caster (0x4071e0), bursts Cast_Star and sounds 0x193
-	# (0x402fd1／0x403128); the call after it is sub-state 5 (0x403089), which hands the flow
-	# back (parent +0x8c++, 0x40309e) — only then do the effect VM states 4／7／0x17／0x19 run,
-	# waiting while the caster's pose bit 0x1000 is set (0x442c89, 0x442d07, 0x442f65,
-	# 0x443009), 8n + 40 ticks.
-	var lead_in: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"]) + SUB_STATE_5_TICKS + float(clip.get("caster_pose_ticks", 0))))
+	# The call that enters sub-state 5 poses the caster (0x4071e0 sets +0x80 |= 0x1000 at
+	# 0x40721b), bursts Cast_Star and sounds 0x193: a strip lead's last tail call (0x402fd1,
+	# counted in TAIL_CALLS), the 預備動作-off lead's 9th call after its 8 states (0x403128).
+	# Sub-state 5 (0x403089) runs on the next call, handing the flow back (parent +0x8c++,
+	# 0x40309e): the effect VM states 4／7／0x17／0x19 set the effect phase from there and wait
+	# only while the pose bit is set (0x442c89, 0x442d07, 0x442f65, 0x443009), 8n + 40 ticks
+	# from the posing call. So the effect starts at the posing call's end + max(sub-state 5's
+	# call, the pose).
+	var posing_end := float(lead["complete_tick"]) + (1.0 if skipped else 0.0)
+	var phase_at: float = Timing.scaled(OriginalTick.seconds(posing_end))
+	var lead_in: float = Timing.scaled(OriginalTick.seconds(posing_end + maxf(SUB_STATE_5_TICKS, float(clip.get("caster_pose_ticks", 0)))))
 	if elapsed < lead_end:
 		host.shade_map(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL))
 		host.show_cast_lead(clip, lead, elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
@@ -936,14 +946,21 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		host.ability_sound.stream = load(host.cue_manifest["sounds"]["cast_magic"]["res_path"])
 		host.ability_sound.play()
 		clip["cast_stars"] = cast_stars(hash(str(clip["strike"])))
-		# After the lead the attacker object stays: sub-state 5 hides it, sub-state 6 (0x4030b7)
-		# keeps its shadow at +0x90 = 8 while the effect phase [0x4c1b00] & 0x1000000 holds —
-		# the one bit the shadow, the spell's lift and the shadows' hold read; the script's op 0
-		# (Global) or the relay after it (Local) clears it and the host plays the 8-call fade.
-		host.begin_spell_phase(clip["strike"])
 		var controller: RefCounted = host.battle_camera()
 		if controller != null and controller.camera != null:
 			clip["cast_camera"] = controller.camera.position
+	if elapsed < phase_at:
+		# The 預備動作-off lead's posing call: sub-state 7 still draws its shadow.
+		host.shade_map(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL))
+	elif not clip.get("spell_phase_begun", false):
+		# After the lead the attacker object stays: sub-state 5 drops the close-up bit and hides
+		# it, sub-state 6 (0x4030b7) keeps its shadow while the effect phase [0x4c1b00] &
+		# 0x1000000 holds — the one bit the shadow, the spell's lift and the shadows' hold read;
+		# the script's op 0 (Global) or the relay after it (Local) clears it and the host fades
+		# the shadow from +0x90: 7..0 after a strip lead, 8..0 after the 預備動作-off one (its
+		# sub-state 7 leaves at +0x90 = 9, 0x4030fe).
+		clip["spell_phase_begun"] = true
+		host.begin_spell_phase(clip["strike"], AnimalCastLead.SHADOW_MAX_LEVEL if skipped else AnimalCastLead.SHADOW_MAX_LEVEL - 1)
 	var star_origin: Vector2 = clip["map_caster"] - Vector2(0, float(clip.get("caster_height", CAST_STAR_DEFAULT_HEIGHT)))
 	var star_tick: float = (elapsed - lead_end) / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND
 	if elapsed < lead_in:
@@ -1013,9 +1030,10 @@ func _view_shift(host: CanvasLayer, clip: Dictionary) -> Vector2:
 ## The two effect objects that act on the whole view. effProcOtherBig (OtherBBall1) moves the
 ## battle camera by its 0x43bf30 track (EffectObjectMotion.camera_at), clamped to the map as
 ## 0x46bede does; the effect sprites, fixed on the map in the original, are drawn shifted
-## back by the camera's actual move (_view_shift). As the clip completes the camera
-## glides back to where the effect found it at the battle step (the cast routine 0x442a90
-## scrolls back after the effect phase; the remake has no separate return glide).
+## back by the camera's actual move (_view_shift). At the script's op 0 the effect hands the
+## camera back: it glides toward where the effect found it at the battle step, and
+## eff_proc_Global's glide to its first receiver (state 9, 0x442dbd, MagicImpactPresentation)
+## replaces that glide as it starts; the fading objects keep drawing without moving it.
 ## effProcIconBGSet (IconBGSet1／FireBGSet) lays its 0x461687 row offsets over the map and
 ## units (host.show_effect_ripple) from its first call until the effect phase ends: the object
 ## only deletes itself — and clears the ripple bit 0x400000 of [0x4c1cc0] (0x41d761) — once
@@ -1035,12 +1053,15 @@ func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bo
 			ripple = params
 	host.show_effect_ripple({} if complete or not host.spell_phase else ripple)
 	var camera: RefCounted = host.battle_camera()
-	if camera == null or camera.camera == null or (offset == Vector2.ZERO and not clip.has("effect_camera_base")):
+	if camera == null or camera.camera == null or clip.get("camera_returned", false) or (offset == Vector2.ZERO and not clip.has("effect_camera_base")):
 		return
 	if not clip.has("effect_camera_base"):
 		clip["effect_camera_base"] = camera.camera.position
 	var base: Vector2 = clip["effect_camera_base"]
-	if complete:
+	if complete or clip.get("script_ended", false):
+		# The camera is handed back once, at the script's op 0: the relay's glide to the first
+		# receiver (state 9, 0x442dbd) then takes it over.
+		clip["camera_returned"] = true
 		camera.scroll_to(base)
 		return
 	camera.stop_scroll()

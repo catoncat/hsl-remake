@@ -92,7 +92,9 @@ static func panel_metrics(frames: Array, textures: Array) -> Array:
 
 
 ## The lead a caster plays with 預備動作 off: SKIPPED_* calls with the caster object hidden
-## (`hidden`), no inset, portrait or afterimage, the map shadowed only for a spell.
+## (`hidden`), no inset, portrait or afterimage, the map shadowed only for a spell; `skipped`
+## marks it, as the host hands it out for a caster with a strip too (0x401e74 → 0x401ec4 does
+## not look at the strip).
 static func skipped(magic: bool) -> Dictionary:
 	var states: Array = []
 	for call in range(SKIPPED_MAGIC_CALLS if magic else SKIPPED_SPECIAL_CALLS):
@@ -102,7 +104,7 @@ static func skipped(magic: bool) -> Dictionary:
 		var shadow := mini(call + 1, SHADOW_MAX_LEVEL) if magic and call > 0 else 0
 		var glow := 0 if magic or call == 0 else mini(call - 1, FADE_CALLS)
 		states.append({"banner": CENTRE, "hidden": true, "mirrored": false, "shadow": shadow, "inset": -1, "inset_anchor": Vector2i.ZERO, "portrait": -1, "portrait_anchor": Vector2i.ZERO, "fade": 0.0, "glow": glow, "afterimages": []})
-	return {"states": states, "complete_tick": states.size(), "strip": []}
+	return {"states": states, "complete_tick": states.size(), "strip": [], "skipped": true}
 
 
 ## True when `program` is a cast lead this module can play against `panel_count` strip

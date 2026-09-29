@@ -198,28 +198,42 @@ func sync_actor_depth(actor: Node, unit: Dictionary) -> void:
 ## writes to *0x4c1b4c, read by 0x410670) and any actor in the use_magic pose
 ## (ActorRuntime.CAST_LIFT_Z). The phase is the cut-in's `spell_phase` bit (spell_effect_phase).
 ## The close-up bit 0x400000 (close_up_phase) caps a flyer outside the footprint at bucket 22;
-## the spell effect phase caps every flyer (steps 2／3); an attack's footprint is its target.
+## the spell effect phase caps every flyer (steps 2／3). The footprint 0x410670 reads is the
+## grid 0x4100e0 last wrote at target selection (*0x4c1b4c): a spell's effect cells at its cast
+## centre through its lead as through its effect; an attack's footprint is its target.
 func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 	var lifted := {}
 	var close_up := close_up_phase(cutin)
 	var phase := spell_effect_phase(cutin)
-	if close_up and not phase:
-		lifted[str(cutin.clips[0]["strike"].get("defender_id", ""))] = true
 	if phase:
-		var strike: Dictionary = cutin.spell_strike
-		var caster := BattlePlayLoop.unit(loop, str(strike.get("attacker_id", "")))
-		var defender := BattlePlayLoop.unit(loop, str(strike.get("defender_id", "")))
-		if not caster.is_empty() and not defender.is_empty():
-			var fields: Dictionary = BattlePlayLoop.skill_fields(loop, str(strike["skill_id"]))
-			var cells: Array = BattlePlayLoop.SkillTargetRules.effect_cells(strike.get("cast_center", defender["coord"]), fields, loop[LoopKeys.SKILL_TARGET_DATA], loop[LoopKeys.MAP_SIZE], caster["coord"])
-			for unit in loop.get(LoopKeys.UNITS, []):
-				if cells.has(unit.get("coord")):
-					lifted[str(unit["id"])] = true
+		lifted = _spell_footprint(loop, cutin.spell_strike)
+	elif close_up:
+		var strike: Dictionary = cutin.clips[0]["strike"]
+		if str(strike.get("skill_id", "")).begins_with("magic:"):
+			lifted = _spell_footprint(loop, strike)
+		else:
+			lifted[str(strike.get("defender_id", ""))] = true
 	for unit in loop.get(LoopKeys.UNITS, []):
 		var actor = runtime.actor_node_for_unit(str(unit["id"]))
 		if actor != null:
 			actor.cast_lift = phase and (lifted.has(str(unit["id"])) or actor.is_posing())
 			actor.flying_cap = phase or (close_up and not lifted.has(str(unit["id"])))
+
+
+## The units standing in `strike`'s effect cells (SkillTargetRules.effect_cells at its cast
+## centre), keyed by id.
+static func _spell_footprint(loop: Dictionary, strike: Dictionary) -> Dictionary:
+	var inside := {}
+	var caster := BattlePlayLoop.unit(loop, str(strike.get("attacker_id", "")))
+	var defender := BattlePlayLoop.unit(loop, str(strike.get("defender_id", "")))
+	if caster.is_empty() or defender.is_empty():
+		return inside
+	var fields: Dictionary = BattlePlayLoop.skill_fields(loop, str(strike["skill_id"]))
+	var cells: Array = BattlePlayLoop.SkillTargetRules.effect_cells(strike.get("cast_center", defender["coord"]), fields, loop[LoopKeys.SKILL_TARGET_DATA], loop[LoopKeys.MAP_SIZE], caster["coord"])
+	for unit in loop.get(LoopKeys.UNITS, []):
+		if cells.has(unit.get("coord")):
+			inside[str(unit["id"])] = true
+	return inside
 
 
 ## The map spell effect phase ([0x4c1b00] & 0x1000000): the cast routine 0x442a90 sets it after
@@ -234,12 +248,13 @@ static func spell_effect_phase(cutin: Node) -> bool:
 
 ## The close-up bit ([0x4c1b00] & 0x400000): the attacker object 154 (process 0x401c20) holds it
 ## through a cut-in clip; a spell's lead drops it at sub-state 5 (0x403089, `&= 0xff3fffff`),
-## the call after its release.
+## the call after the caster poses — where the effect phase begins (SkillEffectScriptPlayer
+## `spell_phase_begun`).
 static func close_up_phase(cutin: Node) -> bool:
 	if cutin == null or not cutin.busy():
 		return false
 	var clip: Dictionary = cutin.clips[0]
-	return not (str(clip["strike"].get("skill_id", "")).begins_with("magic:") and bool(clip["release_emitted"]))
+	return not (str(clip["strike"].get("skill_id", "")).begins_with("magic:") and bool(clip.get("spell_phase_begun", false) if clip.has("effect_timeline") else clip["release_emitted"]))
 
 
 ## Lookup order: the scenario's own manifest, then the shared up-title manifest. An
