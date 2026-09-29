@@ -418,13 +418,13 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 那 1 call 没单独留（效果早 1 tick 起），子状态 6 在效果结束后 8 call 的阴影淡出未播",
+      "difference": "施法引导子状态 5 与子状态 6 的停级 8／8 call 淡出已照原版（RELAYSHADE：效果晚 1 tick 起，黑层跟魔法效果阶段位，Global 在效果脚本走到 op 0 时清、Local 在最后一人撤条且最后一段效果脚本走完后清）；剩残影先后与原版差 ±1 call 处、放招 tick 置位比原版早 ±1 tick、Local 的条在 impact tick 出而原版等脚本走完，Local 清位随之仍早（单受术者 min(脚本尾巴, 条时长)，多受术者逐人累计）",
       "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；地图法术效果期间黑层 8/16，无引导时引导段黑层 1..8/16",
+      "remake": "AnimalCastLead 播停留 11 call、法术尾段 31 call 与中心光球；引导段黑层 min(call+1, 8)/16，放招时 BattleCombatCutin.begin_spell_phase 置位、位在期间黑层 8/16，效果片段走到脚本末（script_end_tick）清位，Local 由接力撑到最后一人撤条且最后一段效果脚本走完，清位后按地图时钟 7..0 淡出；效果起点加子状态 5 的 1 call",
       "remake_code": [
         "game/battle/scene/AnimalCastLead.gd",
         "game/battle/scene/BattleCombatCutin.gd",
@@ -495,17 +495,17 @@
     },
     {
       "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），风／火／水先照做（MAGICSEQ），回复、状态、增益、解除等其余地图法术也已照原版 0x442a90 逐受者接力、每受者至多一个数（MAGICBARALL）；剩：首个受者前原版也滑一次镜头、Local 重放时原版重新压暗并跑 OtherBBall1 镜头轨迹与 IconBGSet 波纹，重制未做",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），所有地图法术已照原版 0x442a90 逐受者接力、每受者至多一个数（MAGICSEQ／MAGICBARALL）；首个受者前的滑镜头（Global 效果脚本走完后、Local 效果前）与 Global 效果阶段位的清除时刻也已照做（RELAYSHADE）；剩 0x43bf30 第二参数 Local 0x80000000／Global 0 含义未读，重制两边同用战斗步长",
       "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移），子状态 0x19 对 0x4104d0(1) 取出的每个受者各走一次，效果结束才出条；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_strike.md",
         "docs/evidence_packets/static_reverse/original_magic_damage.md",
         "docs/evidence_packets/runtime_observations/effect_motion/README.md"
       ],
-      "remake": "BattlePresentation 传入各受影响单位的格中心；所有地图法术（MagicImpactPresentation.is_relayed）的 Local 效果只在首个受者放，MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次",
+      "remake": "BattlePresentation 传入各受影响单位的格中心；Local 效果只在首个受者放（放前 SkillEffectScriptPlayer 滑镜头到首个受者），MagicImpactPresentation 滑镜头后在每个后续受者重放；Global 在 clip map_target（cast_center 格中心）放一次，接力开始时先滑到首个受者",
       "remake_code": [
         "game/battle/scene/BattlePresentation.gd",
-        "game/battle/scene/SkillEffectScriptPlayer.gd",
+        "game/battle/scene/SkillEffectScriptPlayer.gd:_first_receiver_glide",
         "game/battle/scene/MagicImpactPresentation.gd:_lead"
       ],
       "original_status": "read_complete",
@@ -3139,10 +3139,6 @@
       "item": "panel-slide-formula",
       "text": "录屏里加点窗关闭向下（350.25 s）与 `0x43b000`／`0x43b3a0` 自左的起点不符，未读清是哪一个对象，重制按起点原路滑回。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_map_strike.md#5450643da0": {
-      "item": "effect-origin",
-      "text": "首个受者前原版也滑一次镜头、Local 重放时原版重新压暗并跑 OtherBBall1 镜头轨迹与 IconBGSet 波纹，这几处重制未做（见 original_magic_damage.md「边界」）。"
-    },
     "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|negative-evidence|044-M0002.SHP 不在 hsl.pak": {
       "item": "cast-strip-missing"
     },
@@ -3161,7 +3157,7 @@
     "scope:docs/evidence_packets/static_reverse/original_cast_overlays.md|negative-evidence|道具目标态无绘制调用点": {
       "item": "cast-overlay-rules"
     },
-    "scope:docs/evidence_packets/static_reverse/original_draw_order.md|provisional|站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶、效果阶段取整段切入": {
+    "scope:docs/evidence_packets/static_reverse/original_draw_order.md|provisional|站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶": {
       "item": "draw-depth-states"
     },
     "scope:docs/evidence_packets/static_reverse/original_round_display.md|provisional|事件链内武装的胜负判定时机、受击单位注册竞态": {
@@ -3244,6 +3240,10 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_status_application.md|provisional|异常输入拒绝与状态短演出": {
       "item": "floater-extra-words"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_magic_damage.md#560156ba1f": {
+      "item": "effect-origin",
+      "text": "`0x43bf30` 第二参数 Local 为 0x80000000、Global 为 0，含义未读；"
     }
   }
 }

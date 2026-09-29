@@ -127,6 +127,26 @@ var effect_ripple: ColorRect
 ## The cast shadow (shade_map): the level 0..8 this frame and its black rect in the battle World.
 var map_shadow_level := 0
 var map_shadow: ColorRect
+## The map spell effect phase, [0x4c1b00] & 0x1000000 — the one source the shadow, the cast lift
+## and the shadows' hold read (BattleSceneStage.spell_effect_phase). The cast routine 0x442a90
+## sets it in states 4／7／0x17／0x19 (0x442c77, 0x442cf5, 0x442f53, 0x442ff7), after the lead's
+## sub-state 5 steps the VM (0x40309e): SkillEffectScriptPlayer._present_effect at the release.
+## Both run only once the effect script reaches op 0 (0x4239ac steps the routine's state):
+## eff_proc_Global clears it at state 9's entry (0x442da3), before the first receiver's glide
+## and bars; eff_proc_Local after the last receiver's bars go (0x443271). The effect clip clears
+## it at its script end (SkillEffectScriptPlayer `script_end_tick`) unless a relay holds it
+## (`spell_phase_held`); MagicImpactPresentation lets go after the last bars and the last
+## replay's script end (release_spell_phase).
+## While it holds, object 154's sub-state 6 (0x4030b7) keeps the shadow at level 8; once clear
+## it takes one level a call and draws 7..0 (8 calls), then deletes itself.
+var spell_phase := false
+## The strike whose effect phase holds (the lift footprint outlives the clip for Local).
+var spell_strike: Dictionary = {}
+## True while MagicImpactPresentation owns the clear (eff_proc_Local's receivers).
+var spell_phase_held := false
+## Sub-state 6's fade after the clear: map-clock seconds since it started, < 0 when none runs.
+var _shade_fade := -1.0
+var _shade_fade_pace := 1.0
 const EFFECT_RIPPLE_SHADER := """shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
 uniform float offsets[480];
@@ -475,6 +495,51 @@ func shade_map(level: int) -> void:
 	map_shadow.show()
 
 
+## Sets the map spell effect phase for `strike` (the shadow holds at level 8 from this frame).
+func begin_spell_phase(strike: Dictionary) -> void:
+	spell_phase = true
+	spell_strike = strike
+	spell_phase_held = false
+	_shade_fade = -1.0
+	shade_map(AnimalCastLead.SHADOW_MAX_LEVEL)
+
+
+## Clears the map spell effect phase; object 154's 8-call fade runs from the next frame on the
+## map clock (OPT-PACE, Timing.PACE_MAP), whether or not a clip or relay still runs.
+func end_spell_phase() -> void:
+	if not spell_phase:
+		return
+	spell_phase = false
+	spell_strike = {}
+	spell_phase_held = false
+	_shade_fade = 0.0
+	_shade_fade_pace = float(Timing.PACE_MAP.get(GameOptions.value("OPT-PACE"), 1.0))
+
+
+## The Local relay lets go of the clear: the phase ends now, or at the effect clip's script end
+## when that clip is still short of its op 0.
+func release_spell_phase() -> void:
+	spell_phase_held = false
+	if busy() and is_same(clips[0]["strike"], spell_strike) and not bool(clips[0].get("script_ended", false)):
+		return
+	end_spell_phase()
+
+
+## This frame's sub-state 6 shadow: level 8 while the phase holds, then 7..0 one per tick.
+func _shade_spell_phase(delta: float) -> void:
+	if spell_phase:
+		shade_map(AnimalCastLead.SHADOW_MAX_LEVEL)
+		return
+	if _shade_fade < 0.0:
+		return
+	_shade_fade += maxf(0.0, delta) * _shade_fade_pace
+	var level := AnimalCastLead.SHADOW_MAX_LEVEL - 1 - int(OriginalTick.ticks(_shade_fade))
+	if level <= 0:
+		_shade_fade = -1.0
+		return
+	shade_map(level)
+
+
 func show_effect_ripple(params: Dictionary) -> void:
 	var camera := battle_camera()
 	var world: Node = get_parent().get_parent().get_node_or_null("World") if camera != null else null
@@ -526,6 +591,7 @@ func _complete_clip() -> void:
 
 
 func _process(delta: float) -> void:
+	var map_delta := delta
 	delta *= pace
 	for presenter in presenters:
 		presenter.hide()
@@ -534,6 +600,7 @@ func _process(delta: float) -> void:
 	map_shadow_level = 0
 	if map_shadow != null:
 		map_shadow.hide()
+	_shade_spell_phase(map_delta)
 	cast_inset.hide()
 	cast_portrait.hide()
 	hit_flash_sprite.hide()

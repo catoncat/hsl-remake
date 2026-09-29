@@ -127,6 +127,7 @@ func _ready() -> void:
 	receiver_layer.layer = cutin.layer + 1
 	add_child(receiver_layer)
 	receiver_layer.add_child(magic_impact)
+	magic_impact.cutin = cutin
 	attack_cue = preload("res://game/battle/scene/BattleAttackCue.gd").new()
 	attack_cue.hide()
 	add_child(attack_cue)

@@ -1,6 +1,6 @@
 # 原版绘制顺序：单位与站立物件谁挡住谁
 
-> evidence: static-derived; resource-derived: PROCESS.DEF plane／objattr 常量、各关 OBS 的 obj_Plane／obj_Attribute; provisional: 站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶、效果阶段取整段切入 · status: live · functions: 0x4051d0, 0x4071e0, 0x410670, 0x4300f0, 0x43ccf0, 0x43f31e, 0x442a90, 0x443849, 0x446ad0, 0x45dd8a, 0x45e307, 0x45f5f7, 0x461479 · tools: run_battle_scene_runtime_tests.gd, test_hsl_opening_positions.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PROCESS.DEF plane／objattr 常量、各关 OBS 的 obj_Plane／obj_Attribute; provisional: 站立物件行桶不夹紧、抬起桶交错、窗口期飞行封顶 · status: live · functions: 0x4051d0, 0x4071e0, 0x410670, 0x4300f0, 0x43ccf0, 0x43f31e, 0x442a90, 0x443849, 0x446ad0, 0x45dd8a, 0x45e307, 0x45f5f7, 0x461479 · tools: run_battle_scene_runtime_tests.gd, test_hsl_opening_positions.py · updated: 2026-09-29
 
 ## 结论
 
@@ -9,7 +9,7 @@
 - 过程不改 +0xc 的物件停在 `obj_Plane` 桶：defProcObjectMove（`0x4051d0`）整段只读不写自身 +0xc。玩家第 3 场 · 逃出克萊恩城（LEVEL053）开场的 繩子（planeObject1 = 桶 4）因此画在 緹娜 下面——她下绳时桶号 10..19，只有她站在视口最上一格行时才与绳子同桶（static-derived）。
 - 重制 `ActorRuntime.apply_object_depth` 给 defProcObjectMove 物件与带 ATTACKFLAG 的站立物件定固定 plane：planeObject1 以下压在全部单位下，planeObject1..30 = 当前视口的同号桶（`refresh_fixed_planes` 每帧按镜头顶行换算，随镜头滚动与单位交错），planeObject31 以上压在全部未抬起单位上，planeEffect* 起用 `EFFECT_Z`；繩子 = 桶 4，下绳的 緹娜 桶 10..19 画在其上（static-derived）。
 - 单位过程算完行桶与飞行 +10 后还有两段全局状态分支（static-derived）：①`[0x4c1b00] & 0x1400000`（战斗特写或状态窗／仓库窗打开期间、或魔法效果阶段）时，桶号超过 22 的飞行单位若不在施法脚印里就压回 22；②`& 0x1000000`（魔法效果阶段）时，飞行单位先压回 22，再给施法脚印内的单位和摆着施法姿势的单位 +23——施法者与目标在效果放完前画在全部 y 排序的单位与站立物件上面。
-- 重制 `BattleSceneStage.sync_cast_depth` 在地图 `magic:` 切入播放期间，给效果格内的单位与施法姿势中的单位置 `ActorRuntime.cast_lift`（桶 +23，z 进 `CAST_LIFT_Z` 带：全部行桶 z 之上、planeObject31 固定带之下，带内按桶与 plane），并给全部飞行单位置 `flying_cap`；其他切入（攻方特写，对应 0x400000）期间目标格外的飞行单位置 `flying_cap`（桶 > 22 压回 22）（static-derived）。
+- 重制 `BattleSceneStage.sync_cast_depth` 在魔法效果阶段（`spell_effect_phase` 读 `BattleCombatCutin.spell_phase`，放招后置位，Global 在效果脚本走到 op 0 时清、Local 在最后一人撤条且最后一段效果脚本走完后清），给效果格内的单位与施法姿势中的单位置 `ActorRuntime.cast_lift`（桶 +23，z 进 `CAST_LIFT_Z` 带：全部行桶 z 之上、planeObject31 固定带之下，带内按桶与 plane），并给全部飞行单位置 `flying_cap`；特写位期间（`close_up_phase`：切入片段在播且不是已放招的法术，对应 0x400000）目标格外的飞行单位置 `flying_cap`（桶 > 22 压回 22）（static-derived）。
 - 同桶先后：`0x461479` 对象 +0 带 `0x80000000` 时挂桶头，否则挂桶尾；单位（初始化 `or 0x2c000000`）与站立物件都不带这一位，所以同桶按第二遍遍历顺序——plane 小者先画，同 plane 按链表顺序（static-derived）。
 - 差异：站立物件锚点行桶不按视口夹紧（只影响锚点在视口外的物件）、抬起桶 27..46 与 planeObject24..40 不交错、状态窗／仓库窗期间的飞行封顶未建模（provisional）。
 
@@ -45,7 +45,7 @@
 | 读出的量 | 读法 |
 | --- | --- |
 | `0x410670(对象)` 施法脚印 | 以对象 +4／+8（像素 x／y）查字节格 `*0x4c1b4c`（`0x410600`：`(x>>5)+宽/2−[0x4c6d44]`、`(y>>5)+高/2−[0x4c6d40]`，越界读 0）。单位记录（`0x4c1bc8` 表，+0xa4 为下标，步长 0x1fc）+0x2c 字非 0 时查自身与周围 8 格，任一非 0 即真；为 0 只查自身格。`*0x4c1b4c` 是选目标时 `0x4100e0` 写入的光标格效果脚印（[射程格](original_range_cells.md)） |
-| 位 `0x1000000` 魔法效果阶段 | 只由共用施法例程 `0x442a90`（魔法与辅助魔法，玩家与 AI 同一函数）写：阶段字 `[0x4c432c]` 状态 4（`0x442c71`）、7（`0x442cef`）、0x17（`0x442f4d`）、0x19（`0x442ff1`）置位，状态 9（`0x442daf`，镜头回施法者）与 0x1c（`0x44327c`）清除，与 [游戏光标](../runtime_observations/game_cursor/README.md) 的隐藏位读法一致 |
+| 位 `0x1000000` 魔法效果阶段 | 只由共用施法例程 `0x442a90`（魔法与辅助魔法，玩家与 AI 同一函数）写：阶段字 `[0x4c432c]` 状态 4（`0x442c71`）、7（`0x442cef`）、0x17（`0x442f4d`）、0x19（`0x442ff1`）置位，状态 9（`0x442da3` 入口、`0x442daf` 每 tick；状态 8 等效果解释器走到 op 0 才进，入口先清位，再 `0x442dbd` 滑镜、再出条）与 0x1c（`0x443271`／`0x44327c`，Local 最后一受术者之后）清除，与 [游戏光标](../runtime_observations/game_cursor/README.md) 的隐藏位读法一致 |
 | 位 `0x400000` | 攻方特写程序 `0x401c20`（`0x401c6b`）与 AnimalDefense `0x4038a0`（`0x4038dd`）以 `or 0xc00000` 置位，`0x403089`／`0x404d9d`／`0x406fc2`（`and 0xff3fffff`）、`0x4029b7` 清除；状态窗过程（`0x43863f` 置、`0x4389f3` 清）与仓库窗 `0x4289e0` 一段（`0x428d2b` 置、`0x428f15` 清）也单独置位。全 EXE 别无写这一位的地方 |
 | 对象 +0x80 位 `0x1000` 施法姿势 | `0x4071e0` 以 `0x446c40(对象, …, 7, 3)` 换 use_magic 姿势后置位（+0x92 = 40、+0x98 = 0）；调用者为地图施法 `0x402fd1`／`0x403128`、用药 `0x4449a7`、AI `0x440366`／`0x4404c7` 等；姿势播完由单位过程（玩家 `0x443767`、敌方 `0x43f243`）清除，`0x407230` 改置 0x800 时也清 |
 | 站立物件 | `0x43ccf0` 只在 `0x43ce77` 写 +0xc，没有这两段分支，效果阶段不抬 |
@@ -102,7 +102,7 @@
 - 站立物件的行桶用世界行、不按视口夹紧（provisional）：锚点在视口上方或下方 19 行以外的物件，原版夹到桶 4／23，重制保持世界行；只影响锚点在视口外而图像伸进视口的高物件。
 - defProcEffectProcess1／defProcDropRain／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；重制对它们维持原有 z（效果类多为 EFFECT_Z）。
 - 飞行单位封顶 22：重制在切入（特写）与魔法效果阶段封顶；状态窗、仓库窗期间的封顶未建模（重制窗口是全屏覆盖层）；攻方特写的脚印取目标格（provisional）。
-- 重制效果阶段取切入队首的 `magic:` 片段整段（provisional）；原版从状态 4（镜头滚向目标）到状态 9（镜头回施法者）。
+- 效果阶段：放招后置位（原版子状态 5 交回后状态 4／7／0x17／0x19 置位，重制早 ±1 tick）。Global 在效果脚本走到 op 0 时清（状态 9 入口，先于滑镜与出条），照原版。Local 在最后一受术者撤条且最后一段效果脚本走完后清；Local 的条在 impact tick（最后一个 cue）出、原版等效果脚本走到 op 0 才出条，清位随之仍比原版早：单受术者早 min(脚本尾巴, 条时长)（尾巴＝最后一个 cue 到脚本末），多受术者逐人累计（provisional，见 [original_cast_overlays.md](original_cast_overlays.md) 边界）。
 - 单位记录 +0x2c 非 0（大体型）时原版按 3×3 查脚印，重制只查单位所在格；`0x43db60`（`[0x4c1b2c]` 非 0 时对脚印内单位）与字节 +0x34 未读。
 - 原版抬起后的桶 27..46 与 planeObject24..40 固定 plane 物件交错，重制把抬起的单位一律放在 planeObject31 固定带之下。
 - 同一桶同一 plane 内重制按 Godot 节点顺序（单位层与物件层分属不同父节点），原版按建立顺序；`0x45f0d1`（移到本 plane 链表尾）的调用时机未建模。

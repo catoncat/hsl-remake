@@ -42,7 +42,7 @@ r2 -q -e scr.color=0 -c 'pd 60 @ 0x442a90; pxw 64 @ 0x4432c8; px 32 @ 0x443304; 
 
 ## 边界
 
-- Local 法术多受者（static-derived，逐受者序列见 [original_magic_damage.md](original_magic_damage.md)「逐受者序列」）：`0x4104d0(1)` 逐个把下一受者放进 `0x4c1cec`，子状态 0x19 在每个受者身上各建一份效果（`0x443087`），前一人的条撤掉后才建下一份，不同时在场；`0x442a90` 不按魔法功能分支，回复、状态、增益、解除法术也一样。重制所有地图法术照此接力（`MagicImpactPresentation.is_relayed`）：Local 效果只在首个受者放，其余受者在镜头到位后各重放一份。首个受者前原版也滑一次镜头、Local 重放时原版重新压暗并跑 OtherBBall1 镜头轨迹与 IconBGSet 波纹，这几处重制未做（见 original_magic_damage.md「边界」）。
+- Local 法术多受者（static-derived，逐受者序列见 [original_magic_damage.md](original_magic_damage.md)「逐受者序列」）：`0x4104d0(1)` 逐个把下一受者放进 `0x4c1cec`，子状态 0x19 在每个受者身上各建一份效果（`0x443087`），前一人的条撤掉后才建下一份，不同时在场；`0x442a90` 不按魔法功能分支，回复、状态、增益、解除法术也一样。重制所有地图法术照此接力（`MagicImpactPresentation.is_relayed`）：Local 效果只在首个受者放，其余受者在镜头到位后各重放一份。首个受者前的镜头滑动照原版；效果阶段位 Global 在效果脚本走到 op 0 时清、照原版，Local 撑到最后一人撤条且最后一段效果脚本走完，因条在 impact tick 出仍比原版早（见 original_magic_damage.md「边界」）。
 
 ### 3. 剩余（provisional）
 

@@ -10,7 +10,7 @@
 - 原版法术受者条是施法例程 `0x442a90` 每个受者调一次的 `0x43b3f0`——与用药同一对小条（BAR_HP4 框、BAR_HP5／BAR_HP6 填充、条旁 cur/max）；条先示命中前 HP 24 tick，`0x40b8d0` 结算的同一 tick 换成命中后 HP 并生成数字，再 40 tick 撤条；击杀先等 30 tick，再多 8（eff_proc_Local）／16（Global）tick；全局只有一个条槽，受者逐个接力（static-derived，见「受者条」）。录屏 21／29／60 tick 与之同序，差值在 19.4 ms/tick 折算误差内。
 - 多受者时原版逐人处理：前一人撤条后镜头以战斗步长滑向下一人、到位才往下，Local 在他身上再建一份效果、效果完了才出条；受击态从每人扣血那 tick 起；击杀受者在扣血后 30 tick 标死亡，死亡演出与后续受者并行（static-derived，见「逐受者序列」）。
 - `0x442a90` 不按魔法功能分支：回复、状态、增益、解除与伤害法术同样逐受者接力。第 24 tick 的 `0x40b8d0` 即 `0x40aa80` 通道 0，每个受者至多出一个数——命中伤害红字，否则 Heal 位的绿字（回复 0 也出），否则什么都没生效时 MISS；状态、增益、解除生效不出字，地图路径没有蓝色 MP 数字；只有命中伤害或负面状态抽判成功的受者进受击态（static-derived，见「结算分派」）。
-- 重制 `MagicImpactPresentation` 对所有地图法术照上述画法、计数、逐受者序列与结算分派（static-derived）；首个受者前的镜头滑动与 Local 重放时的压暗等未照做（见「边界」）。
+- 重制 `MagicImpactPresentation` 对所有地图法术照上述画法、计数、逐受者序列与结算分派（static-derived）；首个受者前的镜头滑动照原版：Global 在效果后（状态 9 入口，`MagicImpactPresentation._lead`）、Local 在效果前（`SkillEffectScriptPlayer._first_receiver_glide`），镜头已在 `0x43bf30` 容差内时不动；魔法效果阶段位（`[0x4c1b00]` 0x1000000）Global 在效果脚本走到 op 0 时清（状态 9 入口，随后才滑镜、出条）、Local 撑到最后一人撤条且最后一段效果脚本走完后清，压暗、抬层与影子藏匿都读它（static-derived）。
 
 ## 证据
 
@@ -111,9 +111,8 @@
 
 - 原 PLAYERS 字节与导入表的严格 `--pak` 比较曾不一致，差异未查明，拥有权只按导入表声明。
 - 动态学习、升级解锁、转职、禁用状态与角色模式对拥有权的影响未读。
-- 首个受者前的镜头：原版 Global 在效果后、Local 在效果前也各滑一次到首个受者（子状态 9／0x19 对每人同样执行），重制只对第 2 人起滑镜头，首个受者沿用施法效果时的镜头。
 - `0x43bf30` 第二参数 Local 为 0x80000000、Global 为 0，含义未读；重制两边同用战斗步长。
-- Local 重放只画效果时间线的对象与声音，不重做压暗（`[0x4c1b00]` 0x1000000 在 0x19 重新置位）与 OtherBBall1 的镜头轨迹、IconBGSet 波纹；重放的条在 impact tick 出而非等效果对象删除，与首个受者一致。
+- Local 重放只画效果时间线的对象与声音；`[0x4c1b00]` 0x1000000 在 0x19 重新置位，重制的位从首个受者撑到最后一人撤条且最后一段重放的脚本走完，压暗不中断，结果相同。OtherBBall1 镜头轨迹与 IconBGSet／FireBGSet 波纹只出现在 Global 法术里，Local 重放碰不到。重放的条在 impact tick（最后一个 cue）出，原版 `0x1a` 等解释器走到 op 0 才出条，与首个受者一致；Local 清位因此仍比原版早，见 [original_cast_overlays.md](original_cast_overlays.md) 边界。
 - 死亡受者的入口 `0x43eff9` 也调 `0x43bf30(受者)` 等镜头，与施法例程滑向下一受者同帧争镜头时谁先到未读；重制死亡任务不滑镜头。台词窗期间接力照走（原版台词由受者过程 `+0x9c` 轮询关闭，施法例程不等它）。
 - 受者顺序按收据 `affected_targets`；`0x4104d0` 的遍历顺序未与之逐一对照。
 - 结算分派在重制侧由收据推断（sim 不改）：`native_contribution`／`immediate_contributions` 代 `0x4c13fc`／本地 EXP；收据分不出回复抽判落空与满血，重制凡 Heal 位一律出绿字，按 MAGIC.TXT 回复法术 hit_ratio 均为 100、proc1 不会落空推断。

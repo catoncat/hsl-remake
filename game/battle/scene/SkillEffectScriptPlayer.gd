@@ -73,7 +73,11 @@ const AnimalCastLead = preload("res://game/battle/scene/AnimalCastLead.gd")
 const CutinLayout = preload("res://game/battle/runtime/CutinLayout.gd")
 const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.gd")
 const ObjcomdMotion = preload("res://game/battle/scene/ObjcomdMotion.gd")
+const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
 const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
+## Object 154's sub-state 5 (0x403089): the one call after the lead that hands the flow back to
+## the effect VM (0x40309e) before its states 4／7／0x17／0x19 run.
+const SUB_STATE_5_TICKS := 1
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
 ## A row whose attack script is empty still shows the caster's cast panels for this lead.
@@ -516,7 +520,9 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 ## the effect origin (the drawer adds the target position); the impact mark is the script's
 ## last cue — its last object insertion or sound — every object holds for
 ## clamp(lifetime, EFFECT_MIN_LIFETIME_TICKS, the script's remaining waits) then fades, and
-## the clip completes when the script's waits and every fade are over. Pure like `compile`.
+## the clip completes when the script's waits and every fade are over. `script_end_tick` is the
+## sum of the waits: the tick the effect interpreter reaches op 0 and steps the cast routine on
+## (0x4239ac `inc word [ctx+0x8c]`). Pure like `compile`.
 static func compile_effect(lines: Array, seed: int, data: Dictionary, row: Dictionary) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
@@ -546,6 +552,7 @@ static func compile_effect(lines: Array, seed: int, data: Dictionary, row: Dicti
 				if not timeline["unimplemented"].has(op):
 					timeline["unimplemented"].append(op)
 	timeline["impact_tick"] = last_cue
+	timeline["script_end_tick"] = cursor
 	var complete := cursor
 	var seed_order := {}
 	for event in timeline["events"]:
@@ -902,9 +909,8 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	# 0x442f26, 0x442c6c, 0x442cea); a caster with no lead frames takes the 預備動作-off jump
 	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
 	# shadowed whether or not the spell deals damage: level min(call + 1, 8) while +0x90 counts
-	# (0x4030f7), then 8 through sub-states 5 and 6 (0x4030b7).
+	# (0x4030f7); from the release the effect phase holds it at 8 (host.begin_spell_phase).
 	var lead_call := int(elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
-	host.shade_map(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL))
 	# The spell's name captions the AI lead-in's range (BattleAttackCue.caption), not the effect:
 	# the original's effect states (0x7a, 0x4419f8) draw no text.
 	host.result.visible = false
@@ -914,11 +920,14 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	if lead.is_empty():
 		lead = AnimalCastLead.skipped(true)
 	var lead_end: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"])))
-	# The call after the lead poses the caster (0x4071e0), bursts Cast_Star and sounds 0x193
-	# (0x402fd1／0x403128); the effect VM states 4／7／0x17／0x19 wait while the caster's pose bit
-	# 0x1000 is set (0x442c89, 0x442d07, 0x442f65, 0x443009), 8n + 40 ticks.
-	var lead_in: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"]) + float(clip.get("caster_pose_ticks", 0))))
+	# The lead's last call poses the caster (0x4071e0), bursts Cast_Star and sounds 0x193
+	# (0x402fd1／0x403128); the call after it is sub-state 5 (0x403089), which hands the flow
+	# back (parent +0x8c++, 0x40309e) — only then do the effect VM states 4／7／0x17／0x19 run,
+	# waiting while the caster's pose bit 0x1000 is set (0x442c89, 0x442d07, 0x442f65,
+	# 0x443009), 8n + 40 ticks.
+	var lead_in: float = Timing.scaled(OriginalTick.seconds(float(lead["complete_tick"]) + SUB_STATE_5_TICKS + float(clip.get("caster_pose_ticks", 0))))
 	if elapsed < lead_end:
+		host.shade_map(mini(lead_call + 1, AnimalCastLead.SHADOW_MAX_LEVEL))
 		host.show_cast_lead(clip, lead, elapsed / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND)
 		clear()
 		return false
@@ -927,22 +936,46 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		host.ability_sound.stream = load(host.cue_manifest["sounds"]["cast_magic"]["res_path"])
 		host.ability_sound.play()
 		clip["cast_stars"] = cast_stars(hash(str(clip["strike"])))
-	# After the lead the attacker object stays: sub-state 5 (0x403089) hands the flow back
-	# (parent +0x8c++) and hides itself, sub-state 6 (0x4030b7) keeps its shadow at +0x90 = 8
-	# while the effect phase holds [0x4c1b00] & 0x1000000, so the map stays at level 8／16.
-	host.shade_map(AnimalCastLead.SHADOW_MAX_LEVEL)
+		# After the lead the attacker object stays: sub-state 5 hides it, sub-state 6 (0x4030b7)
+		# keeps its shadow at +0x90 = 8 while the effect phase [0x4c1b00] & 0x1000000 holds —
+		# the one bit the shadow, the spell's lift and the shadows' hold read; the script's op 0
+		# (Global) or the relay after it (Local) clears it and the host plays the 8-call fade.
+		host.begin_spell_phase(clip["strike"])
+		var controller: RefCounted = host.battle_camera()
+		if controller != null and controller.camera != null:
+			clip["cast_camera"] = controller.camera.position
 	var star_origin: Vector2 = clip["map_caster"] - Vector2(0, float(clip.get("caster_height", CAST_STAR_DEFAULT_HEIGHT)))
 	var star_tick: float = (elapsed - lead_end) / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND
 	if elapsed < lead_in:
 		mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
-		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin, 0)
+		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - _view_shift(host, clip), 0)
 		return false
-	var seconds: float = (elapsed - lead_in) / Timing.PLAYBACK_SPEED
+	# eff_proc_Local's state 0x19 glides the camera to each receiver before it builds the effect
+	# there, the first included (0x44301e: 0x43bf30 every tick, returning until it reports
+	# arrival; a receiver inside the tolerance does not move it). Global's first glide follows
+	# its effect (state 9, MagicImpactPresentation).
+	if not clip.has("first_glide"):
+		clip["first_glide"] = 0.0 if bool(timeline["global"]) else _first_receiver_glide(host, clip)
+	var effect_start: float = lead_in + float(clip["first_glide"])
+	if elapsed < effect_start:
+		mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
+		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - _view_shift(host, clip), 0)
+		return false
+	var seconds: float = (elapsed - effect_start) / Timing.PLAYBACK_SPEED
 	var scale: float = Timing.PLAYBACK_SPEED / TICKS_PER_SECOND
 	var complete := mark(host, clip, elapsed, {"release": lead_end,
-		"impact": lead_in + float(timeline["impact_tick"]) * scale,
-		"complete": lead_in + float(timeline["complete_tick"]) * scale})
-	var shift := _effect_view(host, clip, seconds * TICKS_PER_SECOND, complete)
+		"impact": effect_start + float(timeline["impact_tick"]) * scale,
+		"complete": effect_start + float(timeline["complete_tick"]) * scale})
+	# The script's op 0 (script_end_tick) steps the cast routine on: eff_proc_Global's state 9
+	# clears the effect phase at its entry (0x442da3); eff_proc_Local's relay holds it past its
+	# last receiver's bars (host.release_spell_phase), clearing it here if those went first.
+	if not clip.get("script_ended", false) and elapsed >= effect_start + float(timeline.get("script_end_tick", timeline["complete_tick"])) * scale:
+		clip["script_ended"] = true
+		if not host.spell_phase_held:
+			host.end_spell_phase()
+	_effect_view(host, clip, seconds * TICKS_PER_SECOND, complete)
+	# The effect sits on the map: drawn back by every camera move since the release.
+	var shift := _view_shift(host, clip)
 	var origins: Array = []
 	# Every map spell relays (MagicImpactPresentation.is_relayed, not preloaded: that script
 	# preloads this one): its Local effect goes on the first receiver here, and the relay rebuilds
@@ -958,17 +991,37 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	return false
 
 
+## eff_proc_Local's glide to the first receiver (state 0x19, 0x44301e) at the battle step,
+## started now; its scaled seconds, 0 when the receiver is already within the tolerance.
+func _first_receiver_glide(host: CanvasLayer, clip: Dictionary) -> float:
+	var controller: RefCounted = host.battle_camera()
+	if controller == null or controller.camera == null or not clip.has("cast_camera") or not clip["strike"].has("magic_key"):
+		return 0.0
+	var world: Vector2 = controller.logical_to_world(clip["affected_positions"][0] - _view_shift(host, clip))
+	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+
+
+## How far the battle camera has moved since the release (the first receiver's glide, the relay's
+## glide, OtherBBall1's track): the logical positions laid at play time move back by it.
+func _view_shift(host: CanvasLayer, clip: Dictionary) -> Vector2:
+	var controller: RefCounted = host.battle_camera()
+	if controller == null or controller.camera == null or not clip.has("cast_camera"):
+		return Vector2.ZERO
+	return controller.camera.position - clip["cast_camera"]
+
+
 ## The two effect objects that act on the whole view. effProcOtherBig (OtherBBall1) moves the
 ## battle camera by its 0x43bf30 track (EffectObjectMotion.camera_at), clamped to the map as
 ## 0x46bede does; the effect sprites, fixed on the map in the original, are drawn shifted
-## back by the camera's actual move (the return value). As the clip completes the camera
+## back by the camera's actual move (_view_shift). As the clip completes the camera
 ## glides back to where the effect found it at the battle step (the cast routine 0x442a90
 ## scrolls back after the effect phase; the remake has no separate return glide).
 ## effProcIconBGSet (IconBGSet1／FireBGSet) lays its 0x461687 row offsets over the map and
 ## units (host.show_effect_ripple) from its first call until the effect phase ends: the object
 ## only deletes itself — and clears the ripple bit 0x400000 of [0x4c1cc0] (0x41d761) — once
-## [0x4c1b00] & 0x1000000 is clear, which the cast routine clears after the effect.
-func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bool) -> Vector2:
+## [0x4c1b00] & 0x1000000 is clear (host.spell_phase: Global's state 9 entry, as the script
+## reaches op 0).
+func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bool) -> void:
 	var timeline: Dictionary = clip["effect_timeline"]
 	var offset := Vector2.ZERO
 	var ripple := {}
@@ -980,19 +1033,18 @@ func _effect_view(host: CanvasLayer, clip: Dictionary, tick: float, complete: bo
 		var params := EffectObjectMotion.ripple_at(str(event["object"]), frame)
 		if not params.is_empty():
 			ripple = params
-	host.show_effect_ripple({} if complete else ripple)
+	host.show_effect_ripple({} if complete or not host.spell_phase else ripple)
 	var camera: RefCounted = host.battle_camera()
 	if camera == null or camera.camera == null or (offset == Vector2.ZERO and not clip.has("effect_camera_base")):
-		return Vector2.ZERO
+		return
 	if not clip.has("effect_camera_base"):
 		clip["effect_camera_base"] = camera.camera.position
 	var base: Vector2 = clip["effect_camera_base"]
 	if complete:
 		camera.scroll_to(base)
-		return Vector2.ZERO
+		return
 	camera.stop_scroll()
 	camera.camera.position = camera.clamped_position(base + offset)
-	return camera.camera.position - base
 
 
 ## 0x408b20 case 4 (0x408bb4): two 0x401390 calls of object 399 Cast_Star at the burst point,

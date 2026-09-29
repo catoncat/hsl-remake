@@ -196,17 +196,17 @@ func sync_actor_depth(actor: Node, unit: Dictionary) -> void:
 ## The map spell effect phase ([0x4c1b00] & 0x1000000, cast routine 0x442a90, magic and
 ## support magic alike) lifts the actors inside the cast's effect cells (the footprint 0x4100e0
 ## writes to *0x4c1b4c, read by 0x410670) and any actor in the use_magic pose
-## (ActorRuntime.CAST_LIFT_Z). The remake's phase is a map `magic:` clip on the cut-in queue.
-## Any cut-in (the attack close-up sets 0x400000) caps a flyer outside the footprint at bucket
-## 22; the spell effect phase caps every flyer (steps 2／3); an attack's footprint is its target.
+## (ActorRuntime.CAST_LIFT_Z). The phase is the cut-in's `spell_phase` bit (spell_effect_phase).
+## The close-up bit 0x400000 (close_up_phase) caps a flyer outside the footprint at bucket 22;
+## the spell effect phase caps every flyer (steps 2／3); an attack's footprint is its target.
 func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 	var lifted := {}
-	var busy: bool = cutin != null and cutin.busy()
+	var close_up := close_up_phase(cutin)
 	var phase := spell_effect_phase(cutin)
-	if busy and not phase:
+	if close_up and not phase:
 		lifted[str(cutin.clips[0]["strike"].get("defender_id", ""))] = true
 	if phase:
-		var strike: Dictionary = cutin.clips[0]["strike"]
+		var strike: Dictionary = cutin.spell_strike
 		var caster := BattlePlayLoop.unit(loop, str(strike.get("attacker_id", "")))
 		var defender := BattlePlayLoop.unit(loop, str(strike.get("defender_id", "")))
 		if not caster.is_empty() and not defender.is_empty():
@@ -219,16 +219,27 @@ func sync_cast_depth(loop: Dictionary, cutin: Node) -> void:
 		var actor = runtime.actor_node_for_unit(str(unit["id"]))
 		if actor != null:
 			actor.cast_lift = phase and (lifted.has(str(unit["id"])) or actor.is_posing())
-			actor.flying_cap = phase or (busy and not lifted.has(str(unit["id"])))
+			actor.flying_cap = phase or (close_up and not lifted.has(str(unit["id"])))
 
 
-## The map spell effect phase ([0x4c1b00] & 0x1000000): the cast routine 0x442a90 sets it from
-## the cast lead through the effect (states 4／7, 0x17／0x19) and clears it as eff_proc_Global
-## turns to its receivers (state 9, 0x442daf, every tick) or after eff_proc_Local's last receiver
-## (0x44327c). The remake reads it as a map `magic:` clip at the head of the cut-in queue — the
-## one predicate for sync_cast_depth, the building bottom's close-up hold and the shadows' hold.
+## The map spell effect phase ([0x4c1b00] & 0x1000000): the cast routine 0x442a90 sets it after
+## the lead's sub-state 5 (states 4／7／0x17／0x19: 0x442c77, 0x442cf5, 0x442f53, 0x442ff7) and
+## clears it as eff_proc_Global turns to its receivers (state 9, 0x442da3, every tick 0x442daf)
+## or after eff_proc_Local's last receiver (0x443271／0x44327c). The cut-in's `spell_phase`
+## holds it (BattleCombatCutin.begin_spell_phase／end_spell_phase) — the one source for
+## sync_cast_depth, the shadows' hold and the cast shadow.
 static func spell_effect_phase(cutin: Node) -> bool:
-	return cutin != null and cutin.busy() and str(cutin.clips[0]["strike"].get("skill_id", "")).begins_with("magic:")
+	return cutin != null and bool(cutin.spell_phase)
+
+
+## The close-up bit ([0x4c1b00] & 0x400000): the attacker object 154 (process 0x401c20) holds it
+## through a cut-in clip; a spell's lead drops it at sub-state 5 (0x403089, `&= 0xff3fffff`),
+## the call after its release.
+static func close_up_phase(cutin: Node) -> bool:
+	if cutin == null or not cutin.busy():
+		return false
+	var clip: Dictionary = cutin.clips[0]
+	return not (str(clip["strike"].get("skill_id", "")).begins_with("magic:") and bool(clip["release_emitted"]))
 
 
 ## Lookup order: the scenario's own manifest, then the shared up-title manifest. An
@@ -398,24 +409,22 @@ func _map_object_record(record: Dictionary, shape_id: String, texture: Texture2D
 
 
 ## The original's cloud hold (0x43ceba, original_map_object_drift.md): 場景效果 off ([0x477c14]
-## bit0), a map magic effect (0x1000000) or a close-up／status window (0x400000). The remake's
-## magic effect and close-ups are both clips on the cut-in queue.
+## bit0), a map magic effect (0x1000000, spell_effect_phase) or a close-up／status window
+## (0x400000, close_up_phase).
 func _clouds_hidden() -> bool:
 	if not GameSettings.scene_effects_enabled():
 		return true
-	var presentation := runtime.get_node_or_null("BattlePresentation")
-	if presentation != null and presentation.get("cutin") != null and presentation.cutin.busy():
+	var cutin := _cutin()
+	if close_up_phase(cutin) or spell_effect_phase(cutin):
 		return true
 	var panel = runtime.get("status_panel")
 	return panel is CanvasItem and panel.visible
 
 
 ## The building bottom's extra hold (0x43d758: [0x4c1b00] & 0x400000, set by the attack
-## close-up 0x401c20 and the status window 0x43863f): a cut-in clip that is not a map `magic:`
-## effect phase (sync_cast_depth's reading), or the status panel open.
+## close-up 0x401c20 and the status window 0x43863f): close_up_phase, or the status panel open.
 func _close_up_hidden() -> bool:
-	var cutin := _cutin()
-	if cutin != null and cutin.busy() and not spell_effect_phase(cutin):
+	if close_up_phase(_cutin()):
 		return true
 	var panel = runtime.get("status_panel")
 	return panel is CanvasItem and panel.visible
