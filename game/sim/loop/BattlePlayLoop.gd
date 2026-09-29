@@ -827,6 +827,8 @@ static func finish_ai_or_continue(loop: Dictionary) -> Dictionary:
 
 static func return_to_player(loop: Dictionary, unit_id: String) -> Dictionary:
 	var next := copy(loop)
+	# The no_attack process clear (0x43f412..0x43f437) also runs while a player unit acts.
+	AI.clear_no_attack_units(next)
 	var entry := ActionEntryRules.prepare(unit_ref(next, unit_id))
 	if not entry["ok"]:
 		next.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": entry["reason"]}, true)

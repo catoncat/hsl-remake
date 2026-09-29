@@ -67,6 +67,10 @@ static func fixture(mode: String = "detour") -> Dictionary:
 		actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "no_magic", 2)["changes"], true)
 	elif mode == "no_action":
 		actor["no_attack"] = true
+		actor.merge(BattlePlayLoop.StatusEffectRules.apply(actor, "poison", 2, 7)["changes"], true)
+		actor.merge(BattlePlayLoop.StatusEffectRules.Enhancements.apply(actor, "attack_up", 3, 20)["actor"], true)
+		actor["combat_profile"] = BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor, loop["equipment_items"])["combat_profile"]
+		actor.merge({"hit_bonus_accum": 4, "stamina": 30}, true)
 	elif mode in ["empty_center", "cure_center"]:
 		actor["coord"] = Vector2i(4, 5)
 		actor["base_move_point"] = 0
@@ -190,7 +194,23 @@ func route_cases() -> void:
 		if mode == "unreachable": check(action["kind"] == "move" and action.get("toward") == "leonard" and BattlePlayLoop.unit(after, loop["units"][0]["id"])["ai_target_id"] == "leonard", "a sealed-off closest enemy is still the scan's pick and the pursuit walks toward it (0x40bb80 without reachability)")
 		if mode in ["empty_mp", "silenced"]: check(not action.has("skill_id") and BattlePlayLoop.unit(after, loop["units"][0]["id"])["mp"] == loop["units"][0]["mp"], "unavailable magic falls through to a legal physical approach without a debit")
 		if mode == "cast": check(action["kind"] == "move_then_attack" and action.has("magic_key") and not path.is_empty(), "moving cast joins the existing shared skill transaction")
-		if mode == "no_action": check(action["kind"] == "wait" and not after.has("last_combat"), "no valid category waits honestly without a fake hit")
+		if mode == "no_action":
+			check(action["kind"] == "wait" and not after.has("last_combat"), "no valid category waits honestly without a fake hit")
+			var idle: Dictionary = BattlePlayLoop.unit(after, loop["units"][0]["id"])
+			var refreshed := BattlePlayLoop.ProgressionRules.refresh_growth_stats(idle, after["equipment_items"])
+			check(int(idle["status_flags"]) == 0 and idle["status_counters"] == BattlePlayLoop.StatusEffectRules.cleared_counters() and int(idle["hit_bonus_accum"]) == 0 and int(idle["stamina"]) == 0
+				and idle["combat_profile"] == refreshed["combat_profile"] and int(idle["combat_profile"]["live_attack_damage"]) < int(loop["units"][0]["combat_profile"]["live_attack_damage"]),
+				"a no_attack AI turn clears status, counters, +0xb0 and stamina, then refreshes (0x43f42d → 0x4483f0 → 0x4483c0／0x448840, 0x43f437)")
+			var frozen := fixture("no_action")
+			var npc: Dictionary = frozen["units"][0]
+			npc.merge(BattlePlayLoop.StatusEffectRules.apply(npc, "paralysis", 2)["changes"], true)
+			var bystander: Dictionary = frozen["units"][2]
+			bystander.merge({"no_attack": true, "player_commandable": false}, true)
+			bystander.merge(BattlePlayLoop.StatusEffectRules.apply(bystander, "poison", 2, 7)["changes"], true)
+			var thawed := BattlePlayLoop.step_ai_turn(frozen, zero)
+			check(thawed["scenario_ok"] and thawed["last_ai_action"].get("wait_reason") == "no_attack" and int(BattlePlayLoop.unit(thawed, npc["id"])["status_flags"]) == 0
+				and int(BattlePlayLoop.unit(thawed, bystander["id"])["status_flags"]) == 0 and BattlePlayLoop.unit(thawed, bystander["id"])["status_counters"] == BattlePlayLoop.StatusEffectRules.cleared_counters(),
+				"the no_attack clear is per-tick process code: it frees a paralyzed one before the gate (0x43f47b) and clears one that is not the current actor (0x43f42d before 0x407540)")
 	var weighted := fixture("cast")
 	TestSuite.own(weighted, "tiles")[Vector2i(3,5)] = {"move_cost": 8}
 	var full := AINavigationRules.full_routes(weighted, weighted["units"][0])

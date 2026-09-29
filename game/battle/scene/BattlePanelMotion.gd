@@ -14,7 +14,11 @@ extends Node
 ## (`slide_out_step`: half the rest, at most 20, lands within 4) while the panel itself is
 ## already hidden. The Controls keep their positions: the slide rewrites only the parts'
 ## RenderingServer draw transforms, so layout, hit testing and every input rule stay the
-## panel's own (a click during the slide lands where the part is going).
+## panel's own (a click during the slide lands where the part is going). A Control's redraw
+## (NOTIFICATION_DRAW) sets its draw transform back to its own place: a part shown, relabelled or
+## resized mid slide — every part in the frame a page opens from the scene's process, e.g. the
+## settlement's 獲得物品 window and the growth window — takes its offset back in that same redraw
+## (`draw` signal), so no frame draws it on its landing point before the slide gets there.
 ## A hover description box (BattleUISkin.in_place: 0x436d70 draws WINDOW50 at camera + (252,349),
 ## no window object) never slides and is left out of the close snapshot (the snapshot is drawn
 ## again without any in-place box when one shows: the root-window list boxes stop drawing in
@@ -76,6 +80,8 @@ var opened_count := 0
 var closed_count := 0
 ## Close snapshots actually drawn (0 without a renderer, e.g. headless tests).
 var ghost_count := 0
+## Part redraws mid open slide that took the slide offset back (see the header).
+var redrawn_count := 0
 ## Shade fade: current level in 16ths, +1 fading in, −1 fading out, 0 still.
 var shade_level := 0
 var _shade_direction := 0
@@ -312,7 +318,10 @@ func _register_parts() -> void:
 	var parts := parts_of(panel)
 	var sides := sides_of(parts)
 	for index in parts.size():
-		_parts.append({"item": parts[index], "side": sides[index], "direction": SIDE_DIRECTIONS[sides[index]]})
+		var direction: Vector2 = SIDE_DIRECTIONS[sides[index]]
+		var redraw := _on_part_drawn.bind(parts[index], direction)
+		parts[index].draw.connect(redraw)
+		_parts.append({"item": parts[index], "side": sides[index], "direction": direction, "redraw": redraw})
 
 
 func _begin_shade_in() -> void:
@@ -515,12 +524,7 @@ func _free_shade_ghost() -> void:
 
 func _apply_parts() -> void:
 	for part in _parts:
-		# A page rebuilt mid-motion frees its parts; a typed read of a freed part errors.
-		var item: Variant = part["item"]
-		if is_instance_valid(item):
-			var xform: Transform2D = item.get_transform()
-			xform.origin += part["direction"] * float(slide_remaining)
-			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), xform)
+		_offset_part(part["item"], part["direction"])
 	for item in _in_place_boxes():
 		if not _held.has(item):
 			_held.append(item)
@@ -530,12 +534,30 @@ func _apply_parts() -> void:
 			RenderingServer.canvas_item_set_modulate(item.get_canvas_item(), Color(item.modulate, 0.0) if held else item.modulate)
 
 
+## A part drawn `slide_remaining` px off its place towards `direction`.
+func _offset_part(item: Variant, direction: Vector2) -> void:
+	# A page rebuilt mid-motion frees its parts; a typed read of a freed part errors.
+	if is_instance_valid(item):
+		var xform: Transform2D = item.get_transform()
+		xform.origin += direction * float(slide_remaining)
+		RenderingServer.canvas_item_set_transform(item.get_canvas_item(), xform)
+
+
+## A part redrawn mid open slide: its draw just put it back on its own place.
+func _on_part_drawn(item: Control, direction: Vector2) -> void:
+	if slide_remaining > 0:
+		redrawn_count += 1
+		_offset_part(item, direction)
+
+
 func _restore_parts() -> void:
 	slide_remaining = 0
 	for part in _parts:
 		# A page rebuilt mid-motion frees its parts; a typed read of a freed part errors.
 		var item: Variant = part["item"]
 		if is_instance_valid(item):
+			if item.draw.is_connected(part["redraw"]):
+				item.draw.disconnect(part["redraw"])
 			RenderingServer.canvas_item_set_transform(item.get_canvas_item(), item.get_transform())
 	for item in _held:
 		if is_instance_valid(item):

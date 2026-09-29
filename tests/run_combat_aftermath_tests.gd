@@ -8,6 +8,8 @@ const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const RuntimeReadback = preload("res://tests/support/RuntimeReadback.gd")
+const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -420,12 +422,15 @@ func kill_loot_level_up_order() -> void:
 	confirm(scene)
 	var order: Array[String] = []
 	var loot_seen_before_level_up := false
+	var redrawn: Array[int] = []
 	for _frame in range(2400):
 		var panel_open: bool = scene.settlement_controller.panel.visible
 		if panel_open and not order.has("loot"):
 			order.append("loot")
 			check(aftermath.holding_for_loot() and level_ups.is_empty() and aftermath.reward_label.text != "LEVEL UP", "the LEVEL UP float waits behind the get-item window")
 			loot_seen_before_level_up = true
+			await process_frame
+			redrawn.append(BattlePanelMotion.attach(scene.settlement_controller.panel).redrawn_count)
 			var settlement: Dictionary = scene.play_loop["settlement"]
 			scene.apply_loop(BattlePlayLoop.finish_rewards(scene.play_loop, int(settlement["sequence"]), int(settlement["revision"]), false, true), "test")
 		if aftermath.busy() and aftermath.reward_label.visible and (order.is_empty() or order.back() != aftermath.reward_label.text):
@@ -437,6 +442,19 @@ func kill_loot_level_up_order() -> void:
 			break
 		scene._process(1.0 / 60.0)
 	check(order.size() == 5 and order[0].begins_with("EXP ") and order[1].begins_with("$ ") and order[2] == "loot" and order[3] == "LEVEL UP" and order[4] == "window" and loot_seen_before_level_up, "kill with loot and a level: EXP → $ → get-item → LEVEL UP → level-up window (%s)" % str(order))
+	await process_frame
+	redrawn.append(BattlePanelMotion.attach(scene.growth_panel).redrawn_count)
+	check(redrawn.size() == 2 and redrawn.min() > 0, "both windows' parts redrawn in the frame they open take their slide offset back, none drawn on the landing point (%s)" % str(redrawn))
+	# A script's story line holding the scene (its coordinator up, the page waiting): the fading
+	# LEVEL UP float keeps its ticks (0x42d600 runs every object's process under the dialogue board).
+	var fading: Node2D = aftermath.trailing.back()["node"]
+	var ticks_before: float = fading.ticks
+	scene._ensure_script_coordinator()
+	scene.scene_timeline = scene.SceneTimeline.from_events([{"kind": "dialogue_message_id"}])
+	scene.opening_coordinator.active = true
+	scene._process(OriginalTick.TICK_SECONDS * 4)
+	check(fading.ticks > ticks_before, "a released float fades on while a script cutscene holds the battle (%s → %s)" % [ticks_before, fading.ticks])
+	scene.opening_coordinator.active = false
 	scene.queue_free()
 	await process_frame
 

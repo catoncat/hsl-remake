@@ -278,6 +278,8 @@ func _process(delta: float) -> void:
 	if settlement_controller != null: settlement_controller.autoload_checkpoint()
 	if opening_coordinator != null and opening_coordinator.active:
 		opening_coordinator.tick(delta)
+		# The original ticks every object under a story line (0x42d600): fading floats go on.
+		$BattlePresentation.aftermath.advance_floats(delta, self)
 		return
 	if world_map_runtime != null and world_map_runtime.active:
 		world_map_runtime.tick(delta)

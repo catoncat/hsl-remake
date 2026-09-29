@@ -23,6 +23,8 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 ##   timing: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
+##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
+##     (0x42d600 ticks every object, dialogue board 0x414280 too)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_death_disposal.md
 ##     (draw mode 0x2c000000: AdditiveLevelBlend, kind 9 0x462e8b)
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
@@ -414,6 +416,12 @@ func _advance_trailing(delta: float, runtime: Node) -> void:
 		else:
 			_place(runtime, node, entry["coord"], float(entry["lift"]))
 			node.show()
+
+
+## The floats alone while a script cutscene holds the battle (the scene skips `advance`): a
+## released EXP／$ float, a KILL float or a star shower keeps its ticks under the story line.
+func advance_floats(delta: float, runtime: Node) -> void:
+	_advance_trailing(delta, runtime)
 
 
 ## Clears every float (developer fast-forward, a restored checkpoint).

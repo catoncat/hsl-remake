@@ -43,7 +43,7 @@
 | `0x40f200`／`0x40ed50`（`0x4c1a74 = 0`） | 半径上限 50，缓冲 (2r+1)²，中心 r+1，四邻按上、下、左、右以预算 r 递归；每格先查地图与缓冲边界；模式跳转表 `0x40f1c4`：2→mask `0x64000`、3→`0x54000`、7→`0x34000`（高差附加在前：`预算 −= 上坡差`，`\|高差\|≥3` 停），格字命中 mask 时要该格对象 `0x446b30`（模板 +0xa0 bit 0x10）才可过，缓冲值 ≥ 预算停，写入预算后 `预算 −= 0x40eb80`（前方与两侧有 mask 旗 2，否则 1）；6→只看 `0x4000`、减 1；预算 ≤0 停；上／下来的格先直行再左、右，左／右来的格先上、下再直行 |
 | `0x413740` | 缓冲逐行逐列；跳过 0／带 0x80 与格字 `& 0x70000` 的格（`0x40d8b0` 在 `0x40dc36` 重新登记自身，所以追击时自身格也跳过）；距离是格心像素对目标像素的曼哈顿；同距先抽 `0x458c10 & 1`；命中写回格心像素 |
 | `0x440c2c..0x440d11` | 站位走法：重定位掷中 `0x410a50(站位)`；否则 `0x40fb20` 在射程内原地攻击；否则 `0x40f440(move)` 后 `0x410a50(站位)`，返回 0（站位＝自身格或不可达）时对象 +0x80 带 0x10000 回 `0x440db1`，否则 `0x441eb8` 结束回合 |
-| `0x43f412..0x43f45a` | NPC 过程回合入口：非剧情阶段（`[0x4c1b00] & 0x4000000` 清）且 `0x446b00`（no_attack）为 1 → `0x411a30` 登记、`0x4483f0`、活记录 +0xe8 清零，当前行动者是自己则 `0x442084` 结束回合 |
+| `0x43f3fb..0x43f45a` | 一般对象过程每 tick 都跑，不是回合入口：除非 `[0x4c1b00]` 带对话框位 0x100000 而无剧情位 0x4000000（`0x43f40c` 跳走），`0x446b00`（no_attack）为 1 → `0x411a30` 登记、`0x4483f0`（→ `0x4483c0` 清 +0x24 状态、+0x30..+0x48 计数、+0xb0 并刷新 `0x448840`）、活记录 +0xe8 清零；此后才 `0x407540` 判当前行动者，剧情阶段改走 `0x43f45f` 一般路径，否则是自己则 `0x442084` 结束回合、不是则 `0x4420df` 走过程尾；麻痺门 `0x43f47b` 在这之后 |
 | `0x43feba`（抽取 `0x43ff32`） | 魔法进攻无法术目标时 `rand(100)<11` 且有站位：`0x40f440(actor,1,mode)` 一步洪泛内取离站位最近格（`0x413900`） |
 
 EVEF 实例回调 `0x42bd50`（过程 3／5 分支 `0x42bd96..`）：
@@ -89,7 +89,7 @@ L051+L052 开场 (--align): AI_REPLAY_CHECK_PASS levels=2 runs=64 rows=896 agree
 - 侧走 11% 支线：`AIDecisionRules.side_walk_roll`、`BattleLoopAI._ai_side_walk`；逐槽换目标：`BattleLoopAI._ai_station_switch`。
 - 表现：`BattleNavigationCue` 画实际路径；Wait 0.55 秒「待機」短反馈是重制可读性选择。
 - 精化：`approach_point` 每级 `native_flood`（`0x40f200`／`0x40ed50`，移动模式、mask、高差、`0x40eb80`、no_block 占位格）→ `native_candidates`（`0x413740` 候选）→ `nearest_stoppable`；末级选中格的走法与耗费取本回合移动包络的路线；3×3 行动者仍用移动包络。
-- `no_attack`：`BattleLoopAI._ai_take_owned_turn` 在决策前待机（`wait_reason` `no_attack`，`0x43f413`）；活记录 +0xe8 清零与 `0x4483f0` 未接。
+- `no_attack`：`BattleLoopAI._ai_take_owned_turn` 在决策前待机（`wait_reason` `no_attack`，`0x43f413`）；逐 tick 的清除由 `BattleLoopAI.clear_no_attack_units` 在每个 AI 步进（麻痺门之前）与每次玩家菜单入口对全体存活、非玩家操控的 no_attack 单位执行，一次行动之内（连击之间）不清。
 - 重制组合（provisional）：`SkillTargetRules.candidate_centers` 遍历全部合法站位不复刻 250 缓存；`approach_goals` 按平铺 RANGE，只进 `candidate_filters.without_approach` 回执，不影响走法。
 
 ## 复现

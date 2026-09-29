@@ -66,6 +66,35 @@ const Values = preload("res://game/sim/Values.gd")
 static var _row_validation := {"equipment_items": null, "units": {}}
 
 
+## 0x43f3fb..0x43f45a is per-tick process code, not a turn entry: the general-object process
+## (process code 5 — actSetPlayerMode 0x450710 moves pmPlayer units to the player process,
+## which never tests no_attack) runs every tick for every living object, and outside a
+## dialogue box ([0x4c1b00] 0x100000 without the story bit 0x4000000) a unit whose template
+## carries no_attack (+0xa0 bit 2, 0x446b00) re-registers its cell (0x411a30), runs 0x4483f0
+## → 0x4483c0 (clear +0x24 status, the +0x30..+0x48 counters and the +0xb0 hit accumulator,
+## then refresh 0x448840) and zeroes the +0xe8 stamina (0x43f437) — before 0x407540 asks
+## whether it is the current actor and before the paralysis gate (0x43f47b). The loop has no
+## ticks and never steps under a dialogue, so it runs this at every action entry (each AI
+## step here, each player menu in `return_to_player`): no status, counter, hit bonus or
+## stamina of such a unit outlives the action that set it, and a paralyzed one is freed
+## before its own slot. Only the 0x78 bits feed the derived stats, so the refresh is a no-op
+## without them. Writes `loop` in place and touches only units that hold something to clear.
+static func clear_no_attack_units(loop: Dictionary) -> void:
+	var cleared := StatusEffectRules.cleared_counters()
+	for unit in loop.get("units", []):
+		if typeof(unit) != TYPE_DICTIONARY or not bool(unit.get("no_attack", false)) or bool(unit.get("player_commandable", false)) or not Presence.living(unit):
+			continue
+		if int(unit.get("status_flags", 0)) == 0 and unit.get("status_counters", cleared) == cleared and int(unit.get("hit_bonus_accum", 0)) == 0 and int(unit.get("stamina", 0)) == 0:
+			continue
+		var had_derived_status := (int(unit.get("status_flags", 0)) & 0x78) != 0
+		unit["status_flags"] = 0
+		unit["status_counters"] = cleared.duplicate()
+		if unit.has("hit_bonus_accum"): unit["hit_bonus_accum"] = 0
+		if had_derived_status and BattlePlayLoop.ProgressionRules.refresh_input_error(unit, loop["equipment_items"]) == "":
+			unit.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(unit, loop["equipment_items"]), true)
+		if unit.has("stamina"): unit["stamina"] = 0
+
+
 static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 	var next := BattlePlayLoop.copy(loop)
 	if BattleOutcome.decided(loop) or not loop.get("scenario_ok", false): return next
@@ -78,6 +107,7 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 		next["scenario_error"] = reward_error
 		next["interaction"] = "scenario_error"
 		return next
+	clear_no_attack_units(next)
 	if Treasure.awaiting_handoff(next):
 		next["treasures"]["handoff"] = {}
 		return BattlePlayLoop.advance_current_actor(next)
@@ -117,8 +147,9 @@ static func step_ai_turn(loop: Dictionary, rng: Variant = null) -> Dictionary:
 		next["scenario_error"] = resource_error
 		next["interaction"] = "scenario_error"
 		return next
-	# `next` is still `loop`'s state (every check above only reads it): the turn may work
-	# on it in place, and a rejected step copies `loop` instead.
+	# `next` is `loop`'s state plus the no_attack clear (every other check above only reads
+	# it): the turn may work on it in place, and a rejected step — a scenario error — copies
+	# `loop` instead.
 	var step: Dictionary = _ai_take_owned_turn(next, loop, actor_id, rng, true)
 	next = step.get("loop", next)
 	if not bool(next.get("scenario_ok", false)):
@@ -151,9 +182,10 @@ static func ai_take_turn(loop: Dictionary, actor_id: String, rng: Variant = null
 ## this actor on this state (`step_ai_turn`), so the preflight does not run it again.
 static func _ai_take_owned_turn(next: Dictionary, loop: Dictionary, actor_id: String, rng: Variant = null, skill_inputs_checked: bool = false) -> Dictionary:
 	var actor: Dictionary = BattlePlayLoop.unit_ref(next, actor_id)
-	# 0x43f412..0x43f45a: an AI unit whose template carries no_attack (+0xa0 bit 2, 0x446b00)
-	# re-registers its cell and ends the turn before any decision — no pursuit, no cast —
-	# unless the story-phase bit 0x4000000 of [0x4c1b00] is set (never during an AI turn).
+	# 0x43f44d..0x43f454: a no_attack unit (+0xa0 bit 2, 0x446b00) that is the current actor
+	# ends the turn (0x442084) before any decision — no pursuit, no cast — unless the
+	# story-phase bit 0x4000000 of [0x4c1b00] is set (never during an AI turn). Its status
+	# clear is the per-tick process code in `clear_no_attack_units`, already run this step.
 	if bool(actor.get("no_attack", false)):
 		return {"loop": next, "action": {"actor_id": actor_id, "kind": "wait", "wait_reason": "no_attack",
 			"from": actor["coord"], "to": actor["coord"], "path": [], "source": "0x43f413"}}
