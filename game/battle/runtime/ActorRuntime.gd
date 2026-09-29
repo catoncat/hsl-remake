@@ -85,7 +85,9 @@ static var view_top_row := 0
 ## −30..30 and wraps (61 ticks), the colour is side − 5·|p| per channel floored at 0. The shape
 ## is drawn twice over the sprite: engGLASS in that colour — (dst + C)/2 — then engADDCOLOR_MIX
 ## level 10 — + src·10/16 (Wine frames fit this at level 10). Which kind lit it is only
-## bookkeeping; all three draw the same.
+## bookkeeping; all three draw the same. The fragment's COLOR input is already vertex colour ×
+## texture, so the shader takes the modulate from the vertex stage and multiplies only that;
+## multiplying the input COLOR squared the sprite and drew the lit actor darker than unlit.
 const HIGHLIGHT_KINDS := ["speaker", "target", "actor"]
 const HIGHLIGHT_ORDER := HIGHLIGHT_KINDS
 const HIGHLIGHT_PLAYER_SIDE := 0x10000
@@ -101,9 +103,13 @@ const HIGHLIGHT_MIX_LEVEL := 10
 const HIGHLIGHT_SHADER_CODE := """shader_type canvas_item;
 uniform vec3 glass = vec3(0.0);
 uniform float mix_level = 0.625;
+varying vec4 draw_modulate;
+void vertex() {
+	draw_modulate = COLOR;
+}
 void fragment() {
 	vec4 src = texture(TEXTURE, UV);
-	COLOR = vec4(min((src.rgb + glass) * 0.5 + src.rgb * mix_level, vec3(1.0)), src.a) * COLOR;
+	COLOR = vec4(min((src.rgb + glass) * 0.5 + src.rgb * mix_level, vec3(1.0)), src.a) * draw_modulate;
 }
 """
 static var _highlight_shader: Shader = null
