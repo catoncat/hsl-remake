@@ -134,6 +134,19 @@ func ally_actions() -> void:
 		var second := BattlePlayLoop.attack_target(BattlePlayLoop.choose_magic(BattlePlayLoop.choose_command(cured,"magic"), HEAL), "enemy021_2", zero)
 		check(second["last_attack"].get("skill_id") == HEAL and BattlePlayLoop.unit(second,"enemy023_1")["exp"] > 0, "a different supported participant receives their own heal contribution")
 		check(BattlePlayLoop.unit(second,"leonard")["exp"] == exp_before, "later ally contribution cannot repeat the prior caster's award")
+	# A wall beside a poisoned ally leaves a two-cell area centre behind it that the RANGE
+	# pattern reaches but the propagated area does not; 0x40c9a0 skips a zero count
+	# (0x40cb8b). It must not reach prepare_cast as an empty target (an enemy turn once
+	# stalled there on invalid_experience_exp).
+	var walled := fixture(CURE)
+	walled["skill_book"]["skills"][CURE]["fields"]["effect_range"] = "range2CellCircle"
+	var patient := BattlePlayLoop.unit_ref(walled, "enemy023_1")
+	patient.merge(BattlePlayLoop.StatusEffectRules.apply(patient, "poison", 2, 10)["changes"], true)
+	var tiles: Dictionary = TestSuite.own(walled, "tiles")
+	tiles[Vector2i(13, 8)] = tiles.get(Vector2i(13, 8), {}).duplicate()
+	tiles[Vector2i(13, 8)].merge({"blocks_movement": true, "movement_flags": int(tiles[Vector2i(13, 8)].get("movement_flags", 0)) | 0x4000}, true)
+	var walled_step := BattlePlayLoop.step_ai_turn(walled, zero)
+	check(walled_step["scenario_ok"], "area support skips a centre that covers nobody behind a wall: " + str(walled_step.get("scenario_error", "")))
 
 
 ## 0x40c620 fills SPECIAL buckets beside MAGIC; 0x40c570(actor, 0x40dc50(), 0x40e0e0()) offers the

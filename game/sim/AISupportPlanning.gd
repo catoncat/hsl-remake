@@ -175,6 +175,9 @@ static func _collect_support_intents(ctx: Dictionary, id: Variant, entry: Dictio
 		for coord in SkillTargetRules.candidate_centers(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell):
 			if not cast_cells.has(coord): continue
 			var center := AISkillPlanning.target_for_center(actor, loop["units"], fields, loop["skill_target_data"], loop["map_size"], cell, coord, terrain)
+			# candidate_centers ignores the area's terrain propagation, so a centre may cover
+			# nobody once it is applied; 0x40c9a0 never lands on a zero-count centre (0x40cb8b).
+			if center.is_empty(): continue
 			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], loop["skill_target_data"], loop["equipment_items"], cell, loop["map_size"], coord, {"range_terrain": terrain})
 			if not ready["ok"]:
 				if ready["reason"] in ["out_of_range", "skill_has_no_effect"]: continue

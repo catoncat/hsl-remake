@@ -105,6 +105,7 @@ static func _collect_offense_intents(ctx: Dictionary, id: Variant, fields: Dicti
 			if not cast_cells.has(coord): continue
 			# The shared resolver validates every footprint member before any RNG.
 			var center := target_for_center(actor, loop["units"], fields, targeting, loop["map_size"], cell, coord, terrain)
+			if center.is_empty(): continue # Covers nobody after terrain propagation (0x40c9a0 skips a zero count, 0x40cb8b).
 			var ready := SkillResolutionRules.prepare_cast(actor, center, loop["units"], id, fields, ctx["book"], targeting, loop["equipment_items"], cell, loop["map_size"], coord, {"range_terrain": terrain})
 			if not ready["ok"]:
 				if ready["reason"] not in ["out_of_range", "not_enemy", "target_unavailable", "skill_has_no_effect"]: return ready

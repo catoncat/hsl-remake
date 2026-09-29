@@ -12,7 +12,7 @@ Checked: 2026-09-27
 | --- | --- | --- |
 | 和原版还差什么 | 85 条（2026-09-29；以差异清单为准，本格不逐次改） | [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md)（`hsl check parity_inventory`）；汇报"还剩多少"按它 |
 | 128 场自动对局 | win 20／fail 108／dead_end 0（2026-09-29）——伤害算法与敌方集火照原版、贪心机器人不躲，属难度不属回归 | `content/generated/hsl/development/autoplay/results.json`（负责人每批合并后重生成） |
-| 整章播种走查 | 机器人卡关时强制判胜，一路走到通关（`game_clear=true`，40 场：自然胜 21、强判胜 19）。规则异常只剩 1 处：自覺與宿命・塔克斯（LEVEL075）第 2 试敌方单位经验值越界被拒（`invalid_experience_exp`，在修）；亞修頓大橋 · 橋上的決戰（LEVEL044）的强化攻击力卡死已修，这次是正常负局。自然负多半是机器人策略弱、每关只试 3 次，不当规则信号 | 实玩包生成日志（`tools/hsl_playtest_kit.py generate --force-win`，不入库） |
+| 整章播种走查 | 机器人卡关时强制判胜，一路走到通关（`game_clear=true`，40 场：自然胜 21、强判胜 19）。唯一的规则异常已修：自覺與宿命・塔克斯（LEVEL075）第 2 试敌方范围施法挑到墙后无人覆盖的中心，被当空单位拒绝（`invalid_experience_exp`），现按原版 0x40c9a0 跳过这种中心；亞修頓大橋 · 橋上的決戰（LEVEL044）的强化攻击力卡死已修，这次是正常负局。自然负多半是机器人策略弱、每关只试 3 次，不当规则信号 | 实玩包生成日志（`tools/hsl_playtest_kit.py generate --force-win`，不入库） |
 | 剧情可达 | explorer 走遍 22 段注册剧情、三个结局都到 GameClear；剧情可通不等于战斗可通 | 深门 `tests/run_story_mode_explorer_tests.gd` |
 | 数据字段未消费 | 22／742（2026-09-22） | `hsl check field_coverage` |
 
