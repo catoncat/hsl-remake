@@ -521,6 +521,9 @@ def affected_python_tests(changed: list[str]) -> dict[str, str]:
     files = {path.name: path.read_text(encoding="utf-8", errors="replace") for path in sorted((ROOT / "tools").glob("test_hsl_*.py"))}
     hits: dict[str, str] = {}
     for path in changed:
+        # The shell lint test reads every tracked *.sh, so any shell change selects it.
+        if path.endswith(".sh") and "test_hsl_shell_var_braces.py" in files:
+            hits.setdefault("test_hsl_shell_var_braces.py", path)
         if not (path.startswith("tools/") and path.endswith(".py")):
             continue
         name = Path(path).name
