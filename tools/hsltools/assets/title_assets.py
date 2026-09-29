@@ -93,7 +93,7 @@ REFERENCE_LAYOUT = {
     'world_panel': {'top_left': [190, 67], 'evidence_tier': 'provisional',
                     'note': 'Title051 (257x345, the between-battle variant: 整理裝備／儲存回憶錄／讀取回憶錄／讀取戰場記錄／設定選項／回主選單) is not shown in any recording; the remake reuses the in-battle scroll position'},
     'memoir_list': {'top_left': [87, 44], 'evidence_tier': 'static-derived',
-                    'note': 'Title031 (466x392, 回憶錄 with eight slot bands): defProcMemoir 0x424a60 centres it on the 640x480 frame and starts it at x + 640, sliding in and out at 40 px per tick (0x45e882／0x45e91e); docs/evidence_packets/runtime_observations/menus_ui/README.md §3'},
+                    'note': 'Title031 (466x392, 回憶錄 with eight slot bands): defProcMemoir 0x424a60 centres it on the 640x480 frame and starts it at x + 640, stepping it in with 0x45e882 (each tick min(40, distance >> 3) px, at least 2) and back out to the right at 40 px per tick (0x45e91e); docs/evidence_packets/runtime_observations/menus_ui/README.md §3'},
     'options_panel': {'top_left': [142, 90], 'evidence_tier': 'runtime-measured',
                       'note': 'Title039 (355x299, 設定選項: 場景效果 off/on, 預備動作 off/on, 音效音量 min/max, 音樂音量 min/max) centred on the 640x480 frame: template match on the 2026-09-24 recording at 588.0 s (mean diff 21.4), docs/evidence_packets/runtime_observations/menus_ui/README.md'},
 }

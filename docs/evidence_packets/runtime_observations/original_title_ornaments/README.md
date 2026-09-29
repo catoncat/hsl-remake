@@ -54,7 +54,7 @@
 
 ## 重制接线
 
-`game/title/TitleScreen.gd`：`ORNAMENT_SPAWN_OFFSETS`＋`ornament_spawn_top_left` 是生成位置，`ornament_offset` 按 `OriginalTick` 的整 tick 数算角与截断偏移，`ornament_phases` 存两件初角；`play_click_sound` 在点击标题项（及重制键盘确认）时放 interface_audio 的 confirm（ACCEPT01，398）。`menu_slide`／`_tick` 逐 tick 滑入，`menu_armed` 落位前与开窗时不收输入；`spawn_sparkles`／`_tick_stars` 照上述撒点与运动画在加色层 `MenuStars`；`press_window` 数 10 tick 后 `open_window` 经 `BattleSystemMenu.open_standalone` 开 設定選項／读取回憶錄列表（不带卷轴），窗返回发 `standalone_closed` 复位，列表选有记录的格确认后 `resume_memoir_record` 入队并淡出。provenance 头写 `static-derived` 本包。标题其余读法见 [menus_ui](../menus_ui/README.md)。
+`game/title/TitleScreen.gd`：`ORNAMENT_SPAWN_OFFSETS`＋`ornament_spawn_top_left` 是生成位置，`ornament_offset` 按 `OriginalTick` 的整 tick 数算角与截断偏移，`ornament_phases` 存两件初角；`play_click_sound` 在点击标题项（及重制键盘确认）时放 interface_audio 的 confirm（ACCEPT01，398）。`menu_slide`／`_tick` 逐 tick 滑入，`menu_armed` 落位前与开窗时不收输入；`spawn_sparkles` 交给 `game/common/MenuStars.gd` 的 `spawn`、逐 tick 运动由 `MenuStars.tick` 照上述撒点与运动画在加色层 `MenuStars`（回憶錄列表共用）；`press_window` 数 10 tick 后 `open_window` 经 `BattleSystemMenu.open_standalone` 开 設定選項／读取回憶錄列表（不带卷轴），窗返回发 `standalone_closed` 复位，列表选有记录的格确认后 `resume_memoir_record` 入队并淡出。provenance 头写 `static-derived` 本包。标题其余读法见 [menus_ui](../menus_ui/README.md)。
 
 ## 复现
 

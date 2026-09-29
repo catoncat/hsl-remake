@@ -27,6 +27,7 @@ extends Control
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (opened 0x4082ab; list 0x425842; 確定 0x4259fb／0x42605a; row 0x425140 40-tick hold, messages 9–12)
+##   rules: remake-invented (memoir overwrite／load confirm, OPT-GUIDE＝提示 only)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#05
 ##     (scroll rests at (190,67))
@@ -42,12 +43,13 @@ extends Control
 ##     (items 9–12, 15, 314: memoir messages, 等級, empty slot)
 ##   strings: remake-invented (memoir file label; confirm questions and hints — OPT-GUIDE＝提示 only)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
-##     (scroll steps 0x45e882／0x45e91e from 0x4253f0 case 0／4 and 0x425a90)
+##     (scroll steps 0x45e882／0x45e91e, 0x4253f0 case 0／4, 0x425a90; 回憶錄 slide 0x424a60,
+##     sparkles 0x425337, fade 0x42dc90(2))
 ##   timing: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (save notice ≈0.24 s in, ≈1 s held, ≈0.14 s out; 任務說明 board dissolves ≈0.4 s each way (32／34 ticks))
 ##   timing: remake-invented (1.6 s hint line, OPT-GUIDE＝提示 only)
 ##   audio: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
-##     (ACCEPT01 on open: 0x4082ab, 0x427c41)
+##     (ACCEPT01 on open: 0x4082ab, 0x427c41; 回憶錄 row click 0x425370)
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json (confirm = ACCEPT01)
 
 ## World variant 整理裝備: the host opens the between-battle party equipment screen
@@ -113,6 +115,18 @@ const MEMOIR_HOLD_TICKS := 40
 const MEMOIR_AFTER_TICKS := 20
 ## 0x425140 hover: 0x42c130 pulse text over this shadow; other rows white over TEXT_SHADOW.
 const MEMOIR_HOVER_SHADOW := Color8(82, 134, 82)
+## defProcMemoir 0x424a60 starts the list 640 px right of its rest and steps it in with 0x45e882;
+## Esc／right click steps it back out with 0x45e91e (40 px a tick) before the window closes.
+const MEMOIR_SLIDE_OFFSET := Vector2(640, 0)
+## 0x425140 sparkles: a hovered row counts +0x90 down from 6 and at zero drops 3 Menu_Star (788)
+## per column, 0x423aa0(row, 788, 0x30, 6, 3); a click drops 6 Menu_Star2 (789, 0x40 wide, jitter
+## 2, 0x425399) and 6 Menu_Star (0x4253be).
+const MEMOIR_SPARK_TICKS := 6
+const MEMOIR_HOVER_SPARKS := 3
+const MEMOIR_CLICK_SPARKS := 6
+const MEMOIR_CLICK_JITTER := 2
+const MenuStars = preload("res://game/common/MenuStars.gd")
+const TITLE_SCRIPT_PATH := "res://game/title/TitleScreen.gd"
 const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
 
 var runtime: Node
@@ -128,7 +142,7 @@ var selected := 0
 var confirm_selected := 1 # 取消 by default
 var memoir_selected := 0
 var memoir_mode := "" # save | load
-var phase := "closed" # closed | opening | menu | confirm | mission | memoir | options | remake_options | closing
+var phase := "closed" # closed | opening | menu | confirm | mission | memoir | memoir_closing | loading | options | remake_options | closing
 var pending_action := ""
 var pending_slot := -1
 var last_result: Dictionary = {}
@@ -141,6 +155,15 @@ var _memoir_clock := 0.0
 var _memoir_hold := -1 # ticks left before the clicked slot acts, -1 idle
 var _memoir_hold_clock := 0.0
 var _memoir_busy := 0.0 # seconds the list ignores input after a message
+## The last list input came from the keyboard: the selected row pulses; otherwise only the row
+## under the mouse does (0x425173), none when the mouse is off the rows.
+var _memoir_keyboard := false
+var _mouse_logical := Vector2(-1, -1)
+var _memoir_spark_left: Dictionary = {}
+var _memoir_tick_clock := 0.0
+var _stars: MenuStars
+var _load_fade: ColorRect
+var _slide_node: Control
 var _save_notice_text: Label
 var _options_box: Control
 var _options_panel: TextureRect
@@ -205,6 +228,14 @@ func _ready() -> void:
 	_build_memoir(layout)
 	_build_options(layout)
 	_build_remake_entry_and_hint()
+	# The message board draws over the 回憶錄 list (0x4072b0), the load fade over everything.
+	move_child(_save_notice, get_child_count() - 1)
+	_load_fade = ColorRect.new()
+	_load_fade.name = "LoadFade"
+	_load_fade.size = Vector2(640, 480)
+	_load_fade.color = Color(0, 0, 0, 0)
+	_load_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_load_fade)
 
 
 ## _ready phase: the 確定／取消 prompt.
@@ -280,6 +311,9 @@ func _build_memoir(layout: Dictionary) -> void:
 		# FONT.24 text drawn at the row origin (0x425140 → 0x460884).
 		var row := BattleUISkin.text(memoir_list, Vector2(float(origin[0]), _slot_top(slot)), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(float(row_size[0]), 24))
 		_memoir_rows.append(row)
+	_stars = MenuStars.new()
+	_stars.name = "MemoirStars"
+	add_child(_stars)
 
 
 ## _ready phase: the 設定選項 panel.
@@ -407,6 +441,7 @@ func open_standalone(kind: String) -> Dictionary:
 func _close_standalone() -> void:
 	var kind := standalone
 	standalone = ""
+	_reset_memoir_wait()
 	_confirm_box.visible = false
 	_memoir_box.visible = false
 	_options_box.visible = false
@@ -428,6 +463,7 @@ func close() -> Dictionary:
 	_remake_page.close()
 	pending_action = ""
 	pending_slot = -1
+	_reset_memoir_wait()
 	phase = "closing"
 	_slide(_panel_closed_position, 0, func() -> void:
 		phase = "closed"
@@ -440,12 +476,20 @@ func close() -> Dictionary:
 ## window closes (original frame 17 → right click → the scroll, runtime-measured).
 func hide_now() -> void:
 	_slide_shift = -1
+	_reset_memoir_wait()
 	_confirm_box.visible = false
 	pending_action = ""
 	pending_slot = -1
 	phase = "closed"
 	visible = false
 	_panel.position = _panel_closed_position
+
+
+## A closed window drops a pending row hold and the post-message wait.
+func _reset_memoir_wait() -> void:
+	_memoir_hold = -1
+	_memoir_hold_clock = 0.0
+	_memoir_busy = 0.0
 
 
 func reopen_now() -> void:
@@ -457,9 +501,10 @@ func reopen_now() -> void:
 	_show_lit(selected)
 
 
-## Moves the panel toward `target` one original tick at a time: `shift` 3 is the open
-## (0x45e882), 0 the close (0x45e91e with shift 0).
-func _slide(target: Vector2, shift: int, on_done: Callable) -> void:
+## Moves the panel (or `node`, the 回憶錄 list) toward `target` one original tick at a time:
+## `shift` 3 is the open (0x45e882), 0 the close (0x45e91e with shift 0).
+func _slide(target: Vector2, shift: int, on_done: Callable, node: Control = null) -> void:
+	_slide_node = node if node != null else _panel
 	_slide_target = target
 	_slide_shift = shift
 	_slide_done = on_done
@@ -467,6 +512,10 @@ func _slide(target: Vector2, shift: int, on_done: Callable) -> void:
 
 
 func _process(delta: float) -> void:
+	_memoir_tick_clock += maxf(delta, 0.0)
+	while _memoir_tick_clock >= OriginalTick.TICK_SECONDS:
+		_memoir_tick_clock -= OriginalTick.TICK_SECONDS
+		_memoir_tick()
 	if phase == "memoir":
 		_memoir_clock += maxf(delta, 0.0)
 		_memoir_busy = maxf(_memoir_busy - maxf(delta, 0.0), 0.0)
@@ -491,14 +540,36 @@ func _process(delta: float) -> void:
 ## One tick of 0x45e882／0x45e91e: within 1 px snap and report arrival; otherwise step
 ## min(40, distance >> shift) px (at least 2) toward the target.
 func _slide_tick() -> bool:
-	var offset := _slide_target - _panel.position
+	var offset := _slide_target - _slide_node.position
 	var distance := int(sqrt(offset.length_squared()))
 	if distance <= 1:
-		_panel.position = _slide_target
+		_slide_node.position = _slide_target
 		return true
 	var step := clampi(distance >> _slide_shift, SCROLL_MIN_STEP, SCROLL_STEP_CAP)
-	_panel.position = (_panel.position + offset / float(distance) * float(step)).round()
+	_slide_node.position = (_slide_node.position + offset / float(distance) * float(step)).round()
 	return false
+
+
+## One original tick of the 回憶錄 rows (0x425140): the hovered row's sparkle count, then the stars.
+func _memoir_tick() -> void:
+	if _stars == null:
+		return
+	var row := memoir_slot_at(_mouse_logical)
+	if row >= 0 and _memoir_hold < 0 and _memoir_busy <= 0.0:
+		var left := int(_memoir_spark_left.get(row, MEMOIR_SPARK_TICKS)) - 1
+		if left <= 0:
+			left = MEMOIR_SPARK_TICKS
+			_stars.spawn(_memoir_row_rect(row), "hover", MEMOIR_HOVER_SPARKS)
+		_memoir_spark_left[row] = left
+	_stars.tick()
+
+
+## Row `slot` in this node's (logical) coordinates, following the list as it slides.
+func _memoir_row_rect(slot: int) -> Rect2:
+	var list: TextureRect = _memoir_box.get_node("Title_memoir_list")
+	var origin: Array = memoir_layout.get("row_origin", [37, 82])
+	var row_size: Array = memoir_layout.get("row_size", [390, 26])
+	return Rect2(_memoir_box.position + list.position + Vector2(float(origin[0]), _slot_top(slot)), Vector2(float(row_size[0]), float(row_size[1])))
 
 
 func _show_lit(index: int) -> void:
@@ -556,6 +627,7 @@ func select(index: int) -> void:
 
 
 func hover_at(logical: Vector2) -> void:
+	_mouse_logical = logical
 	match phase:
 		"menu":
 			var index := item_at(logical)
@@ -567,9 +639,7 @@ func hover_at(logical: Vector2) -> void:
 				confirm_selected = index
 				_show_confirm_lit(confirm_selected)
 		"memoir":
-			var slot := memoir_slot_at(logical)
-			if slot >= 0:
-				select_memoir(slot)
+			_hover_memoir(memoir_slot_at(logical))
 		"options":
 			var row := options_row_at(logical)
 			if row >= 0:
@@ -694,7 +764,7 @@ func memoir_slot_at(logical: Vector2) -> int:
 	if phase != "memoir":
 		return -1
 	var list: TextureRect = _memoir_box.get_node("Title_memoir_list")
-	var local := logical - list.position
+	var local := logical - _memoir_box.position - list.position
 	var origin: Array = memoir_layout.get("row_origin", [37, 82])
 	var row_size: Array = memoir_layout.get("row_size", [390, 26])
 	if local.x < float(origin[0]) or local.x >= float(origin[0]) + float(row_size[0]):
@@ -706,28 +776,47 @@ func memoir_slot_at(logical: Vector2) -> int:
 	return -1
 
 
+## Keyboard (remake) selection: the selected row pulses until the mouse moves again.
 func select_memoir(slot: int) -> void:
 	if _memoir_rows.is_empty():
 		return
 	memoir_selected = wrapi(slot, 0, _memoir_rows.size())
+	_memoir_keyboard = true
 	_paint_memoir_rows()
 
 
-## 0x425140: the hovered row pulses green (0x42c130) over a dark-green shadow, the rest are white.
+## The mouse over row `slot` (-1 off the rows): that row becomes the selection.
+func _hover_memoir(slot: int) -> void:
+	_memoir_keyboard = false
+	if slot >= 0:
+		memoir_selected = slot
+	_paint_memoir_rows()
+
+
+## 0x425140: only the row under the mouse pulses green (0x42c130, test 0x10000 at 0x425173) over a
+## dark-green shadow, the rest are white; after a keyboard move the selected row pulses instead.
 func _paint_memoir_rows() -> void:
+	var lit := memoir_selected if _memoir_keyboard else memoir_slot_at(_mouse_logical)
 	for slot in range(_memoir_rows.size()):
-		var hovered := slot == memoir_selected
+		var hovered := slot == lit
 		_memoir_rows[slot].add_theme_color_override("font_color", EventSelectWindow.pulse_colour(_memoir_clock) if hovered else BattleUISkin.TEXT_WHITE)
 		_memoir_rows[slot].add_theme_color_override("font_shadow_color", MEMOIR_HOVER_SHADOW if hovered else BattleUISkin.TEXT_SHADOW)
 
 
-## Row text of 0x424f00: point name padded with spaces to 18 Big5 bytes, " 等級", the level in
+## Row text of 0x424f00: point name cut to 18 bytes (0x46e5d0 strncpy, byte-wise; the remake
+## drops a character that would straddle the limit whole rather than leave a lone lead byte) and padded with spaces to 18, " 等級", the level in
 ## two digits, " ", then the 0x42d090 mode-1 clock (hours right-aligned in three columns, minutes
-## in two). A longer name is not cut.
+## in two).
 static func memoir_row_text(place: String, level: int, play_seconds: float, name_bytes: int = 18) -> String:
 	var width := 0
+	var kept := 0
 	for index in place.length():
-		width += 1 if place.unicode_at(index) < 0x80 else 2
+		var char_width := 1 if place.unicode_at(index) < 0x80 else 2
+		if width + char_width > name_bytes:
+			break
+		width += char_width
+		kept += 1
+	place = place.substr(0, kept)
 	var total_minutes := int(play_seconds) / 60
 	var hours := total_minutes / 60
 	var clock := ("  " if hours < 10 else (" " if hours < 100 else "")) + str(hours) + ":%02d" % (total_minutes % 60)
@@ -740,10 +829,15 @@ func _show_memoir_list(mode: String) -> void:
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(heading_role, {})
 	BattleUISkin.show_shape(_memoir_heading, load(str(entry.get("texture", ""))))
 	_refresh_memoir_rows()
-	select_memoir(memoir_selected)
+	_memoir_keyboard = false
 	_lit.visible = false
+	if not _memoir_box.visible:
+		_memoir_spark_left.clear()
+		_memoir_box.position = MEMOIR_SLIDE_OFFSET
+		_slide(Vector2.ZERO, SCROLL_OPEN_SHIFT, func() -> void: pass, _memoir_box)
 	_memoir_box.visible = true
 	phase = "memoir"
+	_paint_memoir_rows()
 
 
 ## Row text per slot; an empty or unreadable slot shows RESOURCE.TXT 314 centred (0x424f00).
@@ -789,6 +883,8 @@ func activate_memoir() -> Dictionary:
 			return {"ok": false, "reason": "memoir_hold"}
 		if runtime != null and runtime.has_method("play_ui_sound"):
 			runtime.play_ui_sound("confirm")
+		_stars.spawn(_memoir_row_rect(slot), "click", MEMOIR_CLICK_SPARKS, -1, MEMOIR_CLICK_JITTER)
+		_stars.spawn(_memoir_row_rect(slot), "hover", MEMOIR_CLICK_SPARKS)
 		_memoir_hold = MEMOIR_HOLD_TICKS
 		_memoir_hold_clock = 0.0
 		result["status"] = "accepted"
@@ -882,14 +978,24 @@ func _save_memoir_slot(slot: int) -> Dictionary:
 	return result
 
 
+## The header read (0x42ec10(slot, 0)) passed: 0x42ccc0 arms the load ([0x4c1ae4] = slot |
+## 0x80000000 — here the pending hand-off) and fades out with 0x42dc90(2); after the fade
+## 0x42db2b reads the file in whole (here the scene reload). The list stays drawn and inert under
+## the fade. The title runs the same fade itself (TitleScreen.resume_memoir_record).
 func _resume_memoir_slot(slot: int) -> Dictionary:
 	var record := CampaignProgress.load_memoir(slot)
 	var result: Dictionary = {"ok": true, "action": "load_memoir", "slot": slot, "status": "memoir_resumed", "scenario_path": str(record.get("scenario_path", ""))}
 	last_result = result
+	phase = "loading"
 	if runtime.has_method("resume_memoir_record"):
 		runtime.resume_memoir_record(record)
-	else:
-		runtime.campaign_progress.resume_saved_progress(record)
+		return result
+	CampaignProgress.queue_resume(record)
+	var title_script: Variant = load(TITLE_SCRIPT_PATH)
+	var seconds: float = title_script.FADE_TO_BLACK_SECONDS
+	var tween := create_tween()
+	tween.tween_method(func(elapsed: float) -> void: _load_fade.color.a = title_script.fade_alpha(elapsed), 0.0, seconds, seconds)
+	tween.tween_callback(func() -> void: runtime.campaign_progress.resume_saved_progress(record))
 	return result
 
 
@@ -899,8 +1005,8 @@ func activate() -> Dictionary:
 		return {"ok": false, "reason": phase}
 	var action := str(items[selected].get("id", ""))
 	var confirm_table: Dictionary = WORLD_CONFIRM_ACTIONS if variant == "world" else CONFIRM_ACTIONS
-	if variant == "world" and action == "load_record" and CampaignProgress.battle_record_entries().is_empty():
-		return _perform(action) # nothing to confirm: says 沒有戰場記錄
+	if variant == "world" and action == "load_record" and CampaignProgress.battle_record_entries().is_empty() and not GameOptions.is_original("OPT-GUIDE"):
+		return _perform(action) # OPT-GUIDE＝提示: nothing to confirm, says 沒有戰場記錄
 	if confirm_table.has(action):
 		pending_action = action
 		phase = "confirm"
@@ -957,8 +1063,12 @@ func _perform(action: String) -> Dictionary:
 			"load_record":
 				var records: Array = CampaignProgress.battle_record_entries()
 				if records.is_empty():
+					# 確定 then 0x42ebe0 (0x425eee) finds no record: red message 12.
 					result["status"] = "no_record"
-					_show_hint("沒有戰場記錄")
+					if GameOptions.is_original("OPT-GUIDE"):
+						_show_save_notice(MEMOIR_MESSAGES["no_file"], BattleUISkin.TEXT_RED)
+					else:
+						_show_hint("沒有戰場記錄")
 				else:
 					var newest: Dictionary = records[0]
 					result["status"] = "battle_record_resumed"
@@ -1024,7 +1134,8 @@ func _show_save_notice(text: String, color: Color) -> void:
 		_save_notice_tween.kill()
 	_save_notice_text.text = text
 	_save_notice_text.add_theme_color_override("font_color", color)
-	_memoir_busy = SAVE_NOTICE_IN_SECONDS + SAVE_NOTICE_HOLD_SECONDS + SAVE_NOTICE_OUT_SECONDS + MEMOIR_AFTER_TICKS * OriginalTick.TICK_SECONDS
+	if phase == "memoir":
+		_memoir_busy = SAVE_NOTICE_IN_SECONDS + SAVE_NOTICE_HOLD_SECONDS + SAVE_NOTICE_OUT_SECONDS + MEMOIR_AFTER_TICKS * OriginalTick.TICK_SECONDS
 	_save_notice.modulate.a = 0.0
 	_save_notice.visible = true
 	_save_notice_tween = create_tween()
@@ -1045,7 +1156,7 @@ func _show_hint(text: String) -> void:
 func handle_input(event: InputEvent) -> bool:
 	if not active():
 		return false
-	if phase in ["opening", "closing"]:
+	if phase in ["opening", "closing", "memoir_closing", "loading"]:
 		return true
 	if phase == "memoir" and (_memoir_hold >= 0 or _memoir_busy > 0.0):
 		return true
@@ -1083,7 +1194,7 @@ func _handle_click(event: InputEventMouseButton) -> void:
 				_back()
 			"memoir":
 				if memoir_slot_at(logical) >= 0:
-					select_memoir(memoir_slot_at(logical))
+					_hover_memoir(memoir_slot_at(logical))
 					activate_memoir()
 			"options":
 				var row := options_row_at(logical)
@@ -1165,11 +1276,14 @@ func _back() -> void:
 			_mission_board.fade_out()
 			_lit.visible = true
 			phase = "menu"
-		"memoir", "options":
+		"memoir":
+			# 0x45e91e: out to the right at 40 px a tick, then the window closes.
+			phase = "memoir_closing"
+			_slide(MEMOIR_SLIDE_OFFSET, 0, _memoir_slid_out, _memoir_box)
+		"options":
 			if standalone != "":
 				_close_standalone()
 				return
-			_memoir_box.visible = false
 			_options_box.visible = false
 			_lit.visible = true
 			phase = "menu"
@@ -1177,6 +1291,15 @@ func _back() -> void:
 			_close_remake_options()
 		"menu":
 			close()
+
+
+func _memoir_slid_out() -> void:
+	_memoir_box.visible = false
+	if standalone != "":
+		_close_standalone()
+		return
+	_lit.visible = true
+	phase = "menu"
 
 
 func summary() -> Dictionary:

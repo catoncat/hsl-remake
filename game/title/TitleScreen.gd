@@ -23,7 +23,7 @@ extends Node2D
 ## CONFIRM_HOLD_TICKS, then fades to black in 16 levels over FADE_DONE_TICKS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
 ## docs/evidence_packets/runtime_observations/menus_ui/README.md). 戰場記錄 with nothing to resume
-## shows message 12「無存檔記錄」on the BOARD02 message board (0x42404c → 0x4072b0). The title plays the original track
+## shows message 12「無存檔記錄」in red (@2) on the BOARD02 message board (0x42404c → 0x4072b0). The title plays the original track
 ## 03 (manifest.music: level 0's table track, played after the vendor logos —
 ## docs/evidence_packets/static_reverse/original_music.md §3.1; the remake has no logo stage, so it
 ## starts with the title); like every level exit it stops at once on the scene change or when the
@@ -47,7 +47,7 @@ extends Node2D
 ##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (「V1.06」; negative-evidence: not an ASCII／UTF-16 string of hsl01.exe)
 ##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
-##     (無存檔記錄 message 12 via 0x4072b0)
+##     (無存檔記錄 message 12 via 0x4072b0, an @2 red line)
 ##     (戰場記錄 code 1 0x42404c: message 12「無存檔記錄」, 11「讀取存檔失敗」)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
 ##     (bob angle +3／tick, 0x424389; slide 0x45e882 speed 40; sparkles 0x4241a0／0x41f5db)
@@ -61,7 +61,7 @@ extends Node2D
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##   audio: resource-derived content/imported/hsl/music/manifest.json
 ##   audio: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
-##     (item click plays ACCEPT01 RESOURCE 398, 0x4242d6)
+##     (item click plays ACCEPT01 RESOURCE 398, 0x4242d6; the 回憶錄 row click too, 0x425370)
 
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
@@ -127,20 +127,12 @@ const MENU_SLIDE_MIN := 2
 ## Sparkles (static-derived): every title object (the three items, gem and book: 0x4241a0) under
 ## the mouse while the menu waits for input counts +0x90 down from 6 each tick and at zero spawns
 ## 4 Menu_Star (object 788) per 32 px column (0x423aa0 → 0x415c10); a click spawns 24 Menu_Star2
-## (789) and 16 Menu_Star per column. Both run effProcFlyUpShape (0x41f5db): random start shape of
-## 3, held; straight up at (rand & 0x1f000) + Data6 (16.16 px a tick); held Shape_Delay + 6..13 + 1
-## ticks, then effProcFlyUp2's fade (0x422c9a) one of 16 additive levels a tick.
-const SKILL_EFFECTS_PATH := "res://content/imported/hsl/shared/skill_effects/manifest.json"
-const STAR_KINDS := {
-	"hover": {"frames": ["MAGIC\\EAR24_22.SHP", "MAGIC\\EAR24_23.SHP", "MAGIC\\EAR24_24.SHP"], "width": 48, "jitter": 6, "speed_base": 0, "shape_delay": 0},
-	"click": {"frames": ["MAGIC\\EAR24_21.SHP", "MAGIC\\EAR24_22.SHP", "MAGIC\\EAR24_23.SHP"], "width": 64, "jitter": 1, "speed_base": 0x8000, "shape_delay": 2},
-}
+## (789) and 16 Menu_Star per column. The stars themselves are MenuStars (shared with the 回憶錄 list).
+const MenuStars = preload("res://game/common/MenuStars.gd")
 const HOVER_SPARK_TICKS := 6
 const HOVER_SPARK_COUNT := 4
 const CLICK_SPARK2_COUNT := 24
 const CLICK_SPARK_COUNT := 16
-const STAR_COLUMN_PITCH := 32
-const STAR_LEVELS := 16
 ## Gem and book carry codes 10 and 11 (Data9): 0x424037 opens 設定選項 (0x423b90) and the
 ## 讀取回憶錄 list (0x423bd0(…, 0)); the menu stays drawn but takes no input until the window
 ## writes its result back (states 4／5: 0x424101／0x424117).
@@ -190,10 +182,7 @@ var hover_code := -1
 var _menu_rest: Dictionary = {}
 var _tick_clock := 0.0
 var _spark_counters: Dictionary = {}
-var _stars: Array = []
-var _star_layer: Node2D
-var _star_material: CanvasItemMaterial
-var _star_frames: Dictionary = {}
+var _stars: MenuStars
 var _rng := RandomNumberGenerator.new()
 var _system: Control
 
@@ -224,13 +213,9 @@ func _build_scene() -> void:
 	_hand = _sprite("cursor_hand", _layout_top_left("cursor_hand"))
 	for node in [_sprites["ring"], _sprites["statue_left"], _sprites["statue_right"]] + _lit:
 		_menu_rest[node] = node.position
-	_star_layer = Node2D.new()
-	_star_layer.name = "MenuStars"
-	add_child(_star_layer)
-	_star_material = CanvasItemMaterial.new()
-	_star_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	var effects: Variant = ContentPaths.read_json(SKILL_EFFECTS_PATH)
-	_star_frames = (effects.get("frames", {}) as Dictionary) if typeof(effects) == TYPE_DICTIONARY else {}
+	_stars = MenuStars.new()
+	_stars.name = "MenuStars"
+	add_child(_stars)
 	var overlay := CanvasLayer.new()
 	overlay.name = "Overlay"
 	overlay.layer = 10
@@ -332,7 +317,7 @@ func _tick() -> void:
 			var code := window_hold_code
 			window_hold_code = -1
 			open_window(code)
-	_tick_stars()
+	_stars.tick()
 
 
 ## The menu waits for input: landed, no window up, not leaving (state 2, +0x80 & 0x10000).
@@ -369,74 +354,9 @@ func code_rect(code: int) -> Rect2:
 	return item_rect(code)
 
 
-## 0x423aa0: columns from the shape's left + 16 every 32 px across its width; each column
-## 0x415c10 drops `count` stars at (column, top + 16) + folded rand offsets (x within the kind's
-## width, y within 2 × (height − 16)), the n-th star delayed by the sum of n rand(jitter) + 1.
+## 0x423aa0 over the object's shape (MenuStars.spawn with the title's width／jitter).
 func spawn_sparkles(code: int, kind: String, count: int) -> void:
-	var rect := code_rect(code)
-	var spec: Dictionary = STAR_KINDS[kind]
-	var span_y := 2 * int(rect.size.y - 16)
-	var x := rect.position.x + 16
-	while x < rect.end.x:
-		var delay := 0
-		for index in count:
-			_add_star(Vector2(x + _fold(int(spec["width"])), rect.position.y + 16 + _fold(span_y)), kind, delay)
-			delay += _rng.randi() % int(spec["jitter"]) + 1
-		x += STAR_COLUMN_PITCH
-
-
-## 0x415c10 offset: r = rand() % n, folded to n/2 − r past n/2.
-func _fold(n: int) -> int:
-	if n <= 0:
-		return 0
-	var r := _rng.randi() % n
-	return r if r <= n / 2 else n / 2 - r
-
-
-func _add_star(at: Vector2, kind: String, delay: int) -> void:
-	var sprite := Sprite2D.new()
-	sprite.centered = false
-	sprite.material = _star_material
-	sprite.visible = false
-	_star_layer.add_child(sprite)
-	_stars.append({"sprite": sprite, "kind": kind, "at": at, "delay": delay, "started": false, "speed": 0.0, "life": 0, "fading": false, "level": STAR_LEVELS})
-
-
-## Per star each tick: the effect prologue (0x415dc0) waits out +0xae; the first drawn tick runs
-## effProcFlyUpShape's setup; later ticks run effProcFlyUp2 (move, then count the held shape down
-## or fade one level; deleted at level 0).
-func _tick_stars() -> void:
-	var alive: Array = []
-	for star in _stars:
-		var sprite: Sprite2D = star["sprite"]
-		star["delay"] = int(star["delay"]) - 1
-		if int(star["delay"]) > 0:
-			alive.append(star)
-			continue
-		var spec: Dictionary = STAR_KINDS[star["kind"]]
-		if not bool(star["started"]):
-			star["started"] = true
-			var frame: Dictionary = _star_frames.get(spec["frames"][_rng.randi() % 3], {})
-			var origin: Array = frame.get("draw_origin", [0, 0])
-			sprite.texture = load(str(frame.get("res_path", ""))) if frame.has("res_path") else null
-			sprite.offset = -Vector2(float(origin[0]), float(origin[1]))
-			star["speed"] = float((_rng.randi() & 0x1f000) + int(spec["speed_base"])) / 65536.0
-			star["life"] = int(spec["shape_delay"]) + 6 + (_rng.randi() & 7)
-			sprite.visible = true
-		else:
-			star["at"] = (star["at"] as Vector2) - Vector2(0, float(star["speed"]))
-			if bool(star["fading"]):
-				star["level"] = int(star["level"]) - 1
-			else:
-				star["life"] = int(star["life"]) - 1
-				star["fading"] = int(star["life"]) < 0
-		if int(star["level"]) <= 0:
-			sprite.queue_free()
-			continue
-		sprite.position = (star["at"] as Vector2).floor()
-		sprite.modulate.a = float(star["level"]) / STAR_LEVELS
-		alive.append(star)
-	_stars = alive
+	_stars.spawn(code_rect(code), kind, count)
 
 
 ## Top-left of the ornament's shape at its spawn position (object position minus draw origin).
@@ -525,7 +445,7 @@ func confirm() -> Dictionary:
 				_start_transition(action, FIRST_SCENE_PATH, str(newest.get("scenario_path", "")))
 				transition["battle_record"] = str(newest.get("save_path", ""))
 			elif saved.is_empty():
-				show_message(NO_RECORD_MESSAGE)
+				show_message(NO_RECORD_MESSAGE, BattleUISkin.TEXT_RED)
 				transition = {"action": action, "status": "no_record"}
 			else:
 				CampaignProgress.queue_resume(saved)
@@ -551,10 +471,15 @@ func _start_transition(action: String, scene_path: String, resume_scenario: Stri
 	tween.finished.connect(_on_fade_finished.bind(scene_path))
 
 
-## 0x46098f／0x460a58: level 1 at the start, +1 every FADE_LEVEL_TICKS, capped at 16 (black).
 func _set_fade_level(elapsed: float) -> void:
+	_fade.color.a = fade_alpha(elapsed)
+
+
+## 0x46098f／0x460a58: level 1 at the start, +1 every FADE_LEVEL_TICKS, capped at 16 (black);
+## the 回憶錄 list's load fade (BattleSystemMenu) runs the same 0x42dc90(2).
+static func fade_alpha(elapsed: float) -> float:
 	var ticks := int(elapsed / OriginalTick.TICK_SECONDS)
-	_fade.color.a = float(mini(FADE_LEVELS, 1 + ticks / FADE_LEVEL_TICKS)) / FADE_LEVELS
+	return float(mini(FADE_LEVELS, 1 + ticks / FADE_LEVEL_TICKS)) / FADE_LEVELS
 
 
 func _on_fade_finished(scene_path: String) -> void:
@@ -604,10 +529,12 @@ func skip_intro() -> Dictionary:
 	return intro_player.skip()
 
 
-func show_message(text: String) -> void:
+## RESOURCE.TXT 12 is an @2 (red) line.
+func show_message(text: String, color: Color = BattleUISkin.TEXT_WHITE) -> void:
 	if _message_tween != null and _message_tween.is_valid():
 		_message_tween.kill()
 	_message_text.text = text
+	_message_text.add_theme_color_override("font_color", color)
 	_message.modulate.a = 0.0
 	_message.visible = true
 	_message_tween = create_tween()
@@ -644,9 +571,9 @@ func _on_window_closed(_kind: String) -> void:
 
 
 ## The memoir list's slot confirmed (0x424117: result 1 → load and leave the title): arm the
-## record like 戰場記錄 and fade out without a lit item.
+## record like 戰場記錄 and fade out without a lit item; the list stays drawn, inert, under the
+## 0x42dc90(2) fade (BattleSystemMenu holds it in its "loading" phase).
 func resume_memoir_record(record: Dictionary) -> void:
-	_system.hide_now()
 	_system.standalone = ""
 	window_open = ""
 	CampaignProgress.queue_resume(record)
@@ -689,6 +616,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			press_window(hover_code)
 
 
+## BattleSystemMenu's interface sounds on the title: the 回憶錄 row click (0x425370) is the
+## same ACCEPT01.
+func play_ui_sound(event: String) -> void:
+	if event == "confirm":
+		play_click_sound()
+
+
 ## defProcMainMenuString 0x4242d6: a click on an item plays ACCEPT01 (RESOURCE 398).
 func play_click_sound() -> void:
 	if _click_audio == null:
@@ -717,7 +651,7 @@ func summary() -> Dictionary:
 		"ornament_phases": ornament_phases,
 		"menu_slide": menu_slide,
 		"hover_code": hover_code,
-		"stars": _stars.size(),
+		"stars": _stars.count() if _stars != null else 0,
 		"window": window_open,
 		"lit_visible": _lit.map(func(sprite): return sprite.visible),
 		"transition": transition.duplicate(true),

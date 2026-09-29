@@ -3,18 +3,18 @@
   "updated": "2026-09-29",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 87,
-    "sources": 474,
+    "items": 86,
+    "sources": 477,
     "sources_by_kind": {
-      "provenance": 191,
+      "provenance": 194,
       "sentence": 85,
       "scope": 100,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 49,
+    "layout_timing_modules": 50,
     "items_by_original_status": {
-      "read_complete": 30,
+      "read_complete": 29,
       "read_partial": 39,
       "unread": 1,
       "no_original_code": 17
@@ -22,7 +22,7 @@
     "items_by_visibility": {
       "every_battle": 16,
       "some_levels": 31,
-      "rare": 36,
+      "rare": 35,
       "invisible": 4
     },
     "items_by_category": {
@@ -40,7 +40,7 @@
       "特写与施法演出": 8,
       "重制新增（原版没有）": 16,
       "镜头": 1,
-      "面板与界面": 8,
+      "面板与界面": 7,
       "音频": 2,
       "飘字与数字": 2
     },
@@ -507,7 +507,9 @@
         "provenance:game/battle/scene/BattleItemText.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleStatusPanel.gd|strings|remake-invented|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|layout|remake-invented|",
+        "provenance:game/battle/scene/BattleSystemMenu.gd|rules|remake-invented|",
         "provenance:game/battle/scene/BattleSystemMenu.gd|strings|remake-invented|",
+        "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
         "provenance:game/sim/ProgressionRules.gd|strings|remake-invented|"
       ]
     },
@@ -1516,29 +1518,6 @@
       ]
     },
     {
-      "id": "memoir-list",
-      "difference": "回憶錄列表（战斗卷轴与大地图卷轴共用）的位置、行布局、行文字、空档、悬停、点击后的存读与红字消息已照原版；剩余：列表自右侧滑入／滑出未做，点击时的 Menu_Star 788／789 火花未画，大地图 讀取戰場記錄 无记录时重制跳过確定改出提示行（原版照问、確定后出消息 12）",
-      "original": "defProcMemoir 0x424a60 居中、x＋640 起滑、抬头 (148,29)；行 0x424f00 拼「点名补足 18 字节＋ 等級NN＋时钟 0x42d090」，空档 RESOURCE.TXT 314；行过程 0x425140 悬停 0x42c130 绿脉冲、点击 ACCEPT01＋40 tick 后 0x42ec00／0x42ec10 直接存读，消息 9／10／11／12，板关后 20 tick 收输入；两卷轴確定框 0x423c90 只从 0x4259fb／0x42605a 两处进（战斗 儲存／讀取戰場記錄／回主選單，大地图 讀取戰場記錄／回主選單）",
-      "original_evidence": [
-        "docs/evidence_packets/runtime_observations/menus_ui/README.md",
-        "docs/evidence_packets/static_reverse/original_storage_window.md"
-      ],
-      "remake": "BattleSystemMenu 照读值画列表与行，OPT-GUIDE＝原版 点击停 40 tick 后直接存读并出原版消息；OPT-GUIDE＝提示 保留问句与提示行",
-      "remake_code": [
-        "game/battle/scene/BattleSystemMenu.gd:_show_memoir_list",
-        "game/battle/scene/BattleSystemMenu.gd:finish_memoir_hold",
-        "game/battle/scene/BattleSystemMenu.gd:memoir_row_text"
-      ],
-      "original_status": "read_complete",
-      "visibility": "rare",
-      "effort": "S",
-      "category": "面板与界面",
-      "sources": [
-        "provenance:game/battle/scene/BattleSystemMenu.gd|timing|remake-invented|",
-        "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）"
-      ]
-    },
-    {
       "id": "panel-slide-formula",
       "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，獲得物品待领列表的说明框在滑动途中按落点判悬停、关窗即消失（原版按滑动中的窗矩形判、关窗滑出途中照画）",
       "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
@@ -1584,7 +1563,7 @@
     },
     {
       "id": "title-ornaments",
-      "difference": "宝珠／书浮动、点击声、菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄已照原版（TITLE2）；剩：Menu_Star 未写 Shape_Delay 按 0、星点逐颗落点用重制随机流、回憶錄读入沿用战斗列表的確定／取消且淡出前不停留；宝珠／书点击后 10 tick 按住计时再开窗已照原版（TITLE3）",
+      "difference": "宝珠／书浮动、点击声、菜单自下方滑入、悬停／点击火花、点宝珠开設定選項与点书开回憶錄已照原版（TITLE2）；剩：Menu_Star 未写 Shape_Delay 按 0、星点逐颗落点用重制随机流；宝珠／书点击后 10 tick 按住计时再开窗已照原版（TITLE3）",
       "original": "defProcMainMenuItem 0x424360 逐 tick trunc(6·sin) 浮动、初角 rand()%255；点击放 ACCEPT01；0x423cd0 首帧低 300 px、0x45e882 速度 40 滑回；0x4241a0 悬停每 6 tick 撒 788、点击撒 789＋788（0x423aa0／0x415c10，effProcFlyUpShape 0x41f5db）；码 10／11 开設定選項（792，0x423b90）／回憶錄列表（790，0x423bd0(…,0)），窗开期间菜单不收输入",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_title_ornaments/README.md",
@@ -1601,6 +1580,8 @@
       "effort": "S",
       "category": "标题与过场",
       "sources": [
+        "provenance:game/common/MenuStars.gd|rules|provisional|",
+        "provenance:game/common/MenuStars.gd|timing|provisional|",
         "provenance:game/title/TitleScreen.gd|layout|remake-invented|",
         "scope:docs/evidence_packets/runtime_observations/menus_ui/README.md|provisional|只在这一份录屏出现一次的时长与未命中的声音；回憶錄列表与標題语义等重制读法（§6）",
         "scope:docs/evidence_packets/runtime_observations/original_title_ornaments/README.md|provisional|星点逐颗落点、Menu_Star Shape_Delay 按 0"

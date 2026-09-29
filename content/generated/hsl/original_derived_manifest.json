@@ -15668,7 +15668,7 @@
     "content/imported/hsl/global/tables/effects.h": {"sha256": "280bbee2ece24031367d4b8ab1821780aa767fd5f80f2e7b5d718d3923d12608", "task": "original_tables"},
     "content/imported/hsl/global/tables/mag-spc.h": {"sha256": "2d2475a679cc417c1219d2264423618644f4aff15bf494c30725ecf4403e6c8a", "task": "original_tables"},
     "content/imported/hsl/global/tables/resource.h": {"sha256": "d52682439371dfa1fd61dfe5695724cefe073e2ecd72552dac120babbb13296e", "task": "original_tables"},
-    "content/imported/hsl/global/title/manifest.json": {"sha256": "def4bfbdf5bfcec8b4f2ae4afe398e6b8ec62161e7b48349985a435a7e1e3fec", "task": "title_assets"},
+    "content/imported/hsl/global/title/manifest.json": {"sha256": "541020523b2cefbb3c4e1ce88d3f9b905d8f035debf43aa4161b44c173b3dd83", "task": "title_assets"},
     "content/imported/hsl/global/title/previews/Over001.SHP.png": {"rgba_sha256": "ed123d97b7ab66824ee0fe05eb391f91171a4876155551cd06fbcb687be758c0", "task": "title_assets"},
     "content/imported/hsl/global/title/previews/Over002.SHP.png": {"rgba_sha256": "71ff06a8759741729b068b1335832d05e7b76845b89974b47d355411e2333c32", "task": "title_assets"},
     "content/imported/hsl/global/title/previews/OverBG01.SHP.png": {"rgba_sha256": "fdd3676e7bfe2e7f9bdf8b056f60822098d53973a53faf6735dc9b815f9d8c6c", "task": "title_assets"},

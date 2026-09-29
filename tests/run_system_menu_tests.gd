@@ -56,8 +56,9 @@ func _run() -> void:
 
 ## Class check over both scroll variants: every item that writes a record or leaves the
 ## current game asks 確定／取消 on the one shared Title061 prompt (user recording 581.0 s
-## 儲存戰場記錄, 592.5 s 回主選單). Only viewing items and the memoir list — whose occupied
-## slots ask on the same prompt themselves — open without it.
+## 儲存戰場記錄, 592.5 s 回主選單). Only viewing items and the memoir list open without it; the
+## list itself asks nothing under OPT-GUIDE＝原版 (0x425140), and only OPT-GUIDE＝提示 asks before
+## overwriting or loading an occupied slot on the same prompt.
 func _run_confirm_class_inventory() -> void:
 	var SystemMenu = load("res://game/battle/scene/BattleSystemMenu.gd")
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(SystemMenu.MANIFEST_PATH))
@@ -342,6 +343,8 @@ func _run_world_scroll_and_memoirs() -> void:
 	_assert_eq(menu.summary().get("memoir_mode", ""), "save", "the list is in save mode")
 	_assert_true(str(menu._memoir_heading.texture.resource_path).ends_with("Title033.SHP.png"), "the save heading (Title033 儲存回憶錄) is shown")
 	_assert_true(menu._memoir_rows[0].text.contains("無記錄"), "an empty slot shows ► 無記錄 ◄ (RESOURCE.TXT 314)")
+	# The list slides in from the right (0x424a60, 40 ticks for 640 px) before the hover below.
+	await create_timer(menu.SCROLL_SECONDS + 0.2).timeout
 	menu.handle_input(_key(KEY_DOWN))
 	_assert_eq(menu.summary().get("memoir_selected", -1), 1, "Down selects the second slot")
 	_assert_eq(menu._memoir_rows[1].get_theme_color("font_shadow_color"), menu.MEMOIR_HOVER_SHADOW, "the selected row is drawn with the 0x425140 hover shadow")
@@ -359,6 +362,8 @@ func _run_world_scroll_and_memoirs() -> void:
 	_assert_eq(result.get("status", ""), "saved", "saving over an occupied slot saves without asking")
 	await create_timer(1.8).timeout
 	menu.handle_input(_key(KEY_ESCAPE))
+	# The list slides out at 40 px a tick (0x45e91e, 16 ticks) before the scroll takes input.
+	await create_timer(0.4).timeout
 	_assert_eq(menu.summary().get("phase", ""), "menu", "Esc leaves the list for the scroll")
 	# 讀取回憶錄: an empty slot shows red message 12, an occupied slot arms the resume hand-off.
 	menu.select(2)
@@ -397,8 +402,10 @@ func _run_world_scroll_and_memoirs() -> void:
 	await process_frame
 	menu.select(3)
 	result = menu.activate()
-	_assert_eq(result.get("status", ""), "no_record", "讀取戰場記錄 without a checkpoint reports none")
-	_assert_true(menu._hint.text == "沒有戰場記錄", "the hint reads 沒有戰場記錄")
+	_assert_eq(result.get("status", ""), "confirm", "讀取戰場記錄 without a checkpoint still asks first (0x42605a)")
+	result = menu.confirm(true)
+	_assert_eq(result.get("status", ""), "no_record", "確定 without a checkpoint reports none")
+	_assert_true(menu._save_notice_text.text == "  無存檔記錄", "the board reads 無存檔記錄 (RESOURCE.TXT 12)")
 	var file := FileAccess.open(first_battle_save, FileAccess.WRITE)
 	file.store_string("{}")
 	file.close()
