@@ -1243,6 +1243,10 @@ static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) 
 	return BattleLoopInventory.equip_from_hand(loop, slot, expected_hand)
 
 
+static func hand_fits(loop: Dictionary, slot: String, code: int) -> bool:
+	return BattleLoopInventory.hand_fits(loop, slot, code)
+
+
 static func swap_hand_with_bag(loop: Dictionary, inventory_index: int, expected_code: int, expected_hand: int) -> Dictionary:
 	return BattleLoopInventory.swap_hand_with_bag(loop, inventory_index, expected_code, expected_hand)
 

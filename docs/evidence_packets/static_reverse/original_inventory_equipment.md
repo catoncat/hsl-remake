@@ -62,7 +62,7 @@ Equip 是 state7 mode4（`0x444185`），Drop 是 state8 mode5（`0x4441ac`）�
 - `game/sim/InventoryRules.gd`：首空插入、有序删除、执行前校验索引与预期 code；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md`。
 - `game/sim/EquipmentRules.gd`：接收当前装备与只读 catalog（`EquipmentCatalog` 读缓存返回副本）；`ProgressionRules` 接收显式 catalog；换装、加点、升级在改字段前检查属性源完整性，缺项以 `scenario_error` 整笔拒绝。
 - `hp_damage_half` 由 `EquipmentRules.has_flag` 读出，`BattleLoopCombat.apply_strike` 传给 `CoreCombatRules.resolve_attack` 的 `damage_halved`；`high_cost` 在 `equipment.py` 的 `INERT_FIELDS` 里忽略；错拼列在 `LOADER_ABSENT_FIELDS` 忽略；TYPE.H 常量表不分大小写查找；武器射程表与 `attack_ranges.py` 的 `WEAPON_SELECTED` 共用，含 range6CellShoot。
-- 满包换装可用取走新装备腾出的格；满包卸下不经背包、进 PlayLoop 手持 `held_item`（`0x437020` 不查背包，见 [original_item_actions.md](original_item_actions.md)「边界」）；武器只允许替换（原徒手范围未证明）；同 code 无变化拒绝（provisional）。
+- 满包换装可用取走新装备腾出的格；满包卸下不经背包、进 PlayLoop 手持 `held_item`（`0x437020` 不查背包，见 [original_item_actions.md](original_item_actions.md)「边界」）；武器只允许替换（原徒手范围未证明）；同 code：`0x436f30` 只有两处调用（状态窗 `0x429e24`、战斗持物窗 `0x43993e`），都只判 −1，不比较新旧 code，所以手持装上同一件时照写、手仍持该件、音 400，重制两处同（`EquipmentRules.replace` 的 `rewrite_same`、`BattleLoopInventory.hand_fits`）；`change()`／`change_equipment` 规则接口仍按无变化拒绝，原版没有对应的非手持入口。
 
 ## 复现
 

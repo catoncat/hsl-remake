@@ -114,7 +114,8 @@ static func change(loop: Dictionary, unit_id: String, slot: String, inventory_in
 ## (0x4464f0 → ITEM +0xa8), the slot type (ITEM +8 via the table at 0x437004) and the old piece's
 ## +0xa4 bit 1 lock are checked; -1 leaves everything as is, otherwise the code is written into the
 ## slot and the old one (0 when the slot was empty) returned for the hand. The bag is never looked
-## at, so a full bag does not matter. Same checks as change() (_prepare in hand mode).
+## at, so a full bag does not matter; the held and worn codes are never compared, so the same piece
+## is written back and returned (the hand keeps it). Same checks as change() (_prepare in hand mode).
 ## {ok, loop, old, error}; on failure loop is the input untouched.
 static func equip_from_hand(loop: Dictionary, unit_id: String, slot: String, code: int) -> Dictionary:
 	var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), slot)
@@ -149,7 +150,7 @@ static func _prepare(loop: Dictionary, unit_id: String, slot: String, inventory_
 			empty[0] = expected_code
 			inventory_index = 0
 		actor["inventory"] = empty
-	var result := EquipmentRules.replace(actor, slot, inventory_index, expected_code, items)
+	var result := EquipmentRules.replace(actor, slot, inventory_index, expected_code, items, to_hand)
 	if to_hand and result["ok"]:
 		result["inventory"] = (bag as Array).duplicate()
 	if not result["ok"]:
@@ -244,7 +245,7 @@ static func place_hand(loop: Dictionary, hand: Dictionary, unit_id: String, slot
 ##                          equip_from_hand (no bag slot needed), a held own-bag item through change(); the old piece onto the hand
 ##   lift {unit_id, slot}   empty hand takes a bag item out, the bag closes up (0x436e80)
 ##   unequip {unit_id, slot} empty hand takes a worn piece off onto the hand (0x437020; no bag slot needed)
-##   back {unit_id}         right click: the hand into the member's first empty slot (remake reading, see below)
+##   back {unit_id}         right click under OPT-GUIDE＝提示: the hand into the member's first empty slot (remake reading, see below)
 ## Returns {ok, loop, storage, hand, reason}; a refusal returns the inputs unchanged, except that a
 ## 使用 whose return is zero keeps its damage-stream draws on the refused loop.
 static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary, action: String, args: Dictionary, catalog: Dictionary) -> Dictionary:
@@ -290,9 +291,11 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 			return {"ok": true, "loop": used["loop"], "storage": storage, "hand": {}, "reason": ""}
 		"equip":
 			var unit_id := str(args.get("unit_id", ""))
-			if bool(hand.get("loose", false)) or str(hand.get("unit_id", "")) != unit_id:
-				# 0x436f30 straight from the hand: no bag slot needed; an item held in another member's
-				# bag leaves it first (the original lifts with 0x436e80, so its hand is always loose).
+			var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), str(args.get("slot", "")))
+			if bool(hand.get("loose", false)) or str(hand.get("unit_id", "")) != unit_id or old == code:
+				# 0x436f30 straight from the hand: no bag slot needed; an item held in a bag leaves it
+				# first (the original lifts with 0x436e80, so its hand is always loose). The same code
+				# as the worn piece is written back and returned: the hand keeps it (音 400).
 				var lifted := remove_hand(loop, hand)
 				var worn := equip_from_hand(lifted["loop"], unit_id, str(args.get("slot", "")), code) if lifted["ok"] else {"ok": false, "error": lifted["reason"]}
 				refused["reason"] = worn["error"]
@@ -300,7 +303,6 @@ static func hand_action(loop: Dictionary, storage: Dictionary, hand: Dictionary,
 					return refused
 				return {"ok": true, "loop": worn["loop"], "storage": storage, "hand": {"loose": true, "code": worn["old"]} if int(worn["old"]) > 0 else {}, "reason": ""}
 			var index := int(hand.get("slot", -1))
-			var old := EquipmentRules.equipped_code(_live_unit(loop, unit_id).get("equipment", []), str(args.get("slot", "")))
 			var changed := change(loop, unit_id, str(args.get("slot", "")), index, code)
 			refused["reason"] = changed["error"]
 			if not changed["ok"]:

@@ -19,8 +19,9 @@ extends Control
 ##
 ## An empty-handed goods click pays and puts the item on the hand (TownRuntime.shop_pick,
 ## 0x415519-0x41553c: gold at once, 0x4c1ce4 = code, no message); the player puts it down on a
-## bag slot (0x42923b). Right click puts it into the shown member's first empty slot (0x436e30) —
-## a remake convenience: the original root state 0x428dc7 ignores right click while holding. Selling follows the original gesture (pick a bag item up, click the goods
+## bag slot (0x42923b). Right click／Esc while holding does nothing, as in the original root state
+## (0x428dac closes only with an empty hand, 0x428dc7); OPT-GUIDE＝提示 puts the hand into the shown
+## member's first empty slot (0x436e30) instead. Selling follows the original gesture (pick a bag item up, click the goods
 ## list). 裝備 (page 10) shows the member's six slots and takes the hand like mode 0; 倉庫
 ## (page 7) shows the party storage; 丟棄 throws a non-important held item away; as in the
 ## original the window has no 離開 button — right click／Esc leave it (frame 13). The ↓ mark the original draws after some goods names is not drawn —
@@ -31,7 +32,7 @@ extends Control
 ## 丟棄／使用／裝備／魔法／特殊技 show by page (0x42a330 flags). The left board is the page's:
 ## 狀態 attributes (page 4), the bag (裝備 10／倉庫 7), the magic or special list (2／3); the
 ## right board is the six equipment slots on every page but 倉庫. Only on the 裝備 page do the
-## slots take the hand: an empty hand takes an item off, a held bag item goes on by its kind.
+## slots take the hand: an empty hand takes an item off, a held item goes on the clicked slot.
 ## The window keeps no rules: every hand gesture goes to the host (hand_requested →
 ## PartyEquipmentRules.hand_action) and comes back through
 ## show_loop／show_state. The hand survives 上一位／下一位 (0x4282c0 never writes 0x4c1ce4) and
@@ -39,7 +40,8 @@ extends Control
 ## rows with counts) and 丟棄／使用 act on the hand. A picked-up bag item leaves the bag
 ## (0x436e80) and a taken-off piece goes onto the hand (0x437020; the old piece of an equip too,
 ## 0x436f30). A refused item stays in the hand silently as in the original (0x436f30 returns −1)
-## and the reason is only kept for summary(). Original frames of the 狀態／裝備／倉庫 pages:
+## and the reason is only kept for summary(); the same code as the worn piece is written back and
+## stays in the hand with 400 (0x436f30 never compares the codes). Original frames of the 狀態／裝備／倉庫 pages:
 ## docs/evidence_packets/runtime_observations/original_world_town/README.md (15–17).
 ## provenance:
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
@@ -82,6 +84,7 @@ const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const CoreCombatRules = preload("res://game/sim/CoreCombatRules.gd")
 const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
 const PartyStorageRules = preload("res://game/sim/PartyStorageRules.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 
 ## 0x42ab40 param_1; the page is the root's +0x94 (Data6 of the button that set it).
 const MODE_ARRANGE := 0
@@ -502,13 +505,14 @@ func show_member(next_unit_id: String) -> void:
 		_rebuild()
 
 
-## Mode 0, 裝備 page: a click on equipment slot `slot` — a held item goes on (0x436f30, slot from
-## _slot_for_hand), an empty hand takes the slot's item off (0x437020).
+## Mode 0, 裝備 page: a click on equipment slot `slot` — a held item goes on that slot (0x429766
+## takes the hovered cell, row*2+column, and 0x429e24 passes it to 0x436f30, which refuses another
+## kind with −1), an empty hand takes the slot's item off (0x437020).
 func click_equipment(slot: String) -> void:
 	if page != PAGE_EQUIP or message_visible() or unit_id == "":
 		return
 	if holding():
-		_request_hand("equip", {"unit_id": unit_id, "slot": _slot_for_hand(slot)}, _hand.duplicate())
+		_request_hand("equip", {"unit_id": unit_id, "slot": slot}, _hand.duplicate())
 	elif _worn_code(slot) > 0:
 		# 0x437020: the piece comes off onto the hand.
 		_request_hand("unequip", {"unit_id": unit_id, "slot": slot}, {})
@@ -518,18 +522,6 @@ func click_equipment(slot: String) -> void:
 func refuse(reason: String) -> void:
 	last_refusal = reason
 	_pending_sound = ""
-
-
-## Remake reading: the held item's kind picks its slot (the original passes the hovered slot,
-## 0x429766, and 0x436f30 refuses a mismatch with −1); accessories go to the clicked accessory
-## slot when it is one, else the first empty accessory slot.
-func _slot_for_hand(clicked: String) -> String:
-	var kind := int((_items.get(str(int(_hand.get("code", 0))), {}) as Dictionary).get("type_code", 0))
-	if kind >= 2 and kind <= 5:
-		return str(BattleEquipmentView.SLOTS[kind - 2])
-	if clicked.begins_with("accessory"):
-		return clicked
-	return "accessory2" if _worn_code("accessory1") > 0 and _worn_code("accessory2") == 0 else "accessory1"
 
 
 func _worn_code(slot: String) -> int:
@@ -571,14 +563,15 @@ func step_member(step: int) -> void:
 	_rebuild()
 
 
-## Right click／Esc: close the message, else put the held item back, else leave. The original
-## root state (0x428dac) closes only with an empty hand (0x428dc7) and ignores the click while
-## an item is held; the put-back is a remake reading.
+## Right click／Esc: close the message, else leave. The original root state (0x428dac) closes only
+## with an empty hand (0x428dc7) and ignores the click while an item is held; OPT-GUIDE＝提示 puts
+## the held item back instead (read once per click).
 func back() -> void:
 	if message_visible():
 		dismiss_message()
 	elif holding():
-		put_back()
+		if not GameOptions.is_original("OPT-GUIDE"):
+			put_back()
 	else:
 		_begin_slide_out()
 		close_requested.emit()

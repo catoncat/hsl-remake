@@ -126,9 +126,9 @@ func bag_entries() -> Array:
 	return out
 
 
-## Remake reading: the held item's kind picks its slot (the original passes the hovered slot and
-## 0x436f30 refuses a mismatch with −1); accessories go to the first empty accessory slot
-## (accessory1 when both hold one).
+## The slot the bag-list preview checks an item against (its kind; accessories the first empty
+## accessory slot, accessory1 when both hold one). A held item goes on the clicked slot instead
+## (TownShopScreen.click_equipment → 0x436f30).
 static func _slot_for(unit: Dictionary, kind: int) -> String:
 	if kind != 6:
 		return EquipmentRules.SLOTS[kind - 2]
@@ -168,8 +168,8 @@ func close() -> Dictionary:
 	return last_result
 
 
-## Right click／Esc in the original order (TownShopScreen.back): the message board, else the
-## held item goes back, else the window closes.
+## Right click／Esc in the original order (TownShopScreen.back): the message board, else nothing
+## while an item is held (OPT-GUIDE＝提示 puts it back), else the window closes.
 func handle_input(event: InputEvent) -> bool:
 	if not active:
 		return false

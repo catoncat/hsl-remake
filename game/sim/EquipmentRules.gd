@@ -69,7 +69,10 @@ static func effect_delta(equipment: Array, catalog: Dictionary) -> Dictionary:
 	return {"ok": true, "delta": delta, "weapon": weapon}
 
 
-static func replace(unit: Dictionary, slot: String, inventory_index: int, expected_code: int, catalog: Dictionary) -> Dictionary:
+## `rewrite_same`: the window's hand setter 0x436f30 never compares the held code with the worn one
+## (0x436ff3 writes it after the job, slot-type and lock checks), so the same piece is written back
+## and returned; every other caller refuses it as equipment_unchanged.
+static func replace(unit: Dictionary, slot: String, inventory_index: int, expected_code: int, catalog: Dictionary, rewrite_same: bool = false) -> Dictionary:
 	var index := SLOTS.find(slot)
 	if index < 0 or not InventoryRules.valid(unit.get("inventory")) or not unit.get("equipment") is Array:
 		return {"ok": false, "reason": "invalid_equipment_input"}
@@ -81,7 +84,7 @@ static func replace(unit: Dictionary, slot: String, inventory_index: int, expect
 	var old: Dictionary = catalog.get(str(old_code), {})
 	if old_code > 0 and (old.is_empty() or bool(old["unequip_blocked"])):
 		return {"ok": false, "reason": "equipment_cannot_be_removed"}
-	if expected_code == old_code:
+	if expected_code == old_code and not (rewrite_same and expected_code > 0):
 		return {"ok": false, "reason": "equipment_unchanged"}
 	var bag: Array = unit["inventory"].duplicate()
 	var item: Dictionary = {}

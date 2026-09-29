@@ -185,7 +185,7 @@ static func _equip(loop: Dictionary, slot: String, inventory_index: int, expecte
 		if expected_code > 0: scratch[0] = expected_code
 		probe = actor.duplicate()
 		probe["inventory"] = scratch
-	var result := EquipmentRules.replace(probe, slot, inventory_index, expected_code, loop["equipment_items"])
+	var result := EquipmentRules.replace(probe, slot, inventory_index, expected_code, loop["equipment_items"], hand)
 	if not result["ok"]:
 		return {}
 	# Native409090 uses range0 for an empty weapon slot: no hostile normal target.
@@ -271,7 +271,9 @@ static func unequip_to_hand(loop: Dictionary, slot: String, expected_code: int) 
 
 
 ## Held item on a worn slot (0x43993e..0x439995): 0x436f30(member, held, slot); a refusal (-1)
-## keeps the hand, otherwise the old piece (or nothing) comes into the hand.
+## keeps the hand, otherwise the old piece (or nothing) comes into the hand — the same code as the
+## worn piece is written back and stays in the hand, so the loop comes back equal (hand_fits tells
+## that apart from a refusal).
 static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) -> Dictionary:
 	if expected_hand <= 0 or not _hand_ready(loop, expected_hand):
 		return BattlePlayLoop.copy(loop)
@@ -280,6 +282,13 @@ static func equip_from_hand(loop: Dictionary, slot: String, expected_hand: int) 
 		return BattlePlayLoop.copy(loop)
 	_set_hand(committed["loop"], int(committed["old_item_code"]))
 	return BattlePlayLoop.settle_action(committed["loop"], "equip")
+
+
+## 0x436f30's checks alone — job, slot type, the old piece's unequip lock — for `code` on `slot` of the
+## selected unit; the caller 0x43993e only tests for −1, so an accepted code equal to the worn one is
+## written back with 音 400 and the hand keeps it. The bag and the loop's hand are not looked at.
+static func hand_fits(loop: Dictionary, slot: String, code: int) -> bool:
+	return code > 0 and not _equip(loop, slot, 0, code, true).is_empty()
 
 
 ## Held item on a bag row (0x438c84..0x438d5e): a full bag (last slot occupied, 0x436ed0) gives

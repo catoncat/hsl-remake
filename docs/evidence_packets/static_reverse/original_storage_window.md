@@ -16,7 +16,7 @@
 - 倉庫 页 使用（永久道具抽样、返回 0 不消耗、402）与满包空手卸下已照原版（lane EQUIPUSE）。
 - 原版开窗滑入：`0x428410` 把子窗起点写成落点偏 400（WINDOW10 自上 y−400、WINDOW20／WINDOW40 自左 x−400、WINDOW30 与列表窗 WINDOW90 自右 x+400），`0x4285e0` 把按钮起点写成 y＋400（自下）；列表窗 state 0（`0x414db9`）与按钮子状态 0（`0x42a5dd`）每 tick `0x45e882(当前, 落点, 40)`：距离 ≤1 落位，否则走 min(40, 距离>>3)、至少 2，400 px 共 34 tick；关窗滑出 state 2（`0x414e67`）与子状态 4（`0x42a930`）每 tick `0x45e80d(当前, 起点, 容差 4, 步 20)`：逐轴走剩余一半、上限 20，剩 ≤4 落位，共 23 tick（static-derived）。
 - 重制：`TownShopScreen` 开窗（`open`／`open_arrange`）全部部件共用同一剩余距离逐 tick 走 `slide_in_step`，只改绘制变换、命中照落点；返回键关窗时把最后一帧按部件快照、按 `slide_out_step` 滑回起点（无渲染器跳过）（static-derived）。
-- 差异：持物时右键／Esc 重制把手上物放回当前成员首空格（原版不动作）；列表即时按重要在前排序（原版开窗时并入一张池、关窗才分表）；魔法／特殊技页无悬停说明与滚动条；裝備页手持移入装备板暂显狀態未做；差异清单 `party-equipment-screen`（provisional）。
+- 差异：列表即时按重要在前排序（原版开窗时并入一张池、关窗才分表）；魔法／特殊技页无悬停说明与滚动条；裝備页手持移入装备板暂显狀態未做；差异清单 `party-equipment-screen`（provisional）。
 
 ## 证据
 
@@ -115,6 +115,6 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 - `0x426ce0` 返回值在模式 0 的用途未读（`0x42ab40` 的 param_2 反编译里未被读）。
 - 来源场景缺失的提示字是重制自拟。
 - 战后獲得物品窗的 倉庫／離開 与本窗共用同一份队伍倉庫（`store_reward` → `PartyStorageRules.put`，见 [original_getitem_window](original_getitem_window.md)「结论」）。
-- 持物时右键／Esc 原版不动作（`0x428dc7`）；重制放回当前成员首空格是重制读法，满包时散件留在手上与原版结果相同。
+- 持物时右键／Esc 原版不动作（`0x428dc7`），重制默认同；OPT-GUIDE＝提示 时放回当前成员首空格（满包时散件留在手上）。
 - 父窗把子窗切到滑出状态的触发点（+0x80 旗位经引擎分派）与关窗是否等子窗滑完未读；重制关窗立即交回宿主，只留快照滑出。717／718／719 HP／MP／ST 对象是否随 WINDOW10 滑动未读，重制随 `Vitals` 一起滑。
 - 商店手持散件点货表卖出已接（`TownRuntime.shop_sell_hand`，见 [original_shop_transaction](original_shop_transaction.md)）；手持移入右板时左板暂显狀態未做。

@@ -127,6 +127,10 @@ func equipment_cases() -> void:
 	check(arranged["ok"] and BattlePlayLoop.unit(arranged["loop"], "leonard")["weapon_code"] == 3 and arranged["hand"] == {"loose": true, "code": 2} and BattlePlayLoop.unit(arranged["loop"], "leonard")["inventory"] == BattlePlayLoop.unit(full, "leonard")["inventory"], "full bag: a loose hand goes on and the old weapon comes into the hand")
 	var misfit := PartyEquipmentRules.hand_action(full, {}, loose, "equip", {"unit_id": "leonard", "slot": "head"}, {})
 	check(not misfit["ok"] and misfit["loop"] == full and misfit["hand"] == loose, "a wrong slot keeps the loose hand (0x436f30 returns -1)")
+	# 0x436f30 never compares the held and worn codes (0x436ff3): the same piece is written back and returned.
+	var same := PartyEquipmentRules.hand_action(full, {}, {"loose": true, "code": 2}, "equip", {"unit_id": "leonard", "slot": "weapon"}, {})
+	check(same["ok"] and same["hand"] == {"loose": true, "code": 2} and BattlePlayLoop.unit(same["loop"], "leonard")["weapon_code"] == 2, "the worn code is written back and stays in the hand")
+	check(BattlePlayLoop.hand_fits(hand_worn, "weapon", 3) and not BattlePlayLoop.hand_fits(hand_worn, "head", 3), "battle 0x43993e: the worn code is accepted again, another kind is -1")
 	var hand_dropped := BattlePlayLoop.discard_hand(hand_worn, 2)
 	check(not hand_dropped.has("held_item") and BattlePlayLoop.unit(hand_dropped, "leonard")["inventory"] == [241, 241, 241, 241, 241, 241, 241, 153] and BattlePlayLoop.change_equipment(hand_dropped, "head", 7, 153) != hand_dropped, "丟棄 clears a non-important hand and frees the other commands")
 	var roomy := in_hand.duplicate(true)

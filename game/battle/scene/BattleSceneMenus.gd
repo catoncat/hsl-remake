@@ -558,6 +558,12 @@ func change_equipment(slot: String, inventory_index: int, item_code: int) -> voi
 		return
 	var actor := BattlePlayLoop.unit(runtime.play_loop, runtime.selected_unit_id)
 	var old_code := BattlePlayLoop.EquipmentRules.equipped_code(actor["equipment"], slot)
+	if item_code > 0 and item_code == old_code:
+		# 0x436f30 never compares the codes: the same piece is written back and returned, so the hand
+		# keeps it and 0x43998e plays 400; the loop does not change. A -1 (job／lock) stays silent.
+		if BattlePlayLoop.hand_fits(runtime.play_loop, slot, item_code):
+			runtime.item_panel.hand_equipment_changed(actor, old_code, BattlePlayLoop.held_item_code(runtime.play_loop))
+		return
 	var next: Dictionary
 	if inventory_index < 0 and item_code > 0:
 		next = BattlePlayLoop.equip_from_hand(runtime.play_loop, slot, item_code) # the loop's full-bag hand
