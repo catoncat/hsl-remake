@@ -44,6 +44,19 @@ const HANDOFF_FRAMES := 12000
 const CLICK_THROUGH_KINDS := ["dialogue_message_id", "section_title_resource"]
 
 
+## The coordinator's current timeline event kind and whether a select prompt is open, read
+## straight from the coordinator: summary() deep-copies every record list, and the fixture
+## loops ask every frame.
+static func event_kind(coordinator) -> String:
+	if coordinator.runtime == null or coordinator.runtime.scene_timeline == null:
+		return ""
+	return str(coordinator.runtime.scene_timeline.current_event().get("kind", ""))
+
+
+static func select_open(coordinator) -> bool:
+	return not coordinator.select_options.is_empty()
+
+
 static func click() -> InputEventMouseButton:
 	var event := InputEventMouseButton.new()
 	event.button_index = MOUSE_BUTTON_LEFT
@@ -105,9 +118,9 @@ static func play_opening(tree: SceneTree, scene: Node, label: String, assert_cb:
 			break
 		if scene.party_equipment_screen != null and scene.party_equipment_screen.active:
 			scene.party_equipment_screen.close()
-		if coordinator != null and not (coordinator.summary().get("select_options", []) as Array).is_empty():
+		if coordinator != null and select_open(coordinator):
 			coordinator.choose_select_option(select_option)
-		elif str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+		elif event_kind(coordinator) in CLICK_THROUGH_KINDS:
 			coordinator.handle_input(click())
 		await tree.process_frame
 	assert_cb.call(coordinator == null or not coordinator.active, "%s: the opening reaches first control" % label)
@@ -219,7 +232,7 @@ static func _await_result(tree: SceneTree, scene: Node, presentation, credit: Di
 		elif presentation.dialogue_active():
 			presentation.advance_dialogue()
 		elif scene.opening_coordinator != null and scene.opening_coordinator.active:
-			if str(scene.opening_coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+			if event_kind(scene.opening_coordinator) in CLICK_THROUGH_KINDS:
 				scene.opening_coordinator.handle_input(click())
 		await tree.process_frame
 
@@ -293,7 +306,7 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 				scene.party_equipment_screen.close()
 			elif coordinator != null and coordinator.active:
 				settled = 0
-				if str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+				if event_kind(coordinator) in CLICK_THROUGH_KINDS:
 					coordinator.handle_input(click())
 			elif scene.has_actor_motion():
 				settled = 0
@@ -315,7 +328,7 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 			for _frame in range(RESULT_FRAMES):
 				if presentation.battle_finished:
 					break
-				if coordinator != null and coordinator.active and str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+				if coordinator != null and coordinator.active and event_kind(coordinator) in CLICK_THROUGH_KINDS:
 					coordinator.handle_input(click())
 				await tree.process_frame
 	var outcome := BattleOutcome.describe(BattleOutcome.of(scene.play_loop))
@@ -427,7 +440,7 @@ static func _await_handoff(tree: SceneTree, scene: Node, label: String, assert_c
 			break
 		if scene.party_equipment_screen != null and scene.party_equipment_screen.active:
 			scene.party_equipment_screen.close()
-		elif coordinator != null and coordinator.active and str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+		elif coordinator != null and coordinator.active and event_kind(coordinator) in CLICK_THROUGH_KINDS:
 			coordinator.handle_input(click())
 		await tree.process_frame
 	if finish == "pending_handoff" and not CampaignProgress.has_pending():
@@ -558,8 +571,8 @@ static func _force_choice_branch(tree: SceneTree, scene: Node, label: String, as
 		scene.set_process(true)
 		for _frame in range(RESULT_FRAMES):
 			if coordinator == null or not coordinator.active: break
-			if not (coordinator.summary().get("select_options", []) as Array).is_empty(): break
-			if str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS: coordinator.handle_input(click())
+			if select_open(coordinator): break
+			if event_kind(coordinator) in CLICK_THROUGH_KINDS: coordinator.handle_input(click())
 			await tree.process_frame
 		scene.set_process(false)
 		loop = scene.play_loop
@@ -576,10 +589,10 @@ static func _force_choice_branch(tree: SceneTree, scene: Node, label: String, as
 				coordinator = scene.opening_coordinator
 				if coordinator != null and coordinator.active:
 					idle = 0
-					if (coordinator.summary().get("select_options", []) as Array).size() == 2:
+					if coordinator.select_options.size() == 2:
 						opened = true
 						break
-					if str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
+					if event_kind(coordinator) in CLICK_THROUGH_KINDS:
 						coordinator.handle_input(click())
 				else:
 					idle += 1
@@ -590,7 +603,7 @@ static func _force_choice_branch(tree: SceneTree, scene: Node, label: String, as
 				coordinator.choose_select_option(int(step["select_option"]))
 				for _frame in range(RESULT_FRAMES):
 					if presentation.battle_finished: break
-					if coordinator.active and str(coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS: coordinator.handle_input(click())
+					if coordinator.active and event_kind(coordinator) in CLICK_THROUGH_KINDS: coordinator.handle_input(click())
 					await tree.process_frame
 	var shown := _victory_shown(scene, presentation, label, assert_cb, "choice branch")
 	if fixture.has("expect_install_unit"):

@@ -8,7 +8,7 @@ extends SceneTree
 ## prompt) — until the GameClear sequence appears or nothing new can be reached. Proves that the registered scenes,
 ## the map reveals and the town chains connect from the first field battle to the ending
 ## through the product's own hand-offs; it does not prove any battle or original pacing.
-## Encounter dice are the runtime's own; a registered encounter (501-506) is played through
+## Encounter dice are the runtime's own (seeded from HSL_RNG_SEED when it is set); a registered encounter (501-506) is played through
 ## the formal-battle fixture, an unregistered one leaves the party on the map with a card,
 ## so the walk continues either way. The main walk must meet the milestone set below and
 ## reach GameClear. The coverage passes (PASSES) then walk what a first-row walk cannot
@@ -120,6 +120,15 @@ func _run() -> void:
 	# Finale QA starts from the already-reached STORY057 hand-off; the default
 	# explorer remains the full map BFS when HSL_EXPLORER_ENDING is unset.
 	var started_msec := Time.get_ticks_msec()
+	# The encounter dice (WorldMapRules.arrival) roll the engine's global randi(), which the
+	# engine seeds from the clock: under HSL_RNG_SEED (the gate sets it) the walk takes the
+	# same encounters on every run, so two runs print the same walked lists.
+	var rng_seed := OS.get_environment("HSL_RNG_SEED").strip_edges()
+	if rng_seed.is_valid_int():
+		seed(int(rng_seed))
+	# No Engine.time_scale fast-forward: at 16× the formal battles took a third of the frames
+	# at ~3.5× the cost per frame and the walk was no faster (STORY_MODE_EXPLORER_TIMING, 1×
+	# against 16×); the time goes to the game's own work per second of play, not to frames.
 	StoryExplorer.start_after_ohm_village()
 	var explorer := StoryExplorer.new(self, _play_formal_battle)
 	var outcome := await explorer.run()
@@ -129,6 +138,7 @@ func _run() -> void:
 	var requested_ending := explorer.requested_ending
 	print("STORY_MODE_EXPLORER steps=%d scenes=%d towns=%d game_clear=%s last=%s seconds=%.1f" % [explorer.steps, scenes_played.size(), explorer.towns_explored.size(), str(game_clear_reached), outcome, main_seconds])
 	print("STORY_MODE_EXPLORER scenes: " + ", ".join(scenes_played))
+	print("STORY_MODE_EXPLORER_TIMING main " + explorer.timing_line())
 	var tail := explorer.log_lines.slice(maxi(0, explorer.log_lines.size() - 30))
 	print("STORY_MODE_EXPLORER tail: " + " | ".join(tail))
 	await process_frame

@@ -41,6 +41,15 @@ const STEP_BUDGET := 900
 ## 96 px/s; the explorer's own travels are near-instant).
 const MAP_SETTLE_FRAMES := 900
 
+## Resources the walk's scenes drew, held across scene frees (pin_resources): the next scene
+## that draws the same actor frames, interface art or sounds takes them from the resource cache
+## instead of loading them again (a battle loads hundreds of frame textures). Textures larger
+## than PIN_MAX_PIXELS (a battle map backdrop, drawn by its own level) are not held, except the
+## big map's, which every other hand-off boots again. Harness only: the product lets a scene's
+## resources go with it.
+const PIN_MAX_PIXELS := 512 * 512
+static var pinned: Dictionary = {}
+
 const OUTCOME_HANDOFF := "handoff"
 const OUTCOME_STUCK := "stuck"
 const OUTCOME_RETRY := "retry"
@@ -84,12 +93,32 @@ var ending := OS.get_environment("HSL_EXPLORER_ENDING").strip_edges()
 ## Every hand-off booted, in order: {"after": file name of the scene played before it ("" at
 ## the start), "path": its scenario path, "handoff": a deep copy of the pending hand-off}.
 var handoffs: Array[Dictionary] = []
+## Per scene kind — story (a story-mode opening), battle (a formal battle), map (the big map,
+## its towns included), town (the towns alone), boot, free — [count, wall msec, process frames],
+## printed by timing_line().
+var timing: Dictionary = {}
 
 
 func _init(scene_tree: SceneTree, battle_player: Callable) -> void:
 	tree = scene_tree
 	play_formal_battle = battle_player
 	world_map = WorldMapRules.load_world_map(WORLD_MAP_PATH)
+
+
+func add_timing(kind: String, started_msec: int, started_frame: int) -> void:
+	var entry: Array = timing.get(kind, [0, 0, 0])
+	entry[0] += 1
+	entry[1] += Time.get_ticks_msec() - started_msec
+	entry[2] += Engine.get_process_frames() - started_frame
+	timing[kind] = entry
+
+
+## `kind=seconds/frames/count` for every kind the walk timed.
+func timing_line() -> String:
+	var parts: Array = []
+	for kind in timing:
+		parts.append("%s=%.1fs/%dfr/%d" % [kind, int(timing[kind][1]) / 1000.0, int(timing[kind][2]), int(timing[kind][0])])
+	return " ".join(parts)
 
 
 func note(line: String) -> void:
@@ -158,10 +187,17 @@ func run() -> String:
 				note("ending: " + requested_ending)
 		var handoff: Dictionary = CampaignProgress.pending.duplicate(true)
 		handoffs.append({"after": scenes_played.back() if not scenes_played.is_empty() else "", "path": path, "handoff": handoff})
+		var started_msec := Time.get_ticks_msec()
+		var started_frame := Engine.get_process_frames()
 		var scene = await boot_pending()
+		add_timing("boot", started_msec, started_frame)
+		started_msec = Time.get_ticks_msec()
+		started_frame = Engine.get_process_frames()
+		var kind := "map"
 		if path == MAP_SCENE:
 			outcome = await explore_map(scene)
 		else:
+			kind = "story" if scene.opening_coordinator != null and scene.opening_coordinator.story_mode else "battle"
 			scenes_played.append(path.get_file())
 			note("scene: " + path.get_file())
 			outcome = await play_scene(scene)
@@ -173,8 +209,12 @@ func run() -> String:
 				if ending != null and ending.has_method("summary") and str(ending.summary().get("schema", "")) == "hsl_game_clear_screen.v1":
 					ending.queue_free()
 				await tree.process_frame
+		add_timing(kind, started_msec, started_frame)
 		if is_instance_valid(scene):
+			started_msec = Time.get_ticks_msec()
+			started_frame = Engine.get_process_frames()
 			await free_scene(scene)
+			add_timing("free", started_msec, started_frame)
 		if outcome == OUTCOME_RETRY:
 			# The same battle boots again from the hand-off it came from; one scene entry.
 			scenes_played.pop_back()
@@ -229,9 +269,33 @@ func boot_pending() -> Node:
 
 
 func free_scene(scene: Node) -> void:
+	pin_resources(scene, str(scene.get("scenario_path")) == MAP_SCENE)
 	scene.queue_free()
 	await tree.process_frame
 	await tree.process_frame
+
+
+## Holds the textures, sounds and sprite frames a scene's nodes (and its actors' frame tables)
+## draw, so the next boot finds them cached; `keep_large` holds big textures too.
+static func pin_resources(scene: Node, keep_large: bool) -> void:
+	for node in scene.find_children("*", "", true, false):
+		for key in ["texture", "stream", "sprite_frames"]:
+			_pin(node.get(key), keep_large)
+		var frames: Variant = node.get("_frame_textures")
+		if typeof(frames) == TYPE_DICTIONARY:
+			for texture in (frames as Dictionary).values():
+				_pin(texture, keep_large)
+
+
+static func _pin(value: Variant, keep_large: bool) -> void:
+	if not (value is Resource):
+		return
+	var path: String = (value as Resource).resource_path
+	if not path.begins_with("res://") or pinned.has(path):
+		return
+	if value is Texture2D and not keep_large and (value as Texture2D).get_width() * (value as Texture2D).get_height() > PIN_MAX_PIXELS:
+		return
+	pinned[path] = value
 
 
 ## Plays a scene to its end; returns "handoff", "game_clear", "stuck" or (a formal battle's
@@ -247,11 +311,11 @@ func play_scene(scene: Node) -> String:
 	coordinator.walk_pixels_per_second = 6400.0
 	var frames := 0
 	while coordinator.active and not coordinator.story_finished and frames < 9000 and not CampaignProgress.has_pending():
-		if not (coordinator.summary().get("select_options", []) as Array).is_empty():
+		if BattleForceWin.select_open(coordinator):
 			coordinator.choose_select_option(0)
 		elif scene.party_equipment_screen != null and scene.party_equipment_screen.active:
 			scene.party_equipment_screen.close()  # actEnterStorageWindow: leave the party as it is
-		elif str(coordinator.summary().get("current_event_kind", "")) in BattleForceWin.CLICK_THROUGH_KINDS:
+		elif BattleForceWin.event_kind(coordinator) in BattleForceWin.CLICK_THROUGH_KINDS:
 			coordinator.handle_input(click())
 		await tree.process_frame
 		frames += 1
@@ -321,6 +385,13 @@ func entries(town: Node) -> Array:
 ## Exhausts a town's menu tree once per (town, tree signature): every root entry, every
 ## sub-menu child, re-listing after each pick because events rewrite the tree.
 func explore_town(town: Node, town_id: int) -> void:
+	var started_msec := Time.get_ticks_msec()
+	var started_frame := Engine.get_process_frames()
+	await _explore_town(town, town_id)
+	add_timing("town", started_msec, started_frame)
+
+
+func _explore_town(town: Node, town_id: int) -> void:
 	town_in_focus = town_id
 	drain(town)
 	var visited: Dictionary = {}
@@ -379,7 +450,7 @@ func settle_map(map: Node) -> void:
 		frames += 1
 	await tree.process_frame
 	frames = 0
-	while bool(map.summary().get("reveal_busy", false)) and frames < MAP_SETTLE_FRAMES:
+	while map.reveal_busy() and frames < MAP_SETTLE_FRAMES:
 		await tree.process_frame
 		frames += 1
 	await tree.process_frame
@@ -393,7 +464,7 @@ func travel(map: Node, point_id: int) -> String:
 	if str(record.get("status", "")) == "unreachable":
 		return "unreachable"
 	await settle_map(map)
-	var arrivals: Array = map.summary().get("arrival_records", [])
+	var arrivals: Array = map.arrival_records
 	return str((arrivals[arrivals.size() - 1] as Dictionary).get("kind", "")) if not arrivals.is_empty() else ""
 
 
@@ -455,7 +526,7 @@ func explore_map(scene: Node) -> String:
 		# waits for the reveals (walker sub-state 1 → 2), so it can set off on the very tick
 		# the reveals end: settle again until neither is in flight.
 		var settle_rounds := 0
-		while (map.traveling or bool(map.summary().get("reveal_busy", false))) and settle_rounds < 4:
+		while (map.traveling or map.reveal_busy()) and settle_rounds < 4:
 			await settle_map(map)
 			settle_rounds += 1
 		if CampaignProgress.has_pending():
