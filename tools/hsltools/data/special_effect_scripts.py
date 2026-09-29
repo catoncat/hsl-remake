@@ -181,6 +181,44 @@ def render_inventory() -> dict:
     unresolved: list[str] = []
     shp_members: set[str] = set()
     wav_members: set[str] = set()
+    # native_cues: an effect_caster object's obj_Y1／obj_X2 cue ticks come only from its native run
+    # (effect_motion.json `sounds`); EFFECT_PROGRAM_SOUNDS does not read its program.
+    def resolve(token: str, native_cues: bool = False) -> None:
+        if token in all_objects or token in unresolved:
+            return
+        block = objects_by_code.get(object_codes.get(token, ''))
+        if block is None:
+            unresolved.append(token)
+            return
+        count = int(block.get('obj_Shape_Number', '1') or '1')
+        members = shape_members(block['obj_Shape_Name'], count)
+        shp_members.update(members)
+        # obj_X1 on an effect object is the WAV it plays when inserted (the AirBlade objects
+        # carry WIND0001, the earth shapes UPGROUND／EARTH cues); obj_Data9 names its
+        # effProc* motion program, which the player does not restore (listed as the gap).
+        insert_sound = block.get('obj_X1', '')
+        if not insert_sound.upper().endswith('.WAV'):
+            insert_sound = ''
+        elif insert_sound:
+            wav_members.add(insert_sound)
+        # A defProcObjectMove object runs the objcomd.txt command its obj_Data7 selects.
+        command_code = ''
+        sounds: list[dict] = []
+        if block.get('obj_Process_Code') == 'defProcObjectMove':
+            command_code = block['obj_Data7']
+            if command_code not in programs:
+                raise ValueError(f'{token}: obj_Data7 {command_code} names no objcomd.txt command')
+            sounds = command_sounds(programs[command_code], verbs)
+            wav_members.update(sound['member'] for sound in sounds)
+        secondary = program_sounds(block) if block.get('obj_Process_Code') == 'defProcEffectProcess1' and not native_cues else []
+        wav_members.update(sound['member'] for sound in secondary)
+        all_objects[token] = {'obj_code': block['obj_code'], 'obj_name': block.get('obj_name', ''),
+                              'plane': block.get('obj_Plane', ''), 'process': block.get('obj_Process_Code', ''),
+                              'effect_process': block.get('obj_Data9', ''), 'insert_sound': insert_sound,
+                              'command_code': command_code, 'command_sounds': sounds, 'program_sounds': secondary,
+                              'shape_name': block['obj_Shape_Name'], 'shape_number': count,
+                              'shape_delay': int(block.get('obj_Shape_Delay', '0') or '0'), 'shape_members': members}
+
     for skill_id, entry in sorted(book['skills'].items()):
         # Authored skills are presented from authored_effect_scripts.json (hsltools.data.authored_skills):
         # this file stays the inventory of the original rows the skill_effects import is scoped by.
@@ -206,40 +244,12 @@ def render_inventory() -> dict:
             if not token.startswith('obj_') or token in row_objects:
                 continue
             row_objects.append(token)
-            if token in all_objects or token in unresolved:
-                continue
-            block = objects_by_code.get(object_codes.get(token, ''))
-            if block is None:
-                unresolved.append(token)
-                continue
-            count = int(block.get('obj_Shape_Number', '1') or '1')
-            members = shape_members(block['obj_Shape_Name'], count)
-            shp_members.update(members)
-            # obj_X1 on an effect object is the WAV it plays when inserted (the AirBlade objects
-            # carry WIND0001, the earth shapes UPGROUND／EARTH cues); obj_Data9 names its
-            # effProc* motion program, which the player does not restore (listed as the gap).
-            insert_sound = block.get('obj_X1', '')
-            if not insert_sound.upper().endswith('.WAV'):
-                insert_sound = ''
-            elif insert_sound:
-                wav_members.add(insert_sound)
-            # A defProcObjectMove object runs the objcomd.txt command its obj_Data7 selects.
-            command_code = ''
-            sounds: list[dict] = []
-            if block.get('obj_Process_Code') == 'defProcObjectMove':
-                command_code = block['obj_Data7']
-                if command_code not in programs:
-                    raise ValueError(f'{token}: obj_Data7 {command_code} names no objcomd.txt command')
-                sounds = command_sounds(programs[command_code], verbs)
-                wav_members.update(sound['member'] for sound in sounds)
-            secondary = program_sounds(block) if block.get('obj_Process_Code') == 'defProcEffectProcess1' else []
-            wav_members.update(sound['member'] for sound in secondary)
-            all_objects[token] = {'obj_code': block['obj_code'], 'obj_name': block.get('obj_name', ''),
-                                  'plane': block.get('obj_Plane', ''), 'process': block.get('obj_Process_Code', ''),
-                                  'effect_process': block.get('obj_Data9', ''), 'insert_sound': insert_sound,
-                                  'command_code': command_code, 'command_sounds': sounds, 'program_sounds': secondary,
-                                  'shape_name': block['obj_Shape_Name'], 'shape_number': count,
-                                  'shape_delay': int(block.get('obj_Shape_Delay', '0') or '0'), 'shape_members': members}
+            resolve(token)
+        # effect_caster "obj_X,N" (MAGIC parser 0x44dbf5: object code at record +0x34, N at +0x38): the
+        # object the cast VM builds on the caster after its pose (0x442f77) and the ticks it then waits.
+        caster = [part.strip() for part in fields.get('effect_caster', '').split(',')] if channel == 'magic' else ['']
+        if caster[0]:
+            resolve(caster[0], native_cues=True)
         row_wavs = sorted({token for token in tokens if token.upper().endswith('.WAV')})
         # The WAVs the row's objects sound by themselves (special command／effect program cues).
         row_object_wavs = sorted({sound['member'] for name in row_objects if name in all_objects
@@ -253,6 +263,8 @@ def render_inventory() -> dict:
             row.update({'attack_code': codes[0], 'defense_code': codes[1]})
         else:
             row.update({'effect_code': codes[0], 'effect_proc': fields['effect_proc'], 'effect_caster': fields.get('effect_caster', '')})
+            if caster[0]:
+                row['caster'] = {'object': caster[0], 'ticks': int(caster[1])}
         row.update({'actions': actions, 'opcodes': opcodes, 'objects': row_objects, 'sounds': row_wavs,
                     'object_sounds': row_object_wavs, 'script_shapes': row_shp,
                     'art_imported': set(codes) <= IMPORTED_CODES})
@@ -267,7 +279,7 @@ def render_inventory() -> dict:
         'policy': ('Scope inventory for the skill_effects import and the script player. SPECIAL rows list their '
                    'attack／defense specCode scripts (ANIMAL.H ani* verbs), MAGIC rows their effCode script (effects.h '
                    'eff* verbs: effWait／effInsertObject／effInsertRandomObject／effPlaySound, positions are displacements '
-                   'from the effect origin) with effect_proc (eff_proc_Local／Global) and the unread effect_caster field. '
+                   'from the effect origin) with effect_proc (eff_proc_Local／Global) and effect_caster (caster: the object built on the caster after its pose and the ticks the cast then waits). '
                    'Objects carry their obj_X1 insertion WAV and obj_Data9 effProc* program name; a defProcObjectMove '
                    'object carries its obj_Data7 objcomd.txt command code and that program\'s objmPlaySound／objmPlayHitSound '
                    'cues (command_sounds: WAV, hit_only, the objmDelay ticks ahead of it, and the motion waits ahead of it '

@@ -399,7 +399,9 @@ class Templates:
 
 def scope_objects() -> dict[str, dict]:
     scope = json.loads(SCOPE.read_text(encoding='utf-8'))
-    names = sorted({name for row in scope['rows'].values() if row['channel'] == 'magic' for name in row['objects']})
+    # A MAGIC row's effCode objects and its effect_caster object (built on the caster, 0x442f77).
+    names = sorted({name for row in scope['rows'].values() if row['channel'] == 'magic'
+                    for name in row['objects'] + ([row['caster']['object']] if 'caster' in row else [])})
     return {name: scope['objects'][name] for name in names if name in scope['objects']}
 
 

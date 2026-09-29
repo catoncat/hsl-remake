@@ -187,9 +187,9 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'no_disablemagic': ('consumed', 'game/sim/StatusApplicationRules.gd:modifiers', '免封魔（bit 0x1000）', None),
         'no_weaken': ('consumed', 'game/sim/StatusApplicationRules.gd:modifiers', '免虚弱（bit 0x2000）', None),
         'no_attack': ('consumed', 'game/sim/AINavigationRules.gd:acquire', '不攻击（bit 0x2）', None),
-        'no_shadow': ('unconsumed', None, '不画影子（bit 0x100，1 行）', '表现层未读；玩家可见差异为一个角色多了影子'),
+        'no_shadow': ('dead', None, '不画影子（bit 0x100，1 行）', '全 EXE 找不到读 0x100 的地方；重制不画单位影子，无可见差别'),
         'no_block': ('consumed', 'game/sim/ActorTraversalRules.gd:source', '不阻挡（bit 0x10）', None),
-        'no_showshape': ('unconsumed', None, '不显示形体（bit 0x20，1 行）', 'core_logic 记有位；表现层未读'),
+        'no_showshape': ('consumed', 'game/battle/runtime/ActorRuntime.gd:hide_shape', '不显示形体（bit 0x20，1 行）', None),
     },
     'item': {
         'code': ('consumed', EQ, '物品编号', None),
@@ -279,7 +279,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'effect_proc': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect', 'eff_proc_Local／Global（特效镜头模式）', 'Local 在每个受影响格播放、Global 在光标格中心播放一次（0x442b58／0x442d81）'),
         'effect_code': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect', 'EFFECTS 脚本编号', '39 段 effCode 脚本经 special_effect_scripts.json 编成 tick 时间线；144 个效果对象中 131 个按原生 effProc* 轨迹（effect_motion.json）运动，13 个仍未复原'),
         'status_hit_ratio': ('consumed', 'game/sim/StatusApplicationRules.gd:prepare', '状态命中', None),
-        'effect_caster': ('unconsumed', None, '施法者侧特效（8 行）', '表现层未读'),
+        'effect_caster': ('consumed', 'game/battle/scene/SkillEffectScriptPlayer.gd:compile_caster', '施法者侧特效（8 行）', '架势结束后在施法者格建对象并等 N＋2 tick 再进受者阶段，Local 另多 1 次调用（0x442c4f／0x442f77）；镜头先滑到施法者是状态 0 对所有魔法做的，重制只给这 8 行补上'),
     },
     'special': {
         'code': ('consumed', 'tools/hsltools/data/skill_coverage.py:build', '绝技编号', None),

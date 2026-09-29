@@ -46,6 +46,7 @@ extends "res://game/battle/scene/SkillPresenter.gd"
 ##   timing: resource-derived content/generated/hsl/skills/special_effect_scripts.json
 ##   timing: static-derived content/generated/hsl/skills/effect_motion.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_motion.md
+##   timing: static-derived docs/evidence_packets/static_reverse/original_caster_effect.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: resource-derived content/imported/hsl/chapter01/combat_animation/manifest.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_effect_object_sounds.md
@@ -79,6 +80,14 @@ const TICKS_PER_SECOND := OriginalTick.TICKS_PER_SECOND
 ## back to the effect VM (0x40309e), whose states 4／7／0x17／0x19 set the effect phase and then
 ## wait only on the caster's pose bit — in parallel with the pose, not after it.
 const SUB_STATE_5_TICKS := 1
+## effect_caster (docs/evidence_packets/static_reverse/original_caster_effect.md): Local's start state
+## 0x14 sets 0x15 and returns (0x442f35), and 0x15's 0x43bf30(caster, 0x80000000) finds the camera
+## already there since state 0, so its lead comes a call later than the no-caster lead (0x442f26,
+## same call); Global's 1 → 2 → lead takes the calls its no-caster 1 → 5 → lead does.
+const CASTER_LOCAL_START_TICKS := 1
+## The call that builds the caster object (0x442f77) and the one that finds +0x9e at 0 and sets
+## 7／0x19 (0x442cd0／0x442fe2), around the +0x9e calls that count it down; 7／0x19 run on the next.
+const CASTER_HANDOFF_TICKS := 2
 const STAGE_SIZE := Vector2(640, 320)
 const TARGET_CENTRE := Vector2(320, 160)
 ## A row whose attack script is empty still shows the caster's cast panels for this lead.
@@ -576,7 +585,29 @@ static func compile_effect(lines: Array, seed: int, data: Dictionary, row: Dicti
 		complete = maxi(complete, int(event.get("expire", event["tick"])))
 	timeline["complete_tick"] = complete
 	timeline.erase("sound_cues")
+	var caster: Dictionary = row.get("caster", {})
+	if not caster.is_empty():
+		timeline["caster"] = compile_caster(str(caster["object"]), int(caster["ticks"]), data)
 	return timeline
+
+
+## The effect_caster object (MAGIC record +0x34／+0x38): built once at the caster's cell by
+## 0x45e307(x, y, code, 0) on the first call the pose bit is clear (0x442f77), then the cast waits
+## `ticks` calls. Its own tick 0 is that call; a tracked object follows its native run.
+static func compile_caster(object_name: String, ticks: int, data: Dictionary) -> Dictionary:
+	var caster := {"object": object_name, "ticks": ticks, "events": [], "sound_cues": [], "skipped_objects": []}
+	var event := _insert(caster, data, "effect", object_name, Vector2.ZERO, 0, 0)
+	if not event.is_empty() and EffectObjectMotion.tracked(object_name):
+		var native: Dictionary = EffectObjectMotion.track(object_name, 0)
+		event["variant"] = 0
+		event["motion"] = "native"
+		event["anchored"] = str(native["motion"]) == "anchored"
+		event["expire"] = int(native["frames"])
+	elif not event.is_empty():
+		event["fade_tick"] = clampi(int(event["lifetime"]), EFFECT_MIN_LIFETIME_TICKS, maxi(EFFECT_MIN_LIFETIME_TICKS, ticks))
+		event["expire"] = int(event["fade_tick"]) + EFFECT_FADE_TICKS
+	caster.erase("sound_cues")
+	return caster
 
 
 ## effInsertRandomObject [code][x disp][y disp][x range][y range][delay range][number] as the
@@ -906,6 +937,19 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	host.stage.size = Vector2(640, 480)
 	host.scenery.visible = false
 	host.vitals.visible = false
+	# A spell with an effect_caster (0x4098e0 non-zero): Local spends one more call (0x14 → 0x15,
+	# whose 0x43bf30 arrives at once and builds the lead, 0x442f18). The glide to the caster before
+	# it is state 0's (0x442ad1, every spell), which the remake models for these rows only — the
+	# other spells still start without it (provisional, cast-lead-phase). The clip's clock below
+	# starts after both.
+	var caster: Dictionary = timeline.get("caster", {})
+	if not caster.is_empty():
+		if not clip.has("caster_glide"):
+			clip["caster_glide"] = (0.0 if bool(timeline["global"]) else Timing.scaled(OriginalTick.seconds(CASTER_LOCAL_START_TICKS))) + _caster_glide(host, clip)
+		if elapsed < float(clip["caster_glide"]):
+			clear()
+			return false
+		elapsed -= float(clip["caster_glide"])
 	# Every map spell builds the cast lead object 154 kind 1 (0x442a90 → 0x406d20 on each branch:
 	# 0x442f26, 0x442c6c, 0x442cea); a caster with no lead frames takes the 預備動作-off jump
 	# (0x401d6f → 0x401ec4) into sub-state 7 with the shadow bit set (0x401ed4), so the map is
@@ -947,7 +991,7 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		host.ability_sound.play()
 		clip["cast_stars"] = cast_stars(hash(str(clip["strike"])))
 		var controller: RefCounted = host.battle_camera()
-		if controller != null and controller.camera != null:
+		if controller != null and controller.camera != null and not clip.has("cast_camera"):
 			clip["cast_camera"] = controller.camera.position
 	if elapsed < phase_at:
 		# The 預備動作-off lead's posing call: sub-state 7 still draws its shadow.
@@ -967,16 +1011,34 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 		mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
 		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - _view_shift(host, clip), 0)
 		return false
+	# effect_caster: states 4／0x17 build the caster object on the first pose-clear call
+	# (0x442f77, lead_in), count +0x9e down one a call, then on the call that finds it at 0 set
+	# 0x19 (Local) or glide Global to the effect centre 0x4c3860 and set 7 when it arrives
+	# (0x442cba); 7／0x19 then run as they do without a caster, on the next call (wait_end).
+	var wait_end := lead_in
+	if not caster.is_empty():
+		wait_end = lead_in + Timing.scaled(OriginalTick.seconds(int(caster["ticks"]) + CASTER_HANDOFF_TICKS))
+		var glide_at: float = wait_end - (Timing.scaled(OriginalTick.seconds(1)) if bool(timeline["global"]) else 0.0)
+		if elapsed < glide_at:
+			mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
+			var held := _view_shift(host, clip)
+			_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - held, _draw_caster(clip, elapsed - lead_in, held, 0))
+			return false
 	# eff_proc_Local's state 0x19 glides the camera to each receiver before it builds the effect
 	# there, the first included (0x44301e: 0x43bf30 every tick, returning until it reports
 	# arrival; a receiver inside the tolerance does not move it). Global's first glide follows
-	# its effect (state 9, MagicImpactPresentation).
+	# its effect (state 9, MagicImpactPresentation), except after an effect_caster, whose wait
+	# ends gliding to the effect centre.
 	if not clip.has("first_glide"):
-		clip["first_glide"] = 0.0 if bool(timeline["global"]) else _first_receiver_glide(host, clip)
-	var effect_start: float = lead_in + float(clip["first_glide"])
+		if bool(timeline["global"]):
+			clip["first_glide"] = 0.0 if caster.is_empty() else _effect_centre_glide(host, clip)
+		else:
+			clip["first_glide"] = _first_receiver_glide(host, clip)
+	var effect_start: float = wait_end + float(clip["first_glide"])
 	if elapsed < effect_start:
 		mark(host, clip, elapsed, {"release": lead_end, "impact": INF, "complete": INF})
-		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - _view_shift(host, clip), 0)
+		var held := _view_shift(host, clip)
+		_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - held, _draw_caster(clip, elapsed - lead_in, held, 0))
 		return false
 	var seconds: float = (elapsed - effect_start) / Timing.PLAYBACK_SPEED
 	var scale: float = Timing.PLAYBACK_SPEED / TICKS_PER_SECOND
@@ -1000,7 +1062,7 @@ func _present_effect(host: CanvasLayer, clip: Dictionary, elapsed: float) -> boo
 	var local_origins: Array = clip["affected_positions"].slice(0, 1) if clip["strike"].has("magic_key") else clip["affected_positions"]
 	for origin in ([clip["map_target"]] if bool(timeline["global"]) else local_origins):
 		origins.append(origin - shift)
-	var used := draw(clip, seconds, origins)
+	var used := _draw_caster(clip, elapsed - lead_in, shift, draw(clip, seconds, origins))
 	_draw_cast_stars(clip["cast_stars"], star_tick, star_origin - shift, used)
 	if complete:
 		clear()
@@ -1016,6 +1078,37 @@ func _first_receiver_glide(host: CanvasLayer, clip: Dictionary) -> float:
 		return 0.0
 	var world: Vector2 = controller.logical_to_world(clip["affected_positions"][0] - _view_shift(host, clip))
 	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+
+
+## State 0's glide to the caster (0x442ad1 → 0x43bf30(caster, 0), every spell) at the battle step,
+## started now — supplied ahead for effect_caster rows only; the camera position is kept first,
+## since the clip's logical positions were laid before it moves.
+func _caster_glide(host: CanvasLayer, clip: Dictionary) -> float:
+	var controller: RefCounted = host.battle_camera()
+	if controller == null or controller.camera == null:
+		return 0.0
+	clip["cast_camera"] = controller.camera.position
+	var world: Vector2 = controller.logical_to_world(clip["map_caster"])
+	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+
+
+## eff_proc_Global's glide to the effect centre after an effect_caster wait (0x442cba: 0x43bf30
+## on the pseudo-object 0x4c3860, whose +4／+8 hold the target cell), started now.
+func _effect_centre_glide(host: CanvasLayer, clip: Dictionary) -> float:
+	var controller: RefCounted = host.battle_camera()
+	if controller == null or controller.camera == null or not clip.has("cast_camera"):
+		return 0.0
+	var world: Vector2 = controller.logical_to_world(clip["map_target"] - _view_shift(host, clip))
+	return Timing.scaled(controller.scroll_to(BattleCameraController.focus_centre(world), BattleCameraController.BATTLE_SCROLL_STEP))
+
+
+## The effect_caster object at the caster's cell, `since` scaled seconds after it was built
+## (lead_in); sprites from `used` on, returning the next free one. Its sounds play once each.
+func _draw_caster(clip: Dictionary, since: float, shift: Vector2, used: int) -> int:
+	var caster: Dictionary = clip["effect_timeline"].get("caster", {})
+	if caster.is_empty() or since < 0.0:
+		return used
+	return _draw_timeline(clip, caster, since / Timing.PLAYBACK_SPEED * TICKS_PER_SECOND, [clip["map_caster"] - shift], used, "caster_sounds_played")
 
 
 ## How far the battle camera has moved since the release (the first receiver's glide, the relay's
@@ -1129,16 +1222,20 @@ func _draw_cast_stars(stars: Array, tick: float, origin: Vector2, first: int) ->
 ## are displaced from each affected position.
 func draw(clip: Dictionary, seconds: float, origins: Array) -> int:
 	show()
-	var timeline: Dictionary = clip["effect_timeline"]
-	var tick := seconds * TICKS_PER_SECOND
-	if not clip.has("effect_sounds_played"):
-		clip["effect_sounds_played"] = []
-	var used := 0
+	var used := _draw_timeline(clip, clip["effect_timeline"], seconds * TICKS_PER_SECOND, origins, 0, "effect_sounds_played")
+	for index in range(used, sprites.size()):
+		sprites[index].hide()
+	return used
+
+
+func _draw_timeline(clip: Dictionary, timeline: Dictionary, tick: float, origins: Array, used: int, played_key: String) -> int:
+	if not clip.has(played_key):
+		clip[played_key] = []
 	for index in range(timeline["events"].size()):
 		var event: Dictionary = timeline["events"][index]
 		if event["kind"] == "sound":
-			if tick >= float(event["tick"]) and not clip["effect_sounds_played"].has(index):
-				clip["effect_sounds_played"].append(index)
+			if tick >= float(event["tick"]) and not clip[played_key].has(index):
+				clip[played_key].append(index)
 				_play(str(event["member"]))
 			continue
 		if tick < float(event["tick"]) or tick >= float(event["expire"]):
@@ -1150,8 +1247,6 @@ func draw(clip: Dictionary, seconds: float, origins: Array) -> int:
 			var sprite := _sprite(used)
 			used += 1
 			_draw_object(sprite, event, tick, origin)
-	for index in range(used, sprites.size()):
-		sprites[index].hide()
 	return used
 
 

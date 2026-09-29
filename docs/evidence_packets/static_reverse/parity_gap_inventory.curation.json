@@ -57,18 +57,20 @@
   "items": [
     {
       "id": "panel-slide-formula",
-      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边，獲得物品待领列表的说明框在滑动途中按落点判悬停、关窗即消失（原版按滑动中的窗矩形判、关窗滑出途中照画）",
+      "difference": "面板滑入滑出与压暗已照原版战斗窗（起点偏 380 按模板定边、0x45e882／0x45e80d 步进、根窗黑底 0→8 每 3 tick 一级），悬停说明框 WINDOW50 就地出现、升级窗 BT_ADD 自左、关窗各窗原路滑回也已照做，状态页与道具页右窗 WINDOW30 自右滑入、关窗残影不带说明框、滑入途中重建的说明框等落位，獲得物品待领列表的说明框滑入滑出途中按行的当前矩形判悬停照画；剩不属模板板、按钮、字样或顶条的部件跟随所在板定边；獲得物品待领列表按行矩形而非窗矩形加 mouse_y 定行，残影行名颜色与透明处压暗定在关窗那一帧，窗可见时整窗重建的新部件直接落位、黑底直接 8 级",
       "original": "战斗窗建窗 0x43b4e0 的例程 0x43ac10..0x43b3a0 写起点／落点（顶条自上、WINDOW20 自左、WINDOW30／31／50／90 自右、$: 与按钮自下、升级窗 WINDOW41／BT_OK／BT_ADD（0x43bcf9..0x43bd5c）自左，均 380 px）；关窗目标都是各对象起点 +0xa6／+0xa4；悬停说明框由 0x436d70 在镜头＋(252,349) 直接画：根窗列表分支 9 个调用点只在 +0x8c == 1 画，獲得物品待领列表 0x414c00 的第 10 个调用点 0x4150ab 不看 +0x8c、滑入滑出途中按窗当前矩形（0x415601 进命中链表 0x4c09e8，0x4304ac 求交）判悬停照画；各窗过程 0x45e882 速度 40 滑入、0x45e80d 容差 4 步 20 滑出；根窗 0x4385d3 画全黑形状级 +0xae，0x43828d 置每 3 tick 一级，0x4388d9 升到 8、0x43898f 回落、0x4389ce 删窗",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/camera_panel_motion/README.md"
       ],
-      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
+      "remake": "BattlePanelMotion 按模板定边、共用剩余距离步进，关窗快照按 0x45e80d 滑回；BattleUISkin.in_place 标记的说明框不滑、不进关窗快照（有框显示时去框重画一帧再切），根窗列表分支的滑入期间不画（每 tick 重扫）、獲得物品待领列表的照画，且滑动途中按 drawn_offset 给的当前偏移判悬停（BattleLootPanel.drawn_hover），关窗时快照上方放说明框副本照画；装备栏 BattleEquipmentView 以 WINDOW30 为原点取板尺寸、作为部件自右滑入；压暗 0→8",
       "remake_code": [
         "game/battle/scene/BattlePanelMotion.gd:part_side",
         "game/battle/scene/BattlePanelMotion.gd:sides_of",
         "game/battle/scene/BattlePanelMotion.gd:slide_in_step",
         "game/battle/scene/BattlePanelMotion.gd:shade_step",
         "game/battle/scene/BattlePanelMotion.gd:parts_of",
+        "game/battle/scene/BattlePanelMotion.gd:drawn_offset",
+        "game/battle/scene/BattleLootPanel.gd:drawn_hover",
         "game/common/BattleUISkin.gd:in_place"
       ],
       "original_status": "read_complete",
@@ -404,7 +406,7 @@
     },
     {
       "id": "cast-lead-phase",
-      "difference": "施法引导子状态 5 与子状态 6 已照原版（RELAYSHADE／RELAYSHADE2：效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Global 状态 7 滑向效果中心（0x442d10 调 0x43bf30 到状态 0 记下的 0x4c3864／0x4c3868）未做、起点少算这段滑行；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
+      "difference": "施法引导子状态 5 与子状态 6 已照原版（RELAYSHADE／RELAYSHADE2：效果起点＝引导末＋跳转 call＋max(子状态 5 的 1 call, 姿势)，子状态 5 那 call 置阶段位，黑层停级 8，有引导 7..0、无引导 8..0 淡出，Global 在效果脚本走到 op 0 时清，Local 每个受术者的条等其脚本走到 op 0 才出、最后一人撤条后清；法术特写脚印取效果格）；剩残影先后与原版差 ±1 call 处、条带引导的姿势／撒星／403 比原版晚 1 tick、绝技的特写脚印仍按守方、Global 状态 7 滑向效果中心（0x442d10 调 0x43bf30 到状态 0 记下的 0x4c3864／0x4c3868）未做、起点少算这段滑行；状态 0（0x442ad1）的镜头滑向施法者只给有施法者特效（effect_caster）的 8 行补上，其余魔法起手仍缺这段，两类不对称；±1 tick 的归属依赖同帧里施法例程 0x442a90 与对象 154 过程的调度先后，未读",
       "original": "phase 102 子状态 4 停留 10＋1 call、法术尾段 31 call（级 16→1）与中心光球、子状态 5 交回主流程、子状态 6 效果期间阴影停级 8 后 8 call 淡出，已逐条读；无引导（无条带或預備動作 关）同建对象 154 走子状态 7→5→6，阴影同停级 8、清位后 9 call 淡出；效果 VM 置位后等施法者姿势位（0x442c89 等）；特写脚印 0x410670 读 0x4100e0 选目标时写的 *0x4c1b4c",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
@@ -694,17 +696,19 @@
     },
     {
       "id": "unconsumed-display-flags",
-      "difference": "三个原版显示标志没接：不画影子（1 名角色）、不显示形体、施法者侧特效（8 行）",
-      "original": "字段有值，表现层读法未读",
+      "difference": "不画影子（bit 0x100，古代神殿遺跡（LEVEL037）的 obj_Story_Level_Enemy067 一行）原版找不到读者，重制也不画单位影子，无可见差别；施法者侧特效（8 行）与不显示形体已接，只剩施法者对象随施法片段结束一并清掉（8 个对象的寿命都短于各自的等待加效果）、0x415ba0 开头两个调用未读",
+      "original": "全 EXE 找不到读 0x100 的地方；effect_caster 由施法 VM 起点 1／0x14 取、状态 4／0x17 读（施法者对象、等 N＋2 tick），Local 另多状态 0x15 一次调用；镜头滑到施法者是状态 0（0x442ad1）对所有魔法做的",
       "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_field_coverage.md"
+        "docs/evidence_packets/static_reverse/original_field_coverage.md",
+        "docs/evidence_packets/static_reverse/original_caster_effect.md"
       ],
-      "remake": "表现层不消费这些位",
+      "remake": "effect_caster 由 SkillEffectScriptPlayer 施放；不显示形体由 ActorRuntime.hide_shape 隐去；不画影子不消费",
       "remake_code": [
-        "game/battle/runtime/ActorRuntime.gd"
+        "game/battle/runtime/ActorRuntime.gd:hide_shape",
+        "game/battle/scene/SkillEffectScriptPlayer.gd:compile_caster"
       ],
       "original_status": "read_partial",
-      "visibility": "rare",
+      "visibility": "invisible",
       "effort": "S",
       "category": "地图与物件"
     },
@@ -2626,13 +2630,11 @@
       "item": "effect-sound-timing",
       "text": "缩放 16→8（每 tick 0.5，16）→1（每 tick 0.234，30）、动画等待（`0x45e5a6`，未读，按 0）、倒数 40 → `0x415d40`"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#34226366cb": {
-      "item": "unconsumed-display-flags",
-      "text": "表现层未读"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_field_coverage.md#fe3af7c6c3": {
-      "item": "unconsumed-display-flags",
-      "text": "表现层未读；"
+    "scope:docs/evidence_packets/static_reverse/original_caster_effect.md|provisional|施法者对象在施法结束时随片段一起清掉（原版对象自走到删）；0x415ba0 开头两个调用未读；重制的状态 0 滑镜只给有施法者特效的 8 行补上": {
+      "item": [
+        "unconsumed-display-flags",
+        "cast-lead-phase"
+      ]
     },
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72": {
       "item": "special-object-motion",

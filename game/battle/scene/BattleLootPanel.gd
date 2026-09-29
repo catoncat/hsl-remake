@@ -64,6 +64,12 @@ var _scroll := 0
 var _epoch := 0
 var _key := ""
 var _pointer := Vector2.ZERO
+## BattlePanelMotion draws the pending list off its Controls (open slide, close snapshot): the
+## rows' own enter／exit signals wait and `drawn_hover` places the hover.
+var _drawn := false
+## The pending row `drawn_hover` last described (−1: none) and the box it used.
+var _drawn_row := -1
+var _drawn_box: Control
 
 
 func _ready() -> void:
@@ -73,11 +79,12 @@ func _ready() -> void:
 
 
 ## The held item is drawn at the cursor (0x414c00 draws it after the window). Motion is read from the
-## input stream so pushed test input and the real pointer both move it.
+## input stream so pushed test input and the real pointer both move it; the pointer is kept while
+## hidden too, for the close slide's `drawn_hover`.
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and visible:
+	if event is InputEventMouseMotion:
 		_pointer = get_global_transform_with_canvas().affine_inverse() * event.position
-		if hand_icon != null and hand_icon.visible: hand_icon.position = _pointer - hand_icon.get_meta("origin", Vector2.ZERO)
+		if visible and hand_icon != null and hand_icon.visible: hand_icon.position = _pointer - hand_icon.get_meta("origin", Vector2.ZERO)
 
 
 func close() -> void:
@@ -212,6 +219,9 @@ func _build_list() -> void:
 ## Rows are the pending pool minus the held item, grouped by code like the original (code, qty) pairs;
 ## taking the last of a code removes its row and the rows below shift up (0x44f430).
 func _rebuild_rows() -> void:
+	if _drawn_row >= 0:
+		if is_instance_valid(_drawn_box): _drawn_box.hide()
+		_drawn_row = -1
 	for row in rows: remove_child(row); row.queue_free()
 	rows.clear()
 	_groups = []
@@ -242,11 +252,12 @@ func _rebuild_rows() -> void:
 		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, LIST_ROW))
 		label.text = str(details["name"])
 		label.set_meta("base_color", color)
+		button.set_meta("label", label)
 		var count := BattleUISkin.text(button, Vector2(COUNT_RIGHT - 8 - 84, 0), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(84, LIST_ROW))
 		count.text = str(group["entry_ids"].size())
 		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		button.mouse_entered.connect(_show_description.bind(code, label, false))
-		button.mouse_exited.connect(_hide_description.bind(label))
+		button.mouse_entered.connect(func(): if not _drawn: _show_description(code, label, false))
+		button.mouse_exited.connect(func(): if not _drawn: _hide_description(label))
 		var epoch := _epoch
 		button.pressed.connect(func():
 			if not visible or epoch != _epoch: return
@@ -412,16 +423,59 @@ func _request(extra: Dictionary) -> Dictionary:
 ## `held`: a bag row (root-window list branch, drawn once landed) versus a pending-list row
 ## (0x414c00 draws the box at 0x4150ab in every state, mid-slide included).
 func _show_description(code: int, label: Label, held: bool) -> void:
+	_forget_drawn_row()
 	BattleUISkin.in_place(description_box, held)
 	label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
-	for child in description_box.get_children():
-		if child is Label: description_box.remove_child(child); child.queue_free()
+	_describe(description_box, code)
+
+
+func _describe(box: Control, code: int) -> void:
+	for child in box.get_children():
+		if child is Label: box.remove_child(child); child.queue_free()
 	var lines: Array = _description_lines(code)
 	for index in range(mini(lines.size(), 4)):
-		var row := BattleUISkin.text(description_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
+		var row := BattleUISkin.text(box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
 		row.text = str(lines[index])
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	description_box.show()
+	box.show()
+
+
+## 0x414c00 hit-tests the pending list on its current rect in every state (0x415601 registers it
+## each draw, 0x4304ac intersects) and 0x4150ab describes the row under the pointer, mid-slide and
+## in the close state 2 too. BattlePanelMotion calls this every tick while it draws the rows off
+## their Controls: `offset_of(row)` is where a row is drawn (null: not drawn), `box` the box to
+## fill (null: the panel's own; the close snapshot passes its copy). `drawn` false: the rows are
+## on their Controls again (or gone with the window) and their own signals take over.
+func drawn_hover(offset_of: Callable, box: Control, drawn: bool) -> void:
+	_drawn = drawn
+	if box == null: box = description_box
+	var hovered := -1
+	for index in rows.size():
+		if not is_instance_valid(rows[index]): continue
+		var offset: Variant = offset_of.call(rows[index]) if drawn else (Vector2.ZERO if visible else null)
+		if offset is Vector2 and Rect2(rows[index].position + offset, rows[index].size).has_point(_pointer): hovered = index
+	if hovered == _drawn_row and (hovered < 0 or (box == _drawn_box and is_instance_valid(box) and box.visible)):
+		if not drawn: _drawn_row = -1
+		return
+	if _drawn_row >= 0 and is_instance_valid(_drawn_box): _drawn_box.hide()
+	_forget_drawn_row()
+	if hovered >= 0 and box != null:
+		var row: Button = rows[hovered]
+		if box == description_box: BattleUISkin.in_place(description_box, false)
+		(row.get_meta("label") as Label).add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
+		_describe(box, int(row.get_meta("item_code")))
+		_drawn_row = hovered
+		_drawn_box = box
+	# Handed back: the rows' signals own the hover from here (the pointer is on the row it entered).
+	if not drawn: _drawn_row = -1
+
+
+## The drawn hover's row goes back to its own colour (its box stays for the caller).
+func _forget_drawn_row() -> void:
+	if _drawn_row >= 0 and _drawn_row < rows.size() and is_instance_valid(rows[_drawn_row]):
+		var label: Label = rows[_drawn_row].get_meta("label")
+		label.add_theme_color_override("font_color", label.get_meta("base_color", BattleUISkin.TEXT_WHITE))
+	_drawn_row = -1
 
 
 func _hide_description(label: Label) -> void:

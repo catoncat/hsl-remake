@@ -554,8 +554,11 @@ func skill_effect_contracts() -> void:
 			timeline = cutin.clips[0]["effect_timeline"]
 			if cutin.skill_effects.sprites.any(func(sprite): return sprite.visible and str(sprite.texture.resource_path).contains("skill_effects/frames/")): objects_seen = true
 			if cutin.scenery.visible or cutin.vitals.visible or cutin.attacker_sprite.visible or cutin.defender_sprite.visible or cutin.stage.size != Vector2(640, 480) or cutin.result.visible: map_shot = false
-		var expected := int(ceil(cutin.Timing.CAST_LEAD_IN / cutin.Timing.PLAYBACK_SPEED / TICK)) + int(timeline["complete_tick"])
-		check(not cutin.busy() and frames < 6000 and absi(frames - expected) <= 2, "%s completes at its cast lead + complete_tick (frames=%d expected=%d)" % [skill_id, frames, expected])
+		# An effect_caster adds its wait: N + 2 calls, and Local's one call before the caster glide
+		# (no battle camera here, so the glides themselves take no time).
+		var caster_wait := 0 if not timeline.has("caster") else int(timeline["caster"]["ticks"]) + int(cutin.skill_effects.CASTER_HANDOFF_TICKS) + (0 if bool(timeline["global"]) else int(cutin.skill_effects.CASTER_LOCAL_START_TICKS))
+		var expected := int(ceil(cutin.Timing.CAST_LEAD_IN / cutin.Timing.PLAYBACK_SPEED / TICK)) + caster_wait + int(timeline["complete_tick"])
+		check(not cutin.busy() and frames < 6000 and absi(frames - expected) <= 2, "%s completes at its cast lead + effect_caster wait + complete_tick (frames=%d expected=%d)" % [skill_id, frames, expected])
 		check(events == ["release", "impact"] and objects_seen and map_shot, "%s fires one release then one impact, draws its script objects on the map shot without a name caption (%s %s %s)" % [skill_id, str(events), str(objects_seen), str(map_shot)])
 		cast += 1
 	check(cast == 39, "39 magic rows played through the cut-in (%d)" % cast)

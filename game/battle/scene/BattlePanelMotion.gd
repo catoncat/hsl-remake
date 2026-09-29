@@ -18,10 +18,13 @@ extends Node
 ## A hover description box (BattleUISkin.in_place: 0x436d70 draws WINDOW50 at camera + (252,349),
 ## no window object) never slides and is left out of the close snapshot (the snapshot is drawn
 ## again without any in-place box when one shows: the root-window list boxes stop drawing in
-## state 2, the pending list's box still draws in the original — see the packet's boundary); a held one (root-window
-## list branches, drawn only at +0x8c == 1) stays undrawn while the open slide runs and shows in
-## place when it lands — one a page rebuilt mid-slide brings in too (rescanned every tick) —, an
-## unheld one (the 獲得物品 pending list, 0x4150ab in every state) shows in place mid-slide.
+## state 2); a held one (root-window list branches, drawn only at +0x8c == 1) stays undrawn while
+## the open slide runs and shows in place when it lands — one a page rebuilt mid-slide brings in
+## too (rescanned every tick) —, an unheld one (the 獲得物品 pending list, 0x4150ab in every
+## state) shows in place mid-slide and on close. That list hit-tests its current rect in every
+## state (0x415601, 0x4304ac): a panel with `drawn_hover` is told each tick where its parts are
+## drawn (`drawn_offset`: the open slide's offset, then the close snapshot piece's), and on close
+## gets a copy of its in-place box above the pieces to describe the row under the pointer.
 ## The page's black shade (`shades_of`) is the root window's full-screen black shape
 ## (0x4385d3..0x43862c): level +0xae from 0, one level per 3 ticks (+0x84／+0x86 = 3, 0x43828d)
 ## up to BattleUISkin.PANEL_SHADE_LEVEL (8 of 16, drawn half-blended, 0x40000000) while the
@@ -60,6 +63,8 @@ var _clock := 0.0
 var _ghost: Control
 var _ghost_parts: Array = []
 var _ghost_travelled := 0
+## The close snapshot's copy of the panel's in-place box (a `drawn_hover` panel only).
+var _ghost_box: Control
 var opened_count := 0
 var closed_count := 0
 ## Close snapshots actually drawn (0 without a renderer, e.g. headless tests).
@@ -77,14 +82,16 @@ var _shade_ghost: ColorRect
 var _held: Array = []
 
 
+## An internal child: a page that clears its children to rebuild (BattleLootPanel.show_rewards)
+## keeps it.
 static func attach(target: Control) -> Node:
-	for child in target.get_children():
+	for child in target.get_children(true):
 		if child.get_script() == preload("res://game/battle/scene/BattlePanelMotion.gd"):
 			return child
 	var motion := new()
 	motion.name = "PanelMotion"
 	motion.panel = target
-	target.add_child(motion)
+	target.add_child(motion, false, Node.INTERNAL_MODE_BACK)
 	target.visibility_changed.connect(motion._on_visibility_changed)
 	return motion
 
@@ -271,10 +278,12 @@ func _begin_open() -> void:
 	for index in parts.size():
 		_parts.append({"item": parts[index], "side": sides[index], "direction": SIDE_DIRECTIONS[sides[index]]})
 	if _parts.is_empty():
+		_drawn_hover(false)
 		return
 	opened_count += 1
 	slide_remaining = SLIDE_DISTANCE
 	_clock = 0.0
+	_drawn_hover(true)
 	_apply_parts()
 	set_process(true)
 
@@ -325,8 +334,14 @@ func _begin_close() -> void:
 	_parts.clear()
 	closed_count += 1
 	_begin_shade_out()
-	if was_opening or DisplayServer.get_name() == "headless" or not is_inside_tree():
-		return
+	if not was_opening and DisplayServer.get_name() != "headless" and is_inside_tree():
+		_cut_ghost()
+	_drawn_hover(closing())
+
+
+## The close snapshot cut into one piece per part (`_ghost_parts`, each with the part it came
+## from), sliding from where the part was.
+func _cut_ghost() -> void:
 	var image := _snapshot()
 	if image == null or image.is_empty():
 		return
@@ -355,10 +370,16 @@ func _begin_close() -> void:
 		piece.position = rect.position
 		piece.size = rect.size
 		_ghost.add_child(piece)
-		_ghost_parts.append({"item": piece, "from": rect.position, "direction": SIDE_DIRECTIONS[sides[index]]})
+		_ghost_parts.append({"item": piece, "source": child, "from": rect.position, "direction": SIDE_DIRECTIONS[sides[index]]})
 	if _ghost_parts.is_empty():
 		_free_ghost()
 		return
+	var boxes := _in_place_boxes()
+	if panel.has_method("drawn_hover") and not boxes.is_empty() and boxes[0] is Control:
+		_ghost_box = (boxes[0] as Control).duplicate()
+		_ghost_box.position = (boxes[0] as Control).get_global_rect().position
+		_ghost_box.hide()
+		_ghost.add_child(_ghost_box)
 	ghost_count += 1
 	_ghost_travelled = 0
 	panel.get_parent().add_child(_ghost)
@@ -373,14 +394,17 @@ func _in_place_boxes() -> Array:
 
 ## The last frame for the close snapshot. The original stops drawing every in-place box in
 ## state 2 (the root window's list branches need +0x8c == 1), so when one is up the frame is
-## drawn once more, unpresented, with the panel as it was and no in-place box (nor the page's
-## own shade: the shade fade stands in for it). RenderingServer visibility only: no node
-## visibility changes, so no signal or input rule sees it.
+## drawn once more, unpresented, with the panel as it was and no in-place box. The page's own
+## shade stays in that frame, as in the presented one, so the parts' see-through cells (a
+## caption's cell under its button, text off the boards) carry the dimmed field; the shade fade
+## just put in its place is left out of it (it would dim the frame twice). RenderingServer
+## visibility only: no node visibility changes, so no signal or input rule sees it.
 func _snapshot() -> Image:
 	var boxes := _in_place_boxes().filter(_shown_in_panel)
 	if boxes.is_empty():
 		return get_viewport().get_texture().get_image()
-	boxes.append_array(shades_of(panel))
+	if _shade_ghost != null and is_instance_valid(_shade_ghost):
+		boxes.append(_shade_ghost)
 	RenderingServer.canvas_item_set_visible(panel.get_canvas_item(), true)
 	for item in boxes:
 		RenderingServer.canvas_item_set_visible(item.get_canvas_item(), false)
@@ -414,6 +438,8 @@ func _process(delta: float) -> void:
 func _tick() -> void:
 	if opening():
 		slide_remaining = slide_in_step(slide_remaining)
+		# Before the parts are drawn, so a box the hover shows is drawn this tick.
+		_drawn_hover(slide_remaining > 0)
 		_apply_parts()
 		if slide_remaining <= 0:
 			_restore_parts()
@@ -425,6 +451,7 @@ func _tick() -> void:
 				(part["item"] as TextureRect).position = part["from"] + part["direction"] * float(_ghost_travelled)
 		if _ghost_travelled >= SLIDE_DISTANCE:
 			_free_ghost()
+		_drawn_hover(closing())
 	if shading():
 		var stepping := shade_level > 0 if _shade_direction < 0 else shade_level < BattleUISkin.PANEL_SHADE_LEVEL
 		if stepping:
@@ -495,6 +522,29 @@ func _free_ghost() -> void:
 			_ghost.queue_free()
 		_ghost = null
 	_ghost_parts.clear()
+	_ghost_box = null
+
+
+## Where a panel Control is drawn right now, off its own place: its open-slide offset (a Control
+## that is no part is drawn in place), during the close slide the offset of the snapshot piece
+## cut from it (null: in no piece, not drawn).
+func drawn_offset(item: CanvasItem) -> Variant:
+	if closing():
+		for part in _ghost_parts:
+			if is_instance_valid(part["source"]) and part["source"] == item:
+				return part["direction"] * float(_ghost_travelled)
+		return null
+	for part in _parts:
+		if is_instance_valid(part["item"]) and part["item"] == item:
+			return part["direction"] * float(slide_remaining)
+	return Vector2.ZERO
+
+
+## Tells a panel that hit-tests where its parts are drawn (`drawn_hover`) that they are drawn off
+## their Controls (`drawn`, every tick of either slide), or back on them.
+func _drawn_hover(drawn: bool) -> void:
+	if panel != null and panel.has_method("drawn_hover"):
+		panel.drawn_hover(drawn_offset, _ghost_box if closing() else null, drawn)
 
 
 ## Explicit fast-forward (tests, restore): ends both motions and the shade fade at once.
@@ -512,6 +562,7 @@ func finish() -> void:
 	_restore_parts()
 	_parts.clear()
 	_free_ghost()
+	_drawn_hover(false)
 	_free_shade_ghost()
 	_shade_direction = 0
 	shade_level = BattleUISkin.PANEL_SHADE_LEVEL if panel != null and panel.visible and not _shades.is_empty() else 0

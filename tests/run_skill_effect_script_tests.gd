@@ -86,7 +86,7 @@ func manifest_contracts() -> void:
 		check(object["zoom"].size() == 2 and float(object["zoom"][0]) != 0.0 and float(object["zoom"][1]) != 0.0, "every object carries its obj_ZoomX／Y scale (obj_Special43_06 mirrors with −1): " + name)
 		check(str(object["insert_sound"]) == "" or manifest["sounds"].has(object["insert_sound"]), "an obj_X1 insertion WAV is imported: " + name)
 	check(manifest["objects"]["obj_Effect_FireBomb"]["zoom"] == [1.25, 1.25] and manifest["objects"]["obj_Effect_AirBlade1"]["insert_sound"] == "WAV\\WIND0001.WAV" and manifest["objects"]["obj_Effect_AirBlade1"]["effect_process"] == "effProcFade", "obj_Effect_FireBomb reads engZOOM 0x14000 as 1.25; obj_Effect_AirBlade1 plays WIND0001 on insertion and names its unrestored effProcFade program")
-	check(manifest["totals"]["frames"] == manifest["frames"].size() and manifest["totals"]["missing_members"] == manifest["missing_members"].size() and manifest["totals"]["sounds"] == 130 and manifest["totals"]["objects"] == 365, "totals mirror the frame／missing sets; 130 sounds (111 script／obj_X1 + 7 objcomd-only + 6 effect-program-only + 6 only in the native runs' records), 365 objects (221 special + 144 magic)")
+	check(manifest["totals"]["frames"] == manifest["frames"].size() and manifest["totals"]["missing_members"] == manifest["missing_members"].size() and manifest["totals"]["sounds"] == 131 and manifest["totals"]["objects"] == 373, "totals mirror the frame／missing sets; 131 sounds (111 script／obj_X1 + 7 objcomd-only + 6 effect-program-only + 7 only in the native runs' records), 373 objects (221 special + 152 magic)")
 
 
 ## The tracked objects whose native tree draws `member`.

@@ -12,9 +12,9 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表 | 记录 | 字段 | consumed | passthrough | recorded | unconsumed | dead |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 89 | 0 | 0 | 5 | 8 |
+| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 90 | 0 | 0 | 3 | 9 |
 | [item](#item) ITEM.TXT | \[item] rows | 72 | 67 | 0 | 0 | 0 | 5 |
-| [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 13 | 0 | 0 | 1 | 0 |
+| [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 14 | 0 | 0 | 0 | 0 |
 | [special](#special) SPECIAL.TXT | \[special] rows | 13 | 13 | 0 | 0 | 0 | 0 |
 | [range](#range) RANGE.TXT | \[range] rows | 3 | 3 | 0 | 0 | 0 | 0 |
 | [shapedef](#shapedef) SHAPEDEF.TXT | \[define] rows | 14 | 14 | 0 | 0 | 0 | 0 |
@@ -29,7 +29,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | [town_event](#town_event) TOWNDEF te opcode | te tokens | 46 | 44 | 0 | 0 | 0 | 2 |
 | [animal](#animal) ANIMAL.H ani* opcode（演员程序 + 绝技特效脚本） | ani* opcodes | 36 | 33 | 0 | 0 | 0 | 3 |
 | [effects](#effects) EFFECTS.TXT eff* opcode（法术特效） | \[effect] blocks | 4 | 4 | 0 | 0 | 0 | 0 |
-| **合计** | 17 表 | 742 | 538 | 17 | 75 | 14 | 98 |
+| **合计** | 17 表 | 742 | 540 | 17 | 75 | 11 | 99 |
 
 ## 3. 嫌疑排序
 
@@ -44,11 +44,8 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | --- | --- | --- |
 | `players.class` | rows_nondefault 66 | classHuman／classMonster…（+0x20 低字） |
 | `obj.obj_X2` | rows 10 | 模板 +0x18（特效 WAV／ObjectMove 参数） |
-| `magic.effect_caster` | rows_nondefault 8 | 施法者侧特效（8 行） |
 | `players.sound_hit` | rows_nondefault 4 | 被击音效（4 行；记录 +0x10 lo 句柄） |
 | `players.sound_shoothit` | rows_nondefault 1 | 射击命中音效（1 行，+0x22） |
-| `players.no_shadow` | rows_nondefault 1 | 不画影子（bit 0x100，1 行） |
-| `players.no_showshape` | rows_nondefault 1 | 不显示形体（bit 0x20，1 行） |
 | `obj.obj_Y1` | placed_actor_rows 1；rows 22 | 模板 +0x14；演员：≠0 → live +0x134（0x407ec0）；特效：WAV；ObjectMove：位移 |
 | `obj.obj_Y2` | rows 1 | 模板 +0x1c |
 | `winfail.actMEssage` | occurrences 1 | — |
@@ -176,9 +173,9 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `sound_shoothit` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | — |
 | `no_weaken` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 6；声明行 6 | 免虚弱（bit 0x2000） | — |
 | `no_attack` | consumed | `game/sim/AINavigationRules.gd:acquire` | 非默认行 3；声明行 3 | 不攻击（bit 0x2） | — |
-| `no_shadow` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 不画影子（bit 0x100，1 行） | 表现层未读；玩家可见差异为一个角色多了影子 |
+| `no_shadow` | dead | — | 非默认行 1；声明行 1 | 不画影子（bit 0x100，1 行） | 全 EXE 找不到读 0x100 的地方；重制不画单位影子，无可见差别 |
 | `no_block` | consumed | `game/sim/ActorTraversalRules.gd:source` | 非默认行 1；声明行 1 | 不阻挡（bit 0x10） | — |
-| `no_showshape` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 不显示形体（bit 0x20，1 行） | core_logic 记有位；表现层未读 |
+| `no_showshape` | consumed | `game/battle/runtime/ActorRuntime.gd:hide_shape` | 非默认行 1；声明行 1 | 不显示形体（bit 0x20，1 行） | — |
 
 ### item
 
@@ -280,7 +277,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `effect_proc` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect` | 非默认行 39；声明行 39 | eff_proc_Local／Global（特效镜头模式） | Local 在每个受影响格播放、Global 在光标格中心播放一次（0x442b58／0x442d81） |
 | `effect_code` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_effect` | 非默认行 39；声明行 39 | EFFECTS 脚本编号 | 39 段 effCode 脚本经 special_effect_scripts.json 编成 tick 时间线；144 个效果对象中 131 个按原生 effProc* 轨迹（effect_motion.json）运动，13 个仍未复原 |
 | `status_hit_ratio` | consumed | `game/sim/StatusApplicationRules.gd:prepare` | 非默认行 6；声明行 6 | 状态命中 | — |
-| `effect_caster` | unconsumed | UNCONSUMED | 非默认行 8；声明行 8 | 施法者侧特效（8 行） | 表现层未读 |
+| `effect_caster` | consumed | `game/battle/scene/SkillEffectScriptPlayer.gd:compile_caster` | 非默认行 8；声明行 8 | 施法者侧特效（8 行） | 架势结束后在施法者格建对象并等 N＋2 tick 再进受者阶段，Local 另多 1 次调用（0x442c4f／0x442f77）；镜头先滑到施法者是状态 0 对所有魔法做的，重制只给这 8 行补上 |
 
 ### special
 

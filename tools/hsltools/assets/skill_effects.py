@@ -72,7 +72,7 @@ POLICY = ('Art and audio are byte-for-byte imports of the PAK members the specCo
           '(objects.program_sounds) at its instruction tick plus the statically read effProc* delay; the rest of '
           'the defProcObjectMove motion (obj_Data7 programs), the effProc* programs effect_motion.json lists as '
           'unrestored, '
-          'MAGIC effect_caster objects and the native insertion geometry remain '
+          'and the native insertion geometry remain '
           'static-derived work. A magic script fires impact at its last insertion or sound cue and plays once '
           'per affected position (eff_proc_Local) or once at the screen centre (eff_proc_Global). Every row '
           'declares its presentation: script (the player), dedicated_module (an existing restored module) or '
