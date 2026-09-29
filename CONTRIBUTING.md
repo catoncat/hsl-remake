@@ -52,7 +52,7 @@
 python3 tools/hsl.py check oss_guard
 ```
 
-它把 `git ls-files` 与 `git status` 里未被忽略的文件逐条对照清单（`content/generated/hsl/original_derived_manifest.json`），另查 `content/imported|generated|battles/`、原版容器与音视频后缀（`content/authored/` 除外）和 `legal-assets/` 等存放原版的目录；任何一条被跟踪或未被忽略就 FAIL 并列出路径，按提示 `git rm --cached` 或补忽略规则。重制配乐 `content/generated/hsl/remake_music/` 不算原版派生；从原版程序读出的五份规则数据（`hsltools.original_content.PUBLISHED_EXE_DATA`，见 [NOTICE](NOTICE.md)）是公开发布的例外（C 类，清单仍记哈希）。两者改了都照常提交。截图同理——原版截图、录像帧、原版帧换色图都不提交。公开 CI 每次推送也跑这条检查。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
+它把 `git ls-files` 与 `git status` 里未被忽略的文件逐条对照清单（`content/generated/hsl/original_derived_manifest.json`），另查 `content/imported|generated|battles/`、原版容器与音视频后缀（`content/authored/` 除外）和 `legal-assets/` 等存放原版的目录，其余图片、音视频按内容比对（像素或字节与清单某条相同即算，纯色图除外，改名挪到 `docs/`、`content/authored/` 也拦）；任何一条被跟踪或未被忽略就 FAIL 并列出路径，按提示 `git rm --cached` 或补忽略规则。重制配乐 `content/generated/hsl/remake_music/` 不算原版派生；从原版程序读出的五份规则数据（`hsltools.original_content.PUBLISHED_EXE_DATA`，见 [NOTICE](NOTICE.md)）是公开发布的例外（C 类，清单仍记哈希）。两者改了都照常提交。截图同理——原版截图、录像帧、原版帧换色图都不提交。公开 CI 每次推送也跑这条检查。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
 
 ## 6. Windows 与 Linux
 

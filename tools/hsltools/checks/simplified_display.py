@@ -12,8 +12,9 @@ content/generated/hsl/text/simplified_chars.json. This check proves the displaye
            add it to glyph_review.json and `python3 tools/hsl.py generate simplified_chars`.
   images   every image of the baked-text inventory
            (docs/evidence_packets/static_reverse/original_font_script/image_inventory.json) still
-           has its recorded sha256, and an image whose baked text is traditional is either
-           replaced (its `simplified_replacement` exists and is recorded) or carries a `kept` reason.
+           has its recorded pixel hash (rgba_sha256, png_sha256: the original-derived manifest's value;
+           a player's Pillow / zlib encodes the same image to other bytes), and an image whose baked
+           text is traditional is either replaced (its `simplified_replacement` exists and is recorded) or carries a `kept` reason.
            The credits redraw is also checked cell by cell (workteam_simplified.check_cells): the
            characters both scripts share keep the shape's lettering pixel for pixel, every redrawn
            cell has ink.
@@ -27,7 +28,6 @@ PASS line: SIMPLIFIED_DISPLAY_PASS strings=N traditional_only_chars=N converted=
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from collections import defaultdict
@@ -76,8 +76,8 @@ def check_images(root: Path) -> tuple[list[str], dict[str, int]]:
         if not path.is_file():
             issues.append(f'{entry["path"]}: missing')
             continue
-        if hashlib.sha256(path.read_bytes()).hexdigest() != entry['sha256']:
-            issues.append(f'{entry["path"]}: sha256 changed — re-read its baked text and update {IMAGE_INVENTORY.as_posix()}')
+        if png_sha256(path) != entry['rgba_sha256']:
+            issues.append(f'{entry["path"]}: pixel hash changed — re-read its baked text and update {IMAGE_INVENTORY.as_posix()}')
         if entry['form'] != 'traditional':
             continue
         replacement = entry.get('simplified_replacement')
