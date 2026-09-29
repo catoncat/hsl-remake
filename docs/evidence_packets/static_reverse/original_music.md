@@ -218,7 +218,7 @@ obj-998.obs 的其余物件：5 MessageBox、10 GameClear BOSS（OVERBG01.SHP）
 
 ## 重制接线
 
-- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。音量照 §5：Master 总线＝音效音量线性增益（0 静音）；Music 总线＝§5 流曲线（0 档 −24 dB）并汇入 Master；影片声走 Movie 总线，取音效音量的流曲线；`music_starts()` 在音乐音量 0 时让各放乐点（`BattleOpeningCoordinator.play_music_stream`、`WorldMapRuntime`、`TitleScreen`、`GameClearScreen`）不停不换。重制滑杆是 0.1 一档（11 档），换算成原版字节用 `round(值×255)`，原版是 15 一档（18 档）。
+- `GameSettings` 按 §1 放原曲、整首循环，音乐音量默认满。音量照 §5：Master 总线＝音效音量线性增益（0 静音）；Music 总线＝§5 流曲线（0 档 −24 dB）并汇入 Master；影片声走 Movie 总线，取音效音量的流曲线；`music_starts()` 在音乐音量 0 时让各放乐点（`BattleOpeningCoordinator.play_music_stream`、`WorldMapRuntime`、`TitleScreen`、`GameClearScreen`）不停不换。滑杆照原版 18 档（0..17）：左右键一档，存 档／17，换算成原版字节为 档×15 封顶 255（`GameSettings.original_level`）；点槽取最近档（原版 defProcScrollBar `0x445860` 水平分支：点滑块旁朝点击方向走一档 `0x445bbd`／`0x445be9`，点滑块抓住、按住拖动 `0x445a79–0x445b1a`，松手经 `0x445d70` 取整到档；重制未照做），旧设置文件的值读入时取最近档。
 - `BattleOpeningCoordinator`／`OpeningCinematics` 按剧本放乐动作换曲，`BattleSceneRuntime` 读「戰場記錄」时先停乐再放所读关卡的表内曲目（§3.1）。
 - `TitleScreen`、`WorldMapRuntime`、`TownRuntime`、`GameClearScreen` 分别放标题、大地图、城镇与通关尾声的曲目（§3.2、§3.5）。
 

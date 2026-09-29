@@ -128,8 +128,10 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 	var frame_ticks := int(spec.get("shape_delay", 0))
 	if frame_ticks <= 0:
 		frame_ticks = DEFAULT_FRAME_TICKS
-	# 設定選項 場景效果 off: visual effects are recorded but not drawn; sounds still play.
-	if kind != "background_sound" and not GameSettings.scene_effects_enabled():
+	# 設定選項 場景效果 off: visual effects are recorded but not drawn; sounds still play. The rain
+	# boss and its drops are built and run regardless (defProcDropRain reads [0x477c14] bit0 every
+	# call, StoryRainEmitter hides them while it is clear).
+	if kind != "background_sound" and kind != "rain_emitter" and not GameSettings.scene_effects_enabled():
 		record["status"] = "scene_effects_disabled"
 		return record
 	match kind:

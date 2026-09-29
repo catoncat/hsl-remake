@@ -15,15 +15,18 @@ extends RefCounted
 ## 0 mutes. Effect sounds play at 255 (0 dB) under it. 音樂音量 [0x477c24] sets the music
 ## stream's DirectSound volume (0x424630 → 0x459e60 → 0x459d70): (⌊60v/255⌋ − 60) × 40
 ## hundredths of a dB, so the Music bus runs 0 dB down to −24 dB at 0 (not silent) and sends
-## into Master. Film soundtracks take the same stream curve from 音效音量 (0x42df6f → 0x45c5f0
+## into Master. Both sliders have 18 tiers (0x446270 count 18): the byte is tier × 15 capped at 255
+## (0x4245c0／0x424630), so a stored volume is tier／17 and anything else reads as the nearest tier. Film soundtracks take the same stream curve from 音效音量 (0x42df6f → 0x45c5f0
 ## → 0x45a330), on the Movie bus. Both sliders act at once on what is playing; at 音樂音量 0
 ## a new track does not start (PlayMusic 0x42c250), see music_starts().
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/runtime_observations/system_menu/README.md
 ##     (預備動作 = [0x477c14] bit1, default on)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_music.md (§5 volume curves)
-##   rules: provisional (sliders step 0.1 where the original steps 15／255; 場景效果 readers,
-##     original_map_object_drift.md: BuildBottom's close-up hold is not wired)
+##   rules: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
+##     (sliders: 18 tiers, byte = tier × 15 capped at 255, 0x4245c0／0x424630)
+##   rules: provisional (a groove click takes the nearest tier: the slider control's click reading
+##     is not read)
 ##   rules: remake-invented docs/OPTIONS.md (preset／presentation keys hold the 重製選項 choice)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##   strings: resource-derived content/imported/hsl/global/title/manifest.json
@@ -138,9 +141,24 @@ static func apply() -> void:
 		AudioServer.set_bus_volume_db(movie_index, stream_db(sfx))
 
 
+## Slider tiers above 0 (0..17, 18 in all) and the volume byte per tier (0x4245c0: tier × 15, ≤ 255).
+const VOLUME_TOP_TIER := 17
+const VOLUME_TIER_BYTES := 15
+
+
+## Slider value 0..1 as the nearest of the 18 tiers.
+static func volume_tier(value: float) -> int:
+	return clampi(roundi(clampf(value, 0.0, 1.0) * VOLUME_TOP_TIER), 0, VOLUME_TOP_TIER)
+
+
+## Stored slider value of a tier (tier／17).
+static func tier_value(tier: int) -> float:
+	return float(clampi(tier, 0, VOLUME_TOP_TIER)) / VOLUME_TOP_TIER
+
+
 ## Slider value 0..1 as the original's 0..255 volume byte.
 static func original_level(value: float) -> int:
-	return clampi(roundi(clampf(value, 0.0, 1.0) * 255.0), 0, 255)
+	return mini(volume_tier(value) * VOLUME_TIER_BYTES, 255)
 
 
 ## 0x459d70: SetVolume((⌊60v/255⌋ − 60) × 40) hundredths of a dB, floor −10000.
@@ -166,8 +184,8 @@ static func _normalized(settings: Dictionary) -> Dictionary:
 	return {
 		"scene_effects": bool(settings.get("scene_effects", DEFAULTS["scene_effects"])),
 		"ready_action": bool(settings.get("ready_action", DEFAULTS["ready_action"])),
-		"sfx_volume": snappedf(clampf(float(settings.get("sfx_volume", DEFAULTS["sfx_volume"])), 0.0, 1.0), 0.01),
-		"music_volume": snappedf(clampf(float(settings.get("music_volume", DEFAULTS["music_volume"])), 0.0, 1.0), 0.01),
+		"sfx_volume": tier_value(volume_tier(float(settings.get("sfx_volume", DEFAULTS["sfx_volume"])))),
+		"music_volume": tier_value(volume_tier(float(settings.get("music_volume", DEFAULTS["music_volume"])))),
 		"preset": preset if preset in PRESETS else str(DEFAULTS["preset"]),
 		"presentation": presentation,
 	}

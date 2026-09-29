@@ -13,7 +13,9 @@ extends Node2D
 ## (0x45ebdc), engADDCOLOR_MIX level +1 up to 16 then plain add; after 80 steps level 14 counting
 ## down one a tick, deleted at 0. Depth +0xc = max(0x4300f0(slot), 5): the slot is the landing y
 ## on the first call and afterwards the stack word the previous drop's step left (its dy), so
-## bucket 5 once falling.
+## bucket 5 once falling. Every call also reads 場景效果 ([0x477c14] bit0, 0x43c63f): clear, the
+## drop is not drawn (+0x30 = 0xffff) but keeps stepping, so switching it mid-story hides or shows
+## the rain at once where it has fallen to.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_story_rain.md
 ##     (own words; the original's global stream 0x4795d4 is PlayLoop's global_rng, AI／script rolls)
@@ -29,6 +31,7 @@ const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const AdditiveLevelBlend = preload("res://game/battle/scene/AdditiveLevelBlend.gd")
 const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
+const GameSettings = preload("res://game/settings/GameSettings.gd")
 
 ## 0x4a35fc／0x4a39fc: 256-step cos／sin tables, each entry round(·65536).
 const ANGLE_STEPS := 256
@@ -149,7 +152,7 @@ func _process(delta: float) -> void:
 	if steps <= 0:
 		return
 	_clock -= float(steps) * OriginalTick.TICK_SECONDS
-	var hidden := close_up_hidden.is_valid() and bool(close_up_hidden.call())
+	var hidden := (close_up_hidden.is_valid() and bool(close_up_hidden.call())) or not GameSettings.scene_effects_enabled()
 	for _i in steps:
 		tick()
 	for drop in drops:
@@ -157,7 +160,9 @@ func _process(delta: float) -> void:
 		sprite.visible = not hidden
 		sprite.position = Vector2(int(drop["x"]), int(drop["y"]))
 		sprite.modulate.a = AdditiveLevelBlend.alpha(int(drop["level"]))
-		sprite.z_index = ActorRuntime.bucket_z(int(drop["bucket"]), plane)
+		# The drop's bucket is at most 23 (0x4300f0 caps a row at 19, + 4) and a cast-lifted unit's
+		# 27..46, so the rain stays under the CAST_LIFT_Z band like every y-sorted object.
+		sprite.z_index = mini(ActorRuntime.bucket_z(int(drop["bucket"]), plane), ActorRuntime.CAST_LIFT_Z - 2)
 
 
 ## One original tick: the boss (0x43d578), then every drop in creation order (0x43c611..).

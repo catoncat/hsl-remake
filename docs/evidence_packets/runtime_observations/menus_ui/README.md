@@ -22,7 +22,7 @@
 | 项 | 原版量值 | 等级 | 重制前 | 重制后 |
 | --- | --- | --- | --- | --- |
 | 版本号 | 左下常驻白字「V1.06」，定宽点阵字 8 px 步进，墨迹 (3,459)–(41,467)，整段录屏不变 | runtime-measured | 没有 | ASCFONT.15 半角字（8×15 格，墨迹行 3–11、列 1–7），格左上 (2,456)，墨迹 (3,459)–(41,467) 与原版逐像素一致 |
-| 確認「開始新故事」 | 点击后该项红色亮起字形（Title024 系）在 13.52 s 出现，停 0.75 s；14.27→14.82 s 整屏亮度线性降到黑（0.55 s） | runtime-measured | 0.6 s 直接淡黑 | 亮起停 40 tick，再按 16 级淡黑（每 2 tick 一级、30 tick 全黑、32 tick 结束；`CONFIRM_HOLD_TICKS`／`FADE_DONE_TICKS`）；戰場記錄 同用 |
+| 確認「開始新故事」 | 点击后该项红色亮起字形（Title024 系）在 13.52 s 出现，停 0.75 s；14.27→14.82 s 整屏亮度线性降到黑（0.55 s） | runtime-measured | 0.6 s 直接淡黑 | 亮起停 40 tick，再按 16 级淡黑（每 2 tick 一级、30 tick 全黑、32 tick 结束；`CONFIRM_HOLD_TICKS`／`OriginalFade.DONE_TICKS`）；戰場記錄 同用 |
 | 按住计时与淡出（静态） | 点击时 `0x424302` 把被点对象的 `+0xa8`（obj_Data8，OBJ-000.OBS：三行字 40、宝珠／书 10）交给主菜单；state 2 `0x423fd8` 见码即进 state 3 并清 `0x10000`；state 3 `0x424004` 每 tick `+0xa8` 减一，到 0 才按码分派。码 0／1／2／11 读入后都经 `0x42cc10`／`0x42cc70`／`0x42cb60` 调 `0x42dc90(2)` → `0x46098f(2)`：淡出级 `0x4bbb56`＝1、方向 `0x4bbb5a`＝+1、周期计数 `0x4bbb5e`＝2；主循环 `0x42d772` → `0x460a06` → `0x460a58` 每 tick 计数减一，归零复位为 2 并加一级，超 16 夹到 16 且方向清 0。40＋30 tick 在 19.4 ms 宿主上为 0.78＋0.58 s，与左行实录 0.75＋0.55 s 相符 | static-derived | 0.75 s＋0.55 s 线性（录屏估值） | 同左读法（`TitleScreen.gd` `_set_fade_level`） |
 | 悬停 | 原版悬停只有火花，红色亮起出现在点击时 | runtime-measured | 悬停即亮起 | 原版值悬停不亮起；OPT-GUIDE＝提示 时悬停项亮起；方向键选中项亮起（重制键盘路径）；悬停项／宝珠／书每 6 tick 出 Menu_Star，点击加 Menu_Star2（`0x4241a0`） |
 | 離開遊戲 | 标题 handler `0x423f00`：每项先经 state 3 `0x424004` 按住计时，码 2 `0x4240b2` 经 `0x42cb60`（置 `0xa0000000`）与 `0x42dc90(2)` 淡出后退出 | static-derived | 立即退出 | 同 開始新故事 亮起停 40 tick、按 `0x42dc90(2)` 淡黑后退出 |
@@ -171,7 +171,7 @@ Wine 原版 v1.06，读 HSLBAT.SAV 进 玩家第 2 场 · 惡夢的終曲（LEVE
 
 ## 重制接线
 
-- 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_TICKS`／`FADE_DONE_TICKS`、`spawn_sparkles` 火花、宝珠与书浮动、`_refresh_lit` 悬停亮起读 OPT-GUIDE、`show_message` 无记录消息）；布局来自 `content/imported/hsl/global/title/manifest.json`。
+- 标题：`game/title/TitleScreen.gd`（版本号、`CONFIRM_HOLD_TICKS`／`OriginalFade.DONE_TICKS`、`spawn_sparkles` 火花、宝珠与书浮动、`_refresh_lit` 悬停亮起读 OPT-GUIDE、`show_message` 无记录消息）；布局来自 `content/imported/hsl/global/title/manifest.json`。
 - 目标格光标：`game/battle/scene/BattleSelectionCursor.gd`、`BattleAttackCue.gd`。
 - 系统卷轴：`game/battle/scene/BattleSystemMenu.gd`——`open` 放 ACCEPT01（`runtime.play_ui_sound("confirm")`），`_ask` 出確定／取消、问句读 OPT-GUIDE；timing：save notice 582.53–582.77 s in, held to 583.73 s, out by 583.87 s；任務說明 board dissolves in 577.55–577.95 s and out 579.08–579.48 s（`BattleWinFailBoard` 的 32／34 tick 溶入溶出）；卷动 `_slide`／`_slide_tick` 逐原版 tick 复现 `0x45e882`／`0x45e91e`，起点取 `SCROLL_START_OFFSET`。
 - 道具窗：`BattleItemPanel._show_list`／`_show_hand_window` 共用 `_list_frame`／`_bag_button`（`LIST_*`、`GOLD_AT`、`DETAIL_AT` 常量，裝備 行色 `_hand_colour`）；说明框回复行 `BattleItemText.restore_row`；WINDOW10 字段 `BattleVitals.VALUE_CELLS`（§7）。

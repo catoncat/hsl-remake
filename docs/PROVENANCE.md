@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (200 modules, 135 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (201 modules, 135 remake-invented cells, 59 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (200)
+### 模块矩阵 (201)
 
 #### game/battle/runtime (18)
 
@@ -104,7 +104,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | n/a | static-derived [effect_motion.json](../content/generated/hsl/skills/effect_motion.json); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json); resource-derived [ANIMAL.H](../content/imported/hsl/global/tables/ANIMAL.H); resource-derived [effects.h](../content/imported/hsl/global/tables/effects.h); resource-derived [mage_magic/manifest.json](../content/imported/hsl/shared/mage_magic/manifest.json); static-derived [animal_program_execution.md](../docs/evidence_packets/static_reverse/animal_program_execution.md) `#8-施法引导程序m_actions_action的解释`; static-derived [original_cast_overlays.md](../docs/evidence_packets/static_reverse/original_cast_overlays.md) `#施法引导的合成`; provisional; static-derived [cutin_floaters/README.md](../docs/evidence_packets/runtime_observations/cutin_floaters/README.md) | resource-derived [special_effect_scripts.json](../content/generated/hsl/skills/special_effect_scripts.json); remake-invented [authored_effect_scripts.json](../content/generated/hsl/skills/authored_effect_scripts.json) | resource-derived [special_effect_scripts.json](../content/generated/hsl/skills/special_effect_scripts.json); static-derived [effect_motion.json](../content/generated/hsl/skills/effect_motion.json); static-derived [original_effect_motion.md](../docs/evidence_packets/static_reverse/original_effect_motion.md); static-derived [original_caster_effect.md](../docs/evidence_packets/static_reverse/original_caster_effect.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); resource-derived [combat_animation/manifest.json](../content/imported/hsl/chapter01/combat_animation/manifest.json); static-derived [original_effect_object_sounds.md](../docs/evidence_packets/static_reverse/original_effect_object_sounds.md); provisional | resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json); static-derived [original_effect_object_sounds.md](../docs/evidence_packets/static_reverse/original_effect_object_sounds.md); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [effect_motion.json](../content/generated/hsl/skills/effect_motion.json); provisional; resource-derived [interface_audio/manifest.json](../content/imported/hsl/shared/interface_audio/manifest.json) |
 | [SkillPresenter](../game/battle/scene/SkillPresenter.gd) | remake-invented | n/a | n/a | n/a | n/a |
 
-#### game/common (6)
+#### game/common (7)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
@@ -113,6 +113,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [CampaignProgress](../game/common/CampaignProgress.gd) | resource-derived [campaign.json](../content/battles/campaign.json); static-derived [original_check_targets.md](../docs/evidence_packets/static_reverse/original_check_targets.md) `#R8`; remake-invented | n/a | n/a | n/a | n/a |
 | [EventSelectWindow](../game/common/EventSelectWindow.gd) | n/a | static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json) | n/a | static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md) | n/a |
 | [MenuStars](../game/common/MenuStars.gd) | static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); provisional | resource-derived [skill_effects/manifest.json](../content/imported/hsl/shared/skill_effects/manifest.json) | n/a | static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); provisional | n/a |
+| [OriginalFade](../game/common/OriginalFade.gd) | n/a | n/a | n/a | static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) | n/a |
 | [OriginalTick](../game/common/OriginalTick.gd) | n/a | n/a | n/a | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); runtime-measured [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 
 #### game/cursor (1)
@@ -132,7 +133,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [GameOptions](../game/settings/GameOptions.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
-| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); provisional; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
+| [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional; remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
@@ -451,7 +452,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleUISkin](../game/common/BattleUISkin.gd) | layout | — | set_wrapped_text's break-before-name rule for the shaped UI labels; those labels have no original counterpart read |
 | [MenuStars](../game/common/MenuStars.gd) | rules | — | per-star offsets and delays use the remake RNG, not the original global rand stream |
 | [MenuStars](../game/common/MenuStars.gd) | timing | — | Menu_Star's unset Shape_Delay taken as 0 |
-| [GameSettings](../game/settings/GameSettings.gd) | rules | — | sliders step 0.1 where the original steps 15／255; 場景效果 readers, original_map_object_drift.md: BuildBottom's close-up hold is not wired |
+| [GameSettings](../game/settings/GameSettings.gd) | rules | — | a groove click takes the nearest tier: the slider control's click reading is not read |
 | [AIDecisionRules](../game/sim/AIDecisionRules.gd) | rules | — | stable-id adapter |
 | [AINavigationRules](../game/sim/AINavigationRules.gd) | rules | — | shortest-path tie-breaks, guard routes, a 3×3 actor's refinement flood are remake composition; approach_goals (candidate_filters receipt only) use flat RANGE offsets |
 | [AISelfPreservation](../game/sim/AISelfPreservation.gd) | rules | — | supported-effect dispatcher is a remake adapter; MAGIC-then-SPECIAL cure order |
@@ -487,7 +488,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 31 | 73 | 42 | 10 | 29 | 185 |
-| static-derived | 257 | 114 | 19 | 118 | 25 | 533 |
+| static-derived | 258 | 114 | 19 | 119 | 25 | 535 |
 | runtime-measured | 17 | 32 | 4 | 16 | 2 | 71 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -495,6 +496,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 55 | 33 | 33 | 13 | 1 | 135 |
-| n/a | 62 | 116 | 150 | 134 | 168 | 630 |
+| n/a | 63 | 117 | 151 | 134 | 169 | 634 |
 
 <!-- provenance:end -->

@@ -61,7 +61,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 
 ## 重制接线
 
-`game/battle/runtime/StoryRainEmitter.gd`：`StoryEffectObjects.insert` 为每个 降雨BOSS 建一个，按 16 ms 累计 tick，每 tick 先走 BOSS 计时再按建立顺序走每滴；深度经 `ActorRuntime.depth_bucket`（`0x4300f0`）与 `bucket_z` 进行桶域，plane 取雨模板 obj_Plane；画法用 `AdditiveLevelBlend`（`alpha = 层级/16`）；藏起接 `BattleSceneStage._close_up_hidden`，場景效果 关时照旧不建发射器（画面等价）。随机数用同一生成器 `0x458c10`／`0x458c80`（`DamageRandomStream.rand`）但走本场所有 降雨BOSS 共用的一份自有状态：原版抽的是全局流，重制的全局流是 PlayLoop 的 `global_rng`（时钟播种、不存档，AI、增援与脚本随机都抽它），演出去抽会挪动这些结果。
+`game/battle/runtime/StoryRainEmitter.gd`：`StoryEffectObjects.insert` 为每个 降雨BOSS 建一个，按 16 ms 累计 tick，每 tick 先走 BOSS 计时再按建立顺序走每滴；深度经 `ActorRuntime.depth_bucket`（`0x4300f0`）与 `bucket_z` 进行桶域，plane 取雨模板 obj_Plane；画法用 `AdditiveLevelBlend`（`alpha = 层级/16`）；藏起接 `BattleSceneStage._close_up_hidden`，場景效果 关时发射器照建照走，每 tick 读 `GameSettings.scene_effects_enabled()` 并入藏起判定（剧情中途切换即藏即现，位置连续）。随机数用同一生成器 `0x458c10`／`0x458c80`（`DamageRandomStream.rand`）但走本场所有 降雨BOSS 共用的一份自有状态：原版抽的是全局流，重制的全局流是 PlayLoop 的 `global_rng`（时钟播种、不存档，AI、增援与脚本随机都抽它），演出去抽会挪动这些结果。
 
 ## 边界
 

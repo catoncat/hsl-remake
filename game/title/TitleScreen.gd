@@ -20,7 +20,7 @@ extends Node2D
 ## 讀取回憶錄 list (BattleSystemMenu.open_standalone) after a 10-tick hold; the menu stays drawn and inert until the
 ## window goes back. An arrow key lights the keyboard-selected item (remake keyboard path).
 ## Clicking an item plays ACCEPT01 (RESOURCE 398, defProcMainMenuString 0x4242d6). Confirming an item lights it (the red Title024-026 shape with its white flare), holds
-## CONFIRM_HOLD_TICKS, then fades to black in 16 levels over FADE_DONE_TICKS; the version string
+## CONFIRM_HOLD_TICKS, then fades to black in 16 levels over OriginalFade.DONE_TICKS; the version string
 ## V1.06 stays at the bottom-left corner (runtime-measured on the 2026-09-24 recording,
 ## docs/evidence_packets/runtime_observations/menus_ui/README.md). 戰場記錄 with nothing to resume
 ## shows message 12「無存檔記錄」in red (@2) on the BOARD02 message board (0x42404c → 0x4072b0). The title plays the original track
@@ -66,6 +66,7 @@ extends Node2D
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const OriginalFade = preload("res://game/common/OriginalFade.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
@@ -81,11 +82,8 @@ const FIRST_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
 ## recording (lit 13.52 s, black ramp 14.27 → 14.82 s). FADE_SECONDS is the whole span.
 const CONFIRM_HOLD_TICKS := 40
 const WINDOW_HOLD_TICKS := 10
-const FADE_LEVELS := 16
-const FADE_LEVEL_TICKS := 2
-const FADE_DONE_TICKS := 32
 const CONFIRM_HOLD_SECONDS := CONFIRM_HOLD_TICKS * OriginalTick.TICK_SECONDS
-const FADE_TO_BLACK_SECONDS := FADE_DONE_TICKS * OriginalTick.TICK_SECONDS
+const FADE_TO_BLACK_SECONDS := OriginalFade.TO_BLACK_SECONDS
 const FADE_SECONDS := CONFIRM_HOLD_SECONDS + FADE_TO_BLACK_SECONDS
 ## The version string at the bottom-left corner (runtime-measured: a white fixed-pitch
 ## bitmap font, 8 px advance, ink (3,459)–(41,467)). It is ASCFONT.15 (8×15 half cells, ink
@@ -472,14 +470,7 @@ func _start_transition(action: String, scene_path: String, resume_scenario: Stri
 
 
 func _set_fade_level(elapsed: float) -> void:
-	_fade.color.a = fade_alpha(elapsed)
-
-
-## 0x46098f／0x460a58: level 1 at the start, +1 every FADE_LEVEL_TICKS, capped at 16 (black);
-## the 回憶錄 list's load fade (BattleSystemMenu) runs the same 0x42dc90(2).
-static func fade_alpha(elapsed: float) -> float:
-	var ticks := int(elapsed / OriginalTick.TICK_SECONDS)
-	return float(mini(FADE_LEVELS, 1 + ticks / FADE_LEVEL_TICKS)) / FADE_LEVELS
+	_fade.color.a = OriginalFade.alpha(elapsed)
 
 
 func _on_fade_finished(scene_path: String) -> void:

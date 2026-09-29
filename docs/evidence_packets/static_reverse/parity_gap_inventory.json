@@ -1912,14 +1912,14 @@
     },
     {
       "id": "settings-volume-mixer",
-      "difference": "音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）；剩重制滑杆 11 档对原版 18 档，場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain）；剩建筑底的特写／状态窗藏起未接、瀑布漂移未做、剧情中途切换开关雨滴不跟随",
+      "difference": "音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）与 18 档滑杆（档×15 封顶 255）；場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain，剧情中途切换即藏即现、关着照走）；剩点槽：原版点滑块旁朝点击方向走一档、按住拖动、松手取整（defProcScrollBar 0x445860 水平分支），重制直接跳最近档；音效音量滑杆松手或点箭头时的 RESOURCE 398 试听未做（0x4245c0 只在标志不含 0x3a000000 时放，拖动与翻档不放）",
       "original": "Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者：mapobjCloud 0x43cecd、mapobjWaterFall 0x43d13e、mapobjBuildBottom（及类型越界默认分支）0x43d758、defProcFireSmoke 0x43c337（过程 0x43c260）与 defProcDropRain 0x43c63f（过程 0x43c4a0）关时 +0x30 = 0xffff 不画但照走，云／瀑布／建筑底不画不走；音效音量 0x4245c0 → [0x477c20]＝档×15 封顶 255 → 0x458220 waveOutSetVolume(v×0x01000100)，放声门槛 0x42c180、影片声 0x42df6f；音樂音量 0x424630 → [0x477c24] → 0x459e60 → 0x459d70 SetVolume((⌊60v/255⌋−60)×40)",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_music.md",
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/static_reverse/original_map_object_drift.md"
       ],
-      "remake": "GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）与 BattlePoisonGasPresentation._smoke_tick 读",
+      "remake": "GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；音量存 档／17、字节 original_level＝档×15 封顶 255，BattleSystemMenu.adjust_option 左右一档；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）、StoryRainEmitter._process 与 BattlePoisonGasPresentation._smoke_tick 读",
       "remake_code": [
         "game/settings/GameSettings.gd"
       ],

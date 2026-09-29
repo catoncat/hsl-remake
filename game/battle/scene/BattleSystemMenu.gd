@@ -68,7 +68,6 @@ const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
-const SLIDER_STEP := 0.1
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 ## Scroll start offsets from the rest position: battle +400 px (0x42549b), big map −600 px
 ## (0x425b3b); the close returns there.
@@ -125,8 +124,11 @@ const MEMOIR_SPARK_TICKS := 6
 const MEMOIR_HOVER_SPARKS := 3
 const MEMOIR_CLICK_SPARKS := 6
 const MEMOIR_CLICK_JITTER := 2
+## 0x423aa0 drops the stars inside the row object's box +0x94／+0x98／+0x9c／+0xa0, which a row
+## starts at 4／−4／386／22: x + 4 .. x + 386, y − 4 .. y + 22. Hit testing keeps the 390x26 row.
+const MEMOIR_SPARK_BOX := Rect2(4, -4, 382, 26)
 const MenuStars = preload("res://game/common/MenuStars.gd")
-const TITLE_SCRIPT_PATH := "res://game/title/TitleScreen.gd"
+const OriginalFade = preload("res://game/common/OriginalFade.gd")
 const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
 
 var runtime: Node
@@ -155,6 +157,9 @@ var _memoir_clock := 0.0
 var _memoir_hold := -1 # ticks left before the clicked slot acts, -1 idle
 var _memoir_hold_clock := 0.0
 var _memoir_busy := 0.0 # seconds the list ignores input after a message
+## defProcMemoir 0x424a60 checks neither Esc nor the right button while the list slides in. The
+## rows still take the mouse meanwhile (whether the original's rows do is not read).
+var _memoir_opening := false
 ## The last list input came from the keyboard: the selected row pulses; otherwise only the row
 ## under the mouse does (0x425173), none when the mouse is off the rows.
 var _memoir_keyboard := false
@@ -490,6 +495,7 @@ func _reset_memoir_wait() -> void:
 	_memoir_hold = -1
 	_memoir_hold_clock = 0.0
 	_memoir_busy = 0.0
+	_memoir_opening = false
 
 
 func reopen_now() -> void:
@@ -517,7 +523,6 @@ func _process(delta: float) -> void:
 		_memoir_tick_clock -= OriginalTick.TICK_SECONDS
 		_memoir_tick()
 	if phase == "memoir":
-		_memoir_clock += maxf(delta, 0.0)
 		_memoir_busy = maxf(_memoir_busy - maxf(delta, 0.0), 0.0)
 		if _memoir_hold >= 0:
 			_memoir_hold_clock += maxf(delta, 0.0)
@@ -526,6 +531,8 @@ func _process(delta: float) -> void:
 				_memoir_hold -= 1
 			if _memoir_hold == 0:
 				finish_memoir_hold()
+	if phase in ["memoir", "memoir_closing", "loading"]:
+		_memoir_clock += maxf(delta, 0.0)
 		_paint_memoir_rows()
 	if _slide_shift < 0:
 		return
@@ -564,12 +571,13 @@ func _memoir_tick() -> void:
 	_stars.tick()
 
 
-## Row `slot` in this node's (logical) coordinates, following the list as it slides.
+## Star box of row `slot` (MEMOIR_SPARK_BOX) in this node's (logical) coordinates, following the
+## list as it slides.
 func _memoir_row_rect(slot: int) -> Rect2:
 	var list: TextureRect = _memoir_box.get_node("Title_memoir_list")
 	var origin: Array = memoir_layout.get("row_origin", [37, 82])
-	var row_size: Array = memoir_layout.get("row_size", [390, 26])
-	return Rect2(_memoir_box.position + list.position + Vector2(float(origin[0]), _slot_top(slot)), Vector2(float(row_size[0]), float(row_size[1])))
+	var row := _memoir_box.position + list.position + Vector2(float(origin[0]), _slot_top(slot))
+	return Rect2(row + MEMOIR_SPARK_BOX.position, MEMOIR_SPARK_BOX.size)
 
 
 func _show_lit(index: int) -> void:
@@ -726,8 +734,9 @@ func adjust_option(direction: int, fraction: float = -1.0) -> Dictionary:
 			result["status"] = "set"
 			result["value"] = next
 		"slider":
-			var current := float(GameSettings.get_value(id))
-			var next := fraction if fraction >= 0.0 else current + SLIDER_STEP * direction
+			# One tier of 18 per Left／Right; a groove click lands on the nearest tier (GameSettings).
+			var current := GameSettings.volume_tier(float(GameSettings.get_value(id)))
+			var next := fraction if fraction >= 0.0 else GameSettings.tier_value(current + direction)
 			result["value"] = float(GameSettings.set_value(id, next).get(id, next))
 			result["status"] = "set"
 		_:
@@ -759,9 +768,10 @@ func _slot_top(slot: int) -> float:
 	return float(origin[1]) + float(memoir_layout.get("slot_pitch", 33)) * slot
 
 
-## Memoir row (0x425140 object, 390x26) under a logical point, or -1.
+## Memoir row (0x425140 object, 390x26) under a logical point, or -1; rows keep lighting up
+## under the mouse while the list slides out.
 func memoir_slot_at(logical: Vector2) -> int:
-	if phase != "memoir":
+	if phase != "memoir" and phase != "memoir_closing":
 		return -1
 	var list: TextureRect = _memoir_box.get_node("Title_memoir_list")
 	var local := logical - _memoir_box.position - list.position
@@ -795,8 +805,11 @@ func _hover_memoir(slot: int) -> void:
 
 ## 0x425140: only the row under the mouse pulses green (0x42c130, test 0x10000 at 0x425173) over a
 ## dark-green shadow, the rest are white; after a keyboard move the selected row pulses instead.
+## Through the 40-tick hold, the message board and the 20 ticks after it, and the load fade, the
+## clicked row stays lit whatever the mouse does (0x42530e／0x424c82).
 func _paint_memoir_rows() -> void:
-	var lit := memoir_selected if _memoir_keyboard else memoir_slot_at(_mouse_logical)
+	var inert := _memoir_hold >= 0 or _memoir_busy > 0.0 or phase == "loading"
+	var lit := memoir_selected if _memoir_keyboard or inert else memoir_slot_at(_mouse_logical)
 	for slot in range(_memoir_rows.size()):
 		var hovered := slot == lit
 		_memoir_rows[slot].add_theme_color_override("font_color", EventSelectWindow.pulse_colour(_memoir_clock) if hovered else BattleUISkin.TEXT_WHITE)
@@ -834,7 +847,8 @@ func _show_memoir_list(mode: String) -> void:
 	if not _memoir_box.visible:
 		_memoir_spark_left.clear()
 		_memoir_box.position = MEMOIR_SLIDE_OFFSET
-		_slide(Vector2.ZERO, SCROLL_OPEN_SHIFT, func() -> void: pass, _memoir_box)
+		_memoir_opening = true
+		_slide(Vector2.ZERO, SCROLL_OPEN_SHIFT, func() -> void: _memoir_opening = false, _memoir_box)
 	_memoir_box.visible = true
 	phase = "memoir"
 	_paint_memoir_rows()
@@ -991,12 +1005,20 @@ func _resume_memoir_slot(slot: int) -> Dictionary:
 		runtime.resume_memoir_record(record)
 		return result
 	CampaignProgress.queue_resume(record)
-	var title_script: Variant = load(TITLE_SCRIPT_PATH)
-	var seconds: float = title_script.FADE_TO_BLACK_SECONDS
 	var tween := create_tween()
-	tween.tween_method(func(elapsed: float) -> void: _load_fade.color.a = title_script.fade_alpha(elapsed), 0.0, seconds, seconds)
-	tween.tween_callback(func() -> void: runtime.campaign_progress.resume_saved_progress(record))
+	tween.tween_method(func(elapsed: float) -> void: _load_fade.color.a = OriginalFade.alpha(elapsed), 0.0, OriginalFade.TO_BLACK_SECONDS, OriginalFade.TO_BLACK_SECONDS)
+	tween.tween_callback(_finish_load_fade.bind(record))
 	return result
+
+
+## After the fade: the scene reload reads the memoir in. When no reload follows (the runtime is not
+## the current scene), the fade clears and the list takes input again instead of staying inert.
+func _finish_load_fade(record: Dictionary) -> void:
+	runtime.campaign_progress.resume_saved_progress(record)
+	var reloading: bool = runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime
+	if phase == "loading" and not reloading:
+		_load_fade.color.a = 0.0
+		phase = "memoir"
 
 
 ## Run the selected item. Destructive items first ask 確定／取消.
@@ -1156,6 +1178,9 @@ func _show_hint(text: String) -> void:
 func handle_input(event: InputEvent) -> bool:
 	if not active():
 		return false
+	if phase in ["memoir", "memoir_closing"] and event is InputEventMouseMotion:
+		# Kept for the rows' hover even while the list ignores input or slides out.
+		_mouse_logical = _logical(event.position)
 	if phase in ["opening", "closing", "memoir_closing", "loading"]:
 		return true
 	if phase == "memoir" and (_memoir_hold >= 0 or _memoir_busy > 0.0):
@@ -1277,6 +1302,8 @@ func _back() -> void:
 			_lit.visible = true
 			phase = "menu"
 		"memoir":
+			if _memoir_opening:
+				return
 			# 0x45e91e: out to the right at 40 px a tick, then the window closes.
 			phase = "memoir_closing"
 			_slide(MEMOIR_SLIDE_OFFSET, 0, _memoir_slid_out, _memoir_box)
