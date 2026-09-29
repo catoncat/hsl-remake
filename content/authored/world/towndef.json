@@ -79,14 +79,6 @@
             "1",
             "bmpmHidden"
           ]
-        },
-        {
-          "token": "teBMSetPointEvent",
-          "args": [
-            "2",
-            "200",
-            "bmpmBattle"
-          ]
         }
       ]
     }

@@ -386,7 +386,7 @@ func _close() -> void:
 func _start_run(event_code: int, trigger: String) -> void:
 	_clear(_choice_root)
 	_party_before = WorldPartyRules.party_from_carry(carry, speakers)
-	run = Rules.begin_event(state, _party_before, towndef, town_id, event_code)
+	run = Rules.begin_event(state, _party_before, towndef, town_id, event_code, Rules.job_up_writes_path(_campaign()))
 	_consumed_effects = 0
 	records.append({"kind": "run", "event": event_code, "trigger": trigger, "error": str(run.get("error", ""))})
 	if trigger == "exit_event":
@@ -806,9 +806,13 @@ func _open_shop_window(pending: Dictionary) -> void:
 func _shop_scenario_path() -> String:
 	var scenario_id := str(carry.get("from_scenario_id", ""))
 	if not _scenario_paths.has(scenario_id):
-		var campaign: Dictionary = runtime.campaign_progress.campaign if runtime != null and runtime.get("campaign_progress") != null else CampaignProgress.load_campaign()
-		_scenario_paths[scenario_id] = PartyEquipmentRules.template_scenario_path(campaign, scenario_id)
+		_scenario_paths[scenario_id] = PartyEquipmentRules.template_scenario_path(_campaign(), scenario_id)
 	return str(_scenario_paths[scenario_id])
+
+
+## The campaign.json this process plays (the runtime's loaded copy when there is one).
+func _campaign() -> Dictionary:
+	return runtime.campaign_progress.campaign if runtime != null and runtime.get("campaign_progress") != null else CampaignProgress.load_campaign()
 
 
 ## The shop window replaces the town picture; the big map stays in the gaps as in the

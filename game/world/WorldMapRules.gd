@@ -446,12 +446,15 @@ static func marker_kind(state: Dictionary, world_map: Dictionary, point_id: int)
 ## teBMSetPointEvent, kept by TownEventRules as point_events[id].event) or the
 ## record's own +8 value — the file gives every point its id there (SR-069:
 ## "原文件的 45 个非空点初值均等于点号"), so this is data, not a fallback.
+## An authored point may write that +8 value as `level` (a sequel point opening
+## level 200 while its id stays a 1–99 slot); a point without `level` opens its id.
 static func point_event(state: Dictionary, world_map: Dictionary, point_id: int) -> int:
 	var events: Dictionary = state.get("point_events", {})
 	var assigned: Variant = events.get(str(point_id), {})
 	if typeof(assigned) == TYPE_DICTIONARY and (assigned as Dictionary).has("event"):
 		return int((assigned as Dictionary)["event"])
-	return int(point(world_map, point_id).get("id", 0))
+	var entry := point(world_map, point_id)
+	return int(entry.get("level", entry.get("id", 0)))
 
 
 ## The point's type bit (Town / General / Battle) from its current flags; point

@@ -26,6 +26,7 @@
     {
       "slot": 2,
       "id": 2,
+      "level": 200,
       "raw_field0": 0,
       "flag_names": [
         "bmpmBattle"

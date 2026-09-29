@@ -89,10 +89,13 @@ const ROLE_PROFILES_SCHEMA := "hsl_live_role_profiles.v1"
 ## 0x434680 after teCheckJobUp2: once every listed member holds its last title, the
 ## listed town is rewritten (shops closed, exec event and closed-shop entries) through
 ## the te tree/exec-event writers. The members, town and write list are data
-## (content/world/town_job_up_writes.json, hsl check town_job_up_writes); a missing or
-## mismatched file is an explicit check_failed effect, never a built-in list.
+## (content/world/town_job_up_writes.json, hsl check town_job_up_writes); a campaign
+## names its own table in campaign.json town_job_up_writes (job_up_writes_path), which
+## the town runtime hands to begin_event. A missing or mismatched file is an explicit
+## check_failed effect, never a built-in list.
 const TOWN_JOB_UP_WRITES_PATH := "res://content/world/town_job_up_writes.json"
 const TOWN_JOB_UP_WRITES_SCHEMA := "hsl_town_job_up_writes.v1"
+const TOWN_JOB_UP_WRITES_FIELD := "town_job_up_writes"
 
 ## te tokens whose interpreter reading is recorded in
 ## docs/evidence_packets/static_reverse/town_event_semantics.md (迁出表); records
@@ -286,7 +289,14 @@ static func menu_entries(state: Dictionary, towndef: Dictionary, town_id: int, p
 ## ---------------------------------------------------------------------------
 ## Runs
 
-static func begin_event(state: Dictionary, party: Dictionary, towndef: Dictionary, town_id: int, event_code: int) -> Dictionary:
+## The job-up rewrite table of a campaign: its campaign.json town_job_up_writes (a res://
+## path of a hsl_town_job_up_writes.v1 file) when set, else chapter 1's table.
+static func job_up_writes_path(campaign: Dictionary) -> String:
+	var path: Variant = campaign.get(TOWN_JOB_UP_WRITES_FIELD, "")
+	return str(path) if typeof(path) == TYPE_STRING and str(path) != "" else TOWN_JOB_UP_WRITES_PATH
+
+
+static func begin_event(state: Dictionary, party: Dictionary, towndef: Dictionary, town_id: int, event_code: int, writes_path: String = TOWN_JOB_UP_WRITES_PATH) -> Dictionary:
 	var run := {
 		"schema": RUN_SCHEMA,
 		"town_id": town_id,
@@ -300,6 +310,7 @@ static func begin_event(state: Dictionary, party: Dictionary, towndef: Dictionar
 		"frames": [],
 		"steps": 0,
 		"towndef": towndef,
+		"job_up_writes_path": writes_path,
 	}
 	var error := _state_error(state, town_id)
 	if error != "":
@@ -811,7 +822,7 @@ static func _step_check_job_up(run: Dictionary, ctx: Dictionary, name: String, a
 ## must be in the party with job-up code 0 — i.e. standing on its last row — before
 ## the town writes run.
 static func _apply_second_tier_town_writes(run: Dictionary, ctx: Dictionary, records: Dictionary, event_code: int, pc: int) -> void:
-	var table := _load_json(TOWN_JOB_UP_WRITES_PATH, TOWN_JOB_UP_WRITES_SCHEMA)
+	var table := _load_json(str(run.get("job_up_writes_path", TOWN_JOB_UP_WRITES_PATH)), TOWN_JOB_UP_WRITES_SCHEMA)
 	var second_tier: Dictionary = table.get("second_tier", {}) if typeof(table.get("second_tier")) == TYPE_DICTIONARY else {}
 	if table.has("error") or second_tier.is_empty():
 		(run["effects"] as Array).append({"kind": "check_failed", "token": "teCheckJobUp2", "reason": "missing_town_job_up_writes", "error": str(table.get("error", "second_tier"))})

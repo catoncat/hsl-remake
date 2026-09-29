@@ -385,6 +385,15 @@ func _job_up_success_and_chain() -> void:
 		_assert_true(not (amphibian["tree"]["0"] as Array).has(shop), "shop %d removed" % shop)
 	for closed in [154, 155, 156]:
 		_assert_true((amphibian["tree"]["0"] as Array).has(closed), "closed-shop entry %d added" % closed)
+	# A campaign.json town_job_up_writes table replaces chapter 1's; without the field chapter 1's is read.
+	var own_table := "user://town_event_rules_job_up_writes.json"
+	var own_file := FileAccess.open(own_table, FileAccess.WRITE)
+	own_file.store_string(JSON.stringify({"schema": TownEventRules.TOWN_JOB_UP_WRITES_SCHEMA, "second_tier": {"members": ["SID_雷歐納德", "SID_緹娜"], "town": "town_歐姆村", "writes": [{"token": "teSetTownExecEvent", "args": ["town_歐姆村", "9"]}]}}))
+	own_file.close()
+	party["member_records"] = {"SID_雷歐納德": master, "SID_緹娜": tina}
+	var own := TownEventRules.begin_event(_state(), party, towndef, 16, 79, TownEventRules.job_up_writes_path({"town_job_up_writes": own_table}))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(own_table))
+	_assert_eq([TownEventRules.job_up_writes_path({}), int(own["state"]["towns"]["1"]["exec_event"]), int(own["state"]["towns"]["14"]["exec_event"]), _effects_of(own, "job_up_town_writes")[0]["town"]], [TownEventRules.TOWN_JOB_UP_WRITES_PATH, 9, int(_state()["towns"]["14"]["exec_event"]), "town_歐姆村"], "the campaign's own job-up table rewrites 歐姆村, not 兩棲族部落")
 	# Up2 before any first-tier title: the original has no separate check, so it succeeds onto 010 with the second-tier flag.
 	party["member_records"] = {"SID_雷歐納德": member.duplicate(true), "SID_緹娜": tina}
 	var early := TownEventRules.begin_event(_state(), party, towndef, 16, 79)

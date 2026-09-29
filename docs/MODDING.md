@@ -181,5 +181,3 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 - 从空仓库一条命令导入全部原版资源。
 - 手写层的新界面美术：没有 authored 入口。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
-- 在大地图数据里直接写点位通往哪一关：点位的 `id` 同时当身份（受 100 个槽位限制，`WorldMapRules.ROUTE_SLOTS`）和原版点记录 +8 的初始关号用。原版文件本可以在 +8 直接写 200，重制要先把初始关号拆成独立字段、身份和路线改用 `slot`；在那之前，关号 200 以上的续集关只能靠城镇或剧本事件指过去（#22）。
-- 续集城镇的转职改写：`TownEventRules` 读的转职改写表写死为 `content/world/town_job_up_writes.json`，续集城镇用 `teCheckJobUp2` 会重放第一章的改写。

@@ -435,8 +435,8 @@ func _test_saved_progress() -> void:
 
 
 ## A sequel world written only as data (content/authored/world/): 開始新故事 on its campaign
-## opens its big map, its town's 老獵人 un-hides 龍脊隘口 and points it at level 200, the
-## party walks there, wins 玩家第 1 場 · 龍脊隘口（LEVEL200） and comes back to the map.
+## opens its big map, its town's 老獵人 un-hides 龍脊隘口 (whose point data writes `level` 200),
+## the party walks there, wins 玩家第 1 場 · 龍脊隘口（LEVEL200） and comes back to the map.
 ## Each scene change prints one SEQUEL_WORLD line. The sequel is a registered campaign
 ## (content/authored/campaigns.json): picked on the title, it saves under its own folder while
 ## chapter 1's saved position stays.
@@ -475,6 +475,7 @@ func _test_sequel_world_flow() -> void:
 				await process_frame
 			if map.town_runtime == null and said == ["老獵人"]:
 				steps.append("town → big map after talking to %s, 龍脊隘口 hidden=%s event=%d" % [said[0], WorldMapRules.point_hidden(map.state, map.world_map, 2), WorldMapRules.point_event(map.state, map.world_map, 2)])
+				_assert_true(not (map.state.get("point_events", {}) as Dictionary).has("2") and WorldMapRules.point_event(map.state, map.world_map, 2) == 200, "龍脊隘口 opens level 200 from its own `level` field: no event write is kept for point 2")
 				guard = 0
 				while map.reveal_busy() and guard < 600:
 					guard += 1
