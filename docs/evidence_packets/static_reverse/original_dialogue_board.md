@@ -1,6 +1,6 @@
 # 原作对白框：位置、顶槽、换行、四行窗口与上卷、擦出与淡入淡出
 
-> evidence: static-derived; runtime-measured: 2026-09-24 原版录屏 307.9–309.9 s 与 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头; negative-evidence: 无方框 SHP; provisional: □ 墨迹偏移 · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145b4, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4146e0, 0x41475b, 0x414794, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x455612, 0x45f5b4, 0x460884 · tools: capture_dialogue_selection_review.gd, run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-28
+> evidence: static-derived; runtime-measured: 2026-09-24 原版录屏 307.9–309.9 s 与 398.6–400.6 s（WINFAIL051 消息 369）; resource-derived: BOARD02 形状头; negative-evidence: 无方框 SHP; provisional: □ 墨迹偏移 · status: live · functions: 0x4072b0, 0x413960, 0x414220, 0x414280, 0x4144aa, 0x4145b4, 0x4145f6, 0x41461b, 0x414632, 0x414659, 0x4146c5, 0x4146e0, 0x41475b, 0x414794, 0x4148ba, 0x414933, 0x4149c3, 0x44fad0, 0x45194c, 0x454e20, 0x455612, 0x45f5b4, 0x460884 · tools: capture_dialogue_selection_review.gd, run_presentation_contract_tests.gd, run_story_scene_tests.gd, run_ui_class_contract_tests.gd · updated: 2026-09-29
 
 **static-derived**（objdump／r2 反汇编阅读 `hsl01.exe`，sha256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`；无 Wine、无有界执行）＋ **runtime-measured**（原版录屏 `录屏2026-09-24 中午12.03.22.mov`，游戏区 `crop=1280:960:112:140` 缩到 640×480，按源帧逐帧量）。对应[差异清单](parity_gap_inventory.md)的 `dialogue-top-slot`、`dialogue-timing`、`dialogue-line-breaks`、`dialogue-continue-marker`。
 
@@ -18,8 +18,8 @@
 - 构造器 `0x4072b0(&等待标志, 槽号, 消息 id, 0)`：槽号 ≥0 时 `+0xa8 = 0x4c34c0[槽]`（说话对象），<0 时 `+0xa8 = 0`。`0x44fad0` 对 `defNoOne`（code −3）恒返回 −4（[检查目标包](original_check_targets.md)），所以旁白框 `+0xa8 = 0`。
 - `0x414220(obj, top, wait, face)` 是唯一的旗标设置器：`top` 非零置 `0x4000`，`wait` 非零置 `0x2000`，`face` 非零时 `+0xa8 = face`（高字＝形状、低字＝名字资源 id）并置 `0x1000`（用预置人脸与名字，`0x4144b8`／`0x41458c`）。全 EXE 三个调用者：
   - `0x4519ab`：STORY VM 跳表 `0x4537f4` 第 74 项 `0x45194c`＝`actShapeMessage [shape][name][msg]`，传 `top = 1`；
-  - `0x455612`：城镇 VM 的 shape 类台词（`teShapeMessage [shape][name][msg][if_wait]`，`wait = if_wait`；`teCheckMoney` 金钱不足提示 `0x4555f4` 落入同一尾部；`0x4553bb` 另一条 shape 台词），传 `top = 1`；
-  - `0x455fd4`：城镇 `tePlayerMessage`（说话人的 picture＋名字），传 `top = 0`。
+  - `0x455612`：城镇 VM 台词的公共尾——shape 类（`teShapeMessage [shape][name][msg][if_wait]` 经 case 7 的 `0x45560f`；`teCheckMoney` 金钱不足提示 `0x4555f4` 落入同一尾部；`0x4553bb` 另一条 shape 台词）传 `top = 1`，`tePlayerMessage [player id][msg][if_wait]`（case 5 经 `0x455d2d`，说话人的 picture＋名字）传 `top = 0`；两条 te 都传 `wait = if_wait`；
+  - `0x455fd4`：城镇 `teCheckJobUp` 成功行（case 0x1f，消息 0x54a），传 `top = 0`、`wait = 0`。
   普通 `actMessage`（`0x45330e`）、阵亡遗言（`0x43efce`／`0x4434ef`）都只调构造器，不置 `0x4000`。
 
 ## 位置（init `0x41440c` 起）
@@ -59,6 +59,18 @@
 - 擦出与上卷都是 3 px/tick：满窗擦出 (112 − 17)/3 → 32 tick；每行上卷 10 tick，4 行 40 tick。
 - 淡入、淡出各 16 tick；换句时旧框淡出注销后剧本才建新框。
 - 原版在擦出（状态 1）与上卷（状态 4）期间不读确认键。
+
+## if_wait 位 `0x2000`
+
+`+0xa4` 是构造器第一个参数——调用者的等待标志地址（`0x4072cf`）；城镇 VM 建框前把它置 1。`0x2000` 置位时：
+
+| 状态 | 行为 | 地址 |
+| --- | --- | --- |
+| 2 | 还有正文（`+0xa0` 非空）或 `+0xa4` 为空时照常等确认；末页且标志非 0 时不读确认（直接到公共尾 `0x41469e`）；标志变 0 时清 `+0xa4`、进状态 3，自己收起 | `0x41470a–0x414734` |
+| 3（无正文分支） | `+0xa4` 非空且标志非 0 时写 −1；按上一行，`0x2000` 框走到这里时 `+0xa4` 已清空，这一写走不到 | `0x4148f5–0x41492e` |
+| 99 | `+0xa4` 非空且标志非 0 时停着不淡出；标志为 0 时清 `+0xa4` 再淡出 | `0x4149c3–0x4149dd` |
+
+即 if_wait≠0 的框末页不由玩家关，只等标志被别处清零才收。城镇 VM（`0x454e20`）这边，阶段 5／0xc／7 也等同一标志为 0 或 −1 才往下走，能把它清零的只有 teDeletePlayerMessage／teDeleteShapeMessage（case 6／8），VM 停着时执行不到——按静态读法 if_wait≠0 的城镇消息会一直停着。TOWNDEF 453 句消息（teShapeMessage 269、tePlayerMessage 184）的 if_wait 全为 0，没有数据走这条路；重制不实现此位（每句等确认）。
 
 ## 录屏实测（runtime-measured）
 

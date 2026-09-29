@@ -18,8 +18,8 @@ extends Control
 ## it closes (docs/evidence_packets/static_reverse/original_music.md §3.2).
 ##
 ## The te VM 0x454e20 (static-derived, town_event_semantics.md «执行模型»): a message parks
-## the VM until its board is closed, whatever the script's if_wait flag, so every message
-## waits for a confirm; teDelay N holds the chain N + 1 ticks with no board up (counter
+## the VM until its board is closed, so every message waits for a confirm (if_wait ≠ 0 — bit
+## 0x2000, never set in TOWNDEF — would hold the last page until the flag clears; not modelled); teDelay N holds the chain N + 1 ticks with no board up (counter
 ## 0x4c1d54, one decrement per process call) and teMenuMoveOut holds it 20 ticks; player
 ## input does not cut a hold. tePlaySound (0x455710 -> 0x42c180) plays its WAV at once at full
 ## volume and the chain goes on without waiting; gold and item grants show as narration lines (remake). Shop prices and
@@ -43,7 +43,8 @@ extends Control
 ##     (select board 0x426680, rows 0x4264f0, menu rows 0x4561d0: pulse-green hover)
 ##   layout: provisional (job-up and narration lines on the bottom board)
 ##   layout: resource-derived content/generated/hsl/text/protected_words.json
-##   layout: remake-invented (the stone board hides during a choice)
+##   layout: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
+##     (stone board 0x4561d0: out for VM return 4, the shop and leaving; back when a menu lists)
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/towndef.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
@@ -131,6 +132,8 @@ var shop_screen: Control
 static var _scenario_paths: Dictionary = {}
 var dialogue_slot := ""
 var _hold_serial := 0
+## The stone board is on screen (slid in). It starts off screen (0x456150: x −260).
+var _board_in := false
 
 
 func open() -> void:
@@ -173,8 +176,16 @@ func open() -> void:
 
 func _show_root_menu() -> void:
 	mode = "menu"
-	_clear(_menu_root)
 	_clear(_choice_root)
+	_fill_root_rows()
+	_board_in = true
+	_refresh_board()
+
+
+## The root rows the board lists (0x4545e0) — also while a run goes on with the board in, and
+## after leaving a sub-menu (flag 0x4000 cleared) until the parent's tail ends.
+func _fill_root_rows() -> void:
+	_clear(_menu_root)
 	var entries := Rules.menu_entries(state, towndef, town_id, 0)
 	for index in range(entries.size()):
 		var entry: Dictionary = entries[index]
@@ -182,7 +193,6 @@ func _show_root_menu() -> void:
 		var row := _menu_row(_menu_root, index, _entry_text(entry), "Entry%d" % code)
 		row.disabled = not bool(entry.get("known", false))
 		row.pressed.connect(select_entry.bind(code))
-	_refresh_board()
 
 
 static func _entry_text(entry: Dictionary) -> String:
@@ -220,11 +230,23 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 	return row
 
 
-## The stone board shows while a menu or sub-menu lists its rows; the original hides it while
-## a message plays (frames 05–07), and a choice lists its rows on the select board instead.
+## The stone board (object 740, 0x4561d0) is drawn in every BOSS state wherever it sits: no
+## town code writes its +0x30 shape word, so the 0x4561e8 guard never hides it. It leaves the
+## screen by sliding to x −260 (0x45e80d) — state 89 for VM return 4 (a message, a failed
+## teCheckJobUp, a failed teCheckMoney, a displayed teGetGold, teMenuMoveOut; 0x456af8), state 90
+## before the shop and state 6 when leaving (0x456b2f), state 70 before the exit event
+## (0x456a17) — and comes back only in state 2 (0x45671d), when a menu or sub-menu is listed.
+## A select (VM return 0), a teDelay or a job-up title line (phase 0x1f, 0x455f4e → 0x414220,
+## return 0) leaves it where it is: its rows stay drawn, but take clicks only in state 4
+## (0x45630f). The slide itself is not animated here.
 func _refresh_board() -> void:
-	if _board != null:
-		_board.visible = mode in ["menu", "sub_menu"]
+	if _board == null:
+		return
+	_board.visible = _board_in
+	_menu_root.visible = _board_in
+	var live := mode in ["menu", "sub_menu"]
+	for row in _menu_root.get_children():
+		(row as Control).mouse_filter = Control.MOUSE_FILTER_STOP if live else Control.MOUSE_FILTER_IGNORE
 
 
 func menu_codes() -> Array[int]:
@@ -267,9 +289,9 @@ func leave() -> void:
 ## Runs
 
 func _start_run(event_code: int, trigger: String) -> void:
-	_clear(_menu_root)
 	_clear(_choice_root)
-	_board.hide()
+	if trigger == "exit_event":
+		_board_in = false  # BOSS state 70 slides the board out before the exit event (0x456a17)
 	_party_before = WorldPartyRules.party_from_carry(carry, speakers)
 	run = Rules.begin_event(state, _party_before, towndef, town_id, event_code)
 	_consumed_effects = 0
@@ -313,7 +335,9 @@ func _play_next_effect() -> void:
 				var name := str(speaker.get("name_text", token))
 				var text := "%s的稱號由%s變成%s" % [name, _job_title(str(effect.get("from_actor_id", ""))), _job_title(str(effect.get("to_actor_id", "")))]
 				records.append({"kind": "effect", "effect": effect, "status": "applied"})
-				_show_dialogue("job_up:%s:%s" % [token, str(effect.get("to_actor_id", ""))], name, text, str(speaker.get("portrait_key", "")))
+				# Phase 0x1f returns 0, so the board stays where it is; every TOWNDEF job-up
+				# event puts a tePlayerMessage (return 4) first, so it is already out.
+				_show_dialogue("job_up:%s:%s" % [token, str(effect.get("to_actor_id", ""))], name, text, str(speaker.get("portrait_key", "")), false, false)
 				return
 			"get_gold":
 				_show_narration("gold:%d" % int(effect.get("amount", 0)), "獲得 %d 金錢" % int(effect.get("amount", 0)))
@@ -329,6 +353,8 @@ func _play_next_effect() -> void:
 			"delay", "menu_move_out":
 				var ticks := MENU_MOVE_OUT_TICKS if kind == "menu_move_out" else int(effect.get("ticks", 0))
 				records.append({"kind": "effect", "effect": effect, "status": "applied"})
+				if kind == "menu_move_out":
+					_board_in = false  # VM return 4 → state 89
 				if ticks > 0:
 					_hold(ticks)
 					return
@@ -372,10 +398,13 @@ func _play_sound(member: String) -> bool:
 
 
 ## `top`: an NPC line (teShapeMessage) on the top board; party lines, job-up results and the
-## remake's narration lines keep the bottom board (original frames 05–07).
-func _show_dialogue(key: String, speaker: String, body: String, portrait_key: String, top: bool = false) -> void:
+## remake's narration lines keep the bottom board (original frames 05–07). `slide_board`: the
+## line comes with VM return 4 (state 89 slides the stone board out); false for the job-up line.
+func _show_dialogue(key: String, speaker: String, body: String, portrait_key: String, top: bool = false, slide_board: bool = true) -> void:
 	mode = "dialogue"
-	_board.hide()
+	if slide_board:
+		_board_in = false  # VM return 4 → state 89 slides the board out
+	_refresh_board()
 	current_text = body
 	current_speaker = speaker
 	if portrait_key != "" and _dialogue._portraits.has(portrait_key):
@@ -389,7 +418,11 @@ func _show_dialogue(key: String, speaker: String, body: String, portrait_key: St
 
 func _show_narration(key: String, body: String) -> void:
 	mode = "dialogue"
-	_board.hide()
+	# remake-only: the original prints no narration for teGetItem / teRemoveItem / a non-displayed
+	# teGetGold and leaves the board where it is (0x45536c returns 0); the remake slides it out
+	# under its own narration line.
+	_board_in = false
+	_refresh_board()
 	current_text = body
 	current_speaker = ""
 	_dialogue.show_narration(key, body)
@@ -403,11 +436,11 @@ func _place_dialogue(top: bool) -> void:
 
 ## teDelay N (0x454e20 case 0xe): the VM stores N in 0x4c1d54, each later process call
 ## decrements it and the call that reaches 0 only resets the phase, so the next token runs
-## N + 1 ticks after the delay; the previous board is already closed (the VM left the
-## message phase only once it was), so nothing shows meanwhile.
+## N + 1 ticks after the delay; the previous message board is already closed (the VM left the
+## message phase only once it was). The stone board stays wherever it was (VM return 0).
 func _hold(ticks: int) -> void:
 	mode = "delay"
-	_board.hide()
+	_refresh_board()
 	if _dialogue.visible:
 		_dialogue.clear_message()
 	current_text = ""
@@ -461,14 +494,18 @@ func _show_pending(pending: Dictionary) -> void:
 			# Every TOWNDEF use passes shape -1, so the board is centred without a picture.
 			_show_select_window(labels, "", true, picks)
 		"sub_menu":
+			# VM return 2 (and every later return 1 while flag 0x4000 stands) → state 2: the
+			# board slides in listing the children of the picked entry (0x454610).
 			mode = "sub_menu"
+			_clear(_menu_root)
 			var entries: Array = pending.get("entries", [])
 			for index in range(entries.size()):
 				var entry: Dictionary = entries[index]
 				var code := int(entry.get("code", 0))
-				var row := _menu_row(_choice_root, index, _entry_text(entry), "Sub%d" % code)
+				var row := _menu_row(_menu_root, index, _entry_text(entry), "Sub%d" % code)
 				row.disabled = not bool(entry.get("known", false))
 				row.pressed.connect(menu_pick.bind(code))
+			_board_in = true
 		"shop":
 			_open_shop(pending)
 		_:
@@ -530,9 +567,8 @@ func choose(index: int) -> void:
 	_resume(index)
 
 
-## The player_select board's「離開」row (event −1): the script continues past the token — every
-## TOWNDEF use is the last token, so the event ends — with no member chosen (TownEventRules
-## records the resume as invalid_choice).
+## The player_select board's「離開」row (event −1): a row event of −1 ends the event (VM return 1,
+## 0x455f06 → 0x455ebe) with no member chosen, back to the nearest sub-menu or the root menu.
 func cancel_select() -> void:
 	if mode != "select" or str((run.get("pending", {}) as Dictionary).get("kind", "")) != "player_select":
 		return
@@ -548,17 +584,19 @@ func menu_pick(code: int) -> void:
 	_resume({"event": code})
 
 
-## Leave the open sub-menu (the parked teCreateSubEventMenu advances).
+## Leave the open sub-menu: state 4 right click clears flag 0x4000, points the VM after the
+## parked teCreateSubEventMenu (0x4c27d4) and runs it at once; the board stays in and lists
+## the root rows again.
 func menu_exit() -> void:
 	if mode != "sub_menu":
 		return
 	records.append({"kind": "menu_exit"})
+	_fill_root_rows()
 	_resume(0)
 
 
 func _resume(choice: Variant) -> void:
 	_clear(_choice_root)
-	_board.hide()
 	run = Rules.resume(run, choice)
 	_consume_run()
 
@@ -594,6 +632,7 @@ func _finish_run() -> void:
 
 func _open_shop(pending: Dictionary) -> void:
 	mode = "shop"
+	_board_in = false  # VM return 3 → state 90 slides the board out (0x456b2f)
 	shop_message = ""
 	run["_shop"] = pending.duplicate(true)
 	_set_town_view_visible(false)

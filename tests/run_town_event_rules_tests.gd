@@ -407,8 +407,11 @@ func _menu_move_out() -> void:
 	_assert_eq(mystery["state"]["towns"]["23"]["tree"]["92"], [93, 94, 95, 97, 123], "96 removes itself and its forced teAppearSecretMan adds table entry 123 to the tavern")
 	_assert_true(_kinds(mystery["effects"]).has("menu_move_out"), "menu_move_out effect")
 	var declined := TownEventRules.resume(mystery, {"index": 1})
-	_assert_true(bool(declined["done"]) and declined["pending"] == null, "teMenuMoveOut skips re-opening the tavern")
-	_assert_eq(_effects_of(declined, "secret_man").back(), {"kind": "secret_man", "action": "delete", "town_id": 23}, "tavern tail still runs")
+	var reopened: Dictionary = declined["pending"] if typeof(declined["pending"]) == TYPE_DICTIONARY else {}
+	_assert_eq([str(reopened.get("kind", "")), reopened.get("children")], ["sub_menu", [93, 94, 95, 97]], "teMenuMoveOut only slides the board out: the tavern re-opens once 122 (which deletes 123) ends")
+	_assert_eq(_effects_of(declined, "secret_man").back(), {"kind": "secret_man", "action": "delete", "town_id": 23}, "122's teDeleteSecretMan")
+	var left := TownEventRules.resume(declined, {"exit": true})
+	_assert_true(bool(left["done"]) and left["pending"] == null, "leaving the tavern runs its tail and ends the run")
 
 
 func _script_actions() -> void:

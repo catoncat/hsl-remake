@@ -13,14 +13,19 @@ extends RefCounted
 ## docs/evidence_packets/static_reverse/town_event_semantics.md); nothing here
 ## claims native handler timing, pricing or equivalence.
 ##
-## Execution model (provisional): a run holds a frame stack. teExecEvent replaces
-## the current frame (every use in TOWNDEF is the last token, so jump == call);
-## select branches push a frame; teCreateSubEventMenu leaves the frame parked on
-## the token while the player picks children (each pick pushes a frame, exit
-## advances); teMenuMoveOut closes the enclosing sub-menu when the child ends;
-## a condition's "end the event" (original VM return 1) pops the current frame
-## so a parked sub-menu re-opens; teSetNextPlayLevelEvent ends the run (leaving
-## town). Condition semantics follow the static readings in
+## Execution model (static-derived: town BOSS 0x4561d0 state machine over the one-pointer
+## VM 0x454e20, town_event_semantics.md): the original keeps a single token pointer and a
+## sub-menu flag, no call stack. Here a run holds the parked sub-menu frames plus the one
+## running frame. teExecEvent and a select row's event replace the running frame (0x4556ea,
+## phase 0xf／0x1e 0x455ef0: jump, event 0 or an unknown id continues past the token, a row
+## event -1 ends the event); teCreateSubEventMenu (case 10, VM return 2) parks the frame on
+## the token while the player picks children (each pick pushes a frame, exit resumes after
+## the token — 0x4c27d4); the end of an event, and a condition's "end the event", are the
+## same VM return 1: every frame above the nearest parked sub-menu goes and that sub-menu
+## re-opens (BOSS state 2 with 0x4000 still set), else the run is done and the root menu
+## returns; teMenuMoveOut only slides the stone board out for 20 ticks (VM return 4) and
+## leaves the sub-menu open; teSetNextPlayLevelEvent parks the VM (phase 0xd has no
+## handler), so the run ends (leaving town). Condition semantics follow the static readings in
 ## docs/evidence_packets/static_reverse/original_world_town.md (SR-069). Town-level state changed here: towns[*].exec_event /
 ## exit_exec_event / tree / secret_man / secret_appear_ratio; world-level:
 ## point_flags, track_flags, point_events, encounter_ratios, point_modes,
@@ -36,8 +41,10 @@ extends RefCounted
 ##   rules: static-derived content/generated/hsl/static/hsl01/secret_man_goods.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
+##   rules: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
+##     (execution model: 0x4561d0 BOSS states and the 0x456c84 return table over 0x454e20)
 ##   rules: provisional
-##     (execution model, every behaviour reading and the initial menu trees —
+##     (behaviour readings the packet marks provisional and the initial menu trees —
 ##     docs/evidence_packets/static_reverse/town_event_semantics.md)
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 
@@ -326,15 +333,22 @@ static func resume(run: Dictionary, choice: Variant = null) -> Dictionary:
 	next["pending"] = null
 	match kind:
 		"select", "player_select":
+			# Phase 0xf／0x1e (0x455ef0): a row whose event is -1 (tePlayerSelect's「離開」,
+			# resumed as -1) ends the event; a known event replaces the running frame; event 0,
+			# an unknown id or no row continues past the token.
 			var options: Array = (pending as Dictionary).get("options", [])
 			var index := _choice_index(choice, options)
-			if index == -1:
+			var target := int((options[index] as Dictionary).get("event", 0)) if index != -1 else (-1 if _choice_event(choice) == -1 else 0)
+			if target == -1:
+				_record(next, _top_event(frames), -1, "resume", [str(index), "-1"], "end_event")
+				_end_event(next, frames)
+			elif index == -1:
 				_record(next, _top_event(frames), -1, "resume", [str(choice)], "invalid_choice")
+			elif target > 0 and _event_index(next["towndef"]).has(str(target)):
+				_record(next, _top_event(frames), -1, "resume", [str(index), str(target)], "jump")
+				frames[frames.size() - 1] = _frame(target)
 			else:
-				var target := int((options[index] as Dictionary).get("event", 0))
-				_record(next, _top_event(frames), -1, "resume", [str(index), str(target)], "push")
-				if target > 0:
-					_push_frame(next, target)
+				_record(next, _top_event(frames), -1, "resume", [str(index), str(target)], "continue")
 		"sub_menu":
 			var target := _choice_event(choice)
 			if target > 0:
@@ -405,8 +419,7 @@ static func _execute(run: Dictionary) -> void:
 		var tokens: Array = (index.get(str(event_code), {}) as Dictionary).get("events", [])
 		var pc := int(frame["pc"])
 		if pc >= tokens.size():
-			frames.pop_back()
-			_after_frame_pop(run, frames)
+			_end_event(run, frames)  # token 0: VM return 1
 			continue
 		var command: Dictionary = tokens[pc]
 		var name := str(command.get("token", ""))
@@ -418,8 +431,7 @@ static func _execute(run: Dictionary) -> void:
 			"pending_hold":
 				pass  # teCreateSubEventMenu stays parked until exit
 			"abort":
-				frames.pop_back()
-				_after_frame_pop(run, frames)
+				_end_event(run, frames)  # a condition's VM return 1 ends the whole event
 			"stop":
 				frames.clear()
 				run["done"] = true
@@ -427,20 +439,16 @@ static func _execute(run: Dictionary) -> void:
 				pass  # jump / push already adjusted the frames
 
 
-static func _after_frame_pop(run: Dictionary, frames: Array) -> void:
-	## Returning into a parked sub-menu re-opens it unless a descendant asked
-	## for teMenuMoveOut, in which case the menu token is passed.
-	if frames.is_empty():
-		return
-	var top: Dictionary = frames[frames.size() - 1]
-	if not bool(top.get("menu_open", false)):
-		return
-	if bool(top.get("menu_close", false)):
-		top["menu_open"] = false
-		top["menu_close"] = false
-		top["pc"] = int(top["pc"]) + 1
-		return
-	_open_sub_menu(run, top)
+static func _end_event(run: Dictionary, frames: Array) -> void:
+	## VM return 1 (the end token, a failed condition, a select row event -1): the town BOSS
+	## goes back to state 2 (0x4568b7 → 0x456c84 case 1), which slides the stone board in
+	## and lists the open sub-menu while flag 0x4000 stands, else the root menu. So every
+	## frame above the nearest parked sub-menu goes and that sub-menu re-opens; with none
+	## left the run is done.
+	while not frames.is_empty() and not bool((frames[frames.size() - 1] as Dictionary).get("menu_open", false)):
+		frames.pop_back()
+	if not frames.is_empty():
+		_open_sub_menu(run, frames[frames.size() - 1])
 
 
 static func _step(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
@@ -526,33 +534,31 @@ static func _te_create_shop(run: Dictionary, ctx: Dictionary, frame: Dictionary,
 
 static func _te_create_sub_event_menu(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
 	frame["menu_open"] = true
-	frame["menu_close"] = false
 	_open_sub_menu(run, frame)
 	_record(run, int(frame["event"]), pc, name, args, "pending")
 	return "pending_hold"
 
 
+## teMenuMoveOut (case 0x28): phase 0xe with 0x4c1d54 = 20 and VM return 4 — the BOSS slides
+## the stone board out (state 89) and waits the 20 ticks; flag 0x4000 is untouched, so an
+## open sub-menu re-opens when the event ends.
 static func _te_menu_move_out(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
 	(run["effects"] as Array).append({"kind": "menu_move_out"})
-	var frames: Array = run["frames"]
-	for offset in range(frames.size() - 1, -1, -1):
-		var candidate: Dictionary = frames[offset]
-		if bool(candidate.get("menu_open", false)):
-			candidate["menu_close"] = true
-			break
 	_record(run, int(frame["event"]), pc, name, args, "applied")
 	return "next"
 
 
+## teExecEvent (case 0x11 → 0x4556ea): a found event replaces the token pointer; event 0 or an
+## id 0x44e0e0 does not find continues past the token.
 static func _te_exec_event(run: Dictionary, ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
 	var target := _int_arg(args, 0)
-	_record(run, int(frame["event"]), pc, name, args, "jump")
 	if target > 0 and (ctx["index"] as Dictionary).has(str(target)):
+		_record(run, int(frame["event"]), pc, name, args, "jump")
 		var frames: Array = run["frames"]
 		frames[frames.size() - 1] = _frame(target)
 		return "jump"
-	(run["effects"] as Array).append({"kind": "check_failed", "token": name, "reason": "unknown_event", "event": target})
-	return "abort"
+	_record(run, int(frame["event"]), pc, name, args, "continue")
+	return "next"
 
 
 static func _te_select_insert_event(run: Dictionary, _ctx: Dictionary, frame: Dictionary, name: String, args: Array, pc: int) -> String:
@@ -1301,21 +1307,14 @@ static func _state_error(state: Dictionary, town_id: int) -> String:
 
 
 static func _frame(event_code: int) -> Dictionary:
-	return {"event": event_code, "pc": 0, "menu_open": false, "menu_close": false}
+	return {"event": event_code, "pc": 0, "menu_open": false}
 
 
+## A sub-menu child runs above its parked menu frame (the only push: selects and jumps
+## replace the running frame).
 static func _push_frame(run: Dictionary, event_code: int) -> void:
-	## Inserted frames replace exhausted, non-menu frames beneath them (every
-	## TOWNDEF select is the last token of its event), so data cycles such as the
-	## 命運神殿 ritual (71 -> 61 -> 71 ...) do not grow the stack.
 	var frames: Array = run["frames"]
 	var index := _event_index(run["towndef"])
-	while not frames.is_empty():
-		var top: Dictionary = frames[frames.size() - 1]
-		var tokens: Array = (index.get(str(int(top["event"])), {}) as Dictionary).get("events", [])
-		if bool(top.get("menu_open", false)) or int(top["pc"]) < tokens.size():
-			break
-		frames.pop_back()
 	if frames.size() >= MAX_DEPTH:
 		run["error"] = "depth_limit"
 		run["done"] = true

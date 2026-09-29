@@ -1,12 +1,12 @@
 # 城镇事件（TOWNDEF te token）读法表
 
-> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x4264a0, 0x42caa0, 0x434680, 0x434770, 0x4348f0, 0x4546c0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-28
+> evidence: provisional; resource-derived; static-derived: 带地址的读法 · status: live · functions: 0x414280, 0x4264a0, 0x42caa0, 0x434680, 0x434770, 0x4348f0, 0x4545e0, 0x454610, 0x454690, 0x4546c0, 0x454720, 0x454740, 0x454760, 0x4547a0, 0x4547f0, 0x454870, 0x4548b0, 0x454950, 0x4549e0, 0x454a20, 0x454ae0, 0x454cd0, 0x454db0, 0x454e20, 0x456150, 0x4561d0, 0x45e80d, 0x45e882 · tools: hsltools/checks/function_catalog.py, hsltools/data/town_initial_trees.py, run_town_event_rules_tests.gd · updated: 2026-09-29
 
 ## 结论
 
 - 原版 TOWNDEF 的 te token 名、参数顺序、事件表与脚本引用可从资源读出；带地址的条目（teCheckMoney、teCheckItemExecEvent、teCheckTEExist、teCheckJobUp 失败链、teAppearSecretMan、teSecretManBuyThing、tePlayerSelectInsertEvent 的选人名单与「離開」行、消息与延时的时钟、初始菜单树）已由 `0x454e20` 等静态阅读确认（resource-derived；static-derived）。
 - 重制 `game/sim/TownEventRules.gd`（无状态 te 解释器）与 `content/world/town_initial_trees.json` 按此实现，执行记录的 `provisional` 字段引用本表 `town_event_semantics:<te token>`。
-- 其余 token 的行为、帧栈与子菜单重开是重制读法（provisional，差异清单 `town-event-timing`）。
+- 执行模型已由静态阅读确认（static-derived，下文「执行模型」）：单指针 VM 的返回码由城镇 BOSS 对象 740（`0x4561d0`）的状态机经跳表 `0x456c84` 分派，子菜单靠一个旗标 `0x4000` 重开与退出，选择行与 teExecEvent 找到事件就跳转、不回来，事件末与条件失败同回最近的子菜单或根菜单，石纹板只在列菜单时在屏上、选择与 teDelay 期间不动。其余不带地址的 token 行为仍是重制读法（provisional，差异清单 `town-event-timing`）。
 
 ## 证据
 
@@ -22,11 +22,74 @@ VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主�
 
 | token | 原实现 | 重制 |
 | --- | --- | --- |
-| tePlayerMessage 5／teShapeMessage 7 | 置消息标志为 1、`0x4072b0` 建消息、`0x414220(msg, 位, if_wait, 头像)`（位：player 0／shape 1 → 消息对象 `+0x80` 的 `0x4000`；if_wait → `0x2000`），阶段 5／7；此后每次调用只查标志，**标志清零（消息关掉）才回阶段 0**，下一次调用才执行下一 token | 每句等确认（与 if_wait 无关，与原版同）；`0x2000` 位在消息对象里的作用未读 |
+| tePlayerMessage 5／teShapeMessage 7 | 置消息标志为 1、`0x4072b0` 建消息、`0x414220(msg, 位, if_wait, 头像)`（位：player 0／shape 1 → 消息对象 `+0x80` 的 `0x4000`；if_wait → `0x2000`），阶段 5／7；此后每次调用只查标志，**标志清零（消息关掉）才回阶段 0**，下一次调用才执行下一 token。if_wait≠0（`0x2000`）的框末页不收确认、等同一标志被别处清零才收起（`0x41470a`，[原作对白框](original_dialogue_board.md)「if_wait 位」）；VM 也停着等这个标志，能清它的 teDelete*Message 执行不到——TOWNDEF 453 句的 if_wait 全为 0 | 每句等确认（与原版 if_wait 0 同）；if_wait 位不实现（TOWNDEF 不用） |
 | teDelay 14 | `0x4c1d54 = N`、阶段 0xe；阶段 0xe 每次调用减一，减到 ≤0 那次只复位阶段，**下一 token 在 teDelay 后第 N+1 次调用执行** | 无对白板停 (N+1)×16 ms（`TownRuntime._hold`）；玩家输入不跳过，脚本化 `confirm()` 可跳过（测试用） |
 | teMenuMoveOut 40 | 阶段 0xe、`0x4c1d54 = 0x14`，返回 4 | 同 teDelay 停 20 tick |
 | tePlaySound 28 | `0x42c180(wav, 0)`：音效开关 `0x4c1af4` 开且 `0x477c20` 非零时即播，不等待，同一次调用继续 | 照原版：`0x455710` 调用；三个 WAV（WALK0016／OPEN0001／MOVE0001）由 `tools/hsltools/assets/town_assets.py` 导入 `town_sounds/`，`TownRuntime._play_sound` 当场播放 |
 | teDeletePlayerMessage 6／teDeleteShapeMessage 8 | 把对应消息标志清零 | 只记录（每句已等确认关板） |
+
+### static-derived：执行模型——城镇 BOSS 对象 740（r2 反汇编 `0x4561d0`，未执行）
+
+城镇画面由对象 740（WINDOW70 石纹板，`0x456150` 建，初始 x −260 在屏外）的过程 `0x4561d0` 驱动：参数 −1 为绘制，`0x4561e8` 只在 `+0x30` 为 −1 时不画——`+0x30` 是通用形状字，只有城外调用者经 `0x45e525`／`0x45e554` 写，城镇代码不写，所以板在每个状态都照画，离开画面只靠滑到屏外。其余调用按 `+0x8c` 状态走（跳表 `0x456be0`／索引 `0x456c24`）。VM `0x454e20` 只有一个 token 指针 `+0x38` 与阶段字，没有调用栈；子菜单只靠 BOSS 的旗标 `0x4000` 与续点 `0x4c27d4`。
+
+| 状态 | 行为 | 地址 |
+| --- | --- | --- |
+| 0 | 载 TOWNBG → 1 | — |
+| 1 | 淡入；完 → 2，`0x454720` 查到进城 exec 事件则 → 80 | — |
+| 2 | 板经 `0x45e882`（参数 40）滑到 (60,60)，到位 → 3 | `0x45671d` |
+| 3 | `+0x88 = 0`；`0x4000` 未置时 `+0x98 = −1`；→ 4 | — |
+| 4 | 菜单：更新悬停行 `+0x9a`（鼠标不在板上为 0xffff）；左键（`0x4c6398 & 0x10000`）→ 音效 398、状态 5。右键／Esc：子菜单模式清 `0x4000`、`+0x38 = [0x4c27d4]`、`+0x98 = 0`、进状态 5 并当场调 VM；根菜单模式 → 6，`0x454760` 查到离城事件则 → 70 | `0x45630f` |
+| 5 | 调 VM（`0x4568a1`），返回码经 `0x4568b7` 的跳表 `0x456c84` 分派（下表） | `0x4568a1` |
+| 6／90 | 板经 `0x45e80d`（参数 4、20）滑到 x −260，到位 → 状态＋1 | `0x456b2f` |
+| 7 → 8 → 9 | 淡出、注销 | — |
+| 70 → 71 → 72 | 板滑出（`0x456a17`）；72 调 VM(−2,−2) 跑离城事件 | `0x456a83` |
+| 80 → 81 | 81 调 VM(−1,−1) 跑进城事件，只理返回 1（→ 2） | `0x456ad6` |
+| 89 | 板滑出，到位 → 5 | `0x456af8` |
+| 91／92 | 商店（`0x42a9d0`、`0x42ab40`）开着；关了 → 5 | — |
+
+| VM 返回 | 何时 | BOSS 去向 | 地址 |
+| --- | --- | --- | --- |
+| 0 | 选择窗开着（阶段 0xf／0x1e）、teDelay／teMenuMoveOut 计数（0xe）、消息等关板（5／0xc／7）、停在阶段 0xd | 留在状态 5，下次再调 | — |
+| 1 | 事件末（token 0）；「结束事件」的条件（teCheckTEExist event 0、teCheckJobUp fail −1、选择行事件 −1、teCheckMoney 不足那句关掉后） | 状态 2 | `0x4568cd` |
+| 2 | teCreateSubEventMenu（case 10，`0x4c27d4` ← token 后的指针） | 置 `0x4000` → 状态 2 | `0x4568be` |
+| 3 | teCreateShop | 状态 90 | `0x4568db` |
+| 4 | 建消息（tePlayerMessage／teShapeMessage、teCheckJobUp 失败句、teCheckMoney 不足提示、显示的 teGetGold）、teMenuMoveOut（case 0x28：阶段 0xe、20 tick）；只有 `0x4551ed`（teMenuMoveOut）与 `0x45561a`（消息尾）写 4 | 状态 89 | `0x45691d` |
+| 5 | 消息关掉且下一 token 是 0 | 状态 2 | `0x456ae9` |
+| 其他 | — | 不理，留在状态 5 | — |
+
+推论：
+
+- 子菜单：返回 2 后状态 2 列出所点根行（`+0x98`）的 children（`0x454610`）；点子项 → 状态 5 从子项事件起跑；子项链结束（返回 1／5）→ 状态 2，`0x4000` 还在，所以子菜单重开；右键／Esc 清 `0x4000`、指针回 `0x4c27d4`，当场接着跑 teCreateSubEventMenu 之后的父事件尾巴，尾巴结束 → 状态 2 列根菜单。
+- teMenuMoveOut 不碰 `0x4000`：只让板滑出 20 tick，当前链结束后子菜单照样重开、板滑回。
+- 条件失败与事件末同为返回 1：子菜单模式回子菜单，否则回根菜单；没有「回到父链」。
+- 跳转不回来：teExecEvent（case 0x11 → `0x4556ea`）目标 0 或查不到越过 token 继续，否则指针换到目标事件；选择（阶段 0xf／0x1e 的 `0x455ef0`）窗口结果 −2 等待、−1 越过 token，所选行事件 −1 返回 1、0 或查不到越过 token、找到则指针换到该事件。
+- teSetNextPlayLevelEvent（case 0xd）停在阶段 0xd，VM 没有这一阶段的处理，此后每次返回 0，BOSS 停在状态 5。
+
+石纹板在各阶段：
+
+| 阶段 | 石纹板 | 地址 |
+| --- | --- | --- |
+| 进城 exec 事件（状态 80／81） | 不在屏上（建时 x −260，还没滑入过） | `0x456150` |
+| 列根菜单／子菜单（状态 2 → 4） | 滑入 (60,60)；根行 `0x4545e0`、子菜单行 `0x454610`，每帧照树现画 | `0x45671d` |
+| 消息、teCheckMoney 不足、显示的 teGetGold、teMenuMoveOut（返回 4） | 状态 89 滑出，下次列菜单才回来 | `0x456af8` |
+| 选择、teDelay（返回 0） | 不动：在屏上就照画，行照画；只在状态 4 收点击；悬停行 `+0x9a` 在任何状态都画绿，所以点过的行在选择期间仍是绿的 | `0x45630f` |
+| teCheckJobUp／teCheckJobUp2 成功（返回 0） | 不动。token 成功段（`0x455cd8`）置阶段 0x1f 后不写返回值；阶段 0x1f（`0x455f20` → 表 `0x45613c`）子阶段 1（`0x455f4e`）建 1354 称号句（`0x4072b0`）并经 `0x414220` 挂脸图，子阶段 0／2 等 `[0x4c1d54]` 清零、3 回阶段 0，全程返回 0，BOSS 留在状态 5。TOWNDEF 事件 61–68、79、80 都在 teCheckJobUp 前放一句 tePlayerMessage（返回 4），板在称号句出现前已滑出 | `0x455f4e` |
+| 商店（返回 3） | 状态 90 滑出 | `0x456b2f` |
+| 离城（状态 6／70） | 滑出 | `0x456b2f`、`0x456a17` |
+
+### static-derived：菜单树 `[0x4c1d74]`
+
+每镇 0x108 字节：8 个 0x20 字节节点槽（dword 0＝节点事件，dword 1–7＝children），`+0x100`／`+0x102`（word）为进城／离城 exec 事件（读 `0x454720`／`0x454760`；`0x454740` 写进城事件）。根菜单行＝各槽节点，子菜单行＝所点节点的 children，只有两层。
+
+| 操作 | 原版 | 地址 |
+| --- | --- | --- |
+| 查节点 | 只在 8 个槽里找 | `0x454690` |
+| AddTE num=0 | 节点不在则放进第一个空槽；8 槽满则不加 | `0x4547a0` |
+| AddTE num>0 | 逐个 child：先确保节点（`0x4547a0`），再追加 child，已有不重复，至多 7 个 | `0x454870` → `0x4547f0` |
+| DeleteTE num=0 | 删该节点槽，后面的槽前移（`+0x100` 的 exec 事件先存后还） | `0x4548b0` |
+| DeleteTE num>0 | 逐个 child 从节点的 children 删去并前移；随后首个 child 槽为 0（没有 child 了）就删掉节点 | `0x454950`、`0x4549e0` |
+
+TOWNDEF 的 teAddSelfTE／teAddTE／teDeleteSelfTE／teDeleteTE 与 PAK 全部 STORY／winfail 的 actAddTE／actDeleteTE 都不触及容量上限、不删空节点、不对非根节点做 AddTE。
 
 ### resource-derived 结构与解释器读法：token 表
 
@@ -82,21 +145,20 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 
 ## 重制接线
 
-### 重制：执行模型（provisional）
+### 重制：执行模型
 
-替换证据：hsl01.exe 城镇脚本 VM（te dispatcher）的静态分析，或原作单镇菜单的有界单步采样。不支持的结论：原版是否有帧栈、
-菜单是否在子项后重开、条件失败是否退回菜单、离开城镇的时机——以下每行只描述解释器当前行为。
+`TownEventRules` 照上文「执行模型」实现，`TownRuntime` 的石纹板照「石纹板在各阶段」显隐（`_board_in`）；下表只列重制的表示方式与未照做处。
 
-| 项 | 读法 | 依据／替换证据 |
+| 项 | 重制 | 与原版 |
 | --- | --- | --- |
-| run／frame | `begin_event` 建立帧栈逐 token 执行；`resume(run, choice)` 处理 pending | 重制模型；替换证据为 EXE 城镇脚本 VM |
-| teExecEvent | 跳转：替换当前帧 | TOWNDEF 19 处全部为事件末 token，跳转与调用不可区分 |
-| teSelectInsertEvent／tePlayerSelectInsertEvent | pending `select`／`player_select`；选项事件作为插入帧运行，结束后回到父链 | 20 处全部为末 token；两种都开对象 704 选择窗（`0x4264a0`），tePlayerSelect 只列 `0x42caa0` 判为在队、且 `[mode]` 1／2 按成员 `+0x134` 转职位通过的成员（至多 9 行），再追加「離開」行（event −1 结束事件）（static-derived，[original_world_town 实录](../runtime_observations/original_world_town/README.md)「select 选择窗」「tePlayerSelect 名单过滤」）；重制照做 |
-| teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项结束后重开菜单，`exit` 或 teMenuMoveOut 后越过该 token | 13 处；重开行为为重制读法 |
-| teMenuMoveOut | 标记最近的打开菜单在当前链结束时关闭 | 仅事件 96 使用 |
-| 条件失败 | 只中止当前帧（回到父菜单） | 重制读法 |
-| teSetNextPlayLevelEvent | 记录 `next_level_event` 并结束 run（离开城镇） | 6 处全部为末 token |
-| 尾帧消除 | 插入帧前弹出已执行完且非菜单的帧 | 使 命運神殿 儀式 71→61→71 数据环不增长栈 |
+| run／frame | `begin_event` 建 run，存停放的子菜单帧＋一个运行帧；`resume(run, choice)` 处理 pending | 原版单指针＋`0x4000`／`0x4c27d4`；TOWNDEF 的子菜单都由根行事件自己开、不嵌套，两者走法相同 |
+| teExecEvent／选择行 | 找到事件就替换运行帧；0 或找不到越过 token；选择行事件 −1 结束事件 | 同 |
+| teCreateSubEventMenu | pending `sub_menu`，子项＝树中该事件的 children；每个子项链结束后重开；`exit` 越过该 token 跑父事件尾巴 | 同 |
+| teMenuMoveOut | 只出 `menu_move_out`（停 20 tick、板滑出），子菜单照常重开 | 同 |
+| 事件末／条件失败 | 弹到最近的停放子菜单并重开，否则 run 结束、列根菜单 | 同 |
+| teSetNextPlayLevelEvent | 记录 `next_level_event` 并结束 run（离开城镇） | 原版停在阶段 0xd；之后由谁带出城未读（边界） |
+| 石纹板 | 显隐照上表；滑入滑出没有动画；行是列菜单时的快照；选择期间点过的行不保持绿色 | 差异清单 `town-layout-extras` |
+| 菜单树 | `towns[*].tree` 字典：num=0 删除连子树、删 child 连它自己的节点、删空的节点保留、不设 8／7 上限、AddTE 在整棵树里找 parent | 与 `0x4547a0`–`0x4549e0` 不同，数据不触发（上文） |
 
 ### 重制：解释器读法字符串
 
@@ -104,16 +166,16 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 
 | te token | evidence | 读法（原文） |
 | --- | --- | --- |
-| teAddSelfTE | provisional | AddTE `[parent][num][children]`: num = 0 appends the parent node itself to the root; num > 0 ensures the parent node (root if absent) and appends the children |
-| teAddTE | provisional | AddTE `[parent][num][children]`: num = 0 appends the parent node itself to the root; num > 0 ensures the parent node (root if absent) and appends the children |
-| teDeleteSelfTE | provisional | DeleteTE `[parent][num][children]`: num = 0 removes the parent node and its subtree; num > 0 removes the listed children |
-| teDeleteTE | provisional | DeleteTE `[parent][num][children]`: num = 0 removes the parent node and its subtree; num > 0 removes the listed children |
-| teExecEvent | provisional | jump: the current frame is replaced (every TOWNDEF use is the last token) |
-| teSelectInsertEvent | provisional | the chosen event runs as an inserted frame; the parent continues afterwards (every TOWNDEF use is the last token) |
+| teAddSelfTE | static-derived; provisional | static-derived (0x4547a0, 0x454870 → 0x4547f0): num = 0 adds the parent node to the root; num > 0 ensures the parent node (root if absent) and appends each child not yet listed; provisional: the original's 8-node／7-child capacity is not modelled and the parent is looked up in the whole tree, not only the root slots (no data reaches either) |
+| teAddTE | static-derived; provisional | static-derived (0x4547a0, 0x454870 → 0x4547f0): num = 0 adds the parent node to the root; num > 0 ensures the parent node (root if absent) and appends each child not yet listed; provisional: the original's 8-node／7-child capacity is not modelled and the parent is looked up in the whole tree, not only the root slots (no data reaches either) |
+| teDeleteSelfTE | static-derived; provisional | static-derived (0x454950): num > 0 removes the listed children; provisional: num = 0 also drops the node's subtree, a removed child's own node goes too and an emptied node stays (the original's 0x4548b0 removes only the root slot and 0x4549e0 drops a node once its children are gone; no data tells them apart) |
+| teDeleteTE | static-derived; provisional | static-derived (0x454950): num > 0 removes the listed children; provisional: num = 0 also drops the node's subtree, a removed child's own node goes too and an emptied node stays (the original's 0x4548b0 removes only the root slot and 0x4549e0 drops a node once its children are gone; no data tells them apart) |
+| teExecEvent | static-derived | static-derived (case 0x11 → 0x4556ea): a known target replaces the running frame (jump, no return); target 0 or an unknown id continues past the token |
+| teSelectInsertEvent | static-derived | static-derived (phase 0xf, 0x455ef0): the chosen row's event replaces the running frame (jump, no return); row event −1 ends the event (VM return 1); 0 or an unknown id continues past the token |
 | tePlayerSelectInsertEvent | provisional | options record every candidate with in_party; `listed` keeps the in-party ones whose job_up_flags pass mode 1／2 (0x4557ad), at most nine; the runtime lists those plus the 離開 row (event −1 ends the event) |
 | teCreateShop | provisional | shop goods = the owning town_event's item_code list; buying/selling is the caller's transaction |
-| teCreateSubEventMenu | provisional | children = tree[this event]; the menu re-opens after each child until exit or teMenuMoveOut |
-| teMenuMoveOut | provisional | closes the enclosing sub-menu once the current chain ends |
+| teCreateSubEventMenu | static-derived | static-derived (case 10 → VM return 2 → 0x4568be flag 0x4000, BOSS states 2／4): children = tree[this event]; the sub-menu re-opens after each child's chain ends (VM return 1 with 0x4000 still set); exit (right click／Esc) clears 0x4000 and runs on after the token (0x4c27d4) |
+| teMenuMoveOut | static-derived | static-derived (case 0x28 → VM return 4 → state 89, 0x456af8): a 20-tick hold that slides the stone board out; the sub-menu stays open and re-opens once the chain ends |
 | teCheckMoney | static-derived | static-derived (0x4555a5/0x455627): sufficient gold is deducted at once and the event continues; insufficient gold deducts nothing, shows the shape message and ends the event (VM return 1) |
 | teCheckPlayerExist | static-derived | static-derived (0x454e20): this VM only advances past the opcode — no check, no argument read |
 | teCheckItemExist | static-derived | static-derived (0x454e20): this VM only advances past the opcode — no check, no argument read |
@@ -123,7 +185,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | teCheckJobUp2 | static-derived; provisional | static-derived (0x454e20 case 0x20): same condition and merge with flag 0x40000000; afterwards 0x434680 applies the 兩棲族部落 writes once both 雷歐納德 and 緹娜 have job-up code 0 (provisional: resulting menu not observed natively) |
 | teSecretManBuyThing | static-derived | static-derived (0x454e20 case 0x27, original_secret_man.md): row = secret_man_goods[secret_man_index]; gold < price → face message [fail msg] then jump to [fail event] (0 continues); else deduct, grant items[rand(n)] (positional over the non-zero slots) like teGetItem, counter += 1 while < 8 |
 | teGetGold | provisional | bit 31 of [number] is the display flag, the low 31 bits the amount |
-| teSetNextPlayLevelEvent | provisional | ends the run (leaving town); the caller consumes next_level_event |
+| teSetNextPlayLevelEvent | static-derived; provisional | static-derived (case 0xd): the VM parks in phase 0xd, which has no handler, so nothing after it runs; provisional: the run ends here (leaving town) and the caller consumes next_level_event — what takes the original out of town was not read |
 | teBMSetPointEventNotVisit | provisional | same point_events / type write as teBMSetPointEvent but leaves the Visit bit alone (its handler was not executed; teBMSetPointEvent itself is static-derived 0x426c70) |
 | teSetBMWalkToPoint | static-derived | writes state.pending_walk {from, to}; the world-map runtime sets from (unless 49) as the current point, then walks the 0x427070 route to to like a click (0x45543a, 0x42f7a4, 0x427723) |
 | teAppearSecretMan | static-derived; provisional | static-derived mechanism (0x454db0): undecided cache → strict rand(100)+1 < ratio adds the table event (`content/generated/hsl/static/hsl01/secret_man_goods.json` rows[index].event, the 0x479398 table) under the tavern event and caches it, a failed roll caches -1 (no re-roll), [mode] != 0 forces; the table index is the purchase counter 0x4c1bd4 (secret_man_index: zeroed by the new-game initialiser 0x42ca70, +1 per teSecretManBuyThing purchase, so 0 → 123 first; original_secret_man.md); provisional: the default ratio (DEFAULT_SECRET_APPEAR_RATIO) is not established |
@@ -142,5 +204,7 @@ TOWNDEF 没有城镇归属字段；EXE 的初始树由 `0x454a20` 逐项建立�
 | 神秘商人 | 机制、表索引推进与 BuyThing 价格／货物已静态确认（上表、[original_secret_man](original_secret_man.md)）；默认 ratio 与缓存重置点未证 | secret man 设定入口 |
 | 商店定价／买卖 | 标价买入、卖价 price×50÷100、重要物品拒收与消息 606／607 已由[原作商店交易](original_shop_transaction.md)静态确认；买入先进手持槽 `0x4c1ce4` 再点背包格放下（`0x42923b`）也已静态确认并照做（同包「结论」） | 手持放置的原版实拍已有两帧，满包互换无样本 |
 | teBMSetPointEventNotVisit 与 visited | 与 teBMSetPointEvent 的差别只在名字 | 大地图 handler |
-| 子菜单重开／退出 | 每个子项后是否回到菜单、如何退出 | 菜单 handler 或原作单步采样 |
-| 消息 if_wait 位 | 消息都等关板、teDelay N＝N+1 tick 已读；if_wait 位 `0x2000` 在消息对象里的作用未读 | 消息对象过程读 `+0x80 & 0x2000` 的分支 |
+| 子菜单嵌套与跳入的子菜单 | 原版只有一个 `0x4000`／`0x4c27d4`，子菜单行取所点根行 `+0x98` 的 children；子菜单里再开子菜单、跳转到的事件开子菜单、进城 exec 事件里开子菜单（状态 81 不理返回 2）都不在 TOWNDEF 里 | —（数据不触发） |
+| 离城接手 | teSetNextPlayLevelEvent 之后 VM 停在阶段 0xd、BOSS 停在状态 5；谁把画面带出城未读 | 读 next level event 全局的读者 |
+| 选择窗与石纹板叠放 | 石纹板 238×264 在 (60,60)，选择窗 BOARD02 上缘 y 320，两者在 y 320–324 重叠 4 px；704 与 740 的绘制先后未读 | 引擎绘制链表次序 |
+| 消息 if_wait 位 | 已读（见上文消息表与[原作对白框](original_dialogue_board.md)）；if_wait≠0 的城镇消息按静态读法会一直停着，TOWNDEF 453 句全为 0 | —（数据不用） |

@@ -924,13 +924,14 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；战斗侧 actSelectInsertEvent 已改用同一选择窗（lane BATTLESELECT，0x451f2b）；剩选择期间石纹板隐藏是重制读法",
-      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1，mode 1 跳过 +0x134&0xc0000000、mode 2 只留 0x80000000 无 0x40000000（0x4557e5／0x4557fb）；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；战斗侧 actSelectInsertEvent 已改用同一选择窗（lane BATTLESELECT，0x451f2b）；石纹板显隐已照 BOSS 状态机 0x4561d0（lane TOWNMENU3：消息／teMenuMoveOut／商店／离城滑出，列根菜单或子菜单才滑回，选择与 teDelay 期间不动、行照画）；剩板滑入滑出不做动画、选择期间原版仍把点过的行画绿（+0x9a）、重制自加的旁白行（获得／交出物品、不显示的 teGetGold）也滑出板（原版无旁白、板不动）",
+      "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1，mode 1 跳过 +0x134&0xc0000000、mode 2 只留 0x80000000 无 0x40000000（0x4557e5／0x4557fb）；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽；0x4561d0 城镇代码不写 +0x30，板靠 0x45e80d 滑到 x −260（状态 89／90／6／70）、0x45e882 滑回 (60,60)（状态 2），悬停行 +0x9a 各状态都画绿",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
-        "docs/evidence_packets/static_reverse/original_dialogue_board.md"
+        "docs/evidence_packets/static_reverse/original_dialogue_board.md",
+        "docs/evidence_packets/static_reverse/town_event_semantics.md"
       ],
-      "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；选择期间石纹板隐藏是重制补充",
+      "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；石纹板显隐照原版（_board_in），滑动动画与选择期间行保持绿色未做",
       "remake_code": [
         "game/sim/TownEventRules.gd",
         "game/world/TownRuntime.gd"
@@ -942,8 +943,8 @@
     },
     {
       "id": "town-event-timing",
-      "difference": "城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；tePlaySound 已照原版当场放声（lane WORLDTOWN：0x455710→0x42c180，三个 WAV 已导入）；剩 if_wait 位的作用未读、选择／子菜单的菜单读法暂定",
-      "original": "0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 分支 0x455710 调 0x42c180 即播不等；消息对象 0x2000 位与子菜单重开未读",
+      "difference": "城镇事件的消息与延时已照原版（lane TOWNMAP）：每句等关板、teDelay N 无对白板停 N+1 tick、teMenuMoveOut 停 20 tick；tePlaySound 已照原版当场放声（lane WORLDTOWN：0x455710→0x42c180，三个 WAV 已导入）；执行模型已照 BOSS 状态机 0x4561d0 与返回表 0x456c84（lane TOWNMENU3）：子项链结束后子菜单重开，右键／Esc 退出后接着跑父事件尾巴，选择行与 teExecEvent 找到事件即跳转不回、0／找不到越过，事件末与条件失败同回最近的子菜单或根菜单，teMenuMoveOut 只滑出石纹板；if_wait 位 0x2000（末页等标志归零）TOWNDEF 不用、不实现；剩菜单树 8 节点／7 child 容量与删空节点即删未照做（数据不触发）",
+      "original": "0x454e20 已读：消息阶段 5／7 等消息标志清零、teDelay 阶段 0xe 每调用减一、teMenuMoveOut 20、tePlaySound 分支 0x455710 调 0x42c180 即播不等；0x4561d0 状态 5 调 VM、0x4568b7 按 0x456c84 分派返回 1／5→状态 2、2→置 0x4000、3→商店、4→板滑出；状态 4 右键清 0x4000 接 0x4c27d4；0x4556ea／0x455ef0 跳转；0x414280 的 0x2000 让末页等标志归零；树 0x4547a0–0x4549e0",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/town_event_semantics.md"
       ],
@@ -2409,9 +2410,6 @@
     "provenance:game/world/TownRuntime.gd|layout|provisional|": {
       "item": "town-layout-extras"
     },
-    "provenance:game/world/TownRuntime.gd|layout|remake-invented|": {
-      "item": "town-layout-extras"
-    },
     "provenance:game/world/TownRuntime.gd|rules|provisional|": {
       "item": "town-event-timing"
     },
@@ -2855,14 +2853,6 @@
     "provenance:game/battle/scene/BattleDropLightningPresentation.gd|layout|provisional|": {
       "item": "drop-lightning-presentation"
     },
-    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#413a7dbce4": {
-      "item": "town-event-timing",
-      "text": "if_wait 位 `0x2000` 在消息对象里的作用未读"
-    },
-    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193": {
-      "item": "town-event-timing",
-      "text": "`0x2000` 位在消息对象里的作用未读"
-    },
     "provenance:game/settings/GameSettings.gd|rules|provisional|": {
       "item": "settings-volume-mixer"
     },
@@ -2906,10 +2896,6 @@
     },
     "scope:docs/evidence_packets/static_reverse/original_world_town.md|negative-evidence|独立默认 level 表、路线红白插值、买卖 handler 执行回执": {
       "item": "town-event-timing"
-    },
-    "sentence:docs/evidence_packets/static_reverse/original_world_town.md#643c1d19ff": {
-      "item": "town-event-timing",
-      "text": "if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。"
     },
     "scope:docs/evidence_packets/static_reverse/original_exec_mode_sys_arrive.md|provisional|同一时钟种子选中哪一组": {
       "item": "winfail-readings"
@@ -3248,6 +3234,18 @@
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#de927b7b5f": {
       "item": "draw-depth-states",
       "text": "defProcEffectProcess1／defProcFireSmoke／defProcScreenFlash 等过程是否改写 +0xc 未读；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_world_town.md#7d9a4dd2b5": {
+      "item": "town-event-timing",
+      "text": "全转职成功链、secret 阈值的所有设定入口未读（消息 if_wait 位已读，见[城镇事件读法表](town_event_semantics.md)消息表）。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#c1638643b1": {
+      "item": "town-event-timing",
+      "text": "谁把画面带出城未读"
+    },
+    "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#c3bb21cc09": {
+      "item": "town-layout-extras",
+      "text": "704 与 740 的绘制先后未读"
     }
   }
 }
