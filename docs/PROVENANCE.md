@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (202 modules, 134 remake-invented cells, 58 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (202 modules, 134 remake-invented cells, 57 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (202)
 
@@ -272,7 +272,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TownRuntime](../game/world/TownRuntime.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md); provisional | resource-derived [town_portraits.json](../content/imported/hsl/global/world_map/town_portraits.json); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [original_dialogue_board.md](../docs/evidence_packets/static_reverse/original_dialogue_board.md); static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); provisional; resource-derived [protected_words.json](../content/generated/hsl/text/protected_words.json); static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md) | resource-derived [town_messages.json](../content/imported/hsl/global/world_map/town_messages.json); resource-derived [towndef.json](../content/imported/hsl/global/world_map/towndef.json); static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); static-derived [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); provisional | static-derived [town_event_semantics.md](../docs/evidence_packets/static_reverse/town_event_semantics.md); resource-derived [town_sounds.json](../content/imported/hsl/global/world_map/town_sounds.json); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [TownShopScreen](../game/world/TownShopScreen.gd) | n/a | static-derived [original_getitem_window.md](../docs/evidence_packets/static_reverse/original_getitem_window.md); static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); remake-invented | resource-derived [RESOURCE.TXT](../content/imported/hsl/chapter01/source_texts/RESOURCE.TXT); resource-derived [town_messages.json](../content/imported/hsl/global/world_map/town_messages.json) | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md) | static-derived [original_storage_window.md](../docs/evidence_packets/static_reverse/original_storage_window.md) |
 | [WorldMapRules](../game/world/WorldMapRules.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json) | n/a | n/a |
-| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); provisional | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
+| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); resource-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md) | resource-derived [world_map.json](../content/imported/hsl/global/world_map/world_map.json); runtime-measured [original_world_town/README.md](../docs/evidence_packets/runtime_observations/original_world_town/README.md); static-derived [original_growth_window.md](../docs/evidence_packets/static_reverse/original_growth_window.md); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); remake-invented | static-derived [original_world_town.md](../docs/evidence_packets/static_reverse/original_world_town.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
@@ -413,11 +413,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [PartyEquipmentScreen](../game/world/PartyEquipmentScreen.gd) | strings | the no-sandbox failure lines |
 | [TownRuntime](../game/world/TownRuntime.gd) | strings | narration lines for gold／item grants, OPT-GUIDE=提示 only, except a displayed teGetGold |
 | [TownShopScreen](../game/world/TownShopScreen.gd) | layout | no ↓ mark; magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are not read; slide side by node name／centre x; close = last-frame snapshot |
-| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | layout | not-remade card; point name labels only under OPT-GUIDE=提示 |
+| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | layout | not-remade card; current and reachable point names under OPT-GUIDE=提示 |
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (58)
+### provisional 疑点 (57)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -479,19 +479,18 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [TownRuntime](../game/world/TownRuntime.gd) | rules | — | a scripted confirm() cuts a hold |
 | [TownRuntime](../game/world/TownRuntime.gd) | layout | — | job-up and narration lines on the bottom board |
 | [TownRuntime](../game/world/TownRuntime.gd) | timing | — | the stone menus have no clock of their own |
-| [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | rules | — | the glide uses the battle step 32 |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | rules | — | token semantics are TownEventRules' readings — docs/evidence_packets/static_reverse/town_event_semantics.md |
 
 ### 计数（标签 × 维度）
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 31 | 73 | 42 | 10 | 29 | 185 |
-| static-derived | 259 | 116 | 19 | 122 | 25 | 541 |
+| resource-derived | 32 | 73 | 42 | 10 | 29 | 186 |
+| static-derived | 259 | 117 | 19 | 122 | 25 | 542 |
 | runtime-measured | 17 | 32 | 3 | 16 | 2 | 70 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 29 | 14 | 0 | 13 | 2 | 58 |
+| provisional | 28 | 14 | 0 | 13 | 2 | 57 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
 | remake-invented | 55 | 32 | 33 | 13 | 1 | 134 |

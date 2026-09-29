@@ -17,19 +17,22 @@ extends Node2D
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
-##     (reveal order, dropped clicks, walker member and shape: walker 0x427420)
-##   rules: provisional (the glide uses the battle step 32)
+##     (reveal order, dropped clicks, walker 0x427420; glide step 0x20; Town re-pick Visit 0x4277e0)
+##   rules: resource-derived docs/evidence_packets/static_reverse/original_world_town.md
+##     (glide step 0x20: level049 EVEF places no obj 1 defProcBattleBOSS, setter 0x408229)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (status bar subtracted, text rows, grid lines visible; walker at battle size, frame 01)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_font_script/README.md
 ##     (point name: FONT.15 white over 0x8430 at (+1,+1), x − 8·(bytes/2), y − 25 — 0x427df0 → 0x427e99／0x427ee0)
-##   layout: remake-invented (not-remade card; point name labels only under OPT-GUIDE=提示)
+##   layout: static-derived docs/evidence_packets/static_reverse/original_world_town.md
+##     (names: hovered point and click target 0x4c1ab8, 0x428079; hover beat 0x42802f, 0xe71c)
+##   layout: remake-invented (not-remade card; current and reachable point names under OPT-GUIDE=提示)
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_world_town.md
 ##   strings: remake-invented (card texts)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_world_town.md
-##     (walker speed; track reveal: 0x4280d0 square clip round the anchor, +1 px per tick)
+##     (walker speed; track reveal: 0x4280d0 square clip, +1 px per tick; hover beat 16／6, 0x42802f)
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
@@ -52,6 +55,18 @@ const BattleCameraController = preload("res://game/common/BattleCameraController
 ## The big-map walker moves its 16.16 speed 0x20000 = 2 px per tick (0x4277ed).
 const WALKER_PIXELS_PER_TICK := 2.0
 const MARKER_UNIT_ID := "party_marker"
+## The point proc's hover beat (0x427f1b writes words +0x90／+0x92 = 16／16; 0x42802f lights at ≤ 6).
+const HOVER_BEAT_TICKS := 16
+const HOVER_BEAT_LIT := 6
+## The hover light: [point] |= 0x10000000 with +0x28 = 0xe71c, so each drawn pixel becomes
+## ((pixel & 0xf7de) + (0xe71c & 0xf7de)) >> 1 (draw kind 2, as BattleCombatCutin's tint).
+const HOVER_TINT_WORD := 0xe71c
+const HOVER_TINT_SHADER := """shader_type canvas_item;
+uniform vec3 tint = vec3(0.0);
+void fragment() {
+	COLOR.rgb = (COLOR.rgb + tint) * 0.5;
+}
+"""
 
 var runtime: Node
 var config: Dictionary = {}
@@ -85,6 +100,15 @@ var travel_records: Array[Dictionary] = []
 var arrival_records: Array[Dictionary] = []
 var input_records: Array[Dictionary] = []
 var hovered_point := 0
+## The click target 0x4c1ab8 (0 for −1): the point proc writes it on a click while it is unset
+## (0x427ffc..0x428028) and draws that point's name every tick it holds; the walker keeps it for
+## the whole walk and resets it once its sub-state 1 has waited out the reveals (0x4276fe).
+var click_target := 0
+## Per-point hover beat counts (word +0x90); they live with the map's point objects.
+var _hover_counts: Dictionary = {}
+var _hover_tick_seconds := 0.0
+var _hover_lit_point := 0
+var _hover_material: ShaderMaterial
 var _layer: Node2D
 var _card: Control
 var _card_kind := ""
@@ -162,6 +186,10 @@ func tick(delta: float) -> void:
 	_advance_show_sequence()
 	_consume_pending_walk()
 	_refresh_status_bar()
+	_advance_hover_beat(delta)
+	if click_target > 0 and not traveling and _route_target == 0 and town_runtime == null and not (_card != null and _card.visible) and not reveal_busy():
+		click_target = 0
+		_refresh_labels()
 	if traveling and marker != null:
 		runtime.camera_controller.snap_to(marker.position)
 		return
@@ -194,8 +222,12 @@ func handle_input(event: InputEvent) -> void:
 		return
 	if reveal_busy() and (event is InputEventMouseButton or (event is InputEventKey and event.keycode != KEY_ESCAPE)):
 		# 0x427420 sub-state 1 waits for the reveals and the show-track glides, then clears the
-		# click target 0x4c1ab8: a click meanwhile is dropped.
+		# click target 0x4c1ab8: a click meanwhile is dropped (its point still takes it as the
+		# target while unset and names it until then).
 		input_records.append({"kind": "dropped_while_revealing"})
+		if click_target == 0 and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			click_target = _point_at(runtime.logical_to_world_position(runtime.viewport_to_logical_position(event.position)))
+			_refresh_labels()
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var world_position: Vector2 = runtime.logical_to_world_position(runtime.viewport_to_logical_position(event.position))
@@ -221,6 +253,8 @@ func select_point(point_id: int, trigger: String = "select") -> Dictionary:
 	if point_id <= 0:
 		input_records.append({"kind": "miss", "trigger": trigger})
 		return {"status": "miss"}
+	click_target = point_id
+	_refresh_labels()
 	if point_id == current_point():
 		if Rules.point_type(state, world_map, point_id) != Rules.TOWN or Rules.point_event(state, world_map, point_id) == 0:
 			input_records.append({"kind": "current_point_ignored", "trigger": trigger, "point_id": point_id})
@@ -257,7 +291,11 @@ func _begin_travel(point_id: int, track_id: int, trigger: String, from_point: in
 	}
 	travel_records.append(record)
 	traveling = true
-	_clear_labels()
+	# 原版 keeps the click target's (and a hovered point's) name for the walk; 提示 clears its set.
+	if GameOptions.is_original("OPT-GUIDE"):
+		_refresh_labels()
+	else:
+		_clear_labels()
 	if marker != null:
 		marker.move_along(path, seconds, true)
 	if _travel_tween != null and _travel_tween.is_running():
@@ -339,12 +377,16 @@ func _pass_point(point_id: int, track_id: int) -> bool:
 
 
 ## Re-entering the current point (select_point) resolves on the present state: a
-## visited General point then rolls its encounter like the original.
+## visited General point then rolls its encounter like the original. A Town re-entry
+## writes Visit before the town opens, data or not (0x4277c5..0x4277e0: 0x4c59c4 = event,
+## walker sub-state 15, 0x426d60(point, 0x10000000)).
 func _resolve_arrival(point_id: int) -> Dictionary:
 	var outcome := Rules.arrival(state, world_map, point_id, true, encounter_sample)
 	arrival_records.append(outcome)
 	match str(outcome.get("kind", "")):
 		"town":
+			state = Rules.visit(state, world_map, point_id)
+			_persist_state()
 			_open_town(int(outcome.get("town_id", 0)))
 		"level", "encounter":
 			_enter_level_event(point_id, int(outcome.get("level", 0)))
@@ -569,6 +611,14 @@ func _advance_show_sequence() -> void:
 			_persist_state()
 
 
+## 0x43bf30 moves 0x20 a tick, 0x10 while [0x4c1b00] & 0x4000000 is set. On the big map it is
+## clear: level load 0x42c640 zeroes 0x4c1b00 (0x42c643), and the bit has two setters. 0x408229
+## sits in the create branch of defProcBattleBOSS 0x4081c0, which obj-049.OBS defines as obj 1,
+## but level049's EVEF places none of its 92 objects as obj 1 (45 points, 44 tracks, map, cursor,
+## walker; resource-derived). 0x453b08 sits in 0x453ac0, called by GameClear (0x42b7fd) and the
+## win／fail／event scans (0x44ec92／0x44ed52／0x44ee12) over the tables 0x4c1d04／0x4c1d08／0x4c1d0c
+## that the same load resets to −1 (0x42c69f → 0x44e520) and only a WINFAIL file fills; level 49
+## has none.
 func _glide_to_point(point_id: int) -> void:
 	runtime.camera_controller.scroll_to(BattleCameraController.focus_centre(Rules.point_position(world_map, point_id)), BattleCameraController.BATTLE_SCROLL_STEP)
 
@@ -635,6 +685,7 @@ func _rebuild_layer() -> void:
 	label_nodes.clear()
 	track_nodes.clear()
 	_reveals.clear()
+	_hover_lit_point = 0
 	_build_layer()
 	_refresh_labels()
 	_refresh_status_bar()
@@ -941,19 +992,24 @@ func _play_music(key: String) -> void:
 	music_records.append({"key": key, "stream": path})
 
 
-## Name labels for the current point and the points one visible track away, plus
-## the hovered point: enough to navigate without covering the map with 45 names. The
-## original draws no point names (frames 01／03／04, original_world_town.md), so they are an
-## OPT-GUIDE=提示 addition read on every refresh; 原版 draws none.
+## Point names. 原版 (static-derived, original_world_town.md): a shown point (mode ≥ 1) draws
+## its name on a tick it is the click target 0x4c1ab8 or gets the hover／click message
+## (0x428079 → +0x80 |= 0x10000 at 0x4280b4, drawn by 0x427e07); a hidden point (mode 0,
+## 0x428098) never does. OPT-GUIDE=提示 instead names the current point, the points one visible
+## track away and the hovered point, and clears them for a walk.
 func _refresh_labels() -> void:
 	_clear_labels()
+	var wanted: Array[int] = []
 	if GameOptions.is_original("OPT-GUIDE"):
-		return
-	var wanted: Array[int] = [current_point()]
-	for point_id in reachable_points():
-		wanted.append(point_id)
-	if hovered_point > 0 and not wanted.has(hovered_point) and point_nodes.has(hovered_point):
-		wanted.append(hovered_point)
+		for point_id in [hovered_point, click_target]:
+			if point_id > 0 and not wanted.has(point_id):
+				wanted.append(point_id)
+	else:
+		wanted.append(current_point())
+		for point_id in reachable_points():
+			wanted.append(point_id)
+		if hovered_point > 0 and not wanted.has(hovered_point) and point_nodes.has(hovered_point):
+			wanted.append(hovered_point)
 	for point_id in wanted:
 		if not point_nodes.has(point_id):
 			continue
@@ -986,8 +1042,45 @@ func _set_hovered(point_id: int) -> void:
 	if point_id == hovered_point:
 		return
 	hovered_point = point_id
-	if not traveling:
+	if not traveling or GameOptions.is_original("OPT-GUIDE"):
 		_refresh_labels()
+
+
+## The hover beat (0x42802f, static-derived): on each logic tick with no click target set
+## (0x4c1ab8 == −1) the hovered shown point counts word +0x90 down, reloading 16 from +0x92 when
+## it reaches 0, and at ≤ 6 draws half-mixed with 0xe71c for that tick (the bit is cleared again
+## every tick at 0x427fa4): 6 lit ticks in 16. The count stays on the point, so it resumes where
+## it stopped the next time the point is hovered.
+func _advance_hover_beat(delta: float) -> void:
+	_hover_tick_seconds += delta
+	if _hover_tick_seconds < OriginalTick.TICK_SECONDS:
+		return
+	var lit := 0
+	while _hover_tick_seconds >= OriginalTick.TICK_SECONDS:
+		_hover_tick_seconds -= OriginalTick.TICK_SECONDS
+		lit = 0
+		if hovered_point <= 0 or not point_nodes.has(hovered_point) or click_target > 0 or town_runtime != null or (_card != null and _card.visible):
+			continue
+		var count := int(_hover_counts.get(hovered_point, HOVER_BEAT_TICKS)) - 1
+		if count <= 0:
+			count = HOVER_BEAT_TICKS
+		_hover_counts[hovered_point] = count
+		if count <= HOVER_BEAT_LIT:
+			lit = hovered_point
+	if lit == _hover_lit_point:
+		return
+	if point_nodes.has(_hover_lit_point):
+		(point_nodes[_hover_lit_point] as CanvasItem).material = null
+	_hover_lit_point = lit
+	if lit > 0:
+		if _hover_material == null:
+			var shader := Shader.new()
+			shader.code = HOVER_TINT_SHADER
+			_hover_material = ShaderMaterial.new()
+			_hover_material.shader = shader
+			var word := HOVER_TINT_WORD & 0xf7de
+			_hover_material.set_shader_parameter("tint", Vector3(float((word >> 11) & 31) / 31.0, float((word >> 5) & 63) / 63.0, float(word & 31) / 31.0))
+		(point_nodes[lit] as CanvasItem).material = _hover_material
 
 
 ## The original hit box is the [-16,-16,16,16] square around a shown point; the

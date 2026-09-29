@@ -331,4 +331,10 @@ func _run_shop() -> void:
 		again.handle_input(_right_click())
 		await _settle(again)
 		_assert_true(map.town_runtime == null, "right click on the root menu leaves the town, as in the original")
+	# Re-picking a Town point that has no town data (王都  希里烏斯 20) writes Visit before the town
+	# process runs (0x4277c5..0x4277e0); the remake then shows its card.
+	map.state["current_point"] = 20
+	_assert_true(not WorldMapRules.point_visited(map.state, map.world_map, 20), "王都  希里烏斯 starts without Visit")
+	map.select_point(20, "test")
+	_assert_true(WorldMapRules.point_visited(map.state, map.world_map, 20) and str(map.summary()["card_kind"]) == "town", "re-picking 王都  希里烏斯 writes Visit and shows its card (0x4277e0)")
 	await _teardown(scene)

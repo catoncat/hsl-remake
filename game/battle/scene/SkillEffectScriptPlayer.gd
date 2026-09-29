@@ -282,7 +282,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 	if _insert_pattern(timeline, data, phase, op, args, cursor): return cursor
 	match op:
 		"aniDelay":
-			cursor += number(args[0])
+			# 0x403dbb stores the count in +0x50, sets phase 1 and yields; from the next tick
+			# 0x404584 decrements it and yields while it stays > 0, and the tick it reaches ≤ 0
+			# clears the phase and yields once more: n ≥ 1 waits n + 1 ticks, 0 waits 2.
+			cursor += maxi(number(args[0]), 1) + 1
 		"aniPlaySound", "aniPlayHitSound":
 			if hit or op == "aniPlaySound":
 				timeline["events"].append({"tick": cursor, "kind": "sound", "member": str(args[0]), "phase": phase})
@@ -295,13 +298,15 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 			if hit:
 				# 0x403be2: the base is the defender object's own x／y — the neutral shot anchor
 				# here, moved onto the defender's drawn point at this tick by _place_on_defender.
-				var base: Vector2 = CutinLayout.SHOT_ANCHOR + timeline["xy_disp"]
+				var disp: Vector2 = timeline["xy_disp"]
+				var base: Vector2 = CutinLayout.SHOT_ANCHOR + disp
 				var first: int = timeline["events"].size()
 				_insert_spawner(timeline, data, rng, phase, str(args[0]), base + Vector2(number(args[1]), number(args[2])), Vector2i(number(args[3]), number(args[4])), 0, number(args[5]), false, number(args[6]), cursor)
 				for index in range(first, timeline["events"].size()):
 					if timeline["events"][index]["kind"] == "object":
 						timeline["events"][index]["defender_base"] = base
 						timeline["events"][index]["defender_tick"] = cursor
+						timeline["events"][index]["defender_disp"] = disp
 		"aniInsertRandomObjectDelay", "aniInsertRandomObjectFixDelay", "aniInsertHitRandomObjectFixDelay":
 			if hit or op != "aniInsertHitRandomObjectFixDelay":
 				_insert_spawner(timeline, data, rng, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), Vector2i(number(args[3]), number(args[4])), number(args[5]), number(args[6]), op != "aniInsertRandomObjectDelay", number(args[7]), cursor)
@@ -314,6 +319,10 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 			timeline[phase + "_background"] = str(args[0])
 		"aniProcessHitMiss":
 			timeline["hit_ticks"].append(cursor)
+			# The settlement body (0x4047e9; knock-back speed +0x9c = 0xe0000 and +0x94 =
+			# 0x10000 at 0x40492e／0x404938, 0x404950／0x404960) stores the pointer and yields
+			# (0x4048e6／0x404986 → 0x404ba6): the next instruction runs on the next tick.
+			cursor += 1
 		"aniProcessHitMissMulti":
 			cursor = _multi_hit_wait(timeline, cursor)
 		"aniShowHitResult", "aniShowHitResultNoWait":
@@ -326,7 +335,8 @@ static func _compile_instruction(timeline: Dictionary, data: Dictionary, rng: Ra
 		"aniShowAttacker":
 			timeline["show_attacker"] = true
 		"aniSetXYDisp":
-			timeline["xy_disp"] = Vector2(number(args[0]), number(args[1]))
+			# 0x403ce5 adds x／y to the interpreter object's +4／+8.
+			timeline["xy_disp"] += Vector2(number(args[0]), number(args[1]))
 		_:
 			if not timeline["unimplemented"].has(op):
 				timeline["unimplemented"].append(op)
@@ -941,11 +951,12 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 
 ## The defender object 0x4038a0's drawn point at script tick `tick`: its shot anchor (x 480
 ## from aniDoublePageMode) plus aniSetXYDisp, knock-back on a hit and the dodge slide on a
-## miss from the impact on.
-func _defender_point(host: CanvasLayer, clip: Dictionary, tick: float) -> Vector2:
+## miss from the impact on. `disp` overrides the summed aniSetXYDisp with the sum an insert
+## read when it was compiled.
+func _defender_point(host: CanvasLayer, clip: Dictionary, tick: float, disp = null) -> Vector2:
 	var timeline: Dictionary = clip["effect_timeline"]
 	var double_page := int(timeline["double_page_tick"]) >= 0 and tick >= float(timeline["double_page_tick"])
-	var point: Vector2 = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + timeline["xy_disp"]
+	var point: Vector2 = (Vector2(480, CutinLayout.SHOT_ANCHOR.y) if double_page else host.defender_anchor(clip)) + (timeline["xy_disp"] if disp == null else disp)
 	var row: Dictionary = host.manifest.get("actors", {}).get(clip["defender"], {})
 	if tick >= float(timeline["impact_tick"]) and not row.is_empty():
 		point.x += CutinLayout.reaction_x(row, bool(clip["strike"]["hit"]), tick - float(timeline["impact_tick"]), CutinLayout.side_swapped(clip["defender_unit"]))
@@ -954,14 +965,14 @@ func _defender_point(host: CanvasLayer, clip: Dictionary, tick: float) -> Vector
 
 ## aniInsertHitRandomObjectDisp (0x403be2) reads the defender object's own x／y when it runs:
 ## its objects move from the neutral anchor they were compiled at onto the defender's drawn
-## point at the insert tick, once per clip.
+## point at the insert tick — with the aniSetXYDisp sum of that tick — once per clip.
 func _place_on_defender(host: CanvasLayer, clip: Dictionary) -> void:
 	if clip.get("defender_placed", false):
 		return
 	clip["defender_placed"] = true
 	for event in clip["effect_timeline"]["events"]:
 		if event.has("defender_base"):
-			event["position"] += _defender_point(host, clip, float(event["defender_tick"])) - (event["defender_base"] as Vector2)
+			event["position"] += _defender_point(host, clip, float(event["defender_tick"]), event["defender_disp"]) - (event["defender_base"] as Vector2)
 			event.erase("defender_base")
 
 

@@ -91,13 +91,14 @@ func native(host: CanvasLayer, index: int, object: String, variant: int, frame: 
 
 
 ## The spawner 0x401390's placements for one insert: [offset, wait] per object, offsets
-## rand(range) folded into (−range/2, range/2], the first at once, each next rand(delay) + 1
-## ticks after the previous.
+## rand(range) folded into (−range/2, range/2], the first with insertion delay 0, each next
+## rand(delay) + 1 more; defProcObjectMove (0x405294) decrements +0xae before testing it, so
+## delay d starts max(d − 1, 0) ticks after the insert (the wait returned).
 static func spawn(rng: RandomNumberGenerator, span: Vector2, delay: int, count: int) -> Array:
 	var placed: Array = []
 	var wait := 0
 	for _index in range(count):
-		placed.append([Vector2(_fold(rng, int(span.x)), _fold(rng, int(span.y))), wait])
+		placed.append([Vector2(_fold(rng, int(span.x)), _fold(rng, int(span.y))), maxi(wait - 1, 0)])
 		wait += (rng.randi_range(0, delay - 1) if delay > 0 else 0) + 1
 	return placed
 

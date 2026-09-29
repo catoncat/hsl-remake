@@ -258,20 +258,21 @@ func every_magic_row_compiles() -> void:
 	player.free()
 
 
-## 氣刃斬 (specCode01／02): BG panel + the blade from (700,160) in the caster's shot for 60
-## ticks; in the target's shot the blade re-enters at tick 80, the hit mark at 90 is its
-## arrival, sparks burst on a hit, the result shows at 150 and the clip completes at 190.
+## 氣刃斬 (specCode01／02): BG panel + the blade from (700,160) in the caster's shot for 61
+## ticks (aniDelay n waits n + 1, 0x403dbb／0x404584); in the target's shot the blade re-enters
+## at tick 82, the hit mark at 93 is its arrival, sparks burst on a hit the tick after it
+## (0x4048e6 yields after the settlement), the result shows at 155 and the clip completes at 195.
 func qi_blade_timeline() -> void:
 	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicOTHER:magicCode01", true, 1)
-	check(hit["release_tick"] == 60 and hit["impact_tick"] == 90 and hit["result_tick"] == 150 and hit["complete_tick"] >= 190, "氣刃斬 marks (the last spark, rand(delay)＋1 behind the one before it at 0x401455, may run past the 40-tick result hold): %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
+	check(hit["release_tick"] == 61 and hit["impact_tick"] == 93 and hit["result_tick"] == 155 and hit["complete_tick"] >= 195, "氣刃斬 marks (the last spark, rand(delay)＋1 behind the one before it at 0x401455, may run past the 40-tick result hold): %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
 	check(hit["attack_background"] == "MAGIC\\SP00_001.SHP" and hit["defense_background"] == "", "the attack script's aniInsertSpecialBG panel; the defense keeps the backdrop")
 	var sounds: Array = hit["events"].filter(func(event): return event["kind"] == "sound")
 	check(sounds[0]["tick"] == 0 and sounds[0]["member"] == "WAV\\SP01-001.WAV", "the attack script's aniPlaySound at tick 0")
 	# obj_Special01_03's objcomd.txt command 2 opens with objmPlaySound,WAV\BOMB0017.WAV: each
-	# of the 6 bursts plays the landing sound as it appears — the first at 90, each next
-	# rand(4) + 1 later (spawner 0x401390), so within 90..110.
+	# of the 6 bursts plays the landing sound as it appears — the first at 94, each next
+	# rand(4) + 1 later (spawner 0x401390), so within 94..114.
 	var burst_ticks: Array = []
 	for event in hit["events"]:
 		if event["kind"] == "object" and event["object"] == "obj_Special01_03":
@@ -279,16 +280,16 @@ func qi_blade_timeline() -> void:
 	var landing: Array = sounds.filter(func(event): return event["member"] == "WAV\\BOMB0017.WAV").map(func(event): return int(event["tick"]))
 	burst_ticks.sort()
 	landing.sort()
-	check(landing.size() == 6 and landing == burst_ticks and landing[0] == 90 and landing.all(func(tick): return tick >= 90 and tick <= 110), "the landing sound WAV\\BOMB0017.WAV sounds with the impact bursts at %s (bursts %s)" % [str(landing), str(burst_ticks)])
+	check(landing.size() == 6 and landing == burst_ticks and landing[0] == 94 and landing.all(func(tick): return tick >= 94 and tick <= 114), "the landing sound WAV\\BOMB0017.WAV sounds with the impact bursts at %s (bursts %s)" % [str(landing), str(burst_ticks)])
 	check(sounds.size() == 1 + landing.size(), "no other sound: %s" % str(sounds.map(func(event): return event["member"])))
 	# Every object here runs its objcomd.txt program's native track (objcomd_motion.json, 0x4051d0).
 	var flights: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["object"] in ["obj_Special01_01", "obj_Special01_02"])
-	check(flights.size() == 2 and flights.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd") and flights[0]["tick"] == 0 and flights[1]["tick"] == 80, "the blades run their objcomd.txt programs in the attack and the defense shot")
+	check(flights.size() == 2 and flights.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd") and flights[0]["tick"] == 0 and flights[1]["tick"] == 82, "the blades run their objcomd.txt programs in the attack and the defense shot")
 	check(flights[1]["position"] == Vector2(700, 160) and flights[1]["frames"] == ["MAGIC\\SP01_001.SHP", "MAGIC\\SP01_002.SHP"], "the defense blade is obj_Special01_02 at (700,160)")
 	var bursts: Array = hit["events"].filter(func(event): return event["kind"] == "object" and event["object"] in ["obj_Special01_03", "obj_Special01_04"])
-	check(bursts.size() == 30 and bursts.all(func(event): return int(event["tick"]) >= 90 and int(event["tick"]) <= 90 + 23 * 2 and (event["position"] as Vector2).distance_to(Vector2(320, 160)) <= 90), "6 + 24 hit sparks appear within the accumulated delay range around the target centre")
+	check(bursts.size() == 30 and bursts.all(func(event): return int(event["tick"]) >= 94 and int(event["tick"]) <= 94 + 23 * 2 and (event["position"] as Vector2).distance_to(Vector2(320, 160)) <= 90), "6 + 24 hit sparks appear within the accumulated delay range around the target centre")
 	var miss: Dictionary = player.compile_row("special:magicOTHER:magicCode01", false, 1)
-	check(miss["events"].filter(func(event): return event["kind"] == "object").size() == 2 and miss["impact_tick"] == 90 and miss["complete_tick"] == 190 + 16, "a miss keeps the blades and the marks, drops the hit-only sparks")
+	check(miss["events"].filter(func(event): return event["kind"] == "object").size() == 2 and miss["impact_tick"] == 93 and miss["complete_tick"] == 195 + 16, "a miss keeps the blades and the marks, drops the hit-only sparks")
 	check(miss["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return event["member"]) == ["WAV\\SP01-001.WAV"], "a miss inserts no burst, so no landing sound")
 	var other2: Dictionary = player.compile_row("special:magicOTHER2:magicCode01", true, 1)
 	check(other2["events"].any(func(event): return event["kind"] == "sound" and event["member"] == "WAV\\BOMB0017.WAV" and int(event["tick"]) >= 90), "the magicOTHER2 row of 氣刃斬 (specCode121／122, its own obj_Special61 blades) lands with the same BOMB0017 burst")
@@ -415,15 +416,15 @@ func effect_program_sounds() -> void:
 	player.free()
 
 
-## 天雷猛襲劍 (specCode03／04): the attack script runs 70 ticks; the defense script's
+## 天雷猛襲劍 (specCode03／04): the attack script runs 71 ticks; the defense script's
 ## sounds and lightning strikes land on their aniDelay cursors; hit sound and burst are hit-only.
 func thunder_sword_timeline() -> void:
 	var player := SkillEffectScriptPlayer.new()
 	root.add_child(player)
 	var hit: Dictionary = player.compile_row("special:magicAIR:magicCode01", true, 3)
-	check(hit["release_tick"] == 70 and hit["impact_tick"] == 160 and hit["result_tick"] == 200 and hit["complete_tick"] == 240 + 16, "天雷猛襲劍 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
+	check(hit["release_tick"] == 71 and hit["impact_tick"] == 166 and hit["result_tick"] == 208 and hit["complete_tick"] == 248 + 16, "天雷猛襲劍 marks: %s" % str([hit["release_tick"], hit["impact_tick"], hit["result_tick"], hit["complete_tick"]]))
 	var sound_ticks: Array = hit["events"].filter(func(event): return event["kind"] == "sound").map(func(event): return int(event["tick"]))
-	check(sound_ticks == [0, 90, 100, 110, 140, 160], "sounds at 0 (attack) then 90／100／110 lightning, 140 shoot, 160 hit bomb: %s" % str(sound_ticks))
+	check(sound_ticks == [0, 92, 103, 114, 145, 167], "sounds at 0 (attack) then 92／103／114 lightning, 145 shoot, 167 hit bomb: %s" % str(sound_ticks))
 	var miss: Dictionary = player.compile_row("special:magicAIR:magicCode01", false, 3)
 	check(miss["events"].filter(func(event): return event["kind"] == "sound").size() == 5, "the aniPlayHitSound is dropped on a miss")
 	check(hit["attack_background"] == "MAGIC\\SP00_003.SHP", "its own SP00_003 panel, not 氣刃斬's")
@@ -448,19 +449,19 @@ func geometry_and_flags() -> void:
 	var rage: Dictionary = player.compile_row("special:magicFIRE:magicCode02", true, 5)  # 激怒
 	check(rage["xy_disp"] == Vector2(50, 0), "aniSetXYDisp shifts the target shot")
 	var roar: Dictionary = player.compile_row("special:magicOTHER:magicCode20", true, 5)  # 獅子吼
-	check(roar["show_attacker"] and roar["release_tick"] == 140 and roar["double_page_tick"] == 160, "aniShowAttacker is read; the attack script runs 140 ticks and the double page opens 20 ticks into the defense")
+	check(roar["show_attacker"] and roar["release_tick"] == 142 and roar["double_page_tick"] == 163, "aniShowAttacker is read; the attack script runs 142 ticks and the double page opens 21 ticks into the defense")
 	var flowers: Dictionary = player.compile_row("special:magicOTHER:magicCode07", true, 5)  # 百花撩亂
-	check(flowers["no_dark_bg"] and flowers["double_page_tick"] == 30 + 26, "aniNoSpecialDarkBG and the double page after the empty attack lead + 26")
+	check(flowers["no_dark_bg"] and flowers["double_page_tick"] == 30 + 27, "aniNoSpecialDarkBG and the double page after the empty attack lead + 27")
 	var stars: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5)  # 星辰落牙破
 	# 0x45f5f7 runs the defender (plane 46) before the stars (plane 47): an op 72 on tick t counts at t + 1.
-	check(stars["hit_ticks"] == [105, 116, 128, 140, 152, 164] and stars["impact_tick"] == 105, "aniProcessHitMissMulti settles one strike per recorded objmSetMultiHitData of the obj_Special24_02 stars, a tick after the op: %s" % [stars["hit_ticks"]])
+	check(stars["hit_ticks"] == [107, 118, 130, 142, 154, 166] and stars["impact_tick"] == 107, "aniProcessHitMissMulti settles one strike per recorded objmSetMultiHitData of the obj_Special24_02 stars, a tick after the op: %s" % [stars["hit_ticks"]])
 	var meteors: Array = stars["events"].filter(func(event): return event["kind"] == "object" and event["object"] == "obj_Special24_03")
 	check(meteors.size() == 10 and meteors.all(func(event): return event["motion"] == "native" and event["source"] == "objcomd"), "meteors inserted above the stage run their objcomd.txt program's native track")
-	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 164 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 160 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
+	check(stars["result_ticks"] == stars["hit_ticks"].map(func(tick): return int(tick) + 1) and stars["result_tick"] == stars["impact_tick"] + 1 and stars["complete_tick"] == 166 + SkillEffectScriptPlayer.MULTI_HIT_STRIKE_TICKS + 161 + 16, "each multi-hit strike spawns its numbers a tick later; the clip completes when the delay after the wait ends: %d" % stars["complete_tick"])
 	# The last strike's number holds the defender (0x40478d with the defender as waiter, bumped at
-	# release 0x4088fa): a 12 spawns at 165, releases 27 + 20 ticks later, the check comes 2 after.
+	# release 0x4088fa): a 12 spawns at 167, releases 27 + 20 ticks later, the check comes 2 after.
 	var held: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5, [], {"damage": 12, "experience": 3})
-	check(held["complete_tick"] == 164 + 1 + 47 + 2 + 160 + 16, "the last strike's red number holds the wait until it releases the defender: %d" % held["complete_tick"])
+	check(held["complete_tick"] == 166 + 1 + 47 + 2 + 161 + 16, "the last strike's red number holds the wait until it releases the defender: %d" % held["complete_tick"])
 	var split: Dictionary = player.compile_row("special:magicAIR:magicCode04", true, 5, [true, false, true, false, false, true])
 	var star_runs: Array = split["events"].filter(func(event): return event.has("strike_tick"))
 	star_runs.sort_custom(func(a, b): return int(a["strike_tick"]) < int(b["strike_tick"]))
@@ -472,7 +473,7 @@ func geometry_and_flags() -> void:
 	var earned := SkillEffectScriptPlayer.strike_spawns({"hit_segments": [{"actual_damage": 12, "experience_points": 3}, {"actual_damage": 0}]}, stars, [])
 	check(earned == [{"kind": "damage", "value": 12, "hold": 0}], "an unchanged last strike spawns no MISS once the shot earned experience: %s" % [earned])
 	var empty: Dictionary = SkillEffectScriptPlayer.compile([], ["aniDelay,10,aniProcessHitMiss", "aniDelay,5,aniShowHitResult"], true, 1, manifest)
-	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 40 and empty["result_tick"] == 45 and empty["complete_tick"] == 85 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
+	check(empty["release_tick"] == SkillEffectScriptPlayer.EMPTY_ATTACK_LEAD_TICKS and empty["impact_tick"] == 41 and empty["result_tick"] == 48 and empty["complete_tick"] == 88 + 16 and empty["events"].is_empty(), "an empty attack script still leads for EMPTY_ATTACK_LEAD_TICKS")
 	var unknown: Dictionary = SkillEffectScriptPlayer.compile([], ["aniSetZoom,0x10000", "aniDelay,4"], true, 1, manifest)
 	check(unknown["unimplemented"] == ["aniSetZoom"], "a verb outside the set is reported, not swallowed")
 	player.free()
@@ -797,8 +798,8 @@ func cast_lead_program() -> void:
 	# 0x402e55: sub-state 4's 16 calls draw both panels at mode 0 (opaque), not a crossfade.
 	_assert_eq(states[at + portrait_hold + AnimalCastLead.FADE_CALLS - 1]["fade"], 0.0, "the panels stay opaque through the 16 calls")
 	_assert_eq(states.size() - (at + portrait_hold + AnimalCastLead.FADE_CALLS), AnimalCastLead.HOLD_CALLS, "then 10 calls and the 11th that reads 0x4c1408 end a 絶技 lead")
-	# The special presenter plays the lead first, then the attack script: 氣刃斬's 60-tick
-	# attack script releases at lead + 60.
+	# The special presenter plays the lead first, then the attack script: 氣刃斬's 61-tick
+	# attack script (aniDelay 60, 0x403dbb／0x404584) releases at lead + 61.
 	var release_marks: Array[int] = []
 	cutin.released.connect(func(_s, _a, _d, _c): release_marks.append(int(round(OriginalTick.ticks(cutin.elapsed)))))
 	var banner_seen := false
@@ -816,7 +817,7 @@ func cast_lead_program() -> void:
 		elif frames == int(lead["complete_tick"]) + 1:
 			_assert_true(cutin.scenery.visible and not cutin.cast_inset.visible and not cutin.cast_portrait.visible and not cutin.attacker_sprite.visible, "after the lead the attack script owns the shot: special backdrop, no cast panels, no standing caster")
 	_assert_true(banner_seen and inset_seen and portrait_seen, "the banner, an inset and the portrait were drawn at their anchors (%s %s %s)" % [str(banner_seen), str(inset_seen), str(portrait_seen)])
-	_assert_eq(release_marks, [int(lead["complete_tick"]) + 60], "氣刃斬 releases once, after the lead plus its 60-tick attack script")
+	_assert_eq(release_marks, [int(lead["complete_tick"]) + 61], "氣刃斬 releases once, after the lead plus its 61-tick attack script")
 	cutin.queue_free()
 	await process_frame
 
