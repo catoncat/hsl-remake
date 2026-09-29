@@ -432,7 +432,7 @@ func _script_actions() -> void:
 	var retyped := TownEventRules.apply_script_town_actions(result["state"], [{"name": "actBMSetPointEvent", "args": ["town_曼多力亞", "9", "bmpmBattle"]}, {"name": "actBMSetPointEvent", "args": ["9", "-1", "bmpmTown"]}], towndef)
 	_assert_eq(retyped["state"]["point_flags"]["9"], ["bmpmTown"], "STORY008 turns 曼多力亞 into a Battle point, STORY009's -1 keeps the event and restores Town")
 	_assert_eq(retyped["state"]["point_events"]["9"], {"event": 9, "flag": "bmpmTown"}, "event -1 keeps the previous event value (0x426c70)")
-	_assert_eq(_kinds(result["effects"]), ["bm_point_event", "set_exec_event", "bm_encounter_ratio", "bm_flag_change", "bm_walk_to_point", "recorded_only"], "script effects")
+	_assert_eq(_kinds(result["effects"]), ["bm_point_event", "set_exec_event", "bm_encounter_ratio", "bm_flag_change", "bm_walk_to_point", "bm_walker_player_id"], "script effects")
 	var entered := TownEventRules.begin_event(result["state"], _party(), towndef, 1, int(result["state"]["towns"]["1"]["exec_event"]))
 	_assert_eq(_message_ids(entered["effects"]), [858, 859, 860, 861], "entering 歐姆村 runs event 9")
 

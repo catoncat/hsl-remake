@@ -24,7 +24,7 @@ extends RefCounted
 ## docs/evidence_packets/static_reverse/original_world_town.md (SR-069). Town-level state changed here: towns[*].exec_event /
 ## exit_exec_event / tree / secret_man / secret_appear_ratio; world-level:
 ## point_flags, track_flags, point_events, encounter_ratios, point_modes,
-## track_modes, show_track_points, over_score, over_flag (the ending dispatch's
+## track_modes, show_track_points, bigmap_walker_player_id, over_score, over_flag (the ending dispatch's
 ## inputs — actAddOverScore / actSetOverFlag reach here through
 ## WorldScriptActions as teAddOverScore / teSetOverFlag; EndingDispatchRules reads
 ## them). current_point and visited_points belong to the caller (teSetBMWalkToPoint
@@ -65,13 +65,13 @@ const SUPPORTED_TOKENS := [
 	"teCheckMoney", "teCheckPlayerExist", "teCheckItemExist", "teCheckItemExecEvent", "teCheckTEExist", "teCheckJobUp", "teCheckJobUp2",
 	"teBMSetPointFlag", "teBMClearPointFlag", "teBMSetTrackFlag", "teBMClearTrackFlag",
 	"teBMSetShowTrackPoint", "teBMSetPointEvent", "teBMSetPointEventNotVisit",
-	"teBMSetPointMode", "teBMSetTrackMode", "teSetBMWalkToPoint", "teBMSetPointEncounterRatio",
+	"teBMSetPointMode", "teBMSetTrackMode", "teSetBMWalkToPoint", "teSetBMWalkerPlayerID", "teBMSetPointEncounterRatio",
 	"teAppearSecretMan", "teDeleteSecretMan", "teSetSecretAppearRatio", "teSecretManBuyThing",
 ]
 ## Recognised but only recorded: teCheckJobUpDeny (token 100) is not in the
 ## original VM's dispatch table (negative-evidence, original_town_job_up.md);
-## the others have no remade system.
-const RECORDED_ONLY_TOKENS := ["teCheckJobUpDeny", "teCheckMoney2", "teSetBMWalkerPlayerID"]
+## the other has no remade system.
+const RECORDED_ONLY_TOKENS := ["teCheckJobUpDeny", "teCheckMoney2"]
 const JobUpRules = preload("res://game/sim/JobUpRules.gd")
 const WinfailCompiler = preload("res://game/sim/WinfailCompiler.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
@@ -180,6 +180,7 @@ static var WORLD_TOKEN_HANDLERS := {
 	"teBMSetTrackMode": _world_bm_set_mode,
 	"teBMSetPointEncounterRatio": _world_bm_set_point_encounter_ratio,
 	"teSetBMWalkToPoint": _world_set_bm_walk_to_point,
+	"teSetBMWalkerPlayerID": _world_set_bm_walker_player_id,
 	"teAddOverScore": _world_add_over_score,
 	"teSetOverFlag": _world_set_over_flag,
 	"teAppearSecretMan": _world_appear_secret_man,
@@ -974,6 +975,16 @@ static func _world_set_bm_walk_to_point(ctx: Dictionary, _name: String, args: Ar
 	var walk := {"from": _town_arg(towndef, _arg(args, 0), -1), "to": _town_arg(towndef, _arg(args, 1), -1)}
 	(ctx["state"] as Dictionary)["pending_walk"] = walk
 	(ctx["effects"] as Array).append({"kind": "bm_walk_to_point", "from_point": int(walk["from"]), "to_point": int(walk["to"])})
+
+
+## teSetBMWalkerPlayerID／actSetBMWalkerPlayerID (script opcode 96, 0x4518d5): the operand
+## goes straight into the walker designation 0x4c1acc — the start slot of the next big-map
+## walker (WorldMapRules.walker_unit_id), which clears it once built. SID_* resolve through
+## the TOWNDEF symbols (SID_琥 = 2).
+static func _world_set_bm_walker_player_id(ctx: Dictionary, _name: String, args: Array) -> void:
+	var slot := _symbol_int(ctx["towndef"], _arg(args, 0), _int_arg(args, 0))
+	(ctx["state"] as Dictionary)["bigmap_walker_player_id"] = slot
+	(ctx["effects"] as Array).append({"kind": "bm_walker_player_id", "player_id": slot})
 
 
 static func _world_add_over_score(ctx: Dictionary, _name: String, args: Array) -> void:

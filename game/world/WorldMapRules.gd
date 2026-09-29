@@ -53,6 +53,30 @@ const COMPLETION_DENOMINATOR_OFFSET := 1
 ## Route search bounds (0x427070): 100 point slots, unreached cost 600000 (0x927c0).
 const ROUTE_SLOTS := 100
 const ROUTE_UNREACHED_COST := 600000
+## World-state key of the walker designation 0x4c1acc (teSetBMWalkerPlayerID／opcode 96);
+## absent = 0, as the new game clears it (0x42ca7c).
+const WALKER_PLAYER_ID := "bigmap_walker_player_id"
+## Registered-slot table 0x4c4360 bound of the walker scan (0x427445 cmp esi, 0x14).
+const WALKER_SLOT_LIMIT := 20
+
+
+## The carried member the big-map walker is built from (0x427420, 0x427433..0x427493): from
+## the designated slot (0 → the command-line slot 0x4c1b8c, which is 0 without the option) up
+## to slot 19, the first slot registered in 0x4c4360 (0x42caa0 non-zero) whose template is
+## non-zero (0x45dbe1). A carry unit stands for a registered slot; its slot is its PLAYERS row
+## minus one (the slot code is 800 + slot). "" when no slot in range is registered (the
+## original then builds the walker with shape 0).
+static func walker_unit_id(units: Dictionary, start_slot: int) -> String:
+	var by_slot := {}
+	for unit_id in units.keys():
+		var record: Variant = units[unit_id]
+		var actor_id := str((record as Dictionary).get("actor_id", "")) if typeof(record) == TYPE_DICTIONARY else ""
+		if actor_id.is_valid_int() and not by_slot.has(int(actor_id) - 1):
+			by_slot[int(actor_id) - 1] = str(unit_id)
+	for slot in range(maxi(start_slot, 0), WALKER_SLOT_LIMIT):
+		if by_slot.has(slot):
+			return str(by_slot[slot])
+	return ""
 
 
 static func load_world_map(path: String) -> Dictionary:

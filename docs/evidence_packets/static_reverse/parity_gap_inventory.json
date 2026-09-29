@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 86,
-    "sources": 478,
+    "sources": 477,
     "sources_by_kind": {
       "provenance": 193,
-      "sentence": 88,
+      "sentence": 87,
       "scope": 99,
       "matrix": 85,
       "video": 13
@@ -1203,7 +1203,6 @@
         "scope:docs/evidence_packets/static_reverse/original_world_town.md|negative-evidence|独立默认 level 表、路线红白插值、买卖 handler 执行回执",
         "scope:docs/evidence_packets/static_reverse/town_event_semantics.md|provisional|",
         "sentence:docs/evidence_packets/static_reverse/original_world_town.md#643c1d19ff",
-        "sentence:docs/evidence_packets/static_reverse/original_world_town.md#69bfcfd889",
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#413a7dbce4",
         "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#447abe2193",
         "sentence:docs/evidence_packets/static_reverse/world_map_data.md#79d6ecfe5d"
@@ -1211,8 +1210,8 @@
     },
     {
       "id": "world-map-presentation",
-      "difference": "大地图路线揭示已照原版逐 tick 正方形裁剪、队伍标记已按帧 01 改回战斗尺寸（lane TOWNMAP）；点名文字原版档已不画、只在 OPT-GUIDE=提示 画（lane WORLDTOWN，原版帧 01／03／04 没有）；剩未重制关卡卡（重制缺关卡的替代）、行走者用哪名角色未读（端点 mode1 在 0x427fca 直接落位，重制端点即时出现已等价）",
-      "original": "0x4280d0 已读：子状态 0 取 0x4606a9 边界算计数 max(|w−ox|,|ox|,|h−oy|,|oy|)，子状态 1 每 tick 半边 +1，0x428280 写锚点 ± 半边裁剪；点过程 0x427df0 mode1 在 0x427fca 直接 0x426b70(点, 2) 落到 case 2、无显现动画；行走者形体未读",
+      "difference": "大地图路线揭示已照原版逐 tick 正方形裁剪、队伍标记已按帧 01 改回战斗尺寸（lane TOWNMAP）；点名文字原版档已不画、只在 OPT-GUIDE=提示 画（lane WORLDTOWN，原版帧 01／03／04 没有）；行走者已照原版从指定槽 0x4c1acc 起取第一名在队成员、用其当前职业形状、建好即清（lane WORLDWALKER）；剩未重制关卡卡（重制缺关卡的替代）（端点 mode1 在 0x427fca 直接落位，重制端点即时出现已等价）",
+      "original": "0x4280d0 已读：子状态 0 取 0x4606a9 边界算计数 max(|w−ox|,|ox|,|h−oy|,|oy|)，子状态 1 每 tick 半边 +1，0x428280 写锚点 ± 半边裁剪；点过程 0x427df0 mode1 在 0x427fca 直接 0x426b70(点, 2) 落到 case 2、无显现动画；行走者建立 0x427433..0x427493 已读：起始槽 0x4c1acc（0 取 0x4c1b8c）扫到槽 19，0x42caa0 在队且 0x45dbe1 模板非 0 即取，形状字 +0xa0 → 0x446c40(行走者, 形状, 0, 10)，建好清 0x4c1acc",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/world_map_data.md",
         "docs/evidence_packets/resource_inventory/bigmap_performances.md"
@@ -1232,8 +1231,8 @@
     },
     {
       "id": "world-map-rules",
-      "difference": "大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；脚本行走 teSetBMWalkToPoint 已与点击同路（lane WORLDTOWN：0x45543a／0x42f7a4／0x427723，无路线原地不动）；到点分派已照原版（lane WORLDARRIVE：event 0 一律不分派、Town 也一样，只有分派成立才写 Visit，不成立按 0x427d36 揭示目的点路线；兩棲族部落第二段桥接已删，150／151 只由二转后的 0x434680 加入）；剩镜头滑行步长取战斗的 32（未读，归 WORLDWALKER）",
-      "original": "设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废），另由 0x427d36（调用点 0x427d48，到点分派不成立与离城共用）调用；到点分派 0x427a86..0x427bad 已静态读（event 0 在 0x427aca 先于类型测试、遇敌 0x458c80(100)+1 ≤ ratio、请求后 0x427b54 写 Visit、不成立 0x427d36 揭示不写 Visit）；大地图镜头 0x43bf30 步长未读",
+      "difference": "大地图揭示顺序已照原版（lane TOWNMAP：先揭示脚下路线并等完，再镜头滚到 teBMSetShowTrackPoint 的点揭示、等完、滚回，期间丢弃点击）；点远端点按 0x427070 最短路多跳行走、途中每点跑到达分派已照原版（lane WORLDPATH）；脚本行走 teSetBMWalkToPoint 已与点击同路（lane WORLDTOWN：0x45543a／0x42f7a4／0x427723，无路线原地不动）；到点分派已照原版（lane WORLDARRIVE：event 0 一律不分派、Town 也一样，只有分派成立才写 Visit，不成立按 0x427d36 揭示目的点路线；兩棲族部落第二段桥接已删，150／151 只由二转后的 0x434680 加入）；剩镜头滑行步长取战斗的 32（0x43bf30 在 [0x4c1b00]&0x4000000 时取 16；该位只由 0x453b08 置，大地图上是否置位未读）",
+      "original": "设 mode 1 的写者已定位：0x426e40 由行走者 0x427420 子状态 0／1 调用（显示请求 0x4c1bb0、镜头 0x43bf30、点击目标 0x4c1ab8 作废），另由 0x427d36（调用点 0x427d48，到点分派不成立与离城共用）调用；到点分派 0x427a86..0x427bad 已静态读（event 0 在 0x427aca 先于类型测试、遇敌 0x458c80(100)+1 ≤ ratio、请求后 0x427b54 写 Visit、不成立 0x427d36 揭示不写 Visit）；大地图镜头 0x43bf30 步长 0x20、剧情阶段位 0x4000000 置位时 0x10，该位只由 0x453b08 置，大地图上的状态未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/world_map_data.md",
         "docs/evidence_packets/static_reverse/original_world_town.md"

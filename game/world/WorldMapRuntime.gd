@@ -17,7 +17,7 @@ extends Node2D
 ## provenance:
 ##   rules: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_world_town.md
-##     (reveal order and dropped clicks: walker 0x427420)
+##     (reveal order, dropped clicks, walker member and shape: walker 0x427420)
 ##   rules: provisional (the glide uses the battle step 32)
 ##   layout: resource-derived content/imported/hsl/global/world_map/world_map.json
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/original_world_town/README.md
@@ -897,20 +897,22 @@ func completion_percent() -> int:
 	return Rules.completion_percent(state, world_map) if not world_map.is_empty() else 0
 
 
-## The marker figurine follows the carried member standing on `actor_id`'s row (001
-## 雷歐納德): after a 命運神殿 job-up it walks the map in the up-title frames, like the
-## battles and cutscenes draw him. Remake presentation — the original walker's shape
-## source is not established.
-func _spawn_marker(actor_id: String) -> void:
+## The walker figurine (0x427420 creation): the first registered member from the designated
+## slot (world state bigmap_walker_player_id, 0x4c1acc) up, drawn with the shape of its
+## current code — the up-title frames after a job-up (0x42c700 writes the Up code), as
+## carried_unit_view gives them (0x446c40(walker, shape, 0, 10) standing, (…, 2, 2) walking).
+## The designation is cleared once the walker stands (0x427481), so it holds for one map
+## entry. No registered slot in range (or no carry yet): `fallback_actor_id`.
+func _spawn_marker(fallback_actor_id: String) -> void:
+	var actor_id := fallback_actor_id
 	var view := {"id": MARKER_UNIT_ID, "actor_id": actor_id}
 	var units: Variant = _carry().get("units", {})
-	if typeof(units) == TYPE_DICTIONARY:
-		for unit_id in (units as Dictionary).keys():
-			var record: Variant = (units as Dictionary)[unit_id]
-			if typeof(record) == TYPE_DICTIONARY and str((record as Dictionary).get("actor_id", "")) == actor_id:
-				view = runtime.stage.carried_unit_view(str(unit_id), actor_id)
-				break
-	marker = runtime.stage.spawn_actor_node(MARKER_UNIT_ID, actor_id, Rules.point_position(world_map, current_point()), view)
+	var unit_id := Rules.walker_unit_id(units if typeof(units) == TYPE_DICTIONARY else {}, int(state.get(Rules.WALKER_PLAYER_ID, 0)))
+	state.erase(Rules.WALKER_PLAYER_ID)
+	if unit_id != "":
+		actor_id = str(((units as Dictionary)[unit_id] as Dictionary).get("actor_id", actor_id))
+		view = runtime.stage.carried_unit_view(unit_id, actor_id)
+	marker =runtime.stage.spawn_actor_node(MARKER_UNIT_ID, actor_id, Rules.point_position(world_map, current_point()), view)
 	marker.z_index = 3
 	marker.scale = Vector2(marker_scale, marker_scale)
 

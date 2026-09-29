@@ -13,7 +13,7 @@
 
 重制**全部都有数据和解释器，且都能玩到**，因为触发它们的关卡都已注册。现状两处：
 - **画面构图已照原版实录**：大地图不压暗，TownBG (158,148)、WINDOW70 菜单板 (60,60)、对白板上下两槽（runtime-measured，见[原版大地图与城镇画面实录](../runtime_observations/original_world_town/README.md) §重制接线）。
-- **行走者换人没有接**：`actSetBMWalkerPlayerID` 只做了记录，地图上一直画雷歐納德。
+- **行走者换人已接**：`actSetBMWalkerPlayerID` 写行走者指定槽，下一次进图从该槽起取第一名在队成员，建好即清（[行走者是谁](../static_reverse/original_world_town.md)）。
 
 ## 证据
 
@@ -88,14 +88,14 @@ TOWNDEF 共 191 条事件，180 条带 teShapeMessage 或 tePlayerMessage，合�
 | C5 | 自动行走 | STORY071 | 30→33，先揭示点 30 | 已有 |
 | C6 | 船行 | TOWNDEF 138（薛維斯港船长选一） | 队伍走 11→12 巴瀚納海峽；布置 152 | 已有 |
 | C7 | 船行 | TOWNDEF 183（戈黎塔尼港船员选一） | 揭示后走 25→26 | 已有 |
-| C8 | **行走者换人** | WINFAIL032 胜利、STORY071 | `actSetBMWalkerPlayerID SID_琥`：大地图小人改成琥（雷歐納德离队段落） | **缺失**：`TownEventRules.RECORDED_ONLY_TOKENS` 只记录，`WorldMapRuntime._spawn_marker` 固定画 001 |
+| C8 | **行走者换人** | WINFAIL032 胜利、STORY071 | `actSetBMWalkerPlayerID SID_琥`：下一次进图的行走者从槽 2（琥）起取第一名在队成员 | 已有：`TownEventRules` 写世界状态 `bigmap_walker_player_id`，`WorldMapRuntime._spawn_marker` 经 `WorldMapRules.walker_unit_id` 取人并清掉 |
 | C9 | 路线揭示 | STORY061（2）、STORY071（30）、WINFAIL034（34）；TOWNDEF 30、43、97、164、175、183、188、190 | `act／teBMSetShowTrackPoint`：以该点为端点的路线进入揭示动画 | 已有：进图和关城时消费；揭示按 `0x4280d0` 每 tick 裁剪半径 +1，照原版（见 [world_map_scene](../static_reverse/original_world_town.md)） |
 
 
 ## 重制接线
 
 - 实现入口见盘点表上方「重制处理」一栏；城镇画面构图由 `game/world/TownRuntime.gd` 照原版实录（不压暗、TownBG (158,148)、WINDOW70 (60,60)、对白板上下两槽，[original_world_town](../runtime_observations/original_world_town/README.md)）。
-- **C8 行走者换人（未实现）**：把 `actSetBMWalkerPlayerID` 的 SID 写进 world state，比如 `walker_actor_id`；`_spawn_marker` 用它代替固定 001。`actor_id` 用 EXTRAS 的 SID→001..009 映射。改动约 20 行，属 `game/world` 的规则接线。什么时候换回雷歐納德，要查后续脚本有没有再次调用 `actSetBMWalkerPlayerID SID_雷歐納德`：盘点里只有两处都是 SID_琥，**换回的时机未知**，需要原版证据。
+- **C8 行走者换人**：指定槽只管一次进图——原版建好行走者即把 `0x4c1acc` 清 0，之后每次进图从槽 0 起取人，所以换回雷歐納德不需要脚本（static-derived，[行走者是谁](../static_reverse/original_world_town.md)）。
 
 ## 复现
 
