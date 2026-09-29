@@ -6,6 +6,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# An active virtualenv (where requirements-dev.txt goes on a PEP 668 Python such as Homebrew's) comes first.
+PYTHON_BIN="${PYTHON_BIN:-${VIRTUAL_ENV:+$VIRTUAL_ENV/bin/python3}}"
 PYTHON_BIN="${PYTHON_BIN:-/opt/homebrew/bin/python3}"
 [[ -x "$PYTHON_BIN" ]] || PYTHON_BIN="$(command -v python3 || true)"
 if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--original" ) ]]; then

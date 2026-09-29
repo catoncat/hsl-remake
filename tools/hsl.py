@@ -33,6 +33,16 @@ if sys.platform == 'win32' and not sys.flags.utf8_mode:
     os.environ['PYTHONUTF8'] = '1'
     sys.exit(subprocess.call([sys.executable, '-X', 'utf8', *sys.argv]))
 
+# Tasks resolve content/…, docs/… against the working directory (hsltools.paths.TABLES and many importer
+# constants are relative), so `python3 <checkout>/tools/hsl.py …` from any other directory would read and
+# write the wrong tree. Run from the checkout root; relative paths the caller gave (HSL_ORIGINAL_DIR,
+# HSL_ORIGINAL_PAK, HSL_STEAM_CLASSIC, WINEPREFIX, --exe) keep meaning the caller's directory.
+CALLER_CWD = Path.cwd()
+for _name in ('HSL_ORIGINAL_DIR', 'HSL_ORIGINAL_PAK', 'HSL_STEAM_CLASSIC', 'WINEPREFIX'):
+    if os.environ.get(_name) and not Path(os.environ[_name]).expanduser().is_absolute():
+        os.environ[_name] = str(CALLER_CWD / os.environ[_name])
+os.chdir(Path(__file__).resolve().parent.parent)
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from hsltools import registry  # noqa: E402
@@ -149,7 +159,8 @@ def main(argv: list[str]) -> int:
     sub = parser.add_subparsers(dest='command', required=True)
 
     def common(p, jobs: bool = True) -> None:
-        p.add_argument('--exe', type=Path, default=ORIGINAL_EXE, help='original hsl01.exe for native execution')
+        p.add_argument('--exe', type=lambda value: CALLER_CWD / Path(value).expanduser(), default=ORIGINAL_EXE,
+                       help='original hsl01.exe for native execution')
         if jobs:
             p.add_argument('-j', '--jobs', type=int, default=default_jobs())
 

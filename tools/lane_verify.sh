@@ -22,6 +22,7 @@ export HSL_VERIFY_JOBS="${HSL_VERIFY_JOBS:-3}"
 # A lane's verification yields the CPU to the lead's gate (HSL_VERIFY_PRIORITY=1 runs this script too and
 # keeps normal priority): 2026-09-29 a fast gate took 1211 s instead of about 300 s next to lane verifications.
 [ "${HSL_VERIFY_PRIORITY:-0}" = 1 ] || renice 10 -p $$ >/dev/null 2>&1 || true
+PYTHON_BIN="${PYTHON_BIN:-${VIRTUAL_ENV:+$VIRTUAL_ENV/bin/python3}}"
 PYTHON_BIN="${PYTHON_BIN:-$([[ -x /opt/homebrew/bin/python3 ]] && echo /opt/homebrew/bin/python3 || command -v python3 || echo python3)}"
 LOG_DIR="$ROOT/ignored/lane-verify"
 HEAD_SHORT="$(git rev-parse --short HEAD)"

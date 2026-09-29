@@ -9,6 +9,7 @@ asset-dumps/*
 .godot/
 .pytest_cache/
 __pycache__/
+.venv/
 *.pyc
 
 # Godot import sidecars are local generated cache for this repo unless

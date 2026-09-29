@@ -60,7 +60,7 @@ git diff --cached --name-only --diff-filter=AM \
 
 - **不需要 bash 的入口**：`python tools\hsl.py doctor|check|generate`、`python tools\verify_runner.py python-tests`；玩和跑 Godot 用 PowerShell：`powershell -ExecutionPolicy Bypass -File tools\play.ps1`、`tools\godot.ps1 --headless --import`。`play.ps1` 在缺原版派生文件时先跑 `hsl.py bootstrap`，在缺 `.godot\imported` 或 bootstrap 生成了新文件时先导入；生成了新图片／声音后设 `$env:HSL_FORCE_IMPORT=1` 再跑一次。PowerShell 会吞掉裸 `--`，给 Godot 的用户参数写在 `++` 后面。
 - **Godot**：装 4.7，`godot` 在 PATH 上，或设 `GODOT_BIN` 指向 `Godot_v4.7.x-stable_win64_console.exe`（console 版才会把输出打到终端）。
-- **Python**：3.10 以上，`python -m pip install -r requirements-dev.txt`。`hsl.py`、`verify_runner.py` 在 Windows 自动进 UTF-8 模式；直接跑别的 `tools\*.py` 时先设 `$env:PYTHONUTF8=1`。
+- **Python**：3.10 以上，依赖装进虚拟环境：`python -m venv .venv`，激活（Windows `.venv\Scripts\Activate.ps1`，macOS／Linux `. .venv/bin/activate`）后 `pip install -r requirements-dev.txt`；Homebrew、Debian 等的系统 Python 不允许全局安装。`hsl.py`、`verify_runner.py` 在 Windows 自动进 UTF-8 模式；直接跑别的 `tools\*.py` 时先设 `$env:PYTHONUTF8=1`。
 - **原版目录**：`HSL_ORIGINAL_DIR` 未设时，Windows 读注册表 `HKCU\Software\Valve\Steam\SteamPath` 并试 C:–F: 常见 Steam 目录，Linux 查 `~/.local/share/Steam`、`~/.steam`、Flatpak Steam；每个 Steam 库按 app 4030150 的 `installdir` 找 `GAME-PAK/`。`doctor` 会打印找到的目录或查过的库。
 - **符号链接**：选中的包不叫 `hsl.pak`（Steam 目录默认选 `hsl-cn.pak`）时，工具在 `ignored\original-view\hsl\` 建视图；没有符号链接权限时自动改用 junction／硬链接（跨盘则复制）。
 - **仍要 bash 的**：`tools/verify.sh`、`tools/lane_verify.sh`、`tools/lane_merge.sh` 等维护者门禁（Git Bash 或 WSL 下跑），以及只在 macOS 上有意义的原作采样（`hsl_capture.sh`、Swift helper）。

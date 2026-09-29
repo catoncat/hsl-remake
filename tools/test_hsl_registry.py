@@ -5,8 +5,10 @@ import contextlib
 import importlib
 import io
 import json
+import os
 import pkgutil
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -276,6 +278,21 @@ class AffectedTests(unittest.TestCase):
         offenders = sorted(path.relative_to(ROOT).as_posix() for path in (ROOT / 'tools' / 'hsltools').rglob('*.py')
                            if pattern.search(path.read_text(encoding='utf-8')))
         self.assertEqual(offenders, [])
+
+
+class HslEntryTests(unittest.TestCase):
+    def test_hsl_runs_from_the_checkout_root_and_keeps_caller_relative_paths(self):
+        # Tasks read content/… relative to the working directory: `python3 <checkout>/tools/hsl.py` run from
+        # another directory must not read or write that directory's tree.
+        code = f'import os, runpy; runpy.run_path({str(TOOLS / "hsl.py")!r}); print(os.getcwd()); print(os.environ["HSL_ORIGINAL_DIR"])'
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {**os.environ, 'HSL_ORIGINAL_DIR': 'GAME-PAK'}
+            for name in ('HSL_ORIGINAL_PAK', 'HSL_STEAM_CLASSIC'):  # a host pack/classic path must not re-point ignored/original-view
+                env.pop(name, None)
+            lines = subprocess.run([sys.executable, '-c', code], cwd=tmp, env=env, capture_output=True, text=True,
+                                   check=True).stdout.splitlines()
+            self.assertEqual(Path(lines[0]).resolve(), ROOT.resolve())
+            self.assertEqual(Path(lines[1]).resolve(), (Path(tmp) / 'GAME-PAK').resolve())
 
 
 if __name__ == '__main__':

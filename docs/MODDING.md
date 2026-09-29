@@ -9,7 +9,7 @@
 | 层 | 目录 | 谁产生 | 公开仓库里有没有 | 改它会怎样 |
 | --- | --- | --- | --- | --- |
 | 素材（imported） | `content/imported/hsl/` | 导入器从你的正版 `GAME-PAK/`（`hsl.pak`、`music/`）解出：图片、声音、原版文本表（`global/tables/PLAYERS.TXT` 等）、剧本源文本 | 没有，本地导入 | 直接改的话，下次跑那个导入任务会被原版覆盖回去，`hsl check` 也会报和原版不一致 |
-| 手写数据（authored） | `content/authored/`、`content/battles/levels/NNN.json`、`content/battles/campaign.json`、`content/world/`、`content/schema/` | 人手写 | 有（只有 `content/authored/actors/` 下的占位 PNG 不在，那是原版帧换色） | 重跑用到它的生成任务，下游跟着变。**你的改动主要放这一层** |
+| 手写数据（authored） | `content/authored/`、`content/battles/levels/NNN.json`、`content/battles/campaign.json`、`content/world/`、`content/schema/` | 人手写 | 有（只有示范角色 102／103 的 PNG 不在：那是原版帧换色，bootstrap 的 `demo_actor_art` 任务在本地生成） | 重跑用到它的生成任务，下游跟着变。**你的改动主要放这一层** |
 | 生成物（generated） | `content/generated/hsl/`、`content/battles/battle_NNN.json`、`story_NNN.json` | `python3 tools/hsl.py generate …` 从上面两层算出来 | 没有（只保留重制配乐 `remake_music/`、自动对局结果和清单 `original_derived_manifest.json`） | 不要手改：下次生成就覆盖了，`hsl check` 会报出来 |
 | 代码（game） | `game/` | 人写 | 有 | 规则只在 `game/sim/`；全游戏共用的 tick 与界面皮肤在 `game/common/`；战斗画面在 `game/battle/`；大地图和城镇在 `game/world/`；标题在 `game/title/`；设置和选项在 `game/settings/` |
 
@@ -32,7 +32,7 @@
 
 ## 2. 跑起来
 
-需要 Godot 4.7、Python 3.10+（`python -m pip install -r requirements-dev.txt`），以及你自己的 Steam《幻世錄 重製版》里的 `GAME-PAK/` 目录。
+需要 Godot 4.7+、Python 3.10+，以及你自己的 Steam《幻世錄 重製版》里的 `GAME-PAK/` 目录。Python 依赖装进虚拟环境：`python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt`（Homebrew、Debian 等的系统 Python 不允许全局安装；`tools/doctor.sh` 会用激活的虚拟环境）。从压缩包解出、没有 `.git` 的目录也能玩和改，`doctor` 对此只报 WARN；`hsl affected` 和 `tools/lane_verify.sh` 要先 `git init` 并提交一次。
 
 ```sh
 export HSL_ORIGINAL_DIR=/path/to/GAME-PAK     # Windows/Linux 装了 Steam 版的话可以不设，工具会自己找
@@ -42,7 +42,7 @@ python3 tools/hsl.py check original_derived_manifest          # 逐文件比对�
 tools/play.sh                                 # 没导入过会先跑 bootstrap，再导入 Godot 资源、开游戏；Windows 用 powershell -ExecutionPolicy Bypass -File tools\play.ps1
 ```
 
-`bootstrap` 以原版派生文件清单（`content/generated/hsl/original_derived_manifest.json`，每个文件记着由哪个任务生成）为准：有文件缺席的任务按先上游后下游的顺序生成，文件齐全的任务跳过；`--dry-run` 只数不写。最后一行是 `HSL_BOOTSTRAP_PASS|FAIL generated=… skipped=… original_missing=… no_generator=… failed=… differ=…`。`original_missing` 是要用到 Steam 版不带的东西（原版程序 `hsl01.exe`、原版录像或存档）的任务，`no_generator` 是只有检查器、或输入来自仓库外工具的证据文件，这两类只列出、不算失败；`differ` 是生成出来但和清单哈希不一致的任务（原版字库 `original_bitmap_font` 按导入后内容里实际用到的字排版：改过文字就会不同，公开检出里少了几份没有生成途径的证据文本，字集也会差几个字；不影响游戏）；`failed` 非零时 `tools/play.sh` 下次启动会再补一次。只想重做某一族，照旧 `python3 tools/hsl.py generate <任务或族>`。
+`bootstrap` 以原版派生文件清单（`content/generated/hsl/original_derived_manifest.json`，每个文件记着由哪个任务生成）为准：有文件缺席的任务按先上游后下游的顺序生成，文件齐全的任务跳过；`--dry-run` 只数不写。最后一行是 `HSL_BOOTSTRAP_PASS|FAIL generated=… skipped=… original_missing=… no_generator=… failed=… differ=…`。`original_missing` 是要用到 Steam 版不带的东西（原版程序 `hsl01.exe`、原版录像或存档）的任务，`no_generator` 是只有检查器、或输入来自仓库外工具的证据文件，这两类只列出、不算失败；`differ` 是生成出来但和清单哈希不一致的任务（原版字库 `original_bitmap_font` 按导入后内容里实际用到的字排版：改过文字就会不同，公开检出里少了几份没有生成途径的证据文本，字集也会差几个字；不影响游戏）；`failed` 非零时 `tools/play.sh` 下次启动会再补一次。末尾的 `missing_files` 是 `original_missing`／`no_generator` 那些任务仍缺的文件数，`unowned` 是清单里不归任何任务、只随维护者导入刷新的文件数，`rounds`／`seconds` 是轮数和耗时；这几项和各条 `[bootstrap no_generator]` 下面附的两行原话（比如 `title_assets` 找不到原版录像帧，它的图照样生成了）都只说明缺了什么证据，不影响游戏。之后 `doctor` 会对第一章机制夹具 `first_battle.json` 引用的 `chapter01/message_text_evidence.json` 报 WARN，同样不影响游戏。只想重做某一族，照旧 `python3 tools/hsl.py generate <任务或族>`。
 
 **没有原版的时候**：凡是读写原版派生文件的任务都会报 `SKIP original-absent`，只有文档和纯代码的检查会真正跑出 PASS；`tools/verify.sh` 会跳过 Godot 导入和场景套件。游戏本身开不起来，因为关卡 JSON 和素材都是生成物。注意 SKIP 只是跳过，不等于通过。
 

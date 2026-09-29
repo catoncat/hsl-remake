@@ -2,7 +2,7 @@
 
 [MODDING](MODDING.md) 的附篇。MODDING 讲每件事改哪一层；本页讲从零写一关、一名角色、一段剧情时，每一步改哪个文件、跑哪条命令，以及这一步是**只写数据**、**必须有素材**还是**必须改代码**。分层规则（导入层 `content/imported/` 不要直接改、生成物不要手改）只在 [MODDING §1](MODDING.md#1-三分钟看懂结构) 讲一次，这里默认你已经读过。
 
-示范：第 200 关「龍脊隘口」和两名新角色 102「蕾雅」、103「托蘭」，全部在 `content/authored/` 里，不需要原版剧本。跑通标准是 `tests/run_authored_level_tests.gd`：夹具战役（`start_level` 为 200）从「開始新故事」直接进第 200 关；从标题的「戰場記錄」进第 200 关 → 开场对白 → 机器人打到自然胜负 → 结果页 → 谢幕；102／103 用自己文件夹里的走行帧、切入、头像和称号。公开仓库里没有 102／103 的 PNG（占位美术是原版帧换色），要跑第 200 关得自己把图放进 `content/authored/actors/102/`、`103/`。
+示范：第 200 关「龍脊隘口」和两名新角色 102「蕾雅」、103「托蘭」，全部在 `content/authored/` 里，不需要原版剧本。跑通标准是 `tests/run_authored_level_tests.gd`：夹具战役（`start_level` 为 200）从「開始新故事」直接进第 200 关；从标题的「戰場記錄」进第 200 关 → 开场对白 → 机器人打到自然胜负 → 结果页 → 谢幕；102／103 用自己文件夹里的走行帧、切入、头像和称号。公开仓库里没有 102／103 的 PNG（占位美术是原版 003／004 的帧换色），`python3 tools/hsl.py bootstrap` 的 `demo_actor_art` 任务在本地生成它们。
 
 ## 1. 文件在哪
 
@@ -15,7 +15,7 @@ content/authored/level200/        目录名必须是 level＋三位数字，注�
   messages.json   两个剧本用到的全部讯息编号 → 文字，以及说话者代号 → 显示名
   terrain.txt     地形：每行一列、每个字符一格（# 不可通行，. 平地，1–9 高度）
 content/battles/levels/200.json   关卡档案，只有 battle 分区：id／title／initial_focus_unit_id／initial_objective_phase／result_labels
-content/battles/campaign.json     battles 里注册一行
+content/battles/campaign.json     battles 里注册一行（挂在第一章后面；你自己的战役注册在它自己的 campaign.json，见 #9）
 content/authored/roles/characters.json   你的角色（PLAYERS.TXT 的字段，UTF-8），code 不与原表重复
 content/authored/roles/roster.json       名册：参与角色链的代号
 content/authored/roles/job_formulas.json、learning_tables.json   职业公式与学习表
@@ -60,14 +60,14 @@ python3 tools/hsl.py check authored_level:200 authored_art actor_panels level_pr
 | # | 步骤 | 类型 | 改哪里、怎么做 |
 | --- | --- | --- | --- |
 | 1 | 关卡骨架（标题、结果标签、初始焦点、目标阶段） | 只写数据 | `content/battles/levels/200.json` 的 `battle` 分区，字段见 [LEVEL_PROFILES](architecture/LEVEL_PROFILES.md) |
-| 2 | 地形（格子、阻挡、高度） | 只写数据 | `terrain.txt`；生成器算出统计和 `hsl_wrd_terrain.v2`。没有 tile id（原版 WRD 的 t 值运行时不读） |
-| 3 | 地图图片 | **必须有素材** | `level.json` 的 `map_texture` 指任一 PNG，尺寸＝格数×32 像素，和 `terrain.txt` 的行列数对上。示范借了第 2 关的原版图 |
-| 4 | 单位与阵营 | 只写数据 | `level.json` 的 `units[]`：`id`、`actor`（PLAYERS 或 characters.json 的代号）、`token`（剧本里用的 `SID_…`）、`role`、`cell`。同一 token 的多个单位依次是 serial 1、2、3… |
+| 2 | 地形（格子、阻挡、高度） | 只写数据 | `terrain.txt`；生成器算出统计和 `hsl_wrd_terrain.v2`。没有 tile id（原版 WRD 的 t 值运行时不读）。每格一个字符，高度只能写 0–9。沿用第一章某关的地形：bootstrap 生成的 `content/generated/hsl/static/hsl01/levelNNN_terrain.json` 可以直接转成 terrain.txt：`python3 -c "import json,sys; g=json.load(open(sys.argv[1]))['grid']; hi=max((c['h'] for r in g for c in r if not c['b']),default=0); assert hi<=9, f'walkable height {hi} > 9: terrain.txt holds 0-9'; print('\n'.join(''.join('#' if c['b'] else '.' if c['h']==0 else str(c['h']) for c in r) for r in g))" content/generated/hsl/static/hsl01/level051_terrain.json > content/authored/level201/terrain.txt`。第一章有 8 关可走格高于 9：012、026 最高 16，019、525、526、527、904 最高 18，013 最高 21。命令遇到它们直接报错，不压成 9：高差 ≥3 不可走（`game/sim/TacticalGridRules.gd`），压平会把悬崖变成可走的坡，这 8 关不能原样搬 |
+| 3 | 地图图片 | **必须有素材** | `level.json` 的 `map_texture` 指任一 PNG，尺寸＝格数×32 像素，和 `terrain.txt` 的行列数对上。示范借了第 2 关的原版图；和上一步的地形配套时，借同一关的 `content/imported/hsl/chapter01/battleNNN/levelN.png`（如 `battle051/level51.png`） |
+| 4 | 单位与阵营 | 只写数据 | `level.json` 的 `units[]`：`id`、`actor`（PLAYERS 或 characters.json 的代号）、`token`（剧本里用的 `SID_…`）、`role`、`cell`。同一 token 的多个单位依次是 serial 1、2、3…。借原版外观的单位从 `presentation` 指的 manifest 取表现：走行帧先查本关 manifest，再查第一章共用的 `content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json`，两处都没有才生成失败；音效缺行不报错，这名单位只是没声音；头像只查说话的角色，同样退回第一章共用的 `content/imported/hsl/chapter01/portraits/manifest.json`，两处都没有才失败。音效这边会让生成失败的只有新角色 `art.json` 里 `sounds_of` 借的代号不在本关音效 manifest（如 `sounds_of 003 has no row in …actor_audio.json`）。第一章每关的 manifest 只带本关出场的人；示范借的 `battle500`（共用遭遇演员池）的走行帧与音效带 001–009、023、024、027、030–039、041、043–045、048、049、051、065，头像只带 001、008、023、024、041、043、048、049；敌人模板从走行帧那张表里挑最省事 |
 | 5 | 开场剧情（配乐、延迟、走位、对白、亡语、状态） | 只写数据 | `story.txt`。能用的 token 见 `tools/hsltools/levels/timeline.py` 的 `ACTION_KIND`／`EXTENDED_TOKENS`；`game/battle/runtime/BattleOpeningCoordinator.gd` 里没有演出分支的 token 落进 `RECORD_ONLY_KINDS`，只记录不演。走位终点由生成器算成格子坐标。**配乐**：只有 0–99 号关在原版曲目表里有曲子，100 号以上的关写 `actPlayLevelMusic` 不换曲（换关时已经停过乐，所以单独写就是静音；先用 `actPlayMusic` 放过曲的话照旧放着），用 `actPlayMusic,N` 指定曲号；自己的曲子放进 `content/authored/music/N.ogg`（N 从 100 起），剧本写 `actPlayMusic,N`，示范第 200 关用的是 100 |
 | 6 | 胜负条件与事件（清场胜、主角倒下败、第 N 回合援军） | 只写数据 | `winfail.txt`：`[win]`／`[fail]`／`[event]` 段，每段是 `code`、`message` 加一串 `action =`；开头的 action 是条件（`actCheckEnemyTotalNumber,0` 清场，`actCheckPlayer,1,SID_雷歐納德` 主角倒下，`actCheckRoundNumber,3` 第 3 回合），后面是动作。19 个条件、47 个动作及参数写法见 [WINFAIL_TOKENS](WINFAIL_TOKENS.md)。剧本插入的物件代号在 `level.json` 的 `objects` 里给出 `actor`／`token` |
 | 7 | 对白文字与说话者名 | 只写数据 | `messages.json`；缺讯息编号或缺说话者名，生成即失败。原版用 RESOURCE.TXT 编号当说话者 id，你的关直接用 token 当 id |
 | 8 | 下一关／结局 | 只写数据 | 胜利段写 `actSetNextPlayLevelEvent,200,<下一关 key>`；`998` 表示进谢幕（战斗结果页可以直接进谢幕） |
-| 9 | 注册 | 只写数据 | `content/battles/campaign.json` 的 `battles` 加 `"200": {"scenario": "res://content/battles/battle_200.json", "title": "龍脊隘口"}`，再重生成战役总览（§2）。自动对局结果文件要补一行，见 §9 |
+| 9 | 注册 | 只写数据 | 这关所属战役的 `campaign.json` 的 `battles` 加 `"200": {"scenario": "res://content/battles/battle_200.json", "title": "龍脊隘口"}`，再重生成战役总览（§2）。挂在第一章后面就是 `content/battles/campaign.json`；你自己的战役（#19）写进它自己的 `campaign.json`，示范第 200 关两份都登记了。扫关和自动对局只测当前战役登记的关，自己战役里的关要带 `HSL_CAMPAIGN=<id>`（§9）。自动对局结果文件要补一行，见 §9 |
 
 ### 3.2 角色、职业与招式
 
@@ -222,7 +222,7 @@ python3 tools/hsl.py affected --since <基线提交> --check                    
 ```
 
 - **注册后自动覆盖**：`tests/run_battle_sweep_tests.gd`（开场 → 首次控制 → 强制胜利 → 交接；胜利条件不是清敌时，在 `levels/NNN.json` 写 `sweep_fixture`）和 `tests/run_autoplay_sweep_tests.gd` 会自动测到新关。窗口化截图：`tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=200`。
-- **自动对局结果文件** `content/generated/hsl/development/autoplay/results.json` 要补一行：跑一次全量 `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，它会重写结果文件，并因"新增了一关"报一次不一致，看过重写结果后提交即可。`HSL_AUTOPLAY_LEVELS=200` 只跑这一关，**不写**结果文件，适合调试；`HSL_RNG_SEED=7` 换种子（同样不写）。
+- **自动对局结果文件** `content/generated/hsl/development/autoplay/results.json` 要补一行：跑一次全量 `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，它会重写结果文件，并因"新增了一关"报一次不一致，看过重写结果后提交即可。`HSL_AUTOPLAY_LEVELS=200` 只跑这一关，**不写**结果文件，适合调试；`HSL_RNG_SEED=7` 换种子（同样不写）。两个扫关套件读的是当前战役的 `campaign.json`（默认第一章），只登记在你自己战役里的关要加上战役 id 才找得到：`HSL_CAMPAIGN=sequel_demo HSL_AUTOPLAY_LEVELS=200 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，输出 `AUTOPLAY level=200 outcome=win …` 即自动打到了胜利。
 - **改了剧情流转、大地图或城镇**：`tests/run_story_scene_tests.gd`（全部注册剧情场景：启动 → 跑完 → 交接）、`run_town_scene_tests.gd`，用法同上；大地图与流转改动按需跑 `run_story_mode_explorer_tests.gd`（约 20 分钟，自动走全图）。
 - **原版链的关**（有原版时）：`python3 tools/hsl.py list '*:37'` 列出第 37 关的全部任务，`python3 tools/hsl.py check '*:37'` 只跑它们。
 - 本仓库的"原版裁判"对你有意改动的规则报不一致是正常的，见 [MODDING §4](MODDING.md#4-改规则) 末段；完整门禁口径见 [CONTRIBUTING §2](../CONTRIBUTING.md#2-门禁口径)。

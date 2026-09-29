@@ -20,7 +20,11 @@
 
 ## 运行
 
-需要 Godot 4.x 和 Python 3.10+（`python3 -m pip install -r requirements-dev.txt`）。
+需要 Godot 4.7+ 和 Python 3.10+。Python 依赖装进虚拟环境（Homebrew、Debian 等发行版的系统 Python 不允许全局 `pip install`），下面的命令都在激活了它的终端里跑：
+
+```sh
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt
+```
 
 ```sh
 export HSL_ORIGINAL_DIR=/path/to/GAME-PAK

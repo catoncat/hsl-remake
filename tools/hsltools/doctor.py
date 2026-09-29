@@ -69,7 +69,10 @@ def version_tuple(text: str) -> tuple[int, int] | None:
     return (int(match.group(1)), int(match.group(2))) if match else None
 
 
-def check_scenario() -> None:
+def check_scenario() -> list[str]:
+    """Raises when the campaign's first battle is invalid or lacks a resource; returns the formation fixture's
+    absent resources (the campaign does not load the fixture, and the public bootstrap cannot produce every
+    file it names, e.g. the chapter-wide message_text_evidence.json)."""
     # The campaign's first battle (campaign.json start_level) is a generic level battle; the
     # reviewed formation fixture keeps the same 12-unit roster for the mechanics suites.
     campaign = json.loads(Path('content/battles/campaign.json').read_text(encoding='utf-8'))
@@ -82,15 +85,24 @@ def check_scenario() -> None:
     assert len(data.get('playable_units', [])) == 12
     fixture = json.loads(Path('content/battles/first_battle.json').read_text(encoding='utf-8'))
     assert fixture.get('rule_adapter') == 'development_battle' and len(fixture.get('playable_units', [])) == 12
+    absent = {id(data): [], id(fixture): []}
     for document in (data, fixture):
         for resource in document.get('resources', {}).values():
-            assert isinstance(resource, str) and resource.startswith('res://')
-            assert Path(resource.removeprefix('res://')).exists(), resource
+            assert isinstance(resource, str) and resource.startswith('res://'), resource
+            if not Path(resource.removeprefix('res://')).exists():
+                absent[id(document)].append(resource)
+    assert not absent[id(data)], f'{path} references absent {" ".join(absent[id(data)])}'
+    return absent[id(fixture)]
 
 
 def repository(report: Report) -> None:
     top = run(['git', 'rev-parse', '--show-toplevel']).stdout.strip()
-    report.check(bool(top) and Path(top).resolve() == ROOT.resolve(), f'git root: {ROOT}', 'not inside the expected git repository')
+    if not top:
+        # A downloaded archive has no .git: the game, bootstrap and hsl generate/check still run.
+        report.warn('not a git checkout (downloaded archive?): the game and hsl bootstrap/generate/check work; '
+                    'hsl affected and tools/lane_verify.sh need a git clone or `git init`')
+    else:
+        report.check(Path(top).resolve() == ROOT.resolve(), f'git root: {ROOT}', f'git root is {top}, not this checkout {ROOT}')
     project = Path('project.godot')
     report.check(project.is_file(), 'project.godot present', 'project.godot missing')
     text = project.read_text(encoding='utf-8') if project.is_file() else ''
@@ -135,10 +147,16 @@ def content(report: Report) -> None:
         report.ok('SKIP original-absent: first battle scenario not imported (HSL_ORIGINAL_DIR=... python3 tools/hsl.py bootstrap; tools/play.sh runs it)')
     else:
         try:
-            check_scenario()
-            report.ok('first battle (campaign start_level -> battle_051.json) and the formation fixture reference existing resources')
-        except (AssertionError, KeyError, OSError, ValueError):
-            report.fail('content/battles/battle_051.json / first_battle.json is invalid or references missing resources')
+            absent = check_scenario()
+        except (AssertionError, KeyError, OSError, ValueError) as error:
+            report.fail(f'content/battles/battle_051.json / first_battle.json is invalid or references missing resources: {error!r}')
+        else:
+            if absent:
+                report.warn('first battle (campaign start_level -> battle_051.json) references existing resources; the formation'
+                            f' fixture first_battle.json names files this checkout lacks: {" ".join(absent)} (the game does not'
+                            ' load the fixture; only the maintainer import refreshes them)')
+            else:
+                report.ok('first battle (campaign start_level -> battle_051.json) and the formation fixture reference existing resources')
     bash = shutil.which('bash')
     if sys.platform == 'win32' or not bash:
         report.info('route syntax: skipped (tools/hsl_capture.sh routes drive macOS windows through bash)')
