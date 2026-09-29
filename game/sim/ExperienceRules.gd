@@ -27,7 +27,7 @@ static func actor_error(actor: Dictionary) -> String:
 ## `_resource_input_error`), so it is not run again.
 static func input_error(loop: Dictionary, actor: Dictionary, enhancement_checked: bool = false) -> String:
 	if not enhancement_checked:
-		var stat_error := ProgressionRules.enhancement_profile_error(actor, loop["equipment_items"])
+		var stat_error := ProgressionRules.healed_enhancement_error(actor, loop)
 		if stat_error != "": return stat_error
 	var error := actor_error(actor)
 	if error != "": return error

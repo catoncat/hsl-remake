@@ -187,6 +187,33 @@ static func enhancement_profile_error(unit: Dictionary, equipment_items: Diction
 	return ""
 
 
+## Product self-heal switch (development switch HSL_SELF_HEAL=1, read once at start;
+## tools/play.sh turns it on, so the normal game and tools/playtest.sh run with it). Off
+## by default: every tests/ suite, autoplay and the chapter walk stay strict.
+static var self_heal := OS.get_environment("HSL_SELF_HEAL") == "1"
+## HSL_SELF_HEAL lines already printed: a copy taken before the in-place heal repeats the
+## same repair (for every drifted unit, interleaved), which logs once.
+static var _heal_lines := {}
+
+
+## `enhancement_profile_error` for a unit of `loop`, with the self-heal recovery: while
+## `self_heal` is on, an `inconsistent_*` derived profile (the original has no such check
+## and never stops on it) is replaced in place by the 0x448840 growth refresh, logged as
+## `HSL_SELF_HEAL unit=… level=… round=… reason=…`, and re-checked; only a unit still
+## inconsistent after the refresh keeps the error. Off, it is the plain check.
+static func healed_enhancement_error(unit: Dictionary, loop: Dictionary) -> String:
+	var error := enhancement_profile_error(unit, loop["equipment_items"])
+	if error == "" or not self_heal or not error.begins_with("inconsistent_"): return error
+	var refreshed := refreshed_growth_stats(unit, loop["equipment_items"])
+	if enhancement_profile_error(refreshed, loop["equipment_items"]) != "": return error
+	for key in refreshed: unit[key] = refreshed[key]
+	var line := "HSL_SELF_HEAL unit=%s level=%d round=%d reason=%s" % [str(unit.get("id", "")),
+		int(loop.get("winfail_script_rules", {}).get("source_level", 0)), int(loop.get("turn", 0)), error]
+	if not _heal_lines.has(line): print(line)
+	_heal_lines[line] = true
+	return ""
+
+
 static func refresh_growth_stats(unit: Dictionary, equipment_items: Dictionary) -> Dictionary:
 	var error := refresh_input_error(unit, equipment_items)
 	if error != "":

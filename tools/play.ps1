@@ -43,5 +43,7 @@ if ($env:HSL_FORCE_IMPORT -eq '1' -or -not (Test-Path -LiteralPath (Join-Path $R
 
 # Development switch: P freezes the game and N steps one frame (game/debug/DebugPause.gd); HSL_DEBUG_PAUSE=0 turns it off.
 if (-not $env:HSL_DEBUG_PAUSE) { $env:HSL_DEBUG_PAUSE = '1' }
+# Product self-heal (game/sim/ProgressionRules.gd self_heal), as in tools/play.sh; HSL_SELF_HEAL=0 turns it off.
+if (-not $env:HSL_SELF_HEAL) { $env:HSL_SELF_HEAL = '1' }
 & $Godot --path $Root @args
 exit $LASTEXITCODE

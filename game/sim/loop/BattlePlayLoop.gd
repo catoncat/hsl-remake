@@ -1109,7 +1109,7 @@ static func clear_extra_action(loop: Dictionary) -> void:
 
 
 static func resource_input_error(loop: Dictionary, actor: Dictionary) -> String:
-	var stat_error := ProgressionRules.enhancement_profile_error(actor, loop["equipment_items"])
+	var stat_error := ProgressionRules.healed_enhancement_error(actor, loop)
 	if stat_error != "": return stat_error
 	var error := TurnEndRules.state_error(loop)
 	if error != "": return error

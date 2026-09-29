@@ -22,5 +22,9 @@ trap - EXIT
 # Development switch: P freezes the game and N steps one frame (game/debug/DebugPause.gd).
 # On for every launch through here, playtests included; HSL_DEBUG_PAUSE=0 turns it off.
 export HSL_DEBUG_PAUSE="${HSL_DEBUG_PAUSE:-1}"
+# Product self-heal (game/sim/ProgressionRules.gd self_heal): an inconsistent derived profile is
+# refreshed and logged as HSL_SELF_HEAL instead of stopping the battle. Tests and autoplay (which
+# never come through here) stay strict; HSL_SELF_HEAL=0 turns it off here too.
+export HSL_SELF_HEAL="${HSL_SELF_HEAL:-1}"
 unset __CFBundleIdentifier  # see tools/godot.sh: keep the game window out of the terminal's Dock entry
 exec "$GODOT_BIN" --path "$ROOT" "$@"

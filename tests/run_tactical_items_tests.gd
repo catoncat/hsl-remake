@@ -131,6 +131,24 @@ func cure_weaken() -> void:
 		if lapse["interaction"] == "ai_resolving": lapse = BattlePlayLoop.step_ai_turn(lapse,func(_bound):return 0)
 		else: lapse = BattlePlayLoop.choose_command(lapse,"wait")
 	check(lapse["last_action_end"]["expired"].has("weaken") and BattlePlayLoop.unit(lapse,"tina")["combat_profile"]["live_attack_damage"] == healthy_attack,"衰弱 expiring at action end refreshes (0x40b910 -> 0x448840) back to the unweakened derived attack")
+	# Product self-heal (ProgressionRules.self_heal, HSL_SELF_HEAL): a drifted derived attack
+	# is refreshed and the command runs as on the consistent unit, with one HSL_SELF_HEAL log
+	# line; strict mode still rejects it.
+	var drift := fixture();var drifted := BattlePlayLoop.unit_ref(drift,"tina")
+	drifted.merge(BattlePlayLoop.StatusEffectRules.apply_weaken(drifted,3,10)["changes"],true)
+	drifted.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(drifted,drift["equipment_items"]),true)
+	var consistent := BattlePlayLoop.copy(drift);var waited := BattlePlayLoop.choose_command(consistent,"wait")
+	drifted["combat_profile"]["live_attack_damage"] += 7
+	var strict := BattlePlayLoop.choose_command(drift,"wait")
+	check(not BattlePlayLoop.same_state(waited,consistent) and BattlePlayLoop.same_state(strict,drift),"strict mode still rejects every command of a unit whose derived attack drifted")
+	var sink := HealLog.new();OS.add_logger(sink)
+	BattlePlayLoop.ProgressionRules.self_heal = true
+	var healed := BattlePlayLoop.choose_command(drift,"wait")
+	BattlePlayLoop.ProgressionRules.self_heal = false
+	OS.remove_logger(sink)
+	var lines := sink.lines.filter(func(l):return l.begins_with("HSL_SELF_HEAL "))
+	check(BattlePlayLoop.same_state(healed,waited),"self-heal refreshes the drifted derived attack (0x448840) and the wait command runs as on the consistent unit")
+	check(lines.size() == 1 and lines[0].strip_edges() == "HSL_SELF_HEAL unit=tina level=0 round=1 reason=inconsistent_enhanced_live_attack_damage","self-heal logs one HSL_SELF_HEAL line: %s" % str(lines))
 	var none := fixture();BattlePlayLoop.unit_ref(none,"tina")["inventory"] = [249,0,0,0,0,0,0,0]
 	var wasted := BattlePlayLoop.use_item(none,"249")
 	check(wasted["item_use_sequence"] == 1 and BattlePlayLoop.unit(wasted,"tina")["inventory"] == [0,0,0,0,0,0,0,0] and not wasted["last_item_use"]["cured_weaken"],"振奃劑 on a healthy target still spends the 249 (0x444aba)")
@@ -172,3 +190,10 @@ func magic_and_expiry() -> void:
 		else: cursor = BattlePlayLoop.choose_command(cursor,"wait")
 	check(saved_word != 0 and StatEnhancementRules.word(BattlePlayLoop.unit(cursor,"tina"),"defense_up") == 0 and cursor["last_action_end"]["expired"].has("defense_up"),"actual independent actions and queue cycles expire the local enhancement")
 	check(BattlePlayLoop.unit(cursor,"tina")["combat_profile"]["live_defense"] == BattlePlayLoop.unit(base,"tina")["combat_profile"]["live_defense"],"item expiry restores exact base/equipment defense")
+
+
+## Collects printed lines while a check reads the game log (Godot Logger).
+class HealLog extends Logger:
+	var lines: Array = []
+	func _log_message(message: String, _error: bool) -> void:
+		lines.append(message)
