@@ -26,29 +26,42 @@ static func packet() -> Dictionary:
 	return _packet
 
 
+## `object_name` is an object symbol or a patterned insert's key (`pattern_key`), whose
+## variants are its instances in the inserter's creation order.
 static func tracked(object_name: String) -> bool:
-	return packet()["objects"].has(object_name)
+	return packet()["objects"].has(object_name) or packet().get("patterns", {}).has(object_name)
+
+
+## The packet key of a patterned insert as the script writes it (`op:code,x,y,…`); tracked only
+## for the rows the probe runs natively (objcomd_motion.py PATTERN_ROWS).
+static func pattern_key(op: String, args: Array) -> String:
+	return op + ":" + ",".join(args.map(func(word): return str(word)))
+
+
+static func _row(object_name: String) -> Dictionary:
+	var row: Dictionary = packet()["objects"].get(object_name, {})
+	return row if not row.is_empty() else packet().get("patterns", {}).get(object_name, {})
 
 
 ## Frames until the last instance is gone; open-ended programs (objmOver holds, endless loops)
 ## report the probe's frame limit and `open_ended`. `hit` picks the hit run where it differs.
 static func frames(object_name: String, hit: bool = false) -> int:
-	var row: Dictionary = packet()["objects"][object_name]
+	var row: Dictionary = _row(object_name)
 	return int(row["hit_frames"]) if hit and row.has("hit_frames") else int(row["frames"])
 
 
 static func open_ended(object_name: String) -> bool:
-	return bool(packet()["objects"][object_name]["open_ended"])
+	return bool(_row(object_name)["open_ended"])
 
 
 static func variants(object_name: String) -> int:
-	return (packet()["objects"][object_name]["variants"] as Array).size()
+	return (_row(object_name)["variants"] as Array).size()
 
 
 ## [frame, WAV, hit_only] the variant's program played in the probe's hit run (objmPlaySound
 ## 0x4059b7; objmPlayHitSound 0x4059cf only on a hit).
 static func sounds(object_name: String, variant: int = 0) -> Array:
-	var row: Dictionary = packet()["objects"][object_name]
+	var row: Dictionary = _row(object_name)
 	if row.has("variant_sounds"):
 		return row["variant_sounds"][variant % (row["variant_sounds"] as Array).size()]
 	return row["sounds"]
@@ -70,7 +83,7 @@ static func hit_read_frame(object_name: String, variant: int = 0) -> int:
 ## hit rate [0x4c6f58]), whose hit-only throws (0x405434／0x405495) the miss run lacks; objects
 ## without `hit_variants` run the same either way.
 static func track(object_name: String, variant: int = 0, hit: bool = false) -> Dictionary:
-	var row: Dictionary = packet()["objects"][object_name]
+	var row: Dictionary = _row(object_name)
 	var runs_key := "hit_variants" if hit and row.has("hit_variants") else "variants"
 	var key := "%s#%d#%s" % [object_name, variant, runs_key]
 	if _decoded.has(key):
@@ -96,7 +109,7 @@ static func sprites_at(object_name: String, variant: int, frame: int, hit: bool 
 ## [frame, op] of the variant's objmInitMultiHitData (71, 0x4c6f6a++) and objmSetMultiHitData
 ## (72, 0x4c6f6a--, 0x4c6f68++) in the probe's hit run; [] for a program that runs neither.
 static func multi_hits(object_name: String, variant: int = 0) -> Array:
-	var row: Dictionary = packet()["objects"].get(object_name, {})
+	var row: Dictionary = _row(object_name)
 	if row.has("variant_multi_hit"):
 		return row["variant_multi_hit"][variant % (row["variant_multi_hit"] as Array).size()]
 	return row.get("multi_hit", [])

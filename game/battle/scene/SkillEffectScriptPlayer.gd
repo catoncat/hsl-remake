@@ -424,7 +424,22 @@ static func strike_word_hit(timeline: Dictionary, tick: int) -> bool:
 ## aniInsertDistanceObjectFixDelay [code][x][y][x disp][y disp][base delay][delay][number]
 ## (op 25 → 0x403ad7 → 0x401560): object k at the point + k × disp, created at once with
 ## insertion delay base + k × delay (_insert_delay); no random draw.
+## An angle ring with a native run (objcomd_motion.json `patterns`, op 20 → 0x4039c4 →
+## 0x401600) builds all |n| instances on this tick at the point: instance k gets +0xae =
+## base + k × delay, move and round angle k × 256/n, radius 0, and for n > 0 frame +k; its
+## track (variant k) carries that delay and its own program run — 無想冥殺's ring
+## obj_Special06_06 sets radius 170 itself and, on a hit, throws ten sparks. Rings without
+## a run keep the remake geometry below.
 static func _insert_pattern(timeline: Dictionary, data: Dictionary, phase: String, op: String, args: Array, cursor: int) -> bool:
+	if op in ["aniInsertAngleObject", "aniInsertAngleObjectMakeShape"] and phase != "effect":
+		var key := ObjcomdMotion.pattern_key(op, args.slice(0, 6))
+		if ObjcomdMotion.tracked(key):
+			for index in range(ObjcomdMotion.variants(key)):
+				var ring := _insert(timeline, data, phase, str(args[0]), Vector2(number(args[1]), number(args[2])), cursor, -1, [key, index])
+				if ring.is_empty(): continue
+				ring["track"] = key
+				ring["variant"] = index
+			return true
 	match op:
 		"aniInsertDistanceObjectFixDelay":
 			var step := Vector2(number(args[3]), number(args[4]))
@@ -467,18 +482,21 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 	# program: frame f of the track shows at insertion tick + f, displaced from the insertion
 	# point; repeated insertions of one object cycle its seed variants. Open-ended programs
 	# (objmOver holds, endless loops) last until the clip ends, the scene teardown that
-	# 0x4051d0 obeys (0x4c1404 bit 0). The patterned inserts (angle rings, tornado columns)
-	# write per-instance angle／radius fields the track does not carry and keep their geometry.
+	# 0x4051d0 obeys (0x4c1404 bit 0). An angle ring with a native run draws instance k's own
+	# track (`track`, variant k, _insert_pattern); the other patterned inserts (angle rings,
+	# tornado columns) write per-instance angle／radius fields the object's track does not
+	# carry and keep their geometry.
 	var native_order := {}
 	for event in timeline["events"]:
-		if event["kind"] != "object" or not ObjcomdMotion.tracked(str(event["object"])): continue
-		if str(event["motion"]) in ["radial", "spin"]: continue
-		var name := str(event["object"])
-		var order: int = native_order.get(name, 0)
-		native_order[name] = order + 1
+		if event["kind"] != "object": continue
+		var name := str(event.get("track", event["object"]))
+		if not ObjcomdMotion.tracked(name) or str(event["motion"]) in ["radial", "spin"]: continue
+		if not event.has("track"):
+			var order: int = native_order.get(name, 0)
+			native_order[name] = order + 1
+			event["variant"] = order % ObjcomdMotion.variants(name)
 		event["motion"] = "native"
 		event["source"] = "objcomd"
-		event["variant"] = order % ObjcomdMotion.variants(name)
 		event["anchored"] = false
 		event["open_ended"] = ObjcomdMotion.open_ended(name)
 		# The hit-only throws (0x405434／0x405495) and objmPlayHitSound (0x4059f3) read
@@ -492,7 +510,7 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event.erase("hit_only")
 	for event in timeline["events"]:
 		if event.get("source", "") == "objcomd":
-			event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(str(event["object"]), bool(event["hit"]))
+			event["expire"] = int(event["tick"]) + ObjcomdMotion.frames(str(event.get("track", event["object"])), bool(event["hit"]))
 	# Remaining off-stage objects fly to the target centre, arriving at the phase's next hit mark
 	# or after FLIGHT_TICKS (remake composition).
 	for event in timeline["events"]:
@@ -721,10 +739,10 @@ static func _mark_random(timeline: Dictionary, first: int) -> void:
 ## `effect` phase the position is a displacement and the object's hold and fade are settled by
 ## compile_effect once the script's length is known. The object's own sounds are scheduled
 ## first (`_insert_sounds`), so an object whose frames cannot be drawn still sounds.
-static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1) -> Dictionary:
+static func _insert(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, position: Vector2, tick: int, sound_tick: int = -1, pattern: Array = []) -> Dictionary:
 	var object: Dictionary = data["objects"].get(object_name, {})
 	var first_sound: int = timeline["events"].size()
-	_insert_sounds(timeline, data, phase, object_name, object, tick, sound_tick)
+	_insert_sounds(timeline, data, phase, object_name, object, tick, sound_tick, pattern)
 	for index in range(first_sound, timeline["events"].size()):
 		timeline["events"][index]["source_tick"] = tick
 	var frames: Array = []
@@ -761,14 +779,15 @@ static func _insert(timeline: Dictionary, data: Dictionary, phase: String, objec
 ## - a special object (objcomd_motion.json `sounds`, hit run): objmPlaySound (0x4059b7) always
 ##   and objmPlayHitSound (0x4059cf, `hit_only`) only on a hit — 氣刃斬's impact bursts
 ##   obj_Special01_03 play WAV\BOMB0017.WAV as they appear.
-## The patterned inserts (angle rings, tornado columns) keep their geometry instead of the
-## track but take its sounds and multi-hit ops the same way: every instance runs the program
-## (無想冥殺's ring obj_Special06_06 plays SHOOT008／BOMB0025 and sets the multi-hit counter,
-## which the aniProcessHitMissMulti wait follows). A defense object's op 71／72 ticks go to
+## An angle ring with a native run (`pattern` = [key, instance]) takes instance k's own sounds
+## and multi-hit ops from the pattern row (無想冥殺's ring obj_Special06_06 plays
+## SHOOT008／BOMB0025 and sets the multi-hit counter, which the aniProcessHitMissMulti wait
+## follows); the other patterned inserts keep their geometry but take the object's sounds and
+## ops the same way as a plain insert. A defense object's op 71／72 ticks go to
 ## `multi_hit_ops` (_multi_hit_wait). Objects without a track keep the static tables: obj_X1
 ## once per instruction at `sound_tick`, `program_sounds` and `command_sounds` at the
 ## insertion plus the read delay.
-static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, object: Dictionary, tick: int, sound_tick: int) -> void:
+static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String, object_name: String, object: Dictionary, tick: int, sound_tick: int, pattern: Array = []) -> void:
 	var cues: Array = []
 	if not timeline.has("sound_order"):
 		timeline["sound_order"] = {}
@@ -777,12 +796,16 @@ static func _insert_sounds(timeline: Dictionary, data: Dictionary, phase: String
 		timeline["sound_order"][object_name] = order + 1
 		for sound in EffectObjectMotion.sounds(object_name, order):
 			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0])})
-	elif phase != "effect" and ObjcomdMotion.tracked(object_name):
-		timeline["sound_order"][object_name] = order + 1
-		for sound in ObjcomdMotion.sounds(object_name, order):
+	elif phase != "effect" and (not pattern.is_empty() or ObjcomdMotion.tracked(object_name)):
+		var track := object_name if pattern.is_empty() else str(pattern[0])
+		if pattern.is_empty():
+			timeline["sound_order"][object_name] = order + 1
+		else:
+			order = int(pattern[1])
+		for sound in ObjcomdMotion.sounds(track, order):
 			cues.append({"member": str(sound[1]), "tick": tick + int(sound[0]), "hit_only": bool(sound[2])})
 		if phase == "defense":
-			for op in ObjcomdMotion.multi_hits(object_name, order):
+			for op in ObjcomdMotion.multi_hits(track, order):
 				if not timeline.has("multi_hit_ops"):
 					timeline["multi_hit_ops"] = []
 				var created := sound_tick if sound_tick >= 0 and int(op[0]) == 0 and int(op[1]) == 71 else tick
@@ -1399,7 +1422,7 @@ func _draw_object(sprite: Sprite2D, event: Dictionary, tick: float, origin: Vect
 func _draw_native(event: Dictionary, tick: float, origins: Array, used: int) -> int:
 	var frame := int(tick - float(event["tick"]))
 	var displacement: Vector2 = Vector2.ZERO if bool(event["anchored"]) else event["position"]
-	var entries: Array = ObjcomdMotion.sprites_at(str(event["object"]), int(event["variant"]), frame, bool(event.get("hit", false))) if event.get("source", "") == "objcomd" \
+	var entries: Array = ObjcomdMotion.sprites_at(str(event.get("track", event["object"])), int(event["variant"]), frame, bool(event.get("hit", false))) if event.get("source", "") == "objcomd" \
 		else EffectObjectMotion.sprites_at(EffectObjectMotion.track(str(event["object"]), int(event.get("variant", 0))), frame)
 	for entry in entries:
 		var member := _native_member(str(entry["member"]))

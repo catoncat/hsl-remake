@@ -1,6 +1,6 @@
 # 绝技对象的命令程序：objcomd.txt 解释器 0x4051d0 的运动指令与逐 tick 原指令执行
 
-> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480／0x401560、ANIMAL 随机／等距／环形插入（op 19／23–29）的读法与原指令执行，剧情对象与命中趟轨迹; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字、op 28 基点是否含击退第一步 · status: live · functions: 0x401390, 0x401480, 0x401560, 0x4038a0, 0x403989, 0x403aaa, 0x403ad7, 0x403b25, 0x403b73, 0x403bc1, 0x403be2, 0x403c3b, 0x403ddb, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x406eb0, 0x42fab0, 0x42fae0, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45ea2b, 0x45eb9d, 0x45ebdc, 0x45f5f7 · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-29
+> evidence: static-derived: 0x4051d0 defProcObjectMove 解释器（跳表 0x406bc8）、积分器 0x42fcb0、生成器 0x401390／0x401480／0x401560、ANIMAL 随机／等距／环形插入（op 19／23–29）的读法与原指令执行，角度环 op 20 的逐实例初值与 無想冥殺 三个环的逐实例执行，op 21／22 的初值读法，剧情对象与命中趟轨迹; provisional: objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字、op 28 基点是否含击退第一步、其余角度环／龙卷列的重制几何 · status: live · functions: 0x401390, 0x401480, 0x401560, 0x401600, 0x401730, 0x401990, 0x4038a0, 0x403989, 0x4039c4, 0x403a0a, 0x403a50, 0x403aaa, 0x403ad7, 0x403b25, 0x403b73, 0x403bc1, 0x403be2, 0x403c3b, 0x403ddb, 0x4047c7, 0x4050a0, 0x405140, 0x4051d0, 0x406eb0, 0x42f8c0, 0x42fab0, 0x42fae0, 0x42fc60, 0x42fcb0, 0x45e575, 0x45e5a6, 0x45e5d9, 0x45e80d, 0x45e9bc, 0x45ea2b, 0x45eb9d, 0x45ebdc, 0x45f5f7 · tools: hsltools/probes/effect_motion.py, hsltools/probes/objcomd_motion.py, run_skill_effect_script_tests.gd · updated: 2026-09-29
 
 ## 结论
 
@@ -10,7 +10,8 @@
 - ANIMAL 的随机插入 op 19／23／27／28 走 `0x401390`（累加 rand(delay)+1），op 24／29 走 `0x401480`（固定步长），op 23／24／29 的首只 `+0xae` = base delay；子对象首次调用先把 `+0xae` 减一再与 0 比（`0x405294`），`+0xae` = d 的对象晚 max(d−1, 0) tick 开跑；op 25 走无随机的 `0x401560`，op 26 按 cos／sin 表排成一圈并让出一 tick；op 27／28／29 命中才插，op 28 以守方对象自身为基点。重制照此放置与排时（static-derived）。
 - 剧情脚本插入的 defProcObjectMove 对象（12 关 19 个）走同一解释器，与绝技对象合计 240 个写进同一 JSON；重制 `StoryEffectObjects` 按轨迹逐 tick 画（static-derived）。
 - 命中才掷出的子对象另跑命中趟（17 个对象两趟不同，写进 `hit_variants`），重制按该击结算的命中／落空选趟；多段绝技每个 op 72 各结算一段，对象按它读 `[0x4c1418]` 那一 tick 已结算的最后一段选趟（static-derived，守方先于对象跑，见「命中趟」）。
-- 差异：随机样本用至多 4 个种子变体代替共享流、出屏判定按首个插入点、角度环／龙卷列仍用重制几何、objcomd.txt 字布局（provisional，见边界）。
+- ANIMAL op 20 aniInsertAngleObject（`0x401600`）在同一点建 n 只，第 k 只 `+0xae` = delay＋k·step、移动角与绕圈角 = k·256/n、速度与半径 0，n>0 时 SHP 帧 `+0x30` 加 k；探针对 無想冥殺 的三个环（Special06_03／05／06）逐实例跑原指令，写进 `patterns`，重制逐实例画（含命中趟火花）、按实例放声（static-derived）。
+- 差异：随机样本用至多 4 个种子变体代替共享流、出屏判定按首个插入点、其余角度环（妖華紅蓮舞 op 20、op 21）与龙卷列（op 22）仍用重制几何、objcomd.txt 字布局（provisional，见边界）。
 
 ## 证据
 
@@ -197,10 +198,26 @@ ANIMAL 解释器 `0x4038a0` 在 `0x40397c` 按字节表 `0x404f48[op]` 取下标
 
 r2（`hsl01.exe`）：`pd 30 @ 0x4051d0; pd 40 @ 0x405230; pd 8 @ 0x45e353`（首次调用与先减后比），`pxw 0x60 @ 0x404ee8; pxw 0x24 @ 0x404f48`（跳表与字节表），`pd 30 @ 0x403aaa`、`pd 70 @ 0x403b25`（op 19／25／23／24）、`pd 45 @ 0x403bc1`（op 27／28 与 `0x403c2b`）、`pd 30 @ 0x403c3b`（op 29）、`pd 70 @ 0x403ddb`（op 26）、`pd 40 @ 0x45ea2b`、`pd 62 @ 0x401390; pd 22 @ 0x401422`、`pd 56 @ 0x401480; pd 24 @ 0x401506`、`pd 70 @ 0x401560`。
 
+### 角度环与龙卷列：op 20／21／22 的逐实例初值（static-derived）
+
+三者都在执行那一 tick 建完全部实例、不让出（跳回 `0x403968`），x／y 先加镜头。
+
+| op（处理体 → 插入器） | 参数 | 读法 |
+|---|---|---|
+| 20 aniInsertAngleObject（`0x4039c4` → `0x401600`） | code, x, y, n, delay, step | n=0 不建；n<0 取 −n 并记负号。角步 = 0x1000000/n（16.16，`0x401637`）。第 k 只由 `0x45e307(x, y, code, 0)` 建在同一点，`0x45e485` 串链，`+0xae` = delay＋k·step（`0x401690`）；未记负号时 SHP 帧 `+0x30` 加 k（`0x4016a4`）；角 a = (k·角步>>16)&0xff，`0x42fae0(obj, a, 0)` 写移动角 `+0x3c`、速度 `+0x38` = 0，`0x42fc60(obj, 0, a, 0)` 写绕圈半径 `+0x94` = 0、角 `+0x98` = a、角步 `+0x9a` = 0。没有 rand |
+| 21 aniInsertAngleObjectMakeShape（`0x403a0a` → `0x401730`） | 同 20 | n=0 或造型缓存数 `[0x4c6f6c]` ≥ 5 时整条一只都不建（`0x401755`／`0x40175b`）。角步 = 0x1000000/n（`0x40176e` 直接 `idiv`，没有 op 20 的取反与负号，n<0 不处理）。第 k 只 `0x45e307(x, y, code, 0)` 建；只有首只（`0x4017bf` 查标志、`0x4017cb` 置 1）进造型分支：先按源帧 `+0x30` 在缓存表 `0x4c6f80..0x4c6fa8` 查（`0x4017a2`–`0x4017b8`），没有才 `0x460541(n)` 取 n 个槽并登记（`0x4017fb`／`0x401802`），经 `0x4602d4` 解出源图，用 `0x45f141` 一次旋转出 n 张（角步 256/n，`0x401842`；循环 `0x401858`–`0x4018a1`），`0x457c20`／`0x45f4b9` 收尾、缓存数加一；其后各只走 `0x4018c6`。`0x45f141` 用 cos／sin 表 `0x4a35fc`／`0x4a39fc` 做单位旋转（`0x45f15e`／`0x45f165`），没有缩放。每只 `0x45e485` 串链，`+0xae` = delay＋k·step（`0x4018f2`），`+0x30` = 槽基址＋k（赋值，`0x401912`），`+0x32` = 槽基址（`0x401916`），然后 `0x42fae0(obj, a, 0)`，a = (k·角步>>16)&0xff。不调 `0x42fc60` |
+| 22 aniInsertTornadoObject（`0x403a50` → `0x401990`） | code, x, y, y 步长, 半径, 半径步长, 起始角, 角步, 起始缩放, 缩放步长, n | n=0 不建。每只 `0x45e307(x, y, code, 0)` 建、`0x45e485` 串链，抽 rand（`0x458c80`，`0x45e5a6` 定帧）；`0x42fc60(obj, 半径, 角, 角步)`（`0x401a2f`）写绕圈半径 `+0x94`、角 `+0x98`、角步 `+0x9a`；`0x42f8c0(obj, 0, 0x20)`（`0x401a39`）写 `+0x52` = 0、`+0x50` = 0x20（同 objmSetRoundXYShift(0, 32)：绕圈偏移只剩水平分量）；起始缩放非零时写 `+0x20`／`+0x24` = 缩放并置 `+0` 位 0x8000000（`0x401a41`–`0x401a5f`），起始缩放为 0 则全列不写。逐只递增：缩放 += 缩放步长、下限 0x800（`0x401a51`–`0x401a63`，仅起始缩放非零时）；角 = (角＋角步)&0xff（`0x401a70`／`0x401a74`）；半径 += 半径步长、下限 0x10000（`0x401a72`–`0x401a86`）；y += y 步长（`0x401a8b`–`0x401a99`）；建失败的那只不递增（`0x4019da`）。不写 `+0xae`（没有延迟） |
+
+角度与速度的真正取值在对象自己的 objcomd 程序里：程序按预置的 `+0x3c`／`+0x98` 设速度或绕圈半径（無想冥殺 的 Special06_06 由 `objmSetRoundPos` 自设半径 170 px）。
+
+原指令执行：`objcomd_motion.py` 的 `PATTERN_ROWS` 目前只含 無想冥殺（`special:magicOTHER:magicCode03`），已审阅代码加入 `0x401600..0x401708`；每条 op 20 插入按脚本原字以 `op:code,x,y,n,delay,step` 为键，镜头 (0,0)、从插入点直接调 `0x401600`，逐 tick 跑到全部实例结束，按建出次序把每只拆成一个变体写进 `patterns`（与 `objects` 同列式：`variants`／`sounds`／`multi_hit`，命中趟不同时另有 `hit_variants`／`hit_frames`）。n 只共用一条 RNG 流（种子 0），`+0xae` 的等待已在轨迹里。三个键：Special06_03（n=−32）、06_05（n=−8）、06_06（n=8），共 48 只；06_06 的 8 只各在命中趟多出火花子对象。240 个 `objects` 逐字节不变；新增的 SHP 成员 `MAGIC\SP06_013.SHP` 来自 Special06_03 落空趟（n=−32）的 objmRandomShape——32 只共用一条流时抽到它（06_06 的帧 +k 被 objmSetAngleShape 覆盖，不产生新成员），接在 `members` 表尾。改前 06_03／06_05 两个环（n<0）一只都不画（旧几何按 n 循环，负数为空），现在按原生 |n| 只画出 32＋8 只。
+
+r2（`hsl01.exe`）：`pxw 0x60 @ 0x404ee8; px 0x24 @ 0x404f48`（op 20／21／22 的下标）、`pd 90 @ 0x4039c4`（三个处理体）、`pd 80 @ 0x401600`、`pd 175 @ 0x401730`、`pd 20 @ 0x45f141`、`pd 150 @ 0x401990`、`pd 8 @ 0x42f8c0`、`pd 30 @ 0x42fc60`、`pd 30 @ 0x42fae0`。
+
 ## 重制接线
 
 - `game/battle/scene/ObjcomdMotion.gd` 读 `objcomd_motion.json`（与 `EffectObjectMotion` 同列式，`sprites_at` 共用）。
-- `SkillEffectScriptPlayer._finish_timeline`：有轨迹的普通插入（原 `static`／`fly`）改为 `native`，从插入 tick 起逐帧画整棵树，位置 = 插入点＋轨迹偏移；同一对象的重复插入轮流取种子变体；`open_ended` 对象到片段结束。角度环（aniInsertAngleObject*）与龙卷列（aniInsertTornadoObject）插入时写逐实例角度／半径，轨迹里没有，保留原几何。`_insert_spawner` 按 `0x401390`／`0x401480` 放置 op 19／23／24／27／28／29（base delay、累加或固定步长），各插入的 `+0xae` 经 `_insert_delay`（max(d−1, 0)）换成开跑 tick，`_insert_pattern` 按 `0x401560` 放 op 25，`_insert_round` 按 `0x403ddb`／`0x45ea2b` 放 op 26 并让下一条指令晚 1 tick；op 28 编译时以中性锚点＋aniSetXYDisp 为基点，`_place_on_defender` 在播放时按插入 tick 的守方精灵位置（`_defender_point`：双页 480、击退／闪避）平移。
+- `SkillEffectScriptPlayer._finish_timeline`：有轨迹的普通插入（原 `static`／`fly`）改为 `native`，从插入 tick 起逐帧画整棵树，位置 = 插入点＋轨迹偏移；同一对象的重复插入轮流取种子变体；`open_ended` 对象到片段结束。角度环（aniInsertAngleObject*）有 `patterns` 行时（`ObjcomdMotion.pattern_key(op, 前 6 字)`）逐实例建原生事件（`track` = 键、`variant` = 实例序号），帧数、轨迹、声音、多段数都按该实例取，落在插入 cursor 上（`+0xae` 已在轨迹里）；没有行的角度环与龙卷列（aniInsertTornadoObject）保留原几何。`_insert_spawner` 按 `0x401390`／`0x401480` 放置 op 19／23／24／27／28／29（base delay、累加或固定步长），各插入的 `+0xae` 经 `_insert_delay`（max(d−1, 0)）换成开跑 tick，`_insert_pattern` 按 `0x401560` 放 op 25，`_insert_round` 按 `0x403ddb`／`0x45ea2b` 放 op 26 并让下一条指令晚 1 tick；op 28 编译时以中性锚点＋aniSetXYDisp 为基点，`_place_on_defender` 在播放时按插入 tick 的守方精灵位置（`_defender_point`：双页 480、击退／闪避）平移。
 - 命中趟：`ObjcomdMotion.track／frames／sprites_at` 的 `hit` 取 `hit_variants`；`SkillEffectScriptPlayer` 的原生插入按片段 `timeline.hit`（结算收据 `strike.hit`）选用，落空不画命中才掷出的子对象。
 - `PoisonArrowPresentation`：箭矢与命中火花走原生轨迹；受方段画在地图上，舞台偏移（相对舞台目标中心 (320,160)）按精灵缩放缩小——构图是重制的。
 - `MoonDancePresentation`：64 片花瓣与每脉冲一个爆点走原生轨迹，放置按 `0x401390`；爆点基点取守方精灵锚点。
@@ -224,10 +241,10 @@ effect_motion 为效果对象补镜头与震屏模型后（`REVIEWED` 新增 `0x
 
 - **随机样本**：原版每个实例从同一条 RNG 流抽取，重制用至多 4 个固定种子的变体轮流代替；插入偏移与延迟由片段的表现 RNG 抽取。不证明逐实例与某次原版运行相同。
 - **出屏与位置**：每个对象只在脚本首个插入点跑一次，其它插入点（随机散布、多次插入）平移同一条轨迹；出屏判定按镜头 (0,0)、640×480（脚本点是屏幕点，见「重生成差异」）。objmLoopCheckSmallerY 比世界 y、不减镜头，特写时的真实镜头未读，这一条按镜头 (0,0) 取值（provisional）。特写舞台在重制是 640×320，花瓣等在 y > 320 的部分画在舞台外。
-- **未复用轨迹的插入**：角度环、龙卷列的放置仍是重制读法（provisional）。
+- **未复用轨迹的插入**：只有 無想冥殺 的三个角度环走原生轨迹；妖華紅蓮舞 的 op 20 环、op 21 的环与 op 22 龙卷列仍是重制读法（provisional）。op 21 的旋转造型缓存（`0x4602d4`／`0x45f141` 内部只读了调用链）与 op 22 的 rand 次序未跑原指令。無想冥殺 的 n 只按种子 0 的共享流跑一次，不随片段种子变化。
 - **随机插入的命中与基点**：op 27／29 比较 `[0x4c1418]` 与解释器对象 `+0xa6`，重制按整次命中（与 op 27 现状同）；op 28 的基点取重制守方精灵在插入 tick 的位置。原版 aniProcessHitMiss 结算后经 `0x404ba6` 让出（结算体 `0x40492e`／`0x404950` 已写击退速度 `+0x9c` = 0xe0000），op 28 在结算的下一 tick 才执行，击退已起步；重制把 op 28 编在与结算同一 cursor 上，这一 tick 取到的击退位移是 0，只剩同一 tick 尾段是否已积分一步未读（provisional）。原版 aniSetXYDisp 累加进 `+4`／`+8`（`0x403ce5`），重制是覆盖，op 28 编译基点与 `_defender_point` 又分别取编译时与最终的 xy_disp；用 op 28 的只有月花圓舞，脚本里没有 aniSetXYDisp，当前不触发。原版 aniDelay 倒数完还会再让出一次（`0x403dbb`／`0x404584`，实走 n+1 tick），重制 cursor += n；月花圓舞实时路径 MoonDancePresentation.spawn 也按 wait 直排、未经 max(d−1, 0) 换算，均未改。
 - **字布局**：objcomd.txt 的装载器未读，"每 token 一字、块尾补 objmOver" 是 provisional；221 个对象全部正常结束或进入等待，未见越界读。
 - **未读清**：`0x45e5d9` 反向／往返帧步进（op 37／39）、objmDragonWaveMove 细节、objmSetAngleShape 帧延迟非 0 时、残影对象 0x191 自身行为、编译器是否在程序末尾补 0；这些在原指令执行里照跑，只是表中读法不全。
 - **剧情对象**：每个对象只在探针原点跑一次，不等出屏的程序与落点无关；繩子 的 engRANGE 绘制未读，重制按插入线裁切（provisional）；雨（mapobjDropRain）与 mapobjFlash 是 defProcStandObject 过程，不在本包。
-- **命中趟**：多段绝技按读字 tick 已结算的段选趟（见[对象声音包](original_effect_object_sounds.md)§边界「多段结算时刻」）；首段结算前 `[0x4c1418]` 是整次的掷骰，重制取整次命中（provisional）。無想冥殺 的 Special06_06 由 aniInsertAngleObject 插入、按图案几何画，命中趟的 10 个子对象不画（provisional）。命中趟比落空趟长的对象仍在攻方收页／拆场处截断。
+- **命中趟**：多段绝技按读字 tick 已结算的段选趟（见[对象声音包](original_effect_object_sounds.md)§边界「多段结算时刻」）；首段结算前 `[0x4c1418]` 是整次的掷骰，重制取整次命中（provisional）。無想冥殺 的 Special06_06 由 aniInsertAngleObject 插入，8 只按 `patterns` 的命中趟画出命中火花。命中趟比落空趟长的对象仍在攻方收页／拆场处截断。
 - **声音排程**：`command_sounds` 仍按 objmDelay 之和排（[对象声音包](original_effect_object_sounds.md)），未切到原生执行记下的声音时刻。

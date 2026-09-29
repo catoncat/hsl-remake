@@ -18,13 +18,11 @@ def build():
         text = (ROOT / 'global/tables' / filename).read_bytes().decode('cp950')
         entries = [dict((k, v.strip()) for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)) for block in text.split('[' + section + ']')[1:]]
         return {entry['code']: entry for entry in entries if 'code' in entry}
-    players = table('PLAYERS.TXT', 'character')
-    player = players['1']
     items = table('ITEM.TXT', 'item')
     names = parse_table((ROOT / 'chapter01/source_texts/RESOURCE.TXT').read_bytes())
-    inventory = [int(player[f'item{i}']) for i in range(1, 9)]
-    priest_inventory = [int(players['2'][f'item{i}']) for i in range(1, 9)]
-    codes = sorted({str(code) for code in inventory + priest_inventory if code} | {'247','248','249','250','251','252','262','263'} | {str(code) for code in range(253,262)}, key=int)
+    # Every ITEM.TXT itemTypeUse row (241..263) is a battle-usable item; 303/304 carry add_hp/add_mp but are itemTypeOther.
+    # The original gates on type == 1 alone: use 0x409e8e, use window 0x438d83, AI pick 0x40c1d0 (static-derived).
+    codes = sorted((code for code, entry in items.items() if entry.get('type') == 'itemTypeUse'), key=int)
     definitions = {}
     for code in codes:
         source = items[code]

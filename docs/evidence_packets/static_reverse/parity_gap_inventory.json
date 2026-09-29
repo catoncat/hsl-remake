@@ -560,14 +560,14 @@
     },
     {
       "id": "special-object-motion",
-      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），命中时按命中趟画命中才掷出的子对象（慌雨斬／星辰落牙破／殘影亂斬／血之宴），攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、角度环／龙卷列仍是重制几何（無想冥殺 环的命中火花因此不画）、多段绝技已按对象程序的 op 72 逐段结算（规则层每段各自命中／伤害／HP 封顶／经验，每段出自己的数字（非末段无变化不出、末段无变化出 MISS 或整次有经验时不出），对象按读 [0x4c1418] 那一 tick 已结算的段画命中趟，末击数字以守方为 waiter、释放后才回脚本；剩首段前的命中字按整次、只改 MP 的末击按 3 tick）；剩 aniDelay 原版实走 n+1 tick（0x403dbb／0x404584）重制少 1、op 28 原版晚结算 1 tick 执行、aniSetXYDisp 原版累加重制覆盖、月花圓舞 MoonDancePresentation.spawn 未按 max(d−1, 0) 换算",
-      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json，落空趟 variants＋17 个对象的命中趟 hit_variants，命中才掷出 0x405434／0x405495 比较 [0x4c1418]＜[0x4c6f58]，多段时 0x403e9e 进相位 18，0x4047af 每 tick 读 0x4c6f68 双字、非零减一经 0x4047e9 调 0x40b8f0 结算一击（每段自己的命中掷骰、伤害、封顶与 0x40a5d0 经验，返回值累加 0x4c13f0／0x4c2c7c）并每段改写 [0x4c1418]，子态 1 只读 HP／MP 两变化字决定出数（非末击皆零时 0x404630 不建数字，末击皆零出 MISS、0x4c13f0 非零时 0x404772 不出），19 个对象的 op 71／72 帧记在 multi_hit）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；ANIMAL 插入 op 23／24／29 首只 +0xae=base，子对象先减后比（0x405294），+0xae=d 晚 max(d−1,0) tick 开跑，24／29 走固定步长 0x401480，op 25 走无随机的 0x401560，op 26（0x403ddb）按 cos／sin 表成圈并让出一 tick，op 28（0x403be2）基点为守方对象自身；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
+      "difference": "绝技对象已按 objcomd.txt 程序原生轨迹运动（含月花圓舞／毒魔箭），命中时按命中趟画命中才掷出的子对象（慌雨斬／星辰落牙破／殘影亂斬／血之宴／無想冥殺），無想冥殺 的三个角度环（op 20）逐实例走原生轨迹、按实例放声，攻方收页剪攻方对象、守方脚本后 16 tick 变暗再拆场，拆场后才落地的随机插入实例不出现；剩攻击闪光等待未读、随机用 4 个种子变体代替共享流、其余角度环（妖華紅蓮舞 op 20、op 21）与龙卷列（op 22）仍是重制几何、多段绝技已按对象程序的 op 72 逐段结算（规则层每段各自命中／伤害／HP 封顶／经验，每段出自己的数字（非末段无变化不出、末段无变化出 MISS 或整次有经验时不出），对象按读 [0x4c1418] 那一 tick 已结算的段画命中趟，末击数字以守方为 waiter、释放后才回脚本；剩首段前的命中字按整次、只改 MP 的末击按 3 tick）；剩 aniDelay 原版实走 n+1 tick（0x403dbb／0x404584）重制少 1、op 28 原版晚结算 1 tick 执行、aniSetXYDisp 原版累加重制覆盖、月花圓舞 MoonDancePresentation.spawn 未按 max(d−1, 0) 换算",
+      "original": "0x4051d0 解释器（跳表 0x406bc8）与积分器 0x42fcb0 的命令表已读，221 个对象连同子对象逐 tick 原指令执行（objcomd_motion.json，落空趟 variants＋17 个对象的命中趟 hit_variants，命中才掷出 0x405434／0x405495 比较 [0x4c1418]＜[0x4c6f58]，多段时 0x403e9e 进相位 18，0x4047af 每 tick 读 0x4c6f68 双字、非零减一经 0x4047e9 调 0x40b8f0 结算一击（每段自己的命中掷骰、伤害、封顶与 0x40a5d0 经验，返回值累加 0x4c13f0／0x4c2c7c）并每段改写 [0x4c1418]，子态 1 只读 HP／MP 两变化字决定出数（非末击皆零时 0x404630 不建数字，末击皆零出 MISS、0x4c13f0 非零时 0x404772 不出），19 个对象的 op 71／72 帧记在 multi_hit）；多实例只靠共享 RNG 错开（生成器 0x401390 累加 rand(delay)+1）；ANIMAL 插入 op 23／24／29 首只 +0xae=base，子对象先减后比（0x405294），+0xae=d 晚 max(d−1,0) tick 开跑，24／29 走固定步长 0x401480，op 25 走无随机的 0x401560，op 26（0x403ddb）按 cos／sin 表成圈并让出一 tick，op 28（0x403be2）基点为守方对象自身；op 20（0x401600）同点建 n 只，第 k 只 +0xae=delay+k·step、移动角／绕圈角=k·256/n、速度与半径 0，n>0 时帧 +0x30 加 k，無想冥殺 三个环逐实例原指令执行（objcomd_motion.json patterns，48 只，Special06_06 另有命中趟）；op 21（0x401730）首只按源帧查或建一次旋转造型缓存（至多 5 组，满则整条不建；0x45f141 纯旋转出 n 张、无缩放），第 k 只 +0x30=槽基址+k、+0x32=槽基址、+0xae=delay+k·step，不调 0x42fc60、不处理 n<0，未跑原指令；op 22（0x401990）每只抽 rand，0x42fc60 写半径／角／角步，0x42f8c0(obj, 0, 0x20) 写 +0x52=0、+0x50=0x20，起始缩放非零时写 +0x20／+0x24 并置 +0 位 0x8000000，逐只 y+=y 步长、半径+=半径步长（下限 0x10000）、角=(角+角步)&0xff、缩放+=缩放步长（下限 0x800），不写 +0xae，未跑原指令；守方 aniOver 直接进 phase 101，收尾不查对象，拆场位 0x4c1404 令 slot 36–38 对象自删",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_objcomd_programs.md",
         "docs/evidence_packets/static_reverse/original_effect_object_sounds.md",
         "docs/evidence_packets/static_reverse/original_tick_counts.md"
       ],
-      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；MultiHitSpecialRules 逐段结算多段绝技（收据 hit_segments），SkillEffectScriptPlayer.strike_spawns 逐段出数字（非末段无伤害不出）；随机／等距／环形插入按原版生成器放置与排时，op 28 基点取插入 tick 的守方精灵位置；角度环／龙卷列的 radial／spin 几何保留；complete_tick＝变暗起点＋16 为拆场，随后地图变亮 16 tick",
+      "remake": "ObjcomdMotion 读原生轨迹，SkillEffectScriptPlayer／MoonDancePresentation／PoisonArrowPresentation 按它画；MultiHitSpecialRules 逐段结算多段绝技（收据 hit_segments），SkillEffectScriptPlayer.strike_spawns 逐段出数字（非末段无伤害不出）；随机／等距／环形插入按原版生成器放置与排时，op 28 基点取插入 tick 的守方精灵位置；有 patterns 行的角度环逐实例建原生事件（track／variant），其余角度环／龙卷列的 radial／spin 几何保留；complete_tick＝变暗起点＋16 为拆场，随后地图变亮 16 tick",
       "remake_code": [
         "game/battle/scene/ObjcomdMotion.gd",
         "game/battle/scene/SkillEffectScriptPlayer.gd",
@@ -588,7 +588,7 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色",
-        "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字、op 28 基点是否含击退第一步",
+        "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字、op 28 基点是否含击退第一步、其余角度环／龙卷列的重制几何",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#85f8668377",

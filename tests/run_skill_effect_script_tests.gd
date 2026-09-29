@@ -333,10 +333,11 @@ func object_command_sounds() -> void:
 			var order := {}
 			for event in timeline["events"]:
 				if event["kind"] != "object": continue
-				# Patterned inserts keep their geometry but sound like the track, as every object does.
-				var variant: int = order.get(event["object"], 0)
-				order[event["object"]] = variant + 1
-				var recorded: Array = ObjcomdMotion.sounds(event["object"], variant)
+				# An angle ring with a native run sounds like its instance's track (`track`, variant k); the
+				# other patterned inserts keep their geometry but sound like the object's track, as every object does.
+				var variant: int = int(event["variant"]) if event.has("track") else int(order.get(event["object"], 0))
+				if not event.has("track"): order[event["object"]] = variant + 1
+				var recorded: Array = ObjcomdMotion.sounds(str(event.get("track", event["object"])), variant)
 				for sound in recorded:
 					if bool(sound[2]) and not hit:
 						continue

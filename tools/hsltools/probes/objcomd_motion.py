@@ -46,7 +46,16 @@ REVIEWED = em.REVIEWED + [
     (0x4050a0, 0x4051c6, 'slot 38 fade process 0x4050a0 and the off-screen test 0x405140 (SHP metrics against 640×480)'),
     (0x4051d0, 0x406bc8, 'defProcObjectMove 0x4051d0: init, objm* interpreter (jump table 0x406bc8), phase waits'),
     (0x42f880, 0x42ffe7, 'motion setters 0x42f880..0x42fcaf and the per-tick integrator 0x42fcb0'),
+    (0x401600, 0x401708, '0x401600: aniInsertAngleObject ring (per instance +0xae, frame step, move／round angle k·256/n)'),
 ]
+# The patterned inserts run natively: the ANIMAL op's handler (jump table 0x404ee8 via the byte
+# table 0x404f48) passes its words to the inserter, which builds every instance in one call on the
+# executing tick; the probe calls that inserter at the script point (camera (0,0)) and runs the
+# instances together on the one RNG stream. op → (inserter, argument count after the code).
+PATTERN_OPS = {'aniInsertAngleObject': (0x401600, 5)}
+# Rows whose patterned inserts the remake draws from the native runs (無想冥殺's rings); the other
+# rings (妖華紅蓮舞 op 20, 冰 op 21) and the tornado columns (op 22) keep the remake geometry.
+PATTERN_ROWS = ('special:magicOTHER:magicCode03',)
 # Arrow tracer (毒魔箭 obj_Special19_01, command 17): objmDelay 20, objmSetSpeed 128,0x00200000,
 # objmDelay 10, objmWaitOutScreen.
 ARROW = 'obj_Special19_01'
@@ -139,14 +148,32 @@ class Machine(em.Machine):
             self.events.append([self.frame, 'multi_hit', self.current['id'], MULTI_HIT_OPS[at]])
         super()._guard(m, at, size, data)
 
-    def multi_hits(self) -> list[list[int]]:
-        """[frame, op] of every op 71／72 the tree executed, in execution order."""
-        return [[event[0], event[3]] for event in self.events if event[1] == 'multi_hit']
+    def multi_hits(self, ids=None) -> list[list[int]]:
+        """[frame, op] of every op 71／72 the tree (or the objects `ids`) executed, in execution order."""
+        return [[event[0], event[3]] for event in self.events if event[1] == 'multi_hit' and (ids is None or event[2] in ids)]
 
-    def heard(self) -> list[list]:
-        """[frame, WAV, hit_only] of every sound the tree played, in call order."""
+    def heard(self, ids=None) -> list[list]:
+        """[frame, WAV, hit_only] of every sound the tree (or the objects `ids`) played, in call order."""
         played = [event for event in self.events if event[1] == 'sound']
-        return [[event[0], event[3], caller == HIT_SOUND_RETURN] for event, caller in zip(played, getattr(self, 'sound_returns', []))]
+        return [[event[0], event[3], caller == HIT_SOUND_RETURN] for event, caller in zip(played, getattr(self, 'sound_returns', []))
+                if ids is None or event[2] in ids]
+
+    def call(self, entry: int, args: list[int]) -> None:
+        """One native cdecl call outside the frame loop (the patterned inserters), returning to STOP."""
+        from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EIP
+        self.m.mem_write(em.STACK, struct.pack('<I', em.STOP) + b''.join(struct.pack('<I', arg & 0xffffffff) for arg in args))
+        self.m.reg_write(UC_X86_REG_ESP, em.STACK)
+        self.m.emu_start(entry, em.STOP, count=400000)
+        if self.m.reg_read(UC_X86_REG_EIP) != em.STOP:
+            raise ValueError(f'inserter {entry:#x} did not return')
+
+    def instance_ids(self) -> list[set[int]]:
+        """The object ids of each root (parent −1, creation order) and everything it threw."""
+        roots: dict[int, int] = {}
+        for obj in self.objects:
+            roots[obj['id']] = obj['id'] if obj['parent'] < 0 else roots[obj['parent']]
+        order = [obj['id'] for obj in self.objects if obj['parent'] < 0]
+        return [{one for one, root in roots.items() if root == first} for first in order]
 
 
 def command_words(templates: 'em.Templates') -> dict[int, list[int]]:
@@ -180,6 +207,83 @@ def insert_points() -> dict[str, tuple[int, int]]:
                         continue
                     points.setdefault(tokens[index + 1], point)
     return points
+
+
+def pattern_inserts() -> dict[str, tuple[str, list[str]]]:
+    """PATTERN_ROWS' patterned inserts keyed `op:code,x,y,…` as written: key → (op, words)."""
+    scope = json.loads(SCOPE.read_text(encoding='utf-8'))
+    found: dict[str, tuple[str, list[str]]] = {}
+    for key in PATTERN_ROWS:
+        for lines in scope['rows'][key]['actions'].values():
+            tokens = [token.strip() for line in lines for token in line.split(',')]
+            for index, token in enumerate(tokens):
+                if token in PATTERN_OPS:
+                    words = tokens[index + 1:index + 2 + PATTERN_OPS[token][1]]
+                    found.setdefault(f'{token}:{",".join(words)}', (token, words))
+    return found
+
+
+def run_pattern(exe_image, templates, sounds, metrics, words, op: str, args: list[str], hit: bool = False) -> Machine:
+    """The inserter of `op` called with the script words (x／y as written: camera (0,0), see run),
+    then the frame loop; the instances share seed 0's stream as the original's share one."""
+    machine = Machine(exe_image, templates, sounds, metrics)
+    first, second = seed(0)
+    machine.write(em.RNG_STATE[0], first); machine.write(em.RNG_STATE[1], second)
+    machine.write(em.CAMERA[0], 0); machine.write(em.CAMERA[1], 0)
+    if hit:
+        machine.write(HIT_ROLL, 0); machine.write(HIT_RATE, 1)
+    table, at = PROGRAM_BASE, PROGRAM_BASE + 4 * 256
+    for number, program in words.items():
+        machine.write(table + 4 * number, at)
+        machine.m.mem_write(at, b''.join(struct.pack('<I', word & 0xffffffff) for word in program))
+        at += 4 * len(program)
+    machine.write(PROGRAM_TABLE, table)
+    code = templates.value(args[0])
+    x, y, *rest = (int(word, 0) for word in args[1:])
+    machine.call(PATTERN_OPS[op][0], [x, y, code, *rest])
+    for _ in range(FRAME_LIMIT):
+        machine.step()
+        if all(obj['dead'] is not None for obj in machine.objects):
+            break
+    return machine
+
+
+def split_instances(machine: Machine, members: dict[str, int], point: tuple[int, int]) -> list[list[dict]]:
+    """Per instance k (the inserter's k-th object), its tree in encode_instances' shape, parents renumbered."""
+    for obj in machine.objects:
+        obj['samples'] = [[s[0], s[1] + em.ORIGIN[0] - point[0], s[2] + em.ORIGIN[1] - point[1], *s[3:]] for s in obj['samples']]
+    encoded = em.encode_instances(machine, members)
+    trees = []
+    for ids in machine.instance_ids():
+        local = {one: rank for rank, one in enumerate(sorted(ids))}
+        trees.append([dict(encoded[one], parent=local.get(encoded[one]['parent'], -1)) for one in sorted(ids)])
+    return trees
+
+
+def pattern_rows(env: dict, members: dict[str, int]) -> dict:
+    """Per patterned insert: variants／hit_variants are its instances (index k), sounds and op 71／72 per instance."""
+    rows, pending = {}, {}
+    for key, (op, args) in pattern_inserts().items():
+        point = (int(args[1], 0), int(args[2], 0))
+        common = (env['exe_image'], env['templates'], env['sounds'], env['metrics'], env['words'], op, args)
+        miss, hit = run_pattern(*common), run_pattern(*common, hit=True)
+        pending[key] = (hit, point)
+        instances = hit.instance_ids()
+        heard = [hit.heard(ids) for ids in instances]
+        multi = [hit.multi_hits(ids) for ids in instances]
+        variants = split_instances(miss, members, point)
+        row = {'op': op, 'object': args[0], 'code': env['templates'].value(args[0]), 'point': list(point),
+               'frames': miss.frame, 'open_ended': any(obj['dead'] is None for obj in miss.objects),
+               'variants': variants, 'sounds': heard[0], 'variant_sounds': heard}
+        if any(multi):
+            row['multi_hit'] = multi[0]; row['variant_multi_hit'] = multi
+        rows[key] = row
+    for key, (hit, point) in pending.items():   # hit trees after every miss tree (members order)
+        hit_variants = split_instances(hit, members, point)
+        if hit_variants != rows[key]['variants']:
+            rows[key]['hit_variants'] = hit_variants
+            rows[key]['hit_frames'] = hit.frame
+    return rows
 
 
 def seed(variant: int) -> tuple[int, int]:
@@ -298,13 +402,14 @@ def execute_packet(exe: Path) -> dict:
         if hit_variants != objects[name]['variants']:
             objects[name]['hit_variants'] = hit_variants
             objects[name]['hit_frames'] = max(machine.frame for machine in hit_runs)
+    patterns = pattern_rows(env, members)
     from hsltools.probes.effect_motion import digest
     return {'schema': SCHEMA, 'exe_sha256': EXE_SHA, 'native_execution': True, 'evidence_tier': 'static-derived',
             'sources': {'global_obs': digest(obs), 'objcomd': digest(COMMANDS.read_bytes()), 'process_def': digest(process_def),
                         'obj_051_obs': digest(level_obs), 'obj_037_obs': story_digests['037'], 'story_obs': story_digests},
             'frame_limit': FRAME_LIMIT, 'seeds': [[f'{a:#010x}', f'{b:#010x}'] for a, b in map(seed, range(VARIANTS))],
             'reviewed': [[f'{low:#x}', f'{high:#x}', note] for low, high, note in REVIEWED],
-            'members': sorted(members, key=members.get), 'objects': objects,
+            'members': sorted(members, key=members.get), 'objects': objects, 'patterns': patterns,
             'limits': ['Positions are relative to the creation point; each root is created at its first script insertion '
                        'point with the camera at (0,0), so off-screen waits end where that point would (other insertion '
                        'points and random spreads are drawn with the same track).',
@@ -320,6 +425,10 @@ def execute_packet(exe: Path) -> dict:
                        'multi_hit, present only where the tree runs objmInitMultiHitData／objmSetMultiHitData, is [frame, op] '
                        '(71 init 0x405d6d or, as the first word, 0x40524d; 72 set 0x405d76) of the hit run in execution order; variant_multi_hit lists them '
                        'per variant when they differ.',
+                       'patterns: each patterned insert of PATTERN_ROWS keyed op:words as written, its inserter (0x401600) '
+                       'called at the script point with the camera at (0,0) and every instance run together under seed 0; '
+                       'variants／hit_variants／variant_sounds／variant_multi_hit are indexed by instance (the inserter\'s '
+                       'creation order), positions relative to the script point, frames count from the inserting tick.',
                        'The objcomd.txt word layout (one word per token, objmOver closing each block) is provisional.']}
 
 
@@ -333,8 +442,17 @@ def check(packet: dict) -> None:
         raise ValueError('STORY_OBJECTS differs from the defProcObjectMove script objects of the chapter map_objects')
     if set(packet['objects']) != set(scope) | set(STORY_OBJECTS):
         raise ValueError('objcomd motion scope differs from the defProcObjectMove objects of the SPECIAL and story scripts')
-    for name, row in packet['objects'].items():
-        if name in STORY_OBJECTS:
+    if set(packet.get('patterns', {})) != set(pattern_inserts()):
+        raise ValueError('objcomd motion patterns differ from the patterned inserts of PATTERN_ROWS')
+    for key, row in packet['patterns'].items():
+        op, words = pattern_inserts()[key]
+        count = abs(int(words[3], 0))
+        if row['op'] != op or row['object'] != words[0] or len(row['variants']) != count or len(row.get('hit_variants', row['variants'])) != count:
+            raise ValueError(f'{key}: op／object／instance count differ from the script words')
+    for name, row in list(packet['objects'].items()) + list(packet['patterns'].items()):
+        if name in packet['patterns']:
+            pass
+        elif name in STORY_OBJECTS:
             level, code, command = STORY_OBJECTS[name]
             if (row['code'], row['command_code'], row['level_obs']) != (code, command, story_obs(level)):
                 raise ValueError(f'{name}: code／command／level OBS differ from STORY_OBJECTS')
@@ -359,7 +477,8 @@ def check(packet: dict) -> None:
 def summary_line(packet: dict, executed_now: bool) -> str:
     objects = packet['objects']
     return (f'OBJCOMD_MOTION_NATIVE_PASS objects={len(objects)} open_ended={sum(1 for row in objects.values() if row["open_ended"])} '
-            f'variants={sum(len(row["variants"]) for row in objects.values())} executed_now={executed_now}')
+            f'variants={sum(len(row["variants"]) for row in objects.values())} '
+            f'patterns={len(packet["patterns"])} instances={sum(len(row["variants"]) for row in packet["patterns"].values())} executed_now={executed_now}')
 
 
 class ObjcomdMotionTask(PacketTask):

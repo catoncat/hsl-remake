@@ -7,7 +7,7 @@
 - 原版绝技命中的落地声来自 defProcObjectMove 对象（`0x4051d0`）按 obj_Data7 执行的 objcomd.txt 命令程序（`objmPlaySound`／命中才响的 `objmPlayHitSound`），不在 EFFECTS.TXT 脚本里；法术效果对象（`0x415dc0`）出现时放 obj_X1，obj_Y1／obj_X2 由各 effProc 程序在自己的事件点经 `0x415d40`／`0x415d70`／`0x415d90` 播放（static-derived）。
 - 两个原生探针逐 tick 执行这些程序时记下每次放声的帧与 WAV：`objcomd_motion.json` 每个 SPECIAL 对象的 `sounds` 是 `[帧, WAV, hit_only]`（命中局，`hit_only` 由调用返回地址 `0x4059f3` 判定），`effect_motion.json` 每棵效果树的 `sounds` 是 `[帧, WAV]`（含子对象），种子变体各有一份（static-derived）。重制 `game/battle/scene/SkillEffectScriptPlayer.gd` 的 `_insert_sounds` 按记录逐实例排声（插入 tick＋记录帧），帧未导入时声音照放。
 - 混音通道：`0x42f164` 以 `0x459b60(9, 20, …)` 开 **9 个通道**；对象程序放声（`0x42c180` → `0x45a390`，flags 0）经 `0x4593a0` 取第一个空或已停的通道，全忙则丢掉新声，不截旧声、同名不合并（static-derived）。重制 `SOUND_VOICES = 9`，同一规则。
-- 差异：没有轨迹的对象仍按静态表排声；角度环／龙卷等图案插入画面用重制几何，声音与 op 71／72 同样取记录；多段绝技命中才放的对象声按读字那一 tick 的段放（见 §边界）。
+- 差异：没有轨迹的对象仍按静态表排声；無想冥殺 的角度环按逐实例原生轨迹放声，其余角度环／龙卷等图案插入画面用重制几何，声音与 op 71／72 同样取记录；多段绝技命中才放的对象声按读字那一 tick 的段放（见 §边界）。
 
 ## 证据
 
@@ -109,7 +109,8 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 共享层在 `SkillEffectScriptPlayer._insert_sounds`（每次对象插入都经过它，与技能无关）：
 - 有轨迹的绝技对象：`ObjcomdMotion.sounds(对象, 变体)` 每条在**该实例的插入 tick ＋记录帧**入时间线；`hit_only` 的只在命中（`hit`）时；每个实例各放一次（原版每个对象程序各自调用放声——百裂突刺 26 次突刺各一声 ATTACK17）。变体按同一对象的插入次序取，与 `_finish_timeline` 给轨迹分配变体的次序相同（图案插入不计）。
 - 有轨迹的效果对象：`EffectObjectMotion.sounds(对象, 变体)`，含 obj_X1（每个实例在自己开始时放，不再"每条插入指令一次"）、obj_Y1／obj_X2 与全部子对象的声音。
-- 角度环／龙卷等图案插入（`_insert_pattern` 传 `patterned`）：画面按图案几何，声音与 op 71／72 同样取记录（每个实例都跑程序）。
+- 有 `patterns` 行的角度环（無想冥殺，见[绝技对象命令程序包](original_objcomd_programs.md)「角度环与龙卷列」）：每个实例按 `ObjcomdMotion.sounds(键, 实例序号)` 在插入 cursor＋记录帧放声，不占同一对象的变体次序。
+- 其余角度环／龙卷等图案插入（`_insert_pattern` 传 `patterned`）：画面按图案几何，声音与 op 71／72 同样取记录（每个实例都跑程序）。
 - 没有轨迹的对象：仍按 `command_sounds`（插入 tick＋objmDelay 和）、obj_X1（每条指令一次）与 `program_sounds`。
 - 播放：`_play` 取第一个不在响的声部，9 个全在响就丢掉这一声（`0x4593a0`）。
 - **先排声音再判能否画**：对象帧未导入（`missing_members`）或被跳过时声音照放——"素材未导入的降级路径"不再丢声。
@@ -129,7 +130,7 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 ## 边界
 
 - **计时**：记录帧从对象创建起算（探针的帧模型见 [效果对象运动包](original_effect_motion.md) §帧模型与公共部分，±1 帧）；随机程序的声音是种子样本，原版所有实例共用一条随机流。
-- **图案插入**：角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音与 op 71／72 取记录（每个实例都跑程序）。無想冥殺 的 Special06_06 环：程序自设半径 170 px（`objmSetRoundPos`），8 个实例在插入后 128..151 帧各执行一次 op 72，守方脚本的 `aniProcessHitMissMulti` 等到这 8 击结算完（种子 7：458..484），SHOOT008／BOMB0025 落在 429..483，片段收场 584 之内。
+- **图案插入**：無想冥殺 的三个角度环按逐实例原生轨迹画与放声（n 只共用种子 0 的一条流）；其余角度环／龙卷插入（`aniInsertAngleObject*`／`aniInsertTornadoObject`）重制按图案几何画、不用轨迹，声音与 op 71／72 取记录（每个实例都跑程序）（provisional）。無想冥殺 的 Special06_06 环：程序自设半径 170 px（`objmSetRoundPos`），8 个实例各执行一次 op 72，守方脚本的 `aniProcessHitMissMulti` 等到这 8 击结算完（种子 7：443..482），命中时 SHOOT008／BOMB0025 落在 413..483，片段收场 582 之内。
 - **命中才抛的子对象**：`objmThrowHit*`（`0x405434`／`0x405495`）只在命中时抛出（慌雨斬、星辰落牙破、殘影亂斬、無想冥殺 的火花）；命中局轨迹另存 `hit_variants`，重制按该击结算的命中／落空选趟画。多段绝技里抛子对象与 objmPlayHitSound（`0x4059cf`）都在程序第一个命中声那一帧读 `[0x4c1418]`＜`[0x4c6f58]`（objcomd code 79：op 72、objmDelay 1、抛子对象、放声，探针记录里命中声都在 op 72 后 2 帧，百裂突刺 的 HIT00004 在 op 72 前）；读到的是该 tick 及以前最后结算的一段（static-derived，见下条「多段结算时刻」），重制的火花趟与命中对象声都按这一段（`SkillEffectScriptPlayer.strike_word_hit`）。首段结算前字里是整次的掷骰，重制取整次命中（provisional）。
 - **叠声**：原版 9 个通道全局共用（脚本 aniPlaySound、界面音效也经 `0x45a390`）；重制的 9 个声部只给特效播放器自己的声音，其它声音走各自的播放器、不占这 9 个。
 - **多段结算时刻**（static-derived）：帧循环 `0x45f5f7` 按 plane 升序、每条链按建立序（`0x45e307` 挂链尾，第 4 参非 0 才挂链头）调对象过程；守方对象 155 Animal_Defense 在 planeEffect3（46），多段对象在 planeEffect4（47，Special50_01 在 46 但建立晚于守方），数字对象 177 Show_Number 在 planeMenu2（51）（PROCESS.DEF 与 global.obs 取值）。所以 tick t 执行的 op 72 在 t+1 的检查计数、守方结算改写 `[0x4c1418]` 先于同一 tick 的对象读字、数字释放 waiter 后守方下一 tick 才见子态 3。末击后回脚本：红字（kind 0）在建成后 27＋10×位数 tick 释放，绿字／MISS（kind 2／5，`0x4086ea`）32＋1 tick；两个变化字都为零且本页经验 `[0x4c13f0]`（`0x40485d` 累加、`0x40438c` 清）非零时不出数字（`0x404772`），仍按 3 tick；从末击检查到回脚本的检查是 1＋释放＋2 tick（`SkillEffectScriptPlayer._last_strike_ticks`）。子态 1 的出数判据只读两个变化字（`0x404611`–`0x404622`，不看命中字）：都为零且不是末击（`0x4045fb` 读双字 `0x4c6f68` 非零，`[esp+0x14]` 不置 1）时 `0x404630` 不建数字、直接进子态 3，下一次检查仍在 3 tick 后；末击无变化出 MISS（kind 5，`0x404664`），经验非零时照上不出。重制 `SkillEffectScriptPlayer.strike_spawns` 照此：非末段无伤害不出数字，末段无伤害出 MISS、整次经验非零时不出。只改 MP 的末击出 kind 3 数字，收据不带 MP 变化，重制按 3 tick（provisional）。「整次经验」的口径：原版读的是本页累加字 `[0x4c13f0]`（页开始 `0x40438c` 清零，每击 `0x40485d` 加该击 `0x40b8f0`（→ `0x40aa80`）的经验返回值（`0x40b853` 调 `0x40a5d0` 换算）），重制取该守方收据 `hit_segments` 各段 `experience_points` 之和（单目标收据求和，`SkillEffectScriptPlayer.strike_spawns`／`present`）。
