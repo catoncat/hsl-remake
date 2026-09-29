@@ -295,7 +295,7 @@ Wine 仅用于 targeted validation。执行前：
 | 合并、门禁、发布、清理 | `tools/lane_merge.sh` 的 merge／gate／publish／cleanup（用合并树那份）；curation 并集 `tools/merge_curation_json.py` |
 | 完整门禁 | `tools/verify.sh`（加 `--full` 或 `--deep`）；任务注册表 `python3 tools/hsl.py list`，同一入口的 check／generate／affected |
 | 环境诊断 | `tools/doctor.sh [--original]` |
-| 开游戏／试玩某一关 | `tools/play.sh`／`tools/playtest.sh N`（[PLAYTEST](docs/PLAYTEST.md)） |
+| 开游戏／试玩某一关 | `tools/play.sh`／`tools/playtest.sh <槽名>`（[PLAYTEST](docs/PLAYTEST.md)） |
 | 文档链接检查 | `python3 tools/hsl_docs_check.py`；代码块里的工具路径 `python3 tools/hsl.py check docs:tool_references` |
 | 公开导出 | `tools/oss_export.sh OUT_DIR [REF]`（去掉原版派生物、`docs/internal/`、`docs/audits/` 等） |
 | 证据用语自检 | `jevgrep lint --rules tools/typesafe/evidence_lint_rules.json --diff HEAD`（要联网和 key） |

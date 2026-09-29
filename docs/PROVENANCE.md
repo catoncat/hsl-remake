@@ -406,7 +406,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GameOverScreen](../game/title/GameOverScreen.gd) | strings | OPT-RETRY=可重新挑戰本戰 only: 重新挑戰本戰／回到標題 [OPTIONS.md](../docs/OPTIONS.md) |
 | [MoviePlayer](../game/title/MoviePlayer.gd) | rules | any-key skip; original skip behaviour not located |
 | [MoviePlayer](../game/title/MoviePlayer.gd) | layout | nearest-neighbour doubling to 640×480 |
-| [TitleScreen](../game/title/TitleScreen.gd) | rules | 戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene |
+| [TitleScreen](../game/title/TitleScreen.gd) | rules | 戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene; HSL_SKIP_TITLE=1 playtest switch |
 | [TitleScreen](../game/title/TitleScreen.gd) | layout | lit shape on the keyboard-selected item; hover lit under OPT-GUIDE＝提示, content/authored/options/remake_options.json |
 | [PartyEquipmentScreen](../game/world/PartyEquipmentScreen.gd) | strings | the no-sandbox failure lines |
 | [TownRuntime](../game/world/TownRuntime.gd) | strings | narration lines for gold／item grants, OPT-GUIDE=提示 only, except a displayed teGetGold |

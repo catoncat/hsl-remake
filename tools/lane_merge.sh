@@ -237,9 +237,18 @@ case "${cmd}" in
     # User 2026-09-27: push as we commit. Every published branch goes to origin at once; a push failure is
     # reported but does not undo the local publish.
     if [ "${LANE_PUBLISH_PUSH:-1}" = 1 ]; then
-      if git push -q origin ${ready} "${source_ref}" 2>/tmp/lane-push.err; then echo "LANE_PUSH_OK origin ${ready# } ${source_ref}"; else echo "LANE_PUSH_FAIL origin $(tail -1 /tmp/lane-push.err)" >&2; fi
-      # The public repo follows main automatically (tools/oss_sync.sh: export, rescan, commit, push).
-      case " ${ready} " in *" main "*) HOME="${REAL_HOME}" tools/oss_sync.sh main || echo "LANE_PUBLIC_SYNC_FAIL (see OSS_SYNC_FAIL above)" >&2;; esac
+      # Push every target, not only the ones fast-forwarded now: a rerun after a failed push finds them
+      # already at head (SKIP) and would otherwise leave origin behind.
+      if git push -q origin ${targets} "${source_ref}" 2>/tmp/lane-push.err; then echo "LANE_PUSH_OK origin ${targets} ${source_ref}"; else echo "LANE_PUSH_FAIL origin $(tail -1 /tmp/lane-push.err)" >&2; fi
+      # The public repo follows main automatically (tools/oss_sync.sh: export, rescan, commit, push); a failed
+      # sync leaves a marker so the next publish retries it even when main has nothing new.
+      pending="$(git rev-parse --git-common-dir)/oss-sync-pending"
+      case " ${ready} " in *" main "*) : >| "${pending}";; esac
+      case " ${targets} " in *" main "*)
+        if [ -e "${pending}" ]; then
+          if HOME="${REAL_HOME}" tools/oss_sync.sh main; then rm -f "${pending}"; else echo "LANE_PUBLIC_SYNC_FAIL (see OSS_SYNC_FAIL above; rerun publish to retry)" >&2; fi
+        fi;;
+      esac
     fi
     ;;
   cleanup)

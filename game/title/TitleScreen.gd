@@ -8,6 +8,8 @@ extends Node2D
 ##                 entering level 51 unless a re-entry flag is set — static-derived; playing it
 ##                 between the fade and the first scene, and skipping on any key, are remake readings)
 ##   戰場記錄   -> continue the saved campaign position (CampaignProgress) -> BattleSceneRuntime
+##   (playtest switch HSL_SKIP_TITLE=1, off by default: the first title of the process runs this
+##    item's resume at once, without the menu, the hold or the fade — tools/playtest.sh)
 ##   離開遊戲   -> quit after the same lit hold and fade (handler 0x423f00: every item waits out
 ##                 the hold timer, state 3 0x424004; code 2 0x4240b2 fades via 0x42cb60／0x42dc90(2))
 ## The gem (Title027) and the book (Title028) stay beside item 1 whatever is selected and bob
@@ -31,7 +33,8 @@ extends Node2D
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md
 ##   rules: provisional (0x4c1ae4 read as a re-entry marker)
-##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene)
+##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene;
+##     HSL_SKIP_TITLE=1 playtest switch)
 ##   rules: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
 ##     (gem code 10 → 設定選項 0x423b90, book code 11 → memoir list 0x423bd0; menu inert meanwhile)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
@@ -137,6 +140,10 @@ const CLICK_SPARK_COUNT := 16
 const ORNAMENT_CODES := {10: "cursor_gem", 11: "cursor_hand"}
 const WINDOW_OF_CODE := {10: "options", 11: "memoir"}
 const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
+## Playtest switch (tools/playtest.sh): "1" makes the process's first title run 戰場記錄 at once.
+const SKIP_TITLE_ENV := "HSL_SKIP_TITLE"
+## Once per process: a later return to the title (game over, game clear) shows the menu.
+static var _title_skip_used := false
 
 var manifest: Dictionary = {}
 var items: Array = []
@@ -183,9 +190,13 @@ var _spark_counters: Dictionary = {}
 var _stars: MenuStars
 var _rng := RandomNumberGenerator.new()
 var _system: Control
+## HSL_SKIP_TITLE=1 on this process's first title: no music, 戰場記錄 runs on the first frame.
+var skipping_title := false
 
 
 func _ready() -> void:
+	skipping_title = OS.get_environment(SKIP_TITLE_ENV) == "1" and not _title_skip_used
+	_title_skip_used = _title_skip_used or skipping_title
 	var parsed: Variant = ContentPaths.read_json(MANIFEST_PATH)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Title manifest missing or invalid: " + MANIFEST_PATH)
@@ -197,6 +208,21 @@ func _ready() -> void:
 	_build_scene()
 	_apply_menu_slide()
 	_refresh_lit()
+	if skipping_title:
+		call_deferred("_skip_title")
+
+
+## HSL_SKIP_TITLE=1: the 戰場記錄 resume without the menu, the hold or the fade; with nothing
+## to resume the title stays up and shows message 12 as the item would.
+func _skip_title() -> void:
+	var record := _arm_battle_record()
+	if record.is_empty():
+		show_message(NO_RECORD_MESSAGE, BattleUISkin.TEXT_RED)
+		transition = {"action": "battle_record", "status": "no_record"}
+		return
+	menu_locked = true
+	transition = {"action": "battle_record", "scene": FIRST_SCENE_PATH, "resume_scenario_path": str(record.get("scenario_path", "")), "skipped_title": true}
+	_change_scene(FIRST_SCENE_PATH)
 
 
 func _build_scene() -> void:
@@ -255,7 +281,7 @@ func _build_scene() -> void:
 ## The original title track 03 (manifest.music, original_music.md §3.1), looping whole from the start.
 func _start_music() -> void:
 	var stream_path := str((manifest.get("music", {}) as Dictionary).get("stream", ""))
-	if stream_path == "" or not GameSettings.music_starts():
+	if stream_path == "" or not GameSettings.music_starts() or skipping_title:
 		return
 	var stream: AudioStream = load(stream_path)
 	if stream == null:
@@ -433,25 +459,32 @@ func confirm() -> Dictionary:
 			transition["start_scenario_path"] = CampaignProgress.first_scenario_path(campaign)
 			transition["start_movie"] = str(campaign.get("start_movie", ""))
 		"battle_record":
-			# A mid-battle checkpoint (the original's 戰場記錄) wins; otherwise the auto-saved
-			# campaign position (remake reading); otherwise message 12 無存檔記錄.
-			var records: Array = CampaignProgress.battle_record_entries()
-			var saved := CampaignProgress.load_progress()
-			if not records.is_empty():
-				var newest: Dictionary = records[0]
-				CampaignProgress.queue_battle_record(newest)
-				_start_transition(action, FIRST_SCENE_PATH, str(newest.get("scenario_path", "")))
-				transition["battle_record"] = str(newest.get("save_path", ""))
-			elif saved.is_empty():
+			var record := _arm_battle_record()
+			if record.is_empty():
 				show_message(NO_RECORD_MESSAGE, BattleUISkin.TEXT_RED)
 				transition = {"action": action, "status": "no_record"}
 			else:
-				CampaignProgress.queue_resume(saved)
-				_start_transition(action, FIRST_SCENE_PATH, str(saved.get("scenario_path", "")))
+				_start_transition(action, FIRST_SCENE_PATH, str(record.get("scenario_path", "")))
+				if record.has("save_path"):
+					transition["battle_record"] = str(record["save_path"])
 		"quit":
 			quit_requested = true
 			_start_transition(action, "")
 	return transition
+
+
+## 戰場記錄: a mid-battle checkpoint (the original's 戰場記錄) wins; otherwise the auto-saved
+## campaign position (remake reading). Arms it as the next boot's hand-off and returns it
+## ({} when there is neither: message 12 無存檔記錄).
+func _arm_battle_record() -> Dictionary:
+	var records: Array = CampaignProgress.battle_record_entries()
+	if not records.is_empty():
+		CampaignProgress.queue_battle_record(records[0])
+		return records[0]
+	var saved := CampaignProgress.load_progress()
+	if not saved.is_empty():
+		CampaignProgress.queue_resume(saved)
+	return saved
 
 
 func _start_transition(action: String, scene_path: String, resume_scenario: String = "", lit_hold := true) -> void:

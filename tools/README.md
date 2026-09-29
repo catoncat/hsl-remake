@@ -11,7 +11,7 @@
 | `play.sh`／`play.ps1` | 先导入并检查资源，再运行正式游戏 | `tools/play.sh` |
 | `doctor.sh` | 只读环境与仓库检查；`--original` 加查 Wine 与原作 | `tools/doctor.sh` |
 | `godot.sh`／`godot.ps1` | Godot 共用入口：导入资源、跑定向测试 | `tools/godot.sh --headless --import` |
-| `playtest.sh`／`hsl_playtest_kit.py` | 人工验收：独立存档，标题「戰場記錄」直进验收关 | `tools/playtest.sh [N]` |
+| `playtest.sh`／`hsl_playtest_kit.py` | 人工验收：独立存档，一条命令跳过标题直达某一关（`HSL_SKIP_TITLE=1`） | `tools/playtest.sh <槽名>` |
 | `hsl.py` | 生成器／检查器注册表的唯一 CLI（`list`／`check`／`generate`／`affected`） | `python3 tools/hsl.py list` |
 | `verify.sh`／`verify_runner.py`／`verify_slot.sh` | 完整非 GUI 验证 | `tools/verify.sh` |
 | 任务 `level_battle:N` | 原版关卡组装成正式战斗 `content/battles/battle_NNN.json` | `python3 tools/hsl.py generate level_battle:N` |
@@ -37,7 +37,7 @@ tools/verify_slot.sh        # verify.sh 开头 source：全机最多 2 个 verif
 tools/verify_runner.py      # 门禁背后的并行 runner：python-tests / checks（＝ hsl check --all）/ godot / deep / affected（lane 定向，见下行）/ story-guard（合并门快门档之后：改动落在剧情链上时跑剧情探索器）/ promote-timings（run_all 分片耗时 → tests/support/suite_timings.json）
 python3 tools/hsl.py list|check|generate|affected   # 生成器／检查器注册表的唯一 CLI（见下节）
 tools/play.sh               # 先导入并检查资源，再运行正式游戏
-tools/playtest.sh [N]       # 人工验收：独立存档、标题「戰場記錄」直进验收关 N、日志留 ~/hsl-playtest/logs（docs/PLAYTEST.md）
+tools/playtest.sh l053      # 人工验收：独立存档、跳过标题直达该槽（无参数列出全部槽，title 停在标题）、日志留 ~/hsl-playtest/logs（docs/PLAYTEST.md）
 tools/godot.sh --headless --import # 共用诊断入口；先导入一次再做命中的定向测试；上次成功导入以来没有可导入变动时约 1 s 跳过（HSL_FORCE_IMPORT=1 强制）
 ```
 
@@ -63,7 +63,7 @@ tools/godot.sh --headless --import # 共用诊断入口；先导入一次再做�
 | `hsl_actor_walk_manifest.py` | 从原 PAK 解码演员走路帧 PNG 与 manifest 的命令行（解码器与 manifest 构建在 `hsltools/sources/actor_walk_frames.py`，`levels/actors`、`story_scene`、`map_objects`、`assets/job_casts` 复用） | — |
 | `hsl_chapter_dialogue.py` | RESOURCE.TXT 对白证据导入命令行：`--pak PAK --chapter`／`--level N`（导入器、说话者表 `SPEAKER_IDS` 与检查器同住 `hsltools/levels/message_text.py`） | `test_hsl_levels.py` |
 | `hsl_map_object_origins.py` | 第一战站立物件 SHP 原点导入，`--check` 复核 | `--check`（[放置初始化包](../docs/evidence_packets/static_reverse/actor_placement_initialization.md)） |
-| `hsl_playtest_kit.py` | 人工验收存档：`generate` 在隔离 HOME 跑章节 autoplay、留下产品每次写的战役进度，取每个验收关的首次进入做成 8 个回憶錄（`generate --force-win` 透传 `HSL_CHAPTER_FORCE_WIN=1`：整章走查同一场连输到上限后用 BattleForceWin 强制判胜、行记 `forced: true` 继续走；强判胜那场不给战斗经验，之后的队伍比真实游玩弱，见 `tests/run_chapter_autoplay_tests.gd` 头注）；`select` 只重选；`install` 装进 `~/hsl-playtest/home` 并让标题「戰場記錄」指向某一格（`tools/playtest.sh` 调用；见 [PLAYTEST](../docs/PLAYTEST.md)） | — |
+| `hsl_playtest_kit.py` | 人工验收存档：`generate` 在隔离 HOME 跑章节 autoplay、留下产品每次写的战役进度，取每个验收关的首次进入做成 8 个回憶錄（`generate --force-win` 透传 `HSL_CHAPTER_FORCE_WIN=1`：整章走查同一场连输到上限后用 BattleForceWin 强制判胜、行记 `forced: true` 继续走；强判胜那场不给战斗经验，之后的队伍比真实游玩弱，见 `tests/run_chapter_autoplay_tests.gd` 头注）；`select` 只重选；`raw` 秒级写不依赖走查的槽（直接进关、carry／world 留空、队伍按关卡自带配置）；`list` 列槽名；`install --slot <槽名>` 装进 `~/hsl-playtest/home`：8 个走查槽当回憶錄，选中那一槽写成标题「戰場記錄」读的进度（`tools/playtest.sh` 调用并设 `HSL_SKIP_TITLE=1`，TitleScreen 进程内第一次出现时直接执行「戰場記錄」；见 [PLAYTEST](../docs/PLAYTEST.md)） | — |
 | `hsl_payload_inspector.py` | chapter01 payload 导入报告（EVEF／脚本文本元数据解析在 `hsltools/sources/scripts.py`，WORL／WAV／SHP 报告与 chapter01 写出仍在此；SHP 预览写到同级 `shared/shape_previews/`） | `test_hsl_payload_inspector.py` |
 | `hsl_resource_scanner.py` | 原作目录扫描器：类型猜测、嵌入签名、XOR-A8 WAVE 候选、`ignored/` 安全提取 | `test_hsl_resource_scanner.py` |
 | `hsl_steam_classic.py` | 仓库外 Steam 經典版目录（`paths.STEAM_CLASSIC_ROOT`，`HSL_STEAM_CLASSIC`）：`fetch` 打印 DepotDownloader 命令（用户本人登录），`verify` 按固定清单 `steam_classic_files.json` 逐文件 sha1，`pakdiff [--text]` 本机 hsl.pak 对 Steam hsl.pak／hsl-cn.pak 逐成员比较，`music` 列原曲格式与时长（[证据包](../docs/evidence_packets/resource_inventory/steam_classic_edition.md)） | `verify`（需 Steam 目录，不入门禁）、`fetch` 只打印 |
