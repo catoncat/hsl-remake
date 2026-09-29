@@ -385,7 +385,8 @@ func gold_double_cases() -> void:
 	var table: Dictionary = fixture()["equipment_items"]
 	var doubling: Array = table.keys().filter(func(code): return bool(table[code].get("gold_double", false)))
 	check(doubling == ["230"] and bool(table["230"]["supported"]), "ITEM gold_x2 is 230 黃金的聖杯 alone, now equippable: " + str(doubling))
-	check(BattleEquipmentView.description_lines(table["230"]).has("獲得金錢加倍") and not BattleEquipmentView.description_lines(table["228"]).has("獲得金錢加倍"), "the equipment description names the gold doubling on 230 only")
+	# 0x430710 "#@6" row: ITEM+0xa0 bit 0x20 writes RESOURCE 211 所得金錢x2 (0x43231c).
+	check(BattleEquipmentView.description_lines(table["230"]).has("所得金錢x2") and not BattleEquipmentView.description_lines(table["228"]).has("所得金錢x2"), "the equipment description names the gold doubling on 230 only")
 	# A controlled killer wearing it: the kill gold reaches the party doubled.
 	for slots in [["accessory1"], ["accessory1", "accessory2"]]:
 		var loop := fixture()

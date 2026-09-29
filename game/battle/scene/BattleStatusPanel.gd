@@ -63,6 +63,7 @@ var hint_buttons: Array[Button] = []
 ## (12,174), 28 px text rows from y+8, attribute values at x 92 and derived rows at x 116
 ## (BattleGrowthPanel, docs/evidence_packets/static_reverse/original_growth_window.md §2–3).
 const BattleGrowthPanel = preload("res://game/battle/scene/BattleGrowthPanel.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const STAT_KEYS := ["str", "dex", "mind", "con", "attack", "defense", "magic", "speed", "move"]
 ## `$:` gold box: WINDOW40 at the bottom right of the page (06_status_and_stats_screen
 ## frame_006 template match (415,439) in the 638 px recording → 416 in 640), amount drawn
@@ -240,9 +241,10 @@ func _build_bag() -> void:
 		_hover_lines(row, label, UISkin.TEXT_WHITE, _item_lines(details, code))
 
 
+## Description rows of a bag row, coloured per row (BattleEquipmentView.description_rows).
 func _item_lines(details: Dictionary, code: String) -> Array:
 	var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(code, {})
-	return preload("res://game/battle/scene/BattleItemText.gd").description_lines(details, definition).filter(func(line): return str(line) != "")
+	return BattleEquipmentView.description_rows(details, preload("res://game/battle/scene/BattleItemText.gd").description_lines(details, definition))
 
 
 ## 魔法／特殊技 pages: the unit's list in the skill page's order and row geometry, @1 white or
@@ -296,14 +298,7 @@ func _hover_row(at: Vector2, dimensions: Vector2, parent: Control = null) -> Con
 func _hover_lines(row: Control, label: Label, rest: Color, lines: Array) -> void:
 	row.mouse_entered.connect(func():
 		label.add_theme_color_override("font_color", UISkin.TEXT_GREEN)
-		for child in page_detail.get_children():
-			if child is Label:
-				page_detail.remove_child(child)
-				child.queue_free()
-		for index in range(mini(lines.size(), 4)):
-			var text := UISkin.text(page_detail, Vector2(8, 12 + index * 16), UISkin.TEXT_GREEN if index == 0 else UISkin.TEXT_WHITE, UISkin.FONT_SMALL, Vector2(360, 16))
-			text.text = str(lines[index])
-			text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		BattleEquipmentView.fill_box(page_detail, lines)
 		page_detail.show())
 	row.mouse_exited.connect(func():
 		label.add_theme_color_override("font_color", rest)

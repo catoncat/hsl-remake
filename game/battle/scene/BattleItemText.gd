@@ -46,7 +46,7 @@ static func description_lines(details: Dictionary, definition: Dictionary = {}) 
 	if not values.is_empty(): lines.append(" ".join(values))
 	var flags := _flag_row(details, definition)
 	if flags != "": lines.append(flags)
-	if not GameOptions.is_original("OPT-GUIDE"): lines.append_array(_hint_rows(definition, flags == "回復人物正常狀態"))
+	if not GameOptions.is_original("OPT-GUIDE"): lines.append_array(hint_rows(details, definition))
 	return lines
 
 ## 0x430680: the first word signed (0x45b6de flag 0x80000006), then when the second differs the
@@ -65,9 +65,10 @@ static func _flag_row(details: Dictionary, definition: Dictionary) -> String:
 		return "回復人物正常狀態"
 	return " ".join(PackedStringArray(cures.map(func(pair): return pair[1])))
 
-## The remake's explanatory rows (OPT-GUIDE＝提示 only; the original box has none of them); a full
-## cure (「回復人物正常狀態」) gets no keep-others row.
-static func _hint_rows(definition: Dictionary, full_cure: bool = false) -> Array[String]:
+## The remake's explanatory rows of a type 1 item (OPT-GUIDE＝提示 only; the original box has none
+## of them), after the 0x43088d rows; a full cure (「回復人物正常狀態」) gets no keep-others row.
+static func hint_rows(details: Dictionary, definition: Dictionary) -> Array[String]:
+	var full_cure := _flag_row(details, definition) == "回復人物正常狀態"
 	var rows: Array[String] = []
 	for pair in CURE_SENTENCES:
 		if not full_cure and int(definition.get(pair[0], 0)) == 1:

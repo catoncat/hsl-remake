@@ -19,6 +19,7 @@ signal pool_requested(request: Dictionary)
 signal cue_requested(event: String)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 ## Recipient bag: WINDOW20 at (12,168), eight 32 px rows; icon anchor (44, 184+32i), name (68, 176+32i).
 const BAG_AT := Vector2(12, 168)
@@ -490,13 +491,7 @@ func _show_description(code: int, label: Label, held: bool) -> void:
 
 
 func _describe(box: Control, code: int) -> void:
-	for child in box.get_children():
-		if child is Label: box.remove_child(child); child.queue_free()
-	var lines: Array = _description_lines(code)
-	for index in range(mini(lines.size(), 4)):
-		var row := BattleUISkin.text(box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
-		row.text = str(lines[index])
-		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	BattleEquipmentView.fill_box(box, BattleEquipmentView.description_rows(_catalog[str(code)], _description_lines(code)))
 	box.show()
 
 

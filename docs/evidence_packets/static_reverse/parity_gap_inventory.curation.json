@@ -177,13 +177,13 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」；消耗品数值行、旗句与重要物品说明照 0x430710）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区；商店非整理模式说明框截成 3 行再加「賣價」，会丢掉第 4 行（如世界樹之葉的「回復人物正常狀態」），原版 0x432fab 在全部行之后接賣價、不截行",
+      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」；消耗品数值行、旗句与重要物品说明照 0x430710；装备四行照 0x430710，WINDOW50 四行 FONT.15 裁切照 0x436d70；商店賣價照 0x432fab）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定",
       "original": "原窗体 SHP 已导入；使用／交換 窗与 裝備／丟棄 窗 Wine 实拍各三帧（runtime-measured）；其余面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "BattleItemPanel 四种道具窗、BattleItemText 说明框（0x430710）与 BattleVitals 字段字库、数值写法、抗性行照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
+      "remake": "BattleItemPanel 四种道具窗、BattleItemText／BattleEquipmentView 说明框（0x430710、0x436d70）与 BattleVitals 字段字库、数值写法、抗性行照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
       "remake_code": [
         "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",
@@ -199,17 +199,18 @@
     },
     {
       "id": "panel-captions",
-      "difference": "各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签与装备说明框的效果解释行两条路径都有",
+      "difference": "各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签两条路径都有",
       "original": "原版面板多为纯图标与数值",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md"
       ],
-      "remake": "原版值不显示，开关打开时显示：移动选格说明（OPTIONS-S4）、系统卷轴问句（MENUEXTRAS）与提示行（空的回憶錄、沒有戰場記錄等）、道具使用列表 tooltip／「沒有道具」／「道具 N / 8」、道具说明的解释行（保留其他狀態、延长上限、原始抗性上限；獲得物品窗／状态页／商店共用）；剩回忆录格标签（场景名＋时长）与装备说明框效果解释行两条路径都有",
+      "remake": "原版值不显示，开关打开时显示：移动选格说明（OPTIONS-S4）、系统卷轴问句（MENUEXTRAS）与提示行（空的回憶錄、沒有戰場記錄等）、道具使用列表 tooltip／「沒有道具」／「道具 N / 8」、道具说明的解释行（保留其他狀態、延长上限、原始抗性上限；獲得物品窗／状态页／商店共用）、装备说明框解释行（接在原版行之后，同受四行裁切：原版行已满四行的装备看不到解释行）；剩回忆录格标签（场景名＋时长）两条路径都有",
       "remake_code": [
         "game/battle/scene/BattleItemPanel.gd",
         "game/battle/scene/BattleItemText.gd",
         "game/battle/scene/BattleSystemMenu.gd",
-        "game/battle/scene/BattleLootPanel.gd"
+        "game/battle/scene/BattleLootPanel.gd",
+        "game/battle/scene/BattleEquipmentView.gd"
       ],
       "original_status": "no_original_code",
       "visibility": "every_battle",
@@ -2009,9 +2010,6 @@
         "dialogue-line-breaks",
         "bitmap-font"
       ]
-    },
-    "provenance:game/battle/scene/BattleEquipmentView.gd|layout|remake-invented|": {
-      "item": "ui-layout-readings"
     },
     "provenance:game/battle/scene/BattleEquipmentView.gd|strings|remake-invented|": {
       "item": "panel-captions"

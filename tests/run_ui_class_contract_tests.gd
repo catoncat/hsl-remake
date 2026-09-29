@@ -367,22 +367,15 @@ func word_break_contracts() -> void:
 	GameOptions.environment_preset = ""
 	dialogue.queue_free()
 	# Equipment detail box (BattleEquipmentView, shared by the status page, item／give views and
-	# 整理裝備): every catalog item's description at the box's fixed width.
+	# 整理裝備): 0x436d70 has 0x412060 draw the 0x430710 text unwrapped, one FONT.15 row per "#"
+	# at (x+8, y+12+16i) — 153 鐵護輪 is its name with the 0x430520 job bracket and 56 防禦力.
 	var view = preload("res://game/battle/scene/BattleEquipmentView.gd").new()
 	root.add_child(view)
 	await process_frame
 	var catalog: Dictionary = preload("res://game/sim/EquipmentCatalog.gd").items()
-	checked_wraps = 0
-	var with_names := 0
-	for code in catalog:
-		var source: String = view.description_text(catalog[code])
-		if Array(words).any(func(word): return source.contains(word)):
-			with_names += 1
-		view.show_description(catalog[code])
-		_check_no_split(view.description, source, "equipment %s description" % code)
-	check(checked_wraps == catalog.size() and with_names > 0, "every equipment description keeps each name whole (%d of %d, %d name a protected word)" % [checked_wraps, catalog.size(), with_names])
-	await process_frame
-	check(is_equal_approx(view.description.size.x, view.description.custom_minimum_size.x), "the detail box lays the description out at the width it was wrapped for (%.1f vs %.1f)" % [view.description.size.x, view.description.custom_minimum_size.x])
+	view.show_description(catalog["153"])
+	var drawn: Array = view.detail_rows.get_children().filter(func(child): return child is Label)
+	check(drawn.map(func(row): return row.text) == ["鐵護輪(劍,弓,翼,獸)", "防禦力6"] and drawn[1].position.y - drawn[0].position.y == 16.0, "the detail box draws 鐵護輪 as two unwrapped rows (%s)" % [drawn.map(func(row): return row.text)])
 	view.queue_free()
 	await process_frame
 

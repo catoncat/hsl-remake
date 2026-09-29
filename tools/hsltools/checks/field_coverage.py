@@ -50,7 +50,7 @@ from hsltools.sources.tables import blocks
 OUTPUT_JSON = 'content/generated/hsl/development/field_coverage.json'
 OUTPUT_DOC = 'docs/evidence_packets/static_reverse/original_field_coverage.md'
 SCHEMA = 'hsl_original_field_coverage.v1'
-PACKET_UPDATED = '2026-09-28'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
+PACKET_UPDATED = '2026-09-29'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
 
 SEEDS = 'content/generated/hsl/chapter01/'
 TERRAIN = 'content/generated/hsl/static/hsl01/'
@@ -237,7 +237,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'avoid_nomagic': ('consumed', 'game/sim/StatusApplicationRules.gd:equipment_modifiers', '免封魔', None),
         'avoid_weaken': ('consumed', 'game/sim/StatusApplicationRules.gd:equipment_modifiers', '免衰弱（1 行 220；位 0x2000000，0x40e2f0 免疫查询）', 'R21 曾误记 dead；R27 随 equipment.py status_effect_flags 接入'),
         'avoid_paralysis': ('consumed', 'game/sim/StatusApplicationRules.gd:equipment_modifiers', '免麻痹', None),
-        'high_cost': ('dead', None, '高价（4 行非 0；loader 0x448164 置 item+0xa0 bit 0x800，并入 +0x18c）', '全 .text 无测该位的指令，原版无规则效果；equipment.py INERT_FIELDS 照原版可装'),
+        'high_cost': ('consumed', 'game/battle/scene/BattleEquipmentView.gd:item_flags', '高价（4 行非 0；loader 0x448164 置 item+0xa0 bit 0x800，并入 +0x18c）', '只有说明框 0x430710 在 0x432946 测该位写 618 高價值，无规则效果；equipment.py INERT_FIELDS 照原版可装'),
         'no_addst': ('consumed', 'game/sim/StaminaRules.gd:effects', '不加气力', None),
         'hp_transfer_mp': ('consumed', 'game/sim/ResourceRecoveryRules.gd:transfer_values', 'HP 转 MP', None),
         'add_steal_ratio': ('consumed', 'game/sim/EquipmentRules.gd:effect_delta', '偷窃加成（1 行 131 隱忍黑衣 20；item+0x40，0x448420 加到 +0x196 工作字）', 'equipment.py NUMERIC add_steal_ratio→effects.steal_ratio；131 因此 supported'),

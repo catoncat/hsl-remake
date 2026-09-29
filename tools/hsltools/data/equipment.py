@@ -41,8 +41,9 @@ CURE_FIELDS = {'cure_poison', 'cure_no_magic', 'cure_paralysis', 'cure_weaken'}
 # ITEM loader 0x447e00..0x447e1b: hp_damage_half -> item+0xa0 bit 4, ORed into live +0x18c (0x448709..0x448717);
 # 0x4423c0 halves a nonzero strike at 0x442545 (0x40e2a0 tests the defender's bit 4).
 DEFENSE_FIELDS = {'hp_damage_half'}
-# high_cost: loader 0x448164 ORs item+0xa0 bit 0x800 (stored 0x4481b1, ORed into +0x18c) but no .text
-# instruction tests that bit on either word, so it carries no rule.
+# high_cost: loader 0x448164 ORs item+0xa0 bit 0x800 (stored 0x4481b1, ORed into +0x18c); only the
+# description builder 0x430710 tests it (0x432946, RESOURCE 618 高價值), so it carries no rule and
+# is kept as the row's `high_cost` for the description.
 INERT_FIELDS = {'high_cost'}
 # The ITEM loader 0x4477c0 only asks for field names it holds as strings (0x4466d0 / 0x46dd50 per name);
 # the EXE has no 'add_defnese' string, so the misspelt ITEM.TXT column is never read (194 神之足).
@@ -170,6 +171,7 @@ def build():
                        'move_magic_use': int(row.get('move_magic_use', 0)) != 0,
                        'hp_damage_half': int(row.get('hp_damage_half', 0)) != 0,
                        'add_attack_range': int(row.get('add_attack_range', 0)) != 0,
+                       'high_cost': int(row.get('high_cost', 0)) != 0,
                        'magic_hit_bonus': int(row.get('add_magic_hit', 0)),
                        'status_effect_flags': sum(bit for field, bit in [('keep_status_good', 0x80), ('avoid_poison', 0x800000), ('avoid_nomagic', 0x1000000), ('avoid_weaken', 0x2000000), ('avoid_paralysis', 0x4000000)] if int(row.get(field, 0))),
                        'stamina_effect_flags': sum(bit for field, bit in STAMINA_FLAGS.items() if int(row.get(field, 0))),

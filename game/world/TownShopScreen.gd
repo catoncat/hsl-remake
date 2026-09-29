@@ -969,21 +969,13 @@ func _row_button(at: Vector2, dimensions: Vector2, parent: Node = self) -> Butto
 	return button
 
 
-## Hovering a bag or goods row greens its name and shows WINDOW50 over the buttons (0x436d70);
-## the shop adds the 賣價 line (RESOURCE 608).
+## Hovering a bag or goods row greens its name and shows WINDOW50 over the buttons (0x436d70,
+## BattleEquipmentView.fill_box); the shop adds the 賣價 price (description_rows).
 func _show_description(code: int, label: Label) -> void:
 	if holding() or message_visible():
 		return
 	label.add_theme_color_override("font_color", BattleUISkin.TEXT_GREEN)
-	for child in description_box.get_children():
-		if child is Label:
-			description_box.remove_child(child)
-			child.queue_free()
-	var lines := description_lines(code)
-	for index in range(mini(lines.size(), 4)):
-		var row := BattleUISkin.text(description_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
-		row.text = str(lines[index])
-		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	BattleEquipmentView.fill_box(description_box, description_rows(code))
 	description_box.show()
 
 
@@ -992,15 +984,40 @@ func _hide_description(label: Label) -> void:
 	description_box.hide()
 
 
-func description_lines(code: int) -> Array:
+## The description rows as [text, colour] runs: 0x430710's rows, then in the shop ([0x4c1cbc]
+## bit 1, not 整理) 0x432fab's "@1" 608 賣價 "$" price, unless 0x40e690 finds the item important
+## (ITEM+0xa0 0x8000000). The price goes where the builder's text ends: an equipment item's @6
+## row (index 3), after "   " (0x478564) when that row has text; any other item's next row (the
+## case 0／1 text ends with "#"), which the box's four-row clip hides after four rows. Under
+## OPT-GUIDE＝提示 the price stays right after the builder's rows, before the remake's hint rows.
+func description_rows(code: int) -> Array:
+	var details: Dictionary = _items[str(code)]
 	var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(str(code), {})
-	var lines: Array = BattleItemText.description_lines(_items[str(code)], definition).filter(func(line): return str(line) != "")
-	if mode == MODE_ARRANGE:
-		return lines.slice(0, 4)
-	if lines.size() > 3:
-		lines = lines.slice(0, 3)
-	lines.append("賣價$%d" % WorldPartyRules.sell_price(_cost(code)))
-	return lines
+	var rows: Array = BattleEquipmentView.description_rows(details, BattleItemText.description_lines(details, definition))
+	if mode == MODE_ARRANGE or bool(details.get("important", false)):
+		return rows
+	var price := ["賣價$%d" % WorldPartyRules.sell_price(_cost(code)), BattleUISkin.TEXT_WHITE]
+	var type_code := int(details.get("type_code", 1))
+	if not type_code in range(2, 7):
+		var end := rows.size()
+		if type_code == 1 and not GameOptions.is_original("OPT-GUIDE"):
+			end -= BattleItemText.hint_rows(details, definition).size()
+		rows.insert(end, [price])
+		return rows
+	var flags := BattleEquipmentView.flag_row(details)
+	for index in range(rows.size()):
+		if flags != "" and rows[index][0][0] == flags:
+			rows[index] = [[flags + "   ", rows[index][0][1]], price]
+			return rows
+	# No @6 text: the price is the @6 row, after the name, type and common rows (OPT-GUIDE＝提示
+	# lists only the non-empty ones before its explanatory rows).
+	var at := 3
+	if not GameOptions.is_original("OPT-GUIDE"):
+		at = 1 + [BattleEquipmentView.type_row(details), BattleEquipmentView.common_row(details)].filter(func(text): return text != "").size()
+	while rows.size() < at:
+		rows.append([["", BattleUISkin.TEXT_WHITE]])
+	rows.insert(at, [price])
+	return rows
 
 
 func summary() -> Dictionary:

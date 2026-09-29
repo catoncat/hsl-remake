@@ -255,25 +255,20 @@ func _bag_button(details: Dictionary, code: String, index: int, row: int, colour
 	return button
 
 
-## Description lines of a bag row (0x430710 through BattleItemText; the frame's 回復藥／可使用／生命+40).
+## Description rows of a bag row (0x430710 through BattleItemText; the frame's 回復藥／可使用／生命+40),
+## coloured per row (an equipment row keeps its place when the one above is empty).
 func _item_lines(details: Dictionary, code: String) -> Array:
-	return BattleItemText.description_lines(details, items.get(code, {})).filter(func(line): return str(line) != "")
+	return BattleEquipmentView.description_rows(details, BattleItemText.description_lines(details, items.get(code, {})))
 
 
 ## Hovering a row pulses its name green (BattleMagicPanel.hover_colour) and fills WINDOW50 with
-## up to four FONT.15 rows at (x+8, y+12+16i), 360 px centred, the first @3 green (0x436d70).
+## up to four FONT.15 rows at (x+8, y+12+16i), 360 px centred, the first @3 green (0x436d70,
+## BattleEquipmentView.fill_box).
 func _hover_row(caption: Label, lines: Array) -> void:
 	if is_instance_valid(hover_caption):
 		hover_caption.add_theme_color_override("font_color", hover_caption.get_meta("colour", BattleUISkin.TEXT_WHITE))
 	hover_caption = caption
-	for child in detail_box.get_children():
-		if child is Label:
-			detail_box.remove_child(child)
-			child.queue_free()
-	for index in range(mini(lines.size(), 4)):
-		var row := BattleUISkin.text(detail_box, Vector2(8, 12 + index * 16), BattleUISkin.TEXT_GREEN if index == 0 else BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, Vector2(360, 16))
-		row.text = str(lines[index])
-		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	BattleEquipmentView.fill_box(detail_box, lines)
 	detail_box.visible = caption != null
 	if caption != null:
 		caption.add_theme_color_override("font_color", _hover_colour())
