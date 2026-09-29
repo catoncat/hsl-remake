@@ -12,9 +12,28 @@ extends RefCounted
 ## the explorer a logger. Nothing here is evidence about original balance or pacing: the
 ## fixtures defeat every living enemy / arm the source-timed status and resolve the
 ## outcome so the campaign hand-off can be followed.
+## `credit_experience` (force_win's last argument, default false; only the chapter walk's
+## HSL_CHAPTER_FORCE_WIN passes true) books experience for the enemies the fixture defeats, so a
+## forced win leaves the carried party near where playing the battle through would. The booking is
+## a fixture convention, not an original rule and not evidence about original balance: each enemy
+## the `clear` / `rounds` / `play_to_round` modes defeat has its remaining HP before the defeat
+## split evenly into one hit per living controlled unit (the division's remainder on the last
+## hit). The earlier hits are non-lethal, the last is the kill; the killer is taken in turn in
+## roster (deployment) order across the whole battle, the other units striking before it in roster
+## order from the one after it. A unit the product's experience gate refuses skips its hit and its
+## share joins the next hit. The kills carry no chain bonus: each unit's kill-chain word is held at
+## 0 for its hit and restored after it (the kill count still grows). The conversion and the
+## completed-action award (equipment doubling, level-ups, pending points, automatic allocation,
+## learning) are the product's own ExperienceRules.record → BattleLoopRewards.award_experience →
+## ProgressionRules.resolve_experience, drawing from the loop's own damage stream; no gold or loot
+## is booked. A growth window the credited points open is closed as the commander's play closes it
+## (the points stay pending for the member's next turn).
 
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const ExperienceRules = preload("res://game/sim/ExperienceRules.gd")
+const BattleLoopRewards = preload("res://game/sim/loop/BattleLoopRewards.gd")
+const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const PROFILE_DIRECTORY := "res://content/battles/levels"
 const RESULT_FRAMES := 9000
 const HANDOFF_FRAMES := 12000
@@ -96,18 +115,20 @@ static func play_opening(tree: SceneTree, scene: Node, label: String, assert_cb:
 
 ## The shared traversal fixture: interprets the level's `sweep_fixture` (mode `clear` when
 ## absent) until the result page shows a victory or the fixture's hand-off is armed.
-static func force_win(tree: SceneTree, scene: Node, label: String, assert_cb: Callable) -> bool:
+static func force_win(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, credit_experience: bool = false) -> bool:
 	var fixture := sweep_fixture(scene)
 	var mode := str(fixture.get("mode", "clear"))
+	# {} books nothing; else the killer rotation (see the header).
+	var credit := {"next": 0} if credit_experience else {}
 	match mode:
 		"clear":
-			return await _force_clear(tree, scene, label, assert_cb, fixture)
+			return await _force_clear(tree, scene, label, assert_cb, fixture, credit)
 		"status":
 			return await _force_status(tree, scene, label, assert_cb, fixture)
 		"rounds":
-			return await _force_rounds(tree, scene, label, assert_cb, fixture)
+			return await _force_rounds(tree, scene, label, assert_cb, fixture, credit)
 		"play_to_round":
-			return await _force_play_to_round(tree, scene, label, assert_cb, fixture)
+			return await _force_play_to_round(tree, scene, label, assert_cb, fixture, credit)
 		"choice_branch":
 			return await _force_choice_branch(tree, scene, label, assert_cb, fixture)
 	assert_cb.call(false, "%s: unknown sweep_fixture mode %s" % [label, mode])
@@ -121,13 +142,67 @@ static func _protect_players(loop: Dictionary, rules) -> void:
 			actor["hp"] = actor["max_hp"]
 
 
-static func _defeat_living_enemies(loop: Dictionary, rules) -> int:
+static func _defeat_living_enemies(loop: Dictionary, rules, credit: Dictionary = {}) -> int:
 	var count := 0
 	for actor in loop.get("units", []):
 		if actor["battle_actor_role"] == rules.ROLE_ENEMY and rules.Presence.living(actor):
+			if not credit.is_empty():
+				_credit_kill(loop, rules, actor, credit)
 			rules.set_unit_defeated(loop, actor["id"], true)
 			count += 1
 	return count
+
+
+## The header's experience booking for one enemy about to be defeated: its remaining HP split
+## into one hit per living controlled unit, the rotation's killer last; a unit the experience
+## gate refuses passes its share to the next hit, the last accepted unit's hit taking the rest.
+static func _credit_kill(loop: Dictionary, rules, enemy: Dictionary, credit: Dictionary) -> void:
+	var members: Array = (loop.get("units", []) as Array).filter(func(unit): return unit["battle_actor_role"] == rules.ROLE_PLAYER and rules.Presence.living(unit))
+	if members.is_empty() or typeof(enemy.get("kill_exp")) not in [TYPE_INT, TYPE_FLOAT] or typeof(enemy.get("level")) not in [TYPE_INT, TYPE_FLOAT]:
+		return
+	var count := members.size()
+	var killer_index := int(credit["next"]) % count
+	credit["next"] = int(credit["next"]) + 1
+	var order: Array = []
+	var last_accepted := -1
+	for offset in range(1, count + 1):
+		var member: Dictionary = members[(killer_index + offset) % count]
+		order.append(member)
+		if ExperienceRules.input_error(loop, member) == "":
+			last_accepted = order.size() - 1
+	var remaining := int(enemy["hp"])
+	var share := remaining / count
+	var carried := 0
+	for index in range(last_accepted + 1):
+		carried += share
+		if ExperienceRules.input_error(loop, order[index]) != "":
+			continue
+		var damage := remaining if index == last_accepted else carried
+		carried = 0
+		if damage > 0:
+			_credit_hit(loop, order[index], enemy, remaining, remaining - damage)
+			remaining -= damage
+
+
+## One booked hit through the exchange's own conversion and completed-action award, the unit's
+## kill-chain word held at 0 for it and restored after it (no chain bonus, no accumulation).
+static func _credit_hit(loop: Dictionary, member: Dictionary, enemy: Dictionary, hp_before: int, hp_after: int) -> void:
+	var chain_word := int(member["kill_chain_word"])
+	member["kill_chain_word"] = 0
+	var strike := {"attacker_id": str(member["id"]), "defender_id": str(enemy["id"]), "damage": hp_before - hp_after, "defender_hp_before": hp_before, "defender_hp_after": hp_after}
+	var basis := ExperienceRules.record(member, enemy, strike, DamageRandomStream.loop_source(loop))
+	strike["experience_basis"] = basis
+	member["kill_count"] = int(member["kill_count"]) + int(basis["kills_added"])
+	BattleLoopRewards.award_experience(loop, strike)
+	member["kill_chain_word"] = chain_word
+
+
+## A growth window the credited points opened: closed like the commander's play closes it.
+static func _close_credited_growth(scene: Node, credit: Dictionary) -> bool:
+	if credit.is_empty() or scene.growth_panel == null or not scene.growth_panel.visible:
+		return false
+	scene.growth_panel.hide()
+	return true
 
 
 static func _escape_zone(scene: Node) -> Array:
@@ -135,11 +210,13 @@ static func _escape_zone(scene: Node) -> Array:
 
 
 ## Waits for the result page, advancing result dialogue and clicking coordinator cutscenes.
-static func _await_result(tree: SceneTree, scene: Node, presentation) -> void:
+static func _await_result(tree: SceneTree, scene: Node, presentation, credit: Dictionary = {}) -> void:
 	for _frame in range(RESULT_FRAMES):
 		if presentation.battle_finished:
 			break
-		if presentation.dialogue_active():
+		if _close_credited_growth(scene, credit):
+			pass
+		elif presentation.dialogue_active():
 			presentation.advance_dialogue()
 		elif scene.opening_coordinator != null and scene.opening_coordinator.active:
 			if str(scene.opening_coordinator.summary().get("current_event_kind", "")) in CLICK_THROUGH_KINDS:
@@ -159,7 +236,7 @@ static func _victory_shown(scene: Node, presentation, label: String, assert_cb: 
 ## escape cell. `arm_win_statuses` / `advance_turn` run first when no win status is armed at
 ## first control (a scripted progression without a clear win, or a win status armed by a
 ## later round event).
-static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary) -> bool:
+static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary, credit: Dictionary) -> bool:
 	var coordinator = scene.opening_coordinator
 	var rules = scene.BattlePlayLoop
 	var presentation = scene.get_node("BattlePresentation")
@@ -197,7 +274,7 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		if presentation.battle_finished:
 			break
 		scene.set_process(false)
-		var living := _defeat_living_enemies(scene.play_loop, rules)
+		var living := _defeat_living_enemies(scene.play_loop, rules, credit)
 		if living == 0:
 			scene.set_process(true)
 			scene.apply_loop(rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(scene.play_loop)), "test")
@@ -210,7 +287,9 @@ static func _force_clear(tree: SceneTree, scene: Node, label: String, assert_cb:
 		for _frame in range(RESULT_FRAMES):
 			if presentation.battle_finished:
 				break
-			if scene.party_equipment_screen != null and scene.party_equipment_screen.active:
+			if _close_credited_growth(scene, credit):
+				settled = 0
+			elif scene.party_equipment_screen != null and scene.party_equipment_screen.active:
 				scene.party_equipment_screen.close()
 			elif coordinator != null and coordinator.active:
 				settled = 0
@@ -370,7 +449,7 @@ static func _await_handoff(tree: SceneTree, scene: Node, label: String, assert_c
 ## Mode `rounds`: set the turn to each source round in order (running the round hooks and
 ## resolving, fail statuses held out), then defeat the living enemies phase by phase
 ## (`clear_phases`) and wait for the result page.
-static func _force_rounds(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary) -> bool:
+static func _force_rounds(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary, credit: Dictionary) -> bool:
 	var rules = scene.BattlePlayLoop
 	var presentation = scene.get_node("BattlePresentation")
 	scene.set_process(false)
@@ -392,7 +471,7 @@ static func _force_rounds(tree: SceneTree, scene: Node, label: String, assert_cb
 	if bool(fixture.get("expect_undecided_after_rounds", false)):
 		assert_cb.call(not BattleOutcome.decided(loop), "%s: reaching the source rounds does not decide the battle" % label)
 	for _phase in range(int(fixture.get("clear_phases", 0))):
-		var converted := _defeat_living_enemies(loop, rules)
+		var converted := _defeat_living_enemies(loop, rules, credit)
 		loop = rules.resolve_outcome(rules.BattleScenarioRuleAdapter.run_event_hooks(loop))
 		loop["fail_statuses"] = []
 		if BattleOutcome.decided(loop) or converted == 0:
@@ -401,14 +480,14 @@ static func _force_rounds(tree: SceneTree, scene: Node, label: String, assert_cb
 		assert_cb.call((loop.get("win_statuses", []) as Array).has(int(fixture["expect_win_status"])), "%s: the source chain arms win_%d after the clear" % [label, int(fixture["expect_win_status"])])
 	scene.apply_loop(loop, "test")
 	scene.set_process(true)
-	await _await_result(tree, scene, presentation)
+	await _await_result(tree, scene, presentation, credit)
 	return _victory_shown(scene, presentation, label, assert_cb, "source-timed rounds fixture")
 
 
 ## Mode `play_to_round`: play the battle with wait commands / AI steps up to each source
 ## round (so the script's own insertions and installs commit), assert `expect_units`, then
 ## defeat the living enemies, resolve, settle the rewards and wait for the result page.
-static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary) -> bool:
+static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, assert_cb: Callable, fixture: Dictionary, credit: Dictionary) -> bool:
 	var rules = scene.BattlePlayLoop
 	var presentation = scene.get_node("BattlePresentation")
 	scene.set_process(false)
@@ -436,14 +515,14 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 		var expected: Dictionary = expected_value
 		var unit: Dictionary = rules.unit(loop, str(expected["id"]))
 		assert_cb.call(str(unit.get("actor_id", "")) == str(expected["actor_id"]) and str(unit.get("battle_actor_role", "")) == str(expected["role"]), "%s installs %s (%s, %s) before forced victory" % [label, str(expected["id"]), str(expected["actor_id"]), str(expected["role"])])
-	_defeat_living_enemies(loop, rules)
+	_defeat_living_enemies(loop, rules, credit)
 	loop = rules.resolve_outcome(loop)
 	var settlement: Dictionary = loop.get("settlement", {})
 	if not settlement.is_empty() and not bool(settlement.get("closed", true)):
 		loop = rules.finish_rewards(loop, int(settlement.get("sequence", 0)), int(settlement.get("revision", 0)), false, true)
 	scene.apply_loop(loop, "test")
 	scene.set_process(true)
-	await _await_result(tree, scene, presentation)
+	await _await_result(tree, scene, presentation, credit)
 	return _victory_shown(scene, presentation, label, assert_cb, "played-rounds fixture")
 
 

@@ -48,7 +48,21 @@ extends SceneTree
 ## `force_win=true forced=[…]`. A forced battle is recorded, never a failure; a force-win that
 ## does not reach a victory and a hand-off (or GameClear) stops the walk there as `stuck_at`
 ## with `force_failed` and fails the run. Unset, nothing changes: the first battle lost on every
-## attempt ends the walk and the payload has neither field.
+## attempt ends the walk and the payload has neither field. The forced win books experience for
+## the enemies the fixture defeats (BattleForceWin `credit_experience`, the fixture convention in
+## its header — each one killed in one hit by a living controlled unit in turn, through the
+## product's own experience path; not the original's rule and not evidence about its balance), so
+## the party the walk carries on is not held back by the forced battles; each prints
+## `CHAPTER_AUTOPLAY_FORCED_EXP level=… before={id: [level, exp, pending points]} after={…}`.
+## HSL_CHAPTER_FROM=/abs/campaign_progress.json starts the walk from that saved campaign position
+## (CampaignProgress.save_progress's record, e.g. a playtest-kit snapshot or a
+## HSL_CHAPTER_HANDOFF_DIR file) instead of the campaign start: payload `start` "handoff".
+## HSL_CHAPTER_MAX_BATTLES=N stops the walk once N battle rows are recorded, before the next
+## hand-off is booted (that hand-off stays pending), printing
+## `CHAPTER_AUTOPLAY battle_limit battles=N next=<scene> carry={id: [level, exp, pending points]}`
+## (the pending hand-off's carried party); the PASS line adds
+## `battle_limit=N next=<scene>`. Either knob makes the run a partial walk: chapter.json is not
+## rewritten (the drift line is still printed).
 ## Runs in the deep gate (tools/verify.sh --deep):
 ## `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_chapter_autoplay_tests.gd`.
 
@@ -88,6 +102,9 @@ const FRESH_PARTY_TEMPLATE_LEVEL := "1"
 const HANDOFF_DIR_ENV := "HSL_CHAPTER_HANDOFF_DIR"
 const EVENT_COMPLETION_BATTLES := ["res://content/battles/battle_073.json", "res://content/battles/battle_078.json"]
 const FORCE_WIN_ENV := "HSL_CHAPTER_FORCE_WIN"
+const FROM_ENV := "HSL_CHAPTER_FROM"
+const MAX_BATTLES_ENV := "HSL_CHAPTER_MAX_BATTLES"
+const START_HANDOFF := "handoff"
 
 var failures: Array[String] = []
 var campaign: Dictionary = {}
@@ -126,6 +143,9 @@ var force_win_stuck := false
 var force_armed: Dictionary = {}
 ## Levels force-won, in play order.
 var forced_levels: Array = []
+## HSL_CHAPTER_MAX_BATTLES (0 = no limit) and, once reached, {battles, next}.
+var max_battles := 0
+var battle_limit: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -237,8 +257,9 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 ## opening to first control (Autoplay.reach_first_control), then BattleForceWin.force_win (a
 ## decided victory's closing dialogue and growth panel paged as in the commander's play), and
 ## the hand-off rebuilt as after a natural win. The row keeps the natural attempts and outcome
-## with `forced: true`. A forced win gives no battle experience, so the party in later battles
-## (and in playtest slots made with --force-win) is weaker than a real player's. A force-win without a victory and a
+## with `forced: true`. The fixture books the defeated enemies' experience (`credit_experience`,
+## see the header); the party's level／exp before and after print as CHAPTER_AUTOPLAY_FORCED_EXP.
+## A force-win without a victory and a
 ## hand-off (or GameClear) is a real stop: recorded as stuck_at with `force_failed`, run fails.
 func _force_formal_battle(explorer: StoryExplorer, scene: Node, path: String, level: int, label: String) -> String:
 	var natural: Dictionary = force_armed[path]
@@ -261,7 +282,9 @@ func _force_formal_battle(explorer: StoryExplorer, scene: Node, path: String, le
 			var fixture_note := func(condition: bool, message: String) -> void:
 				if not condition:
 					fixture_notes.append(message)
-			won = await BattleForceWin.force_win(self, scene, label, fixture_note)
+			var before := _party_experience(scene.play_loop)
+			won = await BattleForceWin.force_win(self, scene, label, fixture_note, true)
+			print("CHAPTER_AUTOPLAY_FORCED_EXP level=%d before=%s after=%s" % [level, JSON.stringify(before), JSON.stringify(_party_experience(scene.play_loop))])
 			var presentation: Node = scene.get_node("BattlePresentation")
 			if not won and BattleOutcome.won(scene.play_loop) and not presentation.battle_finished and not CampaignProgress.has_pending():
 				# The fixture's settle loop does not page the win section's closing dialogue or
@@ -417,6 +440,29 @@ func _party_levels(loop: Dictionary) -> Dictionary:
 	return party
 
 
+## Controlled party now: unit id -> [level, exp, pending_stat_points].
+func _party_experience(loop: Dictionary) -> Dictionary:
+	var party := {}
+	for unit in loop.get("units", []):
+		if str(unit.get("battle_actor_role", "")) == "player_controlled":
+			party[str(unit["id"])] = [int(unit.get("level", 0)), int(unit.get("exp", 0)), int(unit.get("pending_stat_points", 0))]
+	return party
+
+
+## The explorer's pre-boot hook: HSL_CHAPTER_MAX_BATTLES — true (the walk ends, this hand-off
+## stays pending, untouched) once that many battle rows are recorded — else the retry reseed.
+func _before_boot(explorer: StoryExplorer, path: String) -> bool:
+	if max_battles > 0 and battles.size() >= max_battles:
+		battle_limit = {"battles": battles.size(), "next": path.get_file()}
+		var carried := {}
+		var units: Variant = (CampaignProgress.pending.get("carry", {}) as Dictionary).get("units", {})
+		for unit_id in (units if units is Dictionary else {}):
+			carried[str(unit_id)] = [int(units[unit_id].get("level", 0)), int(units[unit_id].get("exp", 0)), int(units[unit_id].get("pending_stat_points", 0))]
+		print("CHAPTER_AUTOPLAY battle_limit battles=%d next=%s carry=%s" % [battles.size(), path.get_file(), JSON.stringify(carried)])
+		return true
+	return _reseed_retry_damage(explorer, path)
+
+
 func _run() -> void:
 	campaign = CampaignProgress.load_campaign()
 	CampaignProgress.resume_prompt_in_headless = false
@@ -433,16 +479,29 @@ func _run() -> void:
 	if OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS").is_valid_int():
 		budget_seconds = maxi(0, int(OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS")))
 	force_win_stuck = OS.get_environment(FORCE_WIN_ENV) == "1"
+	var from := OS.get_environment(FROM_ENV)
+	if from != "":
+		start = START_HANDOFF
+	if OS.get_environment(MAX_BATTLES_ENV).is_valid_int():
+		max_battles = maxi(0, int(OS.get_environment(MAX_BATTLES_ENV)))
 	var started := Time.get_ticks_msec()
 	started_msec = started
-	if start == START_OHM_VILLAGE:
+	if start == START_HANDOFF:
+		var saved := CampaignProgress.load_progress(from)
+		if saved.is_empty():
+			push_error("%s=%s holds no campaign progress record" % [FROM_ENV, from])
+			print("CHAPTER_AUTOPLAY_FAIL count=1 %s=%s holds no campaign progress record" % [FROM_ENV, from])
+			quit(1)
+			return
+		StoryExplorer.start_from_handoff(CampaignProgress.queue_resume(saved))
+	elif start == START_OHM_VILLAGE:
 		StoryExplorer.start_after_ohm_village()
 		_seed_fresh_party_records()
 	else:
 		StoryExplorer.start_at_campaign_start()
 	var explorer := StoryExplorer.new(self, _play_formal_battle)
 	explorer.shopper = _shop
-	explorer.goal = _reseed_retry_damage
+	explorer.goal = _before_boot
 	var outcome := await explorer.run()
 	var seconds := float(Time.get_ticks_msec() - started) / 1000.0
 	var wins := battles.filter(func(row): return str(row["outcome"]) == Autoplay.OUTCOME_WIN).size()
@@ -454,7 +513,7 @@ func _run() -> void:
 		retries += int(row["tries"]) - 1
 	print("CHAPTER_AUTOPLAY_WALK steps=%d scenes=%d towns=%d retries=%d last=%s" % [explorer.steps, explorer.scenes_played.size(), explorer.towns_explored.size(), explorer.retries, outcome])
 	print("CHAPTER_AUTOPLAY scenes: " + ", ".join(explorer.scenes_played))
-	_assert_true(explorer.game_clear_reached or not stuck_at.is_empty() or not budget_exhausted.is_empty(), "the walk ends at GameClear, at a lost battle or at the time budget, not by exhaustion (%s): %s" % [outcome, " | ".join(explorer.log_lines.slice(maxi(0, explorer.log_lines.size() - 30)))])
+	_assert_true(explorer.game_clear_reached or not stuck_at.is_empty() or not budget_exhausted.is_empty() or not battle_limit.is_empty(), "the walk ends at GameClear, at a lost battle, at the time budget or at HSL_CHAPTER_MAX_BATTLES, not by exhaustion (%s): %s" % [outcome, " | ".join(explorer.log_lines.slice(maxi(0, explorer.log_lines.size() - 30)))])
 	var payload := {"schema": SCHEMA, "brain": brain_mode, "policy": AutoplayBrain.POLICIES[brain_mode], "tries_limit": tries_limit, "base_seed": BASE_SEED, "round_limit": Autoplay.DEFAULT_ROUND_LIMIT,
 		"start": start, "start_note": "campaign: the campaign's start_level with no carry; ohm_village: the big map after 歐姆村 with a fresh party (the explorer's start); every later scene through the runtime's hand-offs (tests/support/StoryExplorer.gd)",
 		"evidence_tier": "current-godot",
@@ -473,14 +532,17 @@ func _run() -> void:
 	var drifted: Array[String] = []
 	for entry in drift:
 		drifted.append(str(entry["path"]))
-	var drift_lines: Array[String] = ["CHAPTER_AUTOPLAY_DRIFT fields=%s (%s rewritten and left in the worktree; its headline against the tracked file, never a failure)" % [str(drifted), CHAPTER_PATH.get_file()]]
+	# A partial walk (HSL_CHAPTER_FROM／HSL_CHAPTER_MAX_BATTLES) is not the chapter: keep the file.
+	var partial := start == START_HANDOFF or max_battles > 0
+	var drift_lines: Array[String] = ["CHAPTER_AUTOPLAY_DRIFT fields=%s (%s %s; its headline against the tracked file, never a failure)" % [str(drifted), CHAPTER_PATH.get_file(), "not rewritten: a partial walk" if partial else "rewritten and left in the worktree"]]
 	drift_lines.append_array(RegenDiff.field_lines(drift))
 	print("\n".join(drift_lines))
-	var file := FileAccess.open(CHAPTER_PATH, FileAccess.WRITE)
-	_assert_true(file != null, "%s is writable" % CHAPTER_PATH)
-	if file != null:
-		file.store_string(JSON.stringify(payload, "  ", false) + "\n")
-		file.close()
+	if not partial:
+		var file := FileAccess.open(CHAPTER_PATH, FileAccess.WRITE)
+		_assert_true(file != null, "%s is writable" % CHAPTER_PATH)
+		if file != null:
+			file.store_string(JSON.stringify(payload, "  ", false) + "\n")
+			file.close()
 	await process_frame
 	await TestSuite.settle_wall_clock(self, 0.3)
 	var summary := "game_clear=%s stuck_at=%s budget_exhausted_at=%s start=%s brain=%s battles=%d won=%d retries=%d tries_limit=%d budget_seconds=%d seconds=%.1f" % [str(explorer.game_clear_reached), str(stuck_at.get("level", "")) if not stuck_at.is_empty() else "none", str(budget_exhausted.get("level", "")) if not budget_exhausted.is_empty() else "none", start, brain_mode, battles.size(), wins, retries, tries_limit, budget_seconds, seconds]
@@ -491,6 +553,8 @@ func _run() -> void:
 	summary += " dead_ends=%d drift=%s" % [dead_ends.size(), ",".join(drifted) if not drifted.is_empty() else "none"]
 	if force_win_stuck:
 		summary += " force_win=true forced=%s" % JSON.stringify(forced_levels)
+	if not battle_limit.is_empty():
+		summary += " battle_limit=%d next=%s" % [int(battle_limit["battles"]), str(battle_limit["next"])]
 	if failures.is_empty():
 		print("CHAPTER_AUTOPLAY_PASS %s" % summary)
 		quit(0)
