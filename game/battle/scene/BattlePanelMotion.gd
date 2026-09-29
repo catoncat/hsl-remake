@@ -45,6 +45,7 @@ extends Node
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const OriginalSlide = preload("res://game/common/OriginalSlide.gd")
 const VIEW := Vector2(640, 480)
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const TOP_LIMIT_Y := 170.0
@@ -189,18 +190,13 @@ static func sides_of(parts: Array) -> Array[String]:
 ## 0x45e882(cur, target, 40) on the distance still to go: within 1 px lands; else step
 ## min(40, distance >> 3), at least 2.
 static func slide_in_step(remaining: int) -> int:
-	if remaining <= 1:
-		return 0
-	return maxi(remaining - maxi(mini(SLIDE_IN_SPEED, remaining >> 3), 2), 0)
+	return OriginalSlide.approach(remaining, SLIDE_IN_SPEED)
 
 
 ## 0x45e80d(cur, start, 4, 20) on the one moving axis, as distance travelled back to the start
 ## point: within 4 lands; else half the rest, at most 20.
 static func slide_out_step(travelled: int) -> int:
-	var rest := SLIDE_DISTANCE - travelled
-	if rest <= SLIDE_OUT_TOLERANCE:
-		return SLIDE_DISTANCE
-	return travelled + mini(rest >> 1, SLIDE_OUT_STEP)
+	return OriginalSlide.retreat(travelled, SLIDE_DISTANCE, SLIDE_OUT_TOLERANCE, SLIDE_OUT_STEP)
 
 
 ## The panel's drawn parts: its visible Control children, a child that covers most of the

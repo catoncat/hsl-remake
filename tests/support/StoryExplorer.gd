@@ -279,15 +279,15 @@ func play_scene(scene: Node) -> String:
 	return OUTCOME_HANDOFF if CampaignProgress.has_pending() else OUTCOME_STUCK
 
 
-## Confirms dialogue, cuts teDelay / teMenuMoveOut holds (TownRuntime.confirm, the headless
-## driver's path — player input cannot cut one), answers prompts with their first row and
+## Confirms dialogue, cuts teDelay / teMenuMoveOut holds and lands a sliding stone board
+## (TownRuntime.confirm, the headless driver's path — player input cannot cut one), answers prompts with their first row and
 ## closes shops until the town is back on a menu (or closed / handing off). A hold left
 ## standing would end the drain mid-event with the town still open.
 func drain(town: Node) -> void:
 	var guard := 0
 	while is_instance_valid(town) and guard < 200 and not CampaignProgress.has_pending():
 		match str(town.mode):
-			"dialogue", "delay":
+			"dialogue", "delay", "slide":
 				town.confirm()
 			"select":
 				var pending: Dictionary = town.run.get("pending", {})

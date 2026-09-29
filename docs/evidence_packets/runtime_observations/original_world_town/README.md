@@ -121,7 +121,7 @@ case 0x1e 逐个读 `[player][event]` 对，候选只有同时满足下列条件
 | 网格线、系统卷轴、进城底图 | BigMap.SHP 1:1 不压暗；`BattleSystemMenu` world 变体六项同名；进城不压暗 | 同 |
 | TownBG、菜单 | TownBG (158,148)；WINDOW70.SHP (60,60) 叠在其上，白字行 x 72、行距 32；悬停行 `0x42c130` 脉冲绿、阴影照画 | 同 |
 | 离城、金钱栏 | 右键／Esc 离城、退子菜单、取消选人；根画面无点名与金钱／同伴条 | 同 |
-| 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与获得金钱／物品的重制旁白放下方 | 同 |
+| 对白板 | `TownRuntime`：上 y 20、下 y 320；转职结果与显示的 teGetGold 放下方；获得／交出物品与不显示的 teGetGold 的旁白只在 OPT-GUIDE=提示 时出（原版值不出、板不动）；酒館神秘男子买成的「獲得 <物品>」是原版消息框（`0x45535c`），两档都出 | 同 |
 | select 选择窗 | `TownRuntime._show_select_window` 调共用的 `game/common/EventSelectWindow.gd`（战斗侧 actSelectInsertEvent 用同一窗，见 [original_select_insert_event](../../static_reverse/original_select_insert_event.md)）：BOARD02 下槽，有头像 x 144（头像 x 12）、无头像 x 75；行 +17、行距 28、行数 > 4 顶 4、> 5 分两列；FONT.24 白字＋阴影，悬停脉冲绿去阴影；点击放 ACCEPT01；选人名单由 `TownEventRules` 的 `listed` 给出（在队、mode 1／2 按 `job_up_flags` 的同两位、至多 9 行），末行「離開」；Esc／右键不取消；选择期间石纹板隐藏 | 同；淡入 16 tick 满级前不收点击、点选后淡出 16 tick 再交回（玩家点击路径；脚本直调 `choose` 仍立即交回）；选择期间石纹板是否仍在未核对 |
 | 商店窗 | `TownShopScreen`：同一套 WINDOW10／20／90／40 板与六钮、价格右缘 x 594、悬停说明框、BOARD02 拒绝消息；红字按物品职业掩码 | 同；不画 ↓ |
 | 卖出 | 手上物 → 货表，`WorldPartyRules.sell` 半价，重要物品拒卖 | 同 |

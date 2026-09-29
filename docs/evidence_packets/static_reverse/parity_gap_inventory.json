@@ -915,14 +915,14 @@
     },
     {
       "id": "town-layout-extras",
-      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；战斗侧 actSelectInsertEvent 已改用同一选择窗（lane BATTLESELECT，0x451f2b）；石纹板显隐已照 BOSS 状态机 0x4561d0（lane TOWNMENU3：消息／teMenuMoveOut／商店／离城滑出，列根菜单或子菜单才滑回，选择与 teDelay 期间不动、行照画）；剩板滑入滑出不做动画、选择期间原版仍把点过的行画绿（+0x9a）、重制自加的旁白行（获得／交出物品、不显示的 teGetGold）也滑出板（原版无旁白、板不动）",
+      "difference": "城镇根画面已照原版去掉城名、金钱／同伴条与离开按钮（lane TOWNMAP）；select 选项已照原版选择窗（lane TOWNSELECT：BOARD02 下槽、行 +17／28 px、FONT.24 白字、悬停脉冲绿、选人末行「離開」、Esc 不取消）；选人名单照 case 0x1e 按 +0x134 转职位筛（mode 1 未转职、mode 2 只转过一次，至多 9 行）；对白板上下已由 0x414220 静态确认；选择窗淡入淡出 16 tick、满级前不收点击、淡出后交回与根／子菜单悬停脉冲绿（留阴影）已照 0x426680／0x4561d0（lane TOWNMENU2）；战斗侧 actSelectInsertEvent 已改用同一选择窗（lane BATTLESELECT，0x451f2b）；石纹板显隐已照 BOSS 状态机 0x4561d0（lane TOWNMENU3：消息／teMenuMoveOut／商店／离城滑出，列根菜单或子菜单才滑回，选择与 teDelay 期间不动、行照画）；板照 0x45e882／0x45e80d 逐 tick 滑入滑出、等板到位才离城／开始 teMenuMoveOut 计数／走消息后下一 token（商店窗与板滑出同时开）、悬停行 +0x9a 各状态保持绿、获得／交出物品与不显示的 teGetGold 旁白挪到 OPT-GUIDE=提示（lane TOWNBOARDSLIDE）；剩：板上的行是列菜单时的快照（原版每帧照树现画）；进城状态 1（TownBG 移动加 0x800 步进，约 31 tick）未做；+0x9a 悬停判定用按钮矩形，原版用板矩形分 y 带 0..7（0x456778–0x4567e7）；OriginalSlide 滑出对负位移向下取整，原版 sar 给出上取整，有一帧差 1 px（落定 tick 不变）",
       "original": "根画面无金钱与离开项（帧 03／04／14）；0x4264a0 建对象 704（BOARD02），0x426680 摆窗 y＋320、有头像 x 144 否则 75，行对象 705（0x4264f0）平时 0x412760 白字、悬停 0x412680 用 0x42c130 绿；tePlayerSelect 追加 RESOURCE 312「離開」事件 −1，mode 1 跳过 +0x134&0xc0000000、mode 2 只留 0x80000000 无 0x40000000（0x4557e5／0x4557fb）；0x426680 层级 0→16、满 16 才收点击、选后 16→0 再交回；0x4561d0 悬停行 0x42c130 色、阴影照画；0x4145f6 读 0x4000 放上槽；0x4561d0 城镇代码不写 +0x30，板靠 0x45e80d 滑到 x −260（状态 89／90／6／70）、0x45e882 滑回 (60,60)（状态 2），悬停行 +0x9a 各状态都画绿",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",
         "docs/evidence_packets/static_reverse/original_dialogue_board.md",
         "docs/evidence_packets/static_reverse/town_event_semantics.md"
       ],
-      "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；石纹板显隐照原版（_board_in），滑动动画与选择期间行保持绿色未做",
+      "remake": "TownRuntime 选择窗与对白板照原版；选择窗淡入淡出与根菜单悬停色照原版；石纹板滑入滑出与各状态悬停绿照原版（_board_in／_board_x／_hover_index，OriginalSlide 步进）；物品得失旁白只在 OPT-GUIDE=提示（神秘男子买成的「獲得」两档都出）；行是列菜单时的快照",
       "remake_code": [
         "game/sim/TownEventRules.gd",
         "game/world/TownRuntime.gd"

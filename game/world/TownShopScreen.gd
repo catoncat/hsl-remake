@@ -69,6 +69,7 @@ signal hand_requested(action: String, args: Dictionary, hand: Dictionary)
 
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
+const OriginalSlide = preload("res://game/common/OriginalSlide.gd")
 const BattleLootPanel = preload("res://game/battle/scene/BattleLootPanel.gd")
 const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
@@ -245,18 +246,13 @@ func _play_pending_sound() -> void:
 
 ## 0x45e882(cur, target, speed): distance ≤ 1 lands; else step min(speed, distance >> 3), at least 2.
 static func slide_in_step(remaining: int) -> int:
-	if remaining <= 1:
-		return 0
-	return maxi(remaining - maxi(mini(SLIDE_IN_SPEED, remaining >> 3), 2), 0)
+	return OriginalSlide.approach(remaining, SLIDE_IN_SPEED)
 
 
 ## 0x45e80d(cur, start, tol 4, step 20) on the one moving axis: within 4 lands; else half the
 ## rest, at most 20.
 static func slide_out_step(travelled: int) -> int:
-	var rest := SLIDE_DISTANCE - travelled
-	if rest <= SLIDE_OUT_TOLERANCE:
-		return SLIDE_DISTANCE
-	return travelled + mini(rest >> 1, SLIDE_OUT_STEP)
+	return OriginalSlide.retreat(travelled, SLIDE_DISTANCE, SLIDE_OUT_TOLERANCE, SLIDE_OUT_STEP)
 
 
 ## The unit direction a part slides from: WINDOW10 strip from above, buttons from below, left
@@ -364,8 +360,7 @@ class SlideGhost extends CanvasLayer:
 		clock += maxf(delta, 0.0)
 		while clock >= OriginalTick.TICK_SECONDS and travelled < SLIDE_DISTANCE:
 			clock -= OriginalTick.TICK_SECONDS
-			var rest := SLIDE_DISTANCE - travelled
-			travelled = SLIDE_DISTANCE if rest <= SLIDE_OUT_TOLERANCE else travelled + mini(rest >> 1, SLIDE_OUT_STEP)
+			travelled = OriginalSlide.retreat(travelled, SLIDE_DISTANCE, SLIDE_OUT_TOLERANCE, SLIDE_OUT_STEP)
 			for entry in pieces:
 				(entry["item"] as TextureRect).position = entry["from"] + entry["direction"] * float(travelled)
 		if travelled >= SLIDE_DISTANCE:

@@ -67,10 +67,11 @@
         "game/battle/scene/BattleItemPanel.gd:_show_list（道具使用／给予列表每次打开读一次；持物窗 _show_hand_window 同读）→ 原版值只有图标与名字；提示 时使用列表行挂说明 tooltip、空栏出「沒有道具」、左下出「道具 N / 8」",
         "game/battle/scene/BattleItemText.gd:description（每次生成道具说明读一次：獲得物品窗、状态页、商店、使用列表 tooltip）→ 原版值只有回復／解除／永久／增益数值行；提示 时加「；保留其他狀態」「已有同類增益時只延長3回，上限9回」「提升原始抗性…」「不改力量…」解释行",
         "game/world/WorldMapRuntime.gd:_refresh_labels（大地图每次刷新点名读一次：进图、到达、悬停变化、重建图层）→ 原版值不画点名；提示 时当前点、一条已显示路线可达的点与悬停点旁标名",
-        "game/world/TownShopScreen.gd:back（整理裝備／商店持物时每次右键／Esc 读一次）→ 原版值不动作（根态 0x428dac 只在空手时 0x428dc7 关窗）；提示 时持物放回当前成员首空格（0x436e30，满包散件留在手上）"
+        "game/world/TownShopScreen.gd:back（整理裝備／商店持物时每次右键／Esc 读一次）→ 原版值不动作（根态 0x428dac 只在空手时 0x428dc7 关窗）；提示 时持物放回当前成员首空格（0x436e30，满包散件留在手上）",
+        "game/world/TownRuntime.gd:_play_next_effect（城镇 te 链每个 teGetItem／teCheckItemExecEvent 的删物品／teGetGold 读一次）→ 原版值获得／交出物品与不显示的 teGetGold 不出旁白、石纹板不动（0x45536c 返回 0）；提示 时下方出「獲得 … × N」「交出 …」「獲得 N 金錢」旁白并滑出石纹板；显示的 teGetGold 与 teSecretManBuyThing 买成的「獲得 <物品>」（0x45535c 消息框）是原版消息，两档都出、不归本项"
       ],
       "evidence": ["move-path-overlay", "wait-cue", "extra-action-cue", "world-map-presentation", "title-flow-extras",
-        "panel-captions", "ESCAPEMARK 644178ea"],
+        "panel-captions", "town-layout-extras", "ESCAPEMARK 644178ea"],
       "work": "M"
     },
     {

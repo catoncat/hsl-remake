@@ -84,7 +84,18 @@ func _boot(carry: Dictionary, world: Dictionary) -> Node:
 func _open_town(scene: Node, point_id: int) -> Node:
 	scene.world_map_runtime.select_point(point_id, "test")
 	await process_frame
-	return scene.world_map_runtime.town_runtime
+	var town = scene.world_map_runtime.town_runtime
+	await _settle(town)
+	return town
+
+
+## Lets the stone board finish its slide (one 0x45e882／0x45e80d step a tick) and whatever
+## waits for it to land (the shop, leaving, the token after a message).
+func _settle(town: Node) -> void:
+	var deadline := Time.get_ticks_msec() + 3000
+	while is_instance_valid(town) and town.board_moving() and Time.get_ticks_msec() < deadline:
+		await process_frame
+	await process_frame
 
 
 ## Confirms through every message page of the current run until it leaves
@@ -247,6 +258,7 @@ func _run_shop() -> void:
 	_assert_eq(str(town.current_speaker), "武器店老闆", "shape name id 876")
 	_assert_eq(str(town.summary()["dialogue_slot"]), "top", "an NPC line (teShapeMessage) uses the top board, as in original frames 05／07")
 	_assert_true(is_equal_approx(town._dialogue.position.y, 20.0), "the top board sits 300 px above the bottom one (text board y 22 in the original)")
+	await _settle(town)
 	_assert_true(not bool(town.summary()["menu_board_visible"]), "the stone board hides while a message plays")
 	_confirm_through(town)
 	_assert_eq(str(town.mode), "shop", "teCreateShop opens the shop window")
@@ -307,8 +319,9 @@ func _run_shop() -> void:
 	_assert_true(town.shop_screen == null, "the shop window is gone")
 	_assert_eq(town.menu_codes(), [1, 2, 3], "root menu unchanged by the shop")
 	_assert_eq(int(town.party_gold()), 175, "gold survives the run finish (interpreter party refreshed from the carry)")
+	await _settle(town)
 	town.handle_input(_key(KEY_ESCAPE))
-	await process_frame
+	await _settle(town)
 	_assert_true(map.town_runtime == null, "Escape on the root menu leaves the town")
 	_assert_eq(int(scene.campaign_handoff["carry"]["loop"]["gold"]), 175, "the carry keeps the town's result after leaving")
 	_assert_true(map.point_nodes.size() >= 1 and map.point_nodes.has(1), "the map layer is rebuilt after leaving (歐姆村 and whatever the reveal has shown)")
@@ -316,6 +329,6 @@ func _run_shop() -> void:
 	_assert_true(again != null and str(again.mode) == "menu", "the town reopens on its root menu")
 	if again != null:
 		again.handle_input(_right_click())
-		await process_frame
+		await _settle(again)
 		_assert_true(map.town_runtime == null, "right click on the root menu leaves the town, as in the original")
 	await _teardown(scene)

@@ -22,7 +22,8 @@ extends Control
 ## 0x2000, never set in TOWNDEF — would hold the last page until the flag clears; not modelled); teDelay N holds the chain N + 1 ticks with no board up (counter
 ## 0x4c1d54, one decrement per process call) and teMenuMoveOut holds it 20 ticks; player
 ## input does not cut a hold. tePlaySound (0x455710 -> 0x42c180) plays its WAV at once at full
-## volume and the chain goes on without waiting; gold and item grants show as narration lines (remake). Shop prices and
+## volume and the chain goes on without waiting; under OPT-GUIDE=提示 gold and item grants show as narration lines
+## (remake; 原版 shows none and leaves the board where it is). Shop prices and
 ## refusals follow the original code (static-derived, original_shop_transaction.md).
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
@@ -48,9 +49,11 @@ extends Control
 ##   strings: resource-derived content/imported/hsl/global/world_map/town_messages.json
 ##   strings: resource-derived content/imported/hsl/global/world_map/towndef.json
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_shop_transaction.md
-##   strings: remake-invented (narration lines for gold／item grants)
+##   strings: remake-invented (narration lines for gold／item grants, OPT-GUIDE=提示 only,
+##     except a displayed teGetGold)
 ##   timing: static-derived docs/evidence_packets/static_reverse/town_event_semantics.md
-##     (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, through OriginalTick)
+##     (teDelay N → N + 1 ticks, teMenuMoveOut → 20 ticks, via OriginalTick;
+##     board 0x45e882 in／0x45e80d out, input waits)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_world_town/README.md
 ##     (select board 0x426680: 16-tick fade in, clicks only at full level, 16-tick fade out, then hand back)
 ##   timing: provisional (the stone menus have no clock of their own)
@@ -74,6 +77,8 @@ const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
+const OriginalSlide = preload("res://game/common/OriginalSlide.gd")
+const GameOptions = preload("res://game/settings/GameOptions.gd")
 
 const SUMMARY_SCHEMA := "hsl_town_runtime.v1"
 ## Original frames 03／04 (席達鎮 TownBG06, 兩棲族部落 TownBG14; runtime-measured): TownBG and
@@ -85,6 +90,13 @@ const MENU_BOARD_AT := Vector2(60, 60)
 const MENU_ROW_ORIGIN := Vector2(72, 64)
 const MENU_ROW_SIZE := Vector2(216, 32)
 const MENU_ROW_PITCH := 32.0
+const ROW_COLOUR_KEYS: Array[String] = ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color"]
+## 0x456150 builds the board at x −260 (off screen); state 2 slides it in by 0x45e882(cur, 60, 40),
+## states 6／70／89／90 back out by 0x45e80d(cur, −260, 4, 20), one step a tick.
+const BOARD_OUT_X := -260
+const BOARD_SLIDE_IN_SPEED := 40
+const BOARD_SLIDE_OUT_TOLERANCE := 4
+const BOARD_SLIDE_OUT_STEP := 20
 ## Dialogue board top edges: the bottom slot is BattleDialogue's; frames 05／07 put the
 ## teShapeMessage board 300 px higher (text board y 22 against 322).
 const DIALOGUE_TOP_Y := 20.0
@@ -132,8 +144,15 @@ var shop_screen: Control
 static var _scenario_paths: Dictionary = {}
 var dialogue_slot := ""
 var _hold_serial := 0
-## The stone board is on screen (slid in). It starts off screen (0x456150: x −260).
+## The stone board's slide target: in at (60,60) or out at x −260. It starts off screen (0x456150).
 var _board_in := false
+## The board's current x (the rows follow it) and the tick clock of its slide.
+var _board_x := BOARD_OUT_X
+var _board_clock := 0.0
+## What waits for the board to land (the BOSS state after 89／90／6／70), run when it does.
+var _after_board := Callable()
+## +0x9a: the hovered row index (−1 = 0xffff), re-read only while the menu takes clicks (state 4).
+var _hover_index := -1
 
 
 func open() -> void:
@@ -159,6 +178,7 @@ func open() -> void:
 	_menu_root = Control.new()
 	_menu_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_menu_root)
+	_place_board()
 	_choice_root = Control.new()
 	_choice_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_choice_root)
@@ -201,7 +221,7 @@ static func _entry_text(entry: Dictionary) -> String:
 
 
 ## One entry of the stone board (0x4561d0 draw pass): FONT.24 white over the 0x8430 shadow at
-## (+1,+1); the hovered row (+0x9a) is drawn in the 0x42c130 pulse green, shadow kept.
+## (+1,+1); the hovered row (+0x9a) is drawn in the 0x42c130 pulse green, shadow kept (_paint_rows).
 func _menu_row(parent: Control, index: int, text: String, node_name: String) -> Button:
 	var row := Button.new()
 	row.name = node_name
@@ -215,13 +235,8 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 	for style in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
 		row.add_theme_stylebox_override(style, StyleBoxEmpty.new())
 	row.add_theme_font_size_override("font_size", BattleUISkin.FONT_BODY)
-	row.add_theme_color_override("font_color", BattleUISkin.TEXT_WHITE)
-	row.add_theme_color_override("font_hover_color", select_hover_colour())
-	row.add_theme_color_override("font_pressed_color", BattleUISkin.TEXT_WHITE)
-	row.add_theme_color_override("font_hover_pressed_color", select_hover_colour())
-	row.mouse_entered.connect(_hover_menu_row.bind(row))
-	row.mouse_exited.connect(_hover_menu_row.bind(null))
-	set_process(true)
+	for key in ROW_COLOUR_KEYS:
+		row.add_theme_color_override(key, BattleUISkin.TEXT_WHITE)
 	row.add_theme_color_override("font_disabled_color", Color(0.62, 0.6, 0.56))
 	row.add_theme_color_override("font_shadow_color", BattleUISkin.TEXT_SHADOW)
 	row.add_theme_constant_override("shadow_offset_x", 1)
@@ -234,19 +249,91 @@ func _menu_row(parent: Control, index: int, text: String, node_name: String) -> 
 ## town code writes its +0x30 shape word, so the 0x4561e8 guard never hides it. It leaves the
 ## screen by sliding to x −260 (0x45e80d) — state 89 for VM return 4 (a message, a failed
 ## teCheckJobUp, a failed teCheckMoney, a displayed teGetGold, teMenuMoveOut; 0x456af8), state 90
-## before the shop and state 6 when leaving (0x456b2f), state 70 before the exit event
+## while the shop window opens and state 6 when leaving (0x456b2f), state 70 before the exit event
 ## (0x456a17) — and comes back only in state 2 (0x45671d), when a menu or sub-menu is listed.
 ## A select (VM return 0), a teDelay or a job-up title line (phase 0x1f, 0x455f4e → 0x414220,
 ## return 0) leaves it where it is: its rows stay drawn, but take clicks only in state 4
-## (0x45630f). The slide itself is not animated here.
+## (0x45630f), once the state 2 slide has landed. `_board_in` is the slide target; _step_board
+## moves `_board_x` one 0x45e882／0x45e80d step a tick and the rows follow it.
 func _refresh_board() -> void:
 	if _board == null:
 		return
-	_board.visible = _board_in
-	_menu_root.visible = _board_in
-	var live := mode in ["menu", "sub_menu"]
+	_place_board()
+	var live := _board_live()
 	for row in _menu_root.get_children():
 		(row as Control).mouse_filter = Control.MOUSE_FILTER_STOP if live else Control.MOUSE_FILTER_IGNORE
+
+
+## State 4: a menu or sub-menu is listed and the board has landed.
+func _board_live() -> bool:
+	return mode in ["menu", "sub_menu"] and _board_in and not board_moving()
+
+
+func board_moving() -> bool:
+	return _board != null and _board_x != _board_target_x()
+
+
+func _board_target_x() -> int:
+	return int(MENU_BOARD_AT.x) if _board_in else BOARD_OUT_X
+
+
+## Off screen at x −260 the board (238 px wide) draws nothing, so it is hidden there.
+func _place_board() -> void:
+	if _board == null:
+		return
+	_board.position.x = _board_x
+	_menu_root.position.x = _board_x - MENU_BOARD_AT.x
+	_board.visible = _board_x > BOARD_OUT_X
+	_menu_root.visible = _board.visible
+
+
+func _step_board(delta: float) -> void:
+	if not board_moving():
+		_board_clock = 0.0
+		return
+	_board_clock += maxf(delta, 0.0)
+	var land_x := int(MENU_BOARD_AT.x)
+	while _board_clock >= OriginalTick.TICK_SECONDS and board_moving():
+		_board_clock -= OriginalTick.TICK_SECONDS
+		if _board_in:
+			_board_x = land_x - OriginalSlide.approach(land_x - _board_x, BOARD_SLIDE_IN_SPEED)
+		else:
+			_board_x = land_x - OriginalSlide.retreat(land_x - _board_x, land_x - BOARD_OUT_X, BOARD_SLIDE_OUT_TOLERANCE, BOARD_SLIDE_OUT_STEP)
+	_place_board()
+	if not board_moving():
+		_board_landed()
+
+
+func _board_landed() -> void:
+	_board_clock = 0.0
+	_refresh_board()
+	if _after_board.is_valid():
+		var then := _after_board
+		_after_board = Callable()
+		then.call()
+
+
+## What the BOSS state machine does only once the board has landed (89 → 5, 6 → 7, 70 → 72):
+## at once when it is at rest, else the town waits in "slide" (no board up, no input).
+func _after_slide(then: Callable) -> void:
+	if not board_moving():
+		then.call()
+		return
+	mode = "slide"
+	_after_board = then
+	if _dialogue.visible:
+		_dialogue.clear_message()
+	current_text = ""
+	current_speaker = ""
+	_refresh_board()
+
+
+## Scripted drivers need no clock: the board lands at once and whatever waited for it runs.
+func _land_board() -> void:
+	if _board == null:
+		return
+	_board_x = _board_target_x()
+	_board_landed()
 
 
 func menu_codes() -> Array[int]:
@@ -265,22 +352,30 @@ func select_entry(code: int) -> Dictionary:
 		records.append({"kind": "select_entry", "code": code, "status": "not_in_menu"})
 		return {"status": "not_in_menu"}
 	records.append({"kind": "select_entry", "code": code, "status": "run"})
+	_land_board()  # a scripted pick: the player's click only reaches a landed board
 	_start_run(code, "menu")
 	return {"status": "run", "code": code}
 
 
 ## Leaving runs the town's exit event first (teSetTownExitExecEvent) when one is
-## armed, then closes the screen.
+## armed, then closes the screen. Either way the board slides out first (state 70 → 72 runs the
+## exit event, state 6 → 7 fades the town out; 0x456a17／0x456b2f).
 func leave() -> void:
 	if mode != "menu":
 		records.append({"kind": "leave", "status": "ignored_mode_" + mode})
 		return
+	_land_board()
 	var exit_event := int(_town_state().get("exit_exec_event", 0))
+	_board_in = false
 	if exit_event > 0 and not _exit_ran:
 		records.append({"kind": "leave", "status": "exit_event", "event": exit_event})
-		_start_run(exit_event, "exit_event")
+		_after_slide(_start_run.bind(exit_event, "exit_event"))
 		return
 	records.append({"kind": "leave", "status": "closed"})
+	_after_slide(_close)
+
+
+func _close() -> void:
 	mode = "closed"
 	closed.emit(town_id)
 
@@ -290,8 +385,6 @@ func leave() -> void:
 
 func _start_run(event_code: int, trigger: String) -> void:
 	_clear(_choice_root)
-	if trigger == "exit_event":
-		_board_in = false  # BOSS state 70 slides the board out before the exit event (0x456a17)
 	_party_before = WorldPartyRules.party_from_carry(carry, speakers)
 	run = Rules.begin_event(state, _party_before, towndef, town_id, event_code)
 	_consumed_effects = 0
@@ -339,22 +432,29 @@ func _play_next_effect() -> void:
 				# event puts a tePlayerMessage (return 4) first, so it is already out.
 				_show_dialogue("job_up:%s:%s" % [token, str(effect.get("to_actor_id", ""))], name, text, str(speaker.get("portrait_key", "")), false, false)
 				return
-			"get_gold":
-				_show_narration("gold:%d" % int(effect.get("amount", 0)), "獲得 %d 金錢" % int(effect.get("amount", 0)))
-				return
-			"get_item":
-				_show_narration("item:%d" % int(effect.get("item_id", 0)), "獲得 %s × %d" % [item_name(int(effect.get("item_id", 0))), int(effect.get("count", 1))])
-				return
-			"remove_item":
-				_show_narration("lost:%d" % int(effect.get("item_id", 0)), "交出 %s" % item_name(int(effect.get("item_id", 0))))
-				return
+			"get_gold", "get_item", "remove_item":
+				# A non-displayed teGetGold goes 0x454fd3 → 0x45536c and returns 0; teGetItem (0x455098)
+				# and the teCheckItemExecEvent item removal (0x455725) build no message either: no
+				# line, the board stays. A displayed teGetGold is a message (return 4), and a
+				# teSecretManBuyThing purchase (its get_item comes right before secret_man
+				# purchase) raises 1621「獲得」+ item name in a message box (case 0x27, 0x45535c).
+				var original_line := kind == "get_gold" and bool(effect.get("display", false))
+				if kind == "get_item" and not effect_queue.is_empty():
+					var after: Dictionary = effect_queue.front()
+					original_line = str(after.get("kind", "")) == "secret_man" and str(after.get("action", "")) == "purchase"
+				if original_line or not GameOptions.is_original("OPT-GUIDE"):
+					_show_narration(effect)
+					return
+				records.append({"kind": "effect", "effect": effect, "status": "applied"})
 			"next_level":
 				records.append({"kind": "effect", "effect": effect})
 			"delay", "menu_move_out":
 				var ticks := MENU_MOVE_OUT_TICKS if kind == "menu_move_out" else int(effect.get("ticks", 0))
 				records.append({"kind": "effect", "effect": effect, "status": "applied"})
 				if kind == "menu_move_out":
-					_board_in = false  # VM return 4 → state 89
+					_board_in = false  # VM return 4 → state 89: the counter runs once the board is out
+					_after_slide(_hold.bind(ticks))
+					return
 				if ticks > 0:
 					_hold(ticks)
 					return
@@ -416,11 +516,25 @@ func _show_dialogue(key: String, speaker: String, body: String, portrait_key: St
 	_place_dialogue(top)
 
 
-func _show_narration(key: String, body: String) -> void:
+## A gold／item grant as a bottom narration line. remake-only for teGetItem, the
+## teCheckItemExecEvent item removal and a non-displayed teGetGold (OPT-GUIDE=提示; 原版 prints
+## nothing and leaves the board, 0x45536c returns 0): the board slides out under the line. A displayed teGetGold is the original's
+## message (return 4), shown this way under every preset.
+func _show_narration(effect: Dictionary) -> void:
+	var item_id := int(effect.get("item_id", 0))
+	var key := ""
+	var body := ""
+	match str(effect.get("kind", "")):
+		"get_gold":
+			key = "gold:%d" % int(effect.get("amount", 0))
+			body = "獲得 %d 金錢" % int(effect.get("amount", 0))
+		"get_item":
+			key = "item:%d" % item_id
+			body = "獲得 %s × %d" % [item_name(item_id), int(effect.get("count", 1))]
+		_:
+			key = "lost:%d" % item_id
+			body = "交出 %s" % item_name(item_id)
 	mode = "dialogue"
-	# remake-only: the original prints no narration for teGetItem / teRemoveItem / a non-displayed
-	# teGetGold and leaves the board where it is (0x45536c returns 0); the remake slides it out
-	# under its own narration line.
 	_board_in = false
 	_refresh_board()
 	current_text = body
@@ -454,10 +568,14 @@ func _end_hold(serial: int) -> void:
 		_play_next_effect()
 
 
-## Confirm (click / Space / Enter) while a message shows: next page, else next effect.
-## Player input never reaches here during a teDelay hold (handle_input); a scripted
-## confirm() cuts the hold so headless drivers need no clock.
+## Confirm (click / Space / Enter) while a message shows: next page, else next effect once the
+## board has slid out (state 89 → 5). Player input never reaches here during a teDelay hold or a
+## slide (handle_input); a scripted confirm() cuts the hold or lands the board so headless
+## drivers need no clock.
 func confirm() -> void:
+	if mode == "slide":
+		_land_board()
+		return
 	if mode == "delay":
 		_hold_serial += 1
 		_play_next_effect()
@@ -466,7 +584,7 @@ func confirm() -> void:
 		return
 	if _dialogue.advance_page():
 		return
-	_play_next_effect()
+	_after_slide(_play_next_effect)
 
 
 func _show_pending(pending: Dictionary) -> void:
@@ -521,7 +639,6 @@ func _show_pending(pending: Dictionary) -> void:
 const SELECT_LEAVE_TEXT := "離開"
 var _select_clock := 0.0
 var _select_window: Control = null
-var _hover_row: Button = null
 
 
 ## `picks`: the pending option index behind each row (default: row i answers option i).
@@ -550,13 +667,42 @@ func select_hover_colour() -> Color:
 
 func _process(delta: float) -> void:
 	_select_clock += delta
-	if is_instance_valid(_hover_row) and _hover_row.is_visible_in_tree():
-		_hover_row.add_theme_color_override("font_hover_color", select_hover_colour())
-		_hover_row.add_theme_color_override("font_hover_pressed_color", select_hover_colour())
+	if _board == null:
+		return
+	_step_board(delta)
+	if _board_live():
+		_hover_index = _row_under_mouse()
+	_paint_rows()
 
 
-func _hover_menu_row(row: Button) -> void:
-	_hover_row = row
+## 0x45630f (state 4 only): the row under the mouse, −1 (0xffff) off the rows.
+func _row_under_mouse() -> int:
+	var local := _menu_root.get_local_mouse_position()
+	var rows := _rows()
+	for index in rows.size():
+		if Rect2(rows[index].position, rows[index].size).has_point(local):
+			return index
+	return -1
+
+
+## The +0x9a row is drawn pulse green in every state (a picked row stays green under the select
+## board and through a teDelay); the others white.
+func _paint_rows() -> void:
+	var rows := _rows()
+	for index in rows.size():
+		var colour := select_hover_colour() if index == _hover_index else BattleUISkin.TEXT_WHITE
+		if rows[index].get_theme_color("font_color") == colour:
+			continue
+		for key in ROW_COLOUR_KEYS:
+			rows[index].add_theme_color_override(key, colour)
+
+
+func _rows() -> Array[Button]:
+	var rows: Array[Button] = []
+	for child in _menu_root.get_children():
+		if child is Button and not child.is_queued_for_deletion():
+			rows.append(child)
+	return rows
 
 
 ## Answer a select / player_select prompt by option index.
@@ -581,6 +727,7 @@ func menu_pick(code: int) -> void:
 	if mode != "sub_menu":
 		return
 	records.append({"kind": "menu_pick", "code": code})
+	_land_board()
 	_resume({"event": code})
 
 
@@ -591,6 +738,7 @@ func menu_exit() -> void:
 	if mode != "sub_menu":
 		return
 	records.append({"kind": "menu_exit"})
+	_land_board()
 	_fill_root_rows()
 	_resume(0)
 
@@ -630,9 +778,16 @@ func _finish_run() -> void:
 ## ---------------------------------------------------------------------------
 ## Shop (caller-owned transactions; goods = the event's item_code table)
 
+## VM return 3 (0x4568db) builds the shop window in the same call (0x42a9d0／0x42ab40) and sets
+## state 90, which slides the board out meanwhile (0x456b2f); 91 idles until the window closes.
 func _open_shop(pending: Dictionary) -> void:
+	_board_in = false
+	_open_shop_window(pending)
+
+
+func _open_shop_window(pending: Dictionary) -> void:
 	mode = "shop"
-	_board_in = false  # VM return 3 → state 90 slides the board out (0x456b2f)
+	_refresh_board()
 	shop_message = ""
 	run["_shop"] = pending.duplicate(true)
 	_set_town_view_visible(false)
@@ -824,8 +979,8 @@ func shop_close() -> void:
 
 ## The map forwards every event while the town is open. Confirm advances a message. Right
 ## click or Escape (original frames 13／14) leaves the town from the root menu, steps out of a
-## sub-menu and steps the shop back (closes its message, puts a
-## held item back, else closes the shop); Space／Enter also close the shop's message.
+## sub-menu and steps the shop back (closes its message, else does nothing while an item is
+## held — OPT-GUIDE＝提示 puts it back — else closes the shop); Space／Enter also close the shop's message.
 func handle_input(event: InputEvent) -> void:
 	var escape: bool = event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE
 	var right_click: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT
@@ -834,7 +989,7 @@ func handle_input(event: InputEvent) -> void:
 			if _confirm_pressed(event) and not _dialogue.holds_confirm():
 				confirm()
 		"menu":
-			if escape or right_click:
+			if (escape or right_click) and _board_live():
 				leave()
 		"shop":
 			if escape or right_click:
@@ -842,7 +997,7 @@ func handle_input(event: InputEvent) -> void:
 			elif event is InputEventKey and _confirm_pressed(event) and shop_screen.message_visible():
 				shop_screen.dismiss_message()
 		"sub_menu":
-			if escape or right_click:
+			if (escape or right_click) and _board_live():
 				menu_exit()
 		"select":
 			pass  # 0x426680／0x4264f0 read no cancel input: only a row click answers.
