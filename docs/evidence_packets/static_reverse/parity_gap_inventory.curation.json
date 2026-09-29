@@ -175,13 +175,13 @@
     },
     {
       "id": "ui-layout-readings",
-      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区",
+      "difference": "战斗 使用／交換／裝備／丟棄 道具窗已按原版实拍核对：板、行、图标、字、行色（重要物 @6 米白按色表）、悬停脉冲绿、说明框（回复行「生命+40」；消耗品数值行、旗句与重要物品说明照 0x430710）、金钱框、WINDOW10 字段字库、数值「40/40」与抗性行偏移全 0。剩：重制按钮与标签样式、面板绘制顺序与锚定、装备页说明滚动区；商店非整理模式说明框截成 3 行再加「賣價」，会丢掉第 4 行（如世界樹之葉的「回復人物正常狀態」），原版 0x432fab 在全部行之后接賣價、不截行",
       "original": "原窗体 SHP 已导入；使用／交換 窗与 裝備／丟棄 窗 Wine 实拍各三帧（runtime-measured）；其余面板原版录屏未覆盖",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
         "docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md"
       ],
-      "remake": "BattleItemPanel 四种道具窗、BattleItemText 回复行与 BattleVitals 字段字库、数值写法、抗性行照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
+      "remake": "BattleItemPanel 四种道具窗、BattleItemText 说明框（0x430710）与 BattleVitals 字段字库、数值写法、抗性行照原版读数；BattleUISkin／BattleEquipmentView 其余排布是重制读法",
       "remake_code": [
         "game/common/BattleUISkin.gd",
         "game/battle/scene/BattleSceneMenus.gd",
@@ -1042,8 +1042,8 @@
     },
     {
       "id": "ai-skill-buckets",
-      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；剩余＝桶 3／4／5 行的目标掩码 0x40c2d0（0x40d38d..0x40d3a5）未模拟；残血路径的魔法／特技挑行顺序未模拟：原版 0x40d340 先在 0x40c770 按（桶, 掩码）挑行、再判落点，落空换备用桶一次（0x40d494 → 0x40d3bc），特技 0x40df70／0x40dd80 同形，重制先按目标预筛再挑，原版裁判残血对照的「规则类分歧 0」不覆盖这一点；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支已照原版（lane AISELFMOVE）：本人分支 +0xc（效果范围序号）为 0 时 0x40cdd9、一般分支最高覆盖 1 时 0x40d0ed，都先 0x40bb80 取威胁，再经 0x413930（0x413740 模式 1，移动泛洪里离威胁最远的可停格，同距掷 &1、拥挤格 rand(100)<80 跳过）与 0x410a50 走过去、对自己施放，无威胁／无格／走不到时原地施放；自救回复／净化（AISelfPreservation）与援助检查退到施法者本人（0x43fce1..0x43fd46）都走这两条；剩余＝3×3 行动者的逃离泛洪沿用移动包络（provisional）",
-      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码（桶 3／4／5，0x40d38d..0x40d3a5）已读未接入，残血挑行 0x40d340 → 0x40c770 与备用桶 0x40d494 → 0x40d3bc 已读未接入，移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT），自施法逃离 0x40cdd9／0x40d0ed → 0x413930／0x413740(1) → 0x410a50 已读并接入（lane AISELFMOVE）",
+      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；残血路径的魔法／特技挑行已照原版（lane AIDYINGPICK）：共用的（first, fallback）逐桶在全部可负担行上走 0x40c770（桶 3／4 带候选的目标掩码 0x40c2d0，0x40d36d..0x40d3a5）或 0x40dd80，挑中行只取含该候选的落点（0x40c9a0 flag 1，0x40cc20..0x40cc6e），落空换备用桶一次（0x40d494 → 0x40d3bc），两桶都不成换人，状态行也能补刀；魔法桶 3／4 退魔行的 0／200 门（0x40c910..0x40c94a）残血检查与 state 0xa 都已接入；门看 mask&0x60 与 0x40b29d 只清 0x10／0x20 不配，疑似原版笔误，照原版保留，但重制退魔落点按 status&0x30 判有用，只带抗性提升的目标过门后无落点改走备用桶（原版会施放一发清不掉东西的退魔）；剩余＝魔法桶 5（增益援助）的 0x40c2d0 掩码门未模拟：原版 0x40d38d 对桶 5 同样取目标掩码，0x40c770 在增益位与掩码无交集时 roll＝0 必选、有交集（目标已有该增益）时仍按 rand(100)+1 与 use_ratio 抽（0x40c8d9..0x40c8e7），重制 AISupportPlanning 预先剔除目标已有增益的行；特技桶 5（0x40dee1..0x40deeb，增益位全在掩码内置 200）与重制预剔除一致；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支已照原版（lane AISELFMOVE）：本人分支 +0xc（效果范围序号）为 0 时 0x40cdd9、一般分支最高覆盖 1 时 0x40d0ed，都先 0x40bb80 取威胁，再经 0x413930（0x413740 模式 1，移动泛洪里离威胁最远的可停格，同距掷 &1、拥挤格 rand(100)<80 跳过）与 0x410a50 走过去、对自己施放，无威胁／无格／走不到时原地施放；自救回复／净化（AISelfPreservation）与援助检查退到施法者本人（0x43fce1..0x43fd46）都走这两条；剩余＝3×3 行动者的逃离泛洪沿用移动包络（provisional）",
+      "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码（桶 3／4／5，0x40d38d..0x40d3a5）已读，桶 3／4 与退魔门 0x40c910..0x40c94a 已接入、魔法桶 5 未接入（0x40c8d9..0x40c8e7），残血挑行 0x40d340 → 0x40c770／0x40df70 → 0x40dd80、落点 0x40c9a0 flag 1（0x40cc20..0x40cc6e、0x40cfb5..0x40cfda）与备用桶 0x40d494 → 0x40d3bc 已读并接入（lane AIDYINGPICK），移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT），自施法逃离 0x40cdd9／0x40d0ed → 0x413930／0x413740(1) → 0x410a50 已读并接入（lane AISELFMOVE）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
         "docs/evidence_packets/static_reverse/original_ai_skills.md",
@@ -1256,25 +1256,6 @@
       "visibility": "rare",
       "effort": "S",
       "category": "战斗规则"
-    },
-    {
-      "id": "battle-equip-drop-hand",
-      "difference": "战斗内裝備／丟棄已照原版换成 mode4／5 持物窗（lane EQUIPDROPWIN），持物移上装备板时左栏改显屬性页已照 0x439a0f（lane HANDWIN2）；持物背包行即按删格收拢显示（0x436e80）、点背包行或右键放回收拢后的首空格（0x436e30）已照原版（lane BAGPICK）；满包时卸下进手、满包互换（点中格物进手、持物放第 8 格）、手持装上／丟棄／放不回则手与窗都留已照原版（lane FULLBAGHAND）；剩：窗内「返回」钮与「道具 n／8」为共用排布",
-      "original": "state7 0x444185／state8 0x4441ac → 0x43b4e0 跳表 0x43bef4 mode4／5 同进 0x43b7fd，mode5 另建丟棄钮 0x43b280(0,0) 中心 (285,387)；背包格 0x438c84..0x438de7（0x436ed0 满包判定）、装备板 0x43993e／0x439998、左栏页 0x439a0f、丟棄 0x43aacb 已读；点击位 0x40000 的写入者未追",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_item_actions.md",
-        "docs/evidence_packets/static_reverse/original_inventory_equipment.md"
-      ],
-      "remake": "BattleItemPanel 持物窗（held_index／held_code 记所持格），装上／卸下／丢弃／放回各提交一次 PlayLoop 命令，提交后窗不关",
-      "remake_code": [
-        "game/battle/scene/BattleItemPanel.gd",
-        "game/battle/scene/BattleSceneMenus.gd",
-        "game/battle/scene/BattleEquipmentView.gd"
-      ],
-      "original_status": "read_partial",
-      "visibility": "every_battle",
-      "effort": "S",
-      "category": "面板与界面"
     },
     {
       "id": "treasure-rules",
@@ -3103,7 +3084,7 @@
       "item": "cast-strip-missing"
     },
     "sentence:docs/evidence_packets/static_reverse/original_item_actions.md#529c104e37": {
-      "item": "battle-equip-drop-hand",
+      "no_visible_effect": "背包格、待领列表与装备板的点击已照原版；点击位 0x40000 由哪种输入写入只影响命名",
       "text": "0x40000 与背包格、待领列表判点击的是同一位（`0x438c78`／`0x43990c` 都测 `[esp+0x74] & 0x40000`），写入它的输入分派未读；"
     },
     "scope:docs/evidence_packets/static_reverse/original_poison_gas.md|provisional|烟对象初始化的 12 次全局流抽取（每团 rand(5)、rand(77)×2、rand(0x8000)）重制在喷气那次结算里紧接 3 次 rand(3) 连抽，原版在下一 tick、其间可能插进别的对象的抽取；item 252 经 ItemResolutionRules.prepare 的 dispatcher 等价": {

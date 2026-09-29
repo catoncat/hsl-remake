@@ -240,15 +240,8 @@ func _build_bag() -> void:
 
 
 func _item_lines(details: Dictionary, code: String) -> Array:
-	var lines: Array = []
-	if int(details["type_code"]) in range(2, 7):
-		lines.append_array(preload("res://game/battle/scene/BattleEquipmentView.gd").description_lines(details))
-	else:
-		lines.append_array([str(details["name"]), "可使用"])
-		var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(code, {})
-		if not definition.is_empty():
-			lines.append_array(preload("res://game/battle/scene/BattleItemText.gd").description(definition).split("\n"))
-	return lines.filter(func(line): return str(line) != "")
+	var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(code, {})
+	return preload("res://game/battle/scene/BattleItemText.gd").description_lines(details, definition).filter(func(line): return str(line) != "")
 
 
 ## 魔法／特殊技 pages: the unit's list in the skill page's order and row geometry, @1 white or

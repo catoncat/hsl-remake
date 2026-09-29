@@ -176,6 +176,10 @@ def build():
                        'attack_range': row.get('attack_range', ''), 'effects': effects, 'weapon_magic': weapon,
                        'supported': kind in range(2, 7) and not unsupported,
                        'unsupported_fields': sorted(unsupported)}
+        # Type 0 keeps a RESOURCE id in attack_damage (loader 0x447a9c → ITEM+0x88); the
+        # description (0x430710 case 0, 0x4307dd) prints that string under 311 重要物品.
+        if kind == 0 and int(row.get('attack_damage', 0)):
+            items[code]['explain'] = names[str(int(row['attack_damage']))]
     return {'schema': 'hsl_equipment_items.v1', 'evidence_tier': 'static-derived',
             'table_evidence_tier': 'resource-derived',
             'sources': {str(path): digest(path.read_bytes()) for path in (TABLES/'ITEM.TXT', TABLES/'TYPE.H', NAMES)},

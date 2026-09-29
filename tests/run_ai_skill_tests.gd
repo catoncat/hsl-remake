@@ -206,6 +206,20 @@ func centre_scan_cases() -> void:
 		{"skill_id": "single", "source_order": 4, "use_ratio": 100, "bucket": 4, "intents": [_intent("single", cell, Vector2i(5, 4), ["x"])]}]}
 	var walked := AISkillPlanning.choose_any(plan, "h", func(_bound): return 0)
 	check(walked["intent"].get("skill_id") == "single" and walked["decision"]["bucket_order"]["order"] == [3, 4] and walked["decision"]["attempts"].size() == 2 and int(walked["decision"]["attempts"][0]["index"]) == 0, "the castless bucket-3 row falls to bucket 4 (0x40d494 → 0x40d3bc)")
+	# 0x40c910..0x40c94a: a MAGIC bucket 3/4 退魔 row (0x4000) is always taken when the target's
+	# 0x40c2d0 word holds 0x60, never otherwise; rand(100) is drawn either way. SPECIAL has no gate.
+	var gate := func(channel, mask, roll): return AISkillDecisionRules.select_index([90], _sequence([0, roll], []), channel, 4, mask, [0x4000])
+	var taken: Dictionary = gate.call("magic", 0x40, 99)
+	var refused: Dictionary = gate.call("magic", 0x10, 0)
+	check(int(taken["index"]) == 0 and taken["draws"].size() == 2 and int(refused["index"]) == -1 and refused["draws"].size() == 2
+		and int(gate.call("special", 0x10, 0)["index"]) == 0 and int(gate.call("magic", -1, 99)["index"]) == -1, "退魔 gate: mask & 0x60 → roll 0, else 200; special and unmasked keep use_ratio")
+	# Dying check (0x40d340 flag 1): the bucket-3 pick lands on nobody holding the candidate, so the
+	# fallback bucket's status row is picked and cast on it.
+	var dying := {"channel": "magic", "area_flag": 0, "origin": cell, "move_search": false, "threat": null, "skills": [
+		{"skill_id": "blast", "source_order": 5, "use_ratio": 100, "bucket": 3, "function_mask": 1, "intents": [], "by_primary": {"x": [_intent("blast", cell, Vector2i(6, 4), ["x"])]}},
+		{"skill_id": "bind", "source_order": 4, "use_ratio": 100, "bucket": 4, "function_mask": 4, "intents": [], "by_primary": {"h": [_intent("bind", cell, Vector2i(5, 4), ["h"])]}}]}
+	var bound := AISkillPlanning.choose_for_target(dying, "h", 0, func(_bound): return 0, [3, 4])
+	check(bound["intent"].get("skill_id") == "bind" and bound["decision"]["attempts"].size() == 2 and bound["decision"]["attempts"][0]["landing"] == "no centre holds the target", "dying pick: no landing on the candidate falls to the fallback bucket once, the status row lands")
 
 
 ## 0x40cca0 (SPECIAL always, MAGIC with move_magic_use): every flood cell but its own, the cells

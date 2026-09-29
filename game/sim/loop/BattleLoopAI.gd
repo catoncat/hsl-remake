@@ -383,7 +383,7 @@ static func _ai_offense(loop: Dictionary, next: Dictionary, turn: Dictionary) ->
 	decision["action_selection"] = action_selection
 	var kind := int(action_selection["kind"])
 	if kind != 0:
-		var step := _ai_skill_attempt(loop, next, turn, any_magic if kind == 1 else any_special, str(target["id"]))
+		var step := _ai_skill_attempt(loop, next, turn, any_magic if kind == 1 else any_special, str(target["id"]), int(target["status_flags"]) & 0x70)
 		if not step.is_empty(): return step
 	if bool(prepared["candidate_filters"]["unarmed"]): return {}
 	if kind == 1:
@@ -517,11 +517,11 @@ static func _ai_station_attack(next: Dictionary, turn: Dictionary, target: Dicti
 
 ## State 0xa's cast in one skill channel (0x40d340／0x40df70 with flag 0 through the channel's
 ## held-target-free plan, AISkillPlanning.choose_any); {} when the plan is missing or its walk
-## accepts nothing.
-static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictionary, skill_choice: Dictionary, held_id: String) -> Dictionary:
+## accepts nothing. `held_mask` is the held target's 0x40c2d0 word (+0x24 & 0x70).
+static func _ai_skill_attempt(loop: Dictionary, next: Dictionary, turn: Dictionary, skill_choice: Dictionary, held_id: String, held_mask: int) -> Dictionary:
 	if skill_choice.is_empty(): return {}
 	var decision: Dictionary = turn["decision"]
-	var selected_skill := AISkillPlanning.choose_any(skill_choice, held_id, turn["source"])
+	var selected_skill := AISkillPlanning.choose_any(skill_choice, held_id, turn["source"], held_mask if held_id != "" else 0)
 	if not decision.has("skill_attempts"): decision["skill_attempts"] = []
 	decision["skill_attempts"].append(selected_skill["decision"])
 	if selected_skill["intent"].is_empty(): return {}
@@ -582,7 +582,7 @@ static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Di
 	var actor := BattlePlayLoop.unit_ref(loop, actor_id)
 	var support_roll := -1
 	# A check that cannot act is marked tried before the chain rolls: no healing means, or no
-	# foe in the find square with a station or an offensive cast (opportunity_ids) — the dying
+	# foe in the find square with a station or an offensive row landing on it (opportunity_ids) — the dying
 	# check can then settle nothing and would only re-enter the chain (draw structure only).
 	var attempted := (2 if int(prepared["healing_slot"]) < 0 and prepared["self_support"]["healing"].is_empty() else 0) | (1 if prepared["opportunity_ids"].is_empty() else 0)
 	var result := {"kind": "ordinary", "index": -1, "checks": [], "scans": [], "dying_checks": [],
@@ -625,7 +625,8 @@ static func _select_ai_priority(loop: Dictionary, actor_id: String, prepared: Di
 ## 0x40dd60／0x40e1f0, 0x43f824) and tries only that category: ordinary — armed (0x409090)
 ## and 0x40d8b0 from its slot returns the candidate itself (a station on it) → state 0xb;
 ## magic／special — the channel's per-target cast (0x40d340／0x40df70 with flag 1,
-## AISkillPlanning.choose with the shared pair). A failed try resumes the scan after it
+## AISkillPlanning.choose_for_target with the shared pair over every affordable row, the
+## candidate's 0x40c2d0 mask, landing required on it). A failed try resumes the scan after it
 ## (0x43f994, thresholds re-drawn). With every candidate spent the scan restarts from slot 0
 ## (0x43f9a6) asking the ordinary category alone, no category roll (0x43f9c2..0x43fa13).
 ## -1 from 0x40d340／0x40df70 is the move-cast search 0x40cca0 out of its per-frame cell
@@ -658,16 +659,13 @@ static func _ai_dying_scan(loop: Dictionary, actor: Dictionary, prepared: Dictio
 			if armed and _ai_station_switch(prepared, found, loop["units"]) == found: return _ai_dying_station(loop, actor, prepared, found, rng, receipt)
 			entry["failure"] = "unarmed" if not armed else "no_station"
 		else:
-			var plan: Dictionary = prepared["offensive_skills"]["magic" if kind == 1 else "special"].get(target["id"], {})
-			if plan.is_empty():
-				entry["failure"] = "no_cast"
-			else:
-				var selected := AISkillPlanning.choose(plan, rng, buckets["order"])
-				entry["skill_decision"] = selected["decision"]
-				if not selected["intent"].is_empty():
-					receipt.merge({"outcome": "act", "index": found, "held_index": found, "category": kind, "intent": selected["intent"], "skill_decision": selected["decision"]}, true)
-					return receipt
-				entry["failure"] = "no_cast"
+			var plan: Dictionary = any_skills["magic" if kind == 1 else "special"]
+			var selected := AISkillPlanning.choose_for_target(plan, target["id"], int(target["status_flags"]) & 0x70, rng, buckets["order"])
+			entry["skill_decision"] = selected["decision"]
+			if not selected["intent"].is_empty():
+				receipt.merge({"outcome": "act", "index": found, "held_index": found, "category": kind, "intent": selected["intent"], "skill_decision": selected["decision"]}, true)
+				return receipt
+			entry["failure"] = "no_cast"
 		scan = AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), int(scan["native_index"]), rng)
 		scans.append(scan)
 	scan = AIPriorityRules.low_hp_target(scan_rows, owner_slot, int(profile["find_range"]), int(profile["find_no_id"]), 0, rng)
@@ -773,7 +771,7 @@ static func prepare_ai_turn(loop: Dictionary, actor_id: String, skill_inputs_che
 	return {"ok": true, "profile": work["profile"], "rows": work["rows"], "owner_index": work["owner_index"], "registry": work["registry"],
 		"full_routes": work["full_routes"], "approaches": work["approaches"], "candidate_filters": work["candidate_filters"],
 		"call": work["call"],
-		"skills": work["skills"], "envelope": work["envelope"], "physical": work["physical"], "offensive_skills": work["offensive_skills"], "any_skills": work["any_skills"],
+		"skills": work["skills"], "envelope": work["envelope"], "physical": work["physical"], "any_skills": work["any_skills"],
 		"self_support": work["self_support"], "ally_support": work["ally_support"], "healing_slot": work["healing_slot"], "priority_rows": work["priority_rows"], "opportunity_ids": work["opportunity_ids"], "weapon_terrain": work["weapon_terrain"]}
 
 
@@ -962,13 +960,11 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 	# physical choices: the same read-only query over the same board.
 	var envelope := BattlePlayLoop.movement_envelope(loop, actor_id, work["traversal"])
 	var skills := {}
-	var offensive_skills := {}
 	var any_skills := {}
 	for channel in ["magic", "special"]:
 		var prepared := _ai_skill_plans(loop, actor, skill_foes, channel, envelope)
 		if not prepared["ok"]: return prepared
 		skills[channel] = prepared["targets"]
-		offensive_skills[channel] = prepared["offensive_targets"]
 		any_skills[channel] = prepared["any_target"]
 	var self_support := AISelfPreservation.prepare(loop, actor, envelope, profile)
 	if not self_support["ok"]: return self_support
@@ -987,9 +983,9 @@ static func _ai_action_candidates(loop: Dictionary, actor_id: String, work: Dict
 		if not choice.is_empty(): physical[foe["id"]] = choice
 	var opportunity_ids: Array = []
 	for foe in square_foes:
-		if physical.has(foe["id"]) or offensive_skills["magic"].has(foe["id"]) or offensive_skills["special"].has(foe["id"]): opportunity_ids.append(foe["id"])
+		if physical.has(foe["id"]) or skills["magic"].has(foe["id"]) or skills["special"].has(foe["id"]): opportunity_ids.append(foe["id"])
 	var priority_rows := rows.duplicate(true)
-	work.merge({"skills": skills, "offensive_skills": offensive_skills, "any_skills": any_skills, "envelope": envelope, "self_support": self_support,
+	work.merge({"skills": skills, "any_skills": any_skills, "envelope": envelope, "self_support": self_support,
 		"ally_support": ally_support, "physical": physical, "opportunity_ids": opportunity_ids, "priority_rows": priority_rows, "weapon_terrain": terrain}, true)
 	return {}
 

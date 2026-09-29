@@ -58,8 +58,8 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 | `0x4408ee..0x440a21` 状态援助 | `0x40c3a0(actor,8,1,&mask)` → `0x40c570(actor, 0x40dc70(mask), 0x40e100(mask))`；类别 0 `0x40c230` |
 | `0x440a3b..0x440ad5` 增益 | `0x40c480(actor,8,1,&mask)` → `0x458c10() & 1` 决定先 MAGIC 或先 SPECIAL，两次尝试，无物品类别 |
 | `0x40dd80(bucket, mask)` | 桶在 +0x38+8×(bucket−1)，`rand(32)%count` 起点，逐节点 `rand(100)+1 <= row+0x20`；桶 7 无交集置 200，桶 5 已全在 mask 内置 200；桶 3／4 无额外分支 |
-| `0x40c770(bucket, mask)` | 每节点先 `rand(100)+1`；桶 7 净化位与 mask 相交 roll = 0、否则 200（`0x40c89d`）；桶 5 增益 flag 与 mask 无交集 roll = 0（`0x40c8dd..0x40c8e1`）；桶 3／4 对含 0x4000 的行 mask 含 0x60 则 0、否则 200；再 `roll <= row+0x28` |
-| `0x40df70(actor, target, bucket, fallback, …)` | 桶 7／5 取 `0x40c1b0`／`0x40c2d0(target)` 为 mask，`0x40dd80(first)` 落空或 `0x40cca0`／`0x40c9a0` 站位失败再试 fallback |
+| `0x40c770(bucket, mask)` | 每节点先 `rand(100)+1`；桶 7 净化位与 mask 相交 roll = 0、否则 200（`0x40c89d`）；桶 5 增益 flag 与 mask 无交集 roll = 0（`0x40c8dd..0x40c8e1`）；桶 3／4 对含 0x4000 的行（`0x409850`，`test ah,0x40`）mask 含 0x60 则 0、否则 200（`0x40c910..0x40c94a`），rand(100) 照抽；再 `roll <= row+0x28`。重制 `AISkillDecisionRules.select_index` 的 mask 参数接入，残血检查与 state 0xa 都传目标的 `0x40c2d0` |
+| `0x40df70(actor, target, bucket, fallback, …)` | 桶 7／5 取 `0x40c1b0`／`0x40c2d0(target)` 为 mask（`0x40df9e..0x40dfd4`；桶 3／4 时 [0x4c1a04]＝0，所以特技无退魔门），`0x40dd80(first)` 落空或 `0x40cca0`／`0x40c9a0` 站位失败再试 fallback |
 | 进攻段 `0x43f79b..0x43f939` | `0x40bf70` 取目标后先 `0x40d4e0`（`0x43f7bf`）写 `[0x4c2c50]`／`[0x4c2c4c]` 为 (3,4) 或 (4,3)，再 `0x40c570(actor, 0x40dd60(), 0x40e1f0())`（`0x43f824`）；类别 2 → `0x40df70`（`0x43f873`，子状态 0x14），类别 1 → `0x40d340`（`0x43f8f6`，0xd）；`0x40d4e0` 另三个调用点 `0x43fa2a`／`0x43fb1c`／`0x43fdc9` 同样先于 `0x40c570` |
 
 `0x40c480` 排除自身，原版无自身增益路径，所以 千羽風靈壁／激怒／精神統一（`range0Cell` 纯自身增益）原版 AI 不会施放（negative-evidence：`0x43ede0` 的 16 个 mode 中未见读取增益桶的自身路径）。
@@ -110,5 +110,5 @@ AI 绝技通道（AI 对象过程 `0x43ede0`）：
 - `*0x4c13f0` 在多目标施放中跨目标累积，重制按每目标 `experience_basis` 判定；功能绝技命中未生效时守方是否切受击帧未核。
 - `0x4c6f74` 由哪些结算路径写入未全核。
 - 自救净化的通道顺序（先 MAGIC 桶再 SPECIAL 桶再物品）是重制选择；AI 净化只以中毒触发。
-- 桶 3／4 的退魔行重制仍按 `useful_ids` 预过滤加 use_ratio 抽签，未接原 0／200 改写。
+- 退魔门看 mask&0x60（防御提升 0x20／抗性提升 0x40），而 `0x40b29d` 只清 0x10／0x20，两者不配，疑似原版笔误（应为 0x30），照原版保留：只带抗性提升的目标也会被选中退魔。原版 `0x40c9a0` 只数占位，会施放这一发清不掉东西的退魔；重制退魔落点按 StatMagicRules 的 status&0x30 判有用（结算器拒绝无可清的退魔），这一挑行找不到落点、改走备用桶。
 - 魔障壁与第九波区域行（天地鳴動、怒濤地裂崩、魔燒焚燼、怒炎魔獄燋、烈蝕水彈、極零裂凍破、地靈聖護、赤炎波動、大地之癒、大地之惠、神怒）无专属特效素材，降级到通用表现。

@@ -5,8 +5,8 @@
 ## 结论
 
 - 原版：每次进入先抽 `rand(99)+1`，未尝试的自身 HP 检查（+0x1d8）先比，成功选 mode2；再比残血敌方检查（+0x1d4），成功 mode1；自身门槛由 `0x40c110` 计算，药品取 `0x40c1d0` 背包中第一件回血消耗品；残血敌方由 `0x40bf70` 在含边界方形范围内按登记槽顺序找首个 `hp<=clamp(...,10,80)` 的对象（static-derived；146 组原指令执行：98 正常返回、48 有界 prefix）。残血检查 `0x43f79b..0x43fa24` 是逐候选的循环：`0x40d4e0` 循环外抽一次、全部候选共用，每名候选掷一次 `0x40c570` 且只试掷中的一类，不成立换下一名；扫尽后从 0 号重扫只问普通，仍无经 +0x8c＝0x10001 回链首（static-derived，r2 读）。
-- 重制：`game/sim/AIPriorityRules.gd`、`game/sim/AISelfPreservation.gd` 复现数值与顺序，`BattleLoopAI._ai_dying_scan` 按原版循环逐候选掷类别、失败换人、第二遍只问普通、仍无回链首，用药与玩家共用 `_resolve_item_use`（static-derived 规则＋重制组合）；原版裁判两个压残血盘面各 32 种子，残血路径打谁、用什么规则类分歧 0，随机类最小 p＝0.11（runtime-measured，见「证据」）；这一对照不覆盖下条「差异」里魔法／特技挑行的先后。
-- 差异：原完整辅助与整回合逐值 RNG 序列未复原（持有目标／ai_lock 与 wait_round 见 [original_ai_navigation](original_ai_navigation.md)「结论」，抽数分布见 [original_ai_decisions](original_ai_decisions.md)「结论」）；无注册药品时跳过自身 HP 检查是重制组合（provisional）；方域内没有一名敌方有站位或伤害施放时残血检查不掷就记为已尝试，只省抽取：链上自身 HP 位总在残血位之前记掉，原版残血检查落空经 0x10001 回链时两位都已尝试，结果同样落到后续项。残血路径的魔法／特技挑行顺序未模拟：原版魔法 `0x40d340` 先在 `0x40c770` 按（桶, 掩码：桶 3／4／5 取 `0x40c2d0`、桶 7 取 `0x40c1b0`）挑行，再判落点（`0x40c9a0`），落空换备用桶一次（`0x40d494` → `0x40d3bc`），特技 `0x40df70` 以 `0x40dd80` 同样先挑行；重制先按目标预筛再挑（static-derived 读法，未对拍）。
+- 重制：`game/sim/AIPriorityRules.gd`、`game/sim/AISelfPreservation.gd` 复现数值与顺序，`BattleLoopAI._ai_dying_scan` 按原版循环逐候选掷类别、失败换人、第二遍只问普通、仍无回链首，用药与玩家共用 `_resolve_item_use`（static-derived 规则＋重制组合）；原版裁判两个压残血盘面各 32 种子，残血路径打谁、用什么规则类分歧 0，随机类最小 p＝0.11（runtime-measured，见「证据」）。魔法／特技类照原版先挑行再判落点：共用的（first, fallback）逐桶在全部可负担行上走 `0x40c770`（魔法，桶 3／4 带候选的 `0x40c2d0` 掩码，退魔行 0／200 门）或 `0x40dd80`（特技），挑中行只取含该候选的落点（`0x40c9a0` flag 1），落空换备用桶一次（`0x40d494` → `0x40d3bc`），两桶都不成换人（`AISkillPlanning.choose_for_target`，static-derived 读法，上述裁判对照早于这一接入、未对拍）。
+- 差异：原完整辅助与整回合逐值 RNG 序列未复原（持有目标／ai_lock 与 wait_round 见 [original_ai_navigation](original_ai_navigation.md)「结论」，抽数分布见 [original_ai_decisions](original_ai_decisions.md)「结论」）；无注册药品时跳过自身 HP 检查是重制组合（provisional）；方域内没有一名敌方有站位、也没有任何进攻行（含状态行）的落点覆盖它时残血检查不掷就记为已尝试，只省抽取：链上自身 HP 位总在残血位之前记掉，原版残血检查落空经 0x10001 回链时两位都已尝试，结果同样落到后续项。
 
 ## 证据
 

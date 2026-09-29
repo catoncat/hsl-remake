@@ -18,7 +18,6 @@ signal return_requested(request: Dictionary)
 signal pool_requested(request: Dictionary)
 signal cue_requested(event: String)
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
-const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
 ## Recipient bag: WINDOW20 at (12,168), eight 32 px rows; icon anchor (44, 184+32i), name (68, 176+32i).
@@ -551,10 +550,4 @@ func _hide_label(label: Label) -> void:
 
 
 func _description_lines(code: int) -> Array:
-	var details: Dictionary = _catalog[str(code)]
-	if int(details["type_code"]) in range(2, 7):
-		return BattleEquipmentView.description_lines(details)
-	var lines: Array = [str(details["name"]), "可使用"]
-	var definition: Dictionary = _consumables.get(str(code), {})
-	if not definition.is_empty(): lines.append_array(BattleItemText.description(definition).split("\n"))
-	return lines
+	return BattleItemText.description_lines(_catalog[str(code)], _consumables.get(str(code), {}))

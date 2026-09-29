@@ -43,6 +43,7 @@ const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleVitals = preload("res://game/battle/scene/BattleVitals.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
+const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 const BattlePanelMotion = preload("res://game/battle/scene/BattlePanelMotion.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
@@ -254,17 +255,9 @@ func _bag_button(details: Dictionary, code: String, index: int, row: int, colour
 	return button
 
 
-## Description lines of a bag row: equipment as the equipment board's, a consumable as its name,
-## 可使用 and its effect (the frame's 回復藥／可使用／生命+40).
+## Description lines of a bag row (0x430710 through BattleItemText; the frame's 回復藥／可使用／生命+40).
 func _item_lines(details: Dictionary, code: String) -> Array:
-	var lines: Array = []
-	if int(details["type_code"]) in range(2, 7):
-		lines.append_array(BattleEquipmentView.description_lines(details))
-	else:
-		lines.append_array([str(details["name"]), "可使用"])
-		if items.has(code):
-			lines.append_array(preload("res://game/battle/scene/BattleItemText.gd").description(items[code]).split("\n"))
-	return lines.filter(func(line): return str(line) != "")
+	return BattleItemText.description_lines(details, items.get(code, {})).filter(func(line): return str(line) != "")
 
 
 ## Hovering a row pulses its name green (BattleMagicPanel.hover_colour) and fills WINDOW50 with

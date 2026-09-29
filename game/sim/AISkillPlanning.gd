@@ -38,7 +38,6 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 		if not SkillTargetRules.ActorRoleRules.hostile(actor, unit): continue
 		if foes.any(func(foe): return foe.get("id") == unit.get("id")): primaries.append(unit)
 	var targets := {}
-	var offensive_targets := {}
 	var any_skills: Array = []
 	var profile: Dictionary = loop["ai_profiles"]["actors"].get(str(actor["actor_id"]), {}).get("profile", {})
 	var scan := {}
@@ -75,20 +74,19 @@ static func prepare(loop: Dictionary, actor: Dictionary, foes: Array, channel: S
 		var failed := _collect_offense_intents(ctx, id, fields, every, by_primary)
 		if not failed.is_empty(): return failed
 		# 0x40c620 buckets every affordable row whether or not it can land this turn; the
-		# held-target-free planners (0x40d340／0x40df70 with flag 0) pick among all of them.
-		any_skills.append({"skill_id": id, "source_order": source_order, "use_ratio": rate, "bucket": offense_bucket, "intents": every})
+		# planners (0x40d340／0x40df70, flag 0 in state 0xa, flag 1 in the dying check) pick
+		# among all of them before asking where it lands (`by_primary` for flag 1).
+		any_skills.append({"skill_id": id, "source_order": source_order, "use_ratio": rate, "bucket": offense_bucket, "intents": every,
+			"function_mask": mask, "by_primary": by_primary})
 		for primary_id in by_primary:
 			var candidate := {"skill_id": id, "source_order": source_order,
 				"use_ratio": rate, "bucket": offense_bucket, "intents": by_primary[primary_id]}
 			if not targets.has(primary_id): targets[primary_id] = target_plan(primary_id, channel, profile, actor, scan)
 			targets[primary_id]["skills"].append(candidate)
-			if mask & 1:
-				if not offensive_targets.has(primary_id): offensive_targets[primary_id] = target_plan(primary_id, channel, profile, actor, scan)
-				offensive_targets[primary_id]["skills"].append(candidate)
 	var any_target := target_plan("", channel, profile, actor, scan)
 	any_target.merge({"skills": any_skills, "available": not any_skills.is_empty(),
 		"move_search": channel != "magic" or bool(capability["effects"]["move_magic_use"])}, true)
-	return {"ok": true, "targets": targets, "offensive_targets": offensive_targets, "any_target": any_target}
+	return {"ok": true, "targets": targets, "any_target": any_target}
 
 
 ## Every useful (station cell, cast centre) of one offensive row: all into `every`, and per
@@ -243,6 +241,46 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	return cast_station(plan, skill, rng, decision)
 
 
+## The dying check's cast on one candidate (0x43f8f6 → 0x40d340, 0x43f873 → 0x40df70, flag 1)
+## over the channel's held-target-free plan: the shared (first, fallback) pair walks 0x40c770
+## (MAGIC, mask 0x40c2d0(candidate) for buckets 3/4, 0x40d36d..0x40d3a5) or 0x40dd80 (SPECIAL,
+## no mask for 3/4) over every affordable row of the bucket, then asks where the picked row
+## lands. Flag 1 is "the centre must hold the target": 0x40c9a0's tail (0x40cc20..0x40cc6e)
+## returns the best contains-target centre, 0 when none holds it, and the target's own cell when
+## that best count is 1 and 0x40fab0(target x, y) holds (0x40cc30..0x40cc54); 0x40cca0 passes
+## the same flag down (0x40cfb5..0x40cfda, from 0x40d416 push ebp) and drops a station whose
+## 0x40c9a0 returns 0 (0x40cfe8 je 0x40d054). Here: the row's intents affecting the candidate
+## (`by_primary`) through cast_station, whose best-1 tie prefers `center_is_primary`. No row, or
+## no landing (0x40d494 je 0x40d3bc), tries the fallback bucket once ([0x4c1a14] cleared at
+## 0x40d3ed); both failing returns no intent.
+static func choose_for_target(plan: Dictionary, target_id: Variant, mask: int, rng: Variant, order: Array) -> Dictionary:
+	var skills: Array = plan["skills"].duplicate()
+	skills.sort_custom(func(a, b): return int(a["source_order"]) > int(b["source_order"]))
+	var target_plan := plan.duplicate()
+	target_plan["primary_target_id"] = str(target_id)
+	var decision := {"primary_target_id": str(target_id), "attempts": [], "target_mask": mask, "bucket_order": {"order": order},
+		"source": "0x40d340／0x40df70 flag 1 (0x43f8f6／0x43f873)",
+		"threat_policy": "0x40bb80(actor, 3, 0, 8) at cast time: registry-order nearest non-own-side object within radius 8, retain-old coin 0x40bd4f"}
+	for bucket in order:
+		var members := skills.filter(func(row): return int(row["bucket"]) == int(bucket))
+		var selected := AISkillDecisionRules.select_index(members.map(func(row): return int(row["use_ratio"])), rng, plan["channel"], int(bucket),
+			mask, members.map(func(row): return int(row.get("function_mask", 0))))
+		selected["skill_ids"] = members.map(func(row): return str(row["skill_id"]))
+		selected["bucket"] = bucket
+		decision["attempts"].append(selected)
+		if int(selected["index"]) < 0: continue
+		var row: Dictionary = members[int(selected["index"])]
+		var skill := row.duplicate()
+		skill["intents"] = row["by_primary"].get(target_id, [])
+		if skill["intents"].is_empty():
+			selected["landing"] = "no centre holds the target"
+			continue
+		var cast := cast_station(target_plan, skill, rng, decision)
+		if not cast["intent"].is_empty(): return cast
+		selected["landing"] = "no station"
+	return {"intent": {}, "decision": decision}
+
+
 ## The move-cast search 0x40cca0 for the picked row: where the actor stands and the intent
 ## it casts. A plan carrying `flee` (AINavigationRules.flee_field plus `range0`, the owned
 ## rows whose effect range is range0Cell) targets the actor itself (0x40cdab): a range0Cell
@@ -335,8 +373,12 @@ static func _flee(plan: Dictionary, skill: Dictionary, rng: Variant, decision: D
 ## scanned row-major, each keeping its 0x40c9a0 best, the cells of the highest count
 ## collected (0x40cfea..0x40d02f) and the one farthest from the threat taken (0x40d200..
 ## 0x40d2b0; no threat: rand(count), 0x40d1c8); nothing there, or no move search, scans
-## the actor's own cell (0x40d439..0x40d47e, 0x40e059..0x40e09f).
-static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dictionary:
+## the actor's own cell (0x40d439..0x40d47e, 0x40e059..0x40e09f). `mask` is the held target's
+## 0x40c2d0 word (+0x24 & 0x70) for the MAGIC 退魔 gate (AISkillDecisionRules.select_index);
+## -1 keeps the ungated roll. The original never enters here without a held target (state 0xa
+## 0x43fdb6..0x43fdc3: empty [0x4c1cec] zeroes +0x88 and jumps to 0x441eb8; 0x43fe5f／0x43fea7
+## pass [0x4c1cec]); a remake caller without one passes mask 0, so 退魔 is never picked.
+static func choose_any(plan: Dictionary, held_id: String, rng: Variant, mask: int = -1) -> Dictionary:
 	var skills: Array = plan["skills"].duplicate()
 	skills.sort_custom(func(a, b): return int(a["source_order"]) > int(b["source_order"]))
 	var decision := {"primary_target_id": held_id, "attempts": [], "held_target_free": true,
@@ -346,7 +388,8 @@ static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dicti
 	decision["bucket_order"] = order
 	for bucket in order["order"]:
 		var members := skills.filter(func(row): return int(row["bucket"]) == int(bucket))
-		var selected := AISkillDecisionRules.select_index(members.map(func(row): return int(row["use_ratio"])), rng, plan["channel"], int(bucket))
+		var selected := AISkillDecisionRules.select_index(members.map(func(row): return int(row["use_ratio"])), rng, plan["channel"], int(bucket),
+			mask, members.map(func(row): return int(row.get("function_mask", 0))))
 		selected["skill_ids"] = members.map(func(row): return str(row["skill_id"]))
 		selected["bucket"] = bucket
 		decision["attempts"].append(selected)
@@ -441,6 +484,11 @@ static func target_for_center(actor: Dictionary, units: Array, fields: Dictionar
 	return first
 
 
+## Not matched for 退魔: 0x40c9a0 counts occupants (0x40cad4..0x40cb3b), not usefulness, so a
+## target holding only resist_up (0x40) passes the 0x60 gate and the original casts a 退魔 that
+## clears nothing (0x40b29d clears only 0x10／0x20). Here 退魔 counts a target with 0x30 set
+## (StatMagicRules; the resolver refuses a 退魔 with nothing to clear), so that pick finds no
+## landing and falls to the fallback bucket.
 static func useful_ids(ready: Dictionary) -> Array:
 	var result: Array = []
 	for index in range(ready["targets"].size()):

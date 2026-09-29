@@ -989,16 +989,8 @@ func _hide_description(label: Label) -> void:
 
 
 func description_lines(code: int) -> Array:
-	var details: Dictionary = _items[str(code)]
-	var lines: Array = []
-	if int(details["type_code"]) in range(2, 7):
-		lines.append_array(BattleEquipmentView.description_lines(details))
-	else:
-		lines.append_array([str(details["name"]), "可使用"])
-		var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(str(code), {})
-		if not definition.is_empty():
-			lines.append_array(BattleItemText.description(definition).split("\n"))
-	lines = lines.filter(func(line): return str(line) != "")
+	var definition: Dictionary = (_loop.get(LoopKeys.CONSUMABLES, {}) as Dictionary).get(str(code), {})
+	var lines: Array = BattleItemText.description_lines(_items[str(code)], definition).filter(func(line): return str(line) != "")
 	if mode == MODE_ARRANGE:
 		return lines.slice(0, 4)
 	if lines.size() > 3:

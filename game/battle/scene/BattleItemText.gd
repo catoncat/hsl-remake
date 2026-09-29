@@ -1,35 +1,83 @@
 extends RefCounted
-## Read-only descriptions from validated item proposals and committed receipts.
+## The item description box (0x430710) and read-only use previews／receipts.
 ## provenance:
-##   strings: remake-invented (receipt descriptions; effect values are the settled receipt's)
+##   strings: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md#7
+##     (description box 0x430710 case 0／1, range 0x430680 with the half wave 0x17 drawn as ∼)
+##   strings: remake-invented (the OPT-GUIDE＝提示 prose rows; use previews and receipts, whose
+##     effect values are the settled receipt's)
 ##   strings: static-derived docs/evidence_packets/static_reverse/original_item_actions.md (0 HP／MP number)
-##   strings: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
-##     (0x436d70 box: 解除／永久 rows; the prose rows only under OPT-GUIDE＝提示)
-##   strings: runtime-measured docs/evidence_packets/runtime_observations/menus_ui/README.md#7
-##     (restore row 生命+40: 0x430710 case 1, RESOURCE 202／203／624／1201)
 const StatEnhancementRules = preload("res://game/sim/StatEnhancementRules.gd")
 const PermanentCapabilityRules = preload("res://game/sim/PermanentCapabilityRules.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 
-## Description rows. The original box (0x436d70) has the value rows only; the explanatory prose
-## (保留其他狀態, 延長上限, 原始抗性上限…) is the remake's and shows under OPT-GUIDE＝提示.
-static func description(item: Dictionary) -> String:
-	var hints := not GameOptions.is_original("OPT-GUIDE")
+## 0x43088d permanent fields in ITEM order +0x50…+0x70, each RESOURCE name then 625 永久.
+const PERMANENT_NAMES := [["attack_power","攻擊力"],["magic_attack_power","魔擊力"],["defense","防禦力"],["speed","敏捷度"],
+	["resist_0","抗土"],["resist_1","抗水"],["resist_2","抗風"],["resist_3","抗火"],["resist_4","抗心靈"]]
+## ITEM+0xa0 cure bits 0x80000000／0x40000000／0x20000000／0x10000000 and their sentences.
+const CURE_SENTENCES := [["cure_poison","治療中毒"],["cure_no_magic","解除魔法封印"],["cure_paralysis","解除痲痺狀態"],["cure_weaken","解除衰弱效果"]]
+
+## The description box lines of a bag／loot／shop row, as 0x430710 builds them ("#" breaks a line):
+## types 2..6 are the equipment board's (BattleEquipmentView); type 0 (0x4307dd) is the name,
+## 311 重要物品 and the ITEM+0x88 RESOURCE string (`explain`; 197 無特殊屬性 when 0), or the name and
+## 197 without the 0x8000000 flag; type 1 (0x43088d) is the name, 79 可使用, one value row (restore,
+## then permanent +0x50…+0x70, then local +0x74 攻擊力／+0x7c 防禦力, one space 0x476c74 apart)
+## and one flag row. `details` is the items.json row, `definition` the consumable's. The remake's
+## explanatory rows follow only under OPT-GUIDE＝提示.
+static func description_lines(details: Dictionary, definition: Dictionary = {}) -> Array:
+	var type_code := int(details.get("type_code", 1))
+	if type_code in range(2, 7):
+		return Array(BattleEquipmentView.description_lines(details))
+	var lines: Array = [str(details.get("name", ""))]
+	if type_code == 0:
+		if details.get("important", false): lines.append_array(["重要物品", str(details.get("explain", "無特殊屬性"))])
+		else: lines.append("無特殊屬性")
+		return lines
+	lines.append("可使用")
+	var values: Array[String] = []
+	var restore := restore_row(definition)
+	if restore != "": values.append(restore)
+	var permanent: Dictionary = definition.get("permanent", {})
+	for pair in PERMANENT_NAMES:
+		if permanent.has(pair[0]): values.append(pair[1] + "永久" + range_text(permanent[pair[0]]))
+	for pair in [["local_attack","攻擊力"],["local_defense","防禦力"]]:
+		var limits: Array = definition.get(pair[0], [])
+		if limits.size() == 2: values.append(pair[1] + range_text(limits))
+	if not values.is_empty(): lines.append(" ".join(values))
+	var flags := _flag_row(details, definition)
+	if flags != "": lines.append(flags)
+	if not GameOptions.is_original("OPT-GUIDE"): lines.append_array(_hint_rows(definition, flags == "回復人物正常狀態"))
+	return lines
+
+## 0x430680: the first word signed (0x45b6de flag 0x80000006), then when the second differs the
+## half wave 0x17 (∼) and the second's magnitude.
+static func range_text(limits: Array) -> String:
+	var first := int(limits[0])
+	var second := int(limits[1]) if limits.size() > 1 else first
+	return "%+d" % first + ("" if second == first else "∼%d" % absi(second))
+
+## The ITEM+0xa0 row: 0x8000000 311 alone; else the keep-normal bit (bl & 0x80) or all four cure
+## bits 242 alone; else the cure sentences present, one space apart.
+static func _flag_row(details: Dictionary, definition: Dictionary) -> String:
+	if details.get("important", false): return "重要物品"
+	var cures := CURE_SENTENCES.filter(func(pair): return int(definition.get(pair[0], 0)) == 1)
+	if (int(details.get("status_effect_flags", 0)) & 0x80) != 0 or cures.size() == CURE_SENTENCES.size():
+		return "回復人物正常狀態"
+	return " ".join(PackedStringArray(cures.map(func(pair): return pair[1])))
+
+## The remake's explanatory rows (OPT-GUIDE＝提示 only; the original box has none of them); a full
+## cure (「回復人物正常狀態」) gets no keep-others row.
+static func _hint_rows(definition: Dictionary, full_cure: bool = false) -> Array[String]:
 	var rows: Array[String] = []
-	var restore := restore_row(item)
-	if restore != "": rows.append(restore)
-	for pair in [["cure_poison","中毒"],["cure_paralysis","麻痺"],["cure_no_magic","禁魔"],["cure_weaken","衰弱"]]:
-		if int(item.get(pair[0],0)) == 1: rows.append("解除"+pair[1]+("；保留其他狀態" if hints else ""))
-	for pair in [["local_attack","攻擊"],["local_defense","防禦"]]:
-		var limits: Array = item.get(pair[0],[])
-		if limits.size() == 2:
-			rows.append("%s +%d～%d，持續3回" % [pair[1],int(limits[0]),int(limits[1])])
-			if hints: rows.append("已有同類增益時只延長3回，上限9回")
-	for key in item.get("permanent",{}):
-		var limits: Array = item["permanent"][key]
-		rows.append("永久%s +%d%s" % [PermanentCapabilityRules.LABELS[key],int(limits[0]),"～%d"%int(limits[1]) if limits[0]!=limits[1] else ""])
-		if hints: rows.append("提升原始抗性；原始值上限80，裝備另計" if key.begins_with("resist_") else "不改力量／反應／精神／體質；卸裝仍保留")
-	return "\n".join(rows)
+	for pair in CURE_SENTENCES:
+		if not full_cure and int(definition.get(pair[0], 0)) == 1:
+			rows.append("只解除所列狀態，保留其他狀態")
+			break
+	if not (definition.get("local_attack", []) as Array).is_empty() or not (definition.get("local_defense", []) as Array).is_empty():
+		rows.append("增益持續3回；已有同類增益時只延長3回，上限9回")
+	for key in definition.get("permanent", {}):
+		rows.append("提升原始抗性；原始值上限80，裝備另計" if str(key).begins_with("resist_") else "不改力量／反應／精神／體質；卸裝仍保留")
+	return rows
 
 ## The restore row as 0x430710 case 1 builds it: RESOURCE 202 生命／203 魔法 with the signed value
 ## (0x45b6de flag 0x80000000), RESOURCE 624 氣力 in bar cells (value/20, one decimal only when
@@ -56,7 +104,26 @@ static func preview(effect: Dictionary, item: Dictionary) -> String:
 		if int(effect.get(pair[0],0)) > 0: rows.append("回復 %d %s" % [int(effect[pair[0]]),pair[1]])
 	for row in effect.get("stat_proposals",[]):
 		rows.append("%s +%d～%d，持續3回" % [StatEnhancementRules.LABELS[row["kind"]],row["low"],row["high"]] if row["roll_required"] else "%s +%d保持，延長至%d回" % [StatEnhancementRules.LABELS[row["kind"]],int(row["before_word"]) >> 16,row["duration"]])
-	if rows.is_empty(): return description(item)
+	if rows.is_empty(): return _preview_fallback(item)
+	return "\n".join(rows)
+
+## A useful proposal with no value rows (a cure) previews the consumable's own effect rows.
+static func _preview_fallback(item: Dictionary) -> String:
+	var hints := not GameOptions.is_original("OPT-GUIDE")
+	var rows: Array[String] = []
+	var restore := restore_row(item)
+	if restore != "": rows.append(restore)
+	for pair in [["cure_poison","中毒"],["cure_paralysis","麻痺"],["cure_no_magic","禁魔"],["cure_weaken","衰弱"]]:
+		if int(item.get(pair[0],0)) == 1: rows.append("解除"+pair[1]+("；保留其他狀態" if hints else ""))
+	for pair in [["local_attack","攻擊"],["local_defense","防禦"]]:
+		var limits: Array = item.get(pair[0],[])
+		if limits.size() == 2:
+			rows.append("%s +%d～%d，持續3回" % [pair[1],int(limits[0]),int(limits[1])])
+			if hints: rows.append("已有同類增益時只延長3回，上限9回")
+	for key in item.get("permanent",{}):
+		var limits: Array = item["permanent"][key]
+		rows.append("永久%s +%d%s" % [PermanentCapabilityRules.LABELS[key],int(limits[0]),"～%d"%int(limits[1]) if limits[0]!=limits[1] else ""])
+		if hints: rows.append("提升原始抗性；原始值上限80，裝備另計" if key.begins_with("resist_") else "不改力量／反應／精神／體質；卸裝仍保留")
 	return "\n".join(rows)
 
 static func _no_effect(item: Dictionary) -> String:

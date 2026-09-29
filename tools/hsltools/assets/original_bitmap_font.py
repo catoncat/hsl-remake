@@ -64,7 +64,9 @@ FACES = {
 ALIASES = {'・': '‧', '−': '-', '▶': '→', '›': '>'}
 # Half glyphs below 0x20 the original draws (resource-derived, ASCFONT.24／ASCFONT.15 atlas row):
 # 0x10 ► and 0x11 ◄ frame the 回憶錄 empty-slot text (RESOURCE.TXT item 314, bytes 10 20 B5 4C B0 4F BF FD 20 11, drawn by hsl01.exe 0x424f00).
-CONTROL_HALF = {'\u25ba': '\x10', '\u25c4': '\x11'}
+# 0x17 is the mid-height half wave 0x430680 writes between a range's low and high word (hsl01.exe
+# .data 0x478560, the item description 0x430710); \u223c (U+223C) stands for it in remake text.
+CONTROL_HALF = {'\u25ba': '\x10', '\u25c4': '\x11', '\u223c': '\x17'}
 HALF_FIRST, HALF_END = 0x20, 0x7F
 HALF_ROW = 128  # half glyphs 0x00-0x7f kept on the atlas row (the draw loop takes bytes < 0xa1; text uses 0x20-0x7e)
 # Scanned for used characters: runtime content, minus the tables that list every character.
