@@ -21,7 +21,7 @@ from hsltools.data.equipment import build as equipment_data, initial_physical_fi
 from hsltools.data.role_profiles import build as role_data
 from hsltools.paths import ROOT
 from hsltools.registry import Context, GeneratedFilesTask
-from hsltools.sources.tables import authored_characters, parse_table
+from hsltools.sources.tables import authored_characters, override_rows, parse_table
 
 PLACEMENTS = ROOT / 'content/imported/hsl/chapter01/map_objects.json'
 STORY = ROOT / 'content/imported/hsl/chapter01/source_texts/STORY051.TXT'
@@ -41,7 +41,7 @@ def actor_templates(actor_codes=None):
         entries = []
         for block in raw.split('[' + section + ']')[1:]:
             entries.append({k: v.strip() for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)})
-        return {entry['code']: entry for entry in entries if 'code' in entry}
+        return {entry['code']: entry for entry in override_rows(name, entries) if 'code' in entry}
     players = table('PLAYERS.TXT', 'character')
     # Authored characters (content/authored/roles/characters.json) are templates like any PLAYERS row.
     players.update({row['code']: row for row in authored_characters()})

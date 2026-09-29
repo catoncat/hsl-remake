@@ -1,7 +1,8 @@
 """Compile current equipment effects/eligibility; unsupported passives stay explicit.
 
-build() joins ITEM.TXT, TYPE.H and the RESOURCE names into content/generated/hsl/equipment/
-items.json; initial_physical_fields / initial_mobility_fields derive an actor's
+build() joins ITEM.TXT (with the authored overlay), TYPE.H and the RESOURCE names into
+content/generated/hsl/equipment/items.json; original_build() is the same catalog over the bare
+imported ITEM rows, for the native parity probes; initial_physical_fields / initial_mobility_fields derive an actor's
 equipment-adjusted starting rates. Registry task equipment_data (family items). Bodies
 moved verbatim from the former hsl_equipment_data.py.
 """
@@ -14,7 +15,7 @@ from pathlib import Path
 from hsltools.data import json_bytes
 from hsltools.registry import GeneratedFilesTask, Context
 from hsltools.data.attack_ranges import WEAPON_SELECTED
-from hsltools.sources.tables import TABLES, RESOURCE_TXT, blocks, digest, parse_table
+from hsltools.sources.tables import TABLES, RESOURCE_TXT, blocks, digest, parse_table, table_rows
 
 OUTPUT = Path('content/generated/hsl/equipment/items.json')
 NAMES = RESOURCE_TXT
@@ -120,13 +121,14 @@ class Defines(dict):
     def get(self, key, default=None): return dict.get(self, key.lower(), default)
 
 
-def build():
+def build(rows=None):
+    """rows: ITEM [item] rows; default table_rows('ITEM.TXT'), the imported rows with the authored overlay."""
     constants = Defines({key.lower(): int(value, 0) for key, value in re.findall(
         r'^\s*#define\s+(\w+)\s+(0x[0-9a-fA-F]+|\d+)\b',
         (TABLES/'TYPE.H').read_bytes().decode('cp950'), re.M)})
     names = parse_table(NAMES.read_bytes())
     items = {}
-    for row in blocks((TABLES/'ITEM.TXT').read_bytes(), 'item'):
+    for row in table_rows('ITEM.TXT') if rows is None else rows:
         code, kind = row['code'], constants[row['type']]
         effects = {key: 0 for key in NUMERIC.values()}
         for field, key in NUMERIC.items():
@@ -190,6 +192,12 @@ def build():
             'limits': ['Numeric effects, st_x2/no_addst, exp_x2, gold_x2, double_attack/action_twice, mp_use_half, HP/MP automatic restoration, HP transfer, magic hit/protection, moved casting, normal-weapon range extension, strike-damage halving (hp_damage_half), ordinary-series cancellation, the 0x409310 status word (weaken/no-magic/paralysis/poison and the random_status_error pick), weaken/poison/no-magic/paralysis protection and consumable cure bits have independent live contracts; other nonzero fields reject equip.',
                        'Live base-stat refresh supports independently proven job80/85/90/94. Source job eligibility still restricts individual equipment.',
                        'Unknown fields and unrecognized element/resistance constants remain unsupported, not silently discarded; TYPE.H names match case-insensitively (0x46db10 _stricmp).']}
+
+
+def original_build():
+    """build() over the bare imported ITEM rows: the native parity probes check the original, so an
+    authored ITEM overlay never reaches them (nor the generators that re-run a probe check)."""
+    return build(blocks((TABLES/'ITEM.TXT').read_bytes(), 'item'))
 
 
 class EquipmentDataTask(GeneratedFilesTask):

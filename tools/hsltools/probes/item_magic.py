@@ -9,7 +9,7 @@ import copy
 import json
 from pathlib import Path
 
-from hsltools.data.equipment import build
+from hsltools.data.equipment import original_build as build
 from hsltools.model.jobs import SLOTS, ATTRIBUTES, source_profile, calculate
 from hsltools.paths import ROOT
 from hsltools.probes import stat_magic as stat

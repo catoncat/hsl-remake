@@ -11,7 +11,7 @@ from pathlib import Path
 
 from hsltools.data import json_bytes
 from hsltools.registry import GeneratedFilesTask, Context
-from hsltools.sources.tables import TABLES, blocks, character_rows
+from hsltools.sources.tables import TABLES, blocks, character_rows, table_rows
 
 # Every PLAYERS.TXT character row is compiled; the roster of a battle decides which rows are consumed
 # (BattleRewardRules.data_error still refuses a unit whose actor is missing). The first-chapter templates
@@ -75,7 +75,7 @@ def build():
     if not isinstance(curated.get("lists"), dict) or set(curated["lists"]) != wanted:
         raise ValueError("Incomplete or unexpected carry lists")
     items = {}
-    for row in blocks((TABLES / "ITEM.TXT").read_bytes(), "item"):
+    for row in table_rows("ITEM.TXT"):
         code = row["code"]
         if code in items:
             raise ValueError("Duplicate item code")

@@ -23,7 +23,7 @@ from pathlib import Path
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
 from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
-from hsltools.sources.tables import TABLES, blocks, digest, parse_table
+from hsltools.sources.tables import TABLES, digest, parse_table, table_rows
 
 ROOT = Path('content/imported/hsl/chapter01/portraits')
 NAMES = Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT')
@@ -75,7 +75,7 @@ def display_name(row: dict, names: dict[str, str], defines: dict[str, str]) -> s
 
 
 def bindings():
-    players = {int(row['code']): row for row in blocks((TABLES / 'PLAYERS.TXT').read_bytes(), 'character')}
+    players = {int(row['code']): row for row in table_rows('PLAYERS.TXT')}
     names = parse_table(NAMES.read_bytes())
     defines = resource_defines()
     return {code: {'source_member': players[int(code)]['picture'],

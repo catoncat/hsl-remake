@@ -20,7 +20,7 @@ from pathlib import Path
 
 from hsltools.data import json_bytes
 from hsltools.registry import Context, GeneratedFilesTask
-from hsltools.sources.tables import TABLES, blocks, parse_table
+from hsltools.sources.tables import TABLES, blocks, override_rows, parse_table, table_rows
 
 OUT = Path('content/generated/hsl/text/protected_words.json')
 NAMES = Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT')
@@ -64,13 +64,13 @@ def build() -> dict:
         if WORD.match(word):
             sources.setdefault(word, set()).add(source)
 
-    for row in blocks((TABLES / 'PLAYERS.TXT').read_bytes(), 'character'):
+    for row in table_rows('PLAYERS.TXT'):
         for field in ('name', 'job_show_name'):
             rid = _resource_id(row.get(field, ''), defines)
             if rid is not None and str(rid) in names:
                 add(names[str(rid)], 'PLAYERS.' + field)
     for table, section in (('ITEM.TXT', 'item'), ('MAGIC.TXT', 'magic'), ('SPECIAL.TXT', 'special')):
-        for row in blocks((TABLES / table).read_bytes(), section):
+        for row in override_rows(table, blocks((TABLES / table).read_bytes(), section)):
             rid = _resource_id(row.get('name', ''), defines)
             if rid is not None and str(rid) in names:
                 add(names[str(rid)], table.split('.')[0] + '.name')

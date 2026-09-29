@@ -91,11 +91,11 @@ def _players_by_name(players_text: str, names: dict[str, str], resource_h_names:
 def shop_items(names: dict[str, str]) -> dict[str, Any]:
     """ITEM.TXT code/name/cost/type/icon/important for the whole 239-item table (resource-derived; the
     tracked table is the same member the equipment generator reads). Selling prices are not in the table."""
-    from hsltools.sources.tables import blocks
+    from hsltools.sources.tables import override_rows, blocks
 
     constants = {key: int(value, 0) for key, value in re.findall(r"^\s*#define\s+(\w+)\s+(0x[0-9a-fA-F]+|\d+)\b", TYPE_H.read_bytes().decode("cp950"), re.M)}
     items: dict[str, Any] = {}
-    for row in blocks(ITEM_TXT.read_bytes(), "item"):
+    for row in override_rows("ITEM.TXT", blocks(ITEM_TXT.read_bytes(), "item")):
         items[str(int(row["code"]))] = {
             "name": names.get(str(row.get("name", "")), ""),
             "name_resource_id": int(row["name"]) if str(row.get("name", "")).isdigit() else None,

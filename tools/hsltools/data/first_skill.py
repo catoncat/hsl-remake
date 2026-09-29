@@ -14,13 +14,13 @@ from hsltools.registry import Context
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
 from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
-from hsltools.sources.tables import TABLES, blocks, digest, parse_table
+from hsltools.sources.tables import TABLES, blocks, digest, parse_table, table_rows
 
 ROOT = Path('content/imported/hsl/shared/first_skill')
 
 
 def definition():
-    player = next(b for b in blocks((TABLES / 'PLAYERS.TXT').read_bytes(), 'character') if b['code'] == '1')
+    player = next(b for b in table_rows('PLAYERS.TXT') if b['code'] == '1')
     skill = next(b for b in blocks((TABLES / 'SPECIAL.TXT').read_bytes(), 'special')
                  if b['type'] == 'magicOTHER' and b['code'] == 'magicCode01')
     names = parse_table(Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT').read_bytes())

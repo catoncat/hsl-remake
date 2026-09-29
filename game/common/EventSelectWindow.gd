@@ -132,6 +132,17 @@ func _row_input(event: InputEvent, pick: int, leave: bool) -> void:
 	_leave = leave
 
 
+## A host's own way out (the title's Esc／right button; the original boards read neither): the
+## board fades out from its current level like after a pick, with no click sound, and answers
+## leave. Ignored once a pick is fading out or answered.
+func dismiss() -> void:
+	if fading_out or not is_processing():
+		return
+	fading_out = true
+	_pick = -1
+	_leave = true
+
+
 func _process(delta: float) -> void:
 	_clock += delta
 	var step := OriginalTick.ticks(delta)

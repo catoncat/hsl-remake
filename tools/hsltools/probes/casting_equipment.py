@@ -15,7 +15,7 @@ import struct
 
 from hsltools.native.image import EXE_SHA, image
 from hsltools.native.machine import machine_for
-from hsltools.native.sources import sources
+from hsltools.native.sources import original_sources as sources
 from hsltools.paths import ROOT
 from hsltools.probes._base import ProbeTask
 from hsltools.sources.tables import TABLES, digest

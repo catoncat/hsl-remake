@@ -89,11 +89,11 @@ python3 tools/hsl.py check authored_level:200 authored_art actor_panels level_pr
 
 | # | 步骤 | 类型 | 改哪里、怎么做 |
 | --- | --- | --- | --- |
-| 19 | 从标题直接开始你的关 | 只写数据 | `campaign.json` 的 `start_level` 改成第一关的 key，「開始新故事」直接进它；片头动画是 `start_movie`（第一章是 `"start"`），不写就不播 |
+| 19 | 从标题开始你的战役，和第一章并存 | 只写数据，已验证 | 你的战役写自己的 `campaign.json`：`start_level` 是第一关的 key，片头动画是 `start_movie`（第一章是 `"start"`），不写就不播。再在 `content/authored/campaigns.json`（`hsl_campaign_registry.v1`）登记一行：`id`（存档文件夹名，只用英文字母、数字、`_` 和 `-`）、`title`（选单上的名字）、`campaign`（你的 `campaign.json` 路径）；第一章不用登记，永远排第一。登记了不带 `hidden` 的战役后，「開始新故事」先弹选择板列出第一章和各战役，末行「離開」（或 Esc）回菜单；列得出的只有第一章时照旧直接开始。带 `"hidden": true` 的战役不上选单——示范「續集示範」就这样登记，所以本仓库的标题照原版直接开第一章。实玩或测试直达某个战役：环境变量 `HSL_CAMPAIGN=<id>`，直接启动 `BattleSceneRuntime.tscn` 开它；只列出第一章时，这个进程的「開始新故事」也开它（中途读过别的战役的回憶錄或戰場記錄也一样），列得出多个战役时仍先弹选择板 |
 | 20 | 续集自己的大地图 | 只写数据，已验证 | `content/authored/world/world_map.json`（`hsl_world_map.v1`）：点位一行一个，`id`＝`slot`（1–99），`x`／`y` 是地图图面上的像素，`flag_names` 定类型（`bmpmTown`／`bmpmBattle`／`bmpmGeneral`），`raw_track_fields` 列它连着的路线，`raw_field0` 是开局的显示阶段（起点写 2，开局藏起来的点写 0）；路线写 `from_point`／`to_point`、折线 `polyline` 和 `sprite.preview`；`towns[]` 把城镇符号对到点位和背景图。同目录的 `world_map_scene.json` 照第一章的场景写，`resources` 指到续集自己的四张表，`new_game.hidden_points`／`hidden_tracks` 定开局藏起来的点和路 |
 | 21 | 城镇里的店和人 | 只写数据，已验证 | 同目录 `towndef.json`：`symbols` 里 `town_<名字>` 等于点位 id，`town_events` 一行一个菜单项，te 文法照原版 TOWNDEF（`teShapeMessage` 说话、`teCreateShop` 开店，货表在 `items`）；`town_initial_trees.json` 是开局的根菜单；`town_messages.json` 放文字和队员说话者，606／607 是商店拒绝语的固定编号 |
 | 22 | 点位通往哪一关 | 只写数据，已验证 | 没被事件写过的点开和自己 id 同号的关。续集的关号在 200 以上，所以由城镇事件 `teBMSetPointEvent,<点>,<关>,bmpmBattle`（或剧本的 `actBMSetPointEvent`）指过去；示范里晨風鎮的老獵人先用 `teBMClearPointFlag`／`teBMClearTrackFlag` 去掉龍脊隘口和那条路的 `bmpmHidden`，再把它指到第 200 关 |
-| 23 | 战役接起来 | 只写数据，已验证 | 续集自己的 `campaign.json`：`start_level` 写 `"49"`（原版的大地图关号），`battles["49"]` 和 `world_map` 都指到续集的大地图场景；关卡胜利段写 `actSetNextPlayLevelEvent,<点>,49` 回到那个点。示范借用的第 200 关胜利段是 `200,998`，示范战役就把 998 也登记成大地图。游戏只读 `content/battles/campaign.json`，实玩时拿这份替换它（同 #19）。`tests/run_campaign_tests.gd` 的续集世界一条走完 战役 → 大地图 → 城镇 → 大地图 → 第 200 关 → 大地图 |
+| 23 | 战役接起来 | 只写数据，已验证 | 续集自己的 `campaign.json`：`start_level` 写 `"49"`（原版的大地图关号），`battles["49"]` 和 `world_map` 都指到续集的大地图场景；关卡胜利段写 `actSetNextPlayLevelEvent,<点>,49` 回到那个点。示范借用的第 200 关胜利段是 `200,998`，示范战役就把 998 也登记成大地图。登记进 `campaigns.json` 就和第一章并存（#19），存档分开：第一章沿用 `user://` 下原来的进度、戰場記錄和回憶錄文件；登记战役的进度和戰場記錄放 `user://campaigns/<id>/`（`campaign_progress.json`、`<场景 id>.save`）。回憶錄 8 格各战役共用，你的战役存的那格记下 `campaign_id`、行首标出战役名，读取时先切到那个战役；没有战役 id 的记录当第一章。标题的「戰場記錄」接着最近存过档（自动进度或战斗 checkpoint，按文件修改时间）的那个战役。`tests/run_campaign_tests.gd` 的续集世界一条从标题选战役开始，走完 战役 → 大地图 → 城镇 → 大地图 → 龍脊隘口（LEVEL200）→ 大地图，并查存档落在续集自己的文件夹、第一章进度不被覆盖 |
 
 ## 4. 招式表字段（`content/authored/roles/skills.json`）
 
@@ -208,7 +208,7 @@ action = actWalkPrevInsertObject,512,288,4
 | 新的技能效果族（治疗、状态、增益、特殊行动） | 规则侧：在 `game/sim/` 写一个模块，按 `SkillResolutionRules.EFFECTS` 表头的签名提供 descriptor_error／prepare／resolve，再在 `EFFECTS` 登记一行新的 `damage_policy`；生成侧：你的招式目前只收两个通道的原版伤害（`authored_skills.py` 的 `DAMAGE_POLICIES`），要让它放行新值 |
 | 新的特效 opcode | `SkillEffectScriptPlayer.IMPLEMENTED_OPCODES` 及其播放分支 |
 | 新的切入打击程序（不借 `program_of`）、切入 s_shape／m_shape 条带 | 不在作者格式的约定内（绝技切入目前显示站立的施法者） |
-| 手写层的新界面美术、覆盖原版已有的表行 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |
+| 手写层的新界面美术 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |
 
 改代码时的入口：场景宿主 `game/battle/scene/BattleSceneRuntime.gd` → 开场协调器 `game/battle/runtime/BattleOpeningCoordinator.gd`；战斗规则 `game/sim/`（`TacticalGridRules`、`CoreCombatRules`、`CoreTurnQueue`、`WinfailScenarioRules`…），唯一可变的战斗状态在 `game/sim/loop/BattlePlayLoop.gd`；大地图和城镇 `game/world/`；标题、GAME OVER、谢幕 `game/title/`；战斗内系统菜单 `game/battle/scene/BattleSystemMenu.gd`；设置 `game/settings/GameSettings.gd`；战役存档、交接、回憶錄、戰場記錄只经 `game/common/CampaignProgress.gd`。新加 `game/**/*.gd` 要写 `## provenance:` 头，然后 `python3 tools/hsl.py generate provenance`（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。模块地图见 [ARCHITECTURE](ARCHITECTURE.md)。
 

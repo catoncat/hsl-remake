@@ -62,7 +62,7 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 | 头像 | `content/imported/hsl/chapter01/portraits/NNN.png`＋各关 `portraits/manifest.json`；名册脸表是生成物 `content/generated/hsl/roles/actor_portraits.json`（`roster_portraits`） | `content/authored/actors/<外观>/portrait.png`，由 `content/authored/roles/characters.json` 那一行的 `portrait` 指过去 | 示范图 120×144 |
 | 地图 | `content/imported/hsl/chapter01/battleNNN/levelNN.png`（第 51 关 768×768＝24×24 格） | 任意 PNG，写进 `content/authored/levelNNN/level.json` 的 `map_texture` | 尺寸＝格数×32 像素，必须和 `terrain.txt` 的行列数对上 |
 | 界面 | `content/imported/hsl/shared/panels/`（面板，`panel_assets`）、`shared/command_menu/`（命令环）、`shared/range_cells/`（范围格）、`shared/game_cursor/`（光标）、`global/title/`（标题、系统菜单、谢幕，`title_assets`）；位图字体表 `content/generated/hsl/fonts/`（`original_bitmap_font`） | 没有手写层入口，只能就地替换 | 保持原文件名和尺寸；版式常量写在对应的导入工具里 |
-| 音效 | `content/imported/hsl/shared/interface_audio/manifest.json`（确认、取消等符号对应的 WAV，`interface_audio`）、各关 `sounds/manifest.json` 和 `actor_audio.json` | 新角色的音效写在 `art.json`：`sounds_of` 借某个原版角色的走、攻、闪、亡音效；`sounds`（如 `{"attack": "sounds/attack.wav"}`）给其中几项换成外观文件夹里自己的文件，没写的照旧借 `sounds_of`。`sounds/` 里只放自己做的音效：公开导出按路径把它当重制素材整目录带上，不会再核对是不是原版文件。示范 103 的攻击音效是 `content/authored/actors/103/sounds/attack.wav` | PCM WAV（原版多为 11025／22050 Hz 单声道） |
+| 音效 | `content/imported/hsl/shared/interface_audio/manifest.json`（确认、取消等符号对应的 WAV，`interface_audio`）、各关 `sounds/manifest.json` 和 `actor_audio.json` | 新角色的音效写在 `art.json`：`sounds_of` 借某个原版角色的走、攻、闪、亡音效；`sounds`（如 `{"attack": "sounds/attack.wav"}`）给其中几项换成外观文件夹里自己的文件，没写的照旧借 `sounds_of`。`sounds/` 和 `content/authored/music/` 里只放自己做的声音，这两个目录会随仓库一起公开。示范 103 的攻击音效是 `content/authored/actors/103/sounds/attack.wav` | PCM WAV（原版多为 11025／22050 Hz 单声道） |
 | 配乐 | `content/imported/hsl/music/NN.ogg`＋`manifest.json`（`music_import`，NN 是原曲号 02–19） | 大地图和城镇用 `content/world/world_map_scene.json` 的 `map_music`／`town_music`，标题和谢幕用 `global/title/manifest.json` 的 `music`，都是 `res://` 路径，指到你的 OGG 就行；关卡里剧本 `actPlayMusic,N`：N 为 0–99 播原曲 `content/imported/hsl/music/NN.ogg`（原曲只有 02–19，写别的号不会播新曲），N 为 100 起播 `content/authored/music/N.ogg`（文件缺失时生成失败）。示范第 200 关开场写 `actPlayMusic,100`，播 `content/authored/music/100.ogg` | OGG Vorbis；`project.godot` 的 `[importer_defaults]` 默认整首循环 |
 
 仓库自带 14 首重制配乐 `content/generated/hsl/remake_music/`（CC BY 4.0，由 `tools/compose_*.py` 合成），游戏代码目前没有读它；想用就把上面那些 `res://` 路径指过去。
@@ -83,7 +83,30 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 | `global/tables/MAGIC.TXT`、`SPECIAL.TXT`、`RANGE.TXT`／`content/authored/roles/skills.json`（新招） | 魔法、绝技、施放范围 | `python3 tools/hsl.py generate initial_skill_book skill_target_data authored_effect_scripts` |
 | 各关 `winfail` 剧本 | 胜负条件、援军、事件 | 该关的生成链（§5） |
 
-`global/tables/` 下的原版表只要重跑 `original_tables` 导入就会被覆盖。新角色、新职业、新招式请写进 `content/authored/roles/`（[逐步表 §3.2](MODDING_LEVELS.md#32-角色职业与招式) #10–18）；要改原版已有的行，目前只能直接改导入的副本（见本页末"现在做不到的"）。
+`global/tables/` 下的原版表只要重跑 `original_tables` 导入就会被覆盖。新角色、新职业、新招式请写进 `content/authored/roles/`（[逐步表 §3.2](MODDING_LEVELS.md#32-角色职业与招式) #10–18）；要改原版已有的行，写覆盖层，别动导入的副本。
+
+**覆盖层**：`content/authored/overrides/PLAYERS.json` 改 PLAYERS.TXT 的行，`content/authored/overrides/ITEM.json` 改 ITEM.TXT 的行。只写要改的字段，行键是那一行的 `code`，字段名和取值照原表（整数可以写成 JSON 数字）：
+
+```json
+{
+  "schema": "hsl_table_override.v1",
+  "rows": {
+    "1": {"attack_damage": 40, "cost": 500},
+    "241": {"add_hp": 80}
+  }
+}
+```
+
+生成器读这两张表时都经过同一个入口 `tools/hsltools/sources/tables.py` 的 `table_rows()`，覆盖层在那里叠到导入的行上，导入副本本身不改、哈希不变。同一行会流进好几份生成物，上表「重跑」一列不够用：上例 1 号的 `cost` 是商店价，经 `town_assets` 进游戏；241 号的 `add_hp` 是回复量，经 `consumables` 进游戏；装备数值还会进角色模板和各关的战斗文件。所以改完先跑 `python3 tools/hsl.py check --profile=modder`，报不一致的就是要重跑的任务，再对它们跑 `python3 tools/hsl.py generate <任务名…>`。写了不支持的表、表里没有的 `code`、表里没有的列名，或者想改 `code` 本身，生成直接失败，报错里写着文件、行键和字段。目前只支持这两张表：MAGIC.TXT、SPECIAL.TXT、RANGE.TXT、TYPE.H 等其余原版表还不能覆盖；PLAYERS.TXT 在 PAK 里的原件（城镇对话按名字找说话人头像）、各角色 `source_record` 记下的原表行号，也都照旧读原版。原版对拍探针（`probe` 族）有意不叠覆盖层，照旧拿导入副本和原版回执对拍；拿生成物去比原版的检查（`role_profiles_proof` 这类 parity 检查、生成物哈希清单 `original_derived_manifest`）在有覆盖层时会报不一致，`--profile=modder` 本来就跳过它们；拿原版回执对拍的 Godot 套件不归 `hsl check` 管，由 Godot 测试运行器另跑。
+
+**覆盖层的已知限制**：
+
+- 025（法蘭克）的模板 `emperor_data` 会拿刷新出的数值去比原版探针包：改 PLAYERS 025，或它身上 ITEM 5／126／182 的数值，生成和检查都会失败。
+- 039 的模板 `large_actor_data` 的血量、攻防等战斗数值直接取自原版探针包，覆盖层对它不生效。
+- PLAYERS 1 的 `special_other`、PLAYERS 26 的 `magic_wind`／`magic_fire` 在读表处被断言成原版招式名（`initial_skill_book` 和 `special_damage`／`magic_damage` 探针都经过这里），改了生成失败。
+- PLAYERS 的 `carry_item` 用到的掉落表号必须正好是原版用到的那一组：换成原版没用过的号，或让某张表不再有人用，`battle_rewards` 报错。
+- ITEM 241／246 的 `icon` 被 `item_art` 断言成原版值；武器的 `icon` 还决定 `interface_audio` 记下的命中音，改了它的检查不过，重新生成要原版 PAK。
+- 生成物里记的 `source_sha256` 和 `evidence_tier` 在有覆盖层时仍写导入原表的值。
 
 **例一：改普攻伤害公式。** 位置是 `game/sim/CoreCombatRules.gd` 的 `preview_damage()`：先算攻击力减防御力，加上力量差项（限制在 −20～30），再做三次随机抽取，结果不大于 0 时走保底。命中是同一文件的 `hit_chance()`，暴击是 `critical_impact()`；绝技和魔法的伤害抽取在 `game/sim/NativeMagicRollRules.gd`。随机抽取的次数和顺序变了，同一个种子打出来的结果就会变，旧存档读回来后面的发展也会跟着变。
 
@@ -156,9 +179,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 ## 现在做不到的（需要先改代码或工具）
 
 - 从空仓库一条命令导入全部原版资源。
-- 用覆盖层改原版已有的行（ITEM.TXT 某件装备、PLAYERS.TXT 某个原版角色）：目前只能直接改导入副本，而这份副本会被 `original_tables` 覆盖，检查也会报不一致。
 - 手写层的新界面美术：没有 authored 入口。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
-- 续集战役和第一章并存：游戏只读 `content/battles/campaign.json`，换成续集的战役要替换这份文件（测试里改的是 `CampaignProgress.campaign_path`），两边也共用同一个存档位置（[逐步表](MODDING_LEVELS.md#33-从标题开始与续集世界) #23）。
 - 在大地图数据里直接写点位通往哪一关：点位的 `id` 同时当身份（受 100 个槽位限制，`WorldMapRules.ROUTE_SLOTS`）和原版点记录 +8 的初始关号用。原版文件本可以在 +8 直接写 200，重制要先把初始关号拆成独立字段、身份和路线改用 `slot`；在那之前，关号 200 以上的续集关只能靠城镇或剧本事件指过去（#22）。
 - 续集城镇的转职改写：`TownEventRules` 读的转职改写表写死为 `content/world/town_job_up_writes.json`，续集城镇用 `teCheckJobUp2` 会重放第一章的改写。

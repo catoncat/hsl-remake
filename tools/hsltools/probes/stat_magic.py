@@ -13,11 +13,11 @@ import json
 from pathlib import Path
 import struct
 
-from hsltools.data.equipment import build as catalog
+from hsltools.data.equipment import original_build as catalog
 from hsltools.model.jobs import source_profile, calculate, ATTRIBUTES, SLOTS
 from hsltools.native.image import EXE_SHA, image
 from hsltools.native.machine import machine_for
-from hsltools.native.sources import sources
+from hsltools.native.sources import original_sources as sources
 from hsltools.paths import ROOT
 from hsltools.probes._base import ProbeTask
 from hsltools.probes.status_roll import independent

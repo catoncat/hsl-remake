@@ -85,8 +85,9 @@ def _res(path: Path) -> str:
 
 def _players() -> dict[int, dict[str, str]]:
     result = {}
-    for block in PLAYERS.read_bytes().decode('cp950').split('[character]')[1:]:
-        fields = {k: v.strip() for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)}
+    from hsltools.sources.tables import override_rows
+    for fields in override_rows('PLAYERS.TXT', [{k: v.strip() for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)}
+                                                for block in PLAYERS.read_bytes().decode('cp950').split('[character]')[1:]]):
         if fields.get('code'):
             result[int(fields['code'])] = fields
     return result

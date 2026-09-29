@@ -1090,6 +1090,8 @@ func _resume_memoir_slot(slot: int) -> Dictionary:
 	var result: Dictionary = {"ok": true, "action": "load_memoir", "slot": slot, "status": "memoir_resumed", "scenario_path": str(record.get("scenario_path", ""))}
 	last_result = result
 	phase = "loading"
+	# The record plays in its own campaign (the scene reload reads that campaign.json).
+	CampaignProgress.use_memoir_campaign(record)
 	if runtime.has_method("resume_memoir_record"):
 		runtime.resume_memoir_record(record)
 		return result

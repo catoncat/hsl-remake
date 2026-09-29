@@ -10,6 +10,7 @@ from pathlib import Path
 
 from hsltools.data import json_bytes
 from hsltools.registry import GeneratedFilesTask, Context
+from hsltools.sources.tables import override_rows
 
 SOURCE = Path('content/imported/hsl/global/tables/RANGE.TXT')
 OUTPUT = Path('content/generated/hsl/chapter01/attack_ranges.json')
@@ -66,8 +67,7 @@ def compile_ranges(text: str) -> dict:
 
 def weapon_ranges(text: str) -> dict:
     result = {'0':'range0Cell'}  # Native409090 returns0 for no weapon, even with range extension.
-    for block in text.split('[item]')[1:]:
-        fields = dict(re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M))
+    for fields in override_rows('ITEM.TXT', [dict(re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)) for block in text.split('[item]')[1:]]):
         code = fields.get('code', '').strip()
         if fields.get('type', '').strip() == 'itemTypeWeapon' and fields.get('attack_range', '').strip() in WEAPON_SELECTED:
             result[code] = fields['attack_range'].strip()

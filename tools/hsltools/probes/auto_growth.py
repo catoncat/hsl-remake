@@ -14,10 +14,10 @@ import json
 from pathlib import Path
 import struct
 
-from hsltools.data.equipment import build as equipment_data
+from hsltools.data.equipment import original_build as equipment_data
 from hsltools.model.jobs import ATTRIBUTES, CAPS, SLOTS, source_profile, calculate
 from hsltools.native.image import EXE_SHA, image
-from hsltools.native.sources import sources
+from hsltools.native.sources import original_sources as sources
 from hsltools.paths import ROOT
 from hsltools.probes._base import ProbeTask
 from hsltools.probes.departure import setup_world

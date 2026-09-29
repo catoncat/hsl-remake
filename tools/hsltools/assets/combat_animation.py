@@ -382,8 +382,8 @@ def import_opening(read):
 
 
 def weapon_icon_classes():
-    from hsltools.sources.tables import TABLES, blocks
-    return {row['code']: ITEM_ICON_CLASSES.index(row['icon']) for row in blocks((TABLES / 'ITEM.TXT').read_bytes(), 'item')
+    from hsltools.sources.tables import table_rows
+    return {row['code']: ITEM_ICON_CLASSES.index(row['icon']) for row in table_rows('ITEM.TXT')
             if row.get('type') == 'itemTypeWeapon' and row.get('icon') in ITEM_ICON_CLASSES}
 
 

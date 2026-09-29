@@ -49,8 +49,10 @@ TASK_PACKAGES = ('hsltools.probes', 'hsltools.levels', 'hsltools.data', 'hsltool
 CORE_PATHS = ('tools/hsltools/', 'tools/verify_runner.py', 'tools/hsl.py')
 # Shared original sources most scripts read through the table readers without naming them
 # on their command line, plus the authored role tables hsltools.model.jobs reads for every
-# job computation: a change there is treated as affecting every task (conservative).
-SHARED_SOURCE_PATHS = ('content/imported/hsl/global/', 'content/imported/hsl/chapter01/source_texts/', 'content/authored/roles/')
+# job computation and the authored overlay of the original tables (hsltools.sources.tables.table_rows):
+# a change there is treated as affecting every task (conservative).
+SHARED_SOURCE_PATHS = ('content/imported/hsl/global/', 'content/imported/hsl/chapter01/source_texts/', 'content/authored/roles/',
+                       'content/authored/overrides/')
 
 
 class CheckFailed(Exception):

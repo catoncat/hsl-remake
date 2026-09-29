@@ -744,6 +744,54 @@ class WinfailCoverageTests(unittest.TestCase):
         self.assertEqual(coverage.parse_gd_string_array(source, 'C'), [])
 
 
+# ---- table overlay (hsltools.sources.tables.table_rows) ----
+# content/authored/overrides/<PLAYERS|ITEM>.json lays authored field values over imported rows
+# for every generator; a table, row or field the original does not have fails generation.
+
+from unittest import mock
+
+from hsltools.sources import tables as source_tables
+
+
+@unittest.skipUnless(original_content.present(), 'original-derived content absent (hsltools.original_content)')
+class TableOverlayTests(unittest.TestCase):
+    def overlay(self, files):
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        for name, rows in files.items():
+            (Path(folder.name) / name).write_text(json.dumps({'schema': 'hsl_table_override.v1', 'rows': rows}), encoding='utf-8')
+        patch = mock.patch.object(source_tables, 'OVERRIDE_DIR', Path(folder.name))
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def test_overlay_reaches_the_generated_equipment_and_roles(self):
+        from hsltools.data.equipment import build as equipment
+        from hsltools.data.role_profiles import build as roles
+        self.overlay({'ITEM.json': {'1': {'attack_damage': 40}}, 'PLAYERS.json': {'1': {'str': 30}}})
+        self.assertEqual(equipment()['items']['1']['effects']['attack'], 40)
+        self.assertEqual(roles()['actors']['001']['attributes']['str'], 30)
+        # The parity probes keep reading the imported rows.
+        from hsltools.native.sources import original_sources
+        self.assertEqual(original_sources()[0]['001']['str'], '16')
+
+    def test_item_overlay_leaves_the_probe_checks_inside_generators_on_the_original(self):
+        # mobile_jobs / ai_profiles re-run a native probe check whose fixtures equip ITEM 21 / 40.
+        from hsltools.data.ai_profiles import build as ai_profiles
+        from hsltools.data.mobile_jobs import build as mobile_jobs
+        self.overlay({'ITEM.json': {'21': {'attack_damage': 21}, '40': {'attack_damage': 93}}})
+        self.assertTrue(mobile_jobs())
+        self.assertTrue(ai_profiles()['actors'])
+
+    def test_unknown_table_row_or_field_fails_naming_it(self):
+        for files, message in (({'MAGIC.json': {'1': {'damage': '1,2'}}}, 'overrides/MAGIC.json: no overridable table'),
+                               ({'ITEM.json': {'9999': {'cost': 1}}}, 'overrides/ITEM.json: rows["9999"]: ITEM.TXT has no row'),
+                               ({'ITEM.json': {'1': {'attak_damage': 40}}}, 'rows["1"]: ITEM.TXT has no field attak_damage')):
+            with self.subTest(message=message):
+                self.overlay(files)
+                with self.assertRaisesRegex(ValueError, message.replace('[', r'\[').replace(']', r'\]')):
+                    source_tables.table_rows('ITEM.TXT')
+
+
 if __name__ == "__main__":
     import unittest
     unittest.main()

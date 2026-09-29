@@ -14,6 +14,7 @@ from pathlib import Path
 
 from hsltools import original_content
 from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.sources.tables import override_rows
 from hsltools.sources.pak import (find_decoded_paks_packages, find_paks_record_by_name,
     read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes)
 
@@ -26,8 +27,8 @@ EVENTS = ('walk', 'attack', 'miss', 'dead')
 
 def bindings(raw):
     result = {}
-    for block in raw.decode('cp950').split('[character]')[1:]:
-        fields = {k: v.strip() for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)}
+    for fields in override_rows('PLAYERS.TXT', [{k: v.strip() for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)}
+                                                for block in raw.decode('cp950').split('[character]')[1:]]):
         code = fields.get('code')
         if code in CODES:
             result[code] = {event: fields['sound_' + event].replace('\\', '/').lower() for event in EVENTS}

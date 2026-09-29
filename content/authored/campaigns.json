@@ -1,0 +1,12 @@
+{
+  "schema": "hsl_campaign_registry.v1",
+  "note": "第一章（content/battles/campaign.json）不用登記，永遠排第一。每行一個戰役：id 是它的存檔資料夾名（user://campaigns/<id>/），只用英文字母、數字、_ 和 -，title 是開始新故事選單上的名字，campaign 指向它的 campaign.json。hidden 為 true 的戰役不出現在選單上，只能用 HSL_CAMPAIGN=<id>、它自己的回憶錄，或在它的存檔最新時由標題的戰場記錄進入；示範戰役帶 hidden，所以標題照原版直接開始第一章。",
+  "campaigns": [
+    {
+      "id": "sequel_demo",
+      "title": "續集示範",
+      "campaign": "res://content/authored/world/campaign.json",
+      "hidden": true
+    }
+  ]
+}

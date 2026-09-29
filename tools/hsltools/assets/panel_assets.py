@@ -15,7 +15,7 @@ from hsltools.data.ai_profiles import definitions as type_definitions
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
 from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
-from hsltools.sources.tables import TABLES, blocks, digest, parse_table
+from hsltools.sources.tables import TABLES, digest, parse_table, table_rows
 
 ROOT = Path('content/imported/hsl/shared/panels')
 NAMES = Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT')
@@ -50,11 +50,11 @@ def definitions():
     for name, expected in stats['inputs_sha256'].items():
         if digest((TABLES / name).read_bytes()) != expected:
             raise ValueError('Native display-stat input changed: ' + name)
-    players = {r['code']: r for r in blocks((TABLES / 'PLAYERS.TXT').read_bytes(), 'character')}
+    players = {r['code']: r for r in table_rows('PLAYERS.TXT')}
     types = type_definitions(TABLES / 'TYPE.H')
     from hsltools.probes.large_actor import check as check_large
     large = json.loads(LARGE_STATS.read_text());check_large(large)
-    items = {r['code']: r for r in blocks((TABLES / 'ITEM.TXT').read_bytes(), 'item')}
+    items = {r['code']: r for r in table_rows('ITEM.TXT')}
     from hsltools.data.role_profiles import build as roles
     role_data=roles()['actors']
     used, actors = {'241', '246'}, {}

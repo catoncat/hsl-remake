@@ -11,22 +11,22 @@ import struct
 from pathlib import Path
 
 from hsltools.registry import GeneratedFilesTask, Context
-from hsltools.sources.tables import blocks, digest, TABLES
+from hsltools.sources.tables import digest, table_rows, TABLES
 
 OUTPUT=Path('content/imported/hsl/chapter01/progression.json')
 
 def build():
-    raw=(TABLES/'PLAYERS.TXT').read_bytes()
-    actors={b['code'].zfill(3):{k:int(b[k]) for k in ('level','exp','kill_exp')} for b in blocks(raw,'character') if b.get('code') in ('1','2','21','23','24','25','26')}
-    large=next(b for b in blocks(raw,'character') if b.get('code')=='39')
+    raw=(TABLES/'PLAYERS.TXT').read_bytes();table=table_rows('PLAYERS.TXT')
+    actors={b['code'].zfill(3):{k:int(b[k]) for k in ('level','exp','kill_exp')} for b in table if b.get('code') in ('1','2','21','23','24','25','26')}
+    large=next(b for b in table if b.get('code')=='39')
     # Source039 declares kill_exp, but no initial level/EXP. Apply the same
     # explicit fixed-level development policy as its bounded refresh fixture.
     actors['039']={'level':1,'exp':0,'kill_exp':int(large['kill_exp'])}
-    for row in blocks(raw,'character'):
+    for row in table:
         if row['code'] in ['3','4','6','28','36','61','62']:
             actors[row['code'].zfill(3)]={'level':int(row.get('level',1)),'exp':int(row.get('exp',0)),'kill_exp':int(row.get('kill_exp',0))}
     from hsltools.model.jobs import CAMPAIGN_ACTORS
-    for row in blocks(raw,'character'):
+    for row in table:
         code=row['code'].zfill(3)
         if code in CAMPAIGN_ACTORS:
             actors[code]={'level':int(row.get('level',1)),'exp':int(row.get('exp',0)),'kill_exp':int(row.get('kill_exp',0))}
@@ -34,7 +34,7 @@ def build():
     # The stamina word (+0xe8) every actor is constructed with: 0x44cb10 copies the whole PLAYERS
     # template record (0x44cb41 for a first registration, 0x44cb88 for an NPC); an undeclared
     # field is 0 (only 001 20 and 006 8 declare one). original_stamina.md#证据.
-    rows={b['code'].zfill(3):b for b in blocks(raw,'character')}
+    rows={b['code'].zfill(3):b for b in table}
     for code,row in actors.items(): row['stamina']=int(rows[code].get('stamina',0))
     return {'schema':'hsl_progression_templates.v1','evidence_tier':'resource-derived','source_sha256':digest(raw),'actors':actors,'note':'Unadjusted source template fields; undeclared NPC level1/EXP0 are construction inputs, not final encounter levels. InitialRosterGrowth/EntryGrowth apply the reviewed native adjustment. Final EXP is resolved separately by ExperienceRules. stamina is the PLAYERS template word an actor is constructed with (first registration / NPC); a carried player enters at 0 unless the previous script ran actKeepPlayerST (CampaignCarryRules).'}
 

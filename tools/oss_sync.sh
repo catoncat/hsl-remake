@@ -17,9 +17,20 @@ if ! out="$("${ROOT}/tools/oss_export.sh" "${NEW}" "${REF}" 2>&1)"; then
   printf '%s\n' "${out}" | tail -5; echo "OSS_SYNC_FAIL export ref=${head}"; exit 1
 fi
 personal="$(grep -rIl "$(id -un)" "${NEW}" --exclude-dir=.git | wc -l | tr -d ' ')"
-media="$(find "${NEW}" -type f \( -iname '*.png' -o -iname '*.wav' -o -iname '*.ogg' -o -iname '*.webp' -o -iname '*.sav' -o -iname '*.bin' -o -iname '*.shp' -o -iname '*.pak' -o -iname '*.exe' \) -not -path "${NEW}/docs/screenshots/remake/*" | wc -l | tr -d ' ')"
-if [ "${personal}" != 0 ] || [ "${media}" != 0 ]; then
-  echo "OSS_SYNC_FAIL rescan personal_hits=${personal} media_outside=${media} out=${NEW}"; exit 1
+media="$(find "${NEW}" -type f \( -iname '*.png' -o -iname '*.wav' -o -iname '*.ogg' -o -iname '*.webp' -o -iname '*.sav' -o -iname '*.bin' -o -iname '*.shp' -o -iname '*.pak' -o -iname '*.exe' \) -not -path "${NEW}/docs/screenshots/remake/*" -not -path "${NEW}/content/authored/music/*" -not -path "${NEW}/content/authored/actors/*/sounds/*" | wc -l | tr -d ' ')"
+# Mod audio (content/authored/music/, actors/*/sounds/) ships only when self-made: no file may match an
+# original audio sha256 recorded in original_derived_manifest.json.
+original_audio="$(python3 - "${NEW}" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+out = Path(sys.argv[1])
+known = {v['sha256'] for v in json.loads((out / 'content/generated/hsl/original_derived_manifest.json').read_text())['files'].values() if 'sha256' in v}
+files = [*out.glob('content/authored/music/*'), *out.glob('content/authored/actors/*/sounds/*')]
+print(sum(hashlib.sha256(f.read_bytes()).hexdigest() in known for f in files if f.is_file()))
+PY
+)"
+if [ "${personal}" != 0 ] || [ "${media}" != 0 ] || [ "${original_audio}" != 0 ]; then
+  echo "OSS_SYNC_FAIL rescan personal_hits=${personal} media_outside=${media} original_audio=${original_audio} out=${NEW}"; exit 1
 fi
 find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
 (cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)

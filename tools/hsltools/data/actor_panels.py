@@ -25,7 +25,7 @@ from hsltools.data.ai_profiles import definitions as type_definitions
 from hsltools.model.jobs import FORMULAS, authored_job_symbols, formulas as job_formulas
 from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
-from hsltools.sources.tables import AUTHORED_CHARACTERS, TABLES, authored_characters, blocks, parse_table
+from hsltools.sources.tables import AUTHORED_CHARACTERS, TABLES, authored_characters, parse_table, table_rows
 
 IMPORTED = 'content/imported/hsl/shared/panels/manifest.json'
 PROFILES = 'content/generated/hsl/roles/profiles.json'
@@ -38,7 +38,7 @@ def build() -> dict:
     profiles = json.loads((ROOT / PROFILES).read_text(encoding='utf-8'))['actors']
     names = parse_table((ROOT / NAMES).read_bytes())
     types = type_definitions(ROOT / TABLES / 'TYPE.H')
-    players = {f'{int(row["code"]):03d}': row for row in blocks((ROOT / TABLES / 'PLAYERS.TXT').read_bytes(), 'character')}
+    players = {f'{int(row["code"]):03d}': row for row in table_rows('PLAYERS.TXT')}
     defines = resource_defines()
     actors = {code: {**row, 'name': panel_name(players[code], names, defines)} for code, row in imported['actors'].items()}
     authored_jobs = authored_job_symbols()

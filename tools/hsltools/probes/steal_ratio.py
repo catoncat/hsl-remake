@@ -26,7 +26,7 @@ import struct
 from hsltools.model.jobs import SLOTS, source_profile
 from hsltools.native.image import EXE_SHA, image
 from hsltools.native.machine import machine_for
-from hsltools.native.sources import sources
+from hsltools.native.sources import original_sources as sources
 from hsltools.paths import ROOT
 from hsltools.probes._base import ProbeTask
 from hsltools.probes.experience import expected as experience_expected

@@ -12,7 +12,7 @@ from pathlib import Path
 from hsltools.assets.actor_audio import profile
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes, parse_xor_a8_wave_candidate, decoded_xor_a8_wave_bytes
-from hsltools.sources.tables import digest, TABLES, blocks, parse_table
+from hsltools.sources.tables import digest, TABLES, override_rows, parse_table, table_rows
 
 ROOT = Path('content/imported/hsl/shared/interface_audio')
 NAMES = Path('content/imported/hsl/chapter01/source_texts/RESOURCE.TXT')
@@ -34,8 +34,8 @@ def walk_water_rows():
     """PLAYERS.TXT rows with their own sound_walkwater (template +0x12, played by 0x409670 on 0x8000 cells
     instead of sfxWalkWater). Every such row repeats its sound_walk, so the remake reuses the walk sound."""
     rows = []
-    for block in PLAYERS.read_bytes().decode('cp950').split('[character]')[1:]:
-        fields = dict(re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+?)\s*$', block, re.M))
+    for fields in override_rows('PLAYERS.TXT', [dict(re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+?)\s*$', block, re.M))
+                                                for block in PLAYERS.read_bytes().decode('cp950').split('[character]')[1:]]):
         if 'sound_walkwater' in fields:
             assert fields['sound_walkwater'] == fields.get('sound_walk'), fields.get('code')
             rows.append(str(int(fields['code'])))
@@ -49,7 +49,7 @@ def weapon_hits():
     # a second impact cue or silently pretending the claw is a sword.
     categories['itemIconClaw']=''
     categories['itemIconSting']='' # No native same-name impact alias; preserve the actor attack sound only.
-    return {row['code']: categories[row['icon']] for row in blocks((TABLES / 'ITEM.TXT').read_bytes(), 'item')
+    return {row['code']: categories[row['icon']] for row in table_rows('ITEM.TXT')
             if row.get('type') == 'itemTypeWeapon' and row.get('icon') in categories}
 
 

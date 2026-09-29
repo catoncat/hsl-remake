@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 from hsltools.data import json_bytes
 from hsltools.registry import GeneratedFilesTask, Context
-from hsltools.sources.tables import AUTHORED_CHARACTERS, character_rows, parse_table
+from hsltools.sources.tables import AUTHORED_CHARACTERS, character_rows, override_rows, parse_table
 
 ROOT = Path('content/imported/hsl')
 OUTPUT = ROOT / 'chapter01/consumables.json'
@@ -16,7 +16,7 @@ OUTPUT = ROOT / 'chapter01/consumables.json'
 def build():
     def table(filename, section):
         text = (ROOT / 'global/tables' / filename).read_bytes().decode('cp950')
-        entries = [dict((k, v.strip()) for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)) for block in text.split('[' + section + ']')[1:]]
+        entries = override_rows(filename, [dict((k, v.strip()) for k, v in re.findall(r'^\s*(\w+)\s*=\s*([^;\r\n]+)', block, re.M)) for block in text.split('[' + section + ']')[1:]])
         return {entry['code']: entry for entry in entries if 'code' in entry}
     items = table('ITEM.TXT', 'item')
     names = parse_table((ROOT / 'chapter01/source_texts/RESOURCE.TXT').read_bytes())

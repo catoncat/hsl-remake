@@ -12,7 +12,7 @@ from PIL import Image
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
 from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
-from hsltools.sources.tables import TABLES, blocks
+from hsltools.sources.tables import TABLES, table_rows
 
 ROOT = Path('content/imported/hsl/chapter01/item_art')
 MEMBERS = {'consumable': 'SHAPE\\i_use.SHP', 'slot': 'SHAPE\\ICONBOX.SHP', 'selection': 'SHAPE\\ICONRECT.SHP'}
@@ -23,7 +23,7 @@ def digest(data):
 
 
 def bindings():
-    items = blocks((TABLES / 'ITEM.TXT').read_bytes(), 'item')
+    items = table_rows('ITEM.TXT')
     result = {row['code']: row['icon'] for row in items if row['code'] in ('241', '246')}
     assert result == {'241': 'itemIconUse', '246': 'itemIconUse'}
     return result

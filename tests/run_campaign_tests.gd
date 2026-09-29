@@ -19,6 +19,8 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const SEQUEL_CAMPAIGN_PATH := "res://content/authored/world/campaign.json"
+const TitleScene = preload("res://game/title/TitleScreen.tscn")
+const SEQUEL_SAVE_DIR := "user://campaigns/sequel_demo/"
 
 var failures: Array[String] = []
 
@@ -435,8 +437,14 @@ func _test_saved_progress() -> void:
 ## A sequel world written only as data (content/authored/world/): 開始新故事 on its campaign
 ## opens its big map, its town's 老獵人 un-hides 龍脊隘口 and points it at level 200, the
 ## party walks there, wins 玩家第 1 場 · 龍脊隘口（LEVEL200） and comes back to the map.
-## Each scene change prints one SEQUEL_WORLD line.
+## Each scene change prints one SEQUEL_WORLD line. The sequel is a registered campaign
+## (content/authored/campaigns.json): picked on the title, it saves under its own folder while
+## chapter 1's saved position stays.
 func _test_sequel_world_flow() -> void:
+	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
+	CampaignProgress.save_progress({"scenario_path": "res://content/battles/story_002.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "gold": 3}, "from_scenario_id": "x", "world": {}})
+	_assert_eq(CampaignProgress.listed_campaigns().size(), 1, "the shipped registry lists chapter 1 alone (the demo row is hidden): 開始新故事 asks nothing")
+	await _sequel_title_pick()
 	CampaignProgress.campaign_path = SEQUEL_CAMPAIGN_PATH
 	CampaignProgress.reset_campaign()
 	var steps: Array[String] = []
@@ -482,6 +490,7 @@ func _test_sequel_world_flow() -> void:
 		await _sequel_teardown(scene)
 		scene = await _sequel_boot(battle_path)
 		if str(scene.scenario_path) == battle_path:
+			_assert_eq(str(scene.settlement_controller.checkpoint_path), SEQUEL_SAVE_DIR + "%s.save" % str(scene.first_battle_scenario.get("id", "")), "the sequel battle's 戰場記錄 slot is in the sequel's folder")
 			await BattleForceWin.play_opening(self, scene, "sequel level 200", _assert_true)
 			if await BattleForceWin.force_win(self, scene, "sequel level 200", _assert_true):
 				scene.campaign_progress.start_next_battle()
@@ -496,9 +505,57 @@ func _test_sequel_world_flow() -> void:
 	for line in steps:
 		print("SEQUEL_WORLD ", line)
 	_assert_true(steps.size() == 6, "the sequel world flow passes (campaign → map → town → map → level 200 → map): reached %d of 6 steps" % steps.size())
+	if steps.size() == 6:
+		_assert_true(FileAccess.file_exists(SEQUEL_SAVE_DIR + "campaign_progress.json"), "the sequel's saved position is in its own folder")
+		_assert_eq(str(CampaignProgress.load_progress(CampaignProgress.PROGRESS_PATH).get("scenario_path", "")), "res://content/battles/story_002.json", "chapter 1's saved position survives the sequel run")
+		# 回憶錄 slots are shared: the sequel's record carries its campaign and loads back into it.
+		CampaignProgress.save_memoir(7, scene.campaign_progress.current_progress_record(), "test", "龍脊隘口")
+		var memoir := CampaignProgress.load_memoir(7)
+		_assert_eq(str(memoir.get("campaign_id", "")), "sequel_demo", "a sequel 回憶錄 records its campaign id")
+		_assert_eq(str(CampaignProgress.memoir_entries()[7].get("place", "")), "續集示範　龍脊隘口", "the 回憶錄 row names the sequel before the place")
+		CampaignProgress.use_campaign("")
+		CampaignProgress.clear_progress()
+		_assert_eq(CampaignProgress.latest_saved_campaign_id(), "sequel_demo", "戰場記錄 from chapter 1 continues the campaign saved last")
+		_assert_true(CampaignProgress.use_memoir_campaign(memoir) and CampaignProgress.campaign_path == SEQUEL_CAMPAIGN_PATH, "loading the sequel 回憶錄 switches to the sequel")
+		var title = TitleScene.instantiate()
+		root.add_child(title)
+		await process_frame
+		title.finish_slide_in()
+		var started: Dictionary = title.confirm()
+		_assert_true(CampaignProgress.campaign_id() == "" and str(started.get("start_scenario_path", "")) == CampaignProgress.first_scenario_path(CampaignProgress.load_campaign(CampaignProgress.CAMPAIGN_PATH)), "after the sequel 回憶錄, 開始新故事 with chapter 1 alone listed starts chapter 1: " + str(started))
+		title.queue_free()
+		await process_frame
+		CampaignProgress.clear_memoir(7)
 	await _sequel_teardown(scene)
+	for file_name in DirAccess.get_files_at(SEQUEL_SAVE_DIR):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(SEQUEL_SAVE_DIR + file_name))
 	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
 	CampaignProgress.reset_campaign()
+
+
+## 開始新故事 with the demo listed (a fixture registry without hidden): the board offers 第一章 and
+## 續集示範 with 離開; the pick switches the process to the sequel's start level.
+func _sequel_title_pick() -> void:
+	var fixture := "user://campaign_tests_registry.json"
+	var file := FileAccess.open(fixture, FileAccess.WRITE)
+	file.store_string(JSON.stringify({"schema": CampaignProgress.REGISTRY_SCHEMA, "campaigns": [{"id": "sequel_demo", "title": "續集示範", "campaign": SEQUEL_CAMPAIGN_PATH}]}))
+	file.close()
+	CampaignProgress.registry_path = fixture
+	var title = TitleScene.instantiate()
+	root.add_child(title)
+	await process_frame
+	title.finish_slide_in()
+	_assert_eq(str(title.confirm().get("status", "")), "choosing_campaign", "two listed campaigns: 開始新故事 opens the campaign board")
+	var labels: Array = title.campaign_select.rows.map(func(row: Label) -> String: return row.text) if title.campaign_select != null else []
+	_assert_eq(labels, ["第一章", "續集示範", "離開"], "the board lists chapter 1, the registered campaign and 離開")
+	var started: Dictionary = title.choose_campaign(1)
+	_assert_eq(CampaignProgress.campaign_id(), "sequel_demo", "picking 續集示範 plays the sequel")
+	_assert_eq(str(started.get("start_scenario_path", "")), "res://content/authored/world/world_map_scene.json", "the sequel's new story starts at its big map")
+	_assert_true(FileAccess.file_exists(CampaignProgress.PROGRESS_PATH), "starting the sequel keeps chapter 1's saved position")
+	title.queue_free()
+	await process_frame
+	CampaignProgress.registry_path = CampaignProgress.REGISTRY_PATH
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(fixture))
 
 
 func _sequel_boot(path: String) -> Node:

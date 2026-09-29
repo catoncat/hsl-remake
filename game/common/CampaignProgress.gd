@@ -8,7 +8,7 @@ extends Node
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md#R8
 ##   rules: remake-invented
 ##     (one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry
-##     stands in for the original registered-slot table)
+##     stands in for the original slot table; per-campaign save folders)
 
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
@@ -21,6 +21,13 @@ const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 
 const CAMPAIGN_PATH := "res://content/battles/campaign.json"
+## Campaigns beside chapter 1 (hsl_campaign_registry.v1): rows {id, title, campaign, hidden}.
+## Chapter 1 is implied (id "", CAMPAIGN_PATH) and always first; its saves keep the user://
+## paths below, a registered campaign's progress and checkpoints go under user://campaigns/<id>/.
+const REGISTRY_PATH := "res://content/authored/campaigns.json"
+const REGISTRY_SCHEMA := "hsl_campaign_registry.v1"
+## Playtest／test entry: HSL_CAMPAIGN=<registered id> makes the process play that campaign.
+const CAMPAIGN_ENV := "HSL_CAMPAIGN"
 const SCHEMA := "hsl_campaign_progress.v1"
 ## Campaign position persisted across app launches: the last hand-off (scenario
 ## path + carried party), written when the campaign moves to a new scenario.
@@ -37,9 +44,12 @@ static var last_entry: Dictionary = {}
 ## Cumulative play time of the campaign in seconds (the big-map status bar shows
 ## it as h:mm:ss); counted while a scene processes, persisted with the progress.
 static var play_seconds := 0.0
-## The campaign this process plays: campaign.json; a test points it at a fixture
-## campaign (another start_level) before booting the title or the runtime.
-static var campaign_path := CAMPAIGN_PATH
+## Test seam: the campaign registry this process reads.
+static var registry_path := REGISTRY_PATH
+## The campaign this process plays: campaign.json, a registered campaign (HSL_CAMPAIGN, the title's
+## campaign choice, a 回憶錄 or 戰場記錄 of that campaign); a test points it at a fixture campaign
+## (another start_level) before booting the title or the runtime.
+static var campaign_path := _initial_campaign_path()
 
 var runtime: Node
 var campaign: Dictionary = {}
@@ -63,6 +73,157 @@ static func load_campaign(path: String = "") -> Dictionary:
 	if typeof(parsed) != TYPE_DICTIONARY or str(parsed.get("schema", "")) != "hsl_campaign.v1":
 		return {}
 	return parsed
+
+
+static func _initial_campaign_path() -> String:
+	var id := OS.get_environment(CAMPAIGN_ENV)
+	if id == "":
+		return CAMPAIGN_PATH
+	for row in registered_campaigns():
+		if str(row["id"]) == id:
+			return str(row["campaign"])
+	push_warning("%s=%s is not a registered campaign (%s); playing chapter 1" % [CAMPAIGN_ENV, id, REGISTRY_PATH])
+	return CAMPAIGN_PATH
+
+
+## The registry's rows {id, title, campaign, hidden}; a row whose id is not [A-Za-z0-9_-]+ (it
+## names the save folder: "..", "." or a slash would land elsewhere), without a campaign path, or
+## repeating an id, is skipped.
+static func registered_campaigns() -> Array:
+	var rows: Array = []
+	var parsed: Variant = ContentPaths.read_json(registry_path)
+	if typeof(parsed) != TYPE_DICTIONARY or str((parsed as Dictionary).get("schema", "")) != REGISTRY_SCHEMA:
+		return rows
+	var id_pattern := RegEx.create_from_string("^[A-Za-z0-9_-]+$")
+	var seen := {}
+	for value in (parsed as Dictionary).get("campaigns", []):
+		if typeof(value) != TYPE_DICTIONARY:
+			continue
+		var id := str((value as Dictionary).get("id", ""))
+		var path := str((value as Dictionary).get("campaign", ""))
+		if id_pattern.search(id) == null or path == "" or path == CAMPAIGN_PATH or seen.has(id):
+			push_warning("Campaign registry row skipped: %s" % str(value))
+			continue
+		seen[id] = true
+		rows.append({"id": id, "title": str((value as Dictionary).get("title", id)), "campaign": path, "hidden": bool((value as Dictionary).get("hidden", false))})
+	return rows
+
+
+## What 開始新故事 offers: chapter 1 (its campaign.json title) first, then every registered row
+## not marked hidden. A single row means no choice: the title starts at once, as the original does.
+static func listed_campaigns() -> Array:
+	var listed := registered_campaigns().filter(func(row: Dictionary) -> bool: return not bool(row["hidden"]))
+	if listed.is_empty():
+		return [{"id": "", "title": "", "campaign": CAMPAIGN_PATH}]
+	return [{"id": "", "title": str(load_campaign(CAMPAIGN_PATH).get("title", "")), "campaign": CAMPAIGN_PATH}] + listed
+
+
+## Registry id of the campaign this process plays; "" for chapter 1 and for an unregistered
+## (test fixture) campaign, which keep chapter 1's save paths.
+static func campaign_id() -> String:
+	if campaign_path == CAMPAIGN_PATH:
+		return ""
+	for row in registered_campaigns():
+		if str(row["campaign"]) == campaign_path:
+			return str(row["id"])
+	return ""
+
+
+## campaign.json path of campaign `id` ("" = chapter 1; the current campaign keeps its own path);
+## "" when the registry does not know it.
+static func campaign_path_of(id: String) -> String:
+	if id == campaign_id():
+		return campaign_path
+	if id == "":
+		return CAMPAIGN_PATH
+	for row in registered_campaigns():
+		if str(row["id"]) == id:
+			return str(row["campaign"])
+	return ""
+
+
+static func campaign_title(id: String) -> String:
+	for row in registered_campaigns():
+		if str(row["id"]) == id:
+			return str(row["title"])
+	return id
+
+
+## Switches the process to campaign `id` ("" = chapter 1); a no-op when it already plays it.
+## The play-time counter restarts so the next boot reads the campaign's own. False for an id the
+## registry does not know (the process stays where it is).
+static func use_campaign(id: String) -> bool:
+	if id == campaign_id():
+		return true
+	var path := campaign_path_of(id)
+	if path == "":
+		push_warning("Campaign %s is not registered in %s" % [id, registry_path])
+		return false
+	campaign_path = path
+	play_seconds = 0.0
+	return true
+
+
+## The campaign the process started in: HSL_CAMPAIGN's id when the registry knows it, else ""
+## (chapter 1). 開始新故事 with chapter 1 alone listed goes back to it, whatever campaign a 回憶錄
+## or 戰場記錄 moved the process to since.
+static func startup_campaign_id() -> String:
+	var id := OS.get_environment(CAMPAIGN_ENV)
+	for row in registered_campaigns():
+		if str(row["id"]) == id:
+			return id
+	return ""
+
+
+## A 回憶錄 record plays in the campaign it was saved in (campaign_id; none = chapter 1).
+static func use_memoir_campaign(record: Dictionary) -> bool:
+	return use_campaign(str(record.get("campaign_id", "")))
+
+
+## Folder of a campaign's own saves (null = the current campaign): chapter 1's are the user://
+## root, a registered campaign's user://campaigns/<id>/.
+static func save_dir(id: Variant = null) -> String:
+	var key := campaign_id() if id == null else str(id)
+	return "user://" if key == "" else "user://campaigns/%s/" % key
+
+
+static func progress_path(id: Variant = null) -> String:
+	var dir := save_dir(id)
+	return PROGRESS_PATH if dir == "user://" else dir + PROGRESS_PATH.get_file()
+
+
+## 戰場記錄 on the title continues the campaign saved last: each campaign's newest save (its
+## auto-saved position or a battle checkpoint, by file modification time) — the current campaign
+## keeps ties, and with no other campaign's save on disk nothing changes.
+static func latest_saved_campaign_id() -> String:
+	var current := campaign_id()
+	var others := {}
+	for row in registered_campaigns() + [{"id": ""}]:
+		var id := str(row["id"])
+		if id == current or not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(save_dir(id))):
+			continue
+		var unix := _newest_save_unix(id)
+		if unix > 0:
+			others[id] = unix
+	var best := current
+	var best_unix := _newest_save_unix(current) if not others.is_empty() else 0
+	for id in others:
+		if int(others[id]) > best_unix:
+			best = id
+			best_unix = int(others[id])
+	return best
+
+
+static func _newest_save_unix(id: String) -> int:
+	var newest := 0
+	var progress := progress_path(id)
+	if FileAccess.file_exists(progress):
+		newest = int(FileAccess.get_modified_time(progress))
+	var data := load_campaign(campaign_path_of(id))
+	var records := battle_record_entries(data, id) if not data.is_empty() else []
+	if not records.is_empty():
+		newest = maxi(newest, int(records[0]["modified_unix"]))
+	return newest
 
 
 static func has_pending() -> bool:
@@ -91,7 +252,12 @@ static func reset_campaign() -> void:
 	clear_progress()
 
 
-static func save_progress(handoff: Dictionary, path: String = PROGRESS_PATH) -> bool:
+## `path` "" = the current campaign's progress file (progress_path).
+static func save_progress(handoff: Dictionary, path: String = "") -> bool:
+	if path == "":
+		path = progress_path()
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(path.get_base_dir())):
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		push_error("Cannot write campaign progress: %s" % path)
@@ -105,7 +271,9 @@ static func save_progress(handoff: Dictionary, path: String = PROGRESS_PATH) -> 
 	return true
 
 
-static func load_progress(path: String = PROGRESS_PATH) -> Dictionary:
+static func load_progress(path: String = "") -> Dictionary:
+	if path == "":
+		path = progress_path()
 	if not FileAccess.file_exists(path):
 		return {}
 	var parsed: Variant = ContentPaths.read_json(path)
@@ -119,7 +287,9 @@ static func load_progress(path: String = PROGRESS_PATH) -> Dictionary:
 	return record
 
 
-static func clear_progress(path: String = PROGRESS_PATH) -> void:
+static func clear_progress(path: String = "") -> void:
+	if path == "":
+		path = progress_path()
 	if FileAccess.file_exists(path):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
@@ -135,7 +305,9 @@ static func memoir_path(slot: int) -> String:
 
 
 ## place and level are the 回憶錄 row's point name and 等級 (optional fields: a memoir saved
-## before them has neither and its row shows memoir_label and level 00).
+## before them has neither and its row shows memoir_label and level 00). The eight slots are
+## shared by every campaign: a registered campaign's memoir also records its campaign_id (chapter
+## 1 writes none, so its records stay as they were), and its row names the campaign.
 static func save_memoir(slot: int, record: Dictionary, label: String, place: String = "", level: int = 0) -> bool:
 	if slot < 0 or slot >= MEMOIR_SLOTS or record.is_empty():
 		return false
@@ -143,6 +315,8 @@ static func save_memoir(slot: int, record: Dictionary, label: String, place: Str
 	copy["memoir_label"] = label
 	copy["memoir_place"] = place
 	copy["memoir_level"] = level
+	if campaign_id() != "":
+		copy["campaign_id"] = campaign_id()
 	return save_progress(copy, memoir_path(slot))
 
 
@@ -157,7 +331,8 @@ static func clear_memoir(slot: int) -> void:
 	clear_progress(memoir_path(slot))
 
 
-## One row per slot: {slot, empty, label, saved_at_unix, play_seconds}.
+## One row per slot: {slot, empty, label, saved_at_unix, play_seconds}; a registered campaign's
+## record shows its campaign title before the place.
 static func memoir_entries() -> Array:
 	var entries: Array = []
 	for slot in range(MEMOIR_SLOTS):
@@ -167,7 +342,10 @@ static func memoir_entries() -> Array:
 		else:
 			var label := str(record.get("memoir_label", ""))
 			var place := str(record.get("memoir_place", ""))
-			entries.append({"slot": slot, "empty": false, "label": label, "place": place if place != "" else label, "level": int(record.get("memoir_level", 0)),
+			place = place if place != "" else label
+			if str(record.get("campaign_id", "")) != "":
+				place = campaign_title(str(record["campaign_id"])) + "　" + place
+			entries.append({"slot": slot, "empty": false, "label": label, "place": place, "level": int(record.get("memoir_level", 0)),
 				"saved_at_unix": int(record.get("saved_at_unix", 0)), "play_seconds": float(record.get("play_seconds", 0.0))})
 	return entries
 
@@ -263,8 +441,9 @@ static func next_scenario_path(campaign_data: Dictionary, loop: Dictionary, scen
 
 ## 戰場記錄 (mid-battle checkpoints written by the settlement controller): one per battle
 ## scenario at scenario_save_path. Rows {scenario_path, title, save_path, modified_unix},
-## newest first; the newest is what 讀取戰場記錄 / the title's 戰場記錄 resume.
-static func battle_record_entries(campaign_data: Dictionary = {}) -> Array:
+## newest first; the newest is what 讀取戰場記錄 / the title's 戰場記錄 resume. `id`: whose save
+## folder (null = the current campaign's).
+static func battle_record_entries(campaign_data: Dictionary = {}, id: Variant = null) -> Array:
 	var data := campaign_data if not campaign_data.is_empty() else load_campaign()
 	var entries: Array = []
 	var battles: Dictionary = data.get("battles", {})
@@ -278,7 +457,7 @@ static func battle_record_entries(campaign_data: Dictionary = {}) -> Array:
 		var scenario: Variant = ContentPaths.read_json(scenario_path)
 		if typeof(scenario) != TYPE_DICTIONARY:
 			continue
-		var save_path := scenario_save_path(scenario)
+		var save_path := scenario_save_path(scenario, id)
 		if not FileAccess.file_exists(save_path):
 			continue
 		entries.append({"scenario_path": scenario_path, "title": str((entry as Dictionary).get("title", "")), "save_path": save_path,
@@ -301,9 +480,10 @@ static func queue_battle_record(record: Dictionary) -> Dictionary:
 	return pending.duplicate(true)
 
 
-static func scenario_save_path(scenario: Dictionary) -> String:
-	## One checkpoint slot per scenario id (the first battle's is battle_051_cannon_fodder.save).
-	return "user://%s.save" % str(scenario.get("id", "battle"))
+static func scenario_save_path(scenario: Dictionary, id: Variant = null) -> String:
+	## One checkpoint slot per scenario id (the first battle's is battle_051_cannon_fodder.save),
+	## in the campaign's save folder.
+	return save_dir(id) + "%s.save" % str(scenario.get("id", "battle"))
 
 
 func _ready() -> void:

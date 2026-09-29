@@ -10,6 +10,9 @@ extends Node2D
 ##   戰場記錄   -> continue the saved campaign position (CampaignProgress) -> BattleSceneRuntime
 ##   (playtest switch HSL_SKIP_TITLE=1, off by default: the first title of the process runs this
 ##    item's resume at once, without the menu, the hold or the fade — tools/playtest.sh)
+##   With campaigns registered beside chapter 1 (content/authored/campaigns.json, not hidden),
+##   開始新故事 first asks which on the object 704 select board; 戰場記錄 continues the campaign
+##   saved last and a 回憶錄 row its own campaign. Chapter 1 alone: no board, nothing changes.
 ##   離開遊戲   -> quit after the same lit hold and fade (handler 0x423f00: every item waits out
 ##                 the hold timer, state 3 0x424004; code 2 0x4240b2 fades via 0x42cb60／0x42dc90(2))
 ## The gem (Title027) and the book (Title028) stay beside item 1 whatever is selected and bob
@@ -34,7 +37,7 @@ extends Node2D
 ##   rules: static-derived docs/evidence_packets/resource_inventory/original_movies.md
 ##   rules: provisional (0x4c1ae4 read as a re-entry marker)
 ##   rules: remake-invented (戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene;
-##     HSL_SKIP_TITLE=1 playtest switch)
+##     HSL_SKIP_TITLE=1 playtest switch; campaign choice when several are registered)
 ##   rules: static-derived docs/evidence_packets/runtime_observations/original_title_ornaments/README.md
 ##     (gem code 10 → 設定選項 0x423b90, book code 11 → memoir list 0x423bd0; menu inert meanwhile)
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
@@ -140,6 +143,9 @@ const CLICK_SPARK_COUNT := 16
 const ORNAMENT_CODES := {10: "cursor_gem", 11: "cursor_hand"}
 const WINDOW_OF_CODE := {10: "options", 11: "memoir"}
 const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
+const EventSelectWindow = preload("res://game/common/EventSelectWindow.gd")
+## The campaign board's last row (RESOURCE 312, tePlayerSelectInsertEvent's leave row).
+const CAMPAIGN_LEAVE_TEXT := "離開"
 ## Playtest switch (tools/playtest.sh): "1" makes the process's first title run 戰場記錄 at once.
 const SKIP_TITLE_ENV := "HSL_SKIP_TITLE"
 ## Once per process: a later return to the title (game over, game clear) shows the menu.
@@ -192,6 +198,10 @@ var _rng := RandomNumberGenerator.new()
 var _system: Control
 ## HSL_SKIP_TITLE=1 on this process's first title: no music, 戰場記錄 runs on the first frame.
 var skipping_title := false
+var _overlay: CanvasLayer
+## 開始新故事's campaign board while it is up, and the campaign rows behind it.
+var campaign_select: Control
+var campaign_choices: Array = []
 
 
 func _ready() -> void:
@@ -244,6 +254,7 @@ func _build_scene() -> void:
 	overlay.name = "Overlay"
 	overlay.layer = 10
 	add_child(overlay)
+	_overlay = overlay
 	_message = Control.new()
 	_message.name = "Message"
 	_message.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -451,13 +462,14 @@ func confirm() -> Dictionary:
 	var action := selected_item_id()
 	match action:
 		"new_story":
-			# A fresh campaign opens at campaign.json's start_level: the runtime boots with
-			# no hand-off and resolves it (BattleSceneRuntime.scenario_path empty).
-			CampaignProgress.reset_campaign()
-			var campaign := CampaignProgress.load_campaign()
-			_start_transition(action, FIRST_SCENE_PATH)
-			transition["start_scenario_path"] = CampaignProgress.first_scenario_path(campaign)
-			transition["start_movie"] = str(campaign.get("start_movie", ""))
+			var choices := CampaignProgress.listed_campaigns()
+			if choices.size() > 1:
+				_open_campaign_select(choices)
+			else:
+				# No board: back to the campaign the process started in (a 回憶錄 or 戰場記錄
+				# may have moved it to another since).
+				CampaignProgress.use_campaign(CampaignProgress.startup_campaign_id())
+				_start_new_story()
 		"battle_record":
 			var record := _arm_battle_record()
 			if record.is_empty():
@@ -473,17 +485,67 @@ func confirm() -> Dictionary:
 	return transition
 
 
+## A fresh campaign opens at campaign.json's start_level: the runtime boots with no hand-off
+## and resolves it (BattleSceneRuntime.scenario_path empty).
+func _start_new_story() -> void:
+	CampaignProgress.reset_campaign()
+	var campaign := CampaignProgress.load_campaign()
+	_start_transition("new_story", FIRST_SCENE_PATH)
+	transition["start_scenario_path"] = CampaignProgress.first_scenario_path(campaign)
+	transition["start_movie"] = str(campaign.get("start_movie", ""))
+
+
+## 開始新故事 with more than one listed campaign (CampaignProgress.listed_campaigns): the object 704
+## select board (EventSelectWindow) names them, with a 離開 row; the menu is inert meanwhile.
+func _open_campaign_select(choices: Array) -> void:
+	campaign_choices = choices
+	var labels: Array[String] = []
+	for row in choices:
+		labels.append(str(row["title"]) if str(row["title"]) != "" else str(row["id"]))
+	campaign_select = EventSelectWindow.open(_overlay, labels, null, [], CAMPAIGN_LEAVE_TEXT, "CampaignSelect", self)
+	campaign_select.answered.connect(func(pick: int, leave: bool) -> void: choose_campaign(-1 if leave else pick))
+	window_open = "campaign"
+	hover_code = -1
+	hovered = -1
+	_refresh_lit()
+	transition = {"action": "new_story", "status": "choosing_campaign"}
+
+
+## A campaign row picked (the board's click after its fade-out; tests call it directly): the process
+## plays that campaign and the new story starts as with one campaign. -1 (離開) returns to the menu.
+func choose_campaign(index: int) -> Dictionary:
+	if window_open != "campaign":
+		return {}
+	if campaign_select != null:
+		campaign_select.queue_free()
+		campaign_select = null
+	window_open = ""
+	if index < 0 or index >= campaign_choices.size():
+		transition = {"action": "new_story", "status": "campaign_cancelled"}
+		return transition
+	CampaignProgress.use_campaign(str(campaign_choices[index]["id"]))
+	_start_new_story()
+	transition["campaign_id"] = str(campaign_choices[index]["id"])
+	return transition
+
+
 ## 戰場記錄: a mid-battle checkpoint (the original's 戰場記錄) wins; otherwise the auto-saved
 ## campaign position (remake reading). Arms it as the next boot's hand-off and returns it
-## ({} when there is neither: message 12 無存檔記錄).
+## ({} when there is neither: message 12 無存檔記錄). It reads the campaign saved last
+## (CampaignProgress.latest_saved_campaign_id) and moves the process there only once that
+## campaign yields a readable record; otherwise the process stays where it is.
 func _arm_battle_record() -> Dictionary:
-	var records: Array = CampaignProgress.battle_record_entries()
+	var id := CampaignProgress.latest_saved_campaign_id()
+	var data := CampaignProgress.load_campaign(CampaignProgress.campaign_path_of(id))
+	var records: Array = CampaignProgress.battle_record_entries(data, id) if not data.is_empty() else []
+	var saved := CampaignProgress.load_progress(CampaignProgress.progress_path(id)) if records.is_empty() else {}
+	if records.is_empty() and saved.is_empty():
+		return {}
+	CampaignProgress.use_campaign(id)
 	if not records.is_empty():
 		CampaignProgress.queue_battle_record(records[0])
 		return records[0]
-	var saved := CampaignProgress.load_progress()
-	if not saved.is_empty():
-		CampaignProgress.queue_resume(saved)
+	CampaignProgress.queue_resume(saved)
 	return saved
 
 
@@ -600,6 +662,7 @@ func _on_window_closed(_kind: String) -> void:
 func resume_memoir_record(record: Dictionary) -> void:
 	_system.standalone = ""
 	window_open = ""
+	CampaignProgress.use_memoir_campaign(record)
 	CampaignProgress.queue_resume(record)
 	_start_transition("load_memoir", FIRST_SCENE_PATH, str(record.get("scenario_path", "")), false)
 
@@ -612,6 +675,13 @@ func viewport_to_logical_position(position: Vector2) -> Vector2:
 func _unhandled_input(event: InputEvent) -> void:
 	if _system != null and _system.active():
 		_system.handle_input(event)
+		return
+	if window_open == "campaign":
+		if (event is InputEventKey and event.pressed and (event as InputEventKey).keycode == KEY_ESCAPE) \
+				or (event is InputEventMouseButton and event.pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_RIGHT):
+			# The board fades out first; its answered (leave) then returns to the menu.
+			if campaign_select != null:
+				campaign_select.dismiss()
 		return
 	if not menu_armed() or items.is_empty():
 		return

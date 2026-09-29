@@ -349,7 +349,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleCameraController](../game/common/BattleCameraController.gd) | rules | Home recenter, clamp |
 | [BattleCameraController](../game/common/BattleCameraController.gd) | timing | Home recenter and save restore snap |
 | [BattleUISkin](../game/common/BattleUISkin.gd) | layout | button styling and the button step-down 17→11 for remake buttons; message_rows under OPT-WORDBREAK keeps a protected name whole where the 38-byte break cuts it |
-| [CampaignProgress](../game/common/CampaignProgress.gd) | rules | one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry stands in for the original registered-slot table |
+| [CampaignProgress](../game/common/CampaignProgress.gd) | rules | one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry stands in for the original slot table; per-campaign save folders |
 | [GameCursor](../game/cursor/GameCursor.gd) | rules | OPT-CURSOR=系統硬體游標 only: the OS pointer shows the sceptre [OPTIONS.md](../docs/OPTIONS.md) |
 | [DebugPause](../game/debug/DebugPause.gd) | rules | debug freeze and single-frame step behind the HSL_DEBUG_PAUSE development switch; the original has no such control |
 | [DebugPause](../game/debug/DebugPause.gd) | layout | top-left badge |
@@ -406,7 +406,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GameOverScreen](../game/title/GameOverScreen.gd) | strings | OPT-RETRY=可重新挑戰本戰 only: 重新挑戰本戰／回到標題 [OPTIONS.md](../docs/OPTIONS.md) |
 | [MoviePlayer](../game/title/MoviePlayer.gd) | rules | any-key skip; original skip behaviour not located |
 | [MoviePlayer](../game/title/MoviePlayer.gd) | layout | nearest-neighbour doubling to 640×480 |
-| [TitleScreen](../game/title/TitleScreen.gd) | rules | 戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene; HSL_SKIP_TITLE=1 playtest switch |
+| [TitleScreen](../game/title/TitleScreen.gd) | rules | 戰場記錄 resumes checkpoint or campaign position; film placed between fade and first scene; HSL_SKIP_TITLE=1 playtest switch; campaign choice when several are registered |
 | [TitleScreen](../game/title/TitleScreen.gd) | layout | lit shape on the keyboard-selected item; hover lit under OPT-GUIDE＝提示, content/authored/options/remake_options.json |
 | [PartyEquipmentScreen](../game/world/PartyEquipmentScreen.gd) | strings | the no-sandbox failure lines |
 | [TownRuntime](../game/world/TownRuntime.gd) | strings | narration lines for gold／item grants, OPT-GUIDE=提示 only, except a displayed teGetGold |
