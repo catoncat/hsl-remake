@@ -32,7 +32,14 @@ tools/doctor.sh
 tools/play.sh
 ```
 
-第一次运行会先从原版数据生成游戏要用的表格、素材和关卡文件（`python3 tools/hsl.py bootstrap`，约十分钟，中断了下次接着做），再开游戏；之后直接开。只能从原版程序本身读出的几份规则数据（招式动作表、范围格配色、指令菜单布局、秘密商人货单）随仓库提供，Steam 版不带那个程序也不影响。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
+第一次运行会先从原版数据生成游戏要用的表格、素材和关卡文件（`python3 tools/hsl.py bootstrap`，约十分钟，中断了下次接着做），再开游戏；之后直接开。bootstrap 末行各字段和 doctor 之后那条预期的 WARN 见 [MODDING §2](docs/MODDING.md#2-跑起来)；导入产生的文件都被 `.gitignore` 挡住，`git status` 保持干净。只能从原版程序本身读出的几份规则数据（招式动作表、范围格配色、指令菜单布局、秘密商人货单）随仓库提供，Steam 版不带那个程序也不影响。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
+
+bootstrap 之后不开窗口也能导入资源、自动打一场（macOS／Linux；Windows 用 `tools\godot.ps1`）：
+
+```sh
+tools/godot.sh --headless --import
+HSL_AUTOPLAY_LEVELS=51 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd   # 玩家第 1 场 · 棄卒（LEVEL051），输出 AUTOPLAY level=51 outcome=…
+```
 
 ## 文档
 

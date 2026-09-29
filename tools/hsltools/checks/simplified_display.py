@@ -37,6 +37,7 @@ from hsltools.assets.workteam_simplified import OUTPUT as WORKTEAM_REDRAW, check
 from hsltools.checks import CheckTask
 from hsltools.checks.player_copy_traditional import player_strings
 from hsltools.data.simplified_chars import OUT as TABLE, opencc_candidates, traditional_only
+from hsltools.sources.shp import png_sha256
 from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context
 
@@ -84,8 +85,8 @@ def check_images(root: Path) -> tuple[list[str], dict[str, int]]:
             target = root / replacement['path']
             if not target.is_file():
                 issues.append(f'{entry["path"]}: simplified replacement {replacement["path"]} missing')
-            elif hashlib.sha256(target.read_bytes()).hexdigest() != replacement['sha256']:
-                issues.append(f'{entry["path"]}: simplified replacement {replacement["path"]} sha256 differs from the inventory')
+            elif png_sha256(target) != replacement['rgba_sha256']:
+                issues.append(f'{entry["path"]}: simplified replacement {replacement["path"]} pixel hash differs from the inventory')
             else:
                 counts['replaced'] += 1
                 if replacement['path'] == WORKTEAM_REDRAW.as_posix():

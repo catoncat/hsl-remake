@@ -189,7 +189,7 @@
    "note": "the only baked traditional text a player sees; redrawn simplified by hsl generate workteam_simplified",
    "simplified_replacement": {
     "path": "content/generated/hsl/title/workteam_simplified.png",
-    "sha256": "7e3deb87ffecdd031ac6b1e734babcea553d0a63aac4ad904832bccaf9362e4e",
+    "rgba_sha256": "ed1ac49afd97812c610ffcaedc925ead5ad5629878c451e59cad5efd7b1d604c",
     "generator": "tools/hsltools/assets/workteam_simplified.py",
     "redrawn_with_font24": "製組畫鄧彥術陳楊漢遊戲則動樂許滄奧測試華衛黃聖懷吳鄭賴張啟劉劇終",
     "shape_lettering_kept_for": "作小企志林汝伋2D美名3模型昶主程式工具引擎居文音泰效汀科技大博施宇致松淑芬王浩辰逸青柏州新奉平信江霖廖荷婷"

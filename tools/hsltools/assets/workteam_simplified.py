@@ -32,11 +32,11 @@ shows the replacement through content/generated/hsl/text/simplified_images.json.
 
 Registry task workteam_simplified (family assets): outputs
 content/generated/hsl/title/workteam_simplified.png and content/generated/hsl/text/simplified_images.json;
-check needs no original install (sha256 against image_inventory.json), generate reads the PAK.
+check needs no original install (pixel hash against image_inventory.json: the PNG a player's Pillow writes has
+other bytes, hsltools.sources.shp.png_sha256), generate reads the PAK.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 from typing import NamedTuple
@@ -44,6 +44,7 @@ from typing import NamedTuple
 from hsltools.data.simplified_chars import OPENCC_TS, opencc_candidates, traditional_only
 from hsltools.registry import Context, ScriptCheckTask, original_archive
 from hsltools.sources.original_font import FONTS, glyph_rows, read_font
+from hsltools.sources.shp import png_sha256
 
 SOURCE = Path('content/imported/hsl/global/title/previews/workteam.SHP.png')
 OUTPUT = Path('content/generated/hsl/title/workteam_simplified.png')
@@ -84,10 +85,6 @@ LINES = (
 # 劇終: (glyph, ink centre x, ink centre y) of the two 42 px characters.
 CLOSING = (('劇', 271, 1188), ('終', 388, 1188))
 CLOSING_SCALE = 2
-
-
-def _digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _distinct(chars) -> str:
@@ -243,7 +240,7 @@ def build(pak: Path, root: Path) -> None:
     inventory = json.loads(inventory_path.read_text(encoding='utf-8'))
     for entry in inventory['images']:
         if entry['path'] == SOURCE.as_posix():
-            entry['simplified_replacement'] = {'path': OUTPUT.as_posix(), 'sha256': _digest(target),
+            entry['simplified_replacement'] = {'path': OUTPUT.as_posix(), 'rgba_sha256': png_sha256(target),
                                                'generator': 'tools/hsltools/assets/workteam_simplified.py',
                                                'redrawn_with_font24': _distinct(cell.char for cell in cells if cell.redrawn),
                                                'shape_lettering_kept_for': _distinct(cell.char for cell in cells if not cell.redrawn)}
@@ -256,7 +253,7 @@ def verify(root: Path) -> None:
     entry = next(e for e in json.loads((root / INVENTORY).read_text(encoding='utf-8'))['images'] if e['path'] == SOURCE.as_posix())
     replacement = entry.get('simplified_replacement', {})
     assert replacement.get('path') == OUTPUT.as_posix(), f'{INVENTORY} records no simplified_replacement for {SOURCE}'
-    assert _digest(root / OUTPUT) == replacement['sha256'], f'{OUTPUT} sha256 differs from {INVENTORY}'
+    assert png_sha256(root / OUTPUT) == replacement['rgba_sha256'], f'{OUTPUT} pixel hash differs from {INVENTORY}'
     issues = check_cells(root)
     assert not issues, f'{len(issues)} credits cell problem(s):\n  ' + '\n  '.join(issues)
     cells = cell_plan(root)

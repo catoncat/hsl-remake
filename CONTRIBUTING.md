@@ -14,7 +14,8 @@
 
    Windows 与 Linux 上用 Steam 装了《幻世錄 重製版》的，可以不设：工具会在各个 Steam 库里找 `GAME-PAK/`（见 §6）。维护者做原作运行观测时另用 Wine 前缀（`WINEPREFIX`，原作在 `$WINEPREFIX/drive_c/hsl`）；普通贡献者不需要 Wine。
 4. 运行 `python3 tools/hsl.py doctor`（`tools/doctor.sh` 同义），检查 Godot、Python，并报出用的是哪个原版目录、为什么选它；`--original` 另查维护者的 Wine 原作环境与采样 helper（macOS）。
-5. 运行 `python3 tools/hsl.py bootstrap`，从这份目录生成游戏要用的原版派生文件（可中断、可重跑，已有的不动；`tools/play.sh`／`tools\play.ps1` 发现缺了也会先跑它）。用法和它生成不了的几份文件见 [MODDING §2](docs/MODDING.md#2-跑起来)。
+5. 运行 `python3 tools/hsl.py bootstrap`，从这份目录生成游戏要用的原版派生文件（可中断、可重跑，已有的不动；`tools/play.sh`／`tools\play.ps1` 发现缺了也会先跑它）。用法、末行各字段、它生成不了的几份文件和 `doctor` 之后那条预期的 WARN 见 [MODDING §2](docs/MODDING.md#2-跑起来)。生成的文件都被 `.gitignore` 挡住，跑完 `git status` 应当是空的（§5）。
+6. 不开窗口导入资源、自动打一场（Windows 换成 `tools\godot.ps1`，见 §6）：`tools/godot.sh --headless --import`，然后 `HSL_AUTOPLAY_LEVELS=51 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`（玩家第 1 场 · 棄卒（LEVEL051），输出 `AUTOPLAY level=51 outcome=…`）。
 
 注意：静态探针工具锁定的是维护者本机的 `hsl01.exe` 构建，Steam 版 `hsl.exe`（1.06）不是同一构建（[Steam 经典版证据](docs/evidence_packets/resource_inventory/steam_classic_edition.md)）。EXE 派生的规则数据以仓库里已公开的探针结果与运行记录为准，Steam 版能重建的是 PAK 派生资源。
 
@@ -45,16 +46,13 @@
 
 ## 5. 不提交原版派生物
 
-提交前确认暂存区里没有原版文件或由它们生成的东西：
+`.gitignore` 挡住 bootstrap 写出的全部原版派生文件：`content/` 生成层、写进 `content/authored/actors/` 的示范角色换色图，以及原版派生文件清单里 `content/` 之外的每一条（`docs/evidence_packets/` 下的原版录像帧与记录）。提交前（`git add` 之后）再跑一次：
 
 ```sh
-git diff --cached --name-only --diff-filter=AM \
-  | grep -E '^(content/(imported|generated|battles)/|content/authored/actors/.*\.png$|legal-assets/.|original-assets/|asset-dumps/.)|\.(pak|exe|dll|sav|shp|wav|mov|mp4|avi|bik)$' \
-  | grep -v -e '^legal-assets/README.md$' -e '^asset-dumps/README.md$' -e '^content/generated/hsl/remake_music/' \
-  | grep -v -e '^content/generated/hsl/skills/(effect_motion|objcomd_motion)\.json$' -e '^content/generated/hsl/static/hsl01/secret_man_goods\.json$' -e '^content/imported/hsl/shared/command_menu/native_layout\.json$' -e '^content/imported/hsl/shared/range_cells/manifest\.json$'
+python3 tools/hsl.py check oss_guard
 ```
 
-有输出就停下核对：`content/` 生成层和 bootstrap 写进 `content/authored/actors/` 的示范角色换色图由本地导入产生，不入公开仓库；重制配乐 `content/generated/hsl/remake_music/` 例外；从原版程序读出的五份规则数据（`hsltools.original_content.PUBLISHED_EXE_DATA`，见 [NOTICE](NOTICE.md)）也例外，改了它们照常提交。截图同理——原版截图、录像帧、原版帧换色图都不提交。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
+它把 `git ls-files` 与 `git status` 里未被忽略的文件逐条对照清单（`content/generated/hsl/original_derived_manifest.json`），另查 `content/imported|generated|battles/`、原版容器与音视频后缀（`content/authored/` 除外）和 `legal-assets/` 等存放原版的目录；任何一条被跟踪或未被忽略就 FAIL 并列出路径，按提示 `git rm --cached` 或补忽略规则。重制配乐 `content/generated/hsl/remake_music/` 不算原版派生；从原版程序读出的五份规则数据（`hsltools.original_content.PUBLISHED_EXE_DATA`，见 [NOTICE](NOTICE.md)）是公开发布的例外（C 类，清单仍记哈希）。两者改了都照常提交。截图同理——原版截图、录像帧、原版帧换色图都不提交。公开 CI 每次推送也跑这条检查。再用 [gitleaks](https://github.com/gitleaks/gitleaks) 扫一次密钥：`gitleaks protect --staged`。
 
 ## 6. Windows 与 Linux
 

@@ -2,6 +2,7 @@
 # checkout has no original-derived content, so nothing here needs the original game. Every OS proves:
 #   - the Python entry points run without bash (Windows steps use PowerShell);
 #   - `hsl check --all` passes with the original-derived tasks reported as SKIP original-absent;
+#   - `hsl check oss_guard`: no path of the original-derived manifest is tracked or left unignored;
 #   - the Python unit tests pass, files that read absent original content counted as SKIP original-absent;
 #   - the doctor preflight passes (Godot 4.7 headless downloaded, no original folder: INFO only);
 #   - shell, PowerShell and Python sources parse.
@@ -75,6 +76,9 @@ jobs:
 
       - name: Registry checks (original absent)
         run: python tools/hsl.py check --all
+
+      - name: No original-derived file tracked or unignored
+        run: python tools/hsl.py check oss_guard
 
       - name: Python unit tests (original absent)
         run: python tools/verify_runner.py python-tests

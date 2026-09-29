@@ -53,19 +53,23 @@ def missing(files: list[str]) -> list[str]:
     return [path for path in files if not (paths.ROOT / path).is_file()]
 
 
-def generate(task: registry.Task, ctx: registry.Context) -> tuple[str, str]:
-    """(status, captured output): ok, original_missing, no_generator or failed."""
+def first_line(text: str) -> str:
+    return next((line.strip() for line in text.splitlines() if line.strip()), '')
+
+
+def generate(task: registry.Task, ctx: registry.Context) -> tuple[str, str, str]:
+    """(status, captured output, one-line reason): ok, original_missing, no_generator or failed."""
     buffer = io.StringIO()
     try:
         with contextlib.redirect_stdout(buffer):
             task.generate(ctx)
-        return 'ok', buffer.getvalue()
+        return 'ok', buffer.getvalue(), ''
     except registry.NoRegenerationPath as error:
-        return 'no_generator', f'{buffer.getvalue()}{error}'
+        return 'no_generator', f'{buffer.getvalue()}{error}', first_line(str(error))
     except registry.NotGeneratable as error:
-        return 'original_missing', f'{buffer.getvalue()}{error}'
-    except Exception:  # noqa: BLE001 - reported with its traceback, retried next round
-        return 'failed', buffer.getvalue() + traceback.format_exc()
+        return 'original_missing', f'{buffer.getvalue()}{error}', first_line(str(error))
+    except Exception as error:  # noqa: BLE001 - reported with its traceback, retried next round
+        return 'failed', buffer.getvalue() + traceback.format_exc(), f'{type(error).__name__}: {first_line(str(error))}'
 
 
 def covers(output: str, path: str) -> bool:
@@ -141,18 +145,19 @@ def main(exe, dry_run: bool = False) -> int:
     ctx = registry.Context(original_exe=exe)
     status: dict[str, str] = {}
     logs: dict[str, str] = {}
+    reasons: dict[str, str] = {}
     todo = registry.generation_order(pending)
     for round_no in range(1, MAX_ROUNDS + 1):
         progressed = False
         for index, task in enumerate(todo, 1):
             task_started = time.monotonic()
-            result, output = generate(task, ctx)
+            result, output, reason = generate(task, ctx)
             if result == 'failed' and (cause := blocked(task, writers, status)):
-                result, output = cause[0], f'{cause[1]}\n{output}'
+                result, reason = cause
             if result == 'ok' and missing(owned[task.name]):
                 absent = missing(owned[task.name])
-                result, output = 'failed', f'{output}\n{len(absent)} owned file(s) still absent, first={absent[0]}'
-            status[task.name], logs[task.name] = result, output
+                result, reason = 'failed', f'{len(absent)} owned file(s) still absent, first={absent[0]}'
+            status[task.name], logs[task.name], reasons[task.name] = result, output, reason
             if result == 'ok':
                 GENERATED.touch()
             progressed |= result == 'ok'
@@ -170,15 +175,19 @@ def main(exe, dry_run: bool = False) -> int:
     if stale:
         print(f'[bootstrap settle] {len(stale)} task(s) wrote content the manifest does not record; generating them again', flush=True)
         for task in registry.generation_order([tasks[name] for name in stale]):
-            result, output = generate(task, ctx)
+            result, output, reason = generate(task, ctx)
             if result != 'ok':
-                status[task.name], logs[task.name] = result, output
+                status[task.name], logs[task.name], reasons[task.name] = result, output, reason
         stale = differing([name for name in stale if status[name] == 'ok'], owned, manifest)
     for name, path in stale.items():
         print(f'[bootstrap differ] {name}: {path} (and possibly more) differs from the manifest', flush=True)
+    # One line per task that did not generate: its name and why. original_missing / no_generator are expected in
+    # a copy without hsl01.exe or the maintainer's recordings; only a failed task gets the tail of its output.
     for name, result in sorted(status.items()):
-        if result != 'ok':
-            print(f'[bootstrap {result}] {name}\n{tail(logs[name], 6 if result == "failed" else 2)}', flush=True)
+        if result == 'failed':
+            print(f'[bootstrap failed] {name}: {reasons[name]}\n{tail(logs[name], 6)}', flush=True)
+        elif result != 'ok':
+            print(f'[bootstrap {result}] {name}: {reasons[name].removeprefix(name + ": ")}', flush=True)
     counts = {key: sum(1 for value in status.values() if value == key) for key in ('ok', 'original_missing', 'no_generator', 'failed')}
     files = sum(len(missing(owned[name])) for name in status)
     if counts['failed'] == 0:

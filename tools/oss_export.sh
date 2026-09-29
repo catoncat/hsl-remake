@@ -27,6 +27,7 @@ fi
 mkdir -p "$OUT"
 export PYTHONDONTWRITEBYTECODE=1
 exec "$PYTHON_BIN" - "$ROOT" "$OUT" "$REF" <<'PY'
+import json
 import re
 import subprocess
 import sys
@@ -35,7 +36,7 @@ from pathlib import Path
 
 root, out, ref = Path(sys.argv[1]), Path(sys.argv[2]).resolve(), sys.argv[3]
 sys.path.insert(0, str(root / 'tools'))
-from hsltools.original_content import PUBLISHED_EXE_DATA, classify  # noqa: E402
+from hsltools.original_content import MANIFEST_RELATIVE, PUBLISHED_EXE_DATA, classify  # noqa: E402
 from hsltools.assets.demo_actor_art import DemoActorArtTask  # noqa: E402
 
 # docs/internal/ and docs/audits/ are our process docs (lane briefs, time log, round log, audits); public docs
@@ -65,6 +66,14 @@ PUBLIC_IGNORE += '# Placeholder art recoloured from original frames by bootstrap
     {f"/{path.rsplit('/', 1)[0]}/*.{path.rsplit('.', 1)[1]}\n" for path in DemoActorArtTask.outputs}))
 
 sha = subprocess.run(['git', 'rev-parse', ref], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
+# Original-derived files outside content/ (evidence frames and records an import task writes into docs/): one
+# exact rule per class-A path of the manifest at REF, so no import leaves one of them for `git add -A`.
+# `python3 tools/hsl.py check oss_guard` reports any that is tracked or not ignored.
+manifest_at_ref = json.loads(subprocess.run(['git', 'show', f'{ref}:{MANIFEST_RELATIVE}'], cwd=root,
+                                            capture_output=True, check=True).stdout)['files']
+outside_content = sorted(path for path in manifest_at_ref if not path.startswith('content/') and classify(path)[0] == 'A')
+PUBLIC_IGNORE += ('# Original-derived files outside content/ (listed in the manifest above), never committed.\n'
+                  + ''.join('/' + re.sub(r'([\\*?\[])', r'\\\1', path) + '\n' for path in outside_content))
 listing = subprocess.run(['git', 'ls-tree', '-r', '-l', '-z', ref], cwd=root, capture_output=True, check=True).stdout
 entries = []
 for item in listing.split(b'\0'):
