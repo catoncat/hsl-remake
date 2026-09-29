@@ -187,7 +187,7 @@ action = actWalkPrevInsertObject,512,288,4
 | 转职后哪座城怎么变 | `content/world/town_job_up_writes.json`（`hsl_town_job_up_writes.v1`）；你的战役用自己的一份 | `teCheckJobUp2` 成功后回放这份表。这份是第一章的，改它就是改第一章（改后跑 `python3 tools/hsl.py check town_job_up_writes`，改成别的城要把 `evidence_tier` 标成 `authored`）。你的战役不改它，而是在自己的 `campaign.json` 写 `"town_job_up_writes": "res://…"` 指向同格式的表：`schema` 为 `hsl_town_job_up_writes.v1`，`second_tier.members` 是 towndef 的 `SID_*` 队员符号（全员都走到最后一个称号才改写），`second_tier.town` 是 `town_*` 符号，`second_tier.writes` 按顺序列 te 代号与 TOWNDEF 参数（`teAddTE`／`teDeleteTE`／`teSetTownExecEvent` 城镇在前）；不写这个字段就回放第一章这份。`check town_job_up_writes` 只校第一章这份，你的表缺文件或 schema 不符时，转职成功后记一条 `check_failed`（`missing_town_job_up_writes`） |
 | 酒馆神秘男子的价格、货表 | `content/generated/hsl/static/hsl01/secret_man_goods.json` | 生成物（`secret_man_goods`，需要原版 EXE），没有手写层入口 |
 | 大地图点位、路线、隐藏 | 导入的 `content/imported/hsl/global/world_map/world_map.json`＋手写的 `content/world/world_map_scene.json`（`new_game` 隐藏集） | 运行时状态随存档。续集的一套示范在 `content/authored/world/`（§3.3 #20） |
-| 标题、系统菜单、谢幕的美术与版式 | 导入的 `content/imported/hsl/global/title/manifest.json`（`title_assets`） | 版式常量在 `tools/hsltools/assets/title_assets.py` 里 |
+| 标题、系统菜单、谢幕的美术与版式 | 导入的 `content/imported/hsl/global/title/manifest.json`（`title_assets`） | 版式常量在 `tools/hsltools/assets/title_assets.py` 里。换图不用改它：同名同尺寸的 PNG 放进 `content/authored/ui/global/title/`，或只给你的战役放进 `campaign.json` 同目录的 `ui/global/title/`（见 [MODDING「界面」](MODDING.md)那一行） |
 | 配乐 | 见 [MODDING §3](MODDING.md#3-换素材) 素材表的"配乐"行 | 关卡里自己的曲子：`content/authored/music/N.ogg`（N 从 100 起）＋剧本 `actPlayMusic,N` |
 
 ## 7. 手写一场战斗：battle JSON 的合同
@@ -208,7 +208,6 @@ action = actWalkPrevInsertObject,512,288,4
 | 新的技能效果族（治疗、状态、增益、特殊行动） | 规则侧：在 `game/sim/` 写一个模块，按 `SkillResolutionRules.EFFECTS` 表头的签名提供 descriptor_error／prepare／resolve，再在 `EFFECTS` 登记一行新的 `damage_policy`；生成侧：你的招式目前只收两个通道的原版伤害（`authored_skills.py` 的 `DAMAGE_POLICIES`），要让它放行新值 |
 | 新的特效 opcode | `SkillEffectScriptPlayer.IMPLEMENTED_OPCODES` 及其播放分支 |
 | 新的切入打击程序（不借 `program_of`）、切入 s_shape／m_shape 条带 | 不在作者格式的约定内（绝技切入目前显示站立的施法者） |
-| 手写层的新界面美术 | 没有入口，见 [MODDING「现在做不到的」](MODDING.md#现在做不到的需要先改代码或工具) |
 
 改代码时的入口：场景宿主 `game/battle/scene/BattleSceneRuntime.gd` → 开场协调器 `game/battle/runtime/BattleOpeningCoordinator.gd`；战斗规则 `game/sim/`（`TacticalGridRules`、`CoreCombatRules`、`CoreTurnQueue`、`WinfailScenarioRules`…），唯一可变的战斗状态在 `game/sim/loop/BattlePlayLoop.gd`；大地图和城镇 `game/world/`；标题、GAME OVER、谢幕 `game/title/`；战斗内系统菜单 `game/battle/scene/BattleSystemMenu.gd`；设置 `game/settings/GameSettings.gd`；战役存档、交接、回憶錄、戰場記錄只经 `game/common/CampaignProgress.gd`。新加 `game/**/*.gd` 要写 `## provenance:` 头，然后 `python3 tools/hsl.py generate provenance`（格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)）。模块地图见 [ARCHITECTURE](ARCHITECTURE.md)。
 

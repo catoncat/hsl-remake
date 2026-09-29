@@ -9,6 +9,9 @@
   hsl generate PATTERN... [--exe PATH]        regenerate outputs (producers before consumers);
                                               a task whose original input is absent FAILs
                                               (WINEPREFIX / --exe), pure checkers are skipped
+  hsl bootstrap [--dry-run] [--exe PATH]      import every original-derived file the manifest lists
+                                              whose task has an absent file (HSL_ORIGINAL_DIR); resumable,
+                                              a complete checkout is left untouched (hsltools.bootstrap)
   hsl affected --since REF [--check] [-j N]   tasks touched by the paths changed since REF
   hsl doctor [--original]                     read-only environment preflight (tools/doctor.sh runs it)
 
@@ -131,6 +134,11 @@ def cmd_affected(args) -> int:
     return 0
 
 
+def cmd_bootstrap(args) -> int:
+    from hsltools import bootstrap
+    return bootstrap.main(args.exe, args.dry_run)
+
+
 def cmd_doctor(args) -> int:
     from hsltools import doctor
     return doctor.main(args.original)
@@ -160,6 +168,11 @@ def main(argv: list[str]) -> int:
     p.add_argument('patterns', nargs='+')
     common(p, jobs=False)
     p.set_defaults(handler=cmd_generate)
+
+    p = sub.add_parser('bootstrap', help='import the original-derived files a checkout lacks (resumable)')
+    p.add_argument('--dry-run', action='store_true', help='count what would be generated, write nothing')
+    common(p, jobs=False)
+    p.set_defaults(handler=cmd_bootstrap)
 
     p = sub.add_parser('affected', help='tasks affected by the paths changed since a git ref')
     p.add_argument('--since', required=True)

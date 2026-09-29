@@ -15,15 +15,14 @@ from hsltools.sources.shp import parse_shp, png_sha256, write_shp_preview
 from hsltools.sources.tables import digest, blocks
 
 ROOT = Path('content/imported/hsl/shared/command_menu')
-SOURCE = Path('content/imported/hsl/chapter01/ui_resources.json')
 OBJECTS = ROOT / 'source_objects.json'
 COMMANDS = {'move': '01', 'attack': '02', 'item': '03', 'wait': '04', 'use': '05', 'give': '06', 'equip': '07', 'drop': '08', 'magic': '09', 'special': '10', 'status': '13'}
 
 
 def definitions():
-    resources = {x['resource_id']: x for x in json.loads(SOURCE.read_text())['resources']}
+    # frame_count is obj-051.obs's obj_Shape_Number for the command object (source_objects.json).
     objects = json.loads(OBJECTS.read_text())['commands']
-    return {name: {'prefix': 'BCMD' + code, 'frame_count': int(resources['BCMD' + code + '_1.SHP']['shape_number_candidates'][0]),
+    return {name: {'prefix': 'BCMD' + code, 'frame_count': objects[name]['frame_count'],
                   'looped': objects[name]['data3'] != 0}
             for name, code in COMMANDS.items()}
 
@@ -42,10 +41,11 @@ def build(pak):
         compact[name] = {'object_code': int(row['obj_code']), 'frame_count': int(row['obj_Shape_Number']),
                          'data3': int(row['obj_Data3'], 0), 'command_id': int(row['obj_Data8']),
                          'process': row['obj_Process_Code']}
+    OBJECTS.parent.mkdir(parents=True, exist_ok=True)
     OBJECTS.write_text(json.dumps({'schema': 'hsl_command_objects.v1', 'source_member': record['name'],
                                   'source_sha256': digest(raw), 'commands': compact}, indent=2) + '\n')
     result = {'schema': 'hsl_command_frames.v1', 'evidence_tier': 'resource-derived',
-              'source_sha256': digest(SOURCE.read_bytes()), 'objects_sha256': digest(OBJECTS.read_bytes()), 'commands': {},
+              'objects_sha256': digest(OBJECTS.read_bytes()), 'commands': {},
               'limits': 'Source frames/counts only. Hover loop timing requires the original recording.'}
     for name, definition in definitions().items():
         frames = []
@@ -73,7 +73,6 @@ def build(pak):
 
 def check():
     data = json.loads((ROOT / 'manifest.json').read_text())
-    assert data['source_sha256'] == digest(SOURCE.read_bytes())
     assert data['objects_sha256'] == digest(OBJECTS.read_bytes())
     assert set(data['commands']) == set(COMMANDS)
     for name, definition in definitions().items():
@@ -91,7 +90,6 @@ def check():
 class CommandFramesTask(ScriptCheckTask):
     name = 'command_frames'
     family = 'assets'
-    inputs = (SOURCE.as_posix(),)
     outputs = (ROOT.as_posix() + '/',)
     replaces = ('tools/hsl_command_frames.py --check',)
     scripts = ('tools/hsltools/assets/command_frames.py',)

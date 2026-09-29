@@ -17,7 +17,7 @@ import struct
 from pathlib import Path
 
 from hsltools.native.image import EXE_SHA, image
-from hsltools.registry import Context, ScriptCheckTask, original_archive
+from hsltools.registry import Context, NotGeneratable, ScriptCheckTask, original_archive
 from hsltools.sources.pak import find_decoded_paks_packages, find_paks_record_by_name, read_paks_record_bytes
 from hsltools.sources.shp import parse_shp, png_sha256, rgb565_to_rgb, shp_pixel_values
 
@@ -187,6 +187,8 @@ class RangeCellsTask(ScriptCheckTask):
         check()
 
     def build(self, ctx: Context) -> None:
+        if not ctx.original_exe.is_file():
+            raise NotGeneratable(f'{self.name}: original EXE not found at {ctx.original_exe} (the colour ramps are read from hsl01.exe)')
         build(original_archive(ctx), ctx.original_exe)
 
 

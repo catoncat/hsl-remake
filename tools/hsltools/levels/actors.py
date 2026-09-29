@@ -339,7 +339,10 @@ class LevelActorsTask(Task):
         self.level = level
         self.name = f'level_actors:{level}'
         folder = level_dir(level).relative_to(ROOT).as_posix()
-        outputs = [f'{folder}/actor_walk_frames/actor_walk_manifest.json', f'{folder}/portraits/manifest.json', f'{folder}/actor_audio.json']
+        # actor_audio/ holds the WAVs actor_audio.json lists (declared so the original-derived manifest names
+        # this task as their owner).
+        outputs = [f'{folder}/actor_walk_frames/actor_walk_manifest.json', f'{folder}/portraits/manifest.json', f'{folder}/actor_audio.json',
+                   f'{folder}/actor_audio/']
         if LEVEL_CASTS[level].get('shape_sets'):
             outputs.append(f'{folder}/actor_shape_sets/manifest.json')
         self.outputs = tuple(outputs)

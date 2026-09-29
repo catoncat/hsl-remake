@@ -45,6 +45,7 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 ## OPT-RETRY menu rows (remake layout): centred under the GAME OVER text, one 32 px pitch.
 const RETRY_ROWS := [{"id": "retry", "text": "重新挑戰本戰"}, {"id": "title", "text": "回到標題"}]
 const RETRY_MENU_TOP := 352.0
@@ -106,7 +107,7 @@ func _ready() -> void:
 		var sprite := Sprite2D.new()
 		sprite.name = "Title_" + role
 		sprite.centered = false
-		sprite.texture = load(str(entry.get("texture", "")))
+		sprite.texture = InterfaceArt.texture(str(entry.get("texture", "")))
 		sprite.position = Vector2(float(top_left[0]), float(top_left[1]))
 		add_child(sprite)
 		if role == "game_over_text":

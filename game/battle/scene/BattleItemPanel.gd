@@ -539,7 +539,7 @@ func _hand_colour(details: Dictionary) -> Color:
 func _drop_icon_button() -> TextureButton:
 	var button := TextureButton.new()
 	button.name = "Button_drop"
-	button.texture_normal = load(BattleUISkin.ROOT + "BCMD08_1.SHP.png")
+	button.texture_normal = BattleUISkin.ui_shape("BCMD08_1")
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	button.position = DROP_BUTTON_CENTRE - Vector2(21, 21)
 	page_root.add_child(button)

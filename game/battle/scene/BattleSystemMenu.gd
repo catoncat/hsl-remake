@@ -69,6 +69,7 @@ const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 ## Scroll start offsets from the rest position: battle +400 px (0x42549b), big map −600 px
 ## (0x425b3b); the close returns there.
@@ -365,7 +366,7 @@ func _build_options(layout: Dictionary) -> void:
 		var knob := TextureRect.new()
 		knob.name = "Knob_" + str(row.get("id", ""))
 		knob.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		knob.texture = load(str(gem_entry.get("texture", "")))
+		knob.texture = InterfaceArt.texture(str(gem_entry.get("texture", "")))
 		_options_panel.add_child(knob)
 		_options_knobs[str(row.get("id", ""))] = knob
 
@@ -403,7 +404,7 @@ func _texture_rect(role: String) -> TextureRect:
 	var rect := TextureRect.new()
 	rect.name = "Title_" + role
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rect.texture = load(str(entry.get("texture", "")))
+	rect.texture = InterfaceArt.texture(str(entry.get("texture", "")))
 	return rect
 
 
@@ -603,7 +604,7 @@ func _show_lit(index: int) -> void:
 		return
 	var item: Dictionary = items[index]
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(str(item.get("lit", "")), {})
-	BattleUISkin.show_shape(_lit, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_lit, InterfaceArt.texture(str(entry.get("texture", ""))))
 	var offset: Array = item.get("lit_offset_in_panel", [0, 0])
 	_lit.position = Vector2(float(offset[0]), float(offset[1]))
 	_lit.visible = true
@@ -612,7 +613,7 @@ func _show_lit(index: int) -> void:
 func _show_confirm_lit(index: int) -> void:
 	var item: Dictionary = confirm_items[index]
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(str(item.get("lit", "")), {})
-	BattleUISkin.show_shape(_confirm_lit, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_confirm_lit, InterfaceArt.texture(str(entry.get("texture", ""))))
 	var offset: Array = item.get("lit_offset_in_buttons", [0, 0])
 	_confirm_lit.position = Vector2(float(offset[0]), float(offset[1]))
 
@@ -928,7 +929,7 @@ func _show_memoir_list(mode: String) -> void:
 	memoir_mode = mode
 	var heading_role := "memoir_heading_save" if mode == "save" else "memoir_heading_load"
 	var entry: Dictionary = (manifest.get("shapes", {}) as Dictionary).get(heading_role, {})
-	BattleUISkin.show_shape(_memoir_heading, load(str(entry.get("texture", ""))))
+	BattleUISkin.show_shape(_memoir_heading, InterfaceArt.texture(str(entry.get("texture", ""))))
 	_refresh_memoir_rows()
 	_memoir_keyboard = false
 	_memoir_closing_row = -1

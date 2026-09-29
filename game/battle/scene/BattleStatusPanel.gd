@@ -186,7 +186,7 @@ var _buttons_right := BUTTONS_LEFT
 func _page_button(key: String, resource: String, caption: String, centre_x: int, target_page: int) -> void:
 	var button := TextureButton.new()
 	button.name = "Page_" + key
-	button.texture_normal = load(UISkin.ROOT + resource + ".SHP.png")
+	button.texture_normal = UISkin.ui_shape(resource)
 	button.position = Vector2(centre_x - 21, PAGE_BUTTON_Y - 21)
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)

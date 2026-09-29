@@ -18,6 +18,7 @@ extends Node2D
 
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/shared/range_cells/manifest.json"
 const PALETTES: PackedStringArray = ["move", "attack", "magic", "special"]
@@ -64,9 +65,10 @@ static func fill_color(palette: String, tick: int) -> Color:
 
 
 static func border_sheet(palette: String) -> Texture2D:
-	if not _border_sheets.has(palette):
-		_border_sheets[palette] = load(str(manifest()["palettes"][palette]["border_sheet"]))
-	return _border_sheets[palette]
+	var source := InterfaceArt.path(str(manifest()["palettes"][palette]["border_sheet"]))
+	if not _border_sheets.has(source):
+		_border_sheets[source] = load(source)
+	return _border_sheets[source]
 
 
 static func border_region(palette: String, tick: int) -> Rect2:
@@ -84,7 +86,7 @@ func _ready() -> void:
 		for rgb in entry["ramp_rgb"]:
 			ramp.append(Color8(int(rgb[0]), int(rgb[1]), int(rgb[2]), int(round(FILL_ALPHA * 255.0))))
 		_palette_ramps[palette] = ramp
-		_palette_sheets[palette] = load(str(entry["border_sheet"]))
+		_palette_sheets[palette] = InterfaceArt.texture(str(entry["border_sheet"]))
 		_frame_count = int(entry["frame_count"])
 		_frame_ticks = int(entry["frame_ticks"])
 	if frame_ticks > 0:

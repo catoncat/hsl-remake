@@ -32,6 +32,7 @@ const LISTENERS := "remake_options_listeners"
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const TITLE_MANIFEST := "res://content/imported/hsl/global/title/manifest.json"
 ## Title031 (466×392) pieces: the ornamented corners, the rim between them (the top rim in two
 ## title-free spans), the stone of the bottom rim that fills the inside, and one slot band.
@@ -475,4 +476,4 @@ static func _shape_path(role: String) -> String:
 			push_error("Title manifest missing or invalid: " + TITLE_MANIFEST)
 			return ""
 		_manifest = parsed
-	return str(((_manifest.get("shapes", {}) as Dictionary).get(role, {}) as Dictionary).get("texture", ""))
+	return InterfaceArt.path(str(((_manifest.get("shapes", {}) as Dictionary).get(role, {}) as Dictionary).get("texture", "")))

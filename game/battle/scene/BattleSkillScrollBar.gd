@@ -45,7 +45,7 @@ var _drag_grab := NO_DRAG
 ## `trough`／`rows`／`bar_dx`: the 獲得物品 list passes WIN06BAR, 5 and 351 (WINDOW90 width − 24).
 func _init(list_at: Vector2 = Vector2.ZERO, trough: String = "WIN02BAR", rows: int = VISIBLE_ROWS, bar_dx: int = BAR_DX) -> void:
 	name = "ScrollBar"
-	texture = load(BattleUISkin.ROOT + trough + ".SHP.png")
+	texture = BattleUISkin.ui_shape(trough)
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	position = list_at + Vector2(bar_dx, 0)
 	visible_rows = rows

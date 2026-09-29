@@ -982,7 +982,7 @@ func lead_in_contracts() -> void:
 	# player's own selection cursor stays hidden even with the pointer resting on a cell.
 	scene.hovered_grid_cell = leonard["coord"]
 	scene._process(0)
-	check(cue.TARGET_FRAME == view.selection_cursor.TARGET_FRAME and cue.TARGET_FRAME.get_size() == Vector2(32, 32), "the AI lead-in cursor draws the I_RECT01 target frame")
+	check(cue.TARGET_FRAME == view.selection_cursor.TARGET_FRAME and view.selection_cursor.target_frame_texture().get_size() == Vector2(32, 32), "the AI lead-in cursor draws the I_RECT01 target frame")
 	check(not view.selection_cursor.visible, "no player selection cursor during the AI lead-in (interaction %s)" % scene.interaction_state)
 	# Class check: show_selection is the player cursor's only show path; every interaction state
 	# outside the player's targeting states (AI turns, menus, results, cutscenes) leaves it hidden.

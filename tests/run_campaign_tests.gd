@@ -21,6 +21,8 @@ const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const SEQUEL_CAMPAIGN_PATH := "res://content/authored/world/campaign.json"
 const TitleScene = preload("res://game/title/TitleScreen.tscn")
 const SEQUEL_SAVE_DIR := "user://campaigns/sequel_demo/"
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
+const RangeCellOverlay = preload("res://game/battle/runtime/RangeCellOverlay.gd")
 
 var failures: Array[String] = []
 
@@ -444,6 +446,7 @@ func _test_sequel_world_flow() -> void:
 	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
 	CampaignProgress.save_progress({"scenario_path": "res://content/battles/story_002.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}, "gold": 3}, "from_scenario_id": "x", "world": {}})
 	_assert_eq(CampaignProgress.listed_campaigns().size(), 1, "the shipped registry lists chapter 1 alone (the demo row is hidden): 開始新故事 asks nothing")
+	_test_sequel_interface_art()
 	await _sequel_title_pick()
 	CampaignProgress.campaign_path = SEQUEL_CAMPAIGN_PATH
 	CampaignProgress.reset_campaign()
@@ -532,6 +535,28 @@ func _test_sequel_world_flow() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SEQUEL_SAVE_DIR + file_name))
 	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
 	CampaignProgress.reset_campaign()
+
+
+## Hand-drawn interface art (InterfaceArt): the demo's ui/ folder holds a self-drawn move-range
+## border of the imported sheet's name and size; it replaces the import while the sequel runs,
+## chapter 1 and every image the demo does not replace resolve to the import.
+func _test_sequel_interface_art() -> void:
+	var move_border := str(RangeCellOverlay.manifest()["palettes"]["move"]["border_sheet"])
+	var attack_border := str(RangeCellOverlay.manifest()["palettes"]["attack"]["border_sheet"])
+	var authored := SEQUEL_CAMPAIGN_PATH.get_base_dir() + "/ui/" + move_border.trim_prefix(InterfaceArt.IMPORTED)
+	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
+	var chapter_one := InterfaceArt.path(move_border)
+	_assert_eq(chapter_one, move_border, "chapter 1 draws the imported move border")
+	_assert_eq(RangeCellOverlay.border_sheet("move").resource_path, move_border, "chapter 1's range overlay loads the import")
+	CampaignProgress.campaign_path = SEQUEL_CAMPAIGN_PATH
+	var sequel := InterfaceArt.path(move_border)
+	var sheet := RangeCellOverlay.border_sheet("move")
+	_assert_eq(sequel, authored, "the sequel resolves the move border to its ui/ folder")
+	_assert_eq(sheet.resource_path, authored, "the sequel's range overlay loads the hand-drawn move border")
+	_assert_eq(sheet.get_size(), (load(move_border) as Texture2D).get_size(), "the hand-drawn sheet keeps the imported size")
+	_assert_eq(InterfaceArt.path(attack_border), attack_border, "an interface image the sequel does not replace stays imported")
+	print("INTERFACE_ART chapter1=%s sequel=%s size=%s" % [chapter_one, sequel, sheet.get_size()])
+	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
 
 
 ## 開始新故事 with the demo listed (a fixture registry without hidden): the board offers 第一章 and

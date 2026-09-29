@@ -14,6 +14,7 @@
 
    Windows 与 Linux 上用 Steam 装了《幻世錄 重製版》的，可以不设：工具会在各个 Steam 库里找 `GAME-PAK/`（见 §6）。维护者做原作运行观测时另用 Wine 前缀（`WINEPREFIX`，原作在 `$WINEPREFIX/drive_c/hsl`）；普通贡献者不需要 Wine。
 4. 运行 `python3 tools/hsl.py doctor`（`tools/doctor.sh` 同义），检查 Godot、Python，并报出用的是哪个原版目录、为什么选它；`--original` 另查维护者的 Wine 原作环境与采样 helper（macOS）。
+5. 运行 `python3 tools/hsl.py bootstrap`，从这份目录生成游戏要用的原版派生文件（可中断、可重跑，已有的不动；`tools/play.sh`／`tools\play.ps1` 发现缺了也会先跑它）。用法和它生成不了的几份文件见 [MODDING §2](docs/MODDING.md#2-跑起来)。
 
 注意：静态探针工具锁定的是维护者本机的 `hsl01.exe` 构建，Steam 版 `hsl.exe`（1.06）不是同一构建（[Steam 经典版证据](docs/evidence_packets/resource_inventory/steam_classic_edition.md)）。EXE 派生的规则数据以仓库里已公开的探针结果与运行记录为准，Steam 版能重建的是 PAK 派生资源。
 
@@ -56,7 +57,7 @@ git diff --cached --name-only --diff-filter=AM \
 
 ## 6. Windows 与 Linux
 
-- **不需要 bash 的入口**：`python tools\hsl.py doctor|check|generate`、`python tools\verify_runner.py python-tests`；玩和跑 Godot 用 PowerShell：`powershell -ExecutionPolicy Bypass -File tools\play.ps1`、`tools\godot.ps1 --headless --import`。`play.ps1` 在缺 `.godot\imported` 时先导入；生成了新图片／声音后设 `$env:HSL_FORCE_IMPORT=1` 再跑一次。PowerShell 会吞掉裸 `--`，给 Godot 的用户参数写在 `++` 后面。
+- **不需要 bash 的入口**：`python tools\hsl.py doctor|check|generate`、`python tools\verify_runner.py python-tests`；玩和跑 Godot 用 PowerShell：`powershell -ExecutionPolicy Bypass -File tools\play.ps1`、`tools\godot.ps1 --headless --import`。`play.ps1` 在缺原版派生文件时先跑 `hsl.py bootstrap`，在缺 `.godot\imported` 或 bootstrap 生成了新文件时先导入；生成了新图片／声音后设 `$env:HSL_FORCE_IMPORT=1` 再跑一次。PowerShell 会吞掉裸 `--`，给 Godot 的用户参数写在 `++` 后面。
 - **Godot**：装 4.7，`godot` 在 PATH 上，或设 `GODOT_BIN` 指向 `Godot_v4.7.x-stable_win64_console.exe`（console 版才会把输出打到终端）。
 - **Python**：3.10 以上，`python -m pip install -r requirements-dev.txt`。`hsl.py`、`verify_runner.py` 在 Windows 自动进 UTF-8 模式；直接跑别的 `tools\*.py` 时先设 `$env:PYTHONUTF8=1`。
 - **原版目录**：`HSL_ORIGINAL_DIR` 未设时，Windows 读注册表 `HKCU\Software\Valve\Steam\SteamPath` 并试 C:–F: 常见 Steam 目录，Linux 查 `~/.local/share/Steam`、`~/.steam`、Flatpak Steam；每个 Steam 库按 app 4030150 的 `installdir` 找 `GAME-PAK/`。`doctor` 会打印找到的目录或查过的库。

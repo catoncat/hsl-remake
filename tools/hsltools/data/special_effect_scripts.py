@@ -1,4 +1,4 @@
-"""Inventory of every skill's source effect script — the SPECIAL rows' EFFECTS.TXT specCode
+r"""Inventory of every skill's source effect script — the SPECIAL rows' EFFECTS.TXT specCode
 pairs (ANIMAL.H ``ani*`` verbs) and the MAGIC rows' effCode scripts (effects.h ``eff*``
 verbs) — with the objects, SHP members and WAV members those scripts reference.
 

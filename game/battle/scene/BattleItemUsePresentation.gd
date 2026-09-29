@@ -147,7 +147,7 @@ func _ready() -> void:
 	add_child(_effect_layer)
 	var assets: Dictionary = BattleUISkin.data()["assets"]
 	for key in ["bar_hp4", "bar_hp5", "bar_hp6"]:
-		_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
+		_art[key] = {"texture": BattleUISkin.texture(key), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
 	var flash: Dictionary = BattleRewardFloater.manifest()["assets"]["damage_flash"]
 	_art["flash"] = {"texture": load(str(flash["res_path"])), "origin": Vector2(float(flash["draw_origin"][0]), float(flash["draw_origin"][1]))}
 	for member in SPARK_FRAME_NAMES.values() + EMITTER_FRAMES.values():

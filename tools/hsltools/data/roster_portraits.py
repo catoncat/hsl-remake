@@ -8,12 +8,19 @@ from the PAK) followed by one row per authored character (content/authored/roles
 and the party equipment screen index this table by the unit's PLAYERS code, so a
 sequel character needs a row here or the panel fails on it; the imported rows are copied
 unchanged (byte-identical `actors` entries), only the table's home moves.
+
+A portrait that the original-derived manifest lists (the demo actors' placeholder art, recoloured
+original frames) and this checkout lacks — the public repository ships none — drops that row with a
+note instead of failing: the chapter-one rows still reach the panels, and
+`hsl check original_derived_manifest` reports the table as differing from the manifest. Any other
+missing portrait is an authoring error and fails.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 
+from hsltools import original_content
 from hsltools.data import json_bytes
 from hsltools.paths import ROOT
 from hsltools.registry import Context, GeneratedFilesTask
@@ -30,15 +37,20 @@ def build() -> dict:
     if imported.get('schema') != SCHEMA:
         raise ValueError(f'{IMPORTED}: schema {imported.get("schema")!r} is not {SCHEMA}')
     actors = dict(imported['actors'])
+    original_derived = original_content.manifest()
     for row in authored_characters():
         code = row['code'].zfill(3)
         portrait = row.get('portrait', '')
-        if not portrait.startswith('res://') or not (ROOT / portrait.removeprefix('res://')).is_file():
+        png = portrait.removeprefix('res://')
+        if portrait.startswith('res://') and png in original_derived and not (ROOT / png).is_file():
+            print(f'roster_portraits: character {code} skipped, original-derived portrait {png} is absent from this checkout')
+            continue
+        if not portrait.startswith('res://') or not (ROOT / png).is_file():
             raise ValueError(f'{AUTHORED_CHARACTERS}: character {code} needs a `portrait` res:// path to an existing PNG')
         if code in actors:
             raise ValueError(f'{AUTHORED_CHARACTERS}: character {code} already has an imported portrait row')
         actors[code] = {'name': row['name_text'], 'res_path': portrait, 'evidence_tier': 'authored',
-                        'png_sha256': png_sha256((ROOT / portrait.removeprefix('res://')))}
+                        'png_sha256': png_sha256(ROOT / png)}
     return {
         'schema': SCHEMA,
         'evidence_tier': 'resource-derived',

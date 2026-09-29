@@ -32,6 +32,7 @@ const COMMANDS := {
 const FRAME_PATH := "res://content/imported/hsl/shared/command_menu/manifest.json"
 const PresentationRules = preload("res://game/battle/runtime/CommandPresentationRules.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const RADIAL_ORDER := ["move", "attack", "item", "wait", "status", "magic", "special", "use", "equip", "drop", "give"]
 ## Source frame sequences advance once per original tick (seven calls per hover frame).
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
@@ -65,7 +66,7 @@ func _ready() -> void:
 		frames[id] = []
 		looped[id] = bool(data["commands"][id]["looped"])
 		for frame in data["commands"][id]["frames"]:
-			frames[id].append(load(frame["res_path"]))
+			frames[id].append(InterfaceArt.texture(frame["res_path"]))
 	visibility_changed.connect(_visibility_changed)
 
 

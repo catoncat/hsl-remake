@@ -24,7 +24,6 @@ extends Control
 ##   strings: runtime-measured docs/evidence_packets/static_reverse/original_identity_bar.md#runtime-measured
 ##     (拉爾斯帝國兵 hover frame)
 ##   strings: resource-derived content/imported/hsl/chapter01/source_texts/RESOURCE.TXT
-const UI_ROOT := preload("res://game/sim/ContentPaths.gd").BATTLE_UI_PREVIEWS
 var portrait: TextureRect
 var values: Dictionary = {}
 var hp_bar: TextureProgressBar
@@ -88,7 +87,7 @@ func _ready() -> void:
 	size = Vector2(640, 158)
 	portraits = ContentPaths.actor_portraits()
 	var original := TextureRect.new()
-	original.texture = load(UI_ROOT + "WINDOW10.SHP.png")
+	original.texture = UISkin.ui_shape("WINDOW10")
 	original.position = BOARD_AT
 	original.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(original)
@@ -129,8 +128,8 @@ func _ready() -> void:
 
 func _bar(back: String, fill: String, at: Vector2) -> TextureProgressBar:
 	var bar := TextureProgressBar.new()
-	bar.texture_under = load(UISkin.data()["assets"][back]["res_path"])
-	bar.texture_progress = load(UISkin.data()["assets"][fill]["res_path"])
+	bar.texture_under = UISkin.texture(back)
+	bar.texture_progress = UISkin.texture(fill)
 	bar.position = at
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST

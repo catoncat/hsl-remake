@@ -66,6 +66,7 @@ def normalized_destination(lower_name: str) -> Path:
     renamed to the tracked spelling."""
     folder = ROOT / 'audio_normalized'
     listed = sorted(name for name in original_content.manifest_files(folder.as_posix() + '/') if name.lower() == lower_name)
+    folder.mkdir(parents=True, exist_ok=True)
     existing = [p for p in folder.iterdir() if p.name.lower() == lower_name]
     destination = folder / listed[0] if listed else existing[0] if existing else folder / lower_name
     for other in existing:
@@ -76,6 +77,32 @@ def normalized_destination(lower_name: str) -> Path:
     return destination
 
 
+def decode(packages, name):
+    """(PAK record, raw payload, decoded WAV bytes) of the PAK member <name> (wav/...)."""
+    member = '@:\\' + name.replace('/', '\\')
+    matches = [(p, r) for p in packages if (r := find_paks_record_by_name(p['records'], member)) is not None]
+    if len(matches) != 1:
+        raise ValueError('missing or ambiguous audio member: ' + member)
+    package, record = matches[0]
+    payload = read_paks_record_bytes(package['path'], record, data_end_offset=int(package['paks']['candidate_index_offset']))
+    with tempfile.TemporaryDirectory() as tmp:
+        source = Path(tmp) / 'audio.wav'
+        source.write_bytes(payload)
+        candidate = parse_xor_a8_wave_candidate(source, 0, len(payload))
+        if candidate is None:
+            raise ValueError('unsupported audio format: ' + member)
+        data = decoded_xor_a8_wave_bytes(source, candidate)
+    return record, payload, data
+
+
+def write_normalized(file_name, data):
+    destination = normalized_destination(file_name)
+    if destination.exists() and destination.read_bytes() != data:
+        raise ValueError('existing normalized audio differs: ' + str(destination))
+    destination.write_bytes(data)
+    return destination
+
+
 def build(pak):
     raw = SOURCE.read_bytes()
     characters = bindings(raw)
@@ -83,26 +110,18 @@ def build(pak):
     packages = find_decoded_paks_packages(pak)
     sounds = {}
     for name in expected:
-        member = '@:\\' + name.replace('/', '\\')
-        matches = [(p, r) for p in packages if (r := find_paks_record_by_name(p['records'], member)) is not None]
-        if len(matches) != 1:
-            raise ValueError('missing or ambiguous audio member: ' + member)
-        package, record = matches[0]
-        payload = read_paks_record_bytes(package['path'], record, data_end_offset=int(package['paks']['candidate_index_offset']))
-        with tempfile.TemporaryDirectory() as tmp:
-            source = Path(tmp) / 'audio.wav'
-            source.write_bytes(payload)
-            candidate = parse_xor_a8_wave_candidate(source, 0, len(payload))
-            if candidate is None:
-                raise ValueError('unsupported audio format: ' + member)
-            data = decoded_xor_a8_wave_bytes(source, candidate)
-        destination = normalized_destination(Path(name).name)
-        if destination.exists() and destination.read_bytes() != data:
-            raise ValueError('existing normalized audio differs: ' + str(destination))
-        destination.write_bytes(data)
+        record, payload, data = decode(packages, name)
+        destination = write_normalized(Path(name).name, data)
         sounds[name] = {'source_member': record['name'], 'source_sha256': hashlib.sha256(payload).hexdigest(),
                         'path': destination.as_posix(), 'res_path': 'res://' + destination.as_posix(),
                         'sha256': hashlib.sha256(data).hexdigest(), 'profile': profile(data)}
+    # audio_normalized/ also holds chapter-one sounds no character binds (the payload inspector imported
+    # every wav the chapter references; the original-derived manifest lists them): decoded the same way so a
+    # fresh checkout has them too. They are not character bindings, so actor_audio.json does not list them.
+    bound = {Path(name).name.lower() for name in expected}
+    for listed in sorted(original_content.manifest_files((ROOT / 'audio_normalized').as_posix() + '/')):
+        if listed.lower() not in bound:
+            write_normalized(listed.lower(), decode(packages, 'wav/' + listed)[2])
     manifest = {'schema': 'hsl_actor_audio.v1', 'evidence_tier': 'resource-derived',
                 'source': SOURCE.as_posix(), 'source_sha256': hashlib.sha256(raw).hexdigest(),
                 'characters': characters, 'sounds': sounds,

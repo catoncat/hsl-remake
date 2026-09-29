@@ -116,7 +116,7 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 	if _art.is_empty():
 		var assets: Dictionary = BattleUISkin.data()["assets"]
 		for key in ["bar_hp4", "bar_hp5", "bar_hp6"]:
-			_art[key] = {"texture": load(str(assets[key]["res_path"])), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
+			_art[key] = {"texture": BattleUISkin.texture(key), "origin": Vector2(float(assets[key]["draw_origin"][0]), float(assets[key]["draw_origin"][1]))}
 	var world_height := 1e9
 	if runtime.get("map_config") != null: world_height = float(runtime.map_config.world_size.y)
 	var fields := _fields(strike, runtime)

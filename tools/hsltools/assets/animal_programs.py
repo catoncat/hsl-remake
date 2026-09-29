@@ -234,7 +234,9 @@ class AnimalProgramsTask(GeneratedFilesTask):
         return {self.outputs[0]: (json.dumps(build(), ensure_ascii=False, indent=2) + "\n").encode('utf-8')}
 
     def generate(self, ctx: Context) -> str:
-        (ctx.root / SOURCES["programs"]).write_bytes(original_member(original_archive(ctx), "programs"))
+        target = ctx.root / SOURCES["programs"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(original_member(original_archive(ctx), "programs"))
         return super().generate(ctx)
 
     def summary(self, rendered: dict[str, bytes], mode: str) -> str:

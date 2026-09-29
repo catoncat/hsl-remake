@@ -40,6 +40,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from hsltools import original_content
 from hsltools.assets import authored_art
 from hsltools.data.campaign_actors import COMBAT_KEYS
 from hsltools.data.first_battle_formation import actor_templates
@@ -51,7 +52,7 @@ from hsltools.sources.scripts import parse_text_metadata
 from hsltools.levels.timeline import AUTHORED_MUSIC, compile_documents, level_table_music
 from hsltools.native.sources import sources
 from hsltools.paths import ROOT
-from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
+from hsltools.registry import CheckFailed, Context, GeneratedFilesTask, NotGeneratable
 from hsltools.schema import unit as unit_schema
 from hsltools.sources.tables import AUTHORED_CHARACTERS, authored_characters
 from hsltools.sources.shp import png_sha256
@@ -640,6 +641,13 @@ class AuthoredLevelTask(GeneratedFilesTask):
         try:
             documents = render_level(self.level)
         except (ValueError, FileNotFoundError, KeyError) as error:
+            # The demo actors' placeholder art is original-derived (recoloured original frames) and has no
+            # generator: a checkout without it (the public repository) cannot build a level that casts them.
+            absent = sorted(path for path in original_content.manifest()
+                            if path.startswith(f'{authored_art.ART}/') and not (ROOT / path).is_file())
+            if absent:
+                raise NotGeneratable(f'{self.name}: {len(absent)} original-derived demo actor file(s) absent from this checkout'
+                                     f' (first={absent[0]}): {error}') from error
             raise CheckFailed(f'{self.name}: {error}') from error
         schema = unit_schema.load(ctx.root)
         errors = level_battle.unit_schema_errors(documents[outputs(self.level)['battle']], schema)

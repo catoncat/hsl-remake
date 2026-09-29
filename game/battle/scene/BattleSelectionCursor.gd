@@ -17,11 +17,12 @@ extends Control
 ## The original's cursor frame 1 (I_RECT01.SHP, 32×32, yellow ramp 238,222,0 → 139,121,0);
 ## I_RECT02..08 are the same outline with the corner dots at red 238／222／180／164／180／222／238.
 ## I_rect01..08 left to right (range_cells manifest `cursor`); a frame per 8 drawn ticks.
-const CURSOR_SHEET: Texture2D = preload("res://content/imported/hsl/shared/range_cells/range_border_cursor.png")
+const CURSOR_SHEET := "res://content/imported/hsl/shared/range_cells/range_border_cursor.png"
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const CURSOR_FRAME_TICKS := 8
 const CURSOR_FRAMES := 8
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
-const TARGET_FRAME: Texture2D = preload("res://content/imported/hsl/shared/shape_previews/battle_ui/I_RECT01.SHP.png")
+const TARGET_FRAME := "res://content/imported/hsl/shared/shape_previews/battle_ui/I_RECT01.SHP.png"
 var cell_rect := Rect2()
 ## true: attack／skill／item target selection; false: move selection (same cursor, cost caption).
 var target_frame := false
@@ -31,6 +32,7 @@ var _cursor_clock := 0.0
 var footprint_rect := Rect2()
 var eligible := false
 var caption: Label
+static var _cursor_sheets: Dictionary = {}
 
 
 func _ready() -> void:
@@ -71,7 +73,20 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if footprint_rect.has_area():
 		draw_rect(footprint_rect.grow(-1), Color(1,0.8,0.32,0.92) if eligible else Color(1,0.5,0.4,0.8), false, 2)
-	draw_texture_rect_region(CURSOR_SHEET, cell_rect, cursor_region(cursor_ticks))
+	draw_texture_rect_region(cursor_sheet(), cell_rect, cursor_region(cursor_ticks))
+
+
+## CURSOR_SHEET, or its authored replacement (InterfaceArt), loaded once per resolved file.
+static func cursor_sheet() -> Texture2D:
+	var source := InterfaceArt.path(CURSOR_SHEET)
+	if not _cursor_sheets.has(source):
+		_cursor_sheets[source] = load(source)
+	return _cursor_sheets[source]
+
+
+## TARGET_FRAME, or its authored replacement (InterfaceArt; same 32×32 size).
+static func target_frame_texture() -> Texture2D:
+	return InterfaceArt.texture(TARGET_FRAME)
 
 
 ## The sheet region of the cursor frame at drawn tick `tick` (0x4302a2: every 8th tick, mod 8).

@@ -20,6 +20,7 @@ signal allocation_requested(unit_id: String, allocation: Dictionary)
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ATTRIBUTES := ["str", "dex", "mind", "con"]
@@ -76,14 +77,14 @@ func _ready() -> void:
 		var value := BattleUISkin.text(self, Vector2(ATTRIBUTE_VALUE_X if attribute_row else DERIVED_VALUE_X, top), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(60, GLYPH_ROW))
 		if attribute_row:
 			var key: String = ATTRIBUTES[index]
-			var plus := _button(BattleUISkin.ROOT + "BT_ADD1.SHP.png", Vector2(BUTTON_X[0], BUTTON_Y + index * ROW_HEIGHT))
+			var plus := _button(InterfaceArt.path(BattleUISkin.ROOT + "BT_ADD1.SHP.png"), Vector2(BUTTON_X[0], BUTTON_Y + index * ROW_HEIGHT))
 			plus.pressed.connect(_adjust.bind(key, 1))
-			var minus := _button(BattleUISkin.data()["assets"]["BT_ADD2"]["res_path"], Vector2(BUTTON_X[1], BUTTON_Y + index * ROW_HEIGHT))
+			var minus := _button(InterfaceArt.path(BattleUISkin.data()["assets"]["BT_ADD2"]["res_path"]), Vector2(BUTTON_X[1], BUTTON_Y + index * ROW_HEIGHT))
 			minus.pressed.connect(_adjust.bind(key, -1))
 			choices[key] = {"plus": plus, "minus": minus, "value": value}
 		else:
 			derived_values[DERIVED[index - ATTRIBUTES.size()]] = value
-	confirm_button = _button(BattleUISkin.ROOT + "BT_OK.SHP.png", OK_AT)
+	confirm_button = _button(InterfaceArt.path(BattleUISkin.ROOT + "BT_OK.SHP.png"), OK_AT)
 	confirm_button.pressed.connect(_confirm)
 	BattleUISkin.asset(self, "WINDOW41", POINTS_BOX)
 	remaining_label = BattleUISkin.text(self, POINTS_BOX + Vector2(128, 6), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(72, 24))

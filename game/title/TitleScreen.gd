@@ -77,6 +77,7 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 
 const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const FIRST_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
@@ -314,7 +315,7 @@ func _sprite(role: String, top_left: Vector2) -> Sprite2D:
 	var sprite := Sprite2D.new()
 	sprite.name = "Title_" + role
 	sprite.centered = false
-	sprite.texture = load(str(entry.get("texture", "")))
+	sprite.texture = InterfaceArt.texture(str(entry.get("texture", "")))
 	sprite.position = top_left
 	add_child(sprite)
 	return sprite

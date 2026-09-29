@@ -1,2 +1,5 @@
-# Python tooling dependency used by image/contact-sheet checks.
+# Python tooling dependencies: Pillow for image decoding and contact-sheet checks; numpy and soundfile for
+# encoding the original soundtrack (music_import, run by `hsl bootstrap`).
 Pillow>=10,<13
+numpy
+soundfile

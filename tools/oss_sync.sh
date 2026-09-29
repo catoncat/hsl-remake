@@ -17,7 +17,7 @@ if ! out="$("${ROOT}/tools/oss_export.sh" "${NEW}" "${REF}" 2>&1)"; then
   printf '%s\n' "${out}" | tail -5; echo "OSS_SYNC_FAIL export ref=${head}"; exit 1
 fi
 personal="$(grep -rIl "$(id -un)" "${NEW}" --exclude-dir=.git | wc -l | tr -d ' ')"
-media="$(find "${NEW}" -type f \( -iname '*.png' -o -iname '*.wav' -o -iname '*.ogg' -o -iname '*.webp' -o -iname '*.sav' -o -iname '*.bin' -o -iname '*.shp' -o -iname '*.pak' -o -iname '*.exe' \) -not -path "${NEW}/docs/screenshots/remake/*" -not -path "${NEW}/content/authored/music/*" -not -path "${NEW}/content/authored/actors/*/sounds/*" | wc -l | tr -d ' ')"
+media="$(find "${NEW}" -type f \( -iname '*.png' -o -iname '*.wav' -o -iname '*.ogg' -o -iname '*.webp' -o -iname '*.sav' -o -iname '*.bin' -o -iname '*.shp' -o -iname '*.pak' -o -iname '*.exe' \) -not -path "${NEW}/docs/screenshots/remake/*" -not -path "${NEW}/content/authored/music/*" -not -path "${NEW}/content/authored/actors/*/sounds/*" -not -path "${NEW}/content/authored/ui/*" -not -path "${NEW}/content/authored/*/ui/*" | wc -l | tr -d ' ')"
 # Mod audio (content/authored/music/, actors/*/sounds/) ships only when self-made: no file may match an
 # original audio sha256 recorded in original_derived_manifest.json.
 original_audio="$(python3 - "${NEW}" <<'PY'
@@ -29,8 +29,24 @@ files = [*out.glob('content/authored/music/*'), *out.glob('content/authored/acto
 print(sum(hashlib.sha256(f.read_bytes()).hexdigest() in known for f in files if f.is_file()))
 PY
 )"
-if [ "${personal}" != 0 ] || [ "${media}" != 0 ] || [ "${original_audio}" != 0 ]; then
-  echo "OSS_SYNC_FAIL rescan personal_hits=${personal} media_outside=${media} original_audio=${original_audio} out=${NEW}"; exit 1
+# Hand-drawn interface art (content/authored/ui/, and the ui/ folder beside a campaign.json under
+# content/authored/, the only campaigns game/common/InterfaceArt.gd reads one for) ships only when
+# self-made: no file may match an original sha256, nor a PNG an original rgba_sha256.
+original_ui="$(python3 - "${NEW}" "${ROOT}" <<'PY'
+import fnmatch, hashlib, json, sys
+from pathlib import Path
+out, root = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path.insert(0, str(root / 'tools'))
+from hsltools.sources.shp import png_sha256
+entries = json.loads((out / 'content/generated/hsl/original_derived_manifest.json').read_text())['files'].values()
+known = {v[key] for v in entries for key in ('sha256', 'rgba_sha256') if key in v}
+patterns = ('content/authored/ui/*', 'content/authored/*/ui/*')
+files = [f for f in out.glob('content/authored/**/*') if f.is_file() and any(fnmatch.fnmatch(f.relative_to(out).as_posix(), p) for p in patterns)]
+print(sum(hashlib.sha256(f.read_bytes()).hexdigest() in known or (f.suffix.lower() == '.png' and png_sha256(f) in known) for f in files))
+PY
+)"
+if [ "${personal}" != 0 ] || [ "${media}" != 0 ] || [ "${original_audio}" != 0 ] || [ "${original_ui}" != 0 ]; then
+  echo "OSS_SYNC_FAIL rescan personal_hits=${personal} media_outside=${media} original_audio=${original_audio} original_ui=${original_ui} out=${NEW}"; exit 1
 fi
 find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
 (cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)

@@ -904,7 +904,7 @@ func _cost(code: int) -> int:
 func _status_button(key: String, resource: String, caption: String, centre_x: int) -> void:
 	var button := TextureButton.new()
 	button.name = "Button_" + key
-	button.texture_normal = load(BattleUISkin.ROOT + resource + ".SHP.png")
+	button.texture_normal = BattleUISkin.ui_shape(resource)
 	button.position = Vector2(centre_x - 21, BUTTON_Y - 21)
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)

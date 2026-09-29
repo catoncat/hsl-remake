@@ -332,8 +332,8 @@ def decode_sound(pkgs, member: str) -> tuple[bytes, bytes]:
 def build(pak: Path) -> dict:
     pkgs = find_decoded_paks_packages(pak)
     raw_sound, sound = decode_sound(pkgs, '@:\\wav\\WALKSOUND.WAV')
-    EPILOGUE_SOUND_OUT.write_bytes(sound)
     (OUT / 'previews').mkdir(parents=True, exist_ok=True)
+    EPILOGUE_SOUND_OUT.write_bytes(sound)
     shapes = {}
     members = {role: f'@:\\shape\\Title{number:03d}.SHP' for role, number in SHAPES.items()}
     members.update({role: f'@:\\shape\\{name}.SHP' for role, name in GAME_CLEAR_SHAPES.items()})

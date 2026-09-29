@@ -7,6 +7,19 @@ if [[ -z "$GODOT_BIN" || ! -x "$GODOT_BIN" ]]; then
   echo "Godot executable not found; set GODOT_BIN or install Godot." >&2
   exit 1
 fi
+# A checkout without the original-derived files (the public repository ships none) imports them from the
+# player's copy first (tools/hsl.py bootstrap, HSL_ORIGINAL_DIR); an interrupted import leaves its marker
+# and resumes here. A complete checkout pays two file tests.
+if [[ ! -f "$ROOT/content/imported/hsl/global/tables/PLAYERS.TXT" || -e "$ROOT/ignored/hsl-bootstrap/incomplete" ]]; then
+  PYTHON_BIN="${PYTHON_BIN:-$(command -v python3 || echo python3)}"
+  if ! "$PYTHON_BIN" "$ROOT/tools/hsl.py" bootstrap; then
+    if [[ ! -f "$ROOT/content/imported/hsl/global/tables/PLAYERS.TXT" ]]; then
+      echo "Original data not imported; refusing to open the game without it." >&2
+      exit 1
+    fi
+    echo "Original-data import incomplete (tasks listed above); starting with what was imported." >&2
+  fi
+fi
 # godot.sh seeds a missing import cache from another worktree and skips the import (about 0.3 s
 # instead of a Godot scan of every file) when nothing it imports changed since the last success.
 log="$(mktemp "${TMPDIR:-/tmp}/hsl-play-import.XXXXXX")"

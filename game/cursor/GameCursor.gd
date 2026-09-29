@@ -41,6 +41,7 @@ extends Node
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 ## RemakeOptionsPage.LISTENERS (a literal: preloading the page would pull the UI skin into the autoload).
 const OPTION_LISTENERS := "remake_options_listeners"
 const MANIFEST_PATH := "res://content/imported/hsl/shared/game_cursor/manifest.json"
@@ -56,6 +57,9 @@ const HELD_GROUP := "game_cursor_held_items"
 ## The shapes in source order and their hotspots (SHP draw origins).
 var frames: Array[Texture2D] = []
 var hotspots: Array[Vector2i] = []
+## Manifest paths of the frames: apply_frame reloads a frame whose authored replacement
+## (InterfaceArt) changed with the campaign, as the cursor outlives the title's campaign choice.
+var _frame_sources: PackedStringArray = []
 var frame_ticks := 0
 ## The shape showing now and the ticks it has shown.
 var frame_index := 0
@@ -79,7 +83,8 @@ func _ready() -> void:
 		"GameCursor: %s missing or not %s" % [MANIFEST_PATH, MANIFEST_SCHEMA])
 	frame_ticks = int(manifest["frame_ticks"])
 	for frame in manifest["frames"]:
-		frames.append(load(str(frame["texture"])))
+		_frame_sources.append(str(frame["texture"]))
+		frames.append(InterfaceArt.texture(str(frame["texture"])))
 		hotspots.append(Vector2i(int(frame["draw_origin"][0]), int(frame["draw_origin"][1])))
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = CanvasLayer.new()
@@ -165,6 +170,10 @@ func advance_tick() -> void:
 func apply_frame() -> void:
 	if frames.is_empty():
 		return
+	if frame_index < _frame_sources.size():
+		var source := InterfaceArt.path(_frame_sources[frame_index])
+		if frames[frame_index] == null or frames[frame_index].resource_path != source:
+			frames[frame_index] = load(source)
 	sprite.texture = frames[frame_index]
 	sprite.offset = -Vector2(hotspots[frame_index])
 	if hardware:

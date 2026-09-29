@@ -37,12 +37,12 @@
 ```sh
 export HSL_ORIGINAL_DIR=/path/to/GAME-PAK     # Windows/Linux 装了 Steam 版的话可以不设，工具会自己找
 python3 tools/hsl.py doctor                   # 检查 Godot、Python 和原版目录，并打印选中了哪个目录、为什么
-python3 tools/hsl.py generate original_tables music_import   # 按任务或族导入（示例：原版文本表、配乐）
+python3 tools/hsl.py bootstrap                # 生成全部原版派生文件：缺什么补什么，已有的不动，中断了重跑接着做
 python3 tools/hsl.py check original_derived_manifest          # 逐文件比对导入结果和清单里记的哈希
-tools/play.sh                                 # 先导入 Godot 资源再开游戏；Windows 用 powershell -ExecutionPolicy Bypass -File tools\play.ps1
+tools/play.sh                                 # 没导入过会先跑 bootstrap，再导入 Godot 资源、开游戏；Windows 用 powershell -ExecutionPolicy Bypass -File tools\play.ps1
 ```
 
-从空仓库一条命令导入全部原版资源的工具还在做（README 也这么写）。现在只能按族分批 `generate`，再用 `check original_derived_manifest` 查还缺哪些文件；进度见 [PROJECT](PROJECT.md)「排队」。
+`bootstrap` 以原版派生文件清单（`content/generated/hsl/original_derived_manifest.json`，每个文件记着由哪个任务生成）为准：有文件缺席的任务按先上游后下游的顺序生成，文件齐全的任务跳过；`--dry-run` 只数不写。最后一行是 `HSL_BOOTSTRAP_PASS|FAIL generated=… skipped=… original_missing=… no_generator=… failed=… differ=…`。`original_missing` 是要用到 Steam 版不带的东西（原版程序 `hsl01.exe`、原版录像或存档）的任务，`no_generator` 是只有检查器、或输入来自仓库外工具的证据文件，这两类只列出、不算失败；`differ` 是生成出来但和清单哈希不一致的任务（原版字库 `original_bitmap_font` 按仓库里实际用到的字排版，改过文字就会不同，不影响游戏；缺示范角色 102／103 的占位图时，头像表 `roster_portraits`、受击／施法姿势清单和 `scope_inventory` 也少了这两人或第 200 关）；`failed` 非零时 `tools/play.sh` 下次启动会再补一次。只想重做某一族，照旧 `python3 tools/hsl.py generate <任务或族>`。
 
 **没有原版的时候**：凡是读写原版派生文件的任务都会报 `SKIP original-absent`，只有文档和纯代码的检查会真正跑出 PASS；`tools/verify.sh` 会跳过 Godot 导入和场景套件。游戏本身开不起来，因为关卡 JSON 和素材都是生成物。注意 SKIP 只是跳过，不等于通过。
 
@@ -61,7 +61,7 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 | 战斗切入（特写） | `content/imported/hsl/chapter01/combat_animation/manifest.json`（`combat_animation`） | `content/authored/actors/<外观>/cutin/<n>.png`；`art.json` 的 `cutin.program_of` 写借用哪个原版角色的打击程序，`cutin.anchor` 写锚点 | n 从 0 开始，张数必须等于被借程序的帧数；`cutin: null` 表示没有特写 |
 | 头像 | `content/imported/hsl/chapter01/portraits/NNN.png`＋各关 `portraits/manifest.json`；名册脸表是生成物 `content/generated/hsl/roles/actor_portraits.json`（`roster_portraits`） | `content/authored/actors/<外观>/portrait.png`，由 `content/authored/roles/characters.json` 那一行的 `portrait` 指过去 | 示范图 120×144 |
 | 地图 | `content/imported/hsl/chapter01/battleNNN/levelNN.png`（第 51 关 768×768＝24×24 格） | 任意 PNG，写进 `content/authored/levelNNN/level.json` 的 `map_texture` | 尺寸＝格数×32 像素，必须和 `terrain.txt` 的行列数对上 |
-| 界面 | `content/imported/hsl/shared/panels/`（面板，`panel_assets`）、`shared/command_menu/`（命令环）、`shared/range_cells/`（范围格）、`shared/game_cursor/`（光标）、`global/title/`（标题、系统菜单、谢幕，`title_assets`）；位图字体表 `content/generated/hsl/fonts/`（`original_bitmap_font`） | 没有手写层入口，只能就地替换 | 保持原文件名和尺寸；版式常量写在对应的导入工具里 |
+| 界面 | `content/imported/hsl/shared/panels/`（面板，`panel_assets`）、`shared/shape_previews/battle_ui/`（面板底板、按钮、目标框）、`shared/command_menu/`（命令环）、`shared/range_cells/`（范围格）、`shared/game_cursor/`（光标）、`global/title/`（标题、系统菜单、谢幕，`title_assets`）；位图字体表 `content/generated/hsl/fonts/`（`original_bitmap_font`） | `content/authored/ui/` 下照 `content/imported/hsl/` 的相对路径放同名 PNG（如 `content/authored/ui/shared/panels/WINDOW21.png`），所有战役都换；只给某个战役换，放在它 `campaign.json` 同目录的 `ui/` 下，同一张图战役的优先；这只对 `content/authored/` 下的战役有效，第一章的 `campaign.json` 在 `content/battles/`，只读 `content/authored/ui/`。标题画面在进入战役之前就建好了，所以标题画面的图要放 `content/authored/ui/global/title/`，战役 `ui/` 里的 `global/title/` 只换进入该战役之后才出现的系统菜单和谢幕。没放的照旧读原版，第一章不放就和原版一样。示范：续集示范的 `content/authored/world/ui/shared/range_cells/range_border_move.png` 换了移动范围边框。位图字体没有手写层入口 | 保持原文件名和尺寸（版式、点击范围、帧切片都照原版 manifest）；版式常量写在对应的导入工具里。这两处目录会随仓库公开，只放自己画的图，和原版图同哈希的同步时会被拦下 |
 | 音效 | `content/imported/hsl/shared/interface_audio/manifest.json`（确认、取消等符号对应的 WAV，`interface_audio`）、各关 `sounds/manifest.json` 和 `actor_audio.json` | 新角色的音效写在 `art.json`：`sounds_of` 借某个原版角色的走、攻、闪、亡音效；`sounds`（如 `{"attack": "sounds/attack.wav"}`）给其中几项换成外观文件夹里自己的文件，没写的照旧借 `sounds_of`。`sounds/` 和 `content/authored/music/` 里只放自己做的声音，这两个目录会随仓库一起公开。示范 103 的攻击音效是 `content/authored/actors/103/sounds/attack.wav` | PCM WAV（原版多为 11025／22050 Hz 单声道） |
 | 配乐 | `content/imported/hsl/music/NN.ogg`＋`manifest.json`（`music_import`，NN 是原曲号 02–19） | 大地图和城镇用 `content/world/world_map_scene.json` 的 `map_music`／`town_music`，标题和谢幕用 `global/title/manifest.json` 的 `music`，都是 `res://` 路径，指到你的 OGG 就行；关卡里剧本 `actPlayMusic,N`：N 为 0–99 播原曲 `content/imported/hsl/music/NN.ogg`（原曲只有 02–19，写别的号不会播新曲），N 为 100 起播 `content/authored/music/N.ogg`（文件缺失时生成失败）。示范第 200 关开场写 `actPlayMusic,100`，播 `content/authored/music/100.ogg` | OGG Vorbis；`project.godot` 的 `[importer_defaults]` 默认整首循环 |
 
@@ -178,6 +178,5 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 ## 现在做不到的（需要先改代码或工具）
 
-- 从空仓库一条命令导入全部原版资源。
-- 手写层的新界面美术：没有 authored 入口。
+- 游戏要读、但只能从原版程序 `hsl01.exe` 读出的几份数据：招式动作表（`content/generated/hsl/skills/effect_motion.json`、`objcomd_motion.json`，招式特效 `skill_effects` 由它们生成）、范围格配色 `range_cells`、指令菜单布局 `native_layout.json`、秘密商人货单 `secret_man_goods.json`。Steam 版不带 `hsl01.exe`，`bootstrap` 生成不了（记 `original_missing`／`no_generator`），公开仓库也还没收录。缺了它们，第一章的仗照样能打完，但范围格、指令菜单和招式特效画不出来，战斗中不断报脚本错误；酒馆神秘男子的交易事件会中止。示范角色 102／103 的占位图（由 003／004 换色而来）同样没有生成任务，公开仓库也不带：缺了它们，头像表里没有这两人，龍脊隘口（LEVEL200）组不出来（`authored_level:200` 记 `original_missing`），第一章不受影响。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。

@@ -91,7 +91,9 @@ class RegistryTaskSetTests(unittest.TestCase):
             declared = task.outputs or task.inputs  # pure checkers (hsltools.checks) declare only what they read
             self.assertTrue(declared, task.name)
             for path in declared:
-                self.assertTrue((ROOT / path).exists(), f'{task.name}: {path} is not tracked')
+                # A folder output may hold nothing for some levels (git tracks no empty folder); its parent must exist.
+                target = ROOT / path
+                self.assertTrue(target.exists() or (path.endswith('/') and target.parent.is_dir()), f'{task.name}: {path} is not tracked')
 
     def test_level_battle_covers_every_tracked_battle_scenario(self):
         tracked = sorted(int(p.stem[7:]) for p in (ROOT / 'content/battles').glob('battle_[0-9][0-9][0-9].json'))

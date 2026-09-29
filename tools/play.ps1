@@ -3,7 +3,8 @@
 #
 #   powershell -ExecutionPolicy Bypass -File tools\play.ps1 [GODOT_ARGS...]
 #
-# Import rule (simpler than play.sh): import when .godot\imported is missing or $env:HSL_FORCE_IMPORT is 1;
+# Import rule (simpler than play.sh): import when .godot\imported is missing, the original-data bootstrap
+# generated files (its ignored\hsl-bootstrap\generated marker), or $env:HSL_FORCE_IMPORT is 1;
 # after `python tools\hsl.py generate ...` wrote new images or sounds, run it with HSL_FORCE_IMPORT=1 once.
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
@@ -24,7 +25,26 @@ if (-not $Godot -or -not (Test-Path -LiteralPath $Godot -PathType Leaf)) {
 }
 $env:GODOT_BIN = $Godot
 
-if ($env:HSL_FORCE_IMPORT -eq '1' -or -not (Test-Path -LiteralPath (Join-Path $Root '.godot\imported'))) {
+# A checkout without the original-derived files (the public repository ships none) imports them from the
+# player's copy first (tools\hsl.py bootstrap, HSL_ORIGINAL_DIR), as tools/play.sh does; an interrupted
+# import leaves its marker and resumes here, and new files force the asset import below.
+$Tables = Join-Path $Root 'content\imported\hsl\global\tables\PLAYERS.TXT'
+$Generated = Join-Path $Root 'ignored\hsl-bootstrap\generated'
+if (-not (Test-Path -LiteralPath $Tables) -or (Test-Path -LiteralPath (Join-Path $Root 'ignored\hsl-bootstrap\incomplete'))) {
+    $Python = if ($env:PYTHON_BIN) { $env:PYTHON_BIN } else { 'python' }
+    & $Python (Join-Path $PSScriptRoot 'hsl.py') bootstrap
+    $BootstrapResult = $LASTEXITCODE
+    if ($BootstrapResult -ne 0 -and -not (Test-Path -LiteralPath $Tables)) {
+        [Console]::Error.WriteLine('Original data not imported; refusing to open the game without it.')
+        exit 1
+    }
+    if ($BootstrapResult -ne 0) {
+        [Console]::Error.WriteLine('Original-data import incomplete (tasks listed above); starting with what was imported.')
+    }
+}
+$Imported = Test-Path -LiteralPath $Generated
+
+if ($Imported -or $env:HSL_FORCE_IMPORT -eq '1' -or -not (Test-Path -LiteralPath (Join-Path $Root '.godot\imported'))) {
     $Log = [System.IO.Path]::GetTempFileName()
     try {
         $ErrorActionPreference = 'Continue'
@@ -36,6 +56,7 @@ if ($env:HSL_FORCE_IMPORT -eq '1' -or -not (Test-Path -LiteralPath (Join-Path $R
             [Console]::Error.WriteLine('Asset import failed; refusing to open an incomplete game window.')
             exit 1
         }
+        Remove-Item -LiteralPath $Generated -Force -ErrorAction SilentlyContinue
     } finally {
         Remove-Item -LiteralPath $Log -Force -ErrorAction SilentlyContinue
     }

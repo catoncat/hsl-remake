@@ -39,6 +39,7 @@ const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const BattleDialogue = preload("res://game/battle/scene/BattleDialogue.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const SimplifiedDisplay = preload("res://game/text/SimplifiedDisplay.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const UISkin = preload("res://game/common/BattleUISkin.gd")
@@ -180,7 +181,7 @@ func _shape(role: String) -> Dictionary:
 func _set_background(frame: int) -> void:
 	var roles: Array = config.get("backgrounds", [])
 	if frame < roles.size():
-		_background.texture = load(str(_shape(str(roles[frame])).get("texture", "")))
+		_background.texture = InterfaceArt.texture(str(_shape(str(roles[frame])).get("texture", "")))
 
 
 func _process(delta: float) -> void:
@@ -286,7 +287,7 @@ func _start_scroll(id: String) -> void:
 	var remaining := start_y + height + int(spec.get("past_top", 0)) if bool(spec.get("removed", true)) else start_y + height - int(spec.get("rest_bottom", 480))
 	_scroll = {"id": id, "role": role, "y": start_y, "frac": 0, "remaining": remaining, "removed": bool(spec.get("removed", true)), "done": false}
 	# Baked traditional lettering (workteam) shows its simplified redraw (SimplifiedDisplay).
-	_text.texture = load(SimplifiedDisplay.texture_path(str(shape.get("texture", ""))))
+	_text.texture = load(SimplifiedDisplay.texture_path(InterfaceArt.path(str(shape.get("texture", "")))))
 	_text.visible = true
 	_place_scroll()
 

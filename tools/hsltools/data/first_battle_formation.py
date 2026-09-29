@@ -23,7 +23,9 @@ from hsltools.paths import ROOT
 from hsltools.registry import Context, GeneratedFilesTask
 from hsltools.sources.tables import authored_characters, override_rows, parse_table
 
-PLACEMENTS = ROOT / 'content/imported/hsl/chapter01/map_objects.json'
+# The level-51 seed's EVEF placement records (battle_seed:51, from the PAK): the same records, order and
+# coordinates the payload inspector's chapter01/map_objects.json lists, without that importer's input.
+PLACEMENTS = ROOT / 'content/generated/hsl/chapter01/battle051_seed.json'
 STORY = ROOT / 'content/imported/hsl/chapter01/source_texts/STORY051.TXT'
 SCENARIO = ROOT / 'content/battles/first_battle.json'
 BASE = ROOT / 'content/authored/battles/first_battle_base.json'
@@ -89,13 +91,13 @@ def formation():
     templates = actor_templates()
     counts = {}
     result = []
-    for placement in json.loads(PLACEMENTS.read_text())['placements']:
+    for placement in json.loads(PLACEMENTS.read_text(encoding='utf-8'))['placements']['records']:
         code = placement['object_code']
         if code not in ACTORS:
             continue
         actor = ACTORS[code]
         counts[actor] = counts.get(actor, 0) + 1
-        source = [placement['candidate_x'], placement['candidate_y']]
+        source = list(placement['placement_xy_candidate'])
         world = [(value & ~31) + 16 for value in source]
         if actor == '001':
             world = [value + shift for value, shift in zip(world, delta)]

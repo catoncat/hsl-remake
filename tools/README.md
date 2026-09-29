@@ -35,7 +35,7 @@ tools/doctor.sh --original  # 加查 Wine、原作和采样 helper
 tools/verify.sh             # 完整非 GUI 验证：快门（默认，热缓存并行）／--full（另证冷克隆导入）／--deep（快门＋长端到端套件）
 tools/verify_slot.sh        # verify.sh 开头 source：全机最多 2 个 verify 同跑（/private/tmp/hsl-verify-slots 两个 mkdir 槽）；HSL_VERIFY_PRIORITY=1（lane_merge.sh gate）用负责人专用槽，其余共用另一槽，排队时每 30 s 打 VERIFY_WAIT
 tools/verify_runner.py      # 门禁背后的并行 runner：python-tests / checks（＝ hsl check --all）/ godot / deep / affected（lane 定向，见下行）/ story-guard（合并门快门档之后：改动落在剧情链上时跑剧情探索器）/ promote-timings（run_all 分片耗时 → tests/support/suite_timings.json）
-python3 tools/hsl.py list|check|generate|affected   # 生成器／检查器注册表的唯一 CLI（见下节）
+python3 tools/hsl.py list|check|generate|bootstrap|affected   # 生成器／检查器注册表的唯一 CLI（见下节）；bootstrap 从原版补齐全部原版派生文件
 tools/play.sh               # 先导入并检查资源，再运行正式游戏
 tools/playtest.sh l053      # 人工验收：独立存档、跳过标题直达该槽（无参数列出全部槽，title 停在标题）、日志留 ~/hsl-playtest/logs（docs/PLAYTEST.md）
 tools/godot.sh --headless --import # 共用诊断入口；先导入一次再做命中的定向测试；上次成功导入以来没有可导入变动时约 1 s 跳过（HSL_FORCE_IMPORT=1 强制）

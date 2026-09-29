@@ -15,6 +15,7 @@ extends RefCounted
 ##     (button styling and the button step-down 17→11 for remake buttons; message_rows under
 ##     OPT-WORDBREAK keeps a protected name whole where the 38-byte break cuts it)
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
+const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 const ROOT := ContentPaths.BATTLE_UI_PREVIEWS
 const PANEL_DATA := "res://content/imported/hsl/shared/panels/manifest.json"
 ## Depth of the black shade under a full panel page, in 16ths: the battle root window's black
@@ -77,7 +78,7 @@ static func texture(key: String) -> Texture2D:
 	var record: Dictionary = data()["assets"][key]
 	# Source I_CLAW is explicitly zero-sized. A blank equipment glyph is not a
 	# load failure and must never silently borrow another weapon's icon.
-	return null if record["empty"] else load(record["res_path"])
+	return null if record["empty"] else InterfaceArt.texture(record["res_path"])
 
 
 ## Swaps the shape shown by a reused TextureRect and resets the rect to the new shape's
@@ -114,9 +115,15 @@ static func clear_panel(parent: Control) -> ColorRect:
 	return shade
 
 
+## The battle UI shape `resource` (ROOT + resource + ".SHP.png"), or its authored replacement
+## (InterfaceArt). Every load of a ROOT shape goes through here.
+static func ui_shape(resource: String) -> Texture2D:
+	return InterfaceArt.texture(ROOT + resource + ".SHP.png")
+
+
 static func board(parent: Node, resource: String, at: Vector2) -> TextureRect:
 	var image := TextureRect.new()
-	image.texture = load(ROOT + resource + ".SHP.png")
+	image.texture = ui_shape(resource)
 	image.position = at
 	image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	image.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -178,7 +185,7 @@ static func button(parent: Node, title: String, at: Vector2, dimensions: Vector2
 	var vertical := clampf(floorf((dimensions.y - line) / 2.0), 0.0, BUTTON_FRAME_MARGIN)
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var style := StyleBoxTexture.new()
-		style.texture = load(ROOT + "WINDOW50.SHP.png")
+		style.texture = ui_shape("WINDOW50")
 		style.set_texture_margin_all(BUTTON_FRAME_MARGIN)
 		style.content_margin_left = BUTTON_FRAME_MARGIN
 		style.content_margin_right = BUTTON_FRAME_MARGIN

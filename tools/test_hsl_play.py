@@ -19,6 +19,9 @@ class PlayLauncherTests(unittest.TestCase):
             for name in ("play.sh", "godot.sh"):
                 shutil.copy2(LAUNCHER.parent / name, project / "tools" / name)
             launcher = project / "tools" / "play.sh"
+            # A complete checkout: the launcher runs `hsl bootstrap` only when this table is missing.
+            (project / "content/imported/hsl/global/tables").mkdir(parents=True)
+            (project / "content/imported/hsl/global/tables/PLAYERS.TXT").write_bytes(b"")
             executable = root / "fake-godot"
             executable.write_text('''#!/bin/sh
 printf '%s\\n' "$*" >> "$CALLS"

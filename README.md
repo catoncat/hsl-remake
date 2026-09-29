@@ -20,15 +20,15 @@
 
 ## 运行
 
-需要 Godot 4.x 和 Python 3（Pillow、NumPy）。
+需要 Godot 4.x 和 Python 3.10+（`python3 -m pip install -r requirements-dev.txt`）。
 
 ```sh
 export HSL_ORIGINAL_DIR=/path/to/GAME-PAK
-tools/doctor.sh --original
+tools/doctor.sh
 tools/play.sh
 ```
 
-第一次运行会从原版数据导入素材，之后直接开游戏。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
+第一次运行会先从原版数据生成游戏要用的表格、素材和关卡文件（`python3 tools/hsl.py bootstrap`，十几分钟，中断了下次接着做），再开游戏；之后直接开。有几份从原版程序本身读出的数据还不能这样生成，缺了它们战斗里的范围格、指令菜单和招式特效画不出来，见 [MODDING「现在做不到的」](docs/MODDING.md#现在做不到的需要先改代码或工具)。Windows 与 Linux 见 [CONTRIBUTING](CONTRIBUTING.md#6-windows-与-linux)。
 
 ## 文档
 

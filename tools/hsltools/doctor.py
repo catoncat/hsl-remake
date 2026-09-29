@@ -132,7 +132,7 @@ def content(report: Report) -> None:
     # Original-derived content absent (a public checkout before the import, hsltools.original_content):
     # the scenario check has nothing to read.
     if not original_content.present():
-        report.ok('SKIP original-absent: first battle scenario not imported (HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...)')
+        report.ok('SKIP original-absent: first battle scenario not imported (HSL_ORIGINAL_DIR=... python3 tools/hsl.py bootstrap; tools/play.sh runs it)')
     else:
         try:
             check_scenario()

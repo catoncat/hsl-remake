@@ -355,7 +355,7 @@ func _build_buttons() -> void:
 func _icon_button(key: String, resource: String, caption: String) -> TextureButton:
 	var button := TextureButton.new()
 	button.name = "Button_" + key
-	button.texture_normal = load(BattleUISkin.ROOT + resource + ".SHP.png")
+	button.texture_normal = BattleUISkin.ui_shape(resource)
 	button.position = Vector2(BUTTON_CENTRES[key] - 21, BUTTON_Y - 21)
 	button.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(button)

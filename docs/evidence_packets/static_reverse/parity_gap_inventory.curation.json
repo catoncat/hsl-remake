@@ -1939,6 +1939,9 @@
         "opening-end-card"
       ]
     },
+    "provenance:game/common/InterfaceArt.gd|rules|remake-invented|": {
+      "no_visible_effect": "mod 界面图的路径查找；没放 authored 图时返回原路径，画面与原版导入件相同"
+    },
     "provenance:game/title/CampaignResumePrompt.gd|layout|remake-invented|": {
       "item": "campaign-flow-extras"
     },
