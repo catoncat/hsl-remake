@@ -37,6 +37,9 @@ const EffectObjectMotion = preload("res://game/battle/scene/EffectObjectMotion.g
 const MapObjectAnimation = preload("res://game/battle/runtime/MapObjectAnimation.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const StoryRainEmitter = preload("res://game/battle/runtime/StoryRainEmitter.gd")
+const TerrainEditRules = preload("res://game/sim/TerrainEditRules.gd")
+const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 ## Object ticks (shape_delay, obj_Data7, 16.16 velocities) are original ticks.
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const TICK_SECONDS := OriginalTick.TICK_SECONDS
@@ -48,6 +51,8 @@ const FIXED_POINT_ONE := 65536.0
 var _counts: Dictionary = {}
 ## One random state for every rain boss of the scene (the original's bosses share one stream).
 var _rain_stream: Dictionary = StoryRainEmitter.new_stream()
+## A story-only scene has no PlayLoop: its rain reads the scenario's WRD words instead.
+var _story_tiles: Dictionary = {}
 
 
 static func effect_kind(spec: Dictionary, symbol: String = "", level: int = 0) -> String:
@@ -144,6 +149,10 @@ func insert(runtime: Node, coordinator: Node, spec: Dictionary, all_specs: Dicti
 				emitter.name = "StoryEffect_%s_%d" % [symbol, index]
 				emitter.configure(drop_spec, str(fields.get("obj_Data3", "")), _rain_stream)
 				emitter.camera_top_left = func() -> Vector2: return _view_top_left(runtime)
+				if _story_tiles.is_empty() and not (runtime.get("play_loop") as Dictionary).has("tiles"):
+					_story_tiles = _scenario_tiles(runtime)
+				var story_tiles := _story_tiles
+				emitter.is_water = func(world: Vector2i) -> bool: return _water_at(runtime, world, story_tiles)
 				var stage = runtime.get("stage")
 				if stage != null and stage.has_method("_close_up_hidden"):
 					emitter.close_up_hidden = Callable(stage, "_close_up_hidden")
@@ -343,3 +352,24 @@ class FadeSprite extends Sprite2D:
 			scale = base_scale * (1.0 + 0.5 * t)
 		if t >= 1.0:
 			queue_free()
+
+
+## 0x43dec0: the map word under a world pixel (0x46c091, cells px >> 5; off the map −1, read as
+## not water) & 0x8000, from the live tiles (terrain edits included) as footsteps read it; a
+## story-only scene reads its scenario's WRD words (story_tiles).
+static func _water_at(runtime: Node, world: Vector2i, story_tiles: Dictionary) -> bool:
+	var map_config = runtime.get("map_config")
+	if map_config == null:
+		return false
+	var cell: Vector2i = map_config.world_to_grid(Vector2(world))
+	var loop: Dictionary = runtime.get("play_loop")
+	var tiles: Dictionary = TerrainEditRules.tiles(loop) if loop.has("tiles") else story_tiles
+	return (int((tiles.get(cell, {}) as Dictionary).get("tile_id", 0)) & StoryRainEmitter.WATER_BIT) != 0
+
+
+static func _scenario_tiles(runtime: Node) -> Dictionary:
+	var scenario: Dictionary = runtime.get("first_battle_scenario")
+	var path := BattleScenario.resource_path(scenario, "terrain")
+	if path == "":
+		return {}
+	return WrdTerrainTiles.load_tiles(path, scenario.get("terrain_overrides", [])).get("tiles", {})

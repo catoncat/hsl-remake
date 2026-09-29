@@ -10,7 +10,8 @@ extends RefCounted
 ##   area   0x4100e0 → 0x40fdc0 flood for a matrix record, a straight line for RANGE 21..23
 ##          (player effect areas 0x444f08／0x4450e0: mode 2 offensive, 3 support)
 ##
-## Every step (hsl01.exe, static-derived, 354 native returns in original_range_terrain.json):
+## Every step (hsl01.exe, static-derived, 368 native returns in original_range_terrain.json, 14 of them
+## from a 3×3 body: 0x40fa80 starts at the anchor = body centre, 0x40f8b0 never reads the size):
 ## off-map stop; a 0x4000 word stops; a zero RANGE value stops; coverage already >= power
 ## stops; a positive value writes the power unless the step table's side mask excludes the
 ## occupant (pmALL kept, except a pmMagicAttack pmALL occupant for flag 1), then an onward

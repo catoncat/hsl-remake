@@ -45,6 +45,13 @@ GRIDS = {
                                  [10, 6, E], [7, 7, P]]),
     # One pillar two cells north and one occupant-free wall pair west: onward checks without side masks.
     'pillar': dict(size=15, words=[[7, 5, WALL], [4, 6, WALL], [4, 7, WALL]]),
+    # 3x3 bodies (size_type 1; 0x411a30 writes the side word on all nine cells): an E body around (7,7)
+    # with a wall right above it and one beside its lower right cell, a P body around (11,11), an E body
+    # in the (1,1) corner, a magic-only pmALL and an N occupant.
+    'large': dict(size=15, words=[[x, y, E] for y in (6, 7, 8) for x in (6, 7, 8)]
+                  + [[x, y, P] for y in (10, 11, 12) for x in (10, 11, 12)]
+                  + [[x, y, E] for y in (0, 1, 2) for x in (0, 1, 2)]
+                  + [[7, 5, WALL], [9, 8, WALL], [4, 7, ALL | MAGIC], [7, 11, N]]),
 }
 MATRIX = ['range1Cell', 'range2Cell', 'range3Cell', 'range3CellShoot', 'range4CellShoot', 'range5CellShoot',
           'range6CellShoot', 'range2CellCircle', 'range3CellCircle', 'range4CellCircle', 'range3CellThrust',
@@ -75,6 +82,16 @@ def cases():
             out.append(dict(builder='weapon', grid='wall', code=code, origin=[7, 7], mode=mode, flag5=1))
         out.append(dict(builder='weapon', grid='wall', code=code, origin=[7, 7], mode=2, flag5=0))
         out.append(dict(builder='weapon', grid='wall', code=code, origin=[1, 13], mode=2, flag5=1))
+    # A 3x3 actor: 0x40fa80 passes its anchor (+4/+8, the body centre) and 0x409090 its index +17
+    # (range1..4CellFull). Weapon/counter/in-range from the E body, the same in the map corner, the
+    # station coverage 0x40fa80(target, range, mode, 0) around the P body and 0x40d8b0's first body
+    # cell (px-32, py-32); a P-controlled 3x3 actor (mode 2) from the P body.
+    for code in ['range1CellFull', 'range2CellFull', 'range3CellFull', 'range4CellFull']:
+        out.append(dict(builder='weapon', grid='large', code=code, origin=[7, 7], mode=3, flag5=1))
+        out.append(dict(builder='weapon', grid='large', code=code, origin=[1, 1], mode=3, flag5=1))
+        out.append(dict(builder='weapon', grid='large', code=code, origin=[11, 11], mode=3, flag5=0))
+    out.append(dict(builder='weapon', grid='large', code='range2CellFull', origin=[10, 10], mode=3, flag5=0))
+    out.append(dict(builder='weapon', grid='large', code='range2CellFull', origin=[11, 11], mode=2, flag5=1))
     for grid in ['open', 'wall', 'pillar']:
         for code in ['range1Cell', 'range2Cell', 'range1CellFull', 'range2CellCircle', 'range3CellCircle',
                      'range2CellFull', 'range3CellThrust', 'range4CellCircle']:

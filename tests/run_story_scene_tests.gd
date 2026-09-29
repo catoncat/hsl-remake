@@ -401,6 +401,7 @@ func _run_level_12_preview() -> void:
 		if record.has("effect"):
 			effects[str(record["effect"])] = int(effects.get(str(record["effect"]), 0)) + 1
 	_assert_eq(effects, {"rain_emitter": 4, "background_sound": 1}, "four rain controllers and the rain sound start the storm")
+	_check_water_waves(scene)
 	var card = scene.get_node_or_null("UI/ChapterEndCard")
 	_assert_true(card != null, "without the remade battle the preview ends on the not-remade card")
 	var space := InputEventKey.new()
@@ -415,6 +416,40 @@ func _run_level_12_preview() -> void:
 	scene.queue_free()
 	await process_frame
 	await process_frame
+
+
+## 0x43c6ac..0x43c735: a drop landing on a map word with 0x8000 (1392 of LEVEL012's 2700
+## cells) leaves 698 Wave_Up／699 Wave_Up2; defProcWaterWave (0x43c3f0) first runs the next
+## tick (zoom 0.5, +0xc ± 1), then +0xc00 a tick, engMIX 16 after 18 calls, one level a tick.
+func _check_water_waves(scene) -> void:
+	var emitter = null
+	for child in scene.world_root.get_children():
+		if child.has_method("_step_wave"):
+			emitter = child
+			break
+	_assert_true(emitter != null, "the rain controllers run as StoryRainEmitter nodes")
+	if emitter == null:
+		return
+	var pair: Array = []
+	var trace: Array = []
+	for _tick in 400:
+		emitter.tick()
+		if pair.is_empty():
+			if emitter.waves.size() >= 2 and bool(emitter.waves[-1]["first"]):
+				pair = [emitter.waves[-2], emitter.waves[-1]]
+			continue
+		if not emitter.waves.any(func(wave): return is_same(wave, pair[1])):
+			break
+		trace.append([int(pair[1]["zoom"]), bool(pair[1]["mix"]), int(pair[1]["level"])])
+	_assert_true(not pair.is_empty(), "drops landing on water leave a 698／699 pair")
+	if pair.is_empty():
+		return
+	_assert_eq(int(pair[1]["bucket"]) - int(pair[0]["bucket"]), 2, "Wave_Up draws at the drop's bucket − 1, Wave_Up2 at + 1")
+	_assert_eq(trace.size(), 34, "a wave is drawn 34 ticks: 19 at full add, then engMIX 15..1, deleted at 0")
+	if trace.size() == 34:
+		_assert_eq(trace[0], [0x8000, false, 0], "the first call sets zoom 0.5 with no engMIX")
+		_assert_eq(trace[18], [0x8000 + 18 * 0xc00, true, 16], "18 calls later engMIX level 16")
+		_assert_eq(trace[33], [0x8000 + 33 * 0xc00, true, 1], "the last drawn tick is level 1 at zoom 0x20c00")
 
 
 func _seeded_world(world_map: Dictionary, world_point: int) -> Dictionary:

@@ -684,7 +684,7 @@ func _native_returns() -> void:
 			got = RangePropagationRules.area_coverage(rows[code], _cell(input["target"]), grid["words"], grid["size"], int(input["mode"]))
 		counts[kind] += 1
 		check(got == _native(case), "native %s %s %s %s mode %d: expected %s got %s" % [kind, input["grid"], code, str(input.get("origin", input.get("target"))), int(input["mode"]), str(_native(case)), str(got)])
-	check(counts["weapon"] == 124 and counts["area"] + counts["line"] == 230, "all 354 native returns compared: %s" % str(counts))
+	check(counts["weapon"] == 138 and counts["area"] + counts["line"] == 230, "all 368 native returns compared: %s" % str(counts))
 
 
 ## battle_003 opening: 胡 (4,9) with range3CellShoot. (4,7) carries the WRD 0x4000 flag; the

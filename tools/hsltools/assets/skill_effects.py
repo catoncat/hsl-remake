@@ -38,8 +38,10 @@ OBJCOMD_MOTION = Path('content/generated/hsl/skills/objcomd_motion.json')
 OBJECTS = Path('content/imported/hsl/shared/first_skill/global.obs')
 ROOT = Path('content/imported/hsl/shared/skill_effects')
 # Story-object shapes no effect script reaches: global.obs 706 obj_Fire_Smoke, whose defProcFireSmoke
-# (0x43c260) draws its own +0x32 every tick (噴人沼氣 smoke, docs/evidence_packets/static_reverse/original_poison_gas.md).
-STORY_SHAPES = ('MAGIC\\SMOKE001.SHP',)
+# (0x43c260) draws its own +0x32 every tick (噴人沼氣 smoke, docs/evidence_packets/static_reverse/original_poison_gas.md);
+# 698 Wave_Up／699 Wave_Up2, the defProcWaterWave pair a rain drop leaves on water
+# (docs/evidence_packets/static_reverse/original_story_rain.md).
+STORY_SHAPES = ('MAGIC\\SMOKE001.SHP', 'MAGIC\\WAVEUP001.SHP', 'MAGIC\\WAVEUP002.SHP')
 MANIFEST = ROOT / 'manifest.json'
 SCHEMA = 'hsl_skill_effects.v1'
 # EFFECTS.TXT ani* verbs SkillEffectScriptPlayer.gd interprets (ANIMAL.H names its parameters);

@@ -663,18 +663,18 @@
     },
     {
       "id": "story-rain-water-wave",
-      "difference": "雨滴落在水上时原版在落点生 obj_Water_Wave1／2 两个水波对象，重制不生不画；另有三处雨的读法未定：落下中恒桶 5 来自栈残值推导未实测，淡出中的雨滴与其后首颗下落雨滴的深度槽取前一对象残值（未读，重制按桶 5），400 对象上限重制只数本发射器雨滴；雨用自有随机状态（种子 10）而非原版全局流，是为不挪动 PlayLoop global_rng 的有意偏离",
-      "original": "落地那 tick 0x43dec0 测落点地形字 & 0x8000，水上 0x45e307 生模板 698／699，深度抄雨滴；水波对象自己的过程与画法未读",
+      "difference": "雨的落水水波已照原版画，剩三处雨的读法未定或有意偏离：落下中恒桶 5 来自栈残值推导未实测，淡出中的雨滴与其后首颗下落雨滴的深度槽取前一对象残值（未读，重制按桶 5）；雨用自有随机状态（种子 10）而非原版全局流，是为不挪动 PlayLoop global_rng 的有意偏离",
+      "original": "落地那 tick 0x43dec0 测落点地形字 & 0x8000（越界 −1 不算水），水上 0x45e307 生 698／699，defProcWaterWave 0x43c3f0 下一 tick 首调：缩放 0.5、桶 ±1，每 tick +0xc00，18 调后 engMIX 16 逐级淡出；雨滴深度槽为上一对象过程的陈旧栈字，淡出段的残值未读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_story_rain.md"
       ],
-      "remake": "StoryRainEmitter 不查落点地形；两模板没有任何关卡导入",
+      "remake": "StoryRainEmitter 落地查 is_water 生两个水波，时间线、缩放、桶照原版，場景效果 关与特写期间照画；深度按桶 5；400 上限数本发射器雨滴与水波；种子 10 自有随机状态",
       "remake_code": [
         "game/battle/runtime/StoryRainEmitter.gd"
       ],
       "original_status": "read_partial",
       "visibility": "some_levels",
-      "effort": "M",
+      "effort": "S",
       "category": "地图与物件"
     },
     {
@@ -1042,7 +1042,7 @@
     },
     {
       "id": "ai-skill-buckets",
-      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；残血路径的魔法／特技挑行已照原版（lane AIDYINGPICK）：共用的（first, fallback）逐桶在全部可负担行上走 0x40c770（桶 3／4 带候选的目标掩码 0x40c2d0，0x40d36d..0x40d3a5）或 0x40dd80，挑中行只取含该候选的落点（0x40c9a0 flag 1，0x40cc20..0x40cc6e），落空换备用桶一次（0x40d494 → 0x40d3bc），两桶都不成换人，状态行也能补刀；魔法桶 3／4 退魔行的 0／200 门（0x40c910..0x40c94a）残血检查与 state 0xa 都已接入；门看 mask&0x60 与 0x40b29d 只清 0x10／0x20 不配，疑似原版笔误，照原版保留，但重制退魔落点按 status&0x30 判有用，只带抗性提升的目标过门后无落点改走备用桶（原版会施放一发清不掉东西的退魔）；剩余＝魔法桶 5（增益援助）的 0x40c2d0 掩码门未模拟：原版 0x40d38d 对桶 5 同样取目标掩码，0x40c770 在增益位与掩码无交集时 roll＝0 必选、有交集（目标已有该增益）时仍按 rand(100)+1 与 use_ratio 抽（0x40c8d9..0x40c8e7），重制 AISupportPlanning 预先剔除目标已有增益的行；特技桶 5（0x40dee1..0x40deeb，增益位全在掩码内置 200）与重制预剔除一致；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支已照原版（lane AISELFMOVE）：本人分支 +0xc（效果范围序号）为 0 时 0x40cdd9、一般分支最高覆盖 1 时 0x40d0ed，都先 0x40bb80 取威胁，再经 0x413930（0x413740 模式 1，移动泛洪里离威胁最远的可停格，同距掷 &1、拥挤格 rand(100)<80 跳过）与 0x410a50 走过去、对自己施放，无威胁／无格／走不到时原地施放；自救回复／净化（AISelfPreservation）与援助检查退到施法者本人（0x43fce1..0x43fd46）都走这两条；剩余＝3×3 行动者的逃离泛洪沿用移动包络（provisional）",
+      "difference": "AI 技能桶的全部技能与评分未复原；施法站位、自救与友军援助的组合顺序是暂定；state 0xa 法术分支（只问行动者有无可负担的 3／4 桶行、可达范围内取覆盖最多的施放中心、移动施法搜索、挑中无中心的行退到另一桶一次）已照原版（lane AI-PRIO）；AI 选法术／绝技不估伤、多段绝技的段数不进 AI（伤害公式 0x40aa80 只有两处结算调用者），重制同样只数有效目标，已一致（lane AIMULTIHIT）；残血路径的魔法／特技挑行已照原版（lane AIDYINGPICK）：共用的（first, fallback）逐桶在全部可负担行上走 0x40c770（桶 3／4 带候选的目标掩码 0x40c2d0，0x40d36d..0x40d3a5）或 0x40dd80，挑中行只取含该候选的落点（0x40c9a0 flag 1，0x40cc20..0x40cc6e），落空换备用桶一次（0x40d494 → 0x40d3bc），两桶都不成换人，状态行也能补刀；魔法桶 3／4 退魔行的 0／200 门（0x40c910..0x40c94a）残血检查与 state 0xa 都已接入；门看 mask&0x60 与 0x40b29d 只清 0x10／0x20 不配，疑似原版笔误，照原版保留，但重制退魔落点按 status&0x30 判有用，只带抗性提升的目标过门后无落点改走备用桶（原版会施放一发清不掉东西的退魔）；剩余＝魔法桶 5（增益援助）的 0x40c2d0 掩码门未模拟：原版 0x40d38d 对桶 5 同样取目标掩码，0x40c770 在增益位与掩码无交集时 roll＝0 必选、有交集（目标已有该增益）时仍按 rand(100)+1 与 use_ratio 抽（0x40c8d9..0x40c8e7），重制 AISupportPlanning 预先剔除目标已有增益的行；特技桶 5（0x40dee1..0x40deeb，增益位全在掩码内置 200）与重制预剔除一致；原版每次行动先抽的优先级链（choose_check／low_hp_target／self_recovery／area_order／next_check）重制不抽（抽取结构不复刻）——聖靈之森 · 遭遇戰（LEVEL564）第 1 回合 actor049_5 在 [32,12] 原地对友军放辅助魔法（种子 9、25）即此：AITHREAT 前的两个 AI 文件同样出现，喂原版抽取回放（ai_replay）两种子都与原版一致（移到 [29,11] 待机），40 种子原版 0 次、重制 2 次（p≈0.49），重制预先跳过无法行动的检查（bit 1、bit 2），因此只在 AISupportPlanning.choose 里抽一次 0x440db5；原版在同一处还会抽 0x440ddf、0x440e1b 的重掷和自救、濒死检查的抽取，所以用作援助检查的掷值与原版错位（抽取结构差，不是规则差）；施放目标为行动者本人时 0x40cca0 的两条自逃分支已照原版（lane AISELFMOVE）：本人分支 +0xc（效果范围序号）为 0 时 0x40cdd9、一般分支最高覆盖 1 时 0x40d0ed，都先 0x40bb80 取威胁，再经 0x413930（0x413740 模式 1，移动泛洪里离威胁最远的可停格，同距掷 &1、拥挤格 rand(100)<80 跳过）与 0x410a50 走过去、对自己施放，无威胁／无格／走不到时原地施放；自救回复／净化（AISelfPreservation）与援助检查退到施法者本人（0x43fce1..0x43fd46）都走这两条；剩余＝3×3 行动者的逃离泛洪沿用移动包络（provisional）；施放覆盖计数原版 0x40c9a0 逐格计（字 & 0x70000，0x40cb06..0x40cb14），3×3 目标每个被覆盖的身体格各计一、移动施放时施法者只写锚点一格（0x4119f0），重制按有用单位计，涉及 3×3 单位时 AI 选的施放中心可能不同（未改）",
       "original": "原桶结构与概率已读，全部技能评分未复原；state 0xa 施法 0x40c570／0x40c620／0x40d340／0x40df70／0x40c9a0／0x40cca0／0x40d1c8 已读并接入，选择链不调 0x40aa80（调用者只有 0x40b8d0 地图打击与 0x40b8f0 逐击结算）已读，残血路径 0x40d4e0 循环外一次、全部候选共用（0x43f7bf）已读并接入，0x40c2d0 掩码（桶 3／4／5，0x40d38d..0x40d3a5）已读，桶 3／4 与退魔门 0x40c910..0x40c94a 已接入、魔法桶 5 未接入（0x40c8d9..0x40c8e7），残血挑行 0x40d340 → 0x40c770／0x40df70 → 0x40dd80、落点 0x40c9a0 flag 1（0x40cc20..0x40cc6e、0x40cfb5..0x40cfda）与备用桶 0x40d494 → 0x40d3bc 已读并接入（lane AIDYINGPICK），移动施法威胁 0x40bb80(actor, 3, 0, 8) 已读并接入（lane AITHREAT），自施法逃离 0x40cdd9／0x40d0ed → 0x413930／0x413740(1) → 0x410a50 已读并接入（lane AISELFMOVE）",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_ai_decisions.md",
@@ -1136,13 +1136,13 @@
     },
     {
       "id": "weapon-range-semantics",
-      "difference": "武器射程：玩家武器格、反击、敌方武器格显示、AI 站位与出手都按原 0x40f8b0 地形传播（0x4000 停线、前方检查、同侧格不写），墙后目标 AI 打不到；剩重制的接近目标格收据 approach_goals 仍读平铺掩码（无原版对应调用），大型角色的传播起点与局部框裁剪未验证",
-      "original": "0x40f8b0／0x40f5d0 传播、0x40eb80 前方检查、步进表与 0x40bab0 调用方 mode 已读，354 次原函数返回逐字节对拍；AI 调用方 0x40cca0／0x40d340／0x40d530／0x40d8b0／0x40df70 已定位",
+      "difference": "武器射程：玩家武器格、反击、敌方武器格显示、AI 站位与出手都按原 0x40f8b0 地形传播（0x4000 停线、前方检查、同侧格不写），墙后目标 AI 打不到；3×3 角色从身体中心起算、射程索引 +17、自身九格侧位字参与排除与前方检查，已与原函数逐字节一致；重制的接近目标格收据 approach_goals 读平铺掩码，决策不读；剩玩家武器命令里 0x444509..0x444592 一段（按 0x4c2394 位图 2..6 另建 range 9..13、mode 4 覆盖）未验证",
+      "original": "0x40f8b0／0x40f5d0 传播、0x40eb80 前方检查、步进表与 0x40bab0 调用方 mode 已读，368 次原函数返回逐字节对拍（含 14 次 3×3 起点）；AI 调用方 0x40cca0／0x40d340／0x40d530／0x40d8b0／0x40df70 已定位",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_weapon_ranges.md",
         "docs/evidence_packets/static_reverse/original_line_ranges.md"
       ],
-      "remake": "RangePropagationRules 传播，BattlePlayLoop.weapon_cells 接玩家武器、反击与敌方武器格，AINavigationRules.weapon_terrain 接 AI 站位与到站复查；approach_goals 仍用平铺偏移",
+      "remake": "RangePropagationRules 传播，BattlePlayLoop.weapon_cells 接玩家武器、反击与敌方武器格，AINavigationRules.weapon_terrain 接 AI 站位与到站复查；approach_goals 收据仍用平铺偏移，只进 candidate_filters",
       "remake_code": [
         "game/sim/RangePropagationRules.gd:weapon_coverage",
         "game/sim/loop/BattlePlayLoop.gd:weapon_cells",
@@ -2554,9 +2554,6 @@
     "scope:docs/evidence_packets/static_reverse/original_town_job_up.md|provisional|018 keeps 009 frames": {
       "item": "job-018-frames"
     },
-    "scope:docs/evidence_packets/static_reverse/original_weapon_ranges.md|provisional|AI 接近目标格平铺、大型角色锚点": {
-      "item": "weapon-range-semantics"
-    },
     "scope:docs/evidence_packets/static_reverse/second_battle_opening_script.md|provisional|": {
       "item": "winfail-readings"
     },
@@ -3206,7 +3203,7 @@
     "provenance:game/battle/runtime/StoryRainEmitter.gd|layout|provisional|": {
       "item": "story-rain-water-wave"
     },
-    "scope:docs/evidence_packets/static_reverse/original_story_rain.md|provisional|落水水波模板 698／699 未导入不画、400 对象上限只数雨滴、每 tick 第一滴的陈旧栈字取自前一滴": {
+    "scope:docs/evidence_packets/static_reverse/original_story_rain.md|provisional|400 对象上限只数本发射器的雨滴与水波、每 tick 第一滴的陈旧栈字取自前一滴": {
       "item": "story-rain-water-wave"
     },
     "sentence:docs/evidence_packets/static_reverse/original_draw_order.md#de927b7b5f": {

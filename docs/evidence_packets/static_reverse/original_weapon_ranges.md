@@ -1,17 +1,18 @@
 # 武器射程：武器字来源、RANGE 掩码与地形传播
 
-> evidence: static-derived; resource-derived: EVEF 装备字为零; provisional: AI 接近目标格平铺、大型角色锚点 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40c9a0, 0x40cca0, 0x40d340, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x4119f0, 0x411a30, 0x411b90, 0x42bd50, 0x43f79b, 0x441779, 0x441a73, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_autoplay_sweep_tests.gd, run_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: EVEF 装备字为零 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40c9a0, 0x40cca0, 0x40d340, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x4119f0, 0x411a30, 0x411b90, 0x42bd50, 0x43f79b, 0x441779, 0x441a73, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_autoplay_sweep_tests.gd, run_tests.gd · updated: 2026-09-29
 
 ## 结论
 
-- 原版：射程读 live 角色记录 +0xec 的武器字（PLAYERS `weapon_equip` 复制而来，EVEF 非零实例字可覆盖），武器 0 → 范围 0；`ITEM.attack_range` 选 RANGE 记录，但目标格不是正掩码本身——武器与施放范围由 `0x40f8b0` 从起点四向深度优先传播，效果区域由 `0x4100e0` 矩阵分支调 `0x40fdc0`；只读地图字（WRD `0x4000` 与占位者侧位），不读高度；`0x4000` 格停线且不写，障碍前方检查使本格照写但不外传（static-derived；354 次完整执行逐字节对拍）。
+- 原版：射程读 live 角色记录 +0xec 的武器字（PLAYERS `weapon_equip` 复制而来，EVEF 非零实例字可覆盖），武器 0 → 范围 0；`ITEM.attack_range` 选 RANGE 记录，但目标格不是正掩码本身——武器与施放范围由 `0x40f8b0` 从起点四向深度优先传播，效果区域由 `0x4100e0` 矩阵分支调 `0x40fdc0`；只读地图字（WRD `0x4000` 与占位者侧位），不读高度；`0x4000` 格停线且不写，障碍前方检查使本格照写但不外传（static-derived；368 次完整执行逐字节对拍）。
+- 原版大型角色（`size_type` 1）：`0x40fa80` 把角色 +4／+8（3×3 锚点＝身体中心）交给 `0x40f8b0`，`0x40f8b0` 不读体型；射程索引由 `0x409090` +17 夹到 20（range1..4CellFull），自身九格带侧位字，照常被步进表排除、照常做前方检查；作为目标时 `0x40fb20` 读 +0x2c，九个身体格逐个查覆盖（static-derived：`0x40fa80`、`0x409090`、`0x40fb20` 为指令读法；原生执行只覆盖 `0x40f8b0` 从 3×3 身体内部起算的 14 次，逐字节对拍）。
 - 原版 AI 施放：规划与出手同一套传播——施放范围 `0x40f8b0(施放格, 射程, −1, 0)`（与玩家施放同 mode），效果区域 `0x4100e0(行动者, x, y, 区域, mode)`，mode 由 AI 分支写进 `0x4c2c78`：进攻 `0x40bab0`（P 2、E 3、N 7），援助 `0x40bb00`（P 8、E 9、N 10）；规划逐个候选格先抹自身占位再把自身写到候选格（static-derived）。
 - 重制：`RangePropagationRules`（`weapon_coverage`／`area_coverage`／`line_coverage`）由玩家武器格、反击资格、敌方武器格显示、玩家施放范围与效果区域、AI 武器站位、AI 进攻与援助施放的规划和结算共用；`PositionCapabilityRules.attack_pattern` 选掩码（static-derived）。
-- 差异：`approach_goals`（重制的接近目标格收据，无原版对应调用）仍读平铺掩码；大型角色以 `FootprintRules` 锚点为传播起点（provisional）。
+- 重制大型角色以 `FootprintRules` 锚点（身体中心）为传播起点、`PositionCapabilityRules.attack_pattern` 取 +17 记录、`cell_words` 给九格写侧位字，与原版一致。`approach_goals`（重制的接近目标格收据，无原版对应调用）读平铺掩码，只进 `candidate_filters.without_approach` 计数与全图路线的待解格集合，任何决策都不读，行为等价。
 
 ## 证据
 
-**static-derived**（`hsl01.exe` sha256 `f0b5f835…`；[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar 三张 15×15 格子上完整执行 354 次：武器 124、矩阵区域 104、直线 126）
+**static-derived**（`hsl01.exe` sha256 `f0b5f835…`；[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar／large 四张 15×15 格子上完整执行 368 次：武器 138、矩阵区域 104、直线 126）
 
 武器字来源：
 
@@ -28,7 +29,7 @@
 | 规则 | 原版做法 |
 | --- | --- |
 | 地图字 `0x4c0928` | 每格一个 DWORD：WRD `movement_flags & 0x4000` 或上占位者侧位（P `0x10000`、E `0x20000`、N `0x40000`，pmALL `0x70000`，pmMagicAttack `0x800000`）；高度（h 255、blocks_movement）不参与 |
-| 起点 | `0x40f8b0`（包装 `0x40fa80`）：起点写 `half+1`，除非命中 `0x40fa48[mode]` 排除位；`0x4100e0` 矩阵：中心写 `half+1`，除非命中 `0x410498[mode]` 且非 pmALL，或是无角色的 `0x850000` 字；中心不查 `0x4000` 与 RANGE 值 |
+| 起点 | `0x40f8b0`（包装 `0x40fa80`：`0x40fa93`／`0x40fa96` 取角色 +8／+4 像素作起点）：起点写 `half+1`，除非命中 `0x40fa48[mode]` 排除位；局部框宽高＝min(size, 地图宽／高)（`0x40f8f0..0x40f917`），中心＝框宽高的一半，与起点位置无关；`0x4100e0` 矩阵：中心写 `half+1`，除非命中 `0x410498[mode]` 且非 pmALL，或是无角色的 `0x850000` 字；中心不查 `0x4000` 与 RANGE 值 |
 | 方向与顺序 | 起点四邻各调一次 `0x40f5d0`（上、下、左、右，power＝half）；每步写完深度优先：上→上、左，再转右；下→下、左，再转右；左→上、下，再继续左；右→上、下，再继续右 |
 | 每步次序 | 越界停；含 `0x4000` 停；RANGE 值 0 停；已写 ≥ power 停；值 > 0 写 power（被排除则不写）并做前方检查；power−1 到 0 停；值 < 0 只传递、不写、不查前方 |
 | 前方检查 | `0x40eb80(x, y, dir, 0x4000)`：正前方与左右两侧三格任一带 `0x4000` 时本格照写、power 置 0；越界按 0 读；只在步进表 check 位为 1 的 mode 做（`0x40f874`：2、3、7、8、9、10；`0x4100a0`：除 0、1、4、5 外） |
@@ -44,7 +45,7 @@ AI 施放（`hsl01.exe` 指令读法）：
 | --- | --- | --- |
 | 进攻分支写 mode | `0x43f851`／`0x43f8d4`／`0x43fe3f`／`0x43febb` `call 0x40bab0` → `mov [0x4c2c78], eax`，同值作第 5 参给 `0x40df70`（SPECIAL）／`0x40d340`（MAGIC） | 进攻区域 mode＝P 2、E 3、N 7 |
 | 援助分支写 mode | `0x43fad6`／`0x43faf9`／`0x440adb`／`0x440af8` `call 0x40bb00` → `mov [0x4c2c78], eax`；`0x40bb00` 读 player_mode：`0x10000`→8、`0x20000`→9、`0x40000`→10，否则返回 `0x20000` | 援助区域 mode＝P 8、E 9、N 10 |
-| 规划：移动施放格 | `0x40cca0`：候选格字 `& 0x74000` 非零跳过（`0x40cf34`）；`0x411b90` 抹自身占位（`0x40cf47`）、`0x4119f0` 写到候选格（`0x40cf55`）；`0x4097d0`／`0x409830` 取射程后 `0x40f8b0(px, py, 射程, −1, 0)`（`0x40cfb0`）；`0x40c9a0` 评估后 `0x411a10`／`0x411a30` 复原 | 施放范围从候选格传播，mode −1、flag 0 |
+| 规划：移动施放格 | `0x40cca0`：候选格字 `& 0x74000` 非零跳过（`0x40cf34`）；`0x411b90` 抹自身占位（`0x40cf47`，3×3 抹九格）、`0x4119f0` 写到候选格（`0x40cf55`；`0x4119f0` → `0x411900` 只或一格，不读 +0x2c，3×3 施法者也只写锚点）；`0x4097d0`／`0x409830` 取射程后 `0x40f8b0(px, py, 射程, −1, 0)`（`0x40cfb0`）；`0x40c9a0` 评估后 `0x411a10`／`0x411a30` 复原 | 施放范围从候选格传播，mode −1、flag 0 |
 | 规划：原地 | `0x40d340` 内 `0x40d459` `0x40f8b0(自身格, 射程, −1, 0)`，`0x40d47e` 调 `0x40c9a0`，第 6 参＝`0x40d340` 第 5 参（mode） | 同上 |
 | 规划：区域计数 | `0x40c9a0` 遍历 `*0x4c1b48` 已写格，`0x40ca71` `0x4100e0(行动者, x, y, 区域, 第 6 参)`；再遍历 `*0x4c1b4c`，字 `& 0x70000` 非零且非 pmALL 计一（`0x40cb06..0x40cb14`） | 效果区域按 mode 传播 |
 | 出手 | MAGIC `0x441779` `0x40fa80(行动者, 射程, −1, 0)`、`0x4417a6`／`0x4418fd` `0x4100e0(…, [0x4c2c78])`；SPECIAL `0x441a73` 同 −1、0，`0x441aa0`／`0x441c02` 同 `[0x4c2c78]` | 结算读同一组格 |
@@ -75,17 +76,17 @@ AI 施放（`hsl01.exe` 指令读法）：
 | 玩家施放与效果区域 | `SkillTargetRules.cells(…, terrain)`、`BattlePlayLoop.skill_terrain`／`player_cast_terrain`；`BattleLoopCombat._skill_context` 放进 `range_terrain`，悬停自绘格、目标行、`magic_target_id_at_coord`、`RepeatedSpecialRules.prepare` 读同一份 |
 | AI 武器 | `AINavigationRules.weapon_terrain` → `attack_stations(…, terrain)`；`BattleLoopAI._ai_station_attack` 到站 `target_in_range`，不含目标回 `move`，`wait_reason = station_out_of_range` |
 | AI 技能 | `AISkillPlanning.cast_terrain`（抹自身占位后写到施放格；`cast_mode` −1，`area_modes` 进攻 `offensive_mode`、援助 `support_mode`）交给 `AISkillPlanning`／`AISupportPlanning` 的 `SkillTargetRules.cells`、`target_for_center` 与 `prepare_cast`；出手 `BattleLoopCombat.skill_context(loop, 施放者, 施放格)` 取同一份 |
-| AI 接近 | `AINavigationRules.approach_goals` 仍平铺（provisional，重制收据） |
+| AI 接近 | `AINavigationRules.approach_goals` 平铺（重制收据：只进 `candidate_filters.without_approach` 与全图路线的待解格，决策不读） |
 | 自动对局 | `tests/support/Autoplay.gd` `_destination` 落脚格按落脚后的武器洪泛判定 |
 
 ## 复现
 
-`python3 tools/hsl.py check range_terrain`；重制侧 `tools/godot.sh --headless --script tests/run_tests.gd`（354 次逐字节重放，第 3 关与第 504 关预览＝结算）与 `tests/run_ai_navigation_tests.gd`（`terrain_range_cases`）。
+`python3 tools/hsl.py check range_terrain`；重制侧 `tools/godot.sh --headless --script tests/run_tests.gd`（368 次逐字节重放，第 3 关与第 504 关预览＝结算）与 `tests/run_ai_navigation_tests.gd`（`terrain_range_cases`）。
 
 ## 边界
 
-- 原函数把 RANGE 局部框裁在地图内，比记录小的地图未执行（注册战场都 ≥ 20×15，最大记录 13×13）。
-- 大型角色的传播起点取锚点还是身体未验证。
+- 局部框只在地图比记录小时变窄，比记录小的地图未执行（注册战场都 ≥ 20×15，最大记录 13×13）。
+- `0x40c9a0` 按格计数（字 `& 0x70000`），3×3 占位者每个被覆盖的身体格各计一，移动施放时施法者自己只在锚点一格；重制按单位数有效目标（见差异清单 `ai-skill-buckets`）。
 - `0x44451e`–`0x444592`（range 9..13、mode 4、flag 1，受 `0x45b554` 门控）未验证。
 - `0x44cb10` 敌方槽表满返回 0 的调用方处理未读；宝箱实例字属 [original_treasure.md](original_treasure.md)。
 - range2／4／6CellCircle、range4CellThrust、range1CellFull、Dir 系列不接受为普通武器（没有 ITEM 武器使用）；直线见 [original_line_ranges.md](original_line_ranges.md)。

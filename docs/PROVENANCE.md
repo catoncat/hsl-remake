@@ -35,7 +35,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [SceneTimeline](../game/battle/runtime/SceneTimeline.gd) | resource-derived [STORY051.TXT](../content/imported/hsl/chapter01/source_texts/STORY051.TXT); static-derived [original_select_insert_event.md](../docs/evidence_packets/static_reverse/original_select_insert_event.md) | n/a | n/a | n/a | n/a |
 | [ShowNumberStyle](../game/battle/runtime/ShowNumberStyle.gd) | n/a | resource-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | n/a | n/a |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | n/a | resource-derived [map_objects.json](../content/imported/hsl/chapter01/map_objects.json); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); remake-invented; provisional | n/a | static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json) | resource-derived [scripts](../content/imported/hsl/chapter01/scripts); static-derived [first_battle_audio.md](../docs/evidence_packets/static_reverse/first_battle_audio.md) |
-| [StoryRainEmitter](../game/battle/runtime/StoryRainEmitter.gd) | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md) | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md); resource-derived [map_objects.json](../content/imported/hsl/chapter01/battle010/map_objects.json); provisional | n/a | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
+| [StoryRainEmitter](../game/battle/runtime/StoryRainEmitter.gd) | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md) | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md); resource-derived [map_objects.json](../content/imported/hsl/chapter01/battle010/map_objects.json); resource-derived [global.obs](../content/imported/hsl/shared/first_skill/global.obs); provisional | n/a | static-derived [original_story_rain.md](../docs/evidence_packets/static_reverse/original_story_rain.md); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | n/a |
 
 #### game/battle/runtime/opening (4)
 
@@ -428,7 +428,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleOpeningCoordinator](../game/battle/runtime/BattleOpeningCoordinator.gd) | rules | — | cutscene resume semantics |
 | [MapObjectDrift](../game/battle/runtime/MapObjectDrift.gd) | timing | — | 0x1400000 read as a busy cut-in queue or the open status panel; scroll order not read |
 | [StoryEffectObjects](../game/battle/runtime/StoryEffectObjects.gd) | layout | — | engRANGE blit read as a clip at the insert line — the blit is unread |
-| [StoryRainEmitter](../game/battle/runtime/StoryRainEmitter.gd) | layout | — | water waves 698／699 not drawn; the 400 cap counts own drops; a tick's first stale slot is this emitter's last dy — see the packet's 边界 |
+| [StoryRainEmitter](../game/battle/runtime/StoryRainEmitter.gd) | layout | — | the 400 cap counts this emitter's drops and waves; a tick's first stale slot is this emitter's last dy — see the packet's 边界 |
 | [OpeningCinematics](../game/battle/runtime/opening/OpeningCinematics.gd) | timing | — | dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | — | follow walk reading |
 | [OpeningStoryObjects](../game/battle/runtime/opening/OpeningStoryObjects.gd) | rules | [original_random_position.md](../docs/evidence_packets/static_reverse/original_random_position.md) | random-position slots in table order instead of the native shuffle |
@@ -485,7 +485,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
-| resource-derived | 32 | 73 | 42 | 10 | 29 | 186 |
+| resource-derived | 32 | 74 | 42 | 10 | 29 | 187 |
 | static-derived | 259 | 117 | 19 | 122 | 25 | 542 |
 | runtime-measured | 17 | 32 | 3 | 16 | 2 | 70 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
