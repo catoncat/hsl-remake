@@ -48,6 +48,12 @@ if [[ " $* " == *" --headless "* && "${HSL_REAL_HOME:-}" != 1 && "${HOME:-}" != 
   export HOME="$ROOT/ignored/lane-home"
   mkdir -p "$HOME"
 fi
+# A headless run outside the lead's gate (a lane's targeted suite, a hand sweep) yields the CPU to the gate
+# (HSL_VERIFY_PRIORITY=1, tools/lane_merge.sh gate). renice sets nice 10 absolutely; a caller already nicer
+# stays put (raising priority is refused).
+if [[ " $* " == *" --headless "* && "${HSL_VERIFY_PRIORITY:-0}" != 1 ]]; then
+  renice 10 -p $$ >/dev/null 2>&1 || true
+fi
 
 # Git ignore rules do not stop Godot importing raw captures. Prepare this before
 # every entry, including the first play in a checkout that has never run verify.

@@ -421,11 +421,18 @@ def run_task(task: Task, mode: str, ctx: Context, capture: bool = True) -> Resul
         return 1, buffer.getvalue() + traceback.format_exc(), time.monotonic() - started
 
 
+_WORKER_TASKS: dict[str, Task] = {}
+
+
 def _run_named(name: str, mode: str, exe: str) -> Result:
-    """Process-pool entry: rebuild the task list in the worker and run one task."""
+    """Process-pool entry: run one task in the worker. Under check the task list is built once
+    per worker (a check changes no source; rebuilding it per job cost about 5 s a gate).
+    generate rebuilds it every time, since a generate can rewrite what a task module reads."""
     ctx = Context(original_exe=Path(exe))
-    task = next(task for task in discovered_tasks() if task.name == name)
-    return run_task(task, mode, ctx)
+    if mode != 'check' or not _WORKER_TASKS:
+        _WORKER_TASKS.clear()
+        _WORKER_TASKS.update((task.name, task) for task in discovered_tasks())
+    return run_task(_WORKER_TASKS[name], mode, ctx)
 
 
 def run_tasks(label: str, tasks: list[Task], mode: str, ctx: Context, jobs: int) -> int:

@@ -4,15 +4,15 @@ Checked: 2026-09-27
 
 ## 现状
 
-在 Godot 4.x 中重制《幻世录》第一章。终点两个，按顺序：**① 第一章 127 场战斗像原版一样从标题玩到章末**（规则一致、节奏一致、画面手感经用户实玩认可）；**② 这套引擎能写续集**——没有原版数据可导入时，关卡／角色／技能／剧情只靠写数据就能跑。现在整章 127 场战斗、剧情／城镇／大地图交接与三个结局都已注册，从标题可走到章末；规则按"原版程序当裁判"逐项对齐（开局盘面全字段对拍、随机流照原版、AI 行动种类 127 关对拍无可确证的规则差异），演出与界面照原版录屏补齐；续集示范 龍脊隘口（LEVEL200）＋两名新角色只靠 `content/authored/` 数据可玩。机器人打关不等于玩家可通关，也不等于原版难度；**已合并项待用户实玩验收，验收前不算"已修好"**。旧战斗存档（v4）在新版本拒读。公开仓库 <https://github.com/catoncat/hsl-remake>（公开，三平台 CI 通过）。所有"像原版"的声明都要能追溯到资源、静态分析或原版运行实测（用语见 [CONTEXT](../CONTEXT.md)）。
+在 Godot 4.x 中完整重制《幻世录》。终点两个，按顺序：**① 全部 127 场战斗像原版一样从标题玩到结局**（规则一致、节奏一致、画面手感经用户实玩认可）；**② 这套引擎能写续集**——没有原版数据可导入时，关卡／角色／技能／剧情只靠写数据就能跑。现在整章 127 场战斗、剧情／城镇／大地图交接与三个结局都已注册，从标题可走到章末；规则按"原版程序当裁判"逐项对齐（开局盘面全字段对拍、随机流照原版、AI 行动种类 127 关对拍无可确证的规则差异），演出与界面照原版录屏补齐；续集示范 龍脊隘口（LEVEL200）＋两名新角色只靠 `content/authored/` 数据可玩。机器人打关不等于玩家可通关，也不等于原版难度；**已合并项待用户实玩验收，验收前不算"已修好"**。旧战斗存档（v4）在新版本拒读。公开仓库 <https://github.com/catoncat/hsl-remake>（公开，三平台 CI 通过）。所有"像原版"的声明都要能追溯到资源、静态分析或原版运行实测（用语见 [CONTEXT](../CONTEXT.md)）。
 
 ## 进度尺
 
 | 尺 | 最新值 | 从哪量 |
 | --- | --- | --- |
-| 和原版还差什么 | 107 条（2026-09-27） | [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md)（`hsl check parity_inventory`）；汇报"还剩多少"按它 |
-| 128 场自动对局 | win 20／fail 108／dead_end 0（2026-09-26）——伤害算法与敌方集火照原版、贪心机器人不躲，属难度不属回归 | `content/generated/hsl/development/autoplay/results.json`（深门重生成） |
-| 整章播种走查 | 卡在 玩家第 3 场 · 逃出克萊恩城（LEVEL053），`game_clear=false` | `content/generated/hsl/development/autoplay/chapter.json` |
+| 和原版还差什么 | 85 条（2026-09-29；以差异清单为准，本格不逐次改） | [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md)（`hsl check parity_inventory`）；汇报"还剩多少"按它 |
+| 128 场自动对局 | win 20／fail 108／dead_end 0（2026-09-29）——伤害算法与敌方集火照原版、贪心机器人不躲，属难度不属回归 | `content/generated/hsl/development/autoplay/results.json`（负责人每批合并后重生成） |
+| 整章播种走查 | 卡在 玩家第 3 场 · 逃出克萊恩城（LEVEL053），`game_clear=false`；这份走查早于近两天的规则改动，待按新规则重跑（机器人卡关时强制判胜继续的开关在做） | `content/generated/hsl/development/autoplay/chapter.json` |
 | 剧情可达 | explorer 走遍 22 段注册剧情、三个结局都到 GameClear；剧情可通不等于战斗可通 | 深门 `tests/run_story_mode_explorer_tests.gd` |
 | 数据字段未消费 | 22／742（2026-09-22） | `hsl check field_coverage` |
 

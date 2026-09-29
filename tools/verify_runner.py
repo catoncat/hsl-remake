@@ -24,6 +24,7 @@ Sub-commands (all run from the repository root, all exit non-zero on any failure
                  tests/support/), the sweep for a changed battle scenario, the story-mode
                  explorer (deep call: --fixed-fps, 40-minute timeout) for a change on the
                  story chain (STORY_PATHS or its token walk); one Godot process at a time
+                 (--jobs wide under HSL_VERIFY_PRIORITY=1, the lead's gate)
   story-guard --since REF
                  what tools/lane_merge.sh gate runs after a fast gate: the story-mode
                  explorer when affected would select it for the paths changed since REF,
@@ -537,8 +538,9 @@ def affected_python_tests(changed: list[str]) -> dict[str, str]:
 def cmd_affected(args) -> int:
     # tools/lane_verify.sh affected: what a lane runs while it works (AGENTS.md 效率节拍) —
     # the registry checks `hsl affected --since REF --check` selects, the Python unit files and
-    # Godot suites the change hits, `bash -n` on changed shell scripts. Godot suites run one
-    # process at a time (one Godot process per lane on a shared machine).
+    # Godot suites the change hits, `bash -n` on changed shell scripts. A lane's Godot suites run
+    # one process at a time (one Godot process per lane on a shared machine); the lead's affected
+    # gate (HSL_VERIFY_PRIORITY=1) runs them --jobs wide (2026-09-29: five serial minutes).
     from hsl import changed_since
     unknown = sorted(name for name in args.suites if not (ROOT / "tests" / name).exists())
     if unknown:
@@ -627,7 +629,8 @@ def cmd_affected(args) -> int:
             body = [f"{line}  <- {name}" for line in pass_lines[:-1]] if name == RULE_SUITE_RUNNER else []
             return "\n".join(body + [f"{pass_lines[-1] if pass_lines else '(no PASS line)'}  <- {name} {seconds:.0f}s"])
 
-        if run_parallel("GODOT_SUITES", jobs, 1, summary, suite_timeout) != 0:
+        workers = args.jobs if os.environ.get("HSL_VERIFY_PRIORITY") == "1" else 1
+        if run_parallel("GODOT_SUITES", jobs, workers, summary, suite_timeout) != 0:
             failed.append("godot")
     godot_count = len(rule) + len(scene) + (1 if levels else 0)
     seconds = time.monotonic() - started

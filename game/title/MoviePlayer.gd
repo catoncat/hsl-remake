@@ -208,7 +208,8 @@ func handle_input(event: InputEvent) -> bool:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if handle_input(event):
+	# A skip that ends the movie can hand over to the next scene and take this node out of the tree.
+	if handle_input(event) and is_inside_tree():
 		get_viewport().set_input_as_handled()
 
 

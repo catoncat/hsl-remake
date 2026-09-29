@@ -12,10 +12,13 @@
 #                                           sweep twice (lane + lead) — a UI change must never pay for autoplay.
 #                                           AUTO first: only *.md changed since an already-gated ancestor → doc
 #                                           checks only (whitespace, links, tool references; seconds).
+#                                           Every gate appends one row to ignored/gate-history.tsv (when, head, mode,
+#                                           exit, total and explorer seconds, load at start) and holds caffeinate -i.
 #   tools/lane_merge.sh publish [--dry-run] fast-forward main and presentation-line to pipeline-line, only if
 #                                           the gate log for the current HEAD ends in VERIFY_PASS and no target
 #                                           worktree has an untracked or edited file the fast-forward would
-#                                           overwrite (LANE_PUBLISH_FAIL untracked=|dirty=|not-ff); --dry-run
+#                                           overwrite (LANE_PUBLISH_FAIL untracked=|dirty=|not-ff); a target with
+#                                           no worktree (presentation-line) is fast-forwarded as a ref; --dry-run
 #                                           runs the checks only (LANE_PUBLISH_SOURCE / LANE_PUBLISH_TARGETS
 #                                           override the source branch and the target branches)
 #   tools/lane_merge.sh cleanup WORKTREE... remove lane worktrees and their branches once merged into main
@@ -54,6 +57,13 @@ case "${cmd}" in
           git add -- "${f}"; continue
         fi
         [ -n "${task}" ] || { echo "LANE_MERGE_CONFLICT ${f} (not generated; resolve by hand)"; exit 1; }
+        # PROVENANCE.md and KNOWLEDGE_INDEX.md are hand-written prose around one generated block
+        # (<!-- name:start --> … <!-- name:end -->): taking ours is right only when every conflict hunk lies inside
+        # the block, otherwise it would drop the lane's hand-written rows.
+        if ! awk '/<!-- [a-z_-]+:start -->/{inb=1; has=1} /<!-- [a-z_-]+:end -->/{inb=0}
+                  /^(<<<<<<<|>>>>>>>) /{ if (!inb) out=1 } END{ exit ((has && out) ? 1 : 0) }' "${f}"; then
+          echo "LANE_MERGE_CONFLICT ${f} (conflict outside the generated block; resolve by hand)"; exit 1
+        fi
         git checkout --ours -- "${f}"
       done
     fi
@@ -77,6 +87,15 @@ case "${cmd}" in
   gate)
     cd "${PIPE}"
     head="$(git rev-parse --short=12 HEAD)"; log="/tmp/gate-${head}.log"
+    # A gate on battery or an idle Mac must not sleep halfway (caffeinate exits with this script).
+    if command -v caffeinate >/dev/null 2>&1; then caffeinate -i -w $$ >/dev/null 2>&1 & fi
+    gate_t0="${SECONDS}"; gate_load="$(sysctl -n vm.loadavg 2>/dev/null | awk '{print $2}' || true)"
+    record_gate() {  # MODE EXIT [EXPLORER_SECONDS] -> one row of ignored/gate-history.tsv, the gate timing record
+      local history="${PIPE}/ignored/gate-history.tsv"
+      mkdir -p "${PIPE}/ignored"
+      [ -f "${history}" ] || printf 'when\thead\tmode\texit\tseconds\texplorer_seconds\tload\n' >"${history}"
+      printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$(date '+%F %T')" "${head}" "$1" "$2" "$((SECONDS - gate_t0))" "${3:-0}" "${gate_load}" >>"${history}"
+    }
     mode="auto"; extra=""
     case "${1:-}" in
       --deep) mode="fast"; extra="--deep"; shift ;;
@@ -103,6 +122,7 @@ case "${cmd}" in
           echo "LANE_DOCS_PASS head=${head} base=${b}" >>"${log}"; ec=0
         else ec=1; fi
         grep -E "_FAIL|FAILED" "${log}" | head -5 || true
+        record_gate docs "${ec}"
         echo "LANE_GATE head=${head} mode=docs exit=${ec} $(tail -1 "${log}")"
         exit "${ec}"
       fi
@@ -148,18 +168,20 @@ case "${cmd}" in
         tools/verify.sh ${extra} "$@" >"${log}" 2>&1
     fi
     ec=$?
+    explorer_seconds=0
     # The fast gate skips the deep suites: when the changes since main are on the story chain (the paths and token
     # walk affected uses to select the story-mode explorer; affected mode runs it itself, --deep already has it), the
     # explorer runs after a passing fast gate. publish reads the log's last line, so the pass line is repeated.
     if [ "${ec}" = 0 ] && [ "${mode}" = fast ] && [ -z "${extra}" ]; then
-      pass="$(tail -1 "${log}")"
+      pass="$(tail -1 "${log}")"; explorer_t0="${SECONDS}"
       env HOME="${GATE_HOME}" PYTHONDONTWRITEBYTECODE=1 python3 tools/verify_runner.py story-guard --since main >>"${log}" 2>&1
-      ec=$?
+      ec=$?; explorer_seconds=$((SECONDS - explorer_t0))
       grep '^STORY_EXPLORER_GUARD ' "${log}" | tail -1
       [ "${ec}" != 0 ] || echo "${pass}" >>"${log}"
     fi
     set -e
     grep -E "_FAIL|FAILED" "${log}" | head -5 || true
+    record_gate "${mode}" "${ec}" "${explorer_seconds}"
     echo "LANE_GATE head=${head} mode=${mode} exit=${ec} $(tail -1 "${log}")"
     exit "${ec}"
     ;;
@@ -176,10 +198,16 @@ case "${cmd}" in
     # Preflight every target before fast-forwarding any: `merge --ff-only` aborts on an untracked file with the
     # name of a file it would bring in, and on local edits to such a file (499cdd2f: an untracked
     # tests/play_battle.gd in the main worktree stopped the publish and main stayed 3.5 h behind unnoticed).
-    bad=0; ready=""
+    bad=0; ready=""; refonly=""
     for b in ${targets}; do
       wt="$(worktree_of "${b}")"
-      [ -n "${wt}" ] || { echo "LANE_PUBLISH_SKIP ${b} (no worktree)"; continue; }
+      if [ -z "${wt}" ]; then
+        # No worktree (presentation-line): nothing on disk to clash with, so a plain fast-forward of the ref.
+        tip="$(git rev-parse --verify --quiet "refs/heads/${b}")" || { echo "LANE_PUBLISH_SKIP ${b} (no such branch)"; continue; }
+        git merge-base --is-ancestor "${tip}" "${source_ref}" || { echo "LANE_PUBLISH_FAIL not-ff target=${b} (${b} has commits ${source_ref} lacks)" >&2; bad=1; continue; }
+        [ "${tip}" != "$(git rev-parse "${source_ref}")" ] || { echo "LANE_PUBLISH_SKIP ${b} (already at ${head})"; continue; }
+        refonly="${refonly} ${b}"; continue
+      fi
       tip="$(git -C "${wt}" rev-parse HEAD)"
       git merge-base --is-ancestor "${tip}" "${source_ref}" || { echo "LANE_PUBLISH_FAIL not-ff target=${b} (${b} has commits ${source_ref} lacks)" >&2; bad=1; continue; }
       incoming="$(git -c core.quotepath=false diff --no-renames --name-only "${tip}" "${source_ref}" --)"
@@ -194,12 +222,16 @@ case "${cmd}" in
       ready="${ready} ${b}"
     done
     [ "${bad}" = 0 ] || exit 1
+    ready="${ready}${refonly}"
     if [ "${dry}" = 1 ]; then
       echo "LANE_PUBLISH_DRY_OK ${head} targets=${ready# }"
       exit 0
     fi
     for b in ${ready}; do
-      git -C "$(worktree_of "${b}")" merge -q --ff-only "${source_ref}" || { echo "LANE_PUBLISH_FAIL merge target=${b}" >&2; exit 1; }
+      case " ${refonly} " in
+        *" ${b} "*) git update-ref -m "lane_merge publish" "refs/heads/${b}" "$(git rev-parse "${source_ref}")" "$(git rev-parse "refs/heads/${b}")" || { echo "LANE_PUBLISH_FAIL update-ref target=${b}" >&2; exit 1; } ;;
+        *) git -C "$(worktree_of "${b}")" merge -q --ff-only "${source_ref}" || { echo "LANE_PUBLISH_FAIL merge target=${b}" >&2; exit 1; } ;;
+      esac
     done
     echo "LANE_PUBLISH_OK ${head} targets=${ready# }"
     # User 2026-09-27: push as we commit. Every published branch goes to origin at once; a push failure is

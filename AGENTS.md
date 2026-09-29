@@ -185,24 +185,58 @@ lane 这一侧：
 - 任务书写**目的、背景、约束、验收**，方法留给 lane；负责人的推荐单列「推荐做法（可换）」。派活时记下 lane 的预期最终提交号——lane 结束后其分支引用可能消失，提交仍可按哈希合并（`git branch -f lane-x <hash>`）。
 - **写集按函数／改动块认领而不是按文件**：别的 lane 正在改的文件，只要不碰同一函数、改动 ≤30 行就直接改，合并时解冲突（WRANGE 为 11 行多开了一整条 lane 是反例）。
 - **≤30 行、不碰规则的小改**（快捷键、文案、脚本一行）负责人直接在合并树改，不派 lane（一条 lane 的固定开销：开树、导入、截图、门禁 ≈ 20–40 分钟）。
-- lane 模型与负责人同模型、thinking high；并行上限 3–4（2026-09-25：6 条同跑把 8 核打满，快门从 4 分钟拖到 22 分钟）；lane 与负责人门禁都设 `HSL_VERIFY_JOBS=3`（曾冲到 load 130）；全机 verify 并发上限 2、负责人优先。
+- lane 模型与负责人同模型、thinking high；并行上限 3–4（2026-09-25：6 条同跑把 8 核打满，快门从 4 分钟拖到 22 分钟）；lane 与负责人门禁都设 `HSL_VERIFY_JOBS=3`（曾冲到 load 130）；全机 verify 并发上限 2、负责人优先；lane 的验证与 headless Godot 以 nice 10 运行（`tools/lane_verify.sh`、`tools/godot.sh` 在 `HSL_VERIFY_PRIORITY` 不为 1 时自动降级），负责人门禁保持默认优先级（2026-09-29：一次快门与 lane 验证争 CPU 跑了 1211 s，空闲时 184–338 s）。
 - lane 回来先向用户汇报结论，再派下一条；lane 说"平衡打不过"这类结论，先问它是否具备一个合格玩家的全部手段（买装备、换装、加点、全队估值）再接受。
 - 只问产品行为：派不派 lane、何时派、门禁怎么提速、清理哪些工作树这类流程选择负责人自己定，做完告知。
-- 独立复核只给改随机流／存档格式等高风险 lane、1 名怀疑者（13 人 0 反证，有用发现每组只出自 1 人）、只核最要紧的一条断言。
 - 机器人整章进度只作信息不阻塞。先提交、确认落地再启动门禁，门禁期间不动那棵树。
+
+### 性价比与流程
+
+**排队**
+
+- 价值＝玩家能否察觉 × 碰到的频率，从高到低：影响胜负或卡关的规则＞每场都见的演出＞部分关卡＞罕见。成本＝墙钟分钟，实现、审查、修复、合并、门禁都算；按时间账同类 lane 实测估（S 级约 15–35 分钟，M 级约 55–65 分钟，会改胜负的另加受影响关卡的对局时间）。
+- 新项进队列前过三关：写出玩家在哪一关、哪个操作下能看到；给出原版地址或差异清单字段；估出成本。缺一条只记进差异清单，不派 lane。
+- 只记清单、不派 lane：1 px 取整、1–3 tick 或相位、闪烁相位、LSB 级合成、字间距；visibility＝invisible，或只改抽签次数、行为分布不变的；要 Wine 实测或调度模型才能判定的；原版没有的重制新增；证据包内部矛盾和纯文档措辞。
+- 同一块区域（同一面板、同一演出系统）的小项合成一条 lane。审查报出的、落在同一批文件里的玩家可见项由当条修复收，不另开后续 lane；文档余项走 docfix，不攒文档扫尾 lane。
+- 能让整章走查或实玩推进的事（重跑走查、修卡关、修规则）排在外观项之前。机器人打不过某关先查规则（胜负条件、数值是否照原版）；规则照原版就记「机器人打不过」往下走，不开 lane 逐关调机器人。
+
+**审查与修复**
+
+- 每条 lane 交回后由两个视角各一名审查者设法驳倒：原版读法（重读引用的地址）与代码协议（逻辑、回归、别的技能或调用方是否被波及）。审查者先从报告里列不超过 5 条核心结论，只驳这些结论和 diff 的行为，工具调用约 35 次以内。
+- 分三档：**blocker**（玩家可见的行为错、回归、破坏门禁或协议）、**docfix**（文档、证据层级、地址、标签写错事实）、**minor**（其余，1 tick／1 px／单帧／闪烁相位级差异一律 minor，只进差异清单）。
+- 只有 blocker 才起修复；只有 docfix 时由负责人合并时改（改完重生成物）。修复只跑自己改到的定向套件，改到定向套件覆盖之外的 `game/*.gd` 才跑 `lane_verify`；只改文档就重生成物＋`hsl check docs`＋`git diff --check`，不跑 Godot。
+
+**lane 里怎么跑命令**
+
+- 直接跑 `tools/godot.sh` 与 `tools/lane_verify.sh`，不设 HOME、不 source 环境文件（`tools/godot.sh` 自己隔离 HOME）。
+- 一次调用只放一条简单命令；git 一律 `git -C`；多行 Python 先写成 `ignored/*.py` 再运行。
+- 验证只用 `tools/lane_verify.sh`，不自写脚本跑整套；收尾前台跑一次（Bash timeout 600000），不放后台轮询；中途用定向套件。
+
+**自动对局与走查**
+
+- lane 不跑全量 128 场自动对局、不提交 `results.json`。要看战果时用 `HSL_AUTOPLAY_LEVELS` 跑受影响的 2–5 关，结果写到 `ignored/`，报告列翻转场次。
+- 全量 128 场由负责人每批合并后在后台重生成一次、单独提交，同一提交重算 `brain_comparison.json`（`autoplay_brain` 检查两者一致）。胜负翻转只报告并归因；死局、脚本错误、超时才判失败。
+- 整章走查在独立的干净检出里跑（与合并树共用 `user://` 会互相干扰），只在夜里或阶段收口时跑。
+
+**门禁与收口**
+
+- 已交回的 lane 攒 2–3 条依次合并（每条单独提交），对 HEAD 跑一次 gate，过了一次发布；门红时按失败套件与各 lane 的 diffstat 定位，revert 那一条再过门。
+- 合并后在合并树手改过任何文件，提交前重跑受影响的 `hsl generate`（生成块不会自己更新）。
+- 纯文档改动不评审，在合并树直接提交，走 docs 档。门禁、验证工具本身的小改攒成一个提交，只过一次快门。
+- 时间账「合并树门禁」一列抄 `ignored/gate-history.tsv`（每次 gate 追加一行：档位、秒数、探索器秒数、开跑时 load）。
 
 ### 合并节拍
 
 `tools/lane_merge.sh` 的 merge／gate／publish／cleanup 已脚本化，**一律用合并树（`pipeline-line` 工作树）里的那份**——别的工作树里的副本可能是旧脚本（09-26 OPTIONS-HOTKEY 就因旧脚本误跑了快门）。几条 lane 同时交回：连续 `merge`，只跑一次 `gate`，一次 `publish`。
 
-1. `merge REF MSGFILE`：`--no-ff --no-commit` 合并进 `pipeline-line`。冲突只在生成物（PROVENANCE、KNOWLEDGE_INDEX、差异清单 md/json、原版派生物清单）时取 ours 后由合并树 `hsl generate` 重生成——无冲突也总是重生成（两条 lane 各加证据包不冲突但生成块会过期）；差异清单人工归类 `parity_gap_inventory.curation.json` 的冲突由 `tools/merge_curation_json.py` 三方并集自动解（列表按 id 合并，ours 已删／改名的键保持删除）；其余冲突手解。提交说明写 lane 做了什么、根因、oracle 行。合并已暂存时不要再做别的提交（会把它做成合并提交）。
+1. `merge REF MSGFILE`：`--no-ff --no-commit` 合并进 `pipeline-line`。冲突只在生成物（PROVENANCE、KNOWLEDGE_INDEX、差异清单 md/json、原版派生物清单）时取 ours 后由合并树 `hsl generate` 重生成（PROVENANCE 与 KNOWLEDGE_INDEX 是手写正文夹一个生成块，冲突落在生成块外时停下手解，免得丢掉 lane 手写的行）——无冲突也总是重生成（两条 lane 各加证据包不冲突但生成块会过期）；差异清单人工归类 `parity_gap_inventory.curation.json` 的冲突由 `tools/merge_curation_json.py` 三方并集自动解（列表按 id 合并，ours 已删／改名的键保持删除）；其余冲突手解。提交说明写 lane 做了什么、根因、oracle 行。合并已暂存时不要再做别的提交（会把它做成合并提交）。
 2. `gate`：见下节「门禁」。
-3. `publish`：当前 HEAD 的门禁日志以 `VERIFY_PASS`／`LANE_AFFECTED_PASS`／`LANE_DOCS_PASS` 结尾、目标工作树没有会被覆盖的改动时，把 `main` 与 `presentation-line` 快进到 `pipeline-line`；`--dry-run` 只做检查。
+3. `publish`：当前 HEAD 的门禁日志以 `VERIFY_PASS`／`LANE_AFFECTED_PASS`／`LANE_DOCS_PASS` 结尾、目标工作树没有会被覆盖的改动时，把 `main` 与 `presentation-line` 快进到 `pipeline-line`（没有工作树的目标直接快进分支引用），并推送 origin；`--dry-run` 只做检查。
 4. `cleanup WORKTREE...`：删已合并的 lane 工作树与分支。
 
 ### 门禁
 
-`tools/verify.sh` 是唯一完整非 GUI 门禁：快门（默认，约 4–6 分钟，2026-09-25 实测最短 239 s、中位约 360 s）、`--full` 全门（先删 `.godot` 与 `*.import` 证明冷克隆可导入，另约 6 分钟）、`--deep` 深门（快门＋全程剧情 explorer＋整章自动对局 sweep 等长测试）。检查由 `tools/hsl.py` 注册表、套件由 `tools/verify_runner.py` 按仓库数据枚举并行运行，覆盖：
+`tools/verify.sh` 是唯一完整非 GUI 门禁：快门（默认，空闲时约 3–6 分钟，2026-09-29 实测 184–338 s）、`--full` 全门（先删 `.godot` 与 `*.import` 证明冷克隆可导入，另约 6 分钟）、`--deep` 深门（快门＋全程剧情 explorer＋128 场自然胜负自动对局＋限时整章自动对局等长测试）。检查由 `tools/hsl.py` 注册表、套件由 `tools/verify_runner.py` 按仓库数据枚举并行运行，覆盖：
 
 - Python unit tests 与全部 source／evidence／importer 检查（`hsl check --all`：每个 tracked 生成物与源、每个证据包与其校验器）
 - Godot asset import（快门热缓存、全门冷缓存），以及全部 `tests/run_*.gd` 套件：规则套件在 `tests/run_all.gd` 进程内分片运行，场景套件各自独立进程，注册场景 sweep 分片，快钟套件走 `--fixed-fps 60`
@@ -216,10 +250,10 @@ lane 这一侧：
 | --- | --- |
 | lane（实现期间） | 命中的定向测试：`tools/godot.sh --headless --script res://tests/run_all.gd -- run_x_tests.gd`（规则套件）／`--script res://tests/run_x_tests.gd`（场景套件）／`python3 tools/hsl.py check <family>` |
 | lane（收尾一次） | `tools/lane_verify.sh affected <基线>`（命中的注册表检查、Python 测试与 Godot 套件）；只改文档时 `python3 tools/hsl.py check docs`＋`python3 tools/hsl_docs_check.py`＋`git diff --check` |
-| 负责人（合并树） | `tools/lane_merge.sh gate`，默认 **AUTO 三档**：①自上一个过了门禁的提交以来只改了 `*.md` → **docs 档**（空白、链接、工具引用，秒级）；②改动不碰 OUTCOME_PATHS（规则、战斗数据、harness、verify 工具；资源导入工具 `tools/hsltools/assets/` 不算）→ **affected 档**（`lane_verify.sh affected main`，1–3 分钟；改了 `project.godot` 另跑两个预设的场景冒烟；affected 推迟了 Godot 套件时自动改跑快门）；③碰了 OUTCOME_PATHS → **快门**（含 128 场自动对局）。改动落在剧情链上（affected 选中剧情探索器的同一判据）时，affected 档自带探索器，快门档通过后再跑一次探索器（`STORY_EXPLORER_GUARD` 行）。`--fast`／`--deep`／`--affected` 可强制。2026-09-26 一个 Tab 快捷键跑了两遍自动对局——界面改动永远不该为自动对局买单 |
-| 负责人（发布前） | 深门只在发布前对合并树跑一次；结果文件（`results.json`／`chapter.json`）只由负责人在阶段收口重生成一次 |
+| 负责人（合并树） | `tools/lane_merge.sh gate`，默认 **AUTO 三档**：①自上一个过了门禁的提交以来只改了 `*.md` → **docs 档**（空白、链接、工具引用，秒级）；②改动不碰 OUTCOME_PATHS（规则、战斗数据、harness、verify 工具；资源导入工具 `tools/hsltools/assets/` 不算）→ **affected 档**（`lane_verify.sh affected main`，1–3 分钟；改了 `project.godot` 另跑两个预设的场景冒烟；affected 推迟了 Godot 套件时自动改跑快门）；③碰了 OUTCOME_PATHS → **快门**（含 128 场强制胜利 sweep，分 4 片；自然胜负的自动对局属深门）。改动落在剧情链上（affected 选中剧情探索器的同一判据）时，affected 档自带探索器，快门档通过后再跑一次探索器（`STORY_EXPLORER_GUARD` 行）。`--fast`／`--deep`／`--affected` 可强制。2026-09-26 一个 Tab 快捷键跑了两遍自动对局——界面改动永远不该为自动对局买单 |
+| 负责人（发布前） | 深门只在发布前对合并树跑一次；`results.json` 每批合并后由负责人重生成一次，`chapter.json` 在阶段收口重生成 |
 
-- 自动对局 regen-and-compare 只对胜负／死局／脚本错误判失败，计数漂移只打印，合并者顺手提交；预计会翻转胜负的 lane（改规则、战斗数据或指挥官）收尾前自己跑一次 128 场 sweep 并提交重写的 `results.json`，报告列出翻转场次。
+- 自动对局 regen-and-compare 只对胜负／死局／脚本错误判失败，计数漂移只打印；`results.json` 由负责人每批重生成（见「性价比与流程」），lane 不提交。
 - 首次使用环境、环境变化或排查工具问题时运行 `tools/doctor.sh`，不为未变化环境在开工和收尾重复诊断。同一 diff 与验证环境的通过证据可复用，仅新改动、失败或未解风险需要重跑。
 - 纯文档改动检查内容、路径/链接和 `git diff --check`；不为此启动 GUI、Wine 或冷缓存导入。改可执行验证合同时另核对对应脚本。
 - 玩家可见布局或动效变化还需要截图/录屏人工验收；自动测试不能替代。

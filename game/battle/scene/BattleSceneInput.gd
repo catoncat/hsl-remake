@@ -35,13 +35,14 @@ func handle_input(event: InputEvent) -> void:
 		return
 	# The between-battle equipment screen owns Esc / right click while it is up.
 	if runtime.party_equipment_screen != null and runtime.party_equipment_screen.active:
-		if runtime.party_equipment_screen.handle_input(event):
+		# Closing a screen can change scenes and take the runtime out of the tree.
+		if runtime.party_equipment_screen.handle_input(event) and runtime.is_inside_tree():
 			runtime.get_viewport().set_input_as_handled()
 		return
 	# A raised system scroll (battle or world variant) owns all input until it closes.
 	for scroll in [runtime.system_menu, runtime.world_system_menu]:
 		if scroll != null and scroll.active():
-			if scroll.handle_input(event):
+			if scroll.handle_input(event) and runtime.is_inside_tree():
 				runtime.get_viewport().set_input_as_handled()
 			return
 	if runtime.opening_coordinator != null and runtime.opening_coordinator.active:
