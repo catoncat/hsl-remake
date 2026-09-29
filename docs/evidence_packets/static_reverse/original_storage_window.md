@@ -111,7 +111,7 @@ flags：-1／0 常显；位 31 清→页＝flags 才显；位 31 置→页＝`fl
 ## 边界
 
 - 未读：页 2／3 列表的形状表项 5／10 对应哪张板、魔法／特殊技悬停描述的逐行格式。
-- 裝備页背包行颜色照 `0x414c00` 行色（重要 @6、本职可用 @1、否则 @2 红，与獲得物品窗同一套），重制 `TownShopScreen._row_color`；狀態页黄字（力量 51）的着色条件未读，重制未做。
+- 裝備页背包行颜色照 `0x414c00` 行色（重要 @6、本职可用 @1、否则 @2 红，与獲得物品窗同一套），重制 `TownShopScreen._row_color`；狀態页黄字（力量 51）已读：`0x4289e0` 狀態页的四项属性经 `0x434d10` 调 `0x434bf0`，`cap−50 ≤ base < cap` 为 `@5` 黄、到上限 `@2` 红（SID 7 咕嚕不黄），细节见 [升級窗](original_growth_window.md) §3 行 0–3，重制 `TownShopScreen._build_attributes` 调 `BattleGrowthPanel.attribute_text`。
 - `0x426ce0` 返回值在模式 0 的用途未读（`0x42ab40` 的 param_2 反编译里未被读）。
 - 来源场景缺失的提示字是重制自拟。
 - 战后獲得物品窗的 倉庫／離開 与本窗共用同一份队伍倉庫（`store_reward` → `PartyStorageRules.put`，见 [original_getitem_window](original_getitem_window.md)「结论」）。

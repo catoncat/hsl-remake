@@ -247,6 +247,12 @@ static func resolve_skill(loop: Dictionary, attacker_id: String, defender_id: St
 	BattleLoopAI.prune_ai_calls(loop)
 	var strike: Dictionary = result["receipt"]
 	if not revived.is_empty(): strike["undead_revived"] = revived
+	# Display-only snapshot for the map bars, which read the live record every draw (0x4364e0):
+	# each receiver once every proposal has landed (a 衰弱 or 全解 refresh has moved its maxima
+	# and clamped its MP), before experience can raise the caster's maxima, as the exchange path.
+	for receipt in [strike] + strike.get("affected_targets", []):
+		if receipt.has("defender_id"):
+			receipt["defender_after"] = CoreCombatRules.receipt_vitals(BattlePlayLoop.unit_ref(loop, str(receipt["defender_id"])))
 	_apply_turn_effects(loop, strike, result.get("turn_effects", []))
 	BattleLoopRewards.apply_gold_effects(loop, strike, result.get("gold_effects", []))
 	BattleLoopRewards.award_experience(loop, strike)

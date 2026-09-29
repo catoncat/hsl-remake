@@ -134,9 +134,13 @@ func begin(strike: Dictionary, runtime: Node, effect_timeline: Dictionary = {}) 
 		var panel := Node2D.new()
 		panel.position = runtime.world_to_logical_position(bar_world)
 		add_child(panel)
-		# The bars' live read after 0x40b8d0: the receipt's HP after, the MP plus any restored.
-		var bars: Array[Dictionary] = [{"fill": "bar_hp5", "value": int(unit["hp"]), "max": int(unit["max_hp"]), "after": int(hit.get("defender_hp_after", unit["hp"]))},
-			{"fill": "bar_hp6", "value": int(unit.get("mp", 0)), "max": int(unit.get("max_mp", 0)), "after": int(unit.get("mp", 0)) + int(hit.get("restored_mp", 0))}]
+		# The bars' live read after 0x40b8d0 (0x4364e0 reads cur and max every draw): the receipt's
+		# HP after, and the settled maxima and MP (`defender_after`: a 衰弱／全解 refresh moves
+		# max_hp／max_mp and clamps MP). Receipts without it keep the pre-cast maxima and the MP
+		# plus any restored.
+		var after: Dictionary = hit.get("defender_after", {})
+		var bars: Array[Dictionary] = [{"fill": "bar_hp5", "value": int(unit["hp"]), "max": int(unit["max_hp"]), "after": int(hit.get("defender_hp_after", unit["hp"])), "max_after": int(after.get("max_hp", unit["max_hp"]))},
+			{"fill": "bar_hp6", "value": int(unit.get("mp", 0)), "max": int(unit.get("max_mp", 0)), "after": int(after.get("mp", int(unit.get("mp", 0)) + int(hit.get("restored_mp", 0)))), "max_after": int(after.get("max_mp", unit.get("max_mp", 0)))}]
 		for index in bars.size():
 			var text := BattleUISkin.text(panel, ItemBars.BAR_TEXT_OFFSET + Vector2(0, ItemBars.BAR_PITCH * index), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_SMALL, ItemBars.BAR_TEXT_CELL)
 			text.name = "MagicImpactBarText"
@@ -268,8 +272,9 @@ func _draw_bars(panel: Node2D, bars: Array[Dictionary]) -> void:
 			panel.draw_texture_rect_region(fill, Rect2(at, Vector2(width, fill.get_height())), Rect2(Vector2.ZERO, Vector2(width, fill.get_height())))
 
 
-func _set_bar(bar: Dictionary, value: int) -> void:
+func _set_bar(bar: Dictionary, value: int, maximum: int = -1) -> void:
 	bar["value"] = value
+	if maximum >= 0: bar["max"] = maximum
 	bar["text"].text = "%d/%d" % [value, int(bar["max"])]
 
 
@@ -316,7 +321,7 @@ func _process(delta: float) -> void:
 			# 0x40b8d0 settled the receiver: the bars' live read shows the vitals after it, and a
 			# hurt receiver enters the map hit state this tick (0x40aa80 → 0x40b831 → 0x407230).
 			entry["after_shown"] = true
-			for bar in entry["bars"]: _set_bar(bar, int(bar["after"]))
+			for bar in entry["bars"]: _set_bar(bar, int(bar["after"]), int(bar["max_after"]))
 			entry["panel"].queue_redraw()
 			if runtime != null and MapHitState.hurt(entry["outcome"]):
 				MapHitState.begin(runtime, self, str(entry["unit_id"]), pace)

@@ -12,6 +12,7 @@ extends Control
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/panels/manifest.json
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_growth_window.md
+##     (four attribute rows through 0x434bf0: cap colours, 0x1a arrow + weakened live value)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/menus_ui/README.md
 ##     (§4 魔法／特殊技 pages: 0x43add0 WINDOW20 with the 0x446060 scroll bar past nine rows)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_getitem_window.md
@@ -378,11 +379,15 @@ func show_unit(unit: Dictionary, known: bool = true, own_page: bool = true, loop
 	for key in values:
 		if masked:
 			# 0x434d10 writes ??? in place of every 0x434bf0 attribute row (bVar22 ‖ bVar21).
-			stat_values[key].text = "???"
+			BattleGrowthPanel.show_attribute(stat_values[key], {"text": "???", "color": UISkin.TEXT_WHITE, "suffix": ""})
 			stat_values[key].tooltip_text = ""
 			stat_values[key].mouse_filter = Control.MOUSE_FILTER_IGNORE
 			continue
-		stat_values[key].text = str(values[key]) + ("%" if key == "magic" else "")
+		if key in BattleGrowthPanel.ATTRIBUTES:
+			# 0x434bf0: base (+0x64..) coloured against its cap, then 0x1a + the weakened live value.
+			BattleGrowthPanel.show_attribute(stat_values[key], BattleGrowthPanel.attribute_text(unit, key, int(unit.get("combat_profile", {}).get(key, values[key])), values[key]))
+		else:
+			stat_values[key].text = str(values[key]) + ("%" if key == "magic" else "")
 		var permanent_key: String = {"attack":"attack_power","defense":"defense","magic":"magic_attack_power","speed":"speed"}.get(key,"")
 		var permanent := int(unit["permanent_gains"].get(permanent_key,0))
 		stat_values[key].tooltip_text = "含永久獲得 +%d；不含在四項基礎屬性內" % permanent if permanent>0 and public else ""

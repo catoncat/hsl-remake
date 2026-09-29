@@ -78,7 +78,7 @@ EXE SHA-256 `f0b5f835d7d0d311b3ed75049c9fc2adc2b470b2bb30700e593abedf8c0a70f7`�
 - **x 缩放 −1 的画法**：`0x46b6e4` 显示表消费者对带 `0x8000000` 的记录走 `0x461982`；它按 SHP 行段逐段把段内 x 偏移乘 x 缩放再加锚点 x，缩放为负时走 `0x461b76` 分支——**以锚点为轴左右翻转**（与 Godot `scale.x = −1`、`offset = −原点` 相同）。
 - **aniSetZoom 丢镜像**：`0x402476` 把参数同时写 `+0x20` 与 `+0x24`（正值），镜像对象执行 aniSetZoom 后不再翻转。ANIMAL.TXT 里用 aniSetZoom／速度指令的 action 只有 004／006／007（缩放）与 002（速度），都不是换边单位。
 - **位怎么来**：构造 `0x407ec0` 在 obj_Data9≠0 且 PLAYERS mode 恰为 pmPlayer 或 pmEnemy（真的互换）时 `or 8`（`0x407fc3`），其他 mode 不置位；脚本 `0x450710` actSetPlayerMode 每次调用先 `xor 8`（`0x45073c`）再比较新旧 mode——**翻转**，模式不变也翻（[阵营位包](original_player_mode_sides.md)）。
-- 重制接入点：`CutinLayout.side_swapped`／`k_action(row, swapped)`，`BattleCombatCutin._set_frame(…, mirrored)`（普攻、借用演出）、`SkillEffectScriptPlayer._stand`、`MoonDancePresentation` 的守方帧；`WinfailActions._apply_player_mode` 翻位。守方的 ATTACK_FLASH 击中闪光重制未画，其镜像读法随之未接。
+- 重制接入点：`CutinLayout.side_swapped`／`k_action(row, swapped)`，`BattleCombatCutin._set_frame(…, mirrored)`（普攻、借用演出）、`SkillEffectScriptPlayer._stand`、`MoonDancePresentation` 的守方帧；`WinfailActions._apply_player_mode` 翻位。守方的 ATTACK_FLASH 击中闪光已画（`BattleCombatCutin.hit_flash_sprite`，按 `CutinLayout.player_side` 翻），其换边镜像读法未接。
 
 ### 四个运行时助手（static-derived）
 

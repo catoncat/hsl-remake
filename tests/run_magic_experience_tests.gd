@@ -252,6 +252,20 @@ func presentation_cases() -> void:
 	var clip: Dictionary = presentation.cutin.clips.back()
 	check(clip["attacker_unit"]["level"] == 1 and clip["attacker_unit"]["max_hp"] == hit["attacker_before"]["max_hp"], "a pending cast cannot reveal post-award level or maxima")
 	presentation.cutin.clips.clear()
+	var weakened := hit.duplicate(true)
+	var receiver: Dictionary = weakened.get("affected_targets", [weakened])[0]
+	check(receiver.get("defender_after", {}).get("hp") == receiver["defender_hp_after"], "a cast receipt carries the receiver's settled vitals for the map bars")
+	receiver["defender_before"].merge({"hp": 40, "max_hp": 43}, true)
+	receiver["defender_after"] = receiver["defender_before"].duplicate(true)
+	receiver["defender_after"]["max_hp"] = 38
+	receiver["defender_hp_after"] = 30
+	presentation.magic_impact.begin(weakened, scene)
+	presentation.magic_impact.set_process(false)
+	var hp_bar: Dictionary = presentation.magic_impact.entries[0]["bars"][0]
+	check(hp_bar["text"].text == "40/43", "before 0x40b8d0 settles the receiver its bar reads the pre-cast maximum")
+	presentation.magic_impact._process(0.5)
+	check(hp_bar["text"].text == "30/38", "from the settle tick 0x4364e0's live read shows the maximum a 衰弱 refresh lowered")
+	presentation.magic_impact.finish()
 	scene.queue_free()
 	await process_frame
 	await create_timer(0.3).timeout

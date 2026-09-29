@@ -843,6 +843,10 @@ func _build_attributes() -> void:
 		var value := BattleUISkin.text(self, Vector2(BattleGrowthPanel.ATTRIBUTE_VALUE_X if index < 4 else BattleGrowthPanel.DERIVED_VALUE_X, at.y + 8 + index * BattleGrowthPanel.ROW_HEIGHT), BattleUISkin.TEXT_WHITE, BattleUISkin.FONT_BODY, Vector2(60, BattleGrowthPanel.GLYPH_ROW))
 		value.name = "Attribute_%d" % index
 		value.text = str(values[index])
+		if index < 4:
+			# 狀態 window (0x4289e0) rows come from 0x434d10 as in battle: 0x434bf0 cap colours.
+			var key: String = BattleGrowthPanel.ATTRIBUTES[index]
+			BattleGrowthPanel.show_attribute(value, BattleGrowthPanel.attribute_text(unit, key, int(unit.get("combat_profile", {}).get(key, values[index])), values[index]))
 
 
 ## Mode 0 pages 2／3: the member's magic or special list, 28 px rows (0x4289e0).

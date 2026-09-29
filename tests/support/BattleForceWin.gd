@@ -416,6 +416,7 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 	for target_round in _ints(fixture.get("rounds", [])):
 		var guard := 0
 		while int(loop.get("turn", 0)) < target_round and guard < 256:
+			loop = _defer_loot(loop, rules)
 			if str(loop.get("interaction", "")) == "action_menu":
 				loop = rules.choose_command(loop, "wait")
 			elif str(loop.get("interaction", "")) == "ai_resolving":
@@ -425,6 +426,7 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 			guard += 1
 		# Round-N script events fire after round N's first completed action (the original scans
 		# before the queue advance bumps the round, original_round_display.md): complete it too.
+		loop = _defer_loot(loop, rules)
 		if str(loop.get("interaction", "")) == "action_menu":
 			loop = rules.choose_command(loop, "wait")
 		elif str(loop.get("interaction", "")) == "ai_resolving":
@@ -443,6 +445,15 @@ static func _force_play_to_round(tree: SceneTree, scene: Node, label: String, as
 	scene.set_process(true)
 	await _await_result(tree, scene, presentation)
 	return _victory_shown(scene, presentation, label, assert_cb, "played-rounds fixture")
+
+
+## An open collection panel refuses every command: take its "later" as the commander does
+## (Autoplay.play_battle), keeping the pending items.
+static func _defer_loot(loop: Dictionary, rules) -> Dictionary:
+	if not rules.loot_waiting(loop):
+		return loop
+	var settlement: Dictionary = loop["settlement"]
+	return rules.finish_rewards(loop, int(settlement["sequence"]), int(settlement["revision"]), false, true)
 
 
 ## Mode `choice_branch`: advance to each source round, letting the coordinator play the

@@ -21,6 +21,7 @@ const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const EquipmentCatalog = preload("res://game/sim/EquipmentCatalog.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const ATTRIBUTES := ["str", "dex", "mind", "con"]
 const DERIVED := ["attack", "defense", "magic", "speed", "move"]
 ## WINDOW21 at (12,174): nine 28 px rows from y+8; attribute values after six half-width cells
@@ -40,6 +41,12 @@ const POINTS_BOX := Vector2(20, 442)
 const MAGIC_BOX := Vector2(252, 174)
 const SPECIAL_BOX := Vector2(252, 344)
 const MESSAGE_ROW := 26
+## 0x434d10 sets bit 8 of its flag word (0x434daf) only for an object whose +0xa2 word is 7
+## (SID_PLAYER7, actor 008 咕嚕), whatever the caller; 0x434bf0 then skips the @5 near-cap yellow.
+const NO_NEAR_CAP_SID := 7
+## 0x434bf0 appends byte 0x1a before a differing live value; ASCFONT.24 glyph 0x1a is a right arrow.
+const LIVE_ARROW := "→"
+static var _actor_sids: Dictionary = {}
 var source_unit: Dictionary
 var skill_book: Dictionary = {}
 var draft: Dictionary = {}
@@ -153,15 +160,10 @@ func _adjust(key: String, amount: int) -> void:
 func _refresh() -> void:
 	var remaining := window_points - ProgressionRules.allocation_cost(draft)
 	var preview := ProgressionRules.apply_allocation(source_unit, draft, EquipmentCatalog.items())
-	var caps: Dictionary = source_unit.get("growth_profile", {}).get("caps", {})
 	var profile: Dictionary = preview["combat_profile"]
 	for key in ATTRIBUTES:
-		var value := int(profile[key])
-		var cap := int(caps.get(key, value + 1))
-		# 0x434bf0: at cap → @2 red; within 50 of cap → @5 yellow; otherwise default white.
-		var color := BattleUISkin.TEXT_RED if value >= cap else (BattleUISkin.TEXT_YELLOW if value >= cap - 50 else BattleUISkin.TEXT_WHITE)
-		choices[key]["value"].text = str(value)
-		choices[key]["value"].add_theme_color_override("font_color", color)
+		# Mode 10 passes live = base (0x4356f1), so the window never shows the 0x1a suffix.
+		show_attribute(choices[key]["value"], attribute_text(source_unit, key, int(profile[key]), int(profile[key])))
 		var plus_draft := draft.duplicate()
 		plus_draft[key] = int(plus_draft.get(key, 0)) + 1
 		_set_enabled(choices[key]["plus"], remaining > 0 and ProgressionRules.can_allocate(source_unit, plus_draft))
@@ -212,3 +214,42 @@ func _show_messages(box: Control, heading: String, names: Array) -> void:
 func _confirm() -> void:
 	if visible and not confirm_button.disabled:
 		allocation_requested.emit(str(source_unit["id"]), draft.duplicate())
+
+
+## One attribute row of 0x434d10 (升級 window mode 10, 狀態 window, battle status page) as
+## 0x434bf0(buf, base, live, cap, flag) writes it: base ≥ cap in @2 red; cap−50 ≤ base with the
+## flag clear in @5 yellow; otherwise @1 white. Digits from 0x45b6de(base, …, 10, 4, 0): at most
+## three, no padding. When base ≠ live, byte 0x1a + live follows the closing @1, so the suffix
+## is white. A unit without a cap for the key stays white.
+static func attribute_text(unit: Dictionary, key: String, base: int, live: int) -> Dictionary:
+	var caps: Dictionary = unit.get("growth_profile", {}).get("caps", {})
+	var color := BattleUISkin.TEXT_WHITE
+	if caps.has(key) and base >= int(caps[key]):
+		color = BattleUISkin.TEXT_RED
+	elif caps.has(key) and base >= int(caps[key]) - 50 and _actor_sid(unit) != NO_NEAR_CAP_SID:
+		color = BattleUISkin.TEXT_YELLOW
+	return {"text": str(base), "color": color, "suffix": "" if base == live else LIVE_ARROW + str(live)}
+
+
+## Writes an attribute_text row into a value label; the suffix sits in a white child label
+## right after the digits.
+static func show_attribute(value: Label, row: Dictionary) -> void:
+	value.text = row["text"]
+	value.add_theme_color_override("font_color", row["color"])
+	var suffix: Label = value.get_node_or_null("LiveSuffix")
+	if suffix == null and row["suffix"] != "":
+		suffix = BattleUISkin.text(value, Vector2.ZERO, BattleUISkin.TEXT_WHITE, value.get_theme_font_size("font_size"), Vector2(0, value.size.y))
+		suffix.name = "LiveSuffix"
+	if suffix == null: return
+	suffix.text = row["suffix"]
+	suffix.position = Vector2(value.get_theme_font("font").get_string_size(value.text, HORIZONTAL_ALIGNMENT_LEFT, -1, value.get_theme_font_size("font_size")).x, 0)
+	suffix.visible = row["suffix"] != ""
+
+
+## The object's +0xa2 word: the actor template's SID (content/generated/hsl/ai/profiles.json).
+static func _actor_sid(unit: Dictionary) -> int:
+	if _actor_sids.is_empty():
+		var actors: Dictionary = ContentPaths.read_json(ContentPaths.AI_PROFILES).get("actors", {})
+		for actor_id in actors:
+			_actor_sids[actor_id] = -1 if actors[actor_id].get("sid") == null else int(actors[actor_id]["sid"])
+	return int(_actor_sids.get(str(unit.get("actor_id", "")), -1))

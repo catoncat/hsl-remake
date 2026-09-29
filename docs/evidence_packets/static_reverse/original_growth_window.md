@@ -54,7 +54,7 @@ mode 10：`0x43b4e0` case 10，`0x43bbca`–`0x43bd94`。对象由 `0x45e307(x,y
 
 | 行 | 内容 | 来源 |
 | --- | --- | --- |
-| 0–3 | 力量／反應／精神／體質 | `0x434bf0(buf, base(+0x64..+0x70), live, cap(+0x74..+0x80), job7?)`，mode 10 传 live=base；`base ≥ cap` 红、`cap−50 ≤ base < cap`（非 job 7）黄；宽 4 右对齐；状态页 `base != live` 时追加 `\x1a`+live，mode 10 不出现 |
+| 0–3 | 力量／反應／精神／體質 | `0x434bf0(buf, base(+0x64..+0x70), live(+0x4c..+0x58), cap(+0x74..+0x80), flag)`（调用点 `0x43570f`／`0x43579a`／`0x435825`／`0x4358b3`），mode 10 传 live=base（`0x4356f1`）；`base ≥ cap` 用 `@2` 红、`cap−50 ≤ base < cap` 且 flag 为 0 用 `@5`（`0x47856c`）黄，二者都以 `@1` 收尾；否则不加色码。数字由 `0x45b6de(值, …, 10, 4, 0)` 写，至多 3 位、第 5 参填充字符为 0 故不补位。`base != live` 时再接字节 `0x1a`（`0x4785a0`）＋live（同一 `0x45b6de`），在 `@1` 之后故恒为白；`ASCFONT.24` 的 0x1a 号字形是右箭头；mode 10 不出现。flag 是 `0x434d10` 自己的旗字（第 3 参槽 `[esp+0x34]` 复用）位 8：`0x434daf` 仅当对象 `+0xa2` 字＝7（SID_PLAYER7，actor 008 咕嚕）时置位，与调用者无关——升級窗、城镇狀態页（`0x4289e0`）、战斗状态页（`0x43b4e0`）同一口径。重制 `BattleGrowthPanel.attribute_text`／`show_attribute`，三处共用 |
 | 4 | 攻擊力 `+0xc0`（衰弱时 −`+0x42` 并加箭头） | 每次加减后 `0x448840` 刷新；行 4–8 前导 `#`+8 空格（`0x4785dc`） |
 | 5 | 防禦力 `+0xb4`（衰弱 −`+0x46`） | |
 | 6 | 魔擊力 `+0xd0` + `%`（`0x477820`） | 与 [录像参考 V05](../runtime_observations/original_gameplay_reference/README.md) 一致 |

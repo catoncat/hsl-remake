@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 85,
-    "sources": 470,
+    "sources": 469,
     "sources_by_kind": {
       "provenance": 189,
-      "sentence": 83,
+      "sentence": 82,
       "scope": 100,
       "matrix": 85,
       "video": 13
@@ -117,7 +117,7 @@
     },
     {
       "id": "effect-origin",
-      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），所有地图法术已照原版 0x442a90 逐受者接力、每受者至多一个数（MAGICSEQ／MAGICBARALL）；首个受者前的滑镜头（Global 效果脚本走完后、Local 效果前）与 Global 效果阶段位的清除时刻也已照做（RELAYSHADE）；剩 0x43bf30 第二参数 Local 0x80000000／Global 0 含义未读，重制两边同用战斗步长；虚弱／全解改了 max_hp／max_mp 时受者条仍按施法前的上限与 MP 画（原版 0x4364e0 读实时值）；OPT-INFO=公開 的说明字在镜头滑向下一受者时跟着漂几 tick",
+      "difference": "地图法术特效原点：Local 与原版同为目标格中心、Global 与原版同为光标格中心（MAGICFX）；Local 多受者原版逐人各建一份（前一人撤条后才建下一份），所有地图法术已照原版 0x442a90 逐受者接力、每受者至多一个数（MAGICSEQ／MAGICBARALL）；首个受者前的滑镜头（Global 效果脚本走完后、Local 效果前）与 Global 效果阶段位的清除时刻也已照做（RELAYSHADE）；受者条换值时上限与夹过的 MP 一起换，照 0x4364e0 实时读（MAGICBARLIVE）；剩 OPT-INFO=公開 的说明字在镜头滑向下一受者时跟着漂几 tick",
       "original": "eff_proc_Local：0x443087 以目标对象 (+4, +8) 即格中心建解释器（无 y 偏移），子状态 0x19 对 0x4104d0(1) 取出的每个受者各走一次，效果结束才出条；eff_proc_Global：0x442b58 写光标格 (列×32+16, 行×32+16)，0x442d81 以它建一份",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_map_strike.md",
@@ -493,16 +493,18 @@
     },
     {
       "id": "status-page-extras",
-      "difference": "原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良）",
-      "original": "原版只在移动选格态（phase 20 子态 0 0x443c63）点非己方指挥单位开页，0x443cfa 对未知单位不开页，关窗子态 11 0x4440b7 回选格；行动环 98／74 无点单位分支；按钮条原版没有",
+      "difference": "原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良）；四项基础属性按 0x434bf0 着色（到上限红、距上限 50 内黄，SID 7 咕嚕不黄）、衰弱时 base 后接 0x1a 箭头＋实时值，已照原版（lane ATTRCOLOR，升級窗与城镇狀態页同一函数）",
+      "original": "原版只在移动选格态（phase 20 子态 0 0x443c63）点非己方指挥单位开页，0x443cfa 对未知单位不开页，关窗子态 11 0x4440b7 回选格；行动环 98／74 无点单位分支；按钮条原版没有；属性行 0x434d10 调 0x434bf0(buf, base, live, cap, flag)，flag 位 8 仅 +0xa2＝7 时置（0x434daf）",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/menus_ui/README.md",
-        "docs/evidence_packets/static_reverse/original_identity_bar.md"
+        "docs/evidence_packets/static_reverse/original_identity_bar.md",
+        "docs/evidence_packets/static_reverse/original_growth_window.md"
       ],
       "remake": "原版路径照原版：没有加值行、说明与按钮条，点他人只在移动选格态开、关窗回选格，点未交手单位不开页（BattleStatusPanel.opens_for）；OPT-INFO=公開 恢复加值行、说明与点谁都开，OPT-GUIDE=提示 恢复按钮条；「成長點」随 OPT-GROWTH 暂缓路径（有点数才显示）；OPT-INFO=公開 时悬停／选目标身份栏与切入栏也视为已知、数值始终可见（OPTIONS-S2）",
       "remake_code": [
         "game/battle/scene/BattleStatusPanel.gd:show_unit",
         "game/battle/scene/BattleStatusPanel.gd:opens_for",
+        "game/battle/scene/BattleGrowthPanel.gd:attribute_text",
         "game/battle/scene/BattleSceneInput.gd:handle_pointer_left_pressed"
       ],
       "original_status": "no_original_code",
@@ -571,8 +573,7 @@
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#d8db3c78e7",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#df9bc3bea0",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#e72017fdd8",
-        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d",
-        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#c15a3a7a72"
+        "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#fc8cf6cb1d"
       ]
     },
     {
@@ -2007,8 +2008,8 @@
     },
     {
       "id": "party-equipment-screen",
-      "difference": "「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；拿起即离包（0x436e80）、空手卸下与换下的旧件进手（0x437020／0x436f30）已照原版（lane SHOPHAND）；开窗子窗与按钮滑入、关窗滑出已照原版（lane WINSLIDE：0x428410／0x4285e0 起点偏 400，0x45e882 速度 40，0x45e80d 步 20 容差 4；按钮按下放 ACCEPT01、←／→ 换人，0x42a68f）；倉庫 页 使用（0x409e40(…, 0, 1)：永久道具从伤害随机流抽样，返回 0 的會心之素／鐵壁之素与已到 80 的抗性之源不消耗，成功放 402）与满包空手卸下（0x437020 不看背包）已照原版（lane EQUIPUSE）；满包手持散件装上、旧件进手（0x436f30 不看背包）已照原版（lane EQUIPLOOSE）；裝備页持物点哪格就装哪格（0x429766 悬停格，类型不符 0x436f30 返回 −1、手不变无音）、同 code 照写且手仍持该件放 400、持物时右键／Esc 不动作（0x428dc7；OPT-GUIDE＝提示 才放回首空格）已照原版（lane EQUIPSLOT）；剩重制读法：列表即时按重要在前排序（原版关窗才分表）；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页黄字属性与裝備页背包红字未做；战斗外 使用 的 HP／MP 恢复关窗不留与原版一致（每关入口 0x4075e0 对已注册槽回满 HP／MP）；气力与解状态关窗不留——carry 不存状态、气力按 keep_stamina 取 carry 原值或归 0（原版 0x4075e0 只在 [0x4c1af0] 非 0 时保留记录上的气力），只有永久加成落地，解状态原版是否跨关留存待核",
-      "original": "系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点与滑入起点（0x428410）、按钮起点（0x4285e0）、滑入滑出（0x414c00 state 0／2、0x42a330 子状态 0／4）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0、使用 0x42a887＋0x409e40 第四参与返回值、卸下 0x437020、装上 0x436f30、根态右键／Esc 0x428dac 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、属性黄字与背包红字的条件未读",
+      "difference": "「整理裝備」已照原版换成共用状态窗模式 0（lane PARTYEQUIP：同一套板、九钮位置与按页显隐、当前页钮画暗、初始页 狀態、只有裝備页可换装、关窗回卷轴；原版帧 15–17 版面偏移 0）；倉庫 页、丟棄／使用、换人保留手持已照原版（lane EQUIPSCREEN：队伍存储 carry.loop.party_storage 两表叠数、重要物取不出，帧 18–24）；拿起即离包（0x436e80）、空手卸下与换下的旧件进手（0x437020／0x436f30）已照原版（lane SHOPHAND）；开窗子窗与按钮滑入、关窗滑出已照原版（lane WINSLIDE：0x428410／0x4285e0 起点偏 400，0x45e882 速度 40，0x45e80d 步 20 容差 4；按钮按下放 ACCEPT01、←／→ 换人，0x42a68f）；倉庫 页 使用（0x409e40(…, 0, 1)：永久道具从伤害随机流抽样，返回 0 的會心之素／鐵壁之素与已到 80 的抗性之源不消耗，成功放 402）与满包空手卸下（0x437020 不看背包）已照原版（lane EQUIPUSE）；满包手持散件装上、旧件进手（0x436f30 不看背包）已照原版（lane EQUIPLOOSE）；裝備页持物点哪格就装哪格（0x429766 悬停格，类型不符 0x436f30 返回 −1、手不变无音）、同 code 照写且手仍持该件放 400、持物时右键／Esc 不动作（0x428dc7；OPT-GUIDE＝提示 才放回首空格）已照原版（lane EQUIPSLOT）；剩重制读法：列表即时按重要在前排序（原版关窗才分表）；魔法／特殊技列表用普通 WINDOW20 板、无悬停说明与滚动条；裝備页手持移入装备板时左板暂显狀態（0x40a）没做；狀態页四项属性按 0x434bf0 着色（到上限红、距上限 50 内黄，SID 7 咕嚕不黄）已照原版（lane ATTRCOLOR）；裝備页背包红字未做；战斗外 使用 的 HP／MP 恢复关窗不留与原版一致（每关入口 0x4075e0 对已注册槽回满 HP／MP）；气力与解状态关窗不留——carry 不存状态、气力按 keep_stamina 取 carry 原值或归 0（原版 0x4075e0 只在 [0x4c1af0] 非 0 时保留记录上的气力），只有永久加成落地，解状态原版是否跨关留存待核",
+      "original": "系统卷轴项 0＝defProcBigMapMenu 0x425a90 调 0x42ab40(0,…)（0x425e89），与 actEnterStorageWindow（0x450840 case 0x8b）同一入口；九钮模板 724–735 字样、flags、行为（0x42a330）、子窗落点与滑入起点（0x428410）、按钮起点（0x4285e0）、滑入滑出（0x414c00 state 0／2、0x42a330 子状态 0／4）、各页内容（0x4289e0）已读，倉庫两表 0x44ef70／0x44f100／0x44efe0／0x44f170／0x44f670、开关窗 0x42aa50／0x42aad0、列表点击 0x414c00、存读档 0x44f720／0x44f8a0、使用 0x42a887＋0x409e40 第四参与返回值、卸下 0x437020、装上 0x436f30、根态右键／Esc 0x428dac 已读，原版帧 15–24 核对；魔法／特殊技页板（形状表项 5／10）、悬停描述格式、背包红字的条件未读；狀態页属性着色 0x434d10→0x434bf0 已读",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_storage_window.md",
         "docs/evidence_packets/runtime_observations/original_world_town/README.md",

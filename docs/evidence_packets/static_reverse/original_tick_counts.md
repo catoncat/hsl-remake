@@ -7,7 +7,7 @@
 - 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick（按住任一 Shift 24）；脚本行走（含 actMoveDispWait）speed→1／2／4／8 px/tick；剧情压黑每 3 tick 一级、16 级（48 tick），actDarkScreen／actDeleteDarkScreen 都不等待；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16、之间无停留，收尾镜头在子 0 起第 33 tick 交接（有续击的镜头第 2 tick）；攻方开场 24 tick 缩放＋32 tick 叠层＋1 tick 查挂起（static-derived）。
 - 绝技特写收尾：守方 EFFECTS 脚本的 aniOver 直接进 phase 101（变暗 16 → 拆场 → 回地图变亮 16），不查场上对象是否还活着；未完的特写对象在拆场位 `0x4c1404` 置位的那一 tick 自删（static-derived，§9）。
 - 重制 `CombatPresentationTiming`、`OpeningCinematics`／`BattleOpeningCoordinator`、`BattleCameraController`／`WorldMapRuntime`、`BattleCombatCutin` 按这些计数经 `OriginalTick`（16 ms/tick）换算（static-derived）。
-- 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；击中闪光寿命等计数未读，保留 provisional；施法 phase 102 子状态 4 的 16＋11 call 与 `0x4c1408` 释放已读并照做（见 [original_cast_overlays.md](original_cast_overlays.md)「证据」）（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；像素混合未逐像素对照（provisional）。
+- 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；击中闪光寿命已读（defProcAttackFlash `0x401140`：刀光级 16、停 10、每 2 call 降一级、第 54 call 自删并清父 `+0x88`，见 [original_effect_motion.md](original_effect_motion.md) 第 77 行）；施法 phase 102 子状态 4 的 16＋11 call 与 `0x4c1408` 释放已读并照做（见 [original_cast_overlays.md](original_cast_overlays.md)「证据」）（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；像素混合未逐像素对照（provisional）。
 
 ## 证据
 
@@ -175,9 +175,9 @@ provenance 头 timing／layout 维度写 `static-derived docs/evidence_packets/s
 
 - 本包只给 tick 计数与状态机读法，不证明绘制内容（数字弹跳曲线）等价；切入开场的 `0xc000000`／`0x28000000`、过渡的 `0x20000000` 与章节标题的 `0x2000000`／`0x20000000` 已读到像素例程种类（饱和加法／饱和减法／16 级交叉淡化），像素级等价仍未对照。
 - 系统卷轴展开／收起已读（`0x45e882`／`0x45e91e`，[menus_ui](../runtime_observations/menus_ui/README.md) §6）。
-- 未读（保留 provisional）：击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）、`0x4c1e00` 切入底图缓冲的装入路径。施法对象 phase 102 子状态 4 的过渡／停留与 `0x4c1408` 释放已读（`AnimalCastLead` 照做，见 [original_cast_overlays.md](original_cast_overlays.md)「证据」），对象 700 每级明暗已读（§结论）。
+- 未读（保留 provisional）：`0x4c1e00` 切入底图缓冲的装入路径。击中闪光对象 `0x401310` 的寿命（攻方 phase 101 等 `+0x88` 归零）已读，见 [original_effect_motion.md](original_effect_motion.md) 第 77 行。施法对象 phase 102 子状态 4 的过渡／停留与 `0x4c1408` 释放已读（`AnimalCastLead` 照做，见 [original_cast_overlays.md](original_cast_overlays.md)「证据」），对象 700 每级明暗已读（§结论）。
 - `mapobjFlash` 亮度步进已读：见 [地图物件闪烁](original_map_object_flash.md)。
 - §8：到位后原版回状态 0，`0x453ba3` 的每 tick 推帧只在脚本状态里跑、站立公共尾因 0x1000 跳过，无脚本形态时帧同样定格；重制到位即停帧，一致。子状态 1／4 的 `0x446c10` 起步动作分支在数据下不可达（SHAPEDEF 无 `prepare`，见 [original_action_state_machine.md](original_action_state_machine.md)「起步动作」），`0x44fbd0` 目标修正在重制里经 `_move_actor` 取开局生成器记下的落点（与 actWalk 系列同一路径，见 [original_script_walk_path.md](original_script_walk_path.md)「结论」），走位当时不另跑一次。
-- §9：攻方收页在重制里取 `release_tick`，原版还等本对象插入的攻击闪光（`+0x88`）归零，闪光寿命未读；结果数字放行（`0x404643`）的阻塞未计入脚本游标，仍以 `RESULT_HOLD_TICKS` 代替，数字寿命长过拆场时黑幕下多停几 tick；出现的随机插入实例集随种子变（与原版共享 RNG 同理，具体实例不逐个对应）。
+- §9：攻方收页在重制里取 `release_tick`，原版还等本对象插入的攻击闪光（`+0x88`）归零；闪光寿命已读（刀光 54 call，[original_effect_motion.md](original_effect_motion.md) 第 77 行），但 ANIMAL 的 19 段 s_action（绝技攻方程序）都不含 aniInsertAttackFlash（`0x4021df`；59 处全在普攻 action，见 [ANIMAL 程序包 §8.1](animal_program_execution.md#81-逐通道-opcode-普查resource-derived)），绝技攻方页没有本对象插入的闪光可等，重制取 `release_tick` 不改（`+0x88` 的其他写入点未逐一核）；结果数字放行（`0x404643`）的阻塞未计入脚本游标，仍以 `RESULT_HOLD_TICKS` 代替，数字寿命长过拆场时黑幕下多停几 tick；出现的随机插入实例集随种子变（与原版共享 RNG 同理，具体实例不逐个对应）。
 - §6 交接：重制 `CombatPresentationTiming.ordinary` 在收尾镜头的 `complete` ＝ recovery ＋ 32 tick（原版子 2 交接的 T32）；有续击的镜头 `complete` ＝ recovery ＋ `HANDOVER_TICKS` 1（原版子 0 `0x404b23` 置子 2、T1 交接）。§7：`OPENING_TICKS` ＝ 24 ＋ 32 ＋ 1（`OPENING_WAIT_TICKS`，子 2 那一 tick 不画光球）；子 0 那 1 tick 首镜与续击镜头两边都不计，出手到守方各段的相对 tick 不变。
 - 反编译原文留在 `ignored/static/hsl01/decompiled/`，不入库。

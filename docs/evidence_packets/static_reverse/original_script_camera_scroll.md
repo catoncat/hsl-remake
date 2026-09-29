@@ -100,5 +100,5 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 - 秒数取 16 ms 设计值，本机 19.4 ms 的体验时长不作目标（provisional）。
 - 居中到位与开走之间原版可能差 1 tick（sub 0 到位当 tick 算路径，sub 2 起步），重制到位即开走。
 - actWalkFollow(Wait)：`+0xa8／+0xac` 何处并回 `+4／+8` 不在本读法内（领队走完后再跟随时的基准按其终点处理）；领队尚未过 sub 0 就被跟随时原版复制的是它 `+0x4c` 里的上一张表（领队走完时 `0x4541ba` 把表 `0x457c20` 释放但不清指针，途中续算 `0x45413c` 会把后续段覆盖进表），重制 `_path_buffers` 在领队开走时即写本次首段、走完不清——第一章两处用例（沃斯菲塔王座廳（LEVEL058）、王座廳・俘虜（LEVEL060））都在领队 actWalk 后隔 `actDelay,1`，领队已过 sub 0 且未续算，两边都复制本次首段，差别不可见；跟随者目的格原版不经 `0x44fbd0`（`0x44ff50` 只调 `0x44fad0`／`0x457b70`／`0x407940`／`0x40ba20`／`0x411b90`），重制 `_walk_follow` 以 `fix_destination = false` 跳过 `_fixed_destination`；两场的跟随者都没有 `story_endpoint_landing_from` 落点记录，PlayLoop 站位不变。actWalkAndDeleteWait 到达后原版再停 16 tick 才删（sub 7／8），重制的删除时机不在本读法内。
-- `*0x4c1b1c` 对 `0x43bf30` 负 flag 的语义、非剧情阶段（战斗中玩家光标）的镜头路径不在本读法内。
+- `0x43bf30` 负 flag（0x80000000）的语义见 [original_effect_motion.md](original_effect_motion.md) 第 110 行：镜头正好在目标上时返回 `*0x4c1b1c`，即立即到位。非剧情阶段（战斗中玩家光标）的镜头路径不在本读法内。
 - 不支持的结论：旧的 0.6 s tween／160 px／s 与原版秒数一致。
