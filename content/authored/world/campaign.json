@@ -1,0 +1,63 @@
+{
+  "schema": "hsl_campaign.v1",
+  "title": "續集示範",
+  "evidence_tier": "authored",
+  "note": "續集世界示範（重製版創作，authored）：從大地圖（第 49 關）開始，晨風鎮 → 龍脊隘口（第 200 關）→ 回到大地圖。",
+  "start_level": "49",
+  "battles": {
+    "49": {
+      "scenario": "res://content/authored/world/world_map_scene.json",
+      "title": "大地圖",
+      "kind": "world_map"
+    },
+    "200": {
+      "scenario": "res://content/battles/battle_200.json",
+      "title": "龍脊隘口"
+    },
+    "998": {
+      "scenario": "res://content/authored/world/world_map_scene.json",
+      "title": "大地圖",
+      "kind": "world_map",
+      "note": "第 200 關的 winfail 勝利段寫的是 actSetNextPlayLevelEvent,200,998；本戰役把 998 登記成大地圖，勝利後停在進關的點（龍脊隘口）。"
+    }
+  },
+  "world_map": {
+    "scenario": "res://content/authored/world/world_map_scene.json",
+    "title": "大地圖",
+    "kind": "world_map",
+    "point_level_range": [
+      1,
+      2
+    ]
+  },
+  "carry_policy": {
+    "roles": [
+      "player_controlled"
+    ],
+    "unit_keys": [
+      "level",
+      "exp",
+      "pending_stat_points",
+      "equipment",
+      "weapon_code",
+      "inventory",
+      "kill_count",
+      "permanent_gains",
+      "learned_skills",
+      "job_up_flags",
+      "job_up_target_actor_id",
+      "job_up_history"
+    ],
+    "attribute_keys": [
+      "str",
+      "dex",
+      "mind",
+      "con"
+    ],
+    "loop_keys": [
+      "gold",
+      "party_storage"
+    ],
+    "restore_vitals": true
+  }
+}

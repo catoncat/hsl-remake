@@ -1,0 +1,34 @@
+{
+  "schema": "hsl_town_message_text.v1",
+  "evidence_tier": "authored",
+  "source_policy": "續集世界的城鎮文字（重製版創作）。606／607 是商店引擎固定讀的拒絕訊息編號，文字是重寫的。",
+  "messages": {
+    "606": "金錢不夠，買不起這件東西。",
+    "607": "這件東西本店不收。",
+    "5001": "武器店",
+    "5002": "武器店老闆",
+    "5003": "來看看吧，出城前總得帶把像樣的武器。",
+    "5004": "老獵人",
+    "5005": "往西北的山道我已經清出來了。龍脊隘口有翼狼出沒，要去的話千萬小心。"
+  },
+  "speakers": {
+    "SID_雷歐納德": {
+      "slot": 0,
+      "name_text": "雷歐納德",
+      "players_row": 1,
+      "portrait_key": "face_0000"
+    },
+    "SID_緹娜": {
+      "slot": 1,
+      "name_text": "緹娜",
+      "players_row": 2,
+      "portrait_key": "face_0001"
+    },
+    "SID_蕾雅": {
+      "slot": 101,
+      "name_text": "蕾雅",
+      "players_row": 102,
+      "portrait_key": ""
+    }
+  }
+}

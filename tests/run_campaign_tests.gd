@@ -16,6 +16,9 @@ const WorldPartyRules = preload("res://game/world/WorldPartyRules.gd")
 const TownEventRules = preload("res://game/sim/TownEventRules.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
+const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const SEQUEL_CAMPAIGN_PATH := "res://content/authored/world/campaign.json"
 
 var failures: Array[String] = []
 
@@ -49,6 +52,7 @@ func _run() -> void:
 	await _test_battle_job_up_runtime_handoff()
 	await _test_separate_party_loot_gate()
 	await _test_saved_progress()
+	await _test_sequel_world_flow()
 	# Audio-release settle on the wall clock: the gate runs this suite under --fixed-fps.
 	await process_frame
 	await TestSuite.settle_wall_clock(self, 0.2)
@@ -426,3 +430,100 @@ func _test_saved_progress() -> void:
 	await process_frame
 	CampaignProgress.resume_prompt_in_headless = false
 	CampaignProgress.reset_campaign()
+
+
+## A sequel world written only as data (content/authored/world/): 開始新故事 on its campaign
+## opens its big map, its town's 老獵人 un-hides 龍脊隘口 and points it at level 200, the
+## party walks there, wins 玩家第 1 場 · 龍脊隘口（LEVEL200） and comes back to the map.
+## Each scene change prints one SEQUEL_WORLD line.
+func _test_sequel_world_flow() -> void:
+	CampaignProgress.campaign_path = SEQUEL_CAMPAIGN_PATH
+	CampaignProgress.reset_campaign()
+	var steps: Array[String] = []
+	var map_path := CampaignProgress.first_scenario_path(CampaignProgress.load_campaign())
+	var scene = await _sequel_boot("")
+	var map = scene.world_map_runtime
+	if map != null and map.active and str(scene.scenario_path) == map_path:
+		steps.append("campaign → big map %s, point %d %s" % [map_path, map.current_point(), WorldMapRules.point_label(map.world_map, map.current_point())])
+		map.track_reveal_tick_seconds = 0.0
+		map.travel_pixels_per_second = 100000.0
+		var town = await _sequel_town(map, 1)
+		if town != null and town.menu_codes() == [1, 2]:
+			steps.append("big map → town %s, menu %s" % [town.town_label, town.menu_codes()])
+			town.select_entry(2)
+			var said: Array[String] = []
+			var guard := 0
+			while is_instance_valid(town) and town.mode in ["dialogue", "delay"] and guard < 400:
+				if town.mode == "dialogue" and not said.has(str(town.current_speaker)):
+					said.append(str(town.current_speaker))
+				if not town.board_moving():
+					town.confirm()
+				guard += 1
+				await process_frame
+			town.leave()
+			guard = 0
+			while map.town_runtime != null and guard < 600:
+				guard += 1
+				await process_frame
+			if map.town_runtime == null and said == ["老獵人"]:
+				steps.append("town → big map after talking to %s, 龍脊隘口 hidden=%s event=%d" % [said[0], WorldMapRules.point_hidden(map.state, map.world_map, 2), WorldMapRules.point_event(map.state, map.world_map, 2)])
+				guard = 0
+				while map.reveal_busy() and guard < 600:
+					guard += 1
+					await process_frame
+				map.select_point(2, "test")
+				guard = 0
+				while not CampaignProgress.has_pending() and guard < 600:
+					guard += 1
+					await process_frame
+	var battle_path := str(CampaignProgress.pending.get("scenario_path", ""))
+	if battle_path == "res://content/battles/battle_200.json" and steps.size() == 3:
+		steps.append("big map → %s (玩家第 1 場 · 龍脊隘口（LEVEL200）)" % battle_path)
+		await _sequel_teardown(scene)
+		scene = await _sequel_boot(battle_path)
+		if str(scene.scenario_path) == battle_path:
+			await BattleForceWin.play_opening(self, scene, "sequel level 200", _assert_true)
+			if await BattleForceWin.force_win(self, scene, "sequel level 200", _assert_true):
+				scene.campaign_progress.start_next_battle()
+	var back_path := str(CampaignProgress.pending.get("scenario_path", ""))
+	if back_path == map_path and steps.size() == 4:
+		steps.append("level 200 win → %s" % back_path)
+		await _sequel_teardown(scene)
+		scene = await _sequel_boot(back_path)
+		map = scene.world_map_runtime
+		if map != null and map.active and map.current_point() == 2:
+			steps.append("big map again, party at point %d %s, town menu kept %s" % [map.current_point(), WorldMapRules.point_label(map.world_map, 2), (map.state["towns"]["1"]["tree"] as Dictionary).get("0", [])])
+	for line in steps:
+		print("SEQUEL_WORLD ", line)
+	_assert_true(steps.size() == 6, "the sequel world flow passes (campaign → map → town → map → level 200 → map): reached %d of 6 steps" % steps.size())
+	await _sequel_teardown(scene)
+	CampaignProgress.campaign_path = CampaignProgress.CAMPAIGN_PATH
+	CampaignProgress.reset_campaign()
+
+
+func _sequel_boot(path: String) -> Node:
+	var scene = RuntimeScene.instantiate()
+	scene.scenario_path = path
+	scene.startup_mode = "product_opening"
+	root.add_child(scene)
+	await process_frame
+	await process_frame
+	return scene
+
+
+func _sequel_town(map: Node, point_id: int) -> Node:
+	map.select_point(point_id, "test")
+	await process_frame
+	var town = map.town_runtime
+	var guard := 0
+	while town != null and town.board_moving() and guard < 600:
+		guard += 1
+		await process_frame
+	return town
+
+
+func _sequel_teardown(scene: Node) -> void:
+	if is_instance_valid(scene):
+		scene.queue_free()
+	await process_frame
+	await process_frame

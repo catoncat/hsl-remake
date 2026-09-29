@@ -1,0 +1,100 @@
+{
+  "schema": "hsl_world_map.v1",
+  "evidence_tier": "authored",
+  "claim": "續集世界的點位與路線（重製版創作）。座標沿用原版大地圖圖面的像素座標；路線 1 的折線和 m_trk001 圖借自原版第 1 條路線。",
+  "points": [
+    {
+      "slot": 1,
+      "id": 1,
+      "raw_field0": 2,
+      "flag_names": [
+        "bmpmTown"
+      ],
+      "name_text": "晨風鎮",
+      "x": 910,
+      "y": 527,
+      "track_ids": [
+        1
+      ],
+      "raw_track_fields": [
+        1,
+        0,
+        0
+      ],
+      "raw_field9": 0
+    },
+    {
+      "slot": 2,
+      "id": 2,
+      "raw_field0": 0,
+      "flag_names": [
+        "bmpmBattle"
+      ],
+      "name_text": "龍脊隘口",
+      "x": 862,
+      "y": 474,
+      "track_ids": [
+        1
+      ],
+      "raw_track_fields": [
+        1,
+        0,
+        0
+      ],
+      "raw_field9": 0
+    }
+  ],
+  "tracks": [
+    {
+      "slot": 1,
+      "id": 1,
+      "field0_flag_names": [],
+      "field1_flag_names": [],
+      "from_point": 1,
+      "to_point": 2,
+      "polyline": [
+        [
+          910,
+          527
+        ],
+        [
+          895,
+          511
+        ],
+        [
+          886,
+          487
+        ],
+        [
+          862,
+          474
+        ]
+      ],
+      "sprite": {
+        "preview": "previews/m_trk001.png",
+        "width": 53,
+        "height": 61,
+        "draw_origin": [
+          51,
+          60
+        ]
+      }
+    }
+  ],
+  "towns": [
+    {
+      "symbol": "town_晨風鎮",
+      "point_id": 1,
+      "point_name_text": "晨風鎮",
+      "background": {
+        "preview": "previews/townbg_01.png",
+        "width": 325,
+        "height": 185,
+        "draw_origin": [
+          162,
+          92
+        ]
+      }
+    }
+  ]
+}

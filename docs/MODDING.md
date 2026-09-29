@@ -132,6 +132,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
    - `content/authored/roles/characters.json`、`skills.json`：数据是新写的，但沿用 PLAYERS／SPECIAL 的字段，并且借用了原版的职业代号、特效物件和 WAV。
    - `content/authored/battles/first_battle_base.json`：原版第一战的手写底稿（含 `resource-derived` 字段）。
    - `content/authored/level200/`：地图借用第 2 关的原版图，表现 manifest 借用 battle500，敌人用的是原版 036。
+   - `content/authored/world/`：续集世界示范。点位、路线、城镇事件和文字是新写的；地图图面 bigmap、点位标记 m_pnt001–003、路线图 m_trk001 和原版第 1 条路线的折线、城镇背景 townbg_01、状态栏 status_bar、头像 FACE0073／0062（队员说话者用 0000／0001）、城镇音效、商品目录、大地图上的行走帧和角色音效表（battle001）、界面音效和配乐 06／05 都借用原版导入件，货架上的 1／81／101 是原版物品。
    - `content/authored/actors/102`、`103` 的 PNG：原版 003／004 号角色的帧换色而来。
    - `content/world/town_initial_trees.json`、`town_job_up_writes.json`（`static-derived`）、`world_map_scene.json`（指向导入的大地图和原曲）。
    - `content/battles/campaign.json`、`content/battles/levels/*.json`：虽然是手写的，但记录的是原版的关卡顺序和标题。
@@ -159,4 +160,6 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 - 手写层的新音效、新界面美术：两者都没有 authored 入口。
 - 关卡配乐用任意路径：剧本 `actPlayMusic` 的路径模板写死在 `tools/hsltools/levels/timeline.py` 的 `MUSIC_STREAM`。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
-- 续集自己的大地图和城镇：数据入口存在，但没有验证过（[逐步表](MODDING_LEVELS.md#33-从标题开始与续集世界) #20）。
+- 续集战役和第一章并存：游戏只读 `content/battles/campaign.json`，换成续集的战役要替换这份文件（测试里改的是 `CampaignProgress.campaign_path`），两边也共用同一个存档位置（[逐步表](MODDING_LEVELS.md#33-从标题开始与续集世界) #23）。
+- 在大地图数据里直接写点位通往哪一关：点位的 `id` 同时当身份（受 100 个槽位限制，`WorldMapRules.ROUTE_SLOTS`）和原版点记录 +8 的初始关号用。原版文件本可以在 +8 直接写 200，重制要先把初始关号拆成独立字段、身份和路线改用 `slot`；在那之前，关号 200 以上的续集关只能靠城镇或剧本事件指过去（#22）。
+- 续集城镇的转职改写：`TownEventRules` 读的转职改写表写死为 `content/world/town_job_up_writes.json`，续集城镇用 `teCheckJobUp2` 会重放第一章的改写。

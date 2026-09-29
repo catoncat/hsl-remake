@@ -89,7 +89,10 @@ python3 tools/hsl.py check authored_level:200 authored_art actor_panels level_pr
 | # | 步骤 | 类型 | 改哪里、怎么做 |
 | --- | --- | --- | --- |
 | 19 | 从标题直接开始你的关 | 只写数据 | `campaign.json` 的 `start_level` 改成第一关的 key，「開始新故事」直接进它；片头动画是 `start_movie`（第一章是 `"start"`），不写就不播 |
-| 20 | 城镇、大地图 | 只写数据，**未验证** | 表在哪见 §6；示范没有碰过 |
+| 20 | 续集自己的大地图 | 只写数据，已验证 | `content/authored/world/world_map.json`（`hsl_world_map.v1`）：点位一行一个，`id`＝`slot`（1–99），`x`／`y` 是地图图面上的像素，`flag_names` 定类型（`bmpmTown`／`bmpmBattle`／`bmpmGeneral`），`raw_track_fields` 列它连着的路线，`raw_field0` 是开局的显示阶段（起点写 2，开局藏起来的点写 0）；路线写 `from_point`／`to_point`、折线 `polyline` 和 `sprite.preview`；`towns[]` 把城镇符号对到点位和背景图。同目录的 `world_map_scene.json` 照第一章的场景写，`resources` 指到续集自己的四张表，`new_game.hidden_points`／`hidden_tracks` 定开局藏起来的点和路 |
+| 21 | 城镇里的店和人 | 只写数据，已验证 | 同目录 `towndef.json`：`symbols` 里 `town_<名字>` 等于点位 id，`town_events` 一行一个菜单项，te 文法照原版 TOWNDEF（`teShapeMessage` 说话、`teCreateShop` 开店，货表在 `items`）；`town_initial_trees.json` 是开局的根菜单；`town_messages.json` 放文字和队员说话者，606／607 是商店拒绝语的固定编号 |
+| 22 | 点位通往哪一关 | 只写数据，已验证 | 没被事件写过的点开和自己 id 同号的关。续集的关号在 200 以上，所以由城镇事件 `teBMSetPointEvent,<点>,<关>,bmpmBattle`（或剧本的 `actBMSetPointEvent`）指过去；示范里晨風鎮的老獵人先用 `teBMClearPointFlag`／`teBMClearTrackFlag` 去掉龍脊隘口和那条路的 `bmpmHidden`，再把它指到第 200 关 |
+| 23 | 战役接起来 | 只写数据，已验证 | 续集自己的 `campaign.json`：`start_level` 写 `"49"`（原版的大地图关号），`battles["49"]` 和 `world_map` 都指到续集的大地图场景；关卡胜利段写 `actSetNextPlayLevelEvent,<点>,49` 回到那个点。示范借用的第 200 关胜利段是 `200,998`，示范战役就把 998 也登记成大地图。游戏只读 `content/battles/campaign.json`，实玩时拿这份替换它（同 #19）。`tests/run_campaign_tests.gd` 的续集世界一条走完 战役 → 大地图 → 城镇 → 大地图 → 第 200 关 → 大地图 |
 
 ## 4. 招式表字段（`content/authored/roles/skills.json`）
 
@@ -179,10 +182,10 @@ action = actWalkPrevInsertObject,512,288,4
 | --- | --- | --- |
 | 战役流转（哪一关接哪一关、哪一关是战斗／剧情／谢幕） | `content/battles/campaign.json` | `battles["N"]` 一行一关：`scenario`、`title`、`kind`（省略＝正式战斗；`story`＝剧情场景或开场预览；`game_clear`＝谢幕）。运行时 `CampaignProgress.next_destination` 只看这张表；`campaign_overview` 生成[战役总览](evidence_packets/resource_inventory/campaign_overview.md) |
 | 查原版剧本怎么写 | `content/imported/hsl/story_corpus/` | 原版全部 STORY／winfail／STORYOVER／TOWNDEF 的机器可读语料（`story_corpus`），写剧情前在这里查文法和用例 |
-| 城镇菜单与事件 | `content/world/town_initial_trees.json`（手写）＋导入的 `content/imported/hsl/global/world_map/towndef.json` | 事件由 `TownEventRules` 解释；剧本对城镇树的改写（actAddTE 等）在交接时由 `WorldScriptActions` 施加 |
+| 城镇菜单与事件 | `content/world/town_initial_trees.json`（手写）＋导入的 `content/imported/hsl/global/world_map/towndef.json` | 事件由 `TownEventRules` 解释；剧本对城镇树的改写（actAddTE 等）在交接时由 `WorldScriptActions` 施加。续集用自己的一套，示范在 `content/authored/world/`（§3.3 #21） |
 | 转职后哪座城怎么变 | `content/world/town_job_up_writes.json`（`hsl_town_job_up_writes.v1`） | `teCheckJobUp2` 成功后回放这份表；改后 `python3 tools/hsl.py check town_job_up_writes`，改成别的城要把 `evidence_tier` 标成 `authored` |
 | 酒馆神秘男子的价格、货表 | `content/generated/hsl/static/hsl01/secret_man_goods.json` | 生成物（`secret_man_goods`，需要原版 EXE），没有手写层入口 |
-| 大地图点位、路线、隐藏 | 导入的 `content/imported/hsl/global/world_map/world_map.json`＋手写的 `content/world/world_map_scene.json`（`new_game` 隐藏集） | 运行时状态随存档 |
+| 大地图点位、路线、隐藏 | 导入的 `content/imported/hsl/global/world_map/world_map.json`＋手写的 `content/world/world_map_scene.json`（`new_game` 隐藏集） | 运行时状态随存档。续集的一套示范在 `content/authored/world/`（§3.3 #20） |
 | 标题、系统菜单、谢幕的美术与版式 | 导入的 `content/imported/hsl/global/title/manifest.json`（`title_assets`） | 版式常量在 `tools/hsltools/assets/title_assets.py` 里 |
 | 配乐 | 见 [MODDING §3](MODDING.md#3-换素材) 素材表的"配乐"行 | |
 

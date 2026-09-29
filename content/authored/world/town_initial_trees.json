@@ -1,0 +1,16 @@
+{
+  "schema": "hsl_town_initial_trees.v1",
+  "evidence_tier": "authored",
+  "claim": "晨風鎮開局的選單：武器店、老獵人（重製版創作）。",
+  "towns": {
+    "town_晨風鎮": {
+      "point_id": 1,
+      "tree": {
+        "0": [
+          1,
+          2
+        ]
+      }
+    }
+  }
+}

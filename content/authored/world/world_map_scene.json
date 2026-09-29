@@ -1,0 +1,77 @@
+{
+  "schema": "hsl_world_map_scene.v1",
+  "id": "world_map_sequel_demo",
+  "title": "大地圖",
+  "level_kind": "world_map",
+  "rule_adapter": "world_map",
+  "status": "authored",
+  "evidence_tier": "authored",
+  "claim": "續集世界示範的大地圖場景（重製版創作）。點位、路線、城鎮表與文字在本目錄；地圖圖面、點位與路線圖、城鎮背景、頭像、音效、商品目錄、行走幀與配樂借用原版導入件。",
+  "player_unit_id": "leonard",
+  "start_point": 1,
+  "resources": {
+    "map_texture": "res://content/imported/hsl/global/world_map/previews/bigmap.png",
+    "world_map": "res://content/authored/world/world_map.json",
+    "towndef": "res://content/authored/world/towndef.json",
+    "town_initial_trees": "res://content/authored/world/town_initial_trees.json",
+    "town_messages": "res://content/authored/world/town_messages.json",
+    "town_portraits": "res://content/imported/hsl/global/world_map/town_portraits.json",
+    "town_sounds": "res://content/imported/hsl/global/world_map/town_sounds.json",
+    "town_shop_items": "res://content/imported/hsl/global/world_map/town_shop_items.json",
+    "point_marker_textures": {
+      "1": "res://content/imported/hsl/global/world_map/previews/m_pnt001.png",
+      "2": "res://content/imported/hsl/global/world_map/previews/m_pnt002.png",
+      "3": "res://content/imported/hsl/global/world_map/previews/m_pnt003.png"
+    },
+    "track_sprite_dir": "res://content/imported/hsl/global/world_map/previews",
+    "town_background_dir": "res://content/imported/hsl/global/world_map/previews",
+    "actor_walk_manifest": "res://content/imported/hsl/chapter01/battle001/actor_walk_frames/actor_walk_manifest.json",
+    "actor_audio": "res://content/imported/hsl/chapter01/battle001/actor_audio.json",
+    "interface_audio": "res://content/imported/hsl/shared/interface_audio/manifest.json",
+    "map_music": "res://content/imported/hsl/music/06.ogg",
+    "town_music": "res://content/imported/hsl/music/05.ogg",
+    "status_bar_texture": "res://content/imported/hsl/global/world_map/previews/status_bar.png"
+  },
+  "view": {
+    "logical_viewport": [
+      640,
+      480
+    ],
+    "grid_projection": {
+      "origin": [
+        0,
+        0
+      ],
+      "cell_size": [
+        32,
+        32
+      ],
+      "evidence_id": "world_map_pixel_space",
+      "evidence_tier": "provisional",
+      "provisional": true
+    }
+  },
+  "travel": {
+    "pixels_per_second": 125,
+    "point_hit_half_extent": 16,
+    "marker_actor_id": "001",
+    "marker_scale": 1.0,
+    "provisional": true
+  },
+  "new_game": {
+    "hidden_points": [
+      2
+    ],
+    "hidden_tracks": [
+      1
+    ],
+    "note": "龍脊隘口和往那裡的路在開局隱藏，晨風鎮的老獵人對話後才出現。"
+  },
+  "status_bar": {
+    "position": [
+      0,
+      412
+    ],
+    "completion_label": "完成度："
+  }
+}
