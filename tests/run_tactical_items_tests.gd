@@ -123,6 +123,14 @@ func cure_weaken() -> void:
 	check(cured["last_item_use"]["cured_weaken"] and cured["last_item_use"]["draws"].is_empty() and no_draw(cured, weak, "damage"),"振奃劑 commits a weaken cure receipt without a random draw")
 	check(not BattlePlayLoop.StatusEffectRules.weakened(after) and not after["status_counters"].has("weaken") and after["inventory"] == [251,247,0,0,0,0,0,0],"the cure clears flag 8 and the +0x38 word and removes one 249")
 	check(after["combat_profile"]["live_attack_damage"] == healthy_attack,"the cure block refresh (0x448840) restores the unweakened derived attack")
+	var lapse := fixture();var fading := BattlePlayLoop.unit_ref(lapse,"tina")
+	fading.merge(BattlePlayLoop.StatusEffectRules.apply_weaken(fading,2,10)["changes"],true)
+	fading.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(fading,lapse["equipment_items"]),true)
+	for _n in range(30):
+		if not BattlePlayLoop.StatusEffectRules.weakened(BattlePlayLoop.unit(lapse,"tina")): break
+		if lapse["interaction"] == "ai_resolving": lapse = BattlePlayLoop.step_ai_turn(lapse,func(_bound):return 0)
+		else: lapse = BattlePlayLoop.choose_command(lapse,"wait")
+	check(lapse["last_action_end"]["expired"].has("weaken") and BattlePlayLoop.unit(lapse,"tina")["combat_profile"]["live_attack_damage"] == healthy_attack,"衰弱 expiring at action end refreshes (0x40b910 -> 0x448840) back to the unweakened derived attack")
 	var none := fixture();BattlePlayLoop.unit_ref(none,"tina")["inventory"] = [249,0,0,0,0,0,0,0]
 	var wasted := BattlePlayLoop.use_item(none,"249")
 	check(wasted["item_use_sequence"] == 1 and BattlePlayLoop.unit(wasted,"tina")["inventory"] == [0,0,0,0,0,0,0,0] and not wasted["last_item_use"]["cured_weaken"],"振奃劑 on a healthy target still spends the 249 (0x444aba)")

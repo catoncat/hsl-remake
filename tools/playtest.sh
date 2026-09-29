@@ -27,6 +27,6 @@ if [[ "$SLOT" == title ]]; then
   echo "停在标题；读档：点书（回憶錄）。日誌：$log"
 else
   export HSL_SKIP_TITLE=1
-  echo "直达 $SLOT；换关：战斗中按 Esc →「讀取回憶錄」。日誌：$log"
+  echo "直达 ${SLOT}；换关：战斗中按 Esc →「讀取回憶錄」。日誌：${log}"
 fi
 HOME="$PLAYTEST_HOME/home" "$ROOT/tools/play.sh" 2>&1 | tee "$log"

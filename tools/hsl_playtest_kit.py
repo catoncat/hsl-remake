@@ -84,7 +84,9 @@ def walk(args: argparse.Namespace) -> int:
         shutil.rmtree(path, ignore_errors=True)
         path.mkdir(parents=True)
     progress = user_dir(home) / "campaign_progress.json"
-    env = dict(os.environ, HOME=str(home), HSL_CHAPTER_TRIES=str(args.tries), HSL_CHAPTER_BUDGET_SECONDS=str(args.budget))
+    # HSL_REAL_HOME=1 keeps tools/godot.sh from swapping this HOME for ignored/lane-home on a headless
+    # run; without it the walk writes its progress there and the watcher below never sees a snapshot.
+    env = dict(os.environ, HOME=str(home), HSL_REAL_HOME="1", HSL_CHAPTER_TRIES=str(args.tries), HSL_CHAPTER_BUDGET_SECONDS=str(args.budget))
     if args.force_win:
         # A battle the commander loses on every try is force-won and the walk goes on, so the
         # slots past it are reached (tests/run_chapter_autoplay_tests.gd HSL_CHAPTER_FORCE_WIN).

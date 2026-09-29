@@ -741,7 +741,9 @@ static func advance_current_actor(loop: Dictionary, skipped_entry: bool = false)
 			return loop
 		var after_tail := actor.duplicate(true)
 		after_tail.merge(tick["changes"], true)
-		if tick["receipt"]["expired"].any(func(key): return StatusEffectRules.Enhancements.FLAGS.has(key)):
+		# 0x40b910 calls 0x448840 after each expiry that moves derived stats: 衰弱 (+0x38, flag 8,
+		# 0x40b97f..0x40b99b) and the three enhancements (+0x44／+0x40／+0x48, 0x40b9a3..0x40ba07).
+		if tick["receipt"]["expired"].any(func(key): return key == StatusEffectRules.WEAKEN_KEY or StatusEffectRules.Enhancements.FLAGS.has(key)):
 			var refresh_error := ProgressionRules.refresh_input_error(after_tail, loop["equipment_items"])
 			if refresh_error != "":
 				loop.merge({"scenario_ok": false, "interaction": "scenario_error", "scenario_error": refresh_error}, true)
