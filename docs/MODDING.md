@@ -62,8 +62,8 @@ tools/play.sh                                 # 先导入 Godot 资源再开游�
 | 头像 | `content/imported/hsl/chapter01/portraits/NNN.png`＋各关 `portraits/manifest.json`；名册脸表是生成物 `content/generated/hsl/roles/actor_portraits.json`（`roster_portraits`） | `content/authored/actors/<外观>/portrait.png`，由 `content/authored/roles/characters.json` 那一行的 `portrait` 指过去 | 示范图 120×144 |
 | 地图 | `content/imported/hsl/chapter01/battleNNN/levelNN.png`（第 51 关 768×768＝24×24 格） | 任意 PNG，写进 `content/authored/levelNNN/level.json` 的 `map_texture` | 尺寸＝格数×32 像素，必须和 `terrain.txt` 的行列数对上 |
 | 界面 | `content/imported/hsl/shared/panels/`（面板，`panel_assets`）、`shared/command_menu/`（命令环）、`shared/range_cells/`（范围格）、`shared/game_cursor/`（光标）、`global/title/`（标题、系统菜单、谢幕，`title_assets`）；位图字体表 `content/generated/hsl/fonts/`（`original_bitmap_font`） | 没有手写层入口，只能就地替换 | 保持原文件名和尺寸；版式常量写在对应的导入工具里 |
-| 音效 | `content/imported/hsl/shared/interface_audio/manifest.json`（确认、取消等符号对应的 WAV，`interface_audio`）、各关 `sounds/manifest.json` 和 `actor_audio.json` | 新角色用 `art.json` 的 `sounds_of` 借某个原版角色的走、攻、闪、亡音效；自带新音效目前没有入口 | WAV |
-| 配乐 | `content/imported/hsl/music/NN.ogg`＋`manifest.json`（`music_import`，NN 是原曲号 02–19） | 大地图和城镇用 `content/world/world_map_scene.json` 的 `map_music`／`town_music`，标题和谢幕用 `global/title/manifest.json` 的 `music`，都是 `res://` 路径，指到你的 OGG 就行；关卡里剧本 `actPlayMusic,N` 固定播 `res://content/imported/hsl/music/NN.ogg` | OGG Vorbis；`project.godot` 的 `[importer_defaults]` 默认整首循环 |
+| 音效 | `content/imported/hsl/shared/interface_audio/manifest.json`（确认、取消等符号对应的 WAV，`interface_audio`）、各关 `sounds/manifest.json` 和 `actor_audio.json` | 新角色的音效写在 `art.json`：`sounds_of` 借某个原版角色的走、攻、闪、亡音效；`sounds`（如 `{"attack": "sounds/attack.wav"}`）给其中几项换成外观文件夹里自己的文件，没写的照旧借 `sounds_of`。`sounds/` 里只放自己做的音效：公开导出按路径把它当重制素材整目录带上，不会再核对是不是原版文件。示范 103 的攻击音效是 `content/authored/actors/103/sounds/attack.wav` | PCM WAV（原版多为 11025／22050 Hz 单声道） |
+| 配乐 | `content/imported/hsl/music/NN.ogg`＋`manifest.json`（`music_import`，NN 是原曲号 02–19） | 大地图和城镇用 `content/world/world_map_scene.json` 的 `map_music`／`town_music`，标题和谢幕用 `global/title/manifest.json` 的 `music`，都是 `res://` 路径，指到你的 OGG 就行；关卡里剧本 `actPlayMusic,N`：N 为 0–99 播原曲 `content/imported/hsl/music/NN.ogg`（原曲只有 02–19，写别的号不会播新曲），N 为 100 起播 `content/authored/music/N.ogg`（文件缺失时生成失败）。示范第 200 关开场写 `actPlayMusic,100`，播 `content/authored/music/100.ogg` | OGG Vorbis；`project.godot` 的 `[importer_defaults]` 默认整首循环 |
 
 仓库自带 14 首重制配乐 `content/generated/hsl/remake_music/`（CC BY 4.0，由 `tools/compose_*.py` 合成），游戏代码目前没有读它；想用就把上面那些 `res://` 路径指过去。
 
@@ -157,8 +157,7 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 - 从空仓库一条命令导入全部原版资源。
 - 用覆盖层改原版已有的行（ITEM.TXT 某件装备、PLAYERS.TXT 某个原版角色）：目前只能直接改导入副本，而这份副本会被 `original_tables` 覆盖，检查也会报不一致。
-- 手写层的新音效、新界面美术：两者都没有 authored 入口。
-- 关卡配乐用任意路径：剧本 `actPlayMusic` 的路径模板写死在 `tools/hsltools/levels/timeline.py` 的 `MUSIC_STREAM`。
+- 手写层的新界面美术：没有 authored 入口。
 - 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
 - 续集战役和第一章并存：游戏只读 `content/battles/campaign.json`，换成续集的战役要替换这份文件（测试里改的是 `CampaignProgress.campaign_path`），两边也共用同一个存档位置（[逐步表](MODDING_LEVELS.md#33-从标题开始与续集世界) #23）。
 - 在大地图数据里直接写点位通往哪一关：点位的 `id` 同时当身份（受 100 个槽位限制，`WorldMapRules.ROUTE_SLOTS`）和原版点记录 +8 的初始关号用。原版文件本可以在 +8 直接写 200，重制要先把初始关号拆成独立字段、身份和路线改用 `slot`；在那之前，关号 200 以上的续集关只能靠城镇或剧本事件指过去（#22）。

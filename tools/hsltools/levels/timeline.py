@@ -26,6 +26,7 @@ from typing import Any
 
 from hsltools.legacy import imported_levels
 from hsltools.levels import CHAPTER_SHARED, encode_json, legacy_failures
+from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context, GeneratedFilesTask, NoRegenerationPath, Task
 
 
@@ -54,6 +55,10 @@ LEVEL_MUSIC_TABLE: tuple[int, ...] = (
 # PlayMusic(n) streams music\%02d.wav (0x42c2ba) from its start and loops it whole (0x459ec0);
 # the imported copies: content/imported/hsl/music/manifest.json (lane MUSIC-IMPORT).
 MUSIC_STREAM = "res://content/imported/hsl/music/{track:02d}.ogg"
+# Tracks from 100 up are the remake's own: actPlayMusic,N plays content/authored/music/N.ogg
+# (the original ships music\02-19.wav only, so no original script names a track that high).
+AUTHORED_MUSIC = "content/authored/music"
+AUTHORED_TRACK_BASE = 100
 # actPlayLevelMusic / actPlayMusic / actPlayDefaultLevelMusic: the events that carry a track.
 MUSIC_KINDS = ("opening_music", "music_track", "default_level_music")
 _SCRIPT_LEVEL = re.compile(r"^(?:story|winfail)(\d+)", re.IGNORECASE)
@@ -65,8 +70,16 @@ def level_table_track(level: int) -> int:
 
 
 def music_stream(track: int) -> str:
-    """The imported file PlayMusic(track) plays; "" for -1 (the current track keeps playing)."""
-    return MUSIC_STREAM.format(track=track) if track >= 0 else ""
+    """The imported file PlayMusic(track) plays; "" for -1 (the current track keeps playing);
+    an authored OGG for tracks >= AUTHORED_TRACK_BASE (missing file: ValueError)."""
+    if track < 0:
+        return ""
+    if track >= AUTHORED_TRACK_BASE:
+        path = f"{AUTHORED_MUSIC}/{track}.ogg"
+        if not (ROOT / path).is_file():
+            raise ValueError(f"actPlayMusic,{track}: {path} is missing (tracks from {AUTHORED_TRACK_BASE} up are {AUTHORED_MUSIC}/<N>.ogg)")
+        return "res://" + path
+    return MUSIC_STREAM.format(track=track)
 
 
 def level_table_music(level: int) -> dict[str, Any]:

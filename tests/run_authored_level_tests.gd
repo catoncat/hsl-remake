@@ -43,7 +43,7 @@ const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const COMBAT_MANIFEST := "res://content/generated/hsl/authored/battle200/combat_animation.json"
 ## content/authored/actors/<art>/: each authored look's folder (hsltools.assets.authored_art).
-const LOOKS := {"102": {"program_of": "003", "sounds_of": "3", "title": "龍騎士", "name": "蕾雅"}, "103": {"program_of": "004", "sounds_of": "4", "title": "盜賊", "name": "托蘭"}}
+const LOOKS := {"102": {"program_of": "003", "sounds_of": "3", "title": "龍騎士", "name": "蕾雅"}, "103": {"program_of": "004", "sounds_of": "4", "sounds": {"attack": "content/authored/actors/103/sounds/attack.wav"}, "title": "盜賊", "name": "托蘭"}}
 const OPENING_FRAMES := 6000
 const AUTHORED_JOB := 101
 const AUTHORED_JOBS_PATH := "res://content/authored/roles/job_formulas.json"
@@ -171,7 +171,10 @@ func _art_cases(scenario: Dictionary, loop: Dictionary) -> void:
 		var strike_frames: Array = row.get("frames", [])
 		check(str(row.get("program_of", "")) == look["program_of"] and strike_frames.size() == chapter_one["actors"][look["program_of"]]["frames"].size() and strike_frames.all(func(frame): return str(frame["res_path"]).begins_with(folder + "cutin/") and load(str(frame["res_path"])) is Texture2D), "%s cuts in with its own frames on the %s strike program: %s" % [code, look["program_of"], str(row.get("program_of", ""))])
 		check(row.get("dispatch") == chapter_one["actors"][look["program_of"]]["dispatch"] and row.get("special_frames") == [], "%s: the dispatch is the program row's; no s_shape strip (standing caster)" % code)
-		check(audio["characters"].has(str(int(code))) and audio["characters"][str(int(code))] == source_audio["characters"].get(look["sounds_of"]), "%s sounds like row %s (art.json sounds_of): %s" % [code, look["sounds_of"], str(audio["characters"].get(str(int(code))))])
+		var expected_sounds: Dictionary = (source_audio["characters"].get(look["sounds_of"], {}) as Dictionary).duplicate()
+		expected_sounds.merge(look.get("sounds", {}), true)
+		var own_sounds_load: bool = (look.get("sounds", {}) as Dictionary).values().all(func(sound_id): return load(str(audio["sounds"].get(sound_id, {}).get("res_path", ""))) is AudioStreamWAV)
+		check(audio["characters"].get(str(int(code))) == expected_sounds and own_sounds_load, "%s sounds like row %s (art.json sounds_of) with its own art.json sounds %s: %s" % [code, look["sounds_of"], str(look.get("sounds", {})), str(audio["characters"].get(str(int(code))))])
 		check(str(faces.get(code, {}).get("res_path", "")) == folder + "portrait.png" and str(faces[code].get("name", "")) == look["name"], "%s's face is %sportrait.png under %s" % [code, folder, look["name"]])
 		check(str(BattleUISkin.data()["actors"].get(code, {}).get("title", "")) == look["title"], "%s's board title is %s (generated panel table)" % [code, look["title"]])
 	var toran := BattlePlayLoop.unit(loop, "toran")

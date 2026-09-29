@@ -1,12 +1,13 @@
 ; 第 200 關「龍脊隘口」開場劇情 —— 為重製版創作的內容（authored），不是原作腳本。
 ; 文法與原作 STORY 腳本相同：[story] 段落內每行 action = 動作,參數,…；分號起始為註解。
 ; 說話者代號（SID_…）對應 level.json units[].token；訊息編號對應 messages.json。
+; 配樂 actPlayMusic,100 播手寫配樂 content/authored/music/100.ogg（曲號 100 起讀這個目錄）。
 #include ACTION.H
 #include OBJ-ALL.H
 #include EXTRAS.H
 
 [story]
-action = actPlayDefaultLevelMusic,2
+action = actPlayMusic,100
 action = actDelay,20
 action = actWalkWait,SID_雷歐納德,1,224,256,4
 action = actMessage,SID_雷歐納德,1,1001

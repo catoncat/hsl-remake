@@ -48,7 +48,7 @@ from hsltools.levels import battle as level_battle
 from hsltools.levels import profile as level_profile
 from hsltools.levels.scenario import SHARED_RESOURCES, impassable, status_timelines
 from hsltools.sources.scripts import parse_text_metadata
-from hsltools.levels.timeline import compile_documents, level_table_music
+from hsltools.levels.timeline import AUTHORED_MUSIC, compile_documents, level_table_music
 from hsltools.native.sources import sources
 from hsltools.paths import ROOT
 from hsltools.registry import CheckFailed, Context, GeneratedFilesTask
@@ -408,21 +408,23 @@ def build_combat_manifest(level: int, manifest: dict, fielded: list[str]) -> dic
 def build_audio_manifest(level: int, manifest: dict, fielded: list[str]) -> dict:
     base = _load_json(_repo(manifest['presentation']['actor_audio']))
     rows = _alias_rows(level, manifest, fielded)
-    characters = {}
+    characters, sounds = {}, copy.deepcopy(base.get('sounds', {}))
     for code in fielded:
-        sound_row = rows[code]
+        sound_row, own = rows[code], {}
         if authored_art.has_art(rows[code]):
-            sound_row = authored_art.sounds_of(rows[code])
-            if sound_row is None:
-                continue
-            if str(int(sound_row)) not in base.get('characters', {}):
+            sound_row, own = authored_art.sounds_of(rows[code]), authored_art.sounds(rows[code])
+            if sound_row is not None and str(int(sound_row)) not in base.get('characters', {}):
                 raise ValueError(f'level{level:03d}: {authored_art.ART}/{rows[code]}/art.json sounds_of {sound_row} has no row in {manifest["presentation"]["actor_audio"]}')
-        row = base.get('characters', {}).get(str(int(sound_row)))
-        if row is not None:
-            characters[str(int(code))] = copy.deepcopy(row)
+        row = copy.deepcopy(base.get('characters', {}).get(str(int(sound_row)), {})) if sound_row is not None else {}
+        for event, entry in own.items():
+            row[event] = entry['path']
+            sounds[entry['path']] = entry
+        if row:
+            characters[str(int(code))] = row
     return {'schema': 'hsl_actor_audio.v1', 'evidence_tier': TIER, 'level': level, 'characters': characters,
-            'sounds': copy.deepcopy(base.get('sounds', {})), 'source_manifest': manifest['presentation']['actor_audio'],
-            'shared_manifest': base.get('shared_manifest', ''), 'limits': ['sound rows of the fielded actors copied from the source manifest (aliases included)']}
+            'sounds': sounds, 'source_manifest': manifest['presentation']['actor_audio'],
+            'shared_manifest': base.get('shared_manifest', ''),
+            'limits': ['sound rows of the fielded actors copied from the source manifest (aliases included); an authored look\'s art.json `sounds` replaces single events with its own WAV']}
 
 
 def build_portraits(level: int, manifest: dict, speakers: dict[str, str], names: dict[str, str]) -> dict:
@@ -630,7 +632,7 @@ class AuthoredLevelTask(GeneratedFilesTask):
                        'content/generated/hsl/roles/profiles.json', 'content/generated/hsl/equipment/items.json',
                        'content/imported/hsl/global/tables/', 'content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json',
                        'content/imported/hsl/chapter01/portraits/manifest.json', 'content/imported/hsl/chapter01/combat_animation/manifest.json',
-                       f'{authored_art.ART}/')
+                       f'{authored_art.ART}/', f'{AUTHORED_MUSIC}/')
         self.scripts = ('tools/hsltools/levels/authored.py', 'tools/hsltools/assets/authored_art.py', 'tools/hsltools/levels/battle.py', 'tools/hsltools/levels/timeline.py',
                         'tools/hsltools/levels/scenario.py', 'tools/hsltools/sources/scripts.py')
 

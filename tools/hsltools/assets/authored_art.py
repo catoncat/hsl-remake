@@ -6,10 +6,13 @@ A sequel character has no SHP behind it. The author draws PNGs into one folder p
                         walk PNG), `walk.fps`, `cutin` (null = no cut-in, or `program_of` — the
                         PLAYERS row whose ANIMAL strike program the frames follow — and `anchor`,
                         the point inside every cut-in PNG that stands on the cut-in stage anchor),
-                        `sounds_of` (null or the row whose walk / attack / miss / dead sounds it uses)
+                        `sounds_of` (null or the row whose walk / attack / miss / dead sounds it uses),
+                        optional `sounds` ({event: WAV path inside the folder}: the look's own sound
+                        for that event, replacing the `sounds_of` row's one)
   walk/<group>-<n>.png  group stand / down / right / up / left, n = 1, 2, … (same count in every group)
   cutin/<n>.png         n = 0 … (count = the program row's frame count; the program's aniSetShape
                         indices name these frames)
+  sounds/<name>.wav     PCM WAV files `sounds` names (convention; any path inside the folder works)
   portrait.png          the face (characters.json `portrait` names it; not read here)
 
 The folder name is the art id: a character's default look is the folder named by its code; a
@@ -21,6 +24,7 @@ folder into the rows hsltools.levels.authored copies into a level's manifests:
                          the frames are the folder's, the strike program (timeline, dispatch,
                          hurt frame, flash, facing) is copied from `program_of` in `base`
   sounds_of(art)         the row whose sound bindings the look uses (or None)
+  sounds(art)            event -> the look's own WAV as an `hsl_actor_audio.v1` sounds entry
 
 s_shape / m_shape strips are not part of the convention: an authored row declares
 special_frames / magic_frames [] (the cut-in shows the standing caster; the manifest's
@@ -31,6 +35,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import wave
 from pathlib import Path
 
 from PIL import Image
@@ -48,6 +53,8 @@ WALK_GROUPS = (('stand', 'idle', '0', 0), ('down', 'walk', 'down', 1), ('right',
 # Copied from the program row: the strike program and how its frames are read.
 PROGRAM_KEYS = ('timeline', 'source_k_action', 'sprite_facing', 'flash', 'attack_flash_offset', 'hurt_frame', 'dispatch')
 ART_ID = re.compile(r'[0-9A-Za-z_]+')
+# The actor sound events of a PLAYERS row (hsl_actor_audio.v1 characters keys).
+SOUND_EVENTS = ('walk', 'attack', 'miss', 'dead')
 
 
 def folder(art: str) -> Path:
@@ -166,6 +173,28 @@ def sounds_of(art: str) -> str | None:
     return None if value is None else str(value).zfill(3)
 
 
+def sounds(art: str) -> dict[str, dict]:
+    """art.json `sounds`: event -> the sounds entry of the look's own WAV (keyed by its repository
+    path in a level's actor_audio `sounds` table). {} when art.json names none."""
+    own = load(art).get('sounds') or {}
+    if not isinstance(own, dict) or not set(own) <= set(SOUND_EVENTS):
+        raise ValueError(f'{ART}/{art}/art.json sounds must map events {SOUND_EVENTS} to WAV paths, got {own!r}')
+    result = {}
+    for event, relative in own.items():
+        path = (folder(art) / str(relative)).resolve()
+        if folder(art).resolve() not in path.parents or path.suffix.lower() != '.wav' or not path.is_file():
+            raise ValueError(f'{ART}/{art}/art.json sounds.{event}: {relative!r} is not a WAV file inside the folder')
+        try:
+            with wave.open(str(path), 'rb') as handle:
+                profile = {'channels': handle.getnchannels(), 'sample_rate': handle.getframerate(),
+                           'sample_width': handle.getsampwidth(), 'frame_count': handle.getnframes()}
+        except (wave.Error, EOFError) as error:
+            raise ValueError(f'{_rel(path)}: not a PCM WAV ({error})') from error
+        result[event] = {'path': _rel(path), 'res_path': 'res://' + _rel(path),
+                         'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'profile': profile, 'evidence_tier': TIER}
+    return result
+
+
 class AuthoredArtTask(CheckTask):
     """Every look under content/authored/actors/ builds its walk entry and cut-in row (a look no
     level fields yet is still checked)."""
@@ -177,15 +206,16 @@ class AuthoredArtTask(CheckTask):
 
     def check(self, ctx: Context) -> str:
         base = json.loads((ctx.root / 'content/imported/hsl/chapter01/combat_animation/manifest.json').read_text(encoding='utf-8'))
-        walk = cutins = 0
+        walk = cutins = own_sounds = 0
         try:
             for art in art_ids():
                 walk += walk_entry(art, art)['frame_count']
                 cutins += combat_row(art, base) is not None
                 sounds_of(art)
+                own_sounds += len(sounds(art))
         except (ValueError, KeyError, OSError) as error:
             raise CheckFailed(f'{self.name}: {error}') from error
-        return f'AUTHORED_ART_PASS looks={len(art_ids())} walk_frames={walk} cutins={cutins}'
+        return f'AUTHORED_ART_PASS looks={len(art_ids())} walk_frames={walk} cutins={cutins} sounds={own_sounds}'
 
 
 def tasks() -> list[AuthoredArtTask]:

@@ -56,6 +56,8 @@ def classify(path: str) -> tuple[str, str]:
         return 'B', 'content/battles authored level profiles / campaign'
     if path.startswith('content/battles/'):
         return 'A', 'content/battles assembled level data'
+    if path.startswith('content/authored/actors/') and '/sounds/' in path and ext in MEDIA:
+        return 'B', 'content/authored sounds (synthesized for the remake)'
     if path.startswith('content/authored/actors/') and ext in MEDIA:
         return 'A', 'content/authored placeholder art (recoloured original frames)'
     if path.startswith(('docs/evidence_packets/', 'docs/evidence_questions/')):
