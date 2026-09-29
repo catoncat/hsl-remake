@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (202 modules, 134 remake-invented cells, 57 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (202 modules, 133 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (202)
 
@@ -97,7 +97,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [LevelUpStars](../game/battle/scene/LevelUpStars.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | n/a | static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md); remake-invented | n/a |
 | [MagicImpactPresentation](../game/battle/scene/MagicImpactPresentation.gd) | n/a | static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_item_use_presentation.md](../docs/evidence_packets/static_reverse/original_item_use_presentation.md); resource-derived [panels/manifest.json](../content/imported/hsl/shared/panels/manifest.json) | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json) | static-derived [original_magic_damage.md](../docs/evidence_packets/static_reverse/original_magic_damage.md); static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [original_script_camera_scroll.md](../docs/evidence_packets/static_reverse/original_script_camera_scroll.md); static-derived [original_cast_overlays.md](../docs/evidence_packets/static_reverse/original_cast_overlays.md) | n/a |
 | [MapHitState](../game/battle/scene/MapHitState.gd) | n/a | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md); runtime-measured [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) `#录屏对照` | n/a | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) | static-derived [original_map_strike.md](../docs/evidence_packets/static_reverse/original_map_strike.md) |
-| [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | n/a | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); provisional; remake-invented | n/a | resource-derived [moon_dance.json](../content/generated/hsl/skills/moon_dance.json); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md); provisional | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json) |
+| [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | n/a | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json); static-derived [animal_program_execution.md](../docs/evidence_packets/static_reverse/animal_program_execution.md) `#8-施法引导程序m_actions_action的解释`; static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); provisional | n/a | resource-derived [moon_dance.json](../content/generated/hsl/skills/moon_dance.json); static-derived [animal_program_execution.md](../docs/evidence_packets/static_reverse/animal_program_execution.md) `#8-施法引导程序m_actions_action的解释`; static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | resource-derived [moon_dance/manifest.json](../content/imported/hsl/shared/moon_dance/manifest.json) |
 | [ObjcomdMotion](../game/battle/scene/ObjcomdMotion.gd) | n/a | static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); static-derived [original_objcomd_programs.md](../docs/evidence_packets/static_reverse/original_objcomd_programs.md); provisional | n/a | static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json) | n/a |
 | [PoisonArrowPresentation](../game/battle/scene/PoisonArrowPresentation.gd) | n/a | resource-derived [poison_arrow/manifest.json](../content/imported/hsl/shared/poison_arrow/manifest.json); static-derived [objcomd_motion.json](../content/generated/hsl/skills/objcomd_motion.json); remake-invented | n/a | resource-derived [poison_arrow/manifest.json](../content/imported/hsl/shared/poison_arrow/manifest.json); static-derived [original_tick_rate/README.md](../docs/evidence_packets/runtime_observations/original_tick_rate/README.md) | resource-derived [poison_arrow/manifest.json](../content/imported/hsl/shared/poison_arrow/manifest.json) |
 | [ResultNumberFloater](../game/battle/scene/ResultNumberFloater.gd) | n/a | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md) | resource-derived [reward_floats/manifest.json](../content/imported/hsl/shared/reward_floats/manifest.json) | static-derived [original_tick_counts.md](../docs/evidence_packets/static_reverse/original_tick_counts.md); static-derived [map_pose_floaters/README.md](../docs/evidence_packets/runtime_observations/map_pose_floaters/README.md) | n/a |
@@ -276,7 +276,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (134)
+### remake-invented 清单 (133)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -344,7 +344,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleTurnEndCue](../game/battle/scene/BattleTurnEndCue.gd) | strings | OPT-INFO=公開 only: 中毒／轉化 and HP／MP words over a number beat [OPTIONS.md](../docs/OPTIONS.md) |
 | [BattleWinFailBoard](../game/battle/scene/BattleWinFailBoard.gd) | rules | under a `--script` SceneTree (tests, autoplay, captures) the opening board ends itself after HOLD_TICKS, the game has no timeout; leaving 任務說明 mid-dissolve fades out from there |
 | [LevelUpStars](../game/battle/scene/LevelUpStars.gd) | timing | the draws come from a presentation RNG seeded by the exchange and the recipient, not the original global 0x458c10 stream |
-| [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | layout | the caster intro panels |
 | [PoisonArrowPresentation](../game/battle/scene/PoisonArrowPresentation.gd) | layout | receiver phase on the map, scaled offsets; spark insertion offsets from a clip-seeded RNG |
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | strings | the authored skills' names and scripts, sequel content from content/authored/roles/skills.json [authored_effect_scripts.json](../content/generated/hsl/skills/authored_effect_scripts.json) |
 | [SkillPresenter](../game/battle/scene/SkillPresenter.gd) | rules | released／impact fire once each at the presenter's own schedule; the contract carries no clock of its own |
@@ -417,7 +416,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldMapRuntime](../game/world/WorldMapRuntime.gd) | strings | card texts |
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | rules | scripted buy() straight into a member's first empty slot — the autoplay shopper, not the window; dropped receipt when the party has no room |
 
-### provisional 疑点 (57)
+### provisional 疑点 (56)
 
 暂定读法，等待更强证据替换；note 写替换点或疑点。
 
@@ -444,7 +443,6 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | layout | — | up to four RNG seed variants stand in for the one shared stream; a member hsl.pak lacks cycles the series' existing members like the untracked player |
 | [EffectObjectMotion](../game/battle/scene/EffectObjectMotion.gd) | timing | — | ±1 frame where the original plane-list order differs from the probe's |
 | [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | layout | — | petal／burst offsets from a target-seeded RNG; seed variants stand in for the shared stream |
-| [MoonDancePresentation](../game/battle/scene/MoonDancePresentation.gd) | timing | — | the 1.5 s intro lead stands in for 002's s_action lead — read by AnimalCastLead, but 002's s_shape strip is not in the combat manifest |
 | [ObjcomdMotion](../game/battle/scene/ObjcomdMotion.gd) | layout | — | seed variants stand in for the one shared RNG stream; off-screen waits end where the first script insertion point would |
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | layout | — | ANIMAL angle／tornado geometry, off-stage flights, static hold of the objects effect_motion.json lists unrestored, eff_proc_Global at screen centre — manifest policy |
 | [SkillEffectScriptPlayer](../game/battle/scene/SkillEffectScriptPlayer.gd) | timing | — | lifetime = shape_number × (shape_delay＋1); untracked objects' lifetime／fade; impact at the last cue; EMPTY_ATTACK_LEAD_TICKS stands in; effProc* motion not restored |
@@ -486,14 +484,14 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 32 | 74 | 42 | 10 | 29 | 187 |
-| static-derived | 259 | 117 | 19 | 122 | 25 | 542 |
+| static-derived | 259 | 118 | 19 | 123 | 25 | 544 |
 | runtime-measured | 17 | 32 | 3 | 16 | 2 | 70 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |
-| provisional | 28 | 14 | 0 | 13 | 2 | 57 |
+| provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 55 | 32 | 33 | 13 | 1 | 134 |
+| remake-invented | 55 | 31 | 33 | 13 | 1 | 133 |
 | n/a | 64 | 118 | 152 | 134 | 170 | 638 |
 
 <!-- provenance:end -->

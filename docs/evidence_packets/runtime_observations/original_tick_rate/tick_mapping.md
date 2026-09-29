@@ -1,6 +1,6 @@
 # 36 格 remake-invented 时序 → 原版 tick 的映射表
 
-> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · functions: 0x407230, 0x43bf30, 0x43e4a0, 0x43e570, 0x450840, 0x453b90, 0x454e20, 0x45e5a6, 0x45e80d, 0x45e882, 0x45e91e, 0x46098f, 0x4609c0, 0x46bede · tools: hsl_win32_memread.c · updated: 2026-09-28
+> evidence: runtime-measured: tick period and walk／idle cadence; static-derived: native tick counts cited per row and in original_tick_counts.md; resource-derived: object shape_delay and teDelay fields; provisional: rows marked B · status: live · functions: 0x407230, 0x43bf30, 0x43e4a0, 0x43e570, 0x450840, 0x453b90, 0x454e20, 0x45e5a6, 0x45e80d, 0x45e882, 0x45e91e, 0x46098f, 0x4609c0, 0x46bede · tools: hsl_win32_memread.c · updated: 2026-09-29
 
 ## 结论
 
@@ -82,7 +82,7 @@
 | 16 | BattlePlayLoop | 常数实际在 BattleSceneRuntime；PlayLoop timing 改 n/a | 行走一格 0.20 s → 8 tick = 0.128 s（`ActorRuntime.WALK_CELL_SECONDS`） |
 | 17 | BattleSceneRuntime | **手写开场已删除**：章节标题、自动推进 0.04／0.06／0.14 s 随 `opening_*` 一并删除（第一战标题与步进走 `OpeningCinematics`／协调器的标题子状态机／1 tick）；剩 `AI_PLAYBACK_STEP_SECONDS 0.35`／结果音乐淡出 1.2 s，无 tick 依据，有意保留（C） |
 | 18 | MagicImpactPresentation | 数字换算（B 读出）；VITALS 条 **有意保留** | 数字 0.75 s → 伤害 10 tick/位＋34、MISS 46 tick；条 0.45 s 不变 |
-| 19 | MoonDancePresentation | 换算；INTRO provisional（002 的 s_action 引导程序已读——同 `AnimalCastLead` 的四 opcode——但 002 的 s_shape 条未导入 combat manifest，模块仍用自己的三帧施放画） | 100 tick/s（×0.4 = 40 真实 tick/s）→ 62.5 真实 tick/s：每目标 180 tick 4.5 s → 2.88 s；风声 0.2 s → 20 tick |
+| 19 | MoonDancePresentation | 换算；起手为 002 的 s_action 引导（`AnimalCastLead` 编出的 call 数，条带在 combat manifest `special_frames`） | 100 tick/s（×0.4 = 40 真实 tick/s）→ 62.5 真实 tick/s：每目标 180 tick 4.5 s → 2.88 s；风声 0.2 s → 20 tick |
 | 20／22／23／24／25 | （已删） | 归 3／SkillEffectScriptPlayer | 60 → 62.5 tick/s；有 `m_shape` 条的施法者按 m_action 引导逐 call 播，无条带者照原版无引导路径 8 call 压暗、第 9 call 姿势（[original_cast_overlays](../../static_reverse/original_cast_overlays.md) §无条带起手序列） |
 | 21 | PoisonArrowPresentation | 换算；删 LEAD | LEAD 0.65 s 删；攻方 0.8 s → 80 tick（面板全程可见）；命中 0.32 s → 32 tick；结果 0.92 s → 92 tick；帧 0.04 s → 5 tick |
 | 26 | ActorRuntime | 换算 | 待机 8 fps → 62.5/11 = 5.68 fps；行走帧 30 fps → 每 3 tick = 20.8 fps；覆盖帧率 8 → 待机节奏（provisional）；manifest `fps: 8` 字段不再读 |

@@ -24,7 +24,6 @@ from hsltools.sources.tables import TABLES, blocks, digest
 OUT=Path('content/imported/hsl/shared/moon_dance')
 CONTRACT=Path('content/generated/hsl/skills/moon_dance.json')
 OBJECTS=Path('content/imported/hsl/shared/first_skill/global.obs')
-PROGRAMS=Path('content/generated/hsl/animation/animal_programs.json')
 ID='special:magicOTHER:magicCode06'
 TRIAL=Path('content/battles/moon_dance_trial.json')
 COUNTS={'aniDelay':1,'aniInsertRandomObject':7,'aniPlaySound':1,'aniProcessHitMiss':0,
@@ -47,16 +46,14 @@ def definition() -> dict:
         if op=='aniDelay':clock+=int(args[0])
         elif op=='aniProcessHitMiss':hits.append(clock)
     if hits!=[80,90,100,110,120] or clock!=180:raise ValueError('Moon source pulse schedule changed')
-    caster=next(r for r in json.loads(PROGRAMS.read_text())['records'] if r['code']=='SID_PLAYER1')
     objects={r['obj_code']:r for r in blocks(OBJECTS.read_bytes(),'Object') if r.get('obj_code') in ['421','422']}
     if len(objects)!=2:raise ValueError('Moon source objects missing')
     return dict(schema='hsl_moon_dance.v1',skill_id=ID,evidence_tier='static-derived',source_fields=source_fields(),
                 pulses=5,target_order='coverage_row_major_unique',kill_accounting='after_all_targets',
                 after_zero_hp='continue_original_rolls_zero_contribution',source_hit_delays=hits,source_duration=clock,
-                actions=actions,program=program,objects=objects,caster_fields={k:caster['fields'][k] for k in ['s_shape','s_number']},
-                caster_program=caster['programs']['s_action'],
+                actions=actions,program=program,objects=objects,
                 sources={'special':digest((TABLES/'SPECIAL.TXT').read_bytes()),'effect':digest(EFFECTS.read_bytes()),
-                         'objects':digest(OBJECTS.read_bytes()),'animal':digest(PROGRAMS.read_bytes()),'native':digest(PACKET.read_bytes())},
+                         'objects':digest(OBJECTS.read_bytes()),'native':digest(PACKET.read_bytes())},
                 limits=['Original numeric/receiver phases are separately bounded; source delay totals do not prove global real-time clock.',
                         'Map burst layout and particle trajectories are remake presentation of these source assets; no native object scheduler claim.'])
 
@@ -70,8 +67,8 @@ def build_assets(pak: Path, data: dict) -> None:
     for member,path in [('data\\effects.txt',EFFECTS),('data\\global.obs',OBJECTS)]:
         if read(member)!=path.read_bytes():raise ValueError('Original Moon source differs: '+member)
     OUT.mkdir(parents=True,exist_ok=True);groups={};images={}
-    shapes=[('caster',data['caster_fields']['s_shape']['token'],data['caster_fields']['s_number']['value'])]
-    shapes += [(key,obj['obj_Shape_Name'],int(obj['obj_Shape_Number'])) for key,obj in data['objects'].items()]
+    # 002's s_shape cast strip (P002_201..203) is the combat manifest's special_frames, not a Moon asset.
+    shapes=[(key,obj['obj_Shape_Name'],int(obj['obj_Shape_Number'])) for key,obj in data['objects'].items()]
     for group,start,count in shapes:
         prefix,digits=re.fullmatch(r'(.+_)(\d+)\.SHP',start).groups();groups[group]=[]
         for i in range(count):
@@ -97,8 +94,9 @@ def build_assets(pak: Path, data: dict) -> None:
 
 def check_assets(data: dict) -> None:
     manifest=json.loads((OUT/'manifest.json').read_text())
-    if manifest['sources']!=data['sources'] or len(manifest['images'])!=11:raise ValueError('Moon asset source mismatch')
-    for key,count in [('caster',3),('421',4),('422',4)]:
+    if manifest['sources']!=data['sources'] or len(manifest['images'])!=8:raise ValueError('Moon asset source mismatch')
+    if sorted(manifest['groups'])!=['421','422']:raise ValueError('Moon frame groups differ')
+    for key,count in [('421',4),('422',4)]:
         if len(manifest['groups'][key])!=count:raise ValueError('Moon frame coverage differs')
     for row in manifest['images'].values():
         if png_sha256(Path(row['res_path'].removeprefix('res://')))!=row['png_sha256']:raise ValueError('Moon image mismatch')
@@ -155,7 +153,7 @@ class MoonDanceDataTask(GeneratedFilesTask):
         return line
 
     def summary(self, rendered: dict[str, bytes], mode: str) -> str:
-        return 'MOON_DANCE_DATA_PASS pulses=5 source_images=11'
+        return 'MOON_DANCE_DATA_PASS pulses=5 source_images=8'
 
 
 def tasks() -> list[MoonDanceDataTask]:

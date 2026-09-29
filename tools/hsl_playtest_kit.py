@@ -66,6 +66,10 @@ def walk(args: argparse.Namespace) -> int:
         path.mkdir(parents=True)
     progress = user_dir(home) / "campaign_progress.json"
     env = dict(os.environ, HOME=str(home), HSL_CHAPTER_TRIES=str(args.tries), HSL_CHAPTER_BUDGET_SECONDS=str(args.budget))
+    if args.force_win:
+        # A battle the commander loses on every try is force-won and the walk goes on, so the
+        # slots past it are reached (tests/run_chapter_autoplay_tests.gd HSL_CHAPTER_FORCE_WIN).
+        env["HSL_CHAPTER_FORCE_WIN"] = "1"
     log = (KIT / "generate.log").open("w")
     cmd = [str(ROOT / "tools" / "godot.sh"), "--headless", "--fixed-fps", "60", "--script", "res://tests/run_chapter_autoplay_tests.gd"]
     proc = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
@@ -164,6 +168,7 @@ def main() -> int:
     gen = sub.add_parser("generate")
     gen.add_argument("--tries", type=int, default=5)
     gen.add_argument("--budget", type=int, default=0)
+    gen.add_argument("--force-win", action="store_true", help="force-win a battle lost on every try and walk on (HSL_CHAPTER_FORCE_WIN=1)")
     sub.add_parser("select", help="rebuild the slots from the kept snapshots without replaying the chapter")
     inst = sub.add_parser("install")
     inst.add_argument("--profile", default=str(PROFILE))

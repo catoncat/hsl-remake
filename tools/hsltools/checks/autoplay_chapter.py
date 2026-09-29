@@ -12,6 +12,12 @@ time budget (`budget_exhausted` names the battle it did not start; every row is 
 it is the last row (a lost battle); `battles_fought` / `battles_won` / `retries` equal the recount. Whether the chapter
 clears is recorded, never asserted; nothing here is evidence about original balance. Not part of the
 fast gate's checks-by-suite (the run itself is a deep-gate suite).
+
+A run with HSL_CHAPTER_FORCE_WIN=1 has `force_win_stuck: true`: a battle lost on all tries_limit
+attempts is force-won and the walk goes on, its row keeps the lost outcome with `forced: true`
+and may stand anywhere; `forced` lists those rows' levels in order. Forced rows are not wins
+(`battles_won`) but pass the every-row-a-win rules of game_clear and budget_exhausted; stuck_at is
+still the last row, a lost unforced one. A file without the fields is an ordinary run.
 """
 from __future__ import annotations
 
@@ -58,8 +64,12 @@ def check_chapter(chapter: dict, campaign: dict) -> list[str]:
     towns = chapter.get("towns", [])
     if not isinstance(towns, list) or any(not isinstance(row, dict) or not isinstance(row.get("purchases"), list) for row in towns):
         errors.append("towns must list shop receipts, each with a purchases list")
+    force = chapter.get("force_win_stuck", False)
+    if not isinstance(force, bool):
+        errors.append(f"force_win_stuck must be a boolean: {force!r}")
     registered = {key for key, entry in campaign.get("battles", {}).items() if "kind" not in entry}
     wins = 0
+    forced: list = []
     retries = 0
     for index, row in enumerate(battles):
         label = f"battle row {index}"
@@ -100,7 +110,13 @@ def check_chapter(chapter: dict, campaign: dict) -> list[str]:
         if not isinstance(row.get("party"), dict):
             errors.append(f"{label}: party must map unit ids to levels")
         retries += len(attempts) - 1
-        if outcome == "win":
+        if row.get("forced", False) is not False:
+            if row.get("forced") is not True or force is not True:
+                errors.append(f"{label}: forced must be true and only in a force_win_stuck run: {row.get('forced')!r}")
+            elif outcome == "win" or len(attempts) != tries_limit:
+                errors.append(f"{label}: a forced row keeps all tries_limit={tries_limit} lost attempts")
+            forced.append(level)
+        elif outcome == "win":
             wins += 1
         elif index != len(battles) - 1:
             errors.append(f"{label}: a lost battle stops the walk, so it must be the last row")
@@ -109,23 +125,25 @@ def check_chapter(chapter: dict, campaign: dict) -> list[str]:
             errors.append("game_clear=true leaves no stuck_at")
         if budget_exhausted:
             errors.append("game_clear=true leaves no budget_exhausted")
-        if wins != len(battles):
-            errors.append("game_clear=true requires every battle row to be a win")
+        if wins + len(forced) != len(battles):
+            errors.append("game_clear=true requires every battle row to be a win (or forced)")
     elif budget_exhausted:
         if stuck_at:
             errors.append("budget_exhausted leaves no stuck_at")
-        if wins != len(battles):
-            errors.append("budget_exhausted requires every battle row to be a win (the walk stopped before the next battle)")
+        if wins + len(forced) != len(battles):
+            errors.append("budget_exhausted requires every battle row to be a win or forced (the walk stopped before the next battle)")
         if not isinstance(budget_exhausted.get("level"), int) or str(budget_exhausted.get("level")) not in registered:
             errors.append(f"budget_exhausted.level must be a registered campaign battle key: {budget_exhausted.get('level')!r}")
     else:
-        if not battles or battles[-1].get("outcome") == "win":
+        if not battles or battles[-1].get("outcome") == "win" or battles[-1].get("forced") is True:
             errors.append("game_clear=false requires the last battle row to be a lost battle")
         elif stuck_at.get("level") != battles[-1].get("level") or stuck_at.get("outcome") != battles[-1].get("outcome"):
             errors.append(f"stuck_at must name the last row's level and outcome: {stuck_at!r} vs {battles[-1].get('level')!r}/{battles[-1].get('outcome')!r}")
     for field, value in (("battles_fought", len(battles)), ("battles_won", wins), ("retries", retries)):
         if chapter.get(field) != value:
             errors.append(f"{field} must equal the recount {value}: {chapter.get(field)!r}")
+    if chapter.get("forced", []) != forced:
+        errors.append(f"forced must list the forced rows' levels {forced}: {chapter.get('forced')!r}")
     return errors
 
 
@@ -136,7 +154,8 @@ def summary_line(chapter: dict) -> str:
     purchases = sum(len(row.get("purchases", [])) for row in chapter.get("towns", []))
     return (f"PASS hsl_autoplay_chapter start={chapter.get('start')} brain={chapter.get('brain', 'scored')} gold={knobs.get('gold')} stat_scale={knobs.get('stat_scale')} "
             f"game_clear={str(chapter['game_clear']).lower()} stuck_at={stuck} budget_exhausted_at={budget.get('level', 'none')} "
-            f"battles={chapter['battles_fought']} won={chapter['battles_won']} retries={chapter['retries']} tries_limit={chapter['tries_limit']} shops={len(chapter.get('towns', []))} purchases={purchases}")
+            f"battles={chapter['battles_fought']} won={chapter['battles_won']} retries={chapter['retries']} tries_limit={chapter['tries_limit']} shops={len(chapter.get('towns', []))} purchases={purchases}"
+            + (f" force_win=true forced={chapter.get('forced', [])}" if chapter.get("force_win_stuck") else ""))
 
 
 def check_paths(root: Path) -> str:

@@ -1,19 +1,24 @@
 extends "res://game/battle/scene/SkillPresenter.gd"
 ## Original Moon artwork and source delay ratios; only immutable receipt playback. The
-## cut-in routes 月花圓舞 here through skill_effects/manifest.json (`dedicated_module`).
+## cut-in routes 月花圓舞 here through skill_effects/manifest.json (`dedicated_module`). The
+## caster's ANIMAL s_action lead opens the clip the way every other 絶技 caster's does: the
+## host's cast_lead over the combat manifest's 002 `special_frames` (P002_201..203, each panel
+## at its SHP draw origin; AnimalCastLead.skipped with 預備動作 off), drawn by
+## show_cast_lead; the empty attack script (specCode19) yields at once, so the target
+## program (specCode20) starts on the lead's last call.
 ## provenance:
 ##   layout: resource-derived content/imported/hsl/shared/moon_dance/manifest.json
+##   layout: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##     (002's s_action lead over its special_frames, via cast_lead)
 ##   layout: static-derived content/generated/hsl/skills/objcomd_motion.json
 ##     (petals obj_Special10_01 run objcomd.txt command 10, bursts obj_Special10_02 command 11, on their native tracks)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_objcomd_programs.md
 ##     (spawner 0x401390 placements and delays; bursts at the defender object + (60,−160), 0x403be2)
 ##   layout: provisional (petal／burst offsets from a target-seeded RNG; seed variants stand in for the shared stream)
-##   layout: remake-invented (the caster intro panels)
 ##   timing: resource-derived content/generated/hsl/skills/moon_dance.json
+##   timing: static-derived docs/evidence_packets/static_reverse/animal_program_execution.md#8-施法引导程序m_actions_action的解释
+##     (lead length = AnimalCastLead complete_tick)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
-##   timing: provisional
-##     (the 1.5 s intro lead stands in for 002's s_action lead — read by AnimalCastLead, but 002's s_shape strip is not
-##     in the combat manifest)
 ##   audio: resource-derived content/imported/hsl/shared/moon_dance/manifest.json
 const RepeatedSpecialRules = preload("res://game/sim/RepeatedSpecialRules.gd")
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
@@ -31,11 +36,8 @@ const PETAL_DELAY := 6
 const PETAL_COUNT := 64
 const BURST_DISP := Vector2(60, -160)
 const BURST_RANGE := Vector2(40, 80)
-## s_action lead, 1.5 s visible on the cut-in's scaled clock; the source lead is unread in ticks.
-const INTRO_VISIBLE_SECONDS := 1.5
 ## Scaled-clock values follow Timing.PLAYBACK_SPEED (instance state: a static var in a
 ## runtime-loaded presenter script keeps the script alive past exit).
-var intro: float = Timing.scaled(INTRO_VISIBLE_SECONDS)
 ## One original tick on the cut-in's scaled clock: source delays play at the original rate.
 var scaled_tick_seconds: float = Timing.scaled(OriginalTick.TICK_SECONDS)
 const WIND_DELAY_TICKS := 20
@@ -110,7 +112,8 @@ static func _fold(rng: RandomNumberGenerator, span: int) -> int:
 	return half - value if value > half else value
 
 
-func impact_time(index: int) -> float:
+## Pulse `index`'s settle time on the scaled clock, `intro` seconds of cast lead before the first target.
+func impact_time(index: int, intro: float) -> float:
 	return intro + (float(index / RepeatedSpecialRules.PULSES) * float(data["source_duration"]) + float(data["source_hit_delays"][index % RepeatedSpecialRules.PULSES])) * scaled_tick_seconds
 
 
@@ -122,8 +125,11 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	var segments: Array = clip["strike"]["special_segments"]
 	var target_count := segments.size() / RepeatedSpecialRules.PULSES
 	var duration := float(data["source_duration"]) * scaled_tick_seconds
+	# The caster's s_action lead ({} without an imported strip: the targets start at once).
+	var lead: Dictionary = host.cast_lead(clip)
+	var intro := float(lead.get("complete_tick", 0)) * scaled_tick_seconds
 	var emitted := int(clip.get("moon_emitted", 0))
-	while emitted < segments.size() and elapsed >= impact_time(emitted):
+	while emitted < segments.size() and elapsed >= impact_time(emitted, intro):
 		var part: Dictionary = segments[emitted]
 		var target: Dictionary = clip["participants"][part["defender_id"]].duplicate(true)
 		target.merge(part["defender_before"], true)
@@ -137,21 +143,9 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		reset()
 		return true
 	if elapsed < intro:
-		host._show_shot(clip, false)
-		host.defender_sprite.hide()
-		var frame_index := 0 if elapsed < 0.24 else 1 if elapsed < 0.42 else 2
-		var frame: Dictionary = assets["images"][assets["groups"]["caster"][frame_index]]
-		host.attacker_sprite.texture = load(frame["res_path"])
-		host.attacker_sprite.centered = true
-		host.attacker_sprite.offset = Vector2.ZERO
-		host.attacker_sprite.scale = Vector2.ONE
-		host.attacker_sprite.position = Vector2(320, 156)
-		host.result.position.y = 272
+		host.show_cast_lead(clip, lead, elapsed / scaled_tick_seconds)
+		host.result.visible = false
 		host.result.text = ""
-		if elapsed >= 0.24:
-			var shown: Dictionary = clip["attacker_unit"].duplicate(true)
-			shown["stamina"] = clip["strike"]["resource_payment"]["after"]
-			host.vitals.show_unit(shown)
 		if not clip["release_emitted"]:
 			clip["release_emitted"] = true
 			host.released.emit(clip["strike"],clip["attacker_unit"],clip["defender_unit"],false)
@@ -188,7 +182,7 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		var pulse_part: Dictionary = segments[pulse]
 		if not pulse_part["hit"] or pulse_part["silent_after_defeat"]: continue
 		var offset: Vector2 = spawn(rng, BURST_RANGE, 2, 1)[0][0]
-		var frame := int((elapsed - impact_time(pulse)) / scaled_tick_seconds)
+		var frame := int((elapsed - impact_time(pulse, intro)) / scaled_tick_seconds)
 		used = native(host, used, BURST, 0, frame, host.defender_sprite.position + BURST_DISP + offset)
 	host.result.position.y = 272
 	# _show_shot wrote the pulse's number alone (aniShowHitResult, UI6); a pulse on a fallen target shows nothing.

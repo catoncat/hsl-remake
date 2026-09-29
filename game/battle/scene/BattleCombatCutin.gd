@@ -347,11 +347,11 @@ func art_key(unit: Dictionary) -> String:
 
 ## Special-skill panels: the ANIMAL `s_shape` strip of the row the attacker cuts in with
 ## (`art_key`: the job-up target row when imported — 010／012／013／016／017／019／020 carry a
-## 3-panel strip of eye banner + two insets, the same shape as 002's moon-dance strip), else
+## 3-panel strip of eye banner + two insets, the same shape as 002's strip), else
 ## the base row's strip (001's seven 氣刃斬 cast panels, 003's six 毒魔箭 portrait／insets,
-## 004／006／007／009's 3／4-panel strips, the monsters 053–055／057), else [] — every combat
-## manifest row declares `special_frames` (`[]` = the ANIMAL block declares no strip, e.g. 056,
-## or it is imported elsewhere, 002's moon-dance strip; manifest `special_frames_policy`) and the
+## 002／004／006／007／009's 3／4-panel strips, the monsters 053–055／057), else [] — every combat
+## manifest row declares `special_frames` (`[]` = the ANIMAL block declares no strip, e.g. 056;
+## manifest `special_frames_policy`) and the
 ## cut-in then shows the caster's standing frame. A row without the declaration is a data error: it is
 ## reported and treated as [] so the clip still completes.
 func special_frames(clip: Dictionary) -> Array:
@@ -1106,7 +1106,7 @@ func _process_borrowed_skill(clip: Dictionary) -> void:
 		_set_frame(attacker_sprite, clip["attacker"], 0, CutinLayout.side_swapped(clip["attacker_unit"]))
 	else:
 		# The strip's panels play in order across the 0.5 s lead (banner first, then the
-		# insets), the moon-dance reading of the same 3-panel shape; remake pacing.
+		# insets); remake pacing.
 		_apply_source_frame(attacker_sprite, casting[mini(casting.size() - 1, int(elapsed * casting.size() / 0.5))])
 	attacker_sprite.position = CutinLayout.attacker_anchor()
 	_set_frame(defender_sprite, clip["defender"], 0, CutinLayout.side_swapped(clip["defender_unit"]))

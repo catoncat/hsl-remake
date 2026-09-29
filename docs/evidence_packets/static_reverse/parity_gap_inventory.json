@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 85,
-    "sources": 472,
+    "sources": 470,
     "sources_by_kind": {
-      "provenance": 191,
+      "provenance": 189,
       "sentence": 83,
       "scope": 100,
       "matrix": 85,
@@ -362,7 +362,7 @@
     },
     {
       "id": "cast-strip-missing",
-      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入",
+      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势",
       "original": "无引导施法者走預備動作 关同一跳 0x401ec4：子状态 7 八 call 压暗，第 9 call 0x4071e0 姿势、0x408b20 case 4（两次 0x401390 放对象 399 Cast_Star，effProcCollectFadeShape）、0x4477b0(0x193) 放声；效果 VM 阶段 4／7／0x17／0x19 等施法者姿势位 0x1000 清",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
@@ -379,7 +379,6 @@
       "effort": "M",
       "category": "特写与施法演出",
       "sources": [
-        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|negative-evidence|044-M0002.SHP 不在 hsl.pak",
         "scope:docs/evidence_packets/runtime_observations/map_pose_floaters/README.md|provisional|无引导施法者撒星高度 h 取重制站立帧高"
@@ -559,13 +558,11 @@
       "sources": [
         "matrix:月花圓舞",
         "provenance:game/battle/scene/MoonDancePresentation.gd|layout|provisional|",
-        "provenance:game/battle/scene/MoonDancePresentation.gd|layout|remake-invented|",
-        "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|",
         "provenance:game/battle/scene/ObjcomdMotion.gd|layout|provisional|",
         "provenance:game/battle/scene/PoisonArrowPresentation.gd|layout|remake-invented|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|layout|provisional|",
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
-        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色",
+        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体与混色",
         "scope:docs/evidence_packets/static_reverse/original_objcomd_programs.md|provisional|objcomd.txt 字布局、种子变体、首个插入点之外的出屏判定、objmLoopCheckSmallerY 的特写镜头、未读清的 5 处、繩子 engRANGE 裁切、多段绝技首段结算前的命中字、op 28 基点是否含击退第一步、其余角度环／龙卷列的重制几何",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#60b362847c",
         "sentence:docs/evidence_packets/static_reverse/original_objcomd_programs.md#61d6dc0b80",
@@ -1005,7 +1002,7 @@
         "provenance:game/battle/scene/SkillEffectScriptPlayer.gd|timing|provisional|",
         "scope:docs/evidence_packets/runtime_observations/effect_motion/README.md|provisional|六团火的随机位置与落光摆动相位",
         "scope:docs/evidence_packets/static_reverse/original_effect_motion.md|provisional|种子变体、±1 帧、缺帧循环、效果后镜头滑回的步长、波纹只加在地图与单位层、换色只挂在无自带材质的物件且清相位当 tick 即还原",
-        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色",
+        "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体与混色",
         "scope:docs/evidence_packets/static_reverse/original_support_magic.md|provisional|AI 自救组合顺序与粒子／时钟",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#4bd2900257",
         "sentence:docs/evidence_packets/static_reverse/original_effect_motion.md#c69f8f3f04",

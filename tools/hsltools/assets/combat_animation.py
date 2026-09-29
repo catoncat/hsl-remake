@@ -33,20 +33,20 @@ ACTORS = ['001', '021', '023', '024', '025', '026', '039', '002', '004', '006', 
           '022', '069']
 UP_TITLE_ACTORS = ['010', '011', '012', '013', '014', '015', '016', '017', '019', '020']
 # Actors whose ANIMAL `s_shape` special (絶技) strip is imported as `special_frames`: every combat
-# row whose ANIMAL block declares s_shape／s_number, except 002 (its P002_201 strip is the moon-dance
-# import, hsltools.data.moon_dance) and 018 (no combat row, see ACTORS). Base rows 001 (氣刃斬 cast
-# panels) and 003 (毒魔箭 portrait/inset panels), the base 3/4-panel strips 004/006/007/009, the
-# up-title 3-panel strips and the monsters 053 (declares 009's P009_201 strip, copied like its
+# row whose ANIMAL block declares s_shape／s_number, except 018 (no combat row, see ACTORS). Base rows
+# 001 (氣刃斬 cast panels) and 003 (毒魔箭 portrait/inset panels), the base 3/4-panel strips
+# 002/004/006/007/009 (002's P002_201 strip leads 月花圓舞: MoonDancePresentation plays it through
+# BattleCombatCutin.cast_lead like every other caster's), the up-title 3-panel strips and the monsters 053 (declares 009's P009_201 strip, copied like its
 # P009_101 magic strip)／054／055／057 are consumed by BattleCombatCutin.special_frames (art row
 # first, then base row). Every other actor row carries `special_frames: []` — the declared "no strip
 # → the cut-in shows the caster's standing frame" contract: their ANIMAL blocks declare no s_shape
 # (056 included: no s_shape／s_action field and no ANIMAL\P056_2xx member in hsl.pak,
 # negative-evidence); the runtime reports a row without the key.
-SPECIAL_FRAME_ACTORS = ['001', '003', '004', '006', '007', '009', '010', '012', '013', '016', '017', '019', '020',
+SPECIAL_FRAME_ACTORS = ['001', '002', '003', '004', '006', '007', '009', '010', '012', '013', '016', '017', '019', '020',
                         '053', '054', '055', '057']
 SPECIAL_FRAMES_POLICY = ('Every actor carries special_frames: the imported ANIMAL s_shape strip (001/003 base panels, '
-                         '004/006/007/009 base 3/4-panel strips, 010/012/013/016/017/019/020 up-title 3-panel strips, '
-                         '053 (P009_201)/054/055/057 monster strips) or [] meaning no strip in this manifest (the ANIMAL block declares none; 002\'s is the moon-dance import) and '
+                         '002/004/006/007/009 base 3/4-panel strips, 010/012/013/016/017/019/020 up-title 3-panel strips, '
+                         '053 (P009_201)/054/055/057 monster strips) or [] meaning the ANIMAL block declares no strip and '
                          'the 絶技 cut-in shows the standing frame; a row without the key is a data error.')
 PROGRAMS = Path('content/generated/hsl/animation/animal_programs.json')
 # The ANIMAL `action` opcodes compile_action / compile_mobile_action bind into the manifest

@@ -429,7 +429,7 @@
     },
     {
       "id": "cast-strip-missing",
-      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势；002 s_shape 绝技条带未导入",
+      "difference": "没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势",
       "original": "无引导施法者走預備動作 关同一跳 0x401ec4：子状态 7 八 call 压暗，第 9 call 0x4071e0 姿势、0x408b20 case 4（两次 0x401390 放对象 399 Cast_Star，effProcCollectFadeShape）、0x4477b0(0x193) 放声；效果 VM 阶段 4／7／0x17／0x19 等施法者姿势位 0x1000 清",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_cast_overlays.md",
@@ -2174,15 +2174,6 @@
     "provenance:game/battle/scene/BattleWinFailBoard.gd|rules|remake-invented|": {
       "no_visible_effect": "只剩 --script 驱动（测试／自动对局／capture）下开场面板 112 tick 自行淡出与任務說明中途离开从当前层级淡出；游戏本身照原版等按键"
     },
-    "provenance:game/battle/scene/MoonDancePresentation.gd|layout|remake-invented|": {
-      "item": "special-object-motion"
-    },
-    "provenance:game/battle/scene/MoonDancePresentation.gd|timing|provisional|": {
-      "item": [
-        "cast-strip-missing",
-        "special-object-motion"
-      ]
-    },
     "provenance:game/battle/scene/PoisonArrowPresentation.gd|layout|remake-invented|": {
       "item": "special-object-motion"
     },
@@ -3178,7 +3169,7 @@
     "scope:docs/evidence_packets/static_reverse/original_mobile_jobs.md|provisional|未声明等级的固定 level1、动作位移镜头与残影节奏": {
       "item": "job-model-gaps"
     },
-    "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体、开场面板、1.5 s 起手与混色": {
+    "scope:docs/evidence_packets/static_reverse/original_moon_dance.md|provisional|落点随机变体与混色": {
       "item": [
         "special-object-motion",
         "effect-motion"

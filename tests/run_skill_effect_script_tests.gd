@@ -861,7 +861,8 @@ func magic_cast_lead_program() -> void:
 	tina["actor_id"] = "002"
 	cutin.play(strike, tina, unit("021"), false, Vector2(470, 320), Vector2(190, 210), [Vector2(470, 320)])
 	var lead: Dictionary = cutin.cast_lead(cutin.clips[0], "magic")
-	_assert_true(not lead.is_empty() and cutin.cast_lead(cutin.clips[0]).is_empty(), "002 has a magic lead and no special lead (its s_shape strip is not imported)")
+	var special_lead: Dictionary = cutin.cast_lead(cutin.clips[0])
+	_assert_true(not lead.is_empty() and not special_lead.is_empty() and special_lead["strip"] == actor["special_frames"] and lead["strip"] == actor["magic_frames"], "002 has a magic lead over its m_shape strip and a special lead over its s_shape strip")
 	var panels: Array = AnimalCastLead.panel_metrics(actor["magic_frames"], actor["magic_frames"].map(func(frame): return load(frame["res_path"])))
 	var expected_total := expected_lead_calls(program, panels, true)
 	_assert_eq(int(lead["complete_tick"]), expected_total, "the magic lead's call count is the sum the program's numbers give (%d)" % expected_total)
@@ -909,33 +910,34 @@ func magic_cast_lead_program() -> void:
 	await process_frame
 
 
-## A caster whose s_action program exists but whose strip is not in the combat manifest (002:
-## its P002_201 strip is the moon-dance import) keeps the standing caster — the manifest's
-## declared per-actor gap, not a silent global fallback. 004 漢克斯, whose P004_201…203 strip is
-## imported, compiles its s_action lead over it.
+## A caster whose ANIMAL block declares no s_shape strip (005) keeps the standing caster — the
+## manifest's declared per-actor contract, not a silent global fallback. 002 緹娜 (P002_201…203,
+## s_action at ANIMAL.TXT lines 33–34) and 004 漢克斯 (P004_201…203), whose strips are imported,
+## compile their s_action leads over them.
 func caster_without_strip() -> void:
 	var cutin := BattleCombatCutin.new()
 	root.add_child(cutin)
 	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
 	cutin.set_process(false)
-	var actor: Dictionary = cutin.manifest["actors"]["002"]
-	_assert_true(not actor["cast_program"].is_empty() and actor["special_frames"].is_empty(), "002 declares an s_action but no strip in the combat manifest")
-	var tina := unit("001")
-	tina["actor_id"] = "002"
+	var actor: Dictionary = cutin.manifest["actors"]["005"]
+	_assert_true(actor["cast_program"].is_empty() and actor["special_frames"].is_empty(), "005 declares neither an s_action nor a strip")
+	var bare := unit("001")
+	bare["actor_id"] = "005"
 	var strike := {"skill_id": "special:magicOTHER:magicCode02", "skill_name": "連續突刺", "attacker_id": "a", "defender_id": "b", "hit": true, "damage": 6, "defender_hp_before": 22, "defender_hp_after": 16, "attacker_before": {}, "defender_before": {}}
-	cutin.play(strike, tina, unit("021"), false)
+	cutin.play(strike, bare, unit("021"), false)
 	_assert_true(cutin.cast_lead(cutin.clips[0]).is_empty(), "no lead is compiled for a caster without a strip")
 	cutin._process(STEP * 5)
-	_assert_true(cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("002/0.png") and cutin.scenery.visible, "the attack phase shows the standing caster over the backdrop")
+	_assert_true(cutin.attacker_sprite.visible and cutin.attacker_sprite.texture.resource_path.ends_with("005/0.png") and cutin.scenery.visible, "the attack phase shows the standing caster over the backdrop")
 	while cutin.busy():
 		cutin._process(0.1)
-	var hanks := unit("001")
-	hanks["actor_id"] = "004"
-	cutin.play(strike, hanks, unit("021"), false)
-	var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
-	_assert_true(not lead.is_empty() and str(lead["row"]) == "004" and lead["strip"] == cutin.manifest["actors"]["004"]["special_frames"], "004 compiles its s_action lead over the imported P004 strip")
-	while cutin.busy():
-		cutin._process(0.1)
+	for caster_id in ["002", "004"]:
+		var caster := unit("001")
+		caster["actor_id"] = caster_id
+		cutin.play(strike, caster, unit("021"), false)
+		var lead: Dictionary = cutin.cast_lead(cutin.clips[0])
+		_assert_true(not lead.is_empty() and str(lead["row"]) == caster_id and lead["strip"] == cutin.manifest["actors"][caster_id]["special_frames"], "%s compiles its s_action lead over the imported P%s strip" % [caster_id, caster_id])
+		while cutin.busy():
+			cutin._process(0.1)
 	# Every actor with an imported strip has a playable lead; every program in ANIMAL.TXT's
 	# m_action／s_action channels uses only the four cast opcodes.
 	var manifest_actors: Dictionary = cutin.manifest["actors"]

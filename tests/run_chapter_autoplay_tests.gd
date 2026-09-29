@@ -36,7 +36,20 @@ extends SceneTree
 ## its headline (game_clear, stuck_at, budget_exhausted_at, battles fought／won, retries) is
 ## printed against the tracked file's as one `CHAPTER_AUTOPLAY_DRIFT fields=[…]` line with a
 ## `<field>: old -> new` line per change, and the PASS line ends `drift=<fields>|none`. Nothing
-## here is evidence about original balance. Runs in the deep gate (tools/verify.sh --deep):
+## here is evidence about original balance.
+## HSL_CHAPTER_FORCE_WIN=1 walks past the commander's losses to find the chapter's real stops:
+## a battle lost on every attempt is booted once more from the same hand-off and won by the
+## story explorer's force-win fixture (tests/support/BattleForceWin.gd, the level's
+## `sweep_fixture`), then the walk takes the campaign's next scene as after a win and goes on to
+## GameClear or the budget. Such a battle's row keeps its lost attempts and outcome and adds
+## `forced: true`; the payload adds `force_win_stuck: true` and `forced` (the forced levels in
+## play order); `battles_won` counts natural wins only; each forced battle prints
+## `CHAPTER_AUTOPLAY_FORCED level=… natural_outcome=… tries=… next=…` and the PASS line ends
+## `force_win=true forced=[…]`. A forced battle is recorded, never a failure; a force-win that
+## does not reach a victory and a hand-off (or GameClear) stops the walk there as `stuck_at`
+## with `force_failed` and fails the run. Unset, nothing changes: the first battle lost on every
+## attempt ends the walk and the payload has neither field.
+## Runs in the deep gate (tools/verify.sh --deep):
 ## `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_chapter_autoplay_tests.gd`.
 
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
@@ -53,6 +66,7 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
 const DamageRandomStream = preload("res://game/sim/DamageRandomStream.gd")
 const RegenDiff = preload("res://tests/support/RegenDiff.gd")
+const BattleForceWin = preload("res://tests/support/BattleForceWin.gd")
 
 const CHAPTER_PATH := "res://content/generated/hsl/development/autoplay/chapter.json"
 ## The sweep's register of battles whose dead_end is recorded but not yet fixed.
@@ -73,6 +87,7 @@ const START_OHM_VILLAGE := "ohm_village"
 const FRESH_PARTY_TEMPLATE_LEVEL := "1"
 const HANDOFF_DIR_ENV := "HSL_CHAPTER_HANDOFF_DIR"
 const EVENT_COMPLETION_BATTLES := ["res://content/battles/battle_073.json", "res://content/battles/battle_078.json"]
+const FORCE_WIN_ENV := "HSL_CHAPTER_FORCE_WIN"
 
 var failures: Array[String] = []
 var campaign: Dictionary = {}
@@ -104,6 +119,13 @@ var first_damage_words: Dictionary = {}
 var damage_reseed_armed: Dictionary = {}
 ## Scenario path -> the k the pre-boot hook applied to the attempt now booting (0: carried as is).
 var damage_reseed_applied: Dictionary = {}
+## HSL_CHAPTER_FORCE_WIN=1: force-win a battle lost on every attempt and walk on.
+var force_win_stuck := false
+## Scenario path -> the natural record ({outcome, battle_outcome, party, attempts, …}) of the
+## battle whose next boot is force-won.
+var force_armed: Dictionary = {}
+## Levels force-won, in play order.
+var forced_levels: Array = []
 
 
 func _initialize() -> void:
@@ -126,6 +148,8 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 		budget_exhausted = {"level": level, "scenario": path.get_file(), "budget_seconds": budget_seconds}
 		print("CHAPTER_AUTOPLAY budget_exhausted at=%d budget_seconds=%d" % [level, budget_seconds])
 		return StoryExplorer.OUTCOME_STUCK
+	if force_armed.has(path):
+		return await _force_formal_battle(explorer, scene, path, level, label)
 	var attempts: Array = attempts_by_scenario.get(path, [])
 	var seed := BASE_SEED + attempts.size()
 	if attempts.is_empty():
@@ -180,6 +204,14 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 	OS.set_environment(BattleSceneRuntime.LOOP_SEED_ENV, str(BASE_SEED))
 	GlobalRandomStream.reset_session()
 	attempts_by_scenario.erase(path)
+	if not won and force_win_stuck:
+		# Boot the same hand-off once more and force-win it (_force_formal_battle).
+		var natural := {"outcome": str(result["outcome"]), "battle_outcome": result["battle_outcome"], "party": party, "attempts": attempts}
+		if str(result["outcome"]) == Autoplay.OUTCOME_DEAD_END:
+			natural["reason"] = str(result["reason"])
+			natural["detail"] = str(result["detail"])
+		force_armed[path] = natural
+		return StoryExplorer.OUTCOME_RETRY
 	var row := {"level": level, "scenario": path.get_file(), "outcome": str(result["outcome"]), "battle_outcome": result["battle_outcome"], "tries": attempts.size(), "party": party, "attempts": attempts}
 	battles.append(row)
 	var reseeded := attempts.filter(func(row): return int(row.get("damage_reseed", 0)) > 0).size()
@@ -199,6 +231,73 @@ func _play_formal_battle(explorer: StoryExplorer, scene: Node) -> String:
 		scene.campaign_progress.start_next_battle()
 		await process_frame
 	return StoryExplorer.OUTCOME_HANDOFF if CampaignProgress.has_pending() else StoryExplorer.OUTCOME_STUCK
+
+
+## HSL_CHAPTER_FORCE_WIN=1: the extra boot of a battle the commander lost on every attempt:
+## opening to first control (Autoplay.reach_first_control), then BattleForceWin.force_win (a
+## decided victory's closing dialogue and growth panel paged as in the commander's play), and
+## the hand-off rebuilt as after a natural win. The row keeps the natural attempts and outcome
+## with `forced: true`. A forced win gives no battle experience, so the party in later battles
+## (and in playtest slots made with --force-win) is weaker than a real player's. A force-win without a victory and a
+## hand-off (or GameClear) is a real stop: recorded as stuck_at with `force_failed`, run fails.
+func _force_formal_battle(explorer: StoryExplorer, scene: Node, path: String, level: int, label: String) -> String:
+	var natural: Dictionary = force_armed[path]
+	force_armed.erase(path)
+	var messages: Array = []
+	var collect := func(condition: bool, message: String) -> void:
+		if not condition:
+			messages.append(message)
+			explorer.note("%s: %s" % [label, message])
+	var won := false
+	if not bool(scene.play_loop.get("scenario_ok", false)):
+		messages.append("scenario_error=%s" % str(scene.play_loop.get("scenario_error", "")))
+	else:
+		if not BattleForceWin.skips_opening(scene):
+			await Autoplay.reach_first_control(self, scene, label, collect)
+		# An event-only battle may hand the campaign off inside its opening.
+		won = CampaignProgress.has_pending()
+		if not won:
+			var fixture_notes: Array = []
+			var fixture_note := func(condition: bool, message: String) -> void:
+				if not condition:
+					fixture_notes.append(message)
+			won = await BattleForceWin.force_win(self, scene, label, fixture_note)
+			var presentation: Node = scene.get_node("BattlePresentation")
+			if not won and BattleOutcome.won(scene.play_loop) and not presentation.battle_finished and not CampaignProgress.has_pending():
+				# The fixture's settle loop does not page the win section's closing dialogue or
+				# growth panel: finish the decided battle the way the commander's play does.
+				await Autoplay._play_scene_phase(self, scene, scene.play_loop, true)
+				won = presentation.battle_finished or CampaignProgress.has_pending()
+			if not won:
+				messages.append_array(fixture_notes)
+	var row := {"level": level, "scenario": path.get_file(), "outcome": str(natural["outcome"]), "battle_outcome": natural["battle_outcome"], "tries": (natural["attempts"] as Array).size(), "party": natural["party"], "attempts": natural["attempts"]}
+	# Rebuilt even when the opening already armed one, as in the natural path and the story
+	# explorer, so the win section's world writes reach the map.
+	if won and not BattleForceWin.arms_own_handoff(scene):
+		var settled := _settle_blocked_loot(scene, level)
+		if not settled.is_empty():
+			row["loot_settled"] = settled
+		scene.campaign_progress.start_next_battle()
+		await process_frame
+	var game_clear := str(scene.campaign_progress.last_handoff.get("kind", "")) == "game_clear"
+	var next := str(CampaignProgress.pending.get("scenario_path", "")).get_file() if CampaignProgress.has_pending() else ("game_clear" if game_clear else "none")
+	if won and next != "none":
+		row["forced"] = true
+		battles.append(row)
+		forced_levels.append(level)
+		print("CHAPTER_AUTOPLAY_FORCED level=%d natural_outcome=%s tries=%d next=%s" % [level, str(natural["outcome"]), int(row["tries"]), next])
+		print("CHAPTER_AUTOPLAY level=%d outcome=%s tries=%d forced=true battle_outcome=%s party=%s" % [level, str(natural["outcome"]), int(row["tries"]), BattleOutcome.describe(natural["battle_outcome"]), JSON.stringify(natural["party"])])
+		# A GameClear hand-off answers stuck; the explorer reads last_handoff and counts GameClear.
+		return StoryExplorer.OUTCOME_HANDOFF if CampaignProgress.has_pending() else StoryExplorer.OUTCOME_STUCK
+	var detail := "; ".join(messages) if not messages.is_empty() else ("victory without a hand-off" if won else "no victory (outcome %s)" % BattleOutcome.describe(BattleOutcome.of(scene.play_loop)))
+	battles.append(row)
+	stuck_at = {"level": level, "scenario": path.get_file(), "outcome": str(natural["outcome"]), "battle_outcome": natural["battle_outcome"], "tries": int(row["tries"]), "party": natural["party"], "force_failed": detail}
+	if natural.has("reason"):
+		stuck_at["reason"] = natural["reason"]
+		stuck_at["detail"] = natural["detail"]
+	print("CHAPTER_AUTOPLAY level=%d outcome=%s tries=%d force_failed=%s" % [level, str(natural["outcome"]), int(row["tries"]), detail])
+	_assert_true(false, "%s: the forced win reaches a victory and the next scene: %s" % [label, detail])
+	return StoryExplorer.OUTCOME_STUCK
 
 
 ## The explorer's pre-boot hook (its `goal`; never ends the walk). The explorer re-boots a retry
@@ -333,6 +432,7 @@ func _run() -> void:
 		brain_mode = OS.get_environment("HSL_AUTOPLAY_BRAIN")
 	if OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS").is_valid_int():
 		budget_seconds = maxi(0, int(OS.get_environment("HSL_CHAPTER_BUDGET_SECONDS")))
+	force_win_stuck = OS.get_environment(FORCE_WIN_ENV) == "1"
 	var started := Time.get_ticks_msec()
 	started_msec = started
 	if start == START_OHM_VILLAGE:
@@ -362,6 +462,9 @@ func _run() -> void:
 		"game_clear": explorer.game_clear_reached, "walk_outcome": outcome, "stuck_at": stuck_at, "budget_seconds": budget_seconds, "budget_exhausted": budget_exhausted,
 		"knobs": {"gold": AutoplayShopping.gold_mode(), "stat_scale": Autoplay.stat_scale_from_environment()},
 		"battles_fought": battles.size(), "battles_won": wins, "retries": retries, "scenes": explorer.scenes_played, "towns": towns, "battles": battles}
+	if force_win_stuck:
+		payload["force_win_stuck"] = true
+		payload["forced"] = forced_levels
 	var known := _known_dead_end_levels()
 	var unknown_dead_ends := dead_ends.filter(func(row): return not known.has(str(row["level"])))
 	_assert_true(unknown_dead_ends.is_empty(), "no attempt ends in a dead_end unless %s lists its level: %s" % [KNOWN_DEAD_ENDS_PATH, JSON.stringify(unknown_dead_ends)])
@@ -386,6 +489,8 @@ func _run() -> void:
 		if stuck_at.has("reason"):
 			summary += " stuck_reason=%s" % str(stuck_at["reason"])
 	summary += " dead_ends=%d drift=%s" % [dead_ends.size(), ",".join(drifted) if not drifted.is_empty() else "none"]
+	if force_win_stuck:
+		summary += " force_win=true forced=%s" % JSON.stringify(forced_levels)
 	if failures.is_empty():
 		print("CHAPTER_AUTOPLAY_PASS %s" % summary)
 		quit(0)
