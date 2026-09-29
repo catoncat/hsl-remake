@@ -67,7 +67,7 @@ def _res(path: str) -> Path:
 
 
 def _foreground(record: dict) -> bool:
-    """BattleSceneStage._map_object_runtime_layer: foreground sprites draw over every actor."""
+    """Building filter by the level hint (runtime_layer_hint, else obj_plane planeObject20); not the runtime layer rule."""
     hint = record.get('runtime_layer_hint', '')
     if hint in ('foreground', 'back', 'backdrop'):
         return hint == 'foreground'

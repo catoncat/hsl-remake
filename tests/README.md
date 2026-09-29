@@ -33,7 +33,7 @@ tools/godot.sh --headless --script res://tests/run_battle_scene_runtime_tests.gd
 HSL_SWEEP_LEVELS=26,34 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_battle_sweep_tests.gd
 HSL_AUTOPLAY_LEVELS=51,501 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd
 python3 tools/verify_runner.py godot      # 门禁同款：全部 Godot 套件并行
-python3 tools/verify_runner.py deep       # 深门：explorer、自动对局、整章机器人
+python3 tools/verify_runner.py deep       # 深门：explorer、自动对局、整章机器人（explorer 另在 affected 改到剧情链时、合并门快门档之后也跑）
 python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-timings   # 改重套件后更新计时（只新增套件用 --missing）
 ```
 
@@ -99,7 +99,7 @@ python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-t
 | [authored_level](run_authored_level_tests.gd) | 自制关卡端到端（[MODDING_LEVELS](../docs/MODDING_LEVELS.md) 的最小原文与 level 200） | — |
 | [battle_sweep](run_battle_sweep_tests.gd) | 全部注册战斗产品开场的规模护栏 | `ro/battle_0*` |
 | [scene_smoke](run_scene_smoke.gd) | 主入口启动（另以 `HSL_OPTIONS_PRESET=comfort` 跑一次） | — |
-| 深门：[autoplay_sweep](run_autoplay_sweep_tests.gd)、[chapter_autoplay](run_chapter_autoplay_tests.gd)、[story_mode_explorer](run_story_mode_explorer_tests.gd) | 128 场自然胜负、整章机器人通关、全程剧情探索（`tools/verify.sh --deep`） | `results.json`／`chapter.json` |
+| 深门：[autoplay_sweep](run_autoplay_sweep_tests.gd)、[chapter_autoplay](run_chapter_autoplay_tests.gd)、[story_mode_explorer](run_story_mode_explorer_tests.gd) | 128 场自然胜负、整章机器人通关、全程剧情探索（深门；改到剧情链时 affected 与合并门快门档之后也跑 explorer） | `results.json`／`chapter.json` |
 
 ## Python
 

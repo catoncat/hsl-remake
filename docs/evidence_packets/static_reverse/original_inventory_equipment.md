@@ -55,14 +55,14 @@ Equip 是 state7 mode4（`0x444185`），Drop 是 state8 mode5（`0x4441ac`）�
 
 **resource-derived**：字段名与类别来自 `ITEM.TXT`、`TYPE.H`、`PLAYERS.TXT`、`RESOURCE.TXT`；表字节身份写入 `content/generated/hsl/equipment/items.json`。Leonard 初始库存 `[241,241,241,246,0,0,0,0]`；3 号銀劍 add_magic_power=5。TYPE.H 的 magic4TYPE 与 ITEM 222 的 magic4Type 大小写不一致，按原解析视为同名。
 
-**runtime-measured**（重制侧 Control 回执，已随回执目录删除）：夹具给 Leonard 3 号銀劍，预览攻击 54→59、魔击 17→22、速度 14→16，确认后 HP 17/30 不变；卸下再装头盔防御 43→37→43；满包卸头盔被拒；饰品 201 可选第二槽。
+**runtime-measured**（重制侧 Control 回执，已随回执目录删除）：夹具给 Leonard 3 号銀劍，预览攻击 54→59、魔击 17→22、速度 14→16，确认后 HP 17/30 不变；卸下再装头盔防御 43→37→43；满包卸头盔被拒（当时的重制行为；现按 `0x437020` 卸到手上，见上文）；饰品 201 可选第二槽。
 
 ## 重制接线
 
 - `game/sim/InventoryRules.gd`：首空插入、有序删除、执行前校验索引与预期 code；provenance 头 `rules: static-derived docs/evidence_packets/static_reverse/original_inventory_equipment.md`。
 - `game/sim/EquipmentRules.gd`：接收当前装备与只读 catalog（`EquipmentCatalog` 读缓存返回副本）；`ProgressionRules` 接收显式 catalog；换装、加点、升级在改字段前检查属性源完整性，缺项以 `scenario_error` 整笔拒绝。
 - `hp_damage_half` 由 `EquipmentRules.has_flag` 读出，`BattleLoopCombat.apply_strike` 传给 `CoreCombatRules.resolve_attack` 的 `damage_halved`；`high_cost` 在 `equipment.py` 的 `INERT_FIELDS` 里忽略；错拼列在 `LOADER_ABSENT_FIELDS` 忽略；TYPE.H 常量表不分大小写查找；武器射程表与 `attack_ranges.py` 的 `WEAPON_SELECTED` 共用，含 range6CellShoot。
-- 满包换装可用取走新装备腾出的格；满包单独卸防具拒绝；武器只允许替换（原徒手范围未证明）；同 code 无变化拒绝（provisional）。
+- 满包换装可用取走新装备腾出的格；满包卸下不经背包、进 PlayLoop 手持 `held_item`（`0x437020` 不查背包，见 [original_item_actions.md](original_item_actions.md)「边界」）；武器只允许替换（原徒手范围未证明）；同 code 无变化拒绝（provisional）。
 
 ## 复现
 

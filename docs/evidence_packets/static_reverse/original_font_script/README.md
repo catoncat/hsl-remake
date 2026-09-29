@@ -1,6 +1,6 @@
 # 原版如何显示简体：Big5 文本＋简体字形的位图字库
 
-> evidence: static-derived: 码位→字形表与绘制循环、各界面字库（0x460884 全部 70 个调用点的字库指针）; resource-derived: 字库字形与逐字审读; runtime-measured: 2026-09-24 原版录像全简体; negative-evidence: EXE 无 Big5→GB 转换; provisional: 鍾針魘三字未判读 · status: live · functions: 0x411d70, 0x412060, 0x4123b0, 0x412ad0, 0x413040, 0x42f230, 0x45f798, 0x460884, 0x4608e4, 0x460ace · tools: hsltools/assets/workteam_simplified.py, hsltools/checks/simplified_display.py, hsltools/data/simplified_chars.py, hsltools/sources/original_font.py · updated: 2026-09-28
+> evidence: static-derived: 码位→字形表与绘制循环、各界面字库（0x460884 全部 70 个调用点的字库指针）; resource-derived: 字库字形与逐字审读; runtime-measured: 2026-09-24 原版录像全简体; negative-evidence: EXE 无 Big5→GB 转换; provisional: 鍾針魘三字未判读 · status: live · functions: 0x411d70, 0x412060, 0x4123b0, 0x412ad0, 0x413040, 0x423c90, 0x423cd0, 0x4264a0, 0x42b2b0, 0x42d3f0, 0x42d600, 0x42f230, 0x45f798, 0x460884, 0x4608e4, 0x460ace · tools: hsltools/assets/workteam_simplified.py, hsltools/checks/simplified_display.py, hsltools/data/simplified_chars.py, hsltools/sources/original_font.py · updated: 2026-09-29
 
 ## 结论
 
@@ -55,7 +55,7 @@ EXE 里成串的色码字符串：`@1`／`@2`／`@3`／`@6` 在 `0x476c80`／`0x
 | 物品描述框（`0x436d70`） | FONT.15 | `0x412060(x+8, y+12, …, 45 半角, 行高 16)`（`0x436e20`） |
 | 资料页按钮标签（`0x43a640`） | FONT.15 | 直调 `0x43a6f1`／`0x43a723`，(中心x − 21 + (42 − 8·字节数)/2, 中心y + 13) |
 | 条旁 cur/max（`0x4365f0`） | FONT.15 | `0x411d70`（`0x4366cf`），条对象 `+0x80` 位 0x100 置位时 |
-| WINDOW10 抗性数值行（过程 `0x438160` 的 `+0xac` 0 分支：`0x4384d5` 在 `0x10000` 位置位的绘制路径、`0x438a92` 在另一路径即跳表 `0x439ed8` case 0；仓库窗 `0x428fb4` 同形） | FONT.15 | 先 `0x4607f9` 逐个画元素宝石（横距 48），再 `0x411d70(x+0x16／x+0x1e, y+0x82, 0x4c1b80 第 6 行, …, 行距参数 28)`；该行由 `0x4355de`–`0x43567e` 拼成五段「数值＋`%` 或 `MAX`＋空格」，不含 `#`，只有一行。停靠 WINDOW10 (133,14) 的帧上数值墨迹 y 149–157 与 x+0x16 路径加 FONT.15 半角下移 2 对上（[menus_ui §7](../../runtime_observations/menus_ui/README.md)）；重制 `BattleVitals` 抗性行。`0x438a92` 路径未拍帧 |
+| WINDOW10 抗性数值行（过程 `0x438160` 的 `+0xac` 0 分支：`0x4384d5` 在 `0x10000` 位置位的绘制路径、`0x438a92` 在另一路径即跳表 `0x439ed8` case 0；仓库窗 `0x428fb4` 同形） | FONT.15 | 先 `0x4607f9` 逐个画元素宝石（横距 48），再 `0x411d70(x, y+0x82, 指针数组第 6 项 [0x4c1b80]+0x18, …, 行距参数 28)`，两路 x 基址不同：`0x4384d5` 取 `[esi+4]+0x72+0x16`（`+0x88`），`0x438a92` 取 `[esi+4]+0x72+0x1e`（`+0x90`，`var_14h` 由 `0x4385b5` 设为 `[esi+4]`、`0x438930` 加 `0x72` 后经 `0x438938` 进入，这是唯一入口），两路 x 只差 8 px，y 都是 `[esi+8]+0x82`；该行由 `0x4355de`–`0x43567e` 拼成五段「数值＋`%`／`MAX`／`???`＋空格」（`0x4355f0` 写 `[0x4c1b80]+0x18`；参数 `[esp+0x1c]` 非 0 取 `???` `0x4785c8`（`0x435603`），否则 ≥80 取 `MAX`（`0x435615`），其余 `%`），不含 `#`，只有一行。停靠 WINDOW10 (133,14) 的帧上数值墨迹 y 149–157 与 y+0x82 加 FONT.15 半角下移 2 对上（[menus_ui §7](../../runtime_observations/menus_ui/README.md)），两路 y 相同，帧上是哪一路从 y 读不出（provisional）；重制 `BattleVitals` 抗性行 |
 | 选择窗对象 704（`0x4264a0`，行过程 `0x4264f0`；全 EXE 三处调用：战斗 VM case 0x4f `0x451fca`、城镇 `0x454e20` 的 `0x4556dd`／`0x45585a`，见 [original_select_insert_event](../original_select_insert_event.md)） | FONT.24 | 平时 `0x412760`（阴影 `0x8430` 在 (+1,+1)、再白）、悬停 `0x412680` 用 `0x42c130` 脉冲绿、淡入淡出 `0x413040`；行 ＝ 窗 ＋ (17, 17 ＋ 28·i)（[original_world_town](../../runtime_observations/original_world_town/README.md)） |
 | 标题版本号（`0x423c90` 建主菜单对象 773，过程 defProcMainMenu `0x423cd0`；`0x423c90` 的调用点是战斗卷轴 `0x4259fb` 与大地图卷轴 `0x42605a`） | FONT.15 | 过程在非建窗消息的分支（`0x423e6a` 起）每帧拼「V」＋`0x45b6de(1)`＋「.」＋`0x45b6de(6, 两位补 0)`＝「V1.06」（EXE 里没有整串），直调 `0x423f22` 画在 (镜头x＋2, 镜头y＋454)、白 `0xffff`；半角下移 2 后字格顶 (2,456)，与 `TitleScreen` 版本号的实录位置一致（[menus_ui §1](../../runtime_observations/menus_ui/README.md)） |
 | 通关队员状态表（`0x42b2b0`） | FONT.24 | 唯一调用点是 defProcClearBOSS `0x42b6b0` 建窗消息里的 `0x42b6df`：为九个队员槽各拼一张 `@3` 标签＋数值的状态表（RESOURCE 37 姓名、38 稱號、39 種族、15 等級、70 移動力、48 殺敵總數、50 復活次數、41–44 四项属性、54／56／131／132／57／58 六项战斗值），未入队的槽只放 2568「此角色未加入隊伍」；由 defProcClearShowPlayer `0x42ba10` 经 `0x4123b0`（`0x42bbc4`）画在 (x−252, y+6)；重制 `GameClearScreen`（[original_game_clear](../original_game_clear.md)） |
@@ -100,7 +100,7 @@ provenance 写法：`static-derived docs/evidence_packets/static_reverse/origina
 
 
 - 原版字形已导入为重制默认字体（OPT-FONT 原版值），系统字体只是改良值。
-- 抗性数值行 `0x438a92`（x+0x1e）所在的绘制路径没有原版帧；`WorldMapRuntime` 地点名的显示条件（`0x427df0` 开头的判断）未读。
+- 抗性数值行两条绘制路径（`0x4384d5` 基址 `[esi+4]+0x72+0x16`、`0x438a92` 基址 `[esi+4]+0x72+0x1e`，x 只差 8 px，y 都是 `+0x82`）哪一条对应已有原版帧未判定（帧只对上 y）；`WorldMapRuntime` 地点名的显示条件（`0x427df0` 开头的判断）未读。
 - FONT.15 行距由调用者给：多行的只有物品描述框（`0x436e20` → `0x412060`，行距 16），条旁 cur/max（`0x4366cf`）也传 16；抗性行三处传 28 但串只有一行。重制 FONT.15 行高 16 与这些调用者一致。
 - 不声明原版对扩展区以外所有 13867 个码位的画法；只审读了重制文本源用到的 672 个仅繁体字。
 - 烘焙在素材图里的文字不经过字库，另见 [`image_inventory.json`](image_inventory.json)。

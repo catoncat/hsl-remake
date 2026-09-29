@@ -181,8 +181,8 @@ static func footprint_palette(selected_attack: String) -> String:
 ## item's Use／Give cell — the original's player state machine (dispatch 0x443a00 over the
 ## byte table 0x445758) sets 0x4c1b00 & 0x200000 in state 0x50 (index 16, 0x4442ef) and on
 ## leaving the Use／Give range states 104／112 (indices 27／32 → 0x444be4, 0x444bf0), clears it
-## on every left press of the pick before the cell is checked and on cancel
-## (0x444947／0x444a67／0x444c40; a rejected press stays in 105／113 unlit —
+## on every left press of the pick before the cell is checked (0x444947／0x444c40) and on
+## cancel (Use 0x444a67, Give 0x444d46; a rejected press stays in 105／113 unlit —
 ## BattleSceneMenus.item_pick_lit), and the actor draw 0x43dcc4 lights
 ## every actor on it (Wine frame: allies blue, enemies pink after 攻擊). The move pick and the
 ## magic／special target states 0x79／0x98 (0x444ec1／0x445099) never set it; the remake's

@@ -120,9 +120,10 @@ negative-evidence：raw load→`+8` setter/getter→到达路径中没有第二�
 | --- | --- | --- |
 | 起始槽 | 行走者建立分支（`[esp+0xc] & 0x20000000`）取行走者指定值 `0x4c1acc`；为 0 时取 `0x4c1b8c`，它只由 WinMain 命令行选项在 `0x457560` 写入，默认 0 | `0x427433..0x427445` |
 | 取人 | 从起始槽扫到槽 19（`cmp esi, 0x14`，不回绕）：`0x42caa0(槽)` 读注册表 `0x4c4360[槽]`，bit 31 置位按 0；非 0 再以槽码查 `0x45dbe1`（表 `0x4a2728`），模板非 0 即取；一个都没有时形状为 0 | `0x42744a..0x42746a`、`0x42caa0`、`0x45dbe1` |
-| 形状 | 模板 `+0xa0` 的形状字写行走者 `+0xa4`，调 `0x446c40(行走者, 形状, 0, 10)`；槽码转职后是 Up 码（`0x42c700`），所以形状随当前职业 | `0x42746c..0x427493` |
+| 形状 | 模板 `+0xa0` 的形状字写行走者 `+0xa4`，调 `0x446c40(行走者, 形状, 0, 10)`；槽码转职后是 Up 码（转职调用点 `0x43493d` → 注册表写入函数 `0x42c700`），所以形状随当前职业 | `0x42746c..0x427493` |
 | 只生效一次 | 建好即 `0x4c1acc = 0`；全 EXE 只有四处引用：建立时读（`0x427435`）与清（`0x427483`）、新游戏清（`0x42ca7c`）、剧情 opcode 96 写（`0x4518d5`：`mov eax,[esi]; mov [0x4c1acc], eax`，脚本操作数原样写入，SID 即槽号）；存档写者 `0x42e070` 的字段表没有它 | 字节检索 `cc1a4c00` |
-| 站立／行走 | 到点 `0x427d59..0x427d8a`：`+0xa6` 改 0 时 `0x446c40(行走者, 形状, 0, 10)`，非 0 时 `(…, 值, 2)` | `0x427d59` |
+| 站立 | 到点 `0x427d59` `xor eax` 进共用尾 `0x427d5b`（值写 `+0xa6`，0 → `0x446c40(行走者, 形状, 0, 10)`） | `0x427d59..0x427d8a` |
+| 行走 | 朝向组 1–4 在 `0x4279ae..0x4279e5` 由走向算出，从 `0x4279cd`／`0x4279db`／`0x4279e5` 进同一共用尾（非 0 → `0x446c40(行走者, 形状, 朝向组, 2)`） | `0x4279ae..0x4279e5` |
 | 用到的脚本 | 拉格納沼地（LEVEL032）的 WINFAIL 胜利段与王座廳・克羅蒂的疑問（LEVEL071）的 STORY 各一次 `actSetBMWalkerPlayerID SID_琥`（TOWNDEF 符号 `SID_琥 = 2`） | resource-derived |
 
 大地图滑屏：关卡装载 `0x42da60` 在 `0x42da8d` 调 `0x42c640`，后者先把 `0x4c1b00` 整字清 0（`0x42c643`），再 OR `0x2000000`（`0x42c6b4`），行走者建立时清 `0x2000000`（`0x427514`）。剧情阶段位 `0x4000000` 的唯一置位点是剧情物件（对象 799）创建 `0x453ac0`（`0x453b08`），调用者为结局过程 `0x42b7fd` 与三个事件表执行器 `0x44ec92`／`0x44ed52`／`0x44ee12`；清位点 `0x453ab1`（脚本结束回调 bit 4）、`0x408275`、`0x420f6a`。大地图（关卡文件 49）没有 STORY／WINFAIL 脚本。
@@ -156,7 +157,7 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - 脚本行走：`WorldMapRuntime._apply_pending_walk_origin` 在进图与离城的首次揭示之前按 from（≠49）落当前点（`0x42f7a4`）；`_consume_pending_walk` 等揭示、展示序列、行走与城镇都停了（行走者子状态 0／1→2／3）再经 `select_point(to, "script_walk")` 走 `route_between` 多跳；无路线记 `unreachable` 原地不动。
 - 点名：`WorldMapRuntime._refresh_labels` 在 OPT-GUIDE=原版 时不画。
 - 音效：`tools/hsltools/assets/town_assets.py` 从 PAK 解出 `tePlaySound` 点名的 WAV（`content/imported/hsl/global/world_map/town_sounds.json`、`town_sounds/*.wav`）；`TownRuntime._play_sound` 当场播放。
-- 行走者：`TownEventRules._world_set_bm_walker_player_id` 把 `actSetBMWalkerPlayerID`／`teSetBMWalkerPlayerID` 的槽号（SID 经 TOWNDEF 符号）写进世界状态 `bigmap_walker_player_id`；`WorldMapRules.walker_unit_id` 照上表从该槽扫到槽 19 取第一名 carry 成员（槽＝PLAYERS 行 −1），`WorldMapRuntime._spawn_marker` 用其 `carried_unit_view`（转职后的 Up 形状）画行走者并清掉指定值；无成员时用场景 `marker_actor_id`。
+- 行走者：`TownEventRules._world_set_bm_walker_player_id` 把 `actSetBMWalkerPlayerID` 的槽号（原版唯一非零写者是剧情 opcode 96；`teSetBMWalkerPlayerID` 只是重制 `apply_script_town_actions` 的内部路由名，原版城镇 VM 无此 token）（SID 经 TOWNDEF 符号）写进世界状态 `bigmap_walker_player_id`；`WorldMapRules.walker_unit_id` 照上表从该槽扫到槽 19 取第一名 carry 成员（槽＝PLAYERS 行 −1），`WorldMapRuntime._spawn_marker` 用其 `carried_unit_view`（转职后的 Up 形状）画行走者并清掉指定值；无成员时用场景 `marker_actor_id`。
 - 重制值：镜头滑行步长 32、TOWNDEF if_wait=0 仍逐句等确认（provisional）；旅行速度 125 px/s（`0x4277ed`）与揭示裁剪节奏（`0x4280d0`）照原版。
 
 ## 复现
@@ -168,11 +169,11 @@ negative-evidence（有范围）：`0x454e20` 的 shop／delay 分派没有取�
 - 探针止于地图新游戏设置、到达请求、失败对白创建、速度设置与状态栏绘制准备等具名边界；关卡加载与 UI 未执行；请求后的 Visit 写入（`0x427b54`）与分派结果分支为静态读，未执行。
 - 完整菜单对象创建、焦点／返回导航与后期所有树变更未执行；UI 应从当前城镇／根的现有子项生成，不从 TOWNDEF 注释归类。
 - 大地图上 `0x43bf30` 是否走剧情步长 16：关卡装载清 `0x4c1b00`、置位只在 `0x453ac0` 已读（见「行走者是谁」段末），三个事件表执行器的表 `0x4c1d04` 在大地图是否为空未读，步长仍按 32。
-- 指定值不进原版存档（`0x42e070` 字段表无 `0x4c1acc`）；重制的指定值随世界状态存进回憶錄，写入后下一次进图即清，通常存不到非 0 值（provisional）。命令行槽 `0x4c1b8c` 按 0。carry 成员的槽按 PLAYERS 行 −1 推，战中转职改了 `actor_id` 的成员（咕嚕 008 → 017）会被算到别的槽，只在扫描越过前面全部成员时才有差别。
+- 指定值不进原版存档（`0x42e070` 字段表无 `0x4c1acc`）；重制把它随世界状态存进回憶錄是重制附加（remake-invented）；写入后下一次进图即清，通常存不到非 0 值。命令行槽 `0x4c1b8c` 按 0。carry 成员的槽按 PLAYERS 行 −1 推，战中转职改了 `actor_id` 的成员（咕嚕 008 → 017）会被算到别的槽，只在扫描越过前面全部成员时才有差别。
 - 起始槽之后没有在队成员时原版形状为 0，重制改用场景 `marker_actor_id`（001）。
 - if_wait=0 是否仍需输入、全转职成功链、secret 阈值的所有设定入口未读。
 - 脚本行走 from 改当前点时，原版回大地图 `0x42f7a4` 先写当前点，行走者子状态 0 揭示的是 from 的路线；重制进图与离城都先落起点再揭示，顺序相同。
-- 无城镇数据的 Town 点（20、45）选定到达时原版照样进城、写 Visit（`0x427b5e..0x427b90` 不查城镇表），城镇过程 `0x4561d0` 在 `0x4564bc` 调 `0x4545e0(town, 0)` 取根槽 0 为空，`0x4564d6` 写结果 2，不开城直接揭示；重制同样写 Visit，但先弹「城鎮內容重製中」卡片再揭示，卡片是重制附加。重选当前点（`_resolve_arrival`）对这类点只弹卡片、不写 Visit，原版 `0x4277c5..0x4277e0` 会写。
+- 无城镇数据的 Town 点（20、45）选定到达时原版照样进城、写 Visit（`0x427b5e..0x427b90` 不查城镇表），城镇过程 `0x4561d0` 在 `0x4564bc` 调 `0x4545e0(town, &slot)` 取根槽 0 为空，`0x4564d6` 写结果 2，不开城直接揭示；重制同样写 Visit，但先弹「城鎮內容重製中」卡片再揭示，卡片是重制附加。重选当前点（`_resolve_arrival`）对这类点只弹卡片、不写 Visit，原版 `0x4277c5..0x4277e0` 会写。
 - `tePlaySound` 的音效开关 `0x4c1af4` 与 `0x477c20` 对应重制的音效音量设置，未逐位核对。
 - 点 16 命運的神殿在 bigmap.dat 没有路线相连：由 薛維斯港 事件 51（港口船長二選一）清点 16 的 Hidden、`teBMSetPointMode gameBMShow`，再 `teSetNextPlayLevelEvent(town_命運神殿, gameBigMapLevel)` 回大地图站到点 16（resource-derived）。
 - 夹具的金额、指针、角色与阶段是显式输入，不是实际存档快照。

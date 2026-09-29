@@ -53,7 +53,7 @@ const COMPLETION_DENOMINATOR_OFFSET := 1
 ## Route search bounds (0x427070): 100 point slots, unreached cost 600000 (0x927c0).
 const ROUTE_SLOTS := 100
 const ROUTE_UNREACHED_COST := 600000
-## World-state key of the walker designation 0x4c1acc (teSetBMWalkerPlayerID／opcode 96);
+## World-state key of the walker designation 0x4c1acc (script opcode 96 actSetBMWalkerPlayerID; the te name is remake routing only);
 ## absent = 0, as the new game clears it (0x42ca7c).
 const WALKER_PLAYER_ID := "bigmap_walker_player_id"
 ## Registered-slot table 0x4c4360 bound of the walker scan (0x427445 cmp esi, 0x14).
@@ -495,7 +495,7 @@ static func town(world_map: Dictionary, town_id: int) -> Dictionary:
 ##                            without town data (0x427b5e..0x427b90 tests no town
 ##                            table: Visit at 0x427b88, sub-state 15 opens it); a point
 ##                            with no town data (20, 45) runs the town process 0x4561d0,
-##                            whose 0x4545e0(town, 0) at 0x4564bc finds root slot 0 empty,
+##                            whose 0x4545e0(town, &slot) at 0x4564bc finds root slot 0 empty,
 ##                            so 0x4564d6 writes result 2 and 0x427d2f goes straight to
 ##                            the 0x427d36 reveal (0x4561bf is the other result-2 path,
 ##                            0x45e307 failing to create the object). The remake shows a

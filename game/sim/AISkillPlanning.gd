@@ -247,8 +247,7 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 	# Not matched: 0x40cf34 tests the word before 0x411b90 lifts the caster (0x40cf47), so a
 	# 3×3 actor skips every anchor cell its body covers; the filter below drops only `origin`.
 	# 0x410a50 failing on the picked station (0x40d2ed → 0x40d31b) keeps the initial 0 return
-	# (0x40ccbf) and the actor casts in place; an empty stand table (0x40d2b7 → 0x40d2fb)
-	# returns the target's coords. The remake has neither fallback.
+	# (0x40ccbf) and the actor casts in place; the remake has no such fallback.
 	var moving := moves_to_cast(plan)
 	if moving and plan.get("origin") is Vector2i:
 		var away := intents.filter(func(intent): return intent["destination"] != plan["origin"] and int(intent["score"]) > 0)
@@ -302,8 +301,9 @@ static func choose(plan: Dictionary, rng: Variant, requested_buckets: Array = []
 ## or 0x40dd80 (SPECIAL) over every affordable row of the bucket (0x40c620 does not ask
 ## whether the row can land); a picked row with no centre falls to the fallback bucket
 ## (0x40d494 → 0x40d3bc, 0x40e0d2 → 0x40dfee), the fallback is tried once. The search is
-## 0x40cca0 first when the actor moves to cast (SPECIAL always, MAGIC with move_magic_use
-## via 0x40e270): every stoppable flood cell but its own (0x40cf34 skips an occupied word)
+## 0x40cca0 first when the actor moves to cast (SPECIAL always; MAGIC when 0x40e270, called
+## at 0x40d3f8, returns non-zero — zero jumps at 0x40d402 to the own-cell scan 0x40d439):
+## every stoppable flood cell but its own (0x40cf34 skips an occupied word)
 ## scanned row-major, each keeping its 0x40c9a0 best, the cells of the highest count
 ## collected (0x40cfea..0x40d02f) and the one farthest from the threat taken (0x40d200..
 ## 0x40d2b0; no threat: rand(count), 0x40d1c8); nothing there, or no move search, scans
@@ -336,8 +336,7 @@ static func choose_any(plan: Dictionary, held_id: String, rng: Variant) -> Dicti
 
 
 ## Same two gaps as `choose`: only `origin` leaves the station cells (0x40cf34 skips every
-## body cell of a 3×3 caster), and no fallback for a failed 0x410a50 (0x40d2ed) or an empty
-## stand table (0x40d2fb).
+## body cell of a 3×3 caster), and no fallback for a failed 0x410a50 (0x40d2ed).
 static func _cast_search(intents: Array, plan: Dictionary, held_id: String, rng: Variant) -> Dictionary:
 	var origin: Vector2i = plan["origin"]
 	var by_cell := {}

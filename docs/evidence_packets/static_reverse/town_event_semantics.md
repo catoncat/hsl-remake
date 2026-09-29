@@ -64,7 +64,7 @@ VM 以 `*param_4` 高半字为阶段、每次过程调用进一次（一次主�
 | 未定义 token | — | 记录 `unknown_token`，链继续 | `recorded_only` |
 
 脚本侧 `apply_script_town_actions` 接受 winfail／STORY 的 `act*` 同名 token（`actAddTE`、`actDeleteTE`、`actSetTownExecEvent`、
-`actSetTownExitExecEvent`、`actBM*`、`actSetBMWalkToPoint`、`actSetBMWalkerPlayerID`），参数形状与 te 版相同，走同一套状态改写；`act／teSetBMWalkerPlayerID` 把槽号写进世界状态 `bigmap_walker_player_id`（[行走者是谁](original_world_town.md)）。
+`actSetTownExitExecEvent`、`actBM*`、`actSetBMWalkToPoint`、`actSetBMWalkerPlayerID`），参数形状与 te 版相同，走同一套状态改写；`actSetBMWalkerPlayerID`（原版唯一写者是剧情 opcode 96 `0x4518d5`）把槽号写进世界状态 `bigmap_walker_player_id`（[行走者是谁](original_world_town.md)）；原版城镇 VM 没有 `teSetBMWalkerPlayerID`（towndef token_ids 只有 1–44、100、101），te 名只是 `apply_script_town_actions` 把 act 换成 te 的内部路由。
 
 ### static-derived：初始菜单树
 

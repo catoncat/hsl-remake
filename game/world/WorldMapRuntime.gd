@@ -899,8 +899,11 @@ func completion_percent() -> int:
 
 ## The walker figurine (0x427420 creation): the first registered member from the designated
 ## slot (world state bigmap_walker_player_id, 0x4c1acc) up, drawn with the shape of its
-## current code — the up-title frames after a job-up (0x42c700 writes the Up code), as
-## carried_unit_view gives them (0x446c40(walker, shape, 0, 10) standing, (…, 2, 2) walking).
+## current code — the up-title frames after a job-up (the job-up call 0x43493d → registry
+## writer 0x42c700 stores the Up code), as carried_unit_view gives them: standing 0x427d59
+## (xor eax → 0x446c40(walker, shape, 0, 10)); walking 0x446c40(walker, shape, direction
+## group 1–4, 2), the group computed from the heading at 0x4279ae..0x4279e5 and entering the
+## shared tail 0x427d5b from 0x4279cd／0x4279db／0x4279e5.
 ## The designation is cleared once the walker stands (0x427481), so it holds for one map
 ## entry. No registered slot in range (or no carry yet): `fallback_actor_id`.
 func _spawn_marker(fallback_actor_id: String) -> void:

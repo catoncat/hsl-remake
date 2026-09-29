@@ -19,8 +19,8 @@ extends Control
 ##
 ## An empty-handed goods click pays and puts the item on the hand (TownRuntime.shop_pick,
 ## 0x415519-0x41553c: gold at once, 0x4c1ce4 = code, no message); the player puts it down on a
-## bag slot (0x42923b) or right click puts it into the shown member's first empty slot
-## (0x436e30). Selling follows the original gesture (pick a bag item up, click the goods
+## bag slot (0x42923b). Right click puts it into the shown member's first empty slot (0x436e30) —
+## a remake convenience: the original root state 0x428dc7 ignores right click while holding. Selling follows the original gesture (pick a bag item up, click the goods
 ## list). 裝備 (page 10) shows the member's six slots and takes the hand like mode 0; 倉庫
 ## (page 7) shows the party storage; 丟棄 throws a non-important held item away; as in the
 ## original the window has no 離開 button — right click／Esc leave it (frame 13). The ↓ mark the original draws after some goods names is not drawn —
