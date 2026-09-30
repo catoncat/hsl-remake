@@ -518,7 +518,7 @@
     "content/generated/hsl/development/ai_replay.json": {"sha256": "94b5b6800a5d1756179ae4688654888bd5b3a16740c12846c523b5f28e6964ca", "task": "ai_replay"},
     "content/generated/hsl/development/ai_replay.md": {"sha256": "1d55b19d4f3d193a41e66f050f1b7181d47ea580cef67b5f60188afb46fbce02", "task": "ai_replay"},
     "content/generated/hsl/development/evef_instances.json": {"sha256": "3ebbe8dc4836d69d2148e177527be2a79032d1258d1e11a0f4f77d2c6c96db1a", "task": "evef_instances"},
-    "content/generated/hsl/development/field_coverage.json": {"sha256": "2966834f1304a0c25be2130c2f0f34a625385ae4e2a6f973cce0bd96bb0b7706", "task": "field_coverage"},
+    "content/generated/hsl/development/field_coverage.json": {"sha256": "7e2334ea77480c11127d4bae0fa38131f43e1f471aeba2dcc806f39f6317beb0", "task": "field_coverage"},
     "content/generated/hsl/development/first_battle_objectives.json": {"sha256": "f18af7f1c5d54d5b2c1b9f5e87f34e7f25c97687bcedf9d77b715d0eda1071ba", "task": "first_battle_formation"},
     "content/generated/hsl/development/growth_lifecycle_inventory.json": {"sha256": "c0ca36e67b7031840f509165c50719ced0ce0cd2b51575b781b34522db6a5f69", "task": "growth_lifecycle_trial"},
     "content/generated/hsl/development/growth_lifecycle_progression.json": {"sha256": "2b43aa7462cb846128644d407e1f21510430064160e152f728206fce0ac19dc1", "task": "growth_lifecycle_trial"},

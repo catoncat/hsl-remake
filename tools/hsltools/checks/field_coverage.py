@@ -50,7 +50,7 @@ from hsltools.sources.tables import blocks
 OUTPUT_JSON = 'content/generated/hsl/development/field_coverage.json'
 OUTPUT_DOC = 'docs/evidence_packets/static_reverse/original_field_coverage.md'
 SCHEMA = 'hsl_original_field_coverage.v1'
-PACKET_UPDATED = '2026-09-29'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
+PACKET_UPDATED = '2026-09-30'  # bump when FIELD_NOTES / SUSPECTS / the static readings change
 
 SEEDS = 'content/generated/hsl/chapter01/'
 TERRAIN = 'content/generated/hsl/static/hsl01/'
@@ -94,11 +94,11 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'sound_walk': ('consumed', 'tools/hsltools/assets/actor_audio.py:build', '行走音效', None),
         'sound_attack': ('consumed', 'tools/hsltools/assets/actor_audio.py:build', '攻击音效', None),
         'sound_miss': ('consumed', 'tools/hsltools/assets/actor_audio.py:build', '未命中音效', None),
-        'sound_hit': ('unconsumed', None, '被击音效（4 行；记录 +0x10 lo 句柄）', '演员音频导入只取 dead／walk／attack／miss'),
+        'sound_hit': ('unconsumed', None, '被击音效（4 行；记录 +0x10 lo 句柄）', '原版攻击结算对象 0x4038a0（0x406d20 每次出手创建）命中分支 0x4040da..0x40414a：攻方 sound_shoothit 优先，否则目标（对象 +0xac，0x403d50 写入）的 sound_hit（0x409790），都无才按武器图标（爪／刺回退 405）；重制只放武器音（缺口 normal-attack-hit-sound-chain，docs/evidence_packets/static_reverse/original_unconsumed_fields.md）'),
         'sound_walkwater': ('consumed', 'tools/hsltools/assets/interface_audio.py:walk_water_rows', '水中行走音效（2 行，均同 sound_walk）', None),
-        'sound_shoothit': ('unconsumed', None, '射击命中音效（1 行，+0x22）', None),
+        'sound_shoothit': ('unconsumed', None, '射击命中音效（1 行，+0x22）', '紅龍 051 BOMB0028；受击音链第一级，见 sound_hit'),
         'job': ('consumed', JOBS, '职业码 → 0x448840 数值分支', None),
-        'class': ('unconsumed', None, 'classHuman／classMonster…（+0x20 低字）', '原版只见搬运（0x4348f0 非零复制、存档 +0x20）；全 .text 839 处 [reg+0x20] 读后 10 条内无 class 常量比较（有界扫描）；重制不读'),
+        'class': ('consumed', 'tools/hsltools/assets/panel_assets.py:definitions', '种族（+0x20 低字，TYPE.H class* → RESOURCE 101–106／243／244）', '原版只作显示：0x42b3b3 GameClear 状态表「種族」、0x4351a0 身份栏文字（0x4477b0）、0x4349b3 非零复制；有界扫描内未见 class 常量比较（839 处 [reg+0x20] 读取后 10 条指令，negative-evidence），无规则效果；重制 panel_assets 写 race，BattleVitals 状态面板与 GameClear 表显示之'),
         'status': ('dead', None, 'PLAYERS 初始状态位（15 行全 0）', '原 live +0x24 由回合 tick 改写；数据全 0'),
         'mode': ('consumed', 'tools/hsltools/levels/battle.py:install_player_mode', 'pmPlayer／pmEnemy／pmNPCPlayer 阵营位', '模板值经 OBJ obj_Data9 互换与 obj_X1 覆盖后写单位 player_mode（见 obj 表）'),
         'str': ('consumed', 'game/sim/CoreCombatRules.gd:hit_chance', '力量（伤害 str 项）', None),
@@ -381,9 +381,9 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'obj_X': ('dead', None, '地图管理员 obj_X（148 行）', '0x45dc5c 不读 obj_X／obj_Y（只有 obj_X1..Y2）'),
         'obj_Y': ('dead', None, '地图管理员 obj_Y（148 行）', '同上'),
         'obj_X1': ('consumed', 'tools/hsltools/levels/battle.py:install_player_mode', '模板 +0x10；演员：≠0 → live +0x28 阵营模式覆盖（pmNPC／pmPlayerEnemy／pmEnemy／pmPlayer）（0x407ec0）；特效对象：WAV', '102 个已放置敌军声明；81 个阵营与模板不同：pmNPC 39（7 关 21、21 关 13、57／531／532／533），pmPlayerEnemy 36（6 关 12、9 关 14、34 关 3、65 关 7 名村民），pmPlayer 6（900 关）；21 个 pmEnemy→pmEnemy 无变化。R22：导入器写单位 `player_mode`（放置与脚本插入同路），运行时 ActorRoleRules.side_mask 按位判敌我；特效对象的 WAV 值只随 object_data_fields 记录'),
-        'obj_Y1': ('unconsumed', None, '模板 +0x14；演员：≠0 → live +0x134（0x407ec0）；特效：WAV；ObjectMove：位移', '1 个演员（80 关 Enemy068 = obj_Story_Level_Enemy68Star）未消费；13 个法术效果对象的 WAV 由 special_effect_scripts.py:program_sounds 按 effProc 相位接入（R5-L2）'),
-        'obj_X2': ('unconsumed', None, '模板 +0x18（特效 WAV／ObjectMove 参数）', '10 行，均非演员；其中 7 个法术效果对象的 WAV 由 special_effect_scripts.py:program_sounds 接入（R5-L2），余为 ObjectMove 参数'),
-        'obj_Y2': ('unconsumed', None, '模板 +0x1c', '1 行'),
+        'obj_Y1': ('unconsumed', None, '模板 +0x14；演员：≠0 → live +0x134 低半字＝伴随对象码（0x407ec0）；特效：WAV；ObjectMove engRANGE：框上边', '22 行＝20 个效果对象 WAV（法术引用的 13 个由 special_effect_scripts.py:program_sounds 按 effProc 相位接入，R5-L2）＋逃出克萊恩城（LEVEL053）繩子框上边 464（重制按插入线裁切，同值）＋1 个演员：禁忌之魂・墳場地下（LEVEL080）怨念集合體 068 = 90 号 LevelUp_Star，0x43def0 每 20 tick（第 2 参非零时 8）经 0x415c10 在身边约 ±0x30×±0x10 随机抛 4 颗，重制未接（缺口 actor-companion-effect-object，docs/evidence_packets/static_reverse/original_unconsumed_fields.md）'),
+        'obj_X2': ('consumed', 'tools/hsltools/data/special_effect_scripts.py:program_sounds', '模板 +0x18（效果对象第二 WAV，0x415d90 放一次；ObjectMove engRANGE：框右边）', '10 行均非演员：9 个效果对象 WAV，法术引用的 7 个由 program_sounds 接入（R5-L2），余 2 个无法术引用、从不生成；逃出克萊恩城（LEVEL053）繩子框右边 10000（屏外，无可见效果）'),
+        'obj_Y2': ('unconsumed', None, '模板 +0x1c（ObjectMove engRANGE：框下边）', '1 行＝逃出克萊恩城（LEVEL053）繩子 800；0x4051d0 创建时 obj_Mode 带 0x1000000 才保留 +0x10..+0x1c（0x4052f1..0x4052fa）；上边 464 与重制插入线同值，下边 800 是否裁到图未核（provisional，docs/evidence_packets/static_reverse/original_unconsumed_fields.md）'),
         'obj_ZoomX': ('passthrough', 'tools/hsltools/levels/seed.py:_placements', '模板 +0x20 缩放', '进 object_data_fields'),
         'obj_ZoomY': ('passthrough', 'tools/hsltools/levels/seed.py:_placements', '模板 +0x24 缩放', '进 object_data_fields'),
         'obj_ShapeSub': ('dead', None, '模板 +0x2c（数据 0 行）', None),
@@ -439,7 +439,7 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'cap_dex': ('consumed', 'tools/hsltools/model/jobs.py:calculate', '+0x78', None),
         'cap_mind': ('consumed', 'tools/hsltools/model/jobs.py:calculate', '+0x7c', None),
         'cap_con': ('consumed', 'tools/hsltools/model/jobs.py:calculate', '+0x80', None),
-        'install_code': ('unconsumed', None, '+0x84 安装时对象码', '运行时无对应键'),
+        'install_code': ('consumed', 'game/sim/ScriptActorCreationRules.gd:_apply_status', '+0x84 脚本寻址 id', '原版 0x451155（actChangePrevInsertObjectID）写、0x44fa80 返回、0x44fad0 按它找对象；0x407cc0 另在 0x407d94 按对象 +0xa2 经 11 项跳表 0x407e8c 给新建演员写默认码 0..8（末两项与首两项同目标）；改号一路由 _apply_status 记进 actor_bindings、按 SID token 寻址，效果等价；默认码 0..8 在重制里的对应待核'),
         'exp': ('consumed', SAVE, '+0x88', None),
         'exp_threshold': ('consumed', 'game/sim/ProgressionRules.gd:exp_to_next', '+0x8c 升级阈值', None),
         'kill_exp': ('consumed', SAVE, '+0x90', None),
@@ -509,13 +509,14 @@ FIELD_NOTES: dict[str, dict[str, tuple]] = {
         'TYPE.H magicFun_*': ('consumed', 'game/sim/SkillTargetRules.gd:function_mask', '功能位', None),
         'TYPE.H pm*': ('consumed', 'game/sim/WinfailActions.gd:_player_mode_arg', '阵营模式常量', None),
         'TYPE.H job*': ('consumed', 'tools/hsltools/model/jobs.py:source_profile', '职业码', None),
-        'TYPE.H class*': ('unconsumed', None, '种族／类别码', '见 PLAYERS.class'),
+        'TYPE.H class*': ('consumed', 'tools/hsltools/assets/panel_assets.py:definitions', '种族码', '见 PLAYERS.class：只作显示'),
         'TYPE.H AI_*／AIF_*': ('consumed', 'game/sim/AIDecisionRules.gd:select_target', 'find_type／find_flag 常量', None),
         'TYPE.H itemType*／itemIcon*': ('consumed', EQ, '物品类型与图标', None),
         'TYPE.H bm*／gameBM*': ('consumed', 'game/sim/TownEventRules.gd:_world_bm_set_mode', '大地图点／线模式', None),
         'TYPE.H eng*': ('consumed', 'tools/hsltools/levels/map_objects.py:build', '显示模式（engADDCOLOR…）', None),
-        'TYPE.H objattr*': ('unconsumed', None, 'obj_Attribute 旗', '见 obj.obj_Attribute'),
-        'TYPE.H other': ('unconsumed', None, '其余 #define（gameBigMapLevel／gameTempResourceID／plane*…）', '按需消费，未逐一登记'),
+        'TYPE.H effProc*': ('consumed', 'tools/hsltools/probes/effect_motion.py:table_defines', '效果对象程序码（obj_Data9，跳表 0x4231b0）', '经探针 effect_motion.table_defines 按名字解出程序号（PROCESS.DEF 优先、TYPE.H 同名被遮），EffectObjectMotion 放记录'),
+        'TYPE.H objattr*': ('dead', None, 'obj_Attribute 旗', 'TYPE.H 无 objattr 定义（0 条）；objattr* 在 PROCESS.DEF，见 obj.obj_Attribute'),
+        'TYPE.H other': ('unconsumed', None, '其余 13 条 #define（gameBigMapLevel／gameTempResourceID／gameover*／bmpm*／effSMOKE）', '按需消费，未逐一登记'),
     },
 }
 
@@ -655,7 +656,8 @@ DEFINE_GROUPS = (
     ('TYPE.H magicCode*', 'TYPE.H', r'magicCode'), ('TYPE.H magicFun_*', 'TYPE.H', r'magicFun_'),
     ('TYPE.H pm*', 'TYPE.H', r'pm[A-Z]'), ('TYPE.H job*', 'TYPE.H', r'job[A-Z]'), ('TYPE.H class*', 'TYPE.H', r'class[A-Z]'),
     ('TYPE.H AI_*／AIF_*', 'TYPE.H', r'AI_|AIF_'), ('TYPE.H itemType*／itemIcon*', 'TYPE.H', r'itemType|itemIcon'),
-    ('TYPE.H bm*／gameBM*', 'TYPE.H', r'bm[A-Z]|gameBM'), ('TYPE.H eng*', 'TYPE.H', r'eng[A-Z]'), ('TYPE.H objattr*', 'TYPE.H', r'objattr'),
+    ('TYPE.H bm*／gameBM*', 'TYPE.H', r'bm[A-Z]|gameBM'), ('TYPE.H eng*', 'TYPE.H', r'eng[A-Z]'), ('TYPE.H effProc*', 'TYPE.H', r'effProc'),
+    ('TYPE.H objattr*', 'TYPE.H', r'objattr'),
 )
 DEFINE = re.compile(r'^\s*#define\s+(\S+)\s+(\S+)', re.M)
 
@@ -729,10 +731,16 @@ def winfail_opcodes(root: Path) -> dict[str, dict]:
     recorded = world_flags | set(sets['PRESENTATION_ACTIONS'])
     totals = coverage['totals']['token_totals']
     handlers = gd_handler_table((root / WINFAIL_ACTIONS).read_text(encoding='utf-8'), 'ACTION_HANDLERS')
+    # Script tokens match case-insensitively (WINFAIL002 spells actMEssage once):
+    # WinfailCompiler.canonical_action folds a respelling onto the supported name.
+    spellings = {name.lower(): name for name in applied | recorded}
     fields = {}
     for token in sorted(set(totals) | applied | recorded, key=lambda name: (-totals.get(name, 0), name)):
-        status = 'consumed' if token in applied else 'recorded' if token in recorded else 'unconsumed'
-        if token in conditions:
+        name = token if token in applied | recorded else spellings.get(token.lower(), token)
+        status = 'consumed' if name in applied else 'recorded' if name in recorded else 'unconsumed'
+        if name != token:
+            consumer = 'game/sim/WinfailCompiler.gd:canonical_action'
+        elif token in conditions:
             consumer = 'game/sim/WinfailConditions.gd:condition_holds'
         elif token in applied:
             consumer = f'{WINFAIL_ACTIONS}:{handlers.get(token, "apply_actions")}'

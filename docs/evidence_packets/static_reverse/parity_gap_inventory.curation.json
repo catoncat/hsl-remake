@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-29",
+  "updated": "2026-09-30",
   "video_diff_classes": {
     "1": {
       "title": "镜头滚动",
@@ -1633,6 +1633,42 @@
       "visibility": "some_levels",
       "effort": "S",
       "category": "地图人物演出"
+    },
+    {
+      "id": "normal-attack-hit-sound-chain",
+      "difference": "普攻受击音只按攻方武器图标放；原版先放攻方 PLAYERS sound_shoothit（紅龍 051 BOMB0028），否则放受击方 sound_hit（咕嚕 008／殭屍 034 HIT00017、門 100／船殼 101 HIT00015），都没有才按武器图标，爪／刺（图标 6／7，15 行 PLAYERS 的武器，含队员 咕嚕）回退 405 sfxHitSword；重制爪／刺命中无撞击声；队员咕嚕 008 在 106 场出现，多数战斗可遇",
+      "original": "攻击结算对象 0x4038a0（每次出手由 0x406d20 创建，过程码 0x9a，过程表项 0x477c88）相位 1 命中分支 0x4040da..0x40414a：[0x4c13f8]（0x406dc9 写攻方 +0x22）→ 目标 sound_hit：对象 +0xac 创建时写攻方（第 1 参，0x406dbd），0x403d50 改成 0x4104d0(1) 取到的目标，0x4040e9 取 [edi+0xac] 调 0x409790，按 +0xa4 索引记录表 [0x4c1bc8] 读 +0x10 → [0x4c6f60] 图标跳表 0x404f6c（0..5 → 404..409，其它 → 405）",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_unconsumed_fields.md",
+        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
+      ],
+      "remake": "BattlePresentation._play_weapon_hit_sound 只查 cue_manifest weapon_hit_sounds；interface_audio.weapon_hits 把 itemIconClaw／itemIconSting 记空串；actor_audio 只导入 dead／walk／attack／miss",
+      "remake_code": [
+        "game/battle/scene/BattlePresentation.gd:_play_weapon_hit_sound",
+        "tools/hsltools/assets/interface_audio.py:weapon_hits",
+        "tools/hsltools/assets/actor_audio.py"
+      ],
+      "original_status": "read_complete",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "音频"
+    },
+    {
+      "id": "actor-companion-effect-object",
+      "difference": "禁忌之魂・墳場地下（LEVEL080）的敌军 怨念集合體 068 在原版身边周期冒出上飞的星（obj-080 的 90 号 LevelUp_Star，与升级飞星同图），重制没有",
+      "original": "OBS obj_Y1 → 0x407ec0 写 live +0x134 低半字；0x43def0 在 0x43e0a7 读到非零就倒数 +0xac，到 0 调 0x415c10(x, y, 码, 0x60, 0x20, 0, 3, 4, 0) 随机抛 4 个（0x60、0x20 各取随机数、过半折回，偏移约 ±0x30 横 × ±0x10 纵），再按第 2 参重置：非零 8、为零 20 tick；两个调用点 0x44217e（压 [esp+0x24]）、0x445633（压 [esp+0x14]）的第 2 参来源待追",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/original_unconsumed_fields.md"
+      ],
+      "remake": "导入器不读演员的 obj_Y1，单位上没有伴随对象码；飞星图已有 LevelUpStars 可用",
+      "remake_code": [
+        "tools/hsltools/levels/battle.py:install_player_mode",
+        "game/battle/scene/LevelUpStars.gd"
+      ],
+      "original_status": "read_partial",
+      "visibility": "some_levels",
+      "effort": "S",
+      "category": "地图人物演出"
     }
   ],
   "sources": {
@@ -3211,6 +3247,22 @@
     "sentence:docs/evidence_packets/static_reverse/town_event_semantics.md#c3bb21cc09": {
       "item": "town-layout-extras",
       "text": "704 与 740 的绘制先后未读"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_unconsumed_fields.md#5fea50cd86": {
+      "item": "normal-attack-hit-sound-chain",
+      "text": "攻方 shoothit、受方 sound_hit 这两级优先和爪／刺的 405 回退，重制未做：原版这些攻击命中时会再响一声撞击音，重制只有出手音。"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_unconsumed_fields.md#83a7355222": {
+      "item": "actor-companion-effect-object",
+      "text": "所以原版里这个敌人每隔 20（或 8）tick 就在身边随机冒出 4 颗上飞的星，这一光环重制未做。"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_unconsumed_fields.md|negative-evidence|PLAYERS.class 读取后 10 条指令内无 class 常量比较、install_code（+0x84）除 0x44fa80／0x44fad0 外无读者，均为有界线性扫描": {
+      "no_visible_effect": "两条否定结论只支撑 class 与 install_code 无规则效果；class 重制已作显示，install_code 改号一路重制按 SID token 寻址"
+    },
+    "scope:docs/evidence_packets/static_reverse/original_unconsumed_fields.md|provisional|禁忌之魂・墳場地下（LEVEL080）光环 0x43def0 第 2 参在两个调用点的来源、逃出克萊恩城（LEVEL053）繩子 engRANGE 框的下边与左右边、新建演员默认 install_code 0..8 在重制里的对应": {
+      "item": [
+        "actor-companion-effect-object"
+      ]
     }
   }
 }

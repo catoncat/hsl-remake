@@ -1,6 +1,6 @@
 # 原版数据字段覆盖：重制消费了哪些、漏了哪些
 
-> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-29
+> evidence: resource-derived: 列、行数、单位数、出现次数; static-derived: 0x45dc5c OBS loader 与 0x407ec0 演员构造的字段读法、0x42bd50 EVEF 分支; negative-evidence: 命中／伤害公式无地形项; provisional: 阵营位覆盖的玩家可见后果 · status: record-only · functions: 0x407ec0, 0x409a60, 0x409be0, 0x42bd50, 0x43ea30, 0x442a90, 0x452197, 0x45dc5c · tools: hsltools/checks/field_coverage.py · updated: 2026-09-30
 
 _本文件由 `hsl generate field_coverage` 逐字节生成；改 [`field_coverage.py`](../../../tools/hsltools/checks/field_coverage.py) 的 `FIELD_NOTES`／`SUSPECTS`，不要手改这里。机读版 [field_coverage.json](../../../content/generated/hsl/development/field_coverage.json)。_
 
@@ -12,7 +12,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表 | 记录 | 字段 | consumed | passthrough | recorded | unconsumed | dead |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 90 | 0 | 0 | 3 | 9 |
+| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 91 | 0 | 0 | 2 | 9 |
 | [item](#item) ITEM.TXT | \[item] rows | 72 | 68 | 0 | 0 | 0 | 4 |
 | [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 14 | 0 | 0 | 0 | 0 |
 | [special](#special) SPECIAL.TXT | \[special] rows | 13 | 13 | 0 | 0 | 0 | 0 |
@@ -20,16 +20,16 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | [shapedef](#shapedef) SHAPEDEF.TXT | \[define] rows | 14 | 14 | 0 | 0 | 0 | 0 |
 | [evef_actor](#evef_actor) level .BIN EVEF 演员实例字 | defProcPlayer／defProcEnemy 记录 0x10..0x2C 与 0x50+4i | 26 | 20 | 0 | 0 | 0 | 6 |
 | [evef_object](#evef_object) level .BIN EVEF 非演员记录 | EVEF 记录 × 对象过程 | 5 | 4 | 0 | 0 | 0 | 1 |
-| [obj](#obj) OBJ-NNN.obs / global.obs \[Object] | \[Object] blocks | 40 | 17 | 11 | 0 | 3 | 9 |
+| [obj](#obj) OBJ-NNN.obs / global.obs \[Object] | \[Object] blocks | 40 | 18 | 11 | 0 | 2 | 9 |
 | [wrd](#wrd) levelNNN.wrd 地形 | WORL header + width×height u32 cells | 9 | 6 | 3 | 0 | 0 | 0 |
-| [actor_record](#actor_record) live actor record（0x1fc） | 201 × 0x1fc records (*0x4c1bc8) | 82 | 79 | 2 | 0 | 1 | 0 |
-| [defines](#defines) EXTRAS.H / ANIMAL.H / TYPE.H #define groups | #define groups by prefix | 17 | 13 | 1 | 0 | 3 | 0 |
+| [actor_record](#actor_record) live actor record（0x1fc） | 201 × 0x1fc records (*0x4c1bc8) | 82 | 80 | 2 | 0 | 0 | 0 |
+| [defines](#defines) EXTRAS.H / ANIMAL.H / TYPE.H #define groups | #define groups by prefix | 18 | 15 | 1 | 0 | 1 | 1 |
 | [story](#story) STORY opcode（ACTION.H act*） | ACTION.H tokens | 139 | 53 | 0 | 22 | 0 | 64 |
-| [winfail](#winfail) WINFAIL opcode | winfail tokens | 120 | 66 | 0 | 53 | 1 | 0 |
+| [winfail](#winfail) WINFAIL opcode | winfail tokens | 120 | 67 | 0 | 53 | 0 | 0 |
 | [town_event](#town_event) TOWNDEF te opcode | te tokens | 46 | 44 | 0 | 0 | 0 | 2 |
 | [animal](#animal) ANIMAL.H ani* opcode（演员程序 + 绝技特效脚本） | ani* opcodes | 36 | 33 | 0 | 0 | 0 | 3 |
 | [effects](#effects) EFFECTS.TXT eff* opcode（法术特效） | \[effect] blocks | 4 | 4 | 0 | 0 | 0 | 0 |
-| **合计** | 17 表 | 742 | 541 | 17 | 75 | 11 | 98 |
+| **合计** | 17 表 | 743 | 547 | 17 | 75 | 5 | 99 |
 
 ## 3. 嫌疑排序
 
@@ -42,17 +42,11 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表.字段 | 量 | 语义 |
 | --- | --- | --- |
-| `players.class` | rows_nondefault 66 | classHuman／classMonster…（+0x20 低字） |
-| `obj.obj_X2` | rows 10 | 模板 +0x18（特效 WAV／ObjectMove 参数） |
 | `players.sound_hit` | rows_nondefault 4 | 被击音效（4 行；记录 +0x10 lo 句柄） |
 | `players.sound_shoothit` | rows_nondefault 1 | 射击命中音效（1 行，+0x22） |
-| `obj.obj_Y1` | placed_actor_rows 1；rows 22 | 模板 +0x14；演员：≠0 → live +0x134（0x407ec0）；特效：WAV；ObjectMove：位移 |
-| `obj.obj_Y2` | rows 1 | 模板 +0x1c |
-| `winfail.actMEssage` | occurrences 1 | — |
-| `actor_record.install_code` | — | +0x84 安装时对象码 |
-| `defines.TYPE.H class*` | — | 种族／类别码 |
-| `defines.TYPE.H objattr*` | — | obj_Attribute 旗 |
-| `defines.TYPE.H other` | — | 其余 #define（gameBigMapLevel／gameTempResourceID／plane*…） |
+| `obj.obj_Y1` | placed_actor_rows 1；rows 22 | 模板 +0x14；演员：≠0 → live +0x134 低半字＝伴随对象码（0x407ec0）；特效：WAV；ObjectMove engRANGE：框上边 |
+| `obj.obj_Y2` | rows 1 | 模板 +0x1c（ObjectMove engRANGE：框下边） |
+| `defines.TYPE.H other` | — | 其余 13 条 #define（gameBigMapLevel／gameTempResourceID／gameover*／bmpm*／effSMOKE） |
 
 ## 4. 静态读法（本包新增，static-derived）
 
@@ -81,7 +75,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `sound_attack` | consumed | `tools/hsltools/assets/actor_audio.py:build` | 非默认行 66；声明行 66 | 攻击音效 | — |
 | `sound_miss` | consumed | `tools/hsltools/assets/actor_audio.py:build` | 非默认行 64；声明行 64 | 未命中音效 | — |
 | `job` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 66；声明行 66 | 职业码 → 0x448840 数值分支 | — |
-| `class` | unconsumed | UNCONSUMED | 非默认行 66；声明行 66 | classHuman／classMonster…（+0x20 低字） | 原版只见搬运（0x4348f0 非零复制、存档 +0x20）；全 .text 839 处 \[reg+0x20] 读后 10 条内无 class 常量比较（有界扫描）；重制不读 |
+| `class` | consumed | `tools/hsltools/assets/panel_assets.py:definitions` | 非默认行 66；声明行 66 | 种族（+0x20 低字，TYPE.H class* → RESOURCE 101–106／243／244） | 原版只作显示：0x42b3b3 GameClear 状态表「種族」、0x4351a0 身份栏文字（0x4477b0）、0x4349b3 非零复制；有界扫描内未见 class 常量比较（839 处 \[reg+0x20] 读取后 10 条指令，negative-evidence），无规则效果；重制 panel_assets 写 race，BattleVitals 状态面板与 GameClear 表显示之 |
 | `status` | dead | — | 非默认行 0；声明行 15 | PLAYERS 初始状态位（15 行全 0） | 原 live +0x24 由回合 tick 改写；数据全 0 |
 | `mode` | consumed | `tools/hsltools/levels/battle.py:install_player_mode` | 非默认行 66；声明行 66 | pmPlayer／pmEnemy／pmNPCPlayer 阵营位 | 模板值经 OBJ obj_Data9 互换与 obj_X1 覆盖后写单位 player_mode（见 obj 表） |
 | `str` | consumed | `game/sim/CoreCombatRules.gd:hit_chance` | 非默认行 66；声明行 66 | 力量（伤害 str 项） | — |
@@ -156,7 +150,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `magic_attack_power` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 22；声明行 23 | 魔攻加值 | — |
 | `move_fly` | consumed | `game/sim/ActorTraversalRules.gd:mode` | 非默认行 12；声明行 12 | 飞行（+0xa0 bit 0x1） | — |
 | `attack_back` | consumed | `game/sim/CoreCombatRules.gd:attack_back_triggered` | 非默认行 2；声明行 2 | 反击率 | — |
-| `sound_hit` | unconsumed | UNCONSUMED | 非默认行 4；声明行 4 | 被击音效（4 行；记录 +0x10 lo 句柄） | 演员音频导入只取 dead／walk／attack／miss |
+| `sound_hit` | unconsumed | UNCONSUMED | 非默认行 4；声明行 4 | 被击音效（4 行；记录 +0x10 lo 句柄） | 原版攻击结算对象 0x4038a0（0x406d20 每次出手创建）命中分支 0x4040da..0x40414a：攻方 sound_shoothit 优先，否则目标（对象 +0xac，0x403d50 写入）的 sound_hit（0x409790），都无才按武器图标（爪／刺回退 405）；重制只放武器音（缺口 normal-attack-hit-sound-chain，docs/evidence_packets/static_reverse/original_unconsumed_fields.md） |
 | `dead_message` | consumed | `tools/hsltools/data/combat_aftermath.py:build` | 非默认行 12；声明行 12 | 死亡台词 id 对 | — |
 | `no_poison` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 16；声明行 16 | 免毒（bit 0x40） | — |
 | `magic_point` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 22；声明行 26 | MP 加值 | — |
@@ -170,7 +164,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `sound_walkwater` | consumed | `tools/hsltools/assets/interface_audio.py:walk_water_rows` | 非默认行 2；声明行 2 | 水中行走音效（2 行，均同 sound_walk） | — |
 | `no_paralyze` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免麻痹（bit 0x800） | — |
 | `no_disablemagic` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免封魔（bit 0x1000） | — |
-| `sound_shoothit` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | — |
+| `sound_shoothit` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | 紅龍 051 BOMB0028；受击音链第一级，见 sound_hit |
 | `no_weaken` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 6；声明行 6 | 免虚弱（bit 0x2000） | — |
 | `no_attack` | consumed | `game/sim/AINavigationRules.gd:acquire` | 非默认行 3；声明行 3 | 不攻击（bit 0x2） | — |
 | `no_shadow` | dead | — | 非默认行 1；声明行 1 | 不画影子（bit 0x100，1 行） | 全 EXE 找不到读 0x100 的地方；重制不画单位影子，无可见差别 |
@@ -401,9 +395,9 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `obj_X` | dead | — | 行 148 | 地图管理员 obj_X（148 行） | 0x45dc5c 不读 obj_X／obj_Y（只有 obj_X1..Y2） |
 | `obj_Y` | dead | — | 行 148 | 地图管理员 obj_Y（148 行） | 同上 |
 | `obj_X1` | consumed | `tools/hsltools/levels/battle.py:install_player_mode` | 行 99；已放置演员 102 | 模板 +0x10；演员：≠0 → live +0x28 阵营模式覆盖（pmNPC／pmPlayerEnemy／pmEnemy／pmPlayer）（0x407ec0）；特效对象：WAV | 102 个已放置敌军声明；81 个阵营与模板不同：pmNPC 39（7 关 21、21 关 13、57／531／532／533），pmPlayerEnemy 36（6 关 12、9 关 14、34 关 3、65 关 7 名村民），pmPlayer 6（900 关）；21 个 pmEnemy→pmEnemy 无变化。R22：导入器写单位 `player_mode`（放置与脚本插入同路），运行时 ActorRoleRules.side_mask 按位判敌我；特效对象的 WAV 值只随 object_data_fields 记录 |
-| `obj_Y1` | unconsumed | UNCONSUMED | 行 22；已放置演员 1 | 模板 +0x14；演员：≠0 → live +0x134（0x407ec0）；特效：WAV；ObjectMove：位移 | 1 个演员（80 关 Enemy068 = obj_Story_Level_Enemy68Star）未消费；13 个法术效果对象的 WAV 由 special_effect_scripts.py:program_sounds 按 effProc 相位接入（R5-L2） |
-| `obj_X2` | unconsumed | UNCONSUMED | 行 10 | 模板 +0x18（特效 WAV／ObjectMove 参数） | 10 行，均非演员；其中 7 个法术效果对象的 WAV 由 special_effect_scripts.py:program_sounds 接入（R5-L2），余为 ObjectMove 参数 |
-| `obj_Y2` | unconsumed | UNCONSUMED | 行 1 | 模板 +0x1c | 1 行 |
+| `obj_Y1` | unconsumed | UNCONSUMED | 行 22；已放置演员 1 | 模板 +0x14；演员：≠0 → live +0x134 低半字＝伴随对象码（0x407ec0）；特效：WAV；ObjectMove engRANGE：框上边 | 22 行＝20 个效果对象 WAV（法术引用的 13 个由 special_effect_scripts.py:program_sounds 按 effProc 相位接入，R5-L2）＋逃出克萊恩城（LEVEL053）繩子框上边 464（重制按插入线裁切，同值）＋1 个演员：禁忌之魂・墳場地下（LEVEL080）怨念集合體 068 = 90 号 LevelUp_Star，0x43def0 每 20 tick（第 2 参非零时 8）经 0x415c10 在身边约 ±0x30×±0x10 随机抛 4 颗，重制未接（缺口 actor-companion-effect-object，docs/evidence_packets/static_reverse/original_unconsumed_fields.md） |
+| `obj_X2` | consumed | `tools/hsltools/data/special_effect_scripts.py:program_sounds` | 行 10 | 模板 +0x18（效果对象第二 WAV，0x415d90 放一次；ObjectMove engRANGE：框右边） | 10 行均非演员：9 个效果对象 WAV，法术引用的 7 个由 program_sounds 接入（R5-L2），余 2 个无法术引用、从不生成；逃出克萊恩城（LEVEL053）繩子框右边 10000（屏外，无可见效果） |
+| `obj_Y2` | unconsumed | UNCONSUMED | 行 1 | 模板 +0x1c（ObjectMove engRANGE：框下边） | 1 行＝逃出克萊恩城（LEVEL053）繩子 800；0x4051d0 创建时 obj_Mode 带 0x1000000 才保留 +0x10..+0x1c（0x4052f1..0x4052fa）；上边 464 与重制插入线同值，下边 800 是否裁到图未核（provisional，docs/evidence_packets/static_reverse/original_unconsumed_fields.md） |
 | `obj_ZoomX` | passthrough | `tools/hsltools/levels/seed.py:_placements` | 行 24 | 模板 +0x20 缩放 | 进 object_data_fields |
 | `obj_ZoomY` | passthrough | `tools/hsltools/levels/seed.py:_placements` | 行 24 | 模板 +0x24 缩放 | 进 object_data_fields |
 | `obj_Data` | passthrough | `tools/hsltools/levels/seed.py:_placements` | 行 44 | 模板 +0x28 通用字 | 进 object_data_fields |
@@ -478,7 +472,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `cap_dex` | consumed | `tools/hsltools/model/jobs.py:calculate` | 偏移 0x78 | +0x78 | — |
 | `cap_mind` | consumed | `tools/hsltools/model/jobs.py:calculate` | 偏移 0x7c | +0x7c | — |
 | `cap_con` | consumed | `tools/hsltools/model/jobs.py:calculate` | 偏移 0x80 | +0x80 | — |
-| `install_code` | unconsumed | UNCONSUMED | 偏移 0x84 | +0x84 安装时对象码 | 运行时无对应键 |
+| `install_code` | consumed | `game/sim/ScriptActorCreationRules.gd:_apply_status` | 偏移 0x84 | +0x84 脚本寻址 id | 原版 0x451155（actChangePrevInsertObjectID）写、0x44fa80 返回、0x44fad0 按它找对象；0x407cc0 另在 0x407d94 按对象 +0xa2 经 11 项跳表 0x407e8c 给新建演员写默认码 0..8（末两项与首两项同目标）；改号一路由 _apply_status 记进 actor_bindings、按 SID token 寻址，效果等价；默认码 0..8 在重制里的对应待核 |
 | `exp` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x88 | +0x88 | — |
 | `exp_threshold` | consumed | `game/sim/ProgressionRules.gd:exp_to_next` | 偏移 0x8c | +0x8c 升级阈值 | — |
 | `kill_exp` | consumed | `tools/hsltools/data/original_save_members.py:synthesize` | 偏移 0x90 | +0x90 | — |
@@ -552,13 +546,14 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `TYPE.H magicFun_*` | consumed | `game/sim/SkillTargetRules.gd:function_mask` | define 20 | 功能位 | — |
 | `TYPE.H pm*` | consumed | `game/sim/WinfailActions.gd:_player_mode_arg` | define 9 | 阵营模式常量 | — |
 | `TYPE.H job*` | consumed | `tools/hsltools/model/jobs.py:source_profile` | define 23 | 职业码 | — |
-| `TYPE.H class*` | unconsumed | UNCONSUMED | define 8 | 种族／类别码 | 见 PLAYERS.class |
+| `TYPE.H class*` | consumed | `tools/hsltools/assets/panel_assets.py:definitions` | define 8 | 种族码 | 见 PLAYERS.class：只作显示 |
 | `TYPE.H AI_*／AIF_*` | consumed | `game/sim/AIDecisionRules.gd:select_target` | define 13 | find_type／find_flag 常量 | — |
 | `TYPE.H itemType*／itemIcon*` | consumed | `tools/hsltools/data/equipment.py:build` | define 20 | 物品类型与图标 | — |
 | `TYPE.H bm*／gameBM*` | consumed | `game/sim/TownEventRules.gd:_world_bm_set_mode` | define 3 | 大地图点／线模式 | — |
 | `TYPE.H eng*` | consumed | `tools/hsltools/levels/map_objects.py:build` | define 0 | 显示模式（engADDCOLOR…） | — |
-| `TYPE.H objattr*` | unconsumed | UNCONSUMED | define 0 | obj_Attribute 旗 | 见 obj.obj_Attribute |
-| `TYPE.H other` | unconsumed | UNCONSUMED | define 127 | 其余 #define（gameBigMapLevel／gameTempResourceID／plane*…） | 按需消费，未逐一登记 |
+| `TYPE.H effProc*` | consumed | `tools/hsltools/probes/effect_motion.py:table_defines` | define 114 | 效果对象程序码（obj_Data9，跳表 0x4231b0） | 经探针 effect_motion.table_defines 按名字解出程序号（PROCESS.DEF 优先、TYPE.H 同名被遮），EffectObjectMotion 放记录 |
+| `TYPE.H objattr*` | dead | — | define 0 | obj_Attribute 旗 | TYPE.H 无 objattr 定义（0 条）；objattr* 在 PROCESS.DEF，见 obj.obj_Attribute |
+| `TYPE.H other` | unconsumed | UNCONSUMED | define 13 | 其余 13 条 #define（gameBigMapLevel／gameTempResourceID／gameover*／bmpm*／effSMOKE） | 按需消费，未逐一登记 |
 
 ### story
 
@@ -817,7 +812,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `actInsertObjectRandomPos` | consumed | `game/sim/WinfailActions.gd:_act_insert_object` | 出现 1 | — | — |
 | `actInsertStoryObjectWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actInsertStoryObjectWaitPos` | consumed | `game/sim/WinfailActions.gd:_act_insert_story_object_wait_pos` | 出现 1 | — | — |
-| `actMEssage` | unconsumed | UNCONSUMED | 出现 1 | — | — |
+| `actMEssage` | consumed | `game/sim/WinfailCompiler.gd:canonical_action` | 出现 1 | — | — |
 | `actMoveDispWait` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actPlayLevelMusic` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
 | `actPlayMovie` | recorded | `game/sim/WinfailCompiler.gd:PRESENTATION_ACTIONS` | 出现 1 | — | — |
