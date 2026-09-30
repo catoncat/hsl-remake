@@ -23,6 +23,9 @@ ROOT = Path('content/imported/hsl/chapter01')
 OUTPUT = ROOT / 'actor_audio.json'
 CODES = ('1', '21', '23', '24', '25', '26', '39', '2', '4', '6', '28', '36', '3', '61', '62')
 EVENTS = ('walk', 'attack', 'miss', 'dead')
+# Exported only on rows that declare them: the ordinary hit's impact chain (0x4040da..0x40414a) plays the
+# attacker's sound_shoothit (+0x22), else the target's sound_hit (+0x10, 0x409790), else the weapon sound.
+OPTIONAL_EVENTS = ('hit', 'shoothit')
 
 
 def bindings(raw):
@@ -32,6 +35,7 @@ def bindings(raw):
         code = fields.get('code')
         if code in CODES:
             result[code] = {event: fields['sound_' + event].replace('\\', '/').lower() for event in EVENTS}
+            result[code].update({event: fields['sound_' + event].replace('\\', '/').lower() for event in OPTIONAL_EVENTS if fields.get('sound_' + event)})
     if set(result) != set(CODES):
         raise ValueError('missing required character audio definitions')
     return result

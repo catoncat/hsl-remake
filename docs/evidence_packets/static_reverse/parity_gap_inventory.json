@@ -3,25 +3,25 @@
   "updated": "2026-09-30",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 87,
-    "sources": 473,
+    "items": 86,
+    "sources": 472,
     "sources_by_kind": {
       "provenance": 189,
-      "sentence": 84,
+      "sentence": 83,
       "scope": 102,
       "matrix": 85,
       "video": 13
     },
     "layout_timing_modules": 49,
     "items_by_original_status": {
-      "read_complete": 30,
+      "read_complete": 29,
       "read_partial": 39,
       "unread": 1,
       "no_original_code": 17
     },
     "items_by_visibility": {
       "every_battle": 15,
-      "some_levels": 33,
+      "some_levels": 32,
       "rare": 34,
       "invisible": 5
     },
@@ -41,7 +41,7 @@
       "重制新增（原版没有）": 16,
       "镜头": 1,
       "面板与界面": 6,
-      "音频": 3,
+      "音频": 2,
       "飘字与数字": 2
     },
     "in_progress": 0,
@@ -60,7 +60,6 @@
     "highlight-colours",
     "level-specific-placement",
     "map-object-flash",
-    "normal-attack-hit-sound-chain",
     "npc-level-policy",
     "script-walk-speed",
     "cast-strip-missing",
@@ -68,7 +67,8 @@
     "bitmap-font",
     "move-path-overlay",
     "panel-captions",
-    "status-page-extras"
+    "status-page-extras",
+    "wait-cue"
   ],
   "items": [
     {
@@ -307,28 +307,6 @@
       "category": "地图与物件",
       "sources": [
         "scope:docs/evidence_packets/static_reverse/original_map_object_flash.md|provisional|层级表逐项值与 16 位通道舍入未逐像素对照"
-      ]
-    },
-    {
-      "id": "normal-attack-hit-sound-chain",
-      "difference": "普攻受击音只按攻方武器图标放；原版先放攻方 PLAYERS sound_shoothit（紅龍 051 BOMB0028），否则放受击方 sound_hit（咕嚕 008／殭屍 034 HIT00017、門 100／船殼 101 HIT00015），都没有才按武器图标，爪／刺（图标 6／7，15 行 PLAYERS 的武器，含队员 咕嚕）回退 405 sfxHitSword；重制爪／刺命中无撞击声；队员咕嚕 008 在 106 场出现，多数战斗可遇",
-      "original": "攻击结算对象 0x4038a0（每次出手由 0x406d20 创建，过程码 0x9a，过程表项 0x477c88）相位 1 命中分支 0x4040da..0x40414a：[0x4c13f8]（0x406dc9 写攻方 +0x22）→ 目标 sound_hit：对象 +0xac 创建时写攻方（第 1 参，0x406dbd），0x403d50 改成 0x4104d0(1) 取到的目标，0x4040e9 取 [edi+0xac] 调 0x409790，按 +0xa4 索引记录表 [0x4c1bc8] 读 +0x10 → [0x4c6f60] 图标跳表 0x404f6c（0..5 → 404..409，其它 → 405）",
-      "original_evidence": [
-        "docs/evidence_packets/static_reverse/original_unconsumed_fields.md",
-        "docs/evidence_packets/static_reverse/original_effect_object_sounds.md"
-      ],
-      "remake": "BattlePresentation._play_weapon_hit_sound 只查 cue_manifest weapon_hit_sounds；interface_audio.weapon_hits 把 itemIconClaw／itemIconSting 记空串；actor_audio 只导入 dead／walk／attack／miss",
-      "remake_code": [
-        "game/battle/scene/BattlePresentation.gd:_play_weapon_hit_sound",
-        "tools/hsltools/assets/interface_audio.py:weapon_hits",
-        "tools/hsltools/assets/actor_audio.py"
-      ],
-      "original_status": "read_complete",
-      "visibility": "some_levels",
-      "effort": "S",
-      "category": "音频",
-      "sources": [
-        "sentence:docs/evidence_packets/static_reverse/original_unconsumed_fields.md#5fea50cd86"
       ]
     },
     {

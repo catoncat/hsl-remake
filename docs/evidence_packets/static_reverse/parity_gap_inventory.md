@@ -10,11 +10,11 @@
 
 ## 总数
 
-共 **87** 条差异（其中 0 条本轮有 lane 进行中），来自 473 个来源条目：provenance 189、sentence 84、scope 102、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 49 个全部归类。另有 61 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
+共 **86** 条差异（其中 0 条本轮有 lane 进行中），来自 472 个来源条目：provenance 189、sentence 83、scope 102、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 49 个全部归类。另有 61 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
-| 已读完只差照做 | 30 |
+| 已读完只差照做 | 29 |
 | 读了一部分 | 39 |
 | 未读 | 1 |
 | 原版无对应代码 | 17 |
@@ -22,7 +22,7 @@
 | 可见度 | 条数 |
 | --- | --- |
 | 每场都看得到 | 15 |
-| 部分关卡 | 33 |
+| 部分关卡 | 32 |
 | 少见 | 34 |
 | 看不见 | 5 |
 
@@ -39,9 +39,9 @@
 | 标题与过场 | 4 |
 | 光标与字体 | 3 |
 | 原版调度与随机流 | 3 |
-| 音频 | 3 |
 | AI 行为 | 2 |
 | 对白 | 2 |
+| 音频 | 2 |
 | 飘字与数字 | 2 |
 | 存档与流程 | 1 |
 | 镜头 | 1 |
@@ -63,15 +63,15 @@
 | 9 | 高亮已照原版（阵营色、脉动、engGLASS＋10/16 加色画法；说话人、行动菜单与技能页的行动者（0x443990 在状态分派前置位，技能页滑出与取消回环也亮）、选攻击、魔法、绝技目标与选用药／交付格时全场亮（技能页滑出期间不亮）、选格与绝技选目标里左键误点一次即熄到该态结束（绝技此后只亮光标处效果覆盖里的受者），选移动格不亮；无 PlayLoop 单位的剧情演员按构造时的阵营字取色）；剩选魔法／绝技目标、用药／交付选格与选移动格只有静态读法，未录原版帧 （`highlight-colours`） | 已读完只差照做 | 部分关卡 | S | 地图人物演出 | — |
 | 10 | 已照原版：终点四邻全是 0xff 的地面走位者开局落链停格，沙羅尼亞近郊（LEVEL034）037_2 (34,17)、禁忌之魂・墳場地下（LEVEL080）嚎 (5,19)；剧情插入的替代抽数已排在 NPC 出生之前，出生张延迟 rand(24) 已抽（玩家在安装当时、NPC 在出生时先于携带）；剩开局快照报告待重生成、开局生成器替代不抽随机（等距取行主序靠后格） （`level-specific-placement`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
 | 11 | 地图物件闪烁已照原版逐 tick 步进与加色＋层级画法，只剩层级表逐项值与通道舍入未逐像素对照 （`map-object-flash`） | 已读完只差照做 | 部分关卡 | S | 地图与物件 | — |
-| 12 | 普攻受击音只按攻方武器图标放；原版先放攻方 PLAYERS sound_shoothit（紅龍 051 BOMB0028），否则放受击方 sound_hit（咕嚕 008／殭屍 034 HIT00017、門 100／船殼 101 HIT00015），都没有才按武器图标，爪／刺（图标 6／7，15 行 PLAYERS 的武器，含队员 咕嚕）回退 405 sfxHitSword；重制爪／刺命中无撞击声；队员咕嚕 008 在 106 场出现，多数战斗可遇 （`normal-attack-hit-sound-chain`） | 已读完只差照做 | 部分关卡 | S | 音频 | — |
-| 13 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；出生张延迟 rand(24) 0x407dba 已照原版（BIRTHDELAY：玩家与 NPC 出生都抽、排在携带之前，开场玩家先于 NPC）；剩余＝开场前后其它全局抽取次数与原版不同，调级所在的全局流仍不同步 （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
-| 14 | actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；0x1800 到位后仍置位、只由 actRestoreShape（0x450329）清，其间后续走位同样保形，重制照做；Wait 期间 VM 不执行别的 token，无插播；剧情走步声按相对帧 0／3 （`script-walk-speed`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
-| 15 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
-| 16 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；持物音效 399／400／2563 照原版放（lane SHOPSOUND）；剩：脚本购物（autoplay）一步入首空格、不经手持；持物时右键／Esc 原版不动作（0x428dc7），重制放回所显示成员首空格（满包时散件留在手上）；商店货表与倉庫页列表（0x414c00 同一滚动条）原版读 ↑↓ 与 PgUp／PgDn（0x445f00 存 0x800／0x1000／4／8，0x445860 读键），重制未接键 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
-| 17 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。对白名字行照原版写「名字:」半角冒号（DIALOGCOLON）；字库表调用点都已标明去向（标题版本号、通关队员状态表、选择窗、WINDOW10 抗性行；截图存盘与坐标调试字不是界面）；FONT.15 行距与原版调用者一致（多行只有描述框，步进 16）。剩：无已知玩家可见差异（抗性行 0x438a92 路径未拍帧、大地图地点名显示条件 0x427df0 开头未读） （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
-| 18 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 19 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
-| 20 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良）；四项基础属性按 0x434bf0 着色（到上限红、距上限 50 内黄，SID 7 咕嚕不黄）、衰弱时 base 后接 0x1a 箭头＋实时值，已照原版（lane ATTRCOLOR，升級窗与城镇狀態页同一函数） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 12 | NPC 开战调级：出生调级 0x40e870 已照原版（R7-NPC 查明触发条件、录屏 023_2 的 L3 41/41 在分布内）；第 6 关 actAdjustAllPlayerLevel 两段式已复刻（LV6：EVEF 单位按均级 1 出生、剧情插入者按已登记玩家的均级出生，之后在场 NPC 全员再重调一次）；出生随机携带已照原版（RNGC：0x407c86 抽全局流、排在调级之前，同状态逐项一致）；出生张延迟 rand(24) 0x407dba 已照原版（BIRTHDELAY：玩家与 NPC 出生都抽、排在携带之前，开场玩家先于 NPC）；剩余＝开场前后其它全局抽取次数与原版不同，调级所在的全局流仍不同步 （`npc-level-policy`） | 已读完只差照做 | 部分关卡 | S | 战斗规则 | — |
+| 13 | actMoveDispWait 已照原版走同一寻路、保形无声、按速度换帧；0x1800 到位后仍置位、只由 actRestoreShape（0x450329）清，其间后续走位同样保形，重制照做；Wait 期间 VM 不执行别的 token，无插播；剧情走步声按相对帧 0／3 （`script-walk-speed`） | 已读完只差照做 | 部分关卡 | S | 剧情走位 | — |
+| 14 | 没导入施法条带（m_shape）的法术施法者已照原版无引导路径演：8 call 压暗后第 9 call 摆 use_magic 姿势、撒 28＋20 颗 Cast_Star 聚拢星、放 403，效果等姿势放完才开演；剩星点高度 h 按重制站立帧高＋2、use_magic 为站立帧的 060／068 不等姿势 （`cast-strip-missing`） | 已读完只差照做 | 部分关卡 | M | 特写与施法演出 | — |
+| 15 | 商店买入已照原版进手持、点背包格放下（首空格，满包互换），不弹「買下」消息；手上任何散件点货表可卖（lane SHOPHAND，原版买下／放下两帧）；裝備／倉庫／丟棄 页照原版（lane EQUIPSCREEN，帧 18–23），无「離開」钮（lane TOWNMAP）；持物音效 399／400／2563 照原版放（lane SHOPSOUND）；剩：脚本购物（autoplay）一步入首空格、不经手持；持物时右键／Esc 原版不动作（0x428dc7），重制放回所显示成员首空格（满包时散件留在手上）；商店货表与倉庫页列表（0x414c00 同一滚动条）原版读 ↑↓ 与 PgUp／PgDn（0x445f00 存 0x800／0x1000／4／8，0x445860 读键），重制未接键 （`shop-hand-cursor`） | 已读完只差照做 | 部分关卡 | M | 城镇与大地图 | — |
+| 16 | 界面文字已换原版 FONT.24／FONT.15＋ASCFONT 点阵字（lane FONT，OPT-FONT 原版值）。各窗用哪张字库已按原版 0x460884 全部 70 个调用点的字库指针对齐（BITMAPFONT）：对白、胜负条件面板、施法名字幕、升级窗与资料页正文、得物窗／商店行 FONT.24，说明字、描述框、按钮标签、条旁 cur/max、大地图地点名 FONT.15；字格顶在原版传入的 y、阴影 (+1,+1) 0x8430。对白名字行照原版写「名字:」半角冒号（DIALOGCOLON）；字库表调用点都已标明去向（标题版本号、通关队员状态表、选择窗、WINDOW10 抗性行；截图存盘与坐标调试字不是界面）；FONT.15 行距与原版调用者一致（多行只有描述框，步进 16）。剩：无已知玩家可见差异（抗性行 0x438a92 路径未拍帧、大地图地点名显示条件 0x427df0 开头未读） （`bitmap-font`） | 读了一部分 | 每场都看得到 | S | 光标与字体 | 照原版（lane FONT 接入；系统字留作 OPT-FONT 改良值） |
+| 17 | 原版预设已照原版：移动选格只画范围与选格角括号；OPT-GUIDE=提示 时显示路径线、「移動 3 / 5」费用栏、「可通過，不能停留」「飛行」「無法到達」提示与 AI 走位路径线（重制改良） （`move-path-overlay`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 18 | 各面板重制写的说明文字、提示（tooltip）、确认问句、提示行：原版值不显示，OPT-GUIDE=提示 时显示；剩回忆录格的存档标签两条路径都有 （`panel-captions`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 19 | 原版预设已照原版：状态页没有永久加值行、属性／抗性悬停说明与按钮条，点他人只在移动选格态开页、未交手单位不开页；OPT-INFO=公開 时显示加值行与说明、点谁都开，OPT-GUIDE=提示 时显示「保存／讀取／待領物品／返回」按钮条（重制改良）；四项基础属性按 0x434bf0 着色（到上限红、距上限 50 内黄，SID 7 咕嚕不黄）、衰弱时 base 后接 0x1a 箭头＋实时值，已照原版（lane ATTRCOLOR，升級窗与城镇狀態页同一函数） （`status-page-extras`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
+| 20 | 原版预设已照原版：AI 待机／守候／麻痺不显示提示、不停顿；OPT-GUIDE=提示 时显示「待機」「守候 · 尚餘N次」「麻痺 · 無法行動」并停 0.55 s（重制改良） （`wait-cue`） | 原版无对应代码 | 每场都看得到 | S | 重制新增（原版没有） | — |
 
 ## 全量（按类）
 
@@ -206,14 +206,6 @@
 | `dispatcher-scheduling` | 原版全局 dispatcher、对象调度顺序与 tick 墙钟没有等价复刻：只影响同一 tick 的先后与部分计时 | 单个 handler 多已读；整个 VM／对象槽生命周期未执行<br>[original_mechanics_audit.md](../../../docs/evidence_packets/static_reverse/original_mechanics_audit.md)、[tick_mapping.md](../../../docs/evidence_packets/runtime_observations/original_tick_rate/tick_mapping.md) | PlayLoop 单一事务顺序<br>[BattlePlayLoop.gd](../../../game/sim/loop/BattlePlayLoop.gd) | 读了一部分 | 看不见 | L | sentence 4、scope 3、matrix 8 |
 | `rng-streams` | 两条流的生成器都已照原版：伤害流（R7-RNGB，随单战存档与战役承接保存），以及全局流（R7-RNGA：时钟播种、不入存档、不随承接）。全局流上已有 AI 决策、NPC 开场与新援调级、脚本建角、开局随机槽、opcode 86／99 随机位置，以及（RNGC）击杀掉落 0x44f5d3、出生随机携带 0x407c86（排在出生调级之前）、（BIRTHDELAY）出生张延迟 rand(24) 0x407dba（玩家与 NPC 都抽、排在携带之前）、opcode 121 每个对象三抽；opcode 107／108 照原版不抽随机数，放在槽位加位移处。掉落与携带同状态逐项对拍：53 关携带 32 种子、51 关掉落 32 种子、51 关自然击杀 1 次、51 关出生携带 7 次，接受项与抽后全局字全部一致。玩家可见后果：全局流不入存档，读档后掉落与携带重掷。剩余两项：① AI 决策链的抽取次数与分支未等价，51 关第 1 回合 11 个 NPC 行动逐次对拍 0/11 一致（9 个缺优先级／类别链抽取，1 个分支不同，1 个注入缺口；决策 5/11 相同）；② 遗言 raw 抽取、秘密人物额外抽取、大地图／城镇 randi()、opcode 106 时序未接入。所以同一时钟种子下 AI 选择、出生等级与携带的序列仍与原版不同 | 全局流 0x458c10／0x458c80（状态 0x4795d4／0x4795d8，标志 0x4c1e8c 为 0 时按时钟懒播种 [t, t ^ 0xe54a231c]，不入存档）：AI 决策 0x40bd4f／0x440db5／0x40d500／0x40c138／0x40c061／0x40c58d／0x41385d 等、掉落 0x44f580（rand(100) 0x44f5d3）、出生 0x407cc0 内依次张延迟 rand(24) 0x407dba、pmEnemy 携带 0x407c40（rand(101) 0x407c86）、调级 0x40e870（模拟器实测）、脚本 0x451787／0x451ecf／0x451d0f 直接调用、opcode 121 0x450f99（0x450fe6／0x451012／0x451075），opcode 107 0x450f2c／108 0x451e64 不抽；伤害流 0x42c720／0x42c780 把自己的两个字换进同一生成器，已逐值复刻<br>[original_damage_random.md](../../../docs/evidence_packets/static_reverse/original_damage_random.md)、[original_enemy_turn.md](../../../docs/evidence_packets/static_reverse/original_enemy_turn.md)、[original_ai_navigation.md](../../../docs/evidence_packets/static_reverse/original_ai_navigation.md)、[battle_reward_inputs.md](../../../docs/evidence_packets/static_reverse/battle_reward_inputs.md)、[original_random_position.md](../../../docs/evidence_packets/static_reverse/original_random_position.md) | 伤害流 DamageRandomStream（loop 键 damage_rng，存档）；全局流 GlobalRandomStream（loop 键 global_rng，进程内单一实例，读档保留活字；无窗口时 HSL_RNG_SEED 代替时钟）；BattleRewardRules.carry／drops 与 WinfailActions 的 opcode 121 抽 global_rng，旧的 reward_rng 与 random_position_rng 已删除；逐次对拍用 tests/diagnostics/compare_ai_global_draws.gd<br>[GlobalRandomStream.gd](../../../game/sim/GlobalRandomStream.gd)、[BattleLoopAI.gd](../../../game/sim/loop/BattleLoopAI.gd)、[BattleLoopInit.gd](../../../game/sim/loop/BattleLoopInit.gd)、[WinfailActions.gd](../../../game/sim/WinfailActions.gd)、[BattleRewardRules.gd](../../../game/sim/BattleRewardRules.gd)、[InitialRosterGrowthRules.gd](../../../game/sim/InitialRosterGrowthRules.gd) | 读了一部分 | 看不见 | L | provenance 3、scope 3、matrix 17 |
 
-### 音频（3）
-
-| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `normal-attack-hit-sound-chain` | 普攻受击音只按攻方武器图标放；原版先放攻方 PLAYERS sound_shoothit（紅龍 051 BOMB0028），否则放受击方 sound_hit（咕嚕 008／殭屍 034 HIT00017、門 100／船殼 101 HIT00015），都没有才按武器图标，爪／刺（图标 6／7，15 行 PLAYERS 的武器，含队员 咕嚕）回退 405 sfxHitSword；重制爪／刺命中无撞击声；队员咕嚕 008 在 106 场出现，多数战斗可遇 | 攻击结算对象 0x4038a0（每次出手由 0x406d20 创建，过程码 0x9a，过程表项 0x477c88）相位 1 命中分支 0x4040da..0x40414a：[0x4c13f8]（0x406dc9 写攻方 +0x22）→ 目标 sound_hit：对象 +0xac 创建时写攻方（第 1 参，0x406dbd），0x403d50 改成 0x4104d0(1) 取到的目标，0x4040e9 取 [edi+0xac] 调 0x409790，按 +0xa4 索引记录表 [0x4c1bc8] 读 +0x10 → [0x4c6f60] 图标跳表 0x404f6c（0..5 → 404..409，其它 → 405）<br>[original_unconsumed_fields.md](../../../docs/evidence_packets/static_reverse/original_unconsumed_fields.md)、[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | BattlePresentation._play_weapon_hit_sound 只查 cue_manifest weapon_hit_sounds；interface_audio.weapon_hits 把 itemIconClaw／itemIconSting 记空串；actor_audio 只导入 dead／walk／attack／miss<br>[BattlePresentation.gd](../../../game/battle/scene/BattlePresentation.gd) `_play_weapon_hit_sound`、[interface_audio.py](../../../tools/hsltools/assets/interface_audio.py) `weapon_hits`、[actor_audio.py](../../../tools/hsltools/assets/actor_audio.py) | 已读完只差照做 | 部分关卡 | S | sentence 1 |
-| `effect-sound-timing` | 特效声音已按原生执行记录排程（角度环／龙卷等图案插入也按记录，無想冥殺 的环声落在片段内）、混音照原版 9 通道满则丢新声；剩无轨迹对象仍按静态表，9 个声部只给特效播放器用、不与其它声音共用，多段绝技里命中才放的对象声（objmPlayHitSound）已按读字那一 tick 已结算的段放（0x45f5f7 守方先于对象） | 对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer._insert_sounds 的无轨迹后备<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 已读完只差照做 | 少见 | S | provenance 1、sentence 3、scope 2 |
-| `settings-volume-mixer` | 音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）与 18 档滑杆（档×15 封顶 255；点槽照 defProcScrollBar 0x445860 水平分支：点滑块旁朝点击方向走一档、点滑块抓住拖动、松手取整，音效音量松手时放 RESOURCE 398 试听）；場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain，剧情中途切换即藏即现、关着照走） | Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者：mapobjCloud 0x43cecd、mapobjWaterFall 0x43d13e、mapobjBuildBottom（及类型越界默认分支）0x43d758、defProcFireSmoke 0x43c337（过程 0x43c260）与 defProcDropRain 0x43c63f（过程 0x43c4a0）关时 +0x30 = 0xffff 不画但照走，云／瀑布／建筑底不画不走；音效音量 0x4245c0 → [0x477c20]＝档×15 封顶 255 → 0x458220 waveOutSetVolume(v×0x01000100)，放声门槛 0x42c180、影片声 0x42df6f；音樂音量 0x424630 → [0x477c24] → 0x459e60 → 0x459d70 SetVolume((⌊60v/255⌋−60)×40)<br>[original_music.md](../../../docs/evidence_packets/static_reverse/original_music.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_map_object_drift.md](../../../docs/evidence_packets/static_reverse/original_map_object_drift.md) | GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；音量存 档／17、字节 original_level＝档×15 封顶 255，BattleSystemMenu.adjust_option 左右一档（代箭头，音效音量放 398 试听）、press_option_groove／drag_option／release_option 点槽拖动取整；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）、StoryRainEmitter._process 与 BattlePoisonGasPresentation._smoke_tick 读<br>[GameSettings.gd](../../../game/settings/GameSettings.gd)、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `press_option_groove`、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `drag_option`、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `release_option` | 读了一部分 | 少见 | S | scope 2 |
-
 ### AI 行为（2）
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
@@ -227,6 +219,13 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `dialogue-timing` | 对白擦出（状态 1）与上卷（状态 4）期间原版不读确认键，要等这一屏停下；重制默认（OPT-PACE 原版）照做，快／極快 两档即时整屏<br>待定：照原版（lane DIALOGKEYS 接入 OPT-PACE 原版档）；即时整屏留作 OPT-PACE 快／極快 改良值 | 对白框过程 0x414280 已读完：淡入淡出 16 tick、擦出 17 px 起 3 px/tick、上卷 3 px/tick（10 tick／行）；只有状态 2 读确认<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | 节奏照原版画出；OPT-PACE 原版下玩家确认在页未停时被吞掉（BattleDialogue.holds_confirm，经 BattleSceneRuntime._input／TownRuntime.handle_input／GameClearScreen._unhandled_input 读）；快／極快 立即翻屏或进下一句<br>[BattleDialogue.gd](../../../game/battle/scene/BattleDialogue.gd) `holds_confirm` | 已读完只差照做 | 每场都看得到 | S | provenance 1、matrix 1 |
 | `dialogue-line-breaks` | 原版 0x413960 按 38 字节硬断，会把名字拆到两行（语料 17 句，如「雪｜拉」「通行｜證」）；重制默认照做，断点前移到名字前归 OPT-WORDBREAK 保護專名<br>待定：照原版（lane DIALOGKEYS）；专名保护留作 OPT-WORDBREAK 改良值（舒适预设开） | 行断规则已读完：每行 38 字节（全角 19 字），无禁则、无专名保护；录屏 369 逐行相符<br>[original_dialogue_board.md](../../../docs/evidence_packets/static_reverse/original_dialogue_board.md) | BattleUISkin.message_rows 照 38 字节硬断；OPT-WORDBREAK＝保護專名 时断点落进专名才前移<br>[BattleUISkin.gd](../../../game/common/BattleUISkin.gd) `message_rows` | 已读完只差照做 | 少见 | S | provenance 2、matrix 1 |
+
+### 音频（2）
+
+| id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `effect-sound-timing` | 特效声音已按原生执行记录排程（角度环／龙卷等图案插入也按记录，無想冥殺 的环声落在片段内）、混音照原版 9 通道满则丢新声；剩无轨迹对象仍按静态表，9 个声部只给特效播放器用、不与其它声音共用，多段绝技里命中才放的对象声（objmPlayHitSound）已按读字那一 tick 已结算的段放（0x45f5f7 守方先于对象） | 对象程序放声时刻由原生执行记录（0x42c180 桩）；混音 0x45a390→0x4593a0 读完：9 通道（0x459b60），取第一个空或已停的，全忙丢新声<br>[original_effect_object_sounds.md](../../../docs/evidence_packets/static_reverse/original_effect_object_sounds.md) | SkillEffectScriptPlayer._insert_sounds 的无轨迹后备<br>[SkillEffectScriptPlayer.gd](../../../game/battle/scene/SkillEffectScriptPlayer.gd) | 已读完只差照做 | 少见 | S | provenance 1、sentence 3、scope 2 |
+| `settings-volume-mixer` | 音量已照原版混音器（Master＝音效音量线性、Music 总线＝流曲线 0 档 −24 dB、音樂音量 0 不换曲、影片声随音效音量）与 18 档滑杆（档×15 封顶 255；点槽照 defProcScrollBar 0x445860 水平分支：点滑块旁朝点击方向走一档、点滑块抓住拖动、松手取整，音效音量松手时放 RESOURCE 398 试听）；場景效果 关时重制照原版藏云、瀑布、建筑底、噴人沼氣的煙（defProcFireSmoke）与雨滴（defProcDropRain，剧情中途切换即藏即现、关着照走） | Title039 第一行开关 0x424560 置／清 [0x477c14] bit0，读者：mapobjCloud 0x43cecd、mapobjWaterFall 0x43d13e、mapobjBuildBottom（及类型越界默认分支）0x43d758、defProcFireSmoke 0x43c337（过程 0x43c260）与 defProcDropRain 0x43c63f（过程 0x43c4a0）关时 +0x30 = 0xffff 不画但照走，云／瀑布／建筑底不画不走；音效音量 0x4245c0 → [0x477c20]＝档×15 封顶 255 → 0x458220 waveOutSetVolume(v×0x01000100)，放声门槛 0x42c180、影片声 0x42df6f；音樂音量 0x424630 → [0x477c24] → 0x459e60 → 0x459d70 SetVolume((⌊60v/255⌋−60)×40)<br>[original_music.md](../../../docs/evidence_packets/static_reverse/original_music.md)、[menus_ui/README.md](../../../docs/evidence_packets/runtime_observations/menus_ui/README.md)、[original_map_object_drift.md](../../../docs/evidence_packets/static_reverse/original_map_object_drift.md) | GameSettings.apply：Master 线性（0 静音）、Music／Movie 总线 stream_db；音量存 档／17、字节 original_level＝档×15 封顶 255，BattleSystemMenu.adjust_option 左右一档（代箭头，音效音量放 398 试听）、press_option_groove／drag_option／release_option 点槽拖动取整；music_starts() 挡各放乐点；scene_effects 由 StoryEffectObjects.insert、BattleSceneStage._clouds_hidden／MapObjectDrift.scene_hidden（瀑布、建筑底）、StoryRainEmitter._process 与 BattlePoisonGasPresentation._smoke_tick 读<br>[GameSettings.gd](../../../game/settings/GameSettings.gd)、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `press_option_groove`、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `drag_option`、[BattleSystemMenu.gd](../../../game/battle/scene/BattleSystemMenu.gd) `release_option` | 读了一部分 | 少见 | S | scope 2 |
 
 ### 飘字与数字（2）
 

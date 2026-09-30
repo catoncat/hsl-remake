@@ -23,6 +23,8 @@ extends Node2D
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_cast_overlays.md#无条带起手序列
 ##   audio: resource-derived content/imported/hsl/shared/interface_audio/manifest.json
 ##   audio: resource-derived content/imported/hsl/chapter01/actor_audio.json
+##   audio: static-derived docs/evidence_packets/static_reverse/original_unconsumed_fields.md
+##     (ordinary hit sound chain: attacker shoothit, target hit, weapon icon)
 
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 signal experience_presented(growth: Dictionary)
@@ -695,7 +697,7 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 		text.modulate = ShowNumberStyle.CAPTION
 		_show_cutin_words(words, strike)
 	effect.add_child(text)
-	_play_weapon_hit_sound(strike, attacker, hit)
+	_play_hit_sound(strike, attacker, defender, hit)
 	# The close-up defender's dodge (0x4041ea..0x404247) plays its template's dodge sound
 	# (0x409760, +0xc) on the tick it starts; a magic miss only spawns MISS (0x40aa80).
 	if not hit and not strike.has("magic_key"):
@@ -703,17 +705,28 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	_animate_impact_text(effect, text, digits, miss, words, half)
 
 
-## _present_impact: the weapon's hit sound for an ordinary strike that hit.
-func _play_weapon_hit_sound(strike: Dictionary, attacker: Dictionary, hit: bool) -> void:
-	if hit and not strike.has("skill_name") and not strike.has("magic_key"):
+## _present_impact: the one impact sound of an ordinary strike that hit (0x4040da..0x40414a):
+## the attacker's sound_shoothit (0x406dc9 keeps it in [0x4c13f8] for every strike, whatever the
+## weapon), else the target's sound_hit (0x409790, template +0x10), else the attacker's weapon
+## sound (claw and sting, icons above dagger, take 405 hit_sword). A miss plays only the dodge.
+func _play_hit_sound(strike: Dictionary, attacker: Dictionary, defender: Dictionary, hit: bool) -> void:
+	if not hit or strike.has("skill_name") or strike.has("magic_key"):
+		return
+	var manifests := [audio_manifest, shared_audio_manifest]
+	var res_path := ActorSpriteKey.audio_binding(attacker, "shoothit", manifests)
+	if res_path == "":
+		res_path = ActorSpriteKey.audio_binding(defender, "hit", manifests)
+	if res_path == "":
 		var cue_key: String = cutin.cue_manifest["weapon_hit_sounds"][str(int(attacker["weapon_code"]))]
-		if cue_key != "":
-			var hit_sound := AudioStreamPlayer.new()
-			hit_sound.name = "WeaponImpactSound"
-			hit_sound.stream = load(cutin.cue_manifest["sounds"][cue_key]["res_path"])
-			add_child(hit_sound)
-			hit_sound.finished.connect(hit_sound.queue_free)
-			hit_sound.play()
+		if cue_key == "":
+			cue_key = cutin.cue_manifest["weapon_hit_default"]
+		res_path = cutin.cue_manifest["sounds"][cue_key]["res_path"]
+	var hit_sound := AudioStreamPlayer.new()
+	hit_sound.name = "WeaponImpactSound"
+	hit_sound.stream = load(res_path)
+	add_child(hit_sound)
+	hit_sound.finished.connect(hit_sound.queue_free)
+	hit_sound.play()
 
 
 ## _present_impact: how the map number／caption label lives and goes (digits, MISS, or a

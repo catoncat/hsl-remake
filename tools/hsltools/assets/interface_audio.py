@@ -42,13 +42,16 @@ def walk_water_rows():
     return sorted(rows, key=int)
 
 
+# The impact switch's default branch: 0x404104 ja 0x404130 sends every icon above 5 to 405 sfxHitSword.
+WEAPON_HIT_DEFAULT = 'hit_sword'
+
+
 def weapon_hits():
     categories = {('itemIcon' + kind.title()): 'hit_' + kind for kind in ['staff', 'sword', 'bow', 'axe', 'spear', 'dagger']}
-    # resource.h has no same-name claw impact alias. This explicit remake
-    # binding uses the character's source attack sound once, without inventing
-    # a second impact cue or silently pretending the claw is a sword.
-    categories['itemIconClaw']=''
-    categories['itemIconSting']='' # No native same-name impact alias; preserve the actor attack sound only.
+    # Table 0x404f6c covers icons 0..5 only (404..409); claw and sting (icons 6, 7) have no entry and take
+    # the switch default WEAPON_HIT_DEFAULT.
+    categories['itemIconClaw'] = ''
+    categories['itemIconSting'] = ''
     return {row['code']: categories[row['icon']] for row in table_rows('ITEM.TXT')
             if row.get('type') == 'itemTypeWeapon' and row.get('icon') in categories}
 
@@ -58,7 +61,7 @@ def check():
     sources = {path.as_posix(): digest(path.read_bytes()) for path in [HEADER, NAMES, TABLES / 'ITEM.TXT', PLAYERS]}
     data = json.loads((ROOT / 'manifest.json').read_text())
     assert data['sources'] == sources and set(data['sounds']) == set(expected)
-    assert data['weapon_hit_sounds'] == weapon_hits()
+    assert data['weapon_hit_sounds'] == weapon_hits() and data['weapon_hit_default'] == WEAPON_HIT_DEFAULT
     assert data['walk_water_is_walk_rows'] == walk_water_rows()
     for key, binding in expected.items():
         row = data['sounds'][key]
@@ -91,8 +94,9 @@ def build(pak):
         row.update(source_sha256=digest(raw), sha256=digest(audio), profile=profile(audio), res_path='res://' + target.as_posix())
     result = {'schema': 'hsl_interface_audio.v1', 'evidence_tier': 'resource-derived', 'sources': sources, 'sounds': expected,
               'weapon_hit_sounds': weapon_hits(),
+              'weapon_hit_default': WEAPON_HIT_DEFAULT,
               'walk_water_is_walk_rows': walk_water_rows(),
-              'weapon_binding_note': 'ITEM weapon icon category to same-named resource.h hit sound; claw has no same-named alias and explicitly uses character attack audio without a second hit cue. These are remake bindings, not a recovered complete native sound dispatch.',
+              'weapon_binding_note': 'ITEM weapon icon category to the resource.h hit sound the impact switch 0x404104 (table 0x404f6c) picks: icons 0..5 to 404..409; claw and sting (icons above 5) are empty here and take weapon_hit_default, the switch default 0x404130 (405 sfxHitSword). It is the third step of the ordinary hit chain, after the attacker sound_shoothit and the target sound_hit (actor_audio events shoothit／hit).',
               'limits': ['Modern playback timing and volume; no claim of complete original interface sound parity.']}
     (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
     print('INTERFACE_AUDIO_IMPORT_PASS')

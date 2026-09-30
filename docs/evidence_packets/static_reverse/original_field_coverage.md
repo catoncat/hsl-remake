@@ -12,7 +12,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表 | 记录 | 字段 | consumed | passthrough | recorded | unconsumed | dead |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 91 | 0 | 0 | 2 | 9 |
+| [players](#players) PLAYERS.TXT | \[character] rows | 102 | 93 | 0 | 0 | 0 | 9 |
 | [item](#item) ITEM.TXT | \[item] rows | 72 | 68 | 0 | 0 | 0 | 4 |
 | [magic](#magic) MAGIC.TXT | \[magic] rows | 14 | 14 | 0 | 0 | 0 | 0 |
 | [special](#special) SPECIAL.TXT | \[special] rows | 13 | 13 | 0 | 0 | 0 | 0 |
@@ -29,7 +29,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | [town_event](#town_event) TOWNDEF te opcode | te tokens | 46 | 44 | 0 | 0 | 0 | 2 |
 | [animal](#animal) ANIMAL.H ani* opcode（演员程序 + 绝技特效脚本） | ani* opcodes | 36 | 33 | 0 | 0 | 0 | 3 |
 | [effects](#effects) EFFECTS.TXT eff* opcode（法术特效） | \[effect] blocks | 4 | 4 | 0 | 0 | 0 | 0 |
-| **合计** | 17 表 | 743 | 547 | 17 | 75 | 5 | 99 |
+| **合计** | 17 表 | 743 | 549 | 17 | 75 | 3 | 99 |
 
 ## 3. 嫌疑排序
 
@@ -42,8 +42,6 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 
 | 表.字段 | 量 | 语义 |
 | --- | --- | --- |
-| `players.sound_hit` | rows_nondefault 4 | 被击音效（4 行；记录 +0x10 lo 句柄） |
-| `players.sound_shoothit` | rows_nondefault 1 | 射击命中音效（1 行，+0x22） |
 | `obj.obj_Y1` | placed_actor_rows 1；rows 22 | 模板 +0x14；演员：≠0 → live +0x134 低半字＝伴随对象码（0x407ec0）；特效：WAV；ObjectMove engRANGE：框上边 |
 | `obj.obj_Y2` | rows 1 | 模板 +0x1c（ObjectMove engRANGE：框下边） |
 | `defines.TYPE.H other` | — | 其余 13 条 #define（gameBigMapLevel／gameTempResourceID／gameover*／bmpm*／effSMOKE） |
@@ -150,7 +148,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `magic_attack_power` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 22；声明行 23 | 魔攻加值 | — |
 | `move_fly` | consumed | `game/sim/ActorTraversalRules.gd:mode` | 非默认行 12；声明行 12 | 飞行（+0xa0 bit 0x1） | — |
 | `attack_back` | consumed | `game/sim/CoreCombatRules.gd:attack_back_triggered` | 非默认行 2；声明行 2 | 反击率 | — |
-| `sound_hit` | unconsumed | UNCONSUMED | 非默认行 4；声明行 4 | 被击音效（4 行；记录 +0x10 lo 句柄） | 原版攻击结算对象 0x4038a0（0x406d20 每次出手创建）命中分支 0x4040da..0x40414a：攻方 sound_shoothit 优先，否则目标（对象 +0xac，0x403d50 写入）的 sound_hit（0x409790），都无才按武器图标（爪／刺回退 405）；重制只放武器音（缺口 normal-attack-hit-sound-chain，docs/evidence_packets/static_reverse/original_unconsumed_fields.md） |
+| `sound_hit` | consumed | `tools/hsltools/levels/actors.py:build_audio` | 非默认行 4；声明行 4 | 被击音效（4 行；记录 +0x10 lo 句柄） | 普攻命中音链第二级：攻方无 sound_shoothit 时 0x409790 放目标的 sound_hit，都无才按武器图标（爪／刺回退 405）；actor_audio hit 事件，BattlePresentation._play_hit_sound 放（docs/evidence_packets/static_reverse/original_unconsumed_fields.md） |
 | `dead_message` | consumed | `tools/hsltools/data/combat_aftermath.py:build` | 非默认行 12；声明行 12 | 死亡台词 id 对 | — |
 | `no_poison` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 16；声明行 16 | 免毒（bit 0x40） | — |
 | `magic_point` | consumed | `tools/hsltools/model/jobs.py:source_profile` | 非默认行 22；声明行 26 | MP 加值 | — |
@@ -164,7 +162,7 @@ lane R16 发现重制一直没读关卡 .BIN 的逐单位实例字（wait_round�
 | `sound_walkwater` | consumed | `tools/hsltools/assets/interface_audio.py:walk_water_rows` | 非默认行 2；声明行 2 | 水中行走音效（2 行，均同 sound_walk） | — |
 | `no_paralyze` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免麻痹（bit 0x800） | — |
 | `no_disablemagic` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 9；声明行 9 | 免封魔（bit 0x1000） | — |
-| `sound_shoothit` | unconsumed | UNCONSUMED | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | 紅龍 051 BOMB0028；受击音链第一级，见 sound_hit |
+| `sound_shoothit` | consumed | `tools/hsltools/levels/actors.py:build_audio` | 非默认行 1；声明行 1 | 射击命中音效（1 行，+0x22） | 紅龍 051 BOMB0028；普攻命中音链第一级，0x406dc9..0x406dd7 每次出手写 \[0x4c13f8]，不看武器；actor_audio shoothit 事件 |
 | `no_weaken` | consumed | `game/sim/StatusApplicationRules.gd:modifiers` | 非默认行 6；声明行 6 | 免虚弱（bit 0x2000） | — |
 | `no_attack` | consumed | `game/sim/AINavigationRules.gd:acquire` | 非默认行 3；声明行 3 | 不攻击（bit 0x2） | — |
 | `no_shadow` | dead | — | 非默认行 1；声明行 1 | 不画影子（bit 0x100，1 行） | 全 EXE 找不到读 0x100 的地方；重制不画单位影子，无可见差别 |

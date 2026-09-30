@@ -32,7 +32,7 @@ SHARED_PORTRAITS = ROOT / 'content/imported/hsl/chapter01/portraits/manifest.jso
 SHARED_AUDIO = ROOT / 'content/imported/hsl/chapter01/actor_audio.json'
 PLAYERS = ROOT / 'content/imported/hsl/global/tables/PLAYERS.TXT'
 NAMES = ROOT / 'content/imported/hsl/chapter01/source_texts/RESOURCE.TXT'
-AUDIO_EVENTS = ('walk', 'attack', 'miss', 'dead')
+AUDIO_EVENTS = ('walk', 'attack', 'miss', 'dead', 'hit', 'shoothit')  # actor_audio.EVENTS + OPTIONAL_EVENTS
 # A speaker the shared chapter table (hsltools.assets.portraits) already imports is mirrored
 # verbatim, including its `name` (the PLAYERS name field — 克里夫 / 法蘭克 — or, for the 306 ???
 # rows, the job_show_name: 一般兵 / 村民); only a level-only import is labelled here, by the
