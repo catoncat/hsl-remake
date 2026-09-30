@@ -19,7 +19,7 @@
 
 ## 证据用语
 
-七级，定义见 [CONTEXT](../../CONTEXT.md#evidence-tiers)：`resource-derived`（原包字节）／`static-derived`（EXE 指令）／`runtime-measured`（实测读数）／`user-confirmed`／`user-hypothesis`／`provisional`（重制暂定，可替换）／`negative-evidence`（查过、不支持）。测试通过不等于原版等价。
+证据等级共七级，定义和在模块头里的写法见 [METHOD](../METHOD.md#证据分级)。
 
 ## Packet header
 

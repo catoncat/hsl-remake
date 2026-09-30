@@ -24,7 +24,7 @@
 | 时机 | 命令 | 说明 |
 | --- | --- | --- |
 | 改动中 | `tools/lane_verify.sh affected <基线提交>` | 只跑改动命中的注册表检查、Python 测试与 Godot 套件；收尾跑一次即可 |
-| 只改文档 | `python3 tools/hsl.py check docs` | 链接、索引与证据用语 |
+| 只改文档 | `python3 tools/hsl.py check docs`、`python3 tools/hsl_docs_check.py` | 代码块里的工具路径；链接与标题锚点 |
 | 合并前 | `tools/verify.sh` | 快门：全部检查＋Godot 套件，热导入缓存 |
 | 阶段收口 | `tools/verify.sh --full`／`--deep` | 冷导入／加跑剧情 explorer 与整章自动对局 |
 
@@ -32,9 +32,7 @@
 
 ## 3. 证据与用语
 
-- 每条"像原版"的声明都要能追溯到资源、静态分析或原作运行观测；用语（resource-derived、static-derived、runtime-measured、provisional、remake-invented 等）见 [CONTEXT](CONTEXT.md)。
-- 原版语义未知时标 provisional 并写明可替换的证据，不为推进而编造等价。
-- `game/` 模块头部的来源字段由 `hsl check provenance` 强制，汇总在 [PROVENANCE](docs/PROVENANCE.md)。
+- 每条"像原版"的声明都要能追溯到原版资源、静态分析或原作运行观测；原版不清楚的标 provisional，不为推进编造等价。证据分级、`game/` 模块头的来源写法和差异清单见 [METHOD](docs/METHOD.md)。
 - 截图、录像帧不进公开仓库；需要画面时用重制版截图（`python3 tools/oss_screenshots.py`），原版帧只写文字描述并注明"原版帧见私有档案"。
 
 ## 4. 提交与 PR
@@ -43,6 +41,7 @@
 - 提交说明写清"为什么"，每个可独立验证的步骤单独提交；附上 §2 门禁的结果行原样（例如 `LANE_AFFECTED_PASS …`）。
 - 只改和这件事有关的文件；顺手发现的问题另开 issue 或 PR。
 - 测试按 [AGENTS 测试政策](AGENTS.md)：只在守住原版事实或复现真实回归时写。
+- 发布时在 [CHANGELOG](CHANGELOG.md) 当天的日期下补一行，写玩家或改游戏的人能看到的变化。
 
 ## 5. 不提交原版派生物
 
@@ -64,3 +63,9 @@ python3 tools/hsl.py check oss_guard
 - **仍要 bash 的**：`tools/verify.sh`、`tools/lane_verify.sh`、`tools/lane_merge.sh` 等维护者门禁（Git Bash 或 WSL 下跑），以及只在 macOS 上有意义的原作采样（`hsl_capture.sh`、Swift helper）。
 - **换行与大小写**：`.gitattributes` 统一 LF，不要用 `core.autocrlf` 覆盖；新增文件名不要只靠大小写区分（`hsl check case_collisions` 会拦）。
 - 这些入口还没有 Windows 真机验证，遇到问题请附 `python tools\hsl.py doctor` 的输出。
+
+## 7. 写文档
+
+- 改现行合同所在的那一段，删掉或标明被替换的旧说法；来源、精确参数和验收过程放进对应的证据包，再从索引链过去。同一件事不在 PROJECT、架构和证据包里各写一份。
+- 旧观测只证明当时的版本，不能盖过后来已经接上的行为。历史用 Git 查，不恢复旧文件当入口。
+- `python3 tools/hsl_docs_check.py` 检查 Markdown 的显式链接和锚点，以及公开文档没有链接 `docs/internal/`、`docs/audits/`；它不联网，也不把代码示例和裸路径当链接。

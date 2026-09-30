@@ -1,5 +1,13 @@
 # HSL Project Vocabulary and Evidence Policy
 
+> 中文摘要：本页是项目共用的术语和写结论的规矩。
+>
+> - 「原版」指玩家自备的 1998 年經典版目录，只当行为参考，不是运行依赖。
+> - 重制运行时、现行场景、PlayLoop、首次可操作等词各有固定所指，见 Product terms。
+> - 证据等级的定义在 [METHOD](docs/METHOD.md#证据分级)；Claim rules 列出写结论时不能混淆的几件事，比如测试通过不等于原版等价。
+> - 镜头、投影、脚点、点击判定和遮挡是同一个空间合同，不能分开凭感觉调。
+> - 原作运行观测怎么采样、对外能说到什么完成度，也在本页。
+
 Checked: 2026-09-27
 
 本文件只定义当前项目必须共享的术语和证据写法。项目进度看 `docs/PROJECT.md`，代码结构看 `docs/ARCHITECTURE.md`，具体资料位置看 `docs/KNOWLEDGE_INDEX.md`。
@@ -44,17 +52,7 @@ Actor id、sprite id、object process 名或 `team` 字段不能单独证明最�
 
 ## Evidence tiers
 
-新结论统一使用以下层级；旧 JSON 中可能保留历史复合标签，但不得继续扩散新命名。
-
-| Tier | 含义 | 可以支持什么 |
-| --- | --- | --- |
-| `resource-derived` | 直接来自原版资源、脚本、表格或可重复解析结果 | 资源存在、字段值、脚本 token/order |
-| `static-derived` | 来自 EXE 静态分析、反编译和明确 call/data join | 函数行为、字段含义、公式或调度候选 |
-| `runtime-measured` | 来自本机原作的窄问题、可追溯窗口采样 | 具体画面、位置、状态转换或标量观测 |
-| `user-confirmed` | 原版知情者对原作内容作出的明确确认 | 原版知情者确认的身份、文字或行为，仍与其他来源分开记录 |
-| `user-hypothesis` | 玩家记忆或推测 | 研究方向，不能直接驱动原版等价实现 |
-| `provisional` | 为工程推进暂定，等待更强证据替换 | 可玩 scaffold；必须列出 unresolved boundary |
-| `negative-evidence` | 已检查某个来源但未找到支持 | 阻止错误声明，不证明相反机制必然成立 |
+七级来源等级的定义，以及它们在 `game/` 模块头和证据包里怎么标，见 [METHOD](docs/METHOD.md#证据分级)。旧 JSON 里可能还留着历史复合标签，不再扩散新命名。
 
 ## Claim rules
 

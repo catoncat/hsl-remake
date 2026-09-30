@@ -1,5 +1,15 @@
 # Current Runtime Architecture
 
+> 中文摘要：本页是现行代码的地图，正文按任务查。
+>
+> - 游戏从 `project.godot` 进标题；战斗场景是 `BattleSceneRuntime`，战斗、剧情、城镇和大地图之间的交接由 `CampaignProgress` 串起来。
+> - 战斗里所有可变状态只归 `BattlePlayLoop` 所有，场景和角色节点只是表现镜像，写入只走 `BattleSceneRuntime.apply_loop`。
+> - 规则放在 `game/sim/` 的纯模块里由 PlayLoop 调用，不放进场景；表现层不复制规则真相。
+> - 坐标只有一条链：视口位置 → 640×480 逻辑坐标 → 镜头世界坐标 → 格子，点击判定共用它。
+> - 数据分层：`content/battles/` 现行场景配置，`content/imported/` 原版派生输入，`content/generated/` 生成事实，`content/authored/` 手写数据。
+> - 每个 `game/` 模块开头的 `## provenance:` 段标明各维度的证据等级和出处，写法见「Provenance headers」。
+> - 改代码前先查「Task routing」，它按任务列出该读的模块和合同。
+
 攻防增益／退魔：`StatEnhancementRules`保存packed正向状态合同，`StatMagicRules`生成单目标变化；既有`SkillResolutionRules`／PlayLoop负责一次MP付款、贡献／EXP与当前派生值提交。AI援助桶5、驱散进攻桶、末次计时v4及Checkpoint共同读取当前来源。表现为`SkillEffectScriptPlayer`（effCode27／06／33 脚本）／Vitals／状态页／TurnEndCue，入口`game/battle/development/StatMagicTrial.tscn`，定向`tests/run_support_magic_tests.gd`（stat 部分；试验场景启动在`run_battle_scene_runtime_tests.gd`）；[证据与边界](evidence_packets/static_reverse/original_stat_magic.md)。
 
 Checked: 2026-09-17

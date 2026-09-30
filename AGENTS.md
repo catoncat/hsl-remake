@@ -19,7 +19,7 @@
 所有任务按顺序读：
 
 1. `AGENTS.md`（本文件；「效率硬规则」必读）
-2. [`docs/PROJECT.md`](docs/PROJECT.md)（唯一当前状态：现状、进度尺、在跑、排队、待拍板）
+2. [`docs/PROJECT.md`](docs/PROJECT.md)（唯一当前状态：现状、进度尺、1.0 的条件）
 3. 承接 lane 时：负责人给的任务书；格式见 `docs/internal/lane_brief.md`
 
 未知 Git 改动先确认归谁，不动别人的。历史用 Git 查（`git log -S`）；逐轮流水在 `docs/internal/ROUNDS.md`，更早的考古用仓库外的清理前 Git bundle；不要把历史文件恢复成任务入口。
@@ -30,7 +30,7 @@
 | --- | --- |
 | 改 `game/`、scene 或 tests | [架构入口](docs/ARCHITECTURE.md)，再只读命中的 [战斗系统](docs/architecture/BATTLE_SYSTEMS.md)／[表现合同](docs/architecture/PRESENTATION.md) 章节 |
 | 选定向测试、排查验证 | [测试路由](tests/README.md)、[工具入口](tools/README.md) |
-| 资源、静态分析或原作对照 | [知识索引](docs/KNOWLEDGE_INDEX.md) 定位对应 packet；[CONTEXT](CONTEXT.md) 核对证据用语 |
+| 资源、静态分析或原作对照 | [知识索引](docs/KNOWLEDGE_INDEX.md) 定位对应 packet；[METHOD](docs/METHOD.md#证据分级) 核对证据等级 |
 | 改机制状态或等价声明 | [机制矩阵](docs/MECHANICS_EVIDENCE_MATRIX.md)、[差异清单](docs/evidence_packets/static_reverse/parity_gap_inventory.md) 及对应证据 |
 | 改游戏：换素材、加关卡、改剧情流转、换配乐、加脚本 opcode 表现 | [MODDING](docs/MODDING.md)＋[加关卡与角色逐步表](docs/MODDING_LEVELS.md)（文件位置、生成命令、改代码入口、验证步骤）＋[战役总览](docs/evidence_packets/resource_inventory/campaign_overview.md) |
 | 提到某一场战斗 | [战斗称呼对照](docs/BATTLE_NAMES.md)（见「命名口径」） |
@@ -53,6 +53,8 @@ project.godot
 ```
 
 当前场景配置：`content/battles/campaign.json`（`start_level "51"` → `battle_051.json`，由 `level_battle:51` 生成；`BattleSceneRuntime.tscn` 仍可直接启动，默认加载同一文件，测试与开发路线不经标题）。`first_battle.json` 是名册模板与测试夹具，不是现行场景。
+
+机器可读的权威数据：`content/imported/hsl/` 是可复用的原版资源、脚本 IR 与 manifest；`content/generated/hsl/` 是可重现的生成事实；`content/authored/` 是手写数据（续集关卡与角色、选项注册表等）；原作视觉基准是 `docs/evidence_packets/runtime_observations/first_battle_visual_evidence_index.json`；完整资源成员索引 `docs/evidence_packets/resource_inventory/resource_manifest.json` 供机器搜索，不要整文件读进上下文。
 
 `BattlePlayLoop` 是唯一可变战斗状态所有者。Scene、`_unit_grid_coords` 和 `ActorRuntime` 只是输入/表现镜像。禁止新增第二套 battle dictionary、bootstrap snapshot 或 UI-owned combat truth。
 
@@ -92,7 +94,7 @@ project.godot
 
 ### 证据用语
 
-新结论使用（唯一定义见 [CONTEXT](CONTEXT.md)）：
+新结论使用（唯一定义见 [METHOD](docs/METHOD.md#证据分级)；写结论的规矩见 [CONTEXT](CONTEXT.md#claim-rules)）：
 
 - `resource-derived`
 - `static-derived`
@@ -166,7 +168,7 @@ Raw 发现只有压缩成可复跑工具输出、imported/generated data 或 cur
 - 实玩报的问题按**类**处理（当成共性问题，不只解决报出的那一处）：写根因线索、盘点全游戏同类实例、在共享层修、加覆盖全部实例的检查，报告写找到／修了／剩余。截图只是样本。
 - **实验用探针（≤5 场代表性战斗），回归用全量**；说"久"必须说已跑多久、预计多久、卡在哪一步。
 
-文档按职责更新：[PROJECT](docs/PROJECT.md) 只保留一屏当前状态（现状、进度尺、在跑、排队、待拍板、文档地图），不追加历史日报，也不新增另一份 TODO／STATUS／HANDOFF；每轮收口的流水进 `docs/internal/ROUNDS.md`；架构存现行合同；evidence packet 存来源和具体回执。结构或代码路径变化同步修复链接。公开文档（`docs/internal/`、`docs/audits/` 之外）不得链接内部文档，`tools/hsl_docs_check.py` 会拦；需要提到时写成代码样式的路径。
+文档按职责更新：[PROJECT](docs/PROJECT.md) 只保留一屏当前状态（现状、进度尺、1.0 的条件、文档地图），不追加历史日报，也不新增另一份 TODO／STATUS／HANDOFF；每轮收口的流水进 `docs/internal/ROUNDS.md`；架构存现行合同；evidence packet 存来源和具体回执。结构或代码路径变化同步修复链接。公开文档（`docs/internal/`、`docs/audits/` 之外）不得链接内部文档，`tools/hsl_docs_check.py` 会拦；需要提到时写成代码样式的路径。
 
 ### Lane 协议
 
@@ -220,7 +222,7 @@ lane 这一侧：
 
 **门禁与收口**
 
-- 已交回的 lane 攒 2–3 条依次合并（每条单独提交），对 HEAD 跑一次 gate，过了一次发布；门红时按失败套件与各 lane 的 diffstat 定位，revert 那一条再过门。
+- 已交回的 lane 攒 2–3 条依次合并（每条单独提交），对 HEAD 跑一次 gate，过了一次发布，发布前在 `CHANGELOG.md` 当天日期下给每条 lane 补一行白话；门红时按失败套件与各 lane 的 diffstat 定位，revert 那一条再过门。
 - 合并后在合并树手改过任何文件，提交前重跑受影响的 `hsl generate`（生成块不会自己更新）。
 - 纯文档改动不评审，在合并树直接提交，走 docs 档。门禁、验证工具本身的小改攒成一个提交，只过一次快门。
 - 时间账「合并树门禁」一列抄 `ignored/gate-history.tsv`（每次 gate 追加一行：档位、秒数、探索器秒数、开跑时 load）。
