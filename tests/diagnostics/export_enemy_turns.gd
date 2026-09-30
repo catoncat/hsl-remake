@@ -289,7 +289,23 @@ func _decision_summary(loop: Dictionary, entry: Dictionary) -> Dictionary:
 		"selected": str(units[index]["id"]) if index >= 0 and index < units.size() else null,
 		"reason": selected.get("reason"), "retained": selected.get("retained"), "previous": selected.get("previous_target_id"),
 		"candidate_filters": decision.get("candidate_filters", {}), "lock_check": decision.get("lock_check", {}),
-		"adoption": decision.get("call_target", {}).get("adoption", {})}
+		"adoption": decision.get("call_target", {}).get("adoption", {}),
+		"action_kind": decision.get("action_selection", {}).get("kind"), "skill_attempts": _skill_attempts(decision),
+		"side_walk": decision.get("side_walk", {}).get("roll")}
+
+
+## State 0xa's cast attempts (0x40d340 flag 0): per call the bucket order and, per bucket, the
+## picked row (null when 0x40c770 accepts none) — the counterpart of _spell_pick_trace.py.
+func _skill_attempts(decision: Dictionary) -> Array:
+	var result: Array = []
+	for attempt in decision.get("skill_attempts", []):
+		var picks: Array = []
+		for bucket_try in attempt.get("attempts", []):
+			var index := int(bucket_try.get("index", -1))
+			var ids: Array = bucket_try.get("skill_ids", [])
+			picks.append({"bucket": bucket_try.get("bucket"), "count": ids.size(), "skill": ids[index] if index >= 0 and index < ids.size() else null})
+		result.append({"order": attempt.get("bucket_order", {}).get("order", []), "picks": picks, "skill_id": attempt.get("skill_id"), "coverage": attempt.get("coverage")})
+	return result
 
 
 func _inject(base: Dictionary, state: Dictionary) -> Dictionary:

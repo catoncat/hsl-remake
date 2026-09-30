@@ -1,12 +1,13 @@
 # 原 AI：技能桶、使用概率、范围中心与施法站位
 
-> evidence: static-derived; resource-derived: 第一战法师法术定义与素材绑定; provisional: 有效收益计数 · status: live · functions: 0x407010, 0x40aa80, 0x40bb80, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d4e0, 0x40dd80 · tools: hsltools/data/mage_magic.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-29
+> evidence: static-derived; runtime-measured: LEVEL059 法术落空; resource-derived: 第一战法师法术定义与素材绑定; provisional: 有效收益计数 · status: live · functions: 0x407010, 0x40aa80, 0x40bb80, 0x40c620, 0x40c770, 0x40c9a0, 0x40cca0, 0x40d340, 0x40d4e0, 0x40dd80 · tools: hsltools/data/mage_magic.py, hsltools/probes/_spell_pick_trace.py, hsltools/probes/ai_skill.py, run_ai_skill_tests.gd · updated: 2026-09-30
 
 ## 结论
 
 - 原版：`0x407010` 按 function 位把技能分到范围桶 3／单体桶 4（另有治疗、增益、状态、解除桶），`0x40c770` 在非空桶内 `rand(32)%count` 起步循环，逐项 `rand(100)+1 <= use_ratio` 才接受；`0x40d4e0` 决定单体／范围先后；`0x40c9a0` 选覆盖最多的范围中心，`0x40d200..0x40d2b0` 在最大覆盖施法格中取离威胁最远者（static-derived；202 组原指令执行：162 正常返回、40 距离后缀）；威胁在施法时刻由 `0x40bb80(actor, 3, 0, 8)` 按登记槽序抽出（见「移动施法的威胁对象」）。
 - 原版 AI 选法术／绝技与施放中心时不估伤：伤害公式 `0x40aa80` 全 EXE 只有两个调用者，都是实际结算——`0x40b8d0`（地图打击 `0x442a90` 在 `0x442e18`／`0x4430f4` 调）与 `0x40b8f0`（逐击结算体 `0x4047e9` 在 `0x404848` 调）；`0x40dd80` 与 `0x40c9a0` 都不读伤害字段、段数或 op 72 计数。所以多段绝技（慌雨斬 5 段、無想冥殺 8 段、星辰落牙破 6 段、殘影亂斬 7 段、百裂突刺 8 段、血之宴 12 段）的段数不影响 AI 选哪招、打谁；重制 `AISkillPlanning.useful_ids` 同样只数有效目标、不估伤，与原版一致（static-derived）。
 - 重制：`game/sim/AISkillDecisionRules.gd` 只算已证实的桶、顺序、逐项概率与距离比较；`game/sim/AISkillPlanning.gd` 为每个拥有的受支持技能准备独立合法站位与中心，选中后先最大化有效覆盖再用原距离末段选格，经 `_resolve_skill` 一次提交（static-derived 规则＋重制组合）。
+- 法术落空已照原版：state 0xa 的 `0x40d340` flag 0 返回 0 后，`0x43ff1f` 查武器（调 `0x409090`，为 0 跳 `0x441eb8`），`0x43ff32` 掷 rand(100)，>10 跳 `0x440041` 普通进攻，≤10 才走 `0x40d8b0` 侧走。劫數 · 地劫神（LEVEL059）的对照里，同一目标、同一法术两边施放与否全同；加跑后以雷歐納德为目标的落空原版 20／75、重制 51／216，都在 `0x40c770` 的期望附近。种子 1..8 的落空次数差（原版 32、重制 11）归为抽签样本，这一点只有分布层面的支持（见「证据」runtime-measured 段）。
 - 差异：原完整地图候选生成、空格中心、中心平分的随机流未复原（目标锁定见 [original_ai_navigation](original_ai_navigation.md)「结论」，辅助见 [original_ai_support](original_ai_support.md)）；有效收益计数是重制组合（provisional）；施放目标为行动者本人时的逃离分支已照原版（见「移动施法的威胁对象」），3×3 行动者的逃离泛洪沿用移动包络（provisional）。
 
 ## 证据
@@ -29,6 +30,21 @@
 | `0x40c9a0` 计数 | 覆盖数＝效果区网格 `0x4c1b4c` 内持有目标格计 1，其余格经 `0x411c40` 取占位字、`& 0x70000` 既非 0 也非 `0x70000` 才计 1；不读技能伤害或段数 | r2 反汇编 `0x40cad4..0x40cb3b` |
 | `0x40c9a0` 尾段（flag） | flag≠0（`0x40cc20..0x40cc6e`）返回含目标组里覆盖最多的中心（`[esp+0x3c]`）；含目标最高计数为 0 返回 0，即落点失败（`0x40d494` → `0x40d3bc` 换备用桶）；该计数为 1 且 `0x40fab0(目标 x, y)` 为真时中心直接取目标本格（`0x40cc30..0x40cc54`）。flag＝0 取一般最高（`0x40cc6f..0x40cc77`）。`0x40cca0` 把第 6 参 flag 原样作为 `0x40c9a0` 第 8 参（`0x40cfb5..0x40cfda`；`0x40d340` 在 `0x40d416` push ebp），返回 0 的格不计（`0x40cfe8 je 0x40d054`），所以移动施法站位也只数含目标的中心。flag 1＝「落点必须含目标」：残血检查（`0x43f8f6`／`0x43f873`）传 1，state 0xa 传 0。重制 `AISkillPlanning.choose_for_target` 取挑中行的 `by_primary`（受影响者含该候选的落点）交 `cast_station`，最高覆盖 1 时偏好 `center_is_primary` | r2 反汇编 |
 | `0x40aa80` 调用者 | 全 EXE 的 `E8／E9` rel32 与 dword 字面量扫描：只有 `0x40b8e6`（`0x40b8d0`）、`0x40b906`（`0x40b8f0`）；`0x40b8d0` 只被 `0x442e18`／`0x4430f4`（地图打击 `0x442a90`，返回值累加 `0x4c2c7c`）调，`0x40b8f0` 只被 `0x404848`（逐击结算体 `0x4047e9`）调；无数据指针 | 字节扫描＋r2 `axt` |
+
+**runtime-measured：state 0xa 的法术落空**（`hsltools/probes/_spell_pick_trace.py`，原版裁判，batch 种子 `mixed_seed(S, 20)`，2 回合，雷歐納德 hp／max_hp 999，玩家待机；重制侧 `export_enemy_turns.gd --decisions` 的 `skill_attempts`）：劫數 · 地劫神（LEVEL059）的 actor060_1 身体中心 (40,16)、移动力 0，8 条进攻法术全在范围桶 3，单体桶 4 为空（`0x40c770` 不取随机数），桶内顺序两边同为 source_order 降序。
+
+- 链路：`0x43feba` 调 `0x40d340(actor, 目标 [0x4c1cec], b1, b2, 0x40bab0(actor), 0)`；`0x40c770` 抽中后 `0x40e270`（move_magic_use）为 0，走原地施放：`0x4097d0` 取施法范围索引，`0x40f8b0(行动者 x, y, 范围, -1, 0)` 洪泛（索引 13 即 6 格 85 格、12 即 5 格 61 格、10 即 3 格 25 格），`0x40c9a0` flag 0 取全场最高计数，目标只是计数项之一：逐个到达格数效果区内的可计单位（目标格，或 `0x411c40` 侧位 `& 0x70000` 非 0 非 `0x70000` 的单位；`0x40cac2..0x40cb3b` 计数），`0x40cb8b` 起更新全局最高，`0x40cc6f..0x40cc77` 返回全局最佳；没有一格的效果区含可计单位即返回 0。本局面 range 3 可达区内能计的只有雷歐納德。探针在 `0x40cb3d` 读 ebx：这里是一格计数的完成点（`call 0x458410`），不是计数指令。返回 0 后 `0x40d3bc` 换桶 4（空），`0x40d340` 返回 0，`0x43ff1f` 查武器（`0x409090` 为 0 跳 `0x441eb8`），`0x43ff32` 掷 rand(100)，>10 跳 `0x440041` 普通进攻，≤10 才走 `0x40d8b0` 侧走。
+- 距离按施法洪泛的菱形（曼哈顿）口径：[40,21]、[35,16] 离中心 5，[37,19] 离中心 6（切比雪夫 3）。三格上 EARTH magicCode05（range 3、效果 1Cell）与 MIND magicCode03（range 3、效果 1CellFull）的到达格里没有一格的效果区含雷歐納德，计数全为 0，每次落空；其余 6 条（range 5／6）每次施放。按（目标、法术）分组，两边施放与否无一例外相同。
+- 次数：种子 1..8 × 三格，原版 93 次调用落空 32（EARTH magicCode05 21、MIND magicCode03 9、目标緹娜 2），重制 80 次落空 11（6、5、0）。分格（只算以雷歐納德为目标的调用）：
+
+  | 格 | 原版落空 | 重制落空 |
+  | --- | ---: | ---: |
+  | [40,21] | 11／31 | 3／26 |
+  | [37,19] | 8／29 | 5／28 |
+  | [35,16] | 11／31 | 3／26 |
+
+  [40,21] 与 [35,16] 相对中心互为镜像，同一种子的抽签序列逐次相同；[37,19] 前一两动相同，之后常因 `0x40c9a0` 的平局抽签（`0x40cb54` 含目标最佳、`0x40cb99` 全局最佳）分叉：它在曼哈顿 6，range 5／6 法术打平的中心数与另两格不同，取随机数的次数随之不同。有效独立样本约 8～16。`0x40c770` 在这一桶的落空期望为 27.4%（均匀抽签精确值；`0x458c10` 模型 20 万个随机状态 26.9%）。原版加跑 [40,21] 种子 9..32，以雷歐納德为目标 75 次落空 20（26.7%）；重制 [40,21] 种子 1..64，216 次落空 51（23.6%）。两边都在期望附近。「无规则差」的结论不靠样本数，靠两点：同一（目标、法术）两边结果全同；加跑分布原版 20／75 对重制 51／216。种子 1..8 的 32 对 11 归为抽签样本，只有分布层面的支持：以雷歐納德为目标的落空率重制 14%（11／80）、原版 33%（30／91），按有效样本计两侧直接比不显著。逐次对齐可用 `hsltools/probes/enemy_turn.py` 的原版抽签回放逐次喂 `AISkillDecisionRules.select_index`，未做。重制诊断的 AI 源是 Godot `RandomNumberGenerator`，与原版抽签流不逐次对齐，只比分布。
+- 目标緹娜：原版 [40,21] 32 个种子中有 5 个（另有 [35,16] 种子 5），地劫神第 2 回合第 1 动打倒雷歐納德后仍跑第 2 动，`0x40d340` 以緹娜（[36,26]，离中心曼哈顿 14）为目标，全部落空；重制在雷歐納德倒下时 `BattleOutcome.decided` 成立，没有第 2 动。这属于判负时机，不在法术分支，见差异清单 `boss-twice-action-after-lead-down`。
 
 **resource-derived**：
 - `use_ratio`：幻火、风刃、酸蚀幻雾 90，封魔灭杀 86；技能书经 TYPE.H 与 code 位值保存 `source_order`。固定起始选择 0 时 026 单体桶先试幻火再试风刃。

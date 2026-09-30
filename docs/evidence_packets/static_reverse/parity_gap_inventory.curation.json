@@ -1067,22 +1067,21 @@
       "category": "AI 行为"
     },
     {
-      "id": "boss-twice-action-spell-miss-rate",
-      "difference": "劫數 · 地劫神（LEVEL059）的地劫神（actor060_1，3×3 身体、移动力 0、武器槽物品 55：action_twice、range5CellCircle），雷歐納德站在离身体中心 5 格（[40,21]、[37,19]、[35,16]）：5 格不普攻已照原版（移动力 0 → 0x40d8b0 洪泛半径 0 → 0x40f200 在 0x40f24b 跳过、0x413390 收不到站位 → 0x440094 读 live+0x12c 为 0 → 0x441eb8 结束回合）；剩余：同探点原版法术落空 32 次、重制 11 次（8 种子 × 3 探点），整回合伤害量级只有种子 1 第 1 回合 409 对 423 一组对照，落空判定或法术目标选择读法待查。两边每个造成伤害的回合都足以打倒 163 血的雷歐納德",
-      "original": "每次法术落空 0x43feba 掷 0x43ff32（5 格三探点 8 种子共 32 次），掷值 >10 落到 0x440041 普通进攻，因移动力 0 经 0x440094 → 0x441eb8 结束回合、不出手；法术为何落空（命中判定或法术目标选择）没有逐指令读",
+      "id": "boss-twice-action-after-lead-down",
+      "difference": "劫數 · 地劫神（LEVEL059）雷歐納德在地劫神（actor060_1，武器槽物品 55：action_twice）一回合的第 1 动倒下：原版仍跑第 2 动（state 0xa 的 0x40d340 目标换成离中心 10 格的緹娜，落空），重制随即判负、没有第 2 动；原版在哪一步判负未读",
+      "original": "雷歐納德离中心 5 格、hp 999 时，[40,21] 种子 1..32 中 5 个种子（另有 [35,16] 种子 5）第 2 回合第 1 动打倒雷歐納德后，第 2 动仍进 0x40d340，目标緹娜 [36,26]，返回 0 落到 0x43ff1f；判负检查相对 action_twice 第 2 动的时机未读",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/oracle_batch/README.md",
-        "docs/evidence_packets/static_reverse/original_ai_navigation.md"
+        "docs/evidence_packets/static_reverse/original_ai_skills.md"
       ],
-      "remake": "5 格不普攻已照做（AINavigationRules.attack_stations 移动力 0 返回空，BattleLoopAI._ai_offense 站位落空且移动力 0 时结束回合，wait_reason immobile_no_station）；同探点法术落空 11 次，落空判定或 SkillTargetRules.candidate_centers 的法术目标选择与原版在哪一步分开未查明",
+      "remake": "雷歐納德倒下即 BattleOutcome.decided 成立，地劫神本回合不再行动",
       "remake_code": [
-        "game/sim/loop/BattleLoopAI.gd:_ai_side_walk",
-        "game/sim/SkillTargetRules.gd:candidate_centers"
+        "game/sim/BattleOutcome.gd"
       ],
-      "original_status": "read_partial",
+      "original_status": "unread",
       "visibility": "rare",
       "effort": "M",
-      "category": "AI 行为"
+      "category": "战斗规则"
     },
     {
       "id": "same-side-mode",
@@ -3259,9 +3258,9 @@
         "actor-companion-effect-object"
       ]
     },
-    "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#097c93094f": {
-      "item": "boss-twice-action-spell-miss-rate",
-      "text": "落空判定或法术目标选择的读法未读，登记为 `boss-twice-action-spell-miss-rate`。"
+    "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#5ae1febbb8": {
+      "item": "boss-twice-action-after-lead-down",
+      "text": "原版的判负时机未读，登记为 `boss-twice-action-after-lead-down`。"
     }
   }
 }
