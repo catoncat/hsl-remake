@@ -2563,7 +2563,7 @@
         "reason": "ITEM 无消耗品置「全清」位，重制同样没有"
       },
       {
-        "source": "scope:docs/evidence_packets/static_reverse/original_unconsumed_fields.md|negative-evidence|PLAYERS.class 读取后 10 条指令内无 class 常量比较、install_code（+0x84）除 0x44fa80／0x44fad0 外无读者，均为有界线性扫描",
+        "source": "scope:docs/evidence_packets/static_reverse/original_unconsumed_fields.md|negative-evidence|PLAYERS.class 读取后 10 条指令内无 class 常量比较、install_code（+0x84）除 0x44fa80／0x44fad0 外无读者，均为有界线性扫描；0x406eb0 调用者（0x441d47／0x4425bc／0x4452f1，无指针引用）与 0x42c180 51 个调用点前 14 条指令为全 .text 有界线性扫描",
         "reason": "两条否定结论只支撑 class 与 install_code 无规则效果；class 重制已作显示，install_code 改号一路重制按 SID token 寻址"
       },
       {

@@ -699,8 +699,11 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 	effect.add_child(text)
 	_play_hit_sound(strike, attacker, defender, hit)
 	# The close-up defender's dodge (0x4041ea..0x404247) plays its template's dodge sound
-	# (0x409760, +0xc) on the tick it starts; a magic miss only spawns MISS (0x40aa80).
-	if not hit and not strike.has("magic_key"):
+	# (0x409760, +0xc) on the tick it starts; a magic miss only spawns MISS (0x40aa80): the
+	# magic channel 0x442a90 creates no defender object (0x406eb0 is called only at 0x441d47,
+	# 0x4425bc, 0x4452f1). A skill defender (+0xa4 = 2) runs its script from 0x403954 and
+	# never reaches phase 1 (0x403f13), so a skill miss has no dodge sound either.
+	if not hit and not strike.has("magic_key") and not strike.has("skill_name"):
 		_play_sound(defender, "miss")
 	_animate_impact_text(effect, text, digits, miss, words, half)
 
@@ -709,6 +712,7 @@ func _present_impact(strike: Dictionary, attacker: Dictionary, defender: Diction
 ## the attacker's sound_shoothit (0x406dc9 keeps it in [0x4c13f8] for every strike, whatever the
 ## weapon), else the target's sound_hit (0x409790, template +0x10), else the attacker's weapon
 ## sound (claw and sting, icons above dagger, take 405 hit_sword). A miss plays only the dodge.
+## Magic (mode 1) and skill (mode 2) strikes never run this phase-1 branch in the original.
 func _play_hit_sound(strike: Dictionary, attacker: Dictionary, defender: Dictionary, hit: bool) -> void:
 	if not hit or strike.has("skill_name") or strike.has("magic_key"):
 		return
