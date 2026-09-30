@@ -1,6 +1,6 @@
 # 原版裁判批量对照：AI 首轮回放判定与行动种类频率
 
-> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验; provisional: 分布等价只靠频率对拍、重制治疗通道次序 · status: record-only · functions: 0x407340, 0x407510, 0x409e40, 0x40bb80, 0x40c3a0, 0x40c570, 0x40c770, 0x40dd80, 0x413740, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x45fc01, 0x45fd4b, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-28
+> evidence: runtime-measured: 原版 127 关 × 3 种子首轮逐行对照重制导出，规则候选以喂原版抽签的整轮回放判定，行动种类频率按关分层检验; provisional: 分布等价只靠频率对拍、重制治疗通道次序 · status: record-only · functions: 0x407340, 0x407510, 0x409090, 0x409e40, 0x40bb80, 0x40c3a0, 0x40c570, 0x40c770, 0x40d8b0, 0x40dd80, 0x413740, 0x426680, 0x42cb30, 0x42da60, 0x440375, 0x45fc01, 0x45fd4b, 0x4602d4 · tools: export_ai_action_frequency.gd, export_enemy_turns.gd, hsltools/probes/_batch_rules.py, hsltools/probes/_enemy_level.py, hsltools/probes/ai_action_frequency.py, hsltools/probes/ai_replay.py, replay_ai_actions.gd, test_hsl_enemy_level.py · updated: 2026-09-30
 
 ## 结论
 
@@ -68,6 +68,21 @@
 - 帧循环中途经 `0x4602d4` 载资源时资源号超过表长 `[0x4bbb38]`，`0x45fd4b` 返回句柄 0；`_enemy_level.EmptyFiles` 把未知句柄当空文件，之后在 `0x4603ca` 停机（31 局），停机那一回合截掉，532 s1 首轮内停机不比。
 
 逐关数据：[oracle_batch.json](oracle_batch.json)（旧口径首轮 128 关 × 3 种子）、[oracle_batch_ai_prio.json](oracle_batch_ai_prio.json)（`ai_action_frequency.py` 读取其关卡清单）。旧口径各轮的叙述由上面的回放判定与新口径复跑取代。
+
+## 劫數 · 地劫神（LEVEL059）法术落空后的普攻
+
+地劫神（actor060_1）是 3×3 身体、移动力 0，武器槽装物品 55（action_twice、range5CellCircle）。局面把雷歐納德放在离身体中心 [40,16] 5 格的 [40,21]、[37,19]、[35,16]，max_hp／hp 999，玩家待机；`_enemy_level.py batch --levels 59 --seeds 1,2,3,4,5,6,7,8 --turns 2 --align --mix 20 --jobs 1`，三格各 8 个种子。
+
+| 侧 | 回合 | 法术落空后的侧移掷骰 | 其中掷后落到普通进攻 | 普攻出手 |
+| --- | ---: | ---: | ---: | ---: |
+| 原版 | 45（另 2 个在 `0x4603ca` 停机） | 32（`0x43ff32`） | 26（掷值 >10） | 0 |
+| 重制 | 48（74 行） | 11（`AIDecisionRules.side_walk_roll`） | 11 | 14（11 次在侧移掷骰后，3 次由类别直接选中） |
+
+- 原版：每次法术落空，`0x43feba` 掷 `0x43ff32`，掷值 >10 落到 `0x440041` 普通进攻；按静态读法随后是 `0x409090` 查武器槽（物品 55，非 0）与 `0x40d8b0` 找普攻站位（[original_ai_navigation](../../static_reverse/original_ai_navigation.md)）。26 次都没有出手，这一次行动就此结束：带侧移掷骰的回合伤害只有另一次行动的法术（123–423，其中 123、227 是打掉剩余血量），种子 6、7 第 1 回合整回合待机。没有逐指令追踪是在哪一步退出。
+- 重制：同局面侧移不成立后照常走普通类别并原地普攻，单次 108–518。种子 1 第 1 回合整回合伤害原版 409（一次 EARTH magicCode04），重制 891（普攻 454＋EARTH magicCode04 437）。
+- 停机：[37,19] 种子 1 第 2 回合、种子 4 第 1 回合在 `0x4603ca` 停机，种子 4 第 2 回合因此没跑；停机回合不比。
+- 原版这一不出手重制未复原，登记为 `boss-twice-action-normal-attack-reach`。
+- 两边每个造成伤害的回合都足以打倒 163 血的雷歐納德，所以对这一关的胜负性质没有改变；离中心 2–4 格的种子 1 探测里原版两次行动都成功施法，没有进入普通进攻。
 
 ## 重制接线
 

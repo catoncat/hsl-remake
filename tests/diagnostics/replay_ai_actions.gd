@@ -300,7 +300,11 @@ static func dict_with(source: Dictionary, key: String, value: Variant) -> Dictio
 func _finish(loop: Dictionary, pending: Dictionary, expected: Dictionary, after: Dictionary, k: int, tracked: Dictionary, sticky: Array, feeder: Feeder, result: Dictionary) -> Dictionary:
 	var entries: Array = pending["entries"]
 	var merged: Dictionary = entries[0].duplicate(true)
+	# The compared row is {actor, from, to, action, target, skill} whether one entry or an
+	# action_twice pair was merged: draws and the per-step hp are dropped (the board follows the
+	# original's action_after hp below, not the remake's).
 	merged.erase("draws")
+	merged.erase("hp")
 	for i in range(1, entries.size()):
 		var last: Dictionary = entries[i]
 		var keep: Dictionary = last if str(last["action"]) != "wait" else (merged if str(merged["action"]) != "wait" else last)

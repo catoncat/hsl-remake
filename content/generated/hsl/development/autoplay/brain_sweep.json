@@ -10,7 +10,7 @@
   "seed": 1,
   "evidence_tier": "current-godot",
   "run": "HSL_AUTOPLAY_BRAIN=lookahead HSL_AUTOPLAY_DEBUG_AI=1 HSL_AUTOPLAY_LEVELS=<shard> tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd, shards of 1-24 battles in campaign order, every battle booted standalone with the opening party (no chapter growth); read from the STEP_DBG trace: first_friendly_death_round counts player-side units only (the battle's playable party and friendly NPCs); defeat_unit is the scenario's player_unit_id when the lead unit fell, otherwise the unit the fail clause names (the player-side unit whose fall ended the battle); defeat_same_hit lists the player-side units downed by the same hit; by=counter when the unit fell to a counter on its own action. handoff_replay: HSL_AUTOPLAY_HANDOFF=<playtest kit>/snapshots/<NNNN>.json HSL_AUTOPLAY_BRAIN=lookahead HSL_AUTOPLAY_DEBUG_AI=1 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd, stopped once round 4 began; the snapshot is the chapter walk hand-off saved just before this battle (tools/hsl_playtest_kit.py generate --force-win, not tracked)",
-  "note": "Snapshot of 2026-09-30; the greedy fields follow results.json and are replaced by it when the two disagree. Exploration driver (tests/support/AutoplayBrain.gd lookahead) over the remake rules with the loop RNG seeded; not evidence about original balance, and a standalone battle is not the chapter walk's difficulty (the walk arrives with a grown party). cause: hero_down = the lead unit (player_unit_id) fell; must_survive_down = another unit the fail clause names fell; rule_suspect = fails in round 1–2 in a way that does not read as difficulty and still does with the walk hand-off party (see note and handoff_replay); underleveled_standalone = fails in round 1–2 standalone but not with the walk hand-off party (opening party against a later battle); driver_stalemate = dead_end from the driver holding position; unfinished = not played to an outcome.",
+  "note": "Snapshot of 2026-09-30; the greedy fields follow results.json and are replaced by it when the two disagree. Exploration driver (tests/support/AutoplayBrain.gd lookahead) over the remake rules with the loop RNG seeded; not evidence about original balance, and a standalone battle is not the chapter walk's difficulty (the walk arrives with a grown party). cause: hero_down = the lead unit (player_unit_id) fell; must_survive_down = another unit the fail clause names fell; rule_suspect = fails in round 1–2 in a way that does not read as difficulty and still does with the walk hand-off party, not yet checked against the original (see note and handoff_replay); hard = a rule_suspect battle that the original referee (tools/hsltools/probes/_enemy_level.py batch, players waiting) plays with the same enemy reach and damage scale over rounds 1–2, so the loss is the battle's difficulty (see note); rule_gap:<id> = the referee shows a divergence recorded in parity_gap_inventory under <id>; underleveled_standalone = fails in round 1–2 standalone but not with the walk hand-off party (opening party against a later battle); driver_stalemate = dead_end from the driver holding position; unfinished = not played to an outcome.",
   "summary": {
     "snapshot": "2026-09-30",
     "battles": 128,
@@ -57,7 +57,8 @@
     ],
     "causes": {
       "hero_down": 70,
-      "rule_suspect": 3,
+      "hard": 2,
+      "rule_gap:boss-twice-action-normal-attack-reach": 1,
       "must_survive_down": 1,
       "unfinished": 1,
       "underleveled_standalone": 2,
@@ -288,8 +289,8 @@
       "defeat_round": 2,
       "defeat_unit": "tina",
       "defeat_by": "actor034_2",
-      "cause": "rule_suspect",
-      "note": "all three drivers fail in round 2 (greedy rounds=2, scored fail in 2 rounds, lookahead 2 plans): 緹娜, the unit the fail clause names, falls to actor034_2 while 雷歐納德 is untouched; next: compare LEVEL010 opening cells and actor034 movement/reach of rounds 1–2 with the original (_enemy_level.py batch --turns 2 on LEVEL010)"
+      "cause": "hard",
+      "note": "all three drivers fail in round 2 (greedy rounds=2, scored fail in 2 rounds, lookahead 2 plans): 緹娜, the unit the fail clause names, falls to actor034_2 while 雷歐納德 is untouched. Original referee (_enemy_level.py batch --levels 10 --seeds 1,2,3 --turns 2 --align --mix 20, players waiting, template party): rounds 1–2 have the same actors, order and targets on both sides (agree 5／2／0 of 8, order 8／8／8); the other rows land 1–5 cells apart (e.g. seed 1 round 2 actor035_2 original [16,16], remake [21,11]), from AI draws neither side replays. The row that decides the battle is the same in all three seeds on both sides: actor034_2 moves to [13,7] and attacks 雷歐納德 30→0. Seed 2 has one remake HP change the original lacks, actor034_2 −16 settled as the queue reaches it in round 2, which goes with its different round-1 stop (remake [10,7], original [11,6]). With 999 HP boards the same hit deals original 35／39／31, remake 37／34／33. Reach and damage match the original, so the round-2 loss is the battle's difficulty for the opening party."
     },
     "12": {
       "title": "巴瀚納海峽 · 風雨中的船戰",
@@ -647,7 +648,8 @@
       "defeat_round": 5,
       "defeat_unit": "leonard",
       "defeat_by": "actor038_5",
-      "cause": "must_survive_down"
+      "cause": "must_survive_down",
+      "note": "lookahead fails in round 5 when 雷歐納德 falls to actor038_5. Original referee (_enemy_level.py batch --levels 26 --seeds 1-12 --turns 5 --align --mix 20, players waiting, template party): both sides stop at the defeat. 雷歐納德 is down in 7 of 12 seeds on each side, not the same seeds: original seeds 2, 5, 8–12 in rounds 3–5, so those 7 original runs end before five rounds are played; remake seeds 1, 3, 5–8, 12 in rounds 4–5. Player units down, 45 against 42 over the 12 seeds, is for reference only, since the runs end at different points. Row counts differ by the known actor101 (ship hull) zero-frame rows. The five-round pressure is of the same order as the original; no rule gap shown."
     },
     "28": {
       "title": "眾神的宮殿遺址 · 神殿守衛",
@@ -1177,8 +1179,8 @@
         "hero_fell_round": 2,
         "defeat_by": "actor060_1"
       },
-      "cause": "rule_suspect",
-      "note": "greedy and lookahead fail in the same round (scored not run): 雷歐納德 falls to actor060_1 (地劫神) in the second enemy phase. Replayed with the walk hand-off party (handoff_replay): still round 2, 地劫神 takes 雷歐納德 from 163 HP to 0 in one hit, so the opening party is not the cause; next: check WINFAIL059 for a scripted defeat／event hand-off and the original 地劫神 damage of rounds 1–2 (_enemy_level.py batch --turns 2 on LEVEL059)"
+      "cause": "rule_gap:boss-twice-action-normal-attack-reach",
+      "note": "greedy and lookahead fail in the same round (scored not run): 雷歐納德 falls to actor060_1 (地劫神) in the second enemy phase; with the walk hand-off party (handoff_replay) 地劫神 takes him from 163 HP to 0 in one entry. WINFAIL059 has no scripted defeat: fail is 雷歐納德 dead, and actSetPlayerUndead targets 地劫神 at low HP inside the win section. Original referee (_enemy_level.py batch --align --mix 20, players waiting, template party): on the default board (--levels 59 --seeds 1,2,3 --turns 2) 地劫神 (3×3 body at [40,16], move_point 0, weapon item 55 action_twice) waits both rounds on both sides. The original writes one row per action_twice entry (both actions, one HP total), the remake one row per action, so a single remake action is not compared with an original row; entry totals differ by up to about three times, in either direction (雷歐納德 at 999 HP, round 1, seed 1: [40,18] original 716 against remake 223, [40,21] original 409 against remake 454 + 437). Reach probe over cells two to five from the centre (雷歐納德 999 HP, seed 1): at [40,20] and [36,16] the original stops at eip 0x4603ca while casting and gives no reading, not compared. Supported: every damaging entry on both sides is lethal to 163 HP, so the loss is of the same nature on both sides. Rule gap: with 雷歐納德 five cells from the centre ([40,21], [37,19], [35,16]; seeds 1–8, two rounds; 45 original rounds read, 2 stopped at 0x4603ca) the original falls to the ordinary attack after a missed spell 26 times (0x43ff32 roll above 10 → 0x440041, then 0x409090 weapon check and 0x40d8b0 station search) and never strikes, while the remake strikes 14 times (11 of them after AIDecisionRules.side_walk_roll); recorded as boss-twice-action-normal-attack-reach (oracle_batch README). Cells inside the 3×3 body (an injected overlap that play cannot reach) differ: original waits, remake attacks −454／−445."
     },
     "73": {
       "title": "悲嘆之湖・兄弟的抉擇",
@@ -1286,8 +1288,8 @@
         "hero_fell_round": 2,
         "defeat_by": "actor049_4"
       },
-      "cause": "rule_suspect",
-      "note": "greedy and lookahead fail in the same round (scored not run): in the standalone run actor065_6 downs four units in one hit in round 2, 雷歐納德 among them. Replayed with the walk hand-off party (handoff_replay): still round 2, actor065_3, actor049_2 and actor049_4 take 雷歐納德 161→55→6→0 in the second enemy phase; next: compare the round-2 reach and damage of actor065／actor049 with the original (_enemy_level.py batch --turns 2 on LEVEL076)"
+      "cause": "hard",
+      "note": "greedy and lookahead fail in the same round (scored not run): in the standalone run actor065_6 downs four units in one hit in round 2, 雷歐納德 among them; with the walk hand-off party (handoff_replay) actor065_3, actor049_2 and actor049_4 take 雷歐納德 161→55→6→0 in the second enemy phase. Original referee (_enemy_level.py batch --levels 76 --seeds 1,2,3 --turns 2 --align --mix 20, players waiting, template party): agree 13／11／11 of 20／20／22 original rows, seed 3 truncated in round 2. Round 1, on both sides and in every seed: actor049_5 moves to [14,17] and attacks 緹娜 36→0. Round 2: in seeds 1–2 the original's actor065_6 casts AIR magicCode02 and downs 雷歐納德 and 漢克斯, which ends the battle; the remake downs 雷歐納德 in all three seeds (actor049_4／actor049_2 attacks or actor065_6 EARTH magicCode03 over an area). In seed 3 the original stops at eip 0x4603ca while actor049_2 casts in round 2 and has no reading after it; a truncated round is not compared (oracle_batch README). With 999 HP boards round 1 is on the same scale (actor049_5 on 緹娜 original 62／77／70, remake 80／62／64); round 2 stops at 0x4603ca in all three original seeds (actor049_2 or actor049_4 casting), so its damage is not compared. The hand-off loss 161→55→6→0 was not observed on the original side: the board carries only hp／max_hp／level／speed per unit and the hand-off party was not injected."
     },
     "77": {
       "title": "破滅的命運 · 毀滅天使",

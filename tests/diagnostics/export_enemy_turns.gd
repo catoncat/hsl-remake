@@ -3,7 +3,11 @@ extends SceneTree
 ## Enemy-turn export (`enemy_turn_v1`): load a level's opening on the pure PlayLoop, fix
 ## every random stream's starting point, run N rounds and print one JSON object per round
 ## listing each NPC action in order (actor, from→to, action, target, skill, and every AI
-## decision draw with its site). The remake counterpart of the emulator run of the
+## decision draw with its site, and "hp": each unit's HP change over the step, as the
+## referee meta's action_after hp — it also holds the HP settled when the step advances to
+## the next queue slot (terrain, status); an action_twice unit is one original row against two
+## remake rows, whose hp add up to it, and the ship-hull zero-frame rows (actor101_x) are to be
+## aligned before rows are paired). The remake counterpart of the emulator run of the
 ## original program on the same board, for cell-by-cell comparison and batch sweeps of
 ## level openings. Diagnostic only, not a gate: no rule changes — draws are recorded by
 ## wrapping the AI source RNG in a Callable (CoreCombatRules accepts either; same values).
@@ -23,7 +27,7 @@ extends SceneTree
 ##   --state FILE        board overrides after opening growth: {"growth": false (births without
 ##                       level dispersion, the referee's growth false; with "speed" the template
 ##                       roster, no births), "turn": n, "speed": {id: n},
-##                       "units": {id: [x, y]}, "hp": {id: n}, "dead": [id], "targets": {id: id},
+##                       "units": {id: [x, y]}, "max_hp": {id: n}, "hp": {id: n}, "dead": [id], "targets": {id: id},
 ##                       "resume_after": id (start mid-round after that unit's slot)};
 ##                       ids with or without the "actor" prefix; the queue is rebuilt
 ##   --state-key KEY     take the board from FILE[KEY] (one file holding several boards)
@@ -293,10 +297,15 @@ func _inject(base: Dictionary, state: Dictionary) -> Dictionary:
 	var speeds: Dictionary = state.get("speed", {})
 	var coords: Dictionary = state.get("units", {})
 	var hps: Dictionary = state.get("hp", {})
+	var max_hps: Dictionary = state.get("max_hp", {})
 	var dead: Array = state.get("dead", [])
 	var targets: Dictionary = state.get("targets", {})
 	for unit in loop["units"]:
 		var short := str(unit["id"]).trim_prefix("actor")
+		# Every key's max_hp first, then hp clamped to it: a board may name the cap under one
+		# key form and the HP under the other.
+		for key in [short, str(unit["id"])]:
+			if max_hps.has(key): unit["max_hp"] = int(max_hps[key])
 		for key in [short, str(unit["id"])]:
 			if speeds.has(key): unit["live_speed"] = int(speeds[key])
 			if coords.has(key): unit["coord"] = Vector2i(int(coords[key][0]), int(coords[key][1]))
@@ -360,7 +369,21 @@ func _action_entry(before: Dictionary, after: Dictionary, draws: Array) -> Dicti
 		var site := _site(draw["stack"])
 		if site != "": ai_draws.append({"site": site, "n": int(draw["n"]), "value": int(draw["value"])})
 	return {"actor": actor_id, "from": [start.x, start.y], "to": [to.x, to.y], "action": verb,
-		"target": target, "skill": skill, "draws": ai_draws}
+		"target": target, "skill": skill, "draws": ai_draws, "hp": _hp_delta(before, after)}
+
+
+## HP change of every unit over one AI step (the original side's meta action_after hp): id -> after - before, non-zero only.
+## `after` is the loop once step_ai_turn has moved on to the next queue slot, so the HP settled on that advance (terrain,
+## status) is counted here too. An action_twice unit gives two rows whose hp sum to the original's one row.
+static func _hp_delta(before: Dictionary, after: Dictionary) -> Dictionary:
+	var old := {}
+	for unit in before.get("units", []): old[str(unit["id"])] = int(unit.get("hp", 0))
+	var delta := {}
+	for unit in after.get("units", []):
+		var id := str(unit["id"])
+		var change := int(unit.get("hp", 0)) - int(old.get(id, unit.get("hp", 0)))
+		if change != 0: delta[id] = change
+	return delta
 
 
 ## The original's recorded AI magic/special target: the cast state writes [0x4c1cec] = 0x4104d0(0) right after
