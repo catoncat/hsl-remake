@@ -2028,24 +2028,24 @@
       ]
     },
     {
-      "id": "boss-twice-action-normal-attack-reach",
-      "difference": "劫數 · 地劫神（LEVEL059）的地劫神（actor060_1，3×3 身体、移动力 0、武器槽物品 55：action_twice、range5CellCircle）法术落空后的普攻：雷歐納德站在离身体中心 5 格（[40,21]、[37,19]、[35,16]）时，原版每次法术落空掷 0x43ff32、掷值 >10 落到 0x440041 普通进攻后都不出手，这一次行动就此结束；重制同一局面在 AIDecisionRules.side_walk_roll 后照常原地普攻。原版裁判种子 1–8、两回合：原版 26 次落到普通进攻、0 次出手，重制普攻 14 次（11 次在侧移掷骰后）；种子 1 第 1 回合整回合伤害原版 409、重制 891。两边每个造成伤害的回合都足以打倒 163 血的雷歐納德",
-      "original": "0x43feba 抽 0x43ff32：魔法进攻无法术目标时 rand(100)<11 走一步侧移，否则回到 0x440041 普通进攻；0x409090 武器 +0xec 为 0 才跳 0x441eb8 结束回合（物品 55 在武器槽，非 0）；0x40d8b0→0x413390 以目标为原点按地形射程收集「洪泛到达 ∩ 射程格 ∩ 无单位」的站位。原版裁判只看到不出手，没有逐指令追踪是在 0x409090 之后哪一步退出",
+      "id": "boss-twice-action-spell-miss-rate",
+      "difference": "劫數 · 地劫神（LEVEL059）的地劫神（actor060_1，3×3 身体、移动力 0、武器槽物品 55：action_twice、range5CellCircle），雷歐納德站在离身体中心 5 格（[40,21]、[37,19]、[35,16]）：5 格不普攻已照原版（移动力 0 → 0x40d8b0 洪泛半径 0 → 0x40f200 在 0x40f24b 跳过、0x413390 收不到站位 → 0x440094 读 live+0x12c 为 0 → 0x441eb8 结束回合）；剩余：同探点原版法术落空 32 次、重制 11 次（8 种子 × 3 探点），整回合伤害量级只有种子 1 第 1 回合 409 对 423 一组对照，落空判定或法术目标选择读法待查。两边每个造成伤害的回合都足以打倒 163 血的雷歐納德",
+      "original": "每次法术落空 0x43feba 掷 0x43ff32（5 格三探点 8 种子共 32 次），掷值 >10 落到 0x440041 普通进攻，因移动力 0 经 0x440094 → 0x441eb8 结束回合、不出手；法术为何落空（命中判定或法术目标选择）没有逐指令读",
       "original_evidence": [
         "docs/evidence_packets/runtime_observations/oracle_batch/README.md",
         "docs/evidence_packets/static_reverse/original_ai_navigation.md"
       ],
-      "remake": "BattleLoopAI._ai_side_walk 掷 side_walk_roll 不取侧移后回到普通类别，AINavigationRules.attack_stations／attack_station 给出站位并原地普攻；两边在哪一步分开未查明",
+      "remake": "5 格不普攻已照做（AINavigationRules.attack_stations 移动力 0 返回空，BattleLoopAI._ai_offense 站位落空且移动力 0 时结束回合，wait_reason immobile_no_station）；同探点法术落空 11 次，落空判定或 SkillTargetRules.candidate_centers 的法术目标选择与原版在哪一步分开未查明",
       "remake_code": [
         "game/sim/loop/BattleLoopAI.gd:_ai_side_walk",
-        "game/sim/AINavigationRules.gd:attack_stations"
+        "game/sim/SkillTargetRules.gd:candidate_centers"
       ],
       "original_status": "read_partial",
       "visibility": "rare",
       "effort": "M",
       "category": "AI 行为",
       "sources": [
-        "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#4cecbed6fb"
+        "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#097c93094f"
       ]
     },
     {

@@ -1,10 +1,10 @@
 # 原 AI：持有目标、等待、守备固定点、追击走法与攻击站位
 
-> evidence: static-derived; runtime-measured: 原版抽签回放; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x40f8b0, 0x40fa80, 0x40fb20, 0x410a50, 0x411080, 0x4111a0, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43f413, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/ai_navigation.py, hsltools/probes/ai_replay.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-29
+> evidence: static-derived; runtime-measured: 原版抽签回放、移动力 0 的普通进攻出口; resource-derived: EVEF 字值; provisional: 固定点逐格路线 · status: live · functions: 0x40c9a0, 0x40cca0, 0x40d530, 0x40d800, 0x40d8b0, 0x40eb80, 0x40ed50, 0x40f200, 0x40f440, 0x40f8b0, 0x40fa80, 0x40fb20, 0x410a50, 0x411080, 0x4111a0, 0x411a30, 0x411b90, 0x413390, 0x413740, 0x42bd50, 0x43f413, 0x43fbd6, 0x45ec32, 0x45ec63 · tools: hsltools/levels/seed.py, hsltools/probes/_normal_attack_trace.py, hsltools/probes/ai_navigation.py, hsltools/probes/ai_replay.py, run_ai_navigation_tests.gd, run_battle_reward_tests.gd · updated: 2026-09-30
 
 ## 结论
 
-- 原版：`object+0x88` 持有目标，保留用曼哈顿域、新查询用圆域，`ai_lock` 概率决定是否换；`wait_round` 每行动减一，受伤／异常／近敌提前结束；`ai_fixed` 是以锚点为中心的半径；追击与回固定点共用 `0x4111a0 → 0x411080` 精化（半径 `max(18,移动力)` 洪泛取曼哈顿最近可停格、半径 −2 重复）；攻击站位由 `0x40d8b0 → 0x413390` 按半格偏置距离降序选取，并以地形射程到站复查（static-derived；118 组原指令执行＋反汇编读法）。
+- 原版：`object+0x88` 持有目标，保留用曼哈顿域、新查询用圆域，`ai_lock` 概率决定是否换；`wait_round` 每行动减一，受伤／异常／近敌提前结束；`ai_fixed` 是以锚点为中心的半径；追击与回固定点共用 `0x4111a0 → 0x411080` 精化（半径 `max(18,移动力)` 洪泛取曼哈顿最近可停格、半径 −2 重复）；攻击站位由 `0x40d8b0 → 0x413390` 按半格偏置距离降序选取，并以地形射程到站复查（static-derived；118 组原指令执行＋反汇编读法）。移动力 0 的行动者：站位洪泛半径 0（`0x40f200` 在 `0x40f24b` 不写中心格就返回），`0x40d8b0` 恒 0，普通进攻在 `0x440094` 读到移动力 0 即 `0x441eb8` 结束回合，不出手也不追击；侧走与濒死检查的站位查询同样落空（static-derived；runtime-measured：劫數 · 地劫神（LEVEL059）5 格 24 局＋2–4 格 6 局有效（另 18 局在 `0x4603ca` 提前停机）0 普攻）。
 - EVEF 实例回调 `0x42bd50` 把实例字写进物品槽与 25 个 AI／调级／装备字段；敌友走同一 dispatcher，无武器的普通路径不移动（static-derived；实例字值 resource-derived）。
 - 重制：`game/sim/AINavigationRules.gd`（`approach_home`／`approach_point`／`attack_stations`／`attack_station`／`target_in_range`）、`game/sim/loop/BattleLoopAI.gd`、`game/sim/ActorInitializationRules.gd` 复刻上述链；第一战原版第 1 回合 12 个 AI 落点全部落在重制可产出集合内（见 [battle_051_ai_moves](../runtime_observations/battle_051_ai_moves/README.md)）。
 - 追击精化的洪泛就是移动洪泛：`0x4111a0` 传末参 0，`0x411080` 取 `0x40f440`（受地图边界）与行动者 `0x40bab0` 模式（P 2／E 3／N 7，飞行 6），每步代价＝上坡差＋`0x40eb80` 的 1／2、高差 ≥3 与敌方占位（mask）挡；洪泛按上下左右深度优先、每格存最大余量；候选按缓冲逐行扫描、像素曼哈顿距离取最近，某一级无候选则目标点不变；目标点是持有目标的像素位置，不是射程格。`no_attack` 单位（模板 +0xa0 bit 2）在 `0x43f413` 直接结束回合，不追击不施法；追击选中的格不可能是自身格（有单位跳过），`0x410a50` 自身格返回 0 只出现在站位＝自身格且打不到时，回合结束（static-derived，反汇编读法）。原版裁判喂原版抽签回放：玩家第 1 场 · 棄卒（LEVEL051）r1 32 种子 352/352、第 1 场与第 2 场 · 惡夢的終曲（LEVEL052）开场 32 种子 894/896 一致（其余 2 行落点一致、目标标签归口径）（runtime-measured）。
@@ -36,6 +36,9 @@
 | `0x440d5c..0x440d84` | 普通追击：`0x4111a0(actor, 目标+4, 目标+8, 0x12, +0x12c)`，与回固定点同入口同参数 |
 | `0x413740` | 洪泛行主序；跳过未到达／有单位（`&0x70000`）格；等距抽 `0x458c10&1`；`0x40d800` 数四个图内邻格命中 mask 数 ≥3 时 `rand(100)<80` 跳过（`0x413889..0x41389b`）；mask 换算 `0x10000→0x60000`、`0x20000→0x50000`、`0x40000→0x30000`，再或 0x4000；`0x411080` 收窄各级传 0（`0x41112b`），最后一级传自身侧位（`0x41114d`） |
 | `0x40d8b0`→`0x413390` | 抹自身占位（`0x411b90`），以目标为原点按地形射程（`0x40fa80`／`0x40f8b0`）收集「洪泛到达 ∩ 射程格 ∩ 无单位」，上限 500；3×3 目标按九个身体格顺序试；按 `\|2dx+1\|+\|2dy+1\|` 降序插入，仅与前项等键时抽 `rand()&1`（`0x41362f..0x413716`） |
+| `0x40d8b0` 的移动洪泛 | `0x40d8f7`／`0x40d911` 读 live+0x12c 移动力作半径，`0x40f440(actor, move, 6 或 0x40bab0 模式)` → `0x40f200` |
+| `0x40f200` 半径 0 | `0x40f247 test edx,edx`、`0x40f24b je 0x40f345`：缓冲按 1×1 清零后直接返回，中心格不写；`0x413390` 只收洪泛字非零且无 0x80 的格（`0x41345a..0x413464`；第二分支 `0x4135a2..0x4135a8` 同样查洪泛字非零、无 0x80），于是移动力 0 的行动者一格站位也收不到（自身格同样不算），`0x40d8b0` 恒返回 0，与目标距离、体型、射程无关；四个调用点 `0x43f959`／`0x43f9e1`（濒死检查）、`0x43ff4e`（侧走）、`0x44005d`（普通进攻）同果 |
+| `0x440041..0x4400ac` | 普通进攻：`0x409090` 有武器后 `0x40d8b0(actor, +0x88)`（`0x44005d`）；非零写回 +0x88、`0x40bee0` 广播、`+0x8c=0xb0000`；为零到 `0x440094` 读 live+0x12c，为 0 `je 0x441eb8` 结束回合（不出手、不追击），非 0 才 `0x4400a2` 置 `+0x8c=0xb0000` 进追击 |
 | `0x440b2c` | 站位不比攻击者远且四邻有敌时，`rand(99)+1` > 92（近战）或 78（远程）仍走到站位；否则目标已在射程内就原地攻击；都不成立则走到站位 |
 | `0x441311..0x441369` | 到站后以行动者为原点重建覆盖测持有目标，为零 `je 0x441eb8` 结束回合不出手 |
 | `0x4111a0` | `0x411080(actor, x, y, 0x12, move, 0)`；两处调用：`0x43fc46`（回固定点）、`0x440d7f`（追击） |
@@ -75,6 +78,15 @@ L051+L052 开场 (--align): AI_REPLAY_CHECK_PASS levels=2 runs=64 rows=896 agree
 | 玩家第 2 场 · 惡夢的終曲（LEVEL052）ally024_2 | [14,35]×12 [13,36]×9 [12,37]×6 [15,36]×2 [11,38]×2 [17,38]×1 | [13,36]×15 [12,37]×5 [17,38]×4 [11,38]×4 [10,39]×2 [14,35]×2 |
 
 分布差来自持有目标比例（023_2 原版 026_1:021_1＝17:15，重制 10:22）与两边随机流不同；同一抽签下落点逐行一致，本包的精化链不是分歧来源。原生洪泛移植前后这 64 局重制输出逐字节相同。
+
+**runtime-measured：普通进攻的移动力 0 出口**（`hsltools/probes/_normal_attack_trace.py`，原版裁判，batch 种子 `mixed_seed(S, 20)` S=1..8，2 回合，雷歐納德 hp／max_hp 999）：劫數 · 地劫神（LEVEL059）的 actor060_1 移动力 0，身体中心 (40,16)。
+
+| 雷歐納德所在 | 运行 | `0x440041` 进入 | `0x40d8b0` 调用（调用点） | `0x40f200` 半径 | `0x413390` 调用／到达格 | `0x40d8b0` 非零 | `0x440094` 读移动力 | 普攻 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 距中心 5 格：(40,21)／(37,19)／(35,16) | 24 | 33 | 39（`0x44005d` 33，`0x43ff4e` 侧走 6） | 全 0 | 349／0，缓冲均 1×1 | 0 | 33 次，全 0 | 0 |
+| 距中心 2–4 格：(40,18)／(40,19)／(40,20) | 24 | 6 | 6（`0x44005d`） | 全 0 | 51／0 | 0 | 6 次，全 0 | 0 |
+
+侧走抽取 `0x43ff32` 在 5 格探点 32 次，掷中后的 6 次 `0x40d8b0` 同样返回 0。2–4 格探点 24 局中 18 局在 `0x4603ca` 越界访问停机（裁判模拟器边界），停机前的数据同上。结论：移动力 0 的行动者在原版从不普攻，普通进攻总是经 `0x440094` 到 `0x441eb8` 结束回合，不进追击。
 
 **user-confirmed**：原版第二战皇帝与上方法师／重装队不会立即下压；重制 all-wait 复跑皇帝第 1–8 回合 `wait_round` 7→0，两名 026 第 3 回合才动（[remake_all_wait_trace_level52.txt](../runtime_observations/original_level17_escort/remake_all_wait_trace_level52.txt)）。
 

@@ -401,7 +401,9 @@ static func _ai_no_target_action(_loop: Dictionary, next: Dictionary, turn: Dict
 ## 0x44003c, _ai_side_walk). The ordinary category needs a weapon (0x409090, else the turn
 ## ends at 0x441eb8) and runs the station switch 0x40d8b0 from the held slot; the object
 ## it finds becomes the held target (0x440069), is broadcast to the call range (0x40bee0)
-## and state 0xb sub 0 strikes it. No station anywhere hands the turn to the pursuit.
+## and state 0xb sub 0 strikes it. No station anywhere hands the turn to the pursuit
+## (0x4400a2) only with move power; at 0 (0x440094 reads live+0x12c) the turn ends at
+## 0x441eb8 — an immobile actor has no station at all (AINavigationRules.attack_stations).
 static func _ai_offense(loop: Dictionary, next: Dictionary, turn: Dictionary) -> Dictionary:
 	var actor: Dictionary = turn["actor"]
 	var prepared: Dictionary = turn["prepared"]
@@ -424,6 +426,11 @@ static func _ai_offense(loop: Dictionary, next: Dictionary, turn: Dictionary) ->
 	var switched := _ai_station_switch(prepared, int(turn["target_index"]), next["units"])
 	decision["station_switch"] = {"held_id": str(target["id"]), "index": switched, "target_id": str(next["units"][switched]["id"]) if switched >= 0 else "",
 		"source": "0x440052..0x440085 / 0x40d8b0"}
+	if switched < 0 and int(actor["move_point"]) == 0:
+		var immobile: Dictionary = turn["action"]
+		immobile["wait_reason"] = "immobile_no_station"
+		decision["station_switch"]["end_turn"] = "0x440094..0x44009c → 0x441eb8"
+		return _finish_ai_call(next, turn["actor_id"], immobile, prepared, turn["adoption"])
 	if switched < 0: return {}
 	turn["adoption"] = _held_target_write(turn["adoption"], switched, true)
 	decision["call_target"]["adoption"] = turn["adoption"]

@@ -542,8 +542,12 @@ static func target_in_range(loop: Dictionary, actor: Dictionary, target: Diction
 ## the actor's own coverage; without one both fall back to the flat RANGE offsets. `routes`
 ## are the stoppable cells of the current envelope. A 3×3 target tries its body cells in
 ## LARGE_TARGET_CENTRES order and keeps the first centre with a station. Empty when no
-## station exists (the turn then pursues through approach_point).
+## station exists (the turn then pursues through approach_point). Empty for move power 0:
+## 0x40d8b0 floods with radius live+0x12c (0x40d8f7／0x40d911 → 0x40f440), 0x40f200 returns
+## at 0x40f24b before writing the centre cell, and 0x413390 collects only reached cells
+## (0x41345a..0x413464) — not even the actor's own cell.
 static func attack_stations(actor: Dictionary, target: Dictionary, offsets: Array, melee: bool, routes: Dictionary, terrain: Dictionary = {}) -> Dictionary:
+	if int(actor["move_point"]) == 0: return {}
 	var origin: Vector2i = actor["coord"]
 	var anchor: Vector2i = target["coord"]
 	var centres: Array = [anchor]
