@@ -28,6 +28,7 @@
 | `hsl_steam_classic.py` | Steam 經典版目录：下载命令、逐文件校验、PAK 比较、原曲清单 | `python3 tools/hsl_steam_classic.py verify` |
 | `web_build.py` | 浏览器版：取 Web 模板、暂存、导出核心和资源包、本机试玩服务；产物在 `ignored/web/`，带原版派生素材，不得公开托管 | `python3 tools/web_build.py build` |
 | `web_packs.py`（含 `web/pack_builder.gd`）／`web_deploy.py`／`web_gate.py`／`web_server.py` | 浏览器版的分包计划与构建；发布到私有 COS 桶（版本化、增量、可回滚）；密码门；在小服务器上装门和 HTTPS，见 [WEB](../docs/WEB.md) | `python3 tools/web_deploy.py push` |
+| `web_cf.py`（含 `web_cf_worker.js`）／`web_release.py` | 同一套发布放到 Cloudflare：私有 R2 桶加 Worker 密码门，用 wrangler 的登录会话，不需要令牌；`web_release.py` 是它和 `web_deploy.py` 共用的发布纯函数 | `python3 tools/web_cf.py push` |
 
 ### 标准入口
 

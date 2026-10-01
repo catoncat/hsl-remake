@@ -60,7 +60,23 @@ python3 tools/web_server.py install --host 服务器别名 --ip 公网IP --caddy
 - 门先验密码，页面和清单自己给，大文件一律 302 到带签名的 COS 链接，所以门所在机器的带宽无关紧要。门只该持有只读密钥。
 - 引擎和核心的链接在一个固定的时间窗口里不变，对象带 `immutable`，回访的玩家不再下载。资源包每次给一小时有效的新链接，游戏自己把它们存进浏览器。
 - `web_server.py` 用 Caddy 给裸 IP 申请 Let's Encrypt 的短期证书并自动续期，需要服务器的 80 和 443 对公网开放；它还管门的账号（`users`）、状态（`status`）和日志（`logs`）。
-- 换别的对象存储要改 `web_deploy.py` 和 `web_gate.py` 里 COS 的部分。
+- 另一条现成的后端是 Cloudflare（下一节）；换成别的对象存储要改 `web_deploy.py` 和 `web_gate.py` 里 COS 的部分。
+
+### 另一条后端：Cloudflare
+
+同一套版本布局也可以放在 Cloudflare：私有的 R2 桶存文件，一个 Worker（`tools/web_cf_worker.js`）当密码门，把 R2 里的文件直接流式返回，没有跳转也没有签名链接。R2 不收出网流量费，免费额度和限制以官方说明为准。全程走 `wrangler` 的登录会话（`wrangler login` 一次），不需要也不存 API 令牌或 S3 密钥：
+
+```sh
+python3 tools/web_cf.py init --hostname 子域名      # 建私有桶和 KV，部署 Worker 与自定义域名；域名要在你的 Cloudflare 账号里
+python3 tools/web_cf.py users import --host 服务器别名   # 把 COS 门的账号灌进 Worker；也可 users add 名字
+python3 tools/web_cf.py push --keep 3
+python3 tools/web_cf.py releases               # 另有 rollback 版本号、check、status、deploy
+```
+
+- `web_cf.py push` 和 `web_deploy.py push` 读同一个 `dist/`，两边都要更新就各跑一次。设 `HSL_CF_CHECK_AUTH=用户名:密码`，push 切换后会逐个文件经门核对大小，不符就把 `latest.json` 放回上一版。
+- 门的行为和 `web_gate.py` 对齐：Basic 认证、同一地址输错 5 次封 5 分钟、只服务版本表里的路径、资源包 `no-store`。页面、清单、引擎和核心都带 ETag：回访只做一次条件请求，没变就回 304、不重新下载。这里不能像 COS 那样给引擎和核心 `immutable`，因为它们的网址在每个版本里都一样，长期缓存会让回访的玩家永远停在第一次下到的版本。
+- 账号存在 Worker 的 `USERS` secret 里，secret 读不回来，所以 `users` 在 `ignored/web/cf-users` 留一份 0600 的副本来编辑。
+- Cloudflare 的普通线路在大陆没有节点，大陆玩家的速度和稳定性取决于各自的线路，不像国内对象存储那样稳定。面向大陆玩家时，先用真实的网络测过，再决定它当主入口还是备用入口。
 
 维护者自己那一套线上部署的现状、账号、费用和风险记在 `docs/internal/WEB_DEPLOY.md`（内部文档，不随公开导出）。
 

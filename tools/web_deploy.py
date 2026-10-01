@@ -22,12 +22,10 @@ import argparse
 import base64
 import concurrent.futures
 import configparser
-import datetime
 import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
 import time
 import urllib.error
@@ -42,22 +40,10 @@ try:
 except ImportError:
     raise SystemExit('web_deploy.py talks to COS through its S3 API and needs boto3: pip install boto3')
 
-ROOT = Path(__file__).resolve().parent.parent
-WORK = ROOT / 'ignored' / 'web'
+from web_release import (DIST, THREADS, WORK, cache_control, content_type, dist_files, hash_files, is_blob, json_bytes, mb,
+                         new_release_id, now_iso, object_keys, release_record, say)
+
 CONFIG = Path(os.environ['HSL_DEPLOY_CONFIG']) if os.environ.get('HSL_DEPLOY_CONFIG') else WORK / 'deploy.json'
-DIST = WORK / 'dist'
-BLOB_SUFFIXES = ('.wasm', '.pck')
-TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.wasm': 'application/wasm',
-         '.pck': 'application/octet-stream', '.png': 'image/png', '.json': 'application/json'}
-THREADS = 8
-
-
-def say(message: str) -> None:
-    print(message, flush=True)
-
-
-def mb(count: int | float) -> str:
-    return f'{count / 1048576:.1f} MB'
 
 
 def load_config() -> dict:
@@ -88,31 +74,6 @@ def client(cfg: dict):
     return s3
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open('rb') as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b''):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def is_blob(rel: str) -> bool:
-    return rel.endswith(BLOB_SUFFIXES)
-
-
-def blob_key(sha: str, rel: str) -> str:
-    """Big files live under their content hash, shared by every release that carries them."""
-    return f'blobs/{sha[:20]}/{Path(rel).name}'
-
-
-def cache_control(rel: str) -> str:
-    if is_blob(rel):
-        # engine and core: the browser may keep them for good (the key names the content); packs: the game stores them
-        # itself in IndexedDB, so keep them out of the HTTP cache
-        return 'no-store' if rel.startswith('packs/') else 'public, max-age=31536000, immutable'
-    return 'no-cache'
-
-
 def get_json(s3, bucket: str, key: str):
     try:
         return json.loads(s3.get_object(Bucket=bucket, Key=key)['Body'].read())
@@ -123,8 +84,7 @@ def get_json(s3, bucket: str, key: str):
 
 
 def put_json(s3, bucket: str, key: str, value: dict) -> None:
-    s3.put_object(Bucket=bucket, Key=key, Body=(json.dumps(value, ensure_ascii=False, indent=1) + '\n').encode('utf-8'),
-                  ContentType='application/json', CacheControl='no-cache')
+    s3.put_object(Bucket=bucket, Key=key, Body=json_bytes(value), ContentType='application/json', CacheControl='no-cache')
 
 
 def release_ids(s3, bucket: str) -> list[str]:
@@ -152,22 +112,16 @@ def cmd_push(args: argparse.Namespace) -> int:
     cfg = load_config()
     s3, bucket = client(cfg), cfg['bucket']
     dist = Path(args.dist or DIST).resolve()
-    files = {p.relative_to(dist).as_posix(): p for p in sorted(dist.rglob('*')) if p.is_file() and not p.name.startswith('.')}
-    for need in ('index.html', 'index.pck', 'packs/manifest.json'):
-        if need not in files:
-            raise SystemExit(f'{dist} has no {need}; run: python3 tools/web_build.py build')
-    info = json.loads((dist / 'build.json').read_text(encoding='utf-8')) if (dist / 'build.json').exists() else {}
-    git = info.get('git') or subprocess.run(['git', '-C', str(ROOT), 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    rid = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M') + '-' + git
+    files = dist_files(dist)
+    rid, git = new_release_id(dist)
     started = time.time()
-    with concurrent.futures.ThreadPoolExecutor(THREADS) as pool:
-        sums = dict(zip(files, pool.map(lambda rel: sha256_file(files[rel]), files)))
+    sums = hash_files(files)
     latest = get_json(s3, bucket, 'latest.json')
     previous = (get_json(s3, bucket, f'releases/{latest["release"]}/release.json') if latest else None) or {'files': []}
     # where each content already lives (a blob, or a file of the previous release written before blobs existed)
     known = {row['sha256']: row.get('key') or f'releases/{previous.get("id", "")}/{row["path"]}' for row in previous['files']}
     blobs = {o['Key']: o['Size'] for page in s3.get_paginator('list_objects_v2').paginate(Bucket=bucket, Prefix='blobs/') for o in page.get('Contents', [])}
-    keys = {rel: blob_key(sums[rel], rel) if is_blob(rel) else f'releases/{rid}/{rel}' for rel in files}
+    keys = object_keys(files, sums, rid)
     size_of = {rel: files[rel].stat().st_size for rel in files}
     plan = {}
     for rel in files:
@@ -185,7 +139,7 @@ def cmd_push(args: argparse.Namespace) -> int:
     transfer = TransferConfig(multipart_threshold=32 << 20, multipart_chunksize=16 << 20, max_concurrency=4)
 
     def headers(rel: str) -> dict:
-        return {'ContentType': TYPES.get(files[rel].suffix.lower(), 'application/octet-stream'), 'CacheControl': cache_control(rel), 'Metadata': {'sha256': sums[rel]}}
+        return {'ContentType': content_type(rel), 'CacheControl': cache_control(rel), 'Metadata': {'sha256': sums[rel]}}
 
     def put(rel: str) -> str:
         if plan[rel] == 'copy':
@@ -205,8 +159,7 @@ def cmd_push(args: argparse.Namespace) -> int:
     wrong = [rel for rel in files if remote.get(keys[rel]) != size_of[rel]]
     if wrong:
         raise SystemExit(f'verification failed for {len(wrong)} files, e.g. {wrong[:3]}; latest.json left as it was')
-    release = {'id': rid, 'git': git, 'created': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),
-               'bytes': sum(size_of.values()), 'files': [{'path': rel, 'size': size_of[rel], 'sha256': sums[rel], 'key': keys[rel]} for rel in files]}
+    release = release_record(rid, git, files, sums, keys)
     put_json(s3, bucket, f'releases/{rid}/release.json', release)
     put_json(s3, bucket, 'latest.json', {'release': rid, 'updated': release['created']})
     say(f'latest.json -> {rid}  ({time.time() - started:.0f}s)')
@@ -251,7 +204,7 @@ def cmd_rollback(args: argparse.Namespace) -> int:
     s3, bucket = client(cfg), cfg['bucket']
     if get_json(s3, bucket, f'releases/{args.release}/release.json') is None:
         raise SystemExit(f'no release {args.release}; see: python3 tools/web_deploy.py releases')
-    put_json(s3, bucket, 'latest.json', {'release': args.release, 'updated': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')})
+    put_json(s3, bucket, 'latest.json', {'release': args.release, 'updated': now_iso()})
     say(f'latest.json -> {args.release}')
     return 0
 
