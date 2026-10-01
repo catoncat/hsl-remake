@@ -19,6 +19,7 @@
  "run_support_magic_tests.gd": 5.48,
  "run_tactical_items_tests.gd": 1.988,
  "run_tests.gd": 17.12,
+ "run_touch_gesture_tests.gd": 0.001,
  "run_town_event_rules_tests.gd": 0.194,
  "run_ui_class_contract_tests.gd": 4.79,
  "run_water_strike_tests.gd": 3.889,

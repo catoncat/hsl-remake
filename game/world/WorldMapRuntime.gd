@@ -52,6 +52,7 @@ const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const SUMMARY_SCHEMA := "hsl_world_map_runtime.v1"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
+const TouchInput = preload("res://game/input/TouchControls.gd")
 ## The big-map walker moves its 16.16 speed 0x20000 = 2 px per tick (0x4277ed).
 const WALKER_PIXELS_PER_TICK := 2.0
 const MARKER_UNIT_ID := "party_marker"
@@ -197,6 +198,7 @@ func tick(delta: float) -> void:
 		return
 	var pan := BattleCameraController.scroll_direction(BattleCameraController.edge_direction(runtime.pointer_logical_position, runtime.pointer_inside_window and runtime.get_window().has_focus()))
 	runtime.camera_controller.pan(pan, delta, BattleCameraController.edge_scroll_pixels_per_second())
+	runtime.camera_controller.pan_by(TouchInput.take_pan())
 
 
 ## Consumes every input while the map is active. Left click on a reachable point

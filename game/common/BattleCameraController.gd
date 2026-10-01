@@ -309,6 +309,19 @@ func pan(direction: Vector2, delta: float, pixels_per_second: float) -> bool:
 	return true
 
 
+## Touch drag (TouchControls.take_pan): moves the camera by `offset` world pixels, clamped to the
+## map; player input stops a running glide. Returns whether the camera moved.
+func pan_by(offset: Vector2) -> bool:
+	if camera == null or offset == Vector2.ZERO:
+		return false
+	stop_scroll()
+	var next := clamped_position(camera.position + offset)
+	if next == camera.position:
+		return false
+	camera.position = next
+	return true
+
+
 static func edge_direction(point: Vector2, pointer_active: bool) -> Vector2:
 	# 0x43e4a0 uses strict viewport thresholds, independently on both axes; the
 	# caller pans at EDGE_SCROLL_PIXELS_PER_SECOND within the normal map bounds.

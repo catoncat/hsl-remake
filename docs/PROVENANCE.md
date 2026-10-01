@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (204 modules, 137 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (206 modules, 140 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (204)
+### 模块矩阵 (206)
 
 #### game/battle/runtime (18)
 
@@ -129,6 +129,13 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [DebugPause](../game/debug/DebugPause.gd) | remake-invented | remake-invented | remake-invented | remake-invented | n/a |
+
+#### game/input (2)
+
+| Module | rules | layout | strings | timing | audio |
+| --- | --- | --- | --- | --- | --- |
+| [TouchControls](../game/input/TouchControls.gd) | remake-invented | n/a | n/a | n/a | n/a |
+| [TouchGestureRecognizer](../game/input/TouchGestureRecognizer.gd) | remake-invented | n/a | n/a | remake-invented | n/a |
 
 #### game/settings (4)
 
@@ -283,7 +290,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (137)
+### remake-invented 清单 (140)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -363,6 +370,9 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [DebugPause](../game/debug/DebugPause.gd) | layout | top-left badge |
 | [DebugPause](../game/debug/DebugPause.gd) | strings | 「停格中」badge |
 | [DebugPause](../game/debug/DebugPause.gd) | timing | one step = one process frame |
+| [TouchControls](../game/input/TouchControls.gd) | rules | touch input; the original is played with mouse and keyboard only |
+| [TouchGestureRecognizer](../game/input/TouchGestureRecognizer.gd) | rules | touch gestures; the original is played with mouse and keyboard only |
+| [TouchGestureRecognizer](../game/input/TouchGestureRecognizer.gd) | timing | hold and two-finger tap windows |
 | [GameOptions](../game/settings/GameOptions.gd) | rules | option registry, value order code default < campaign option_defaults < player choice, presets, HSL_OPTIONS_PRESET seam [OPTIONS.md](../docs/OPTIONS.md) |
 | [GameSettings](../game/settings/GameSettings.gd) | rules | preset／presentation keys hold the 重製選項 choice; an older settings file's volume reads as its nearest tier, non-zero at least tier 1 [OPTIONS.md](../docs/OPTIONS.md) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | rules | Tab opens and closes 重製選項 over any screen and holds the game with the tree pause while it is up; the original binds no key to Tab [OPTIONS.md](../docs/OPTIONS.md) |
@@ -502,7 +512,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 57 | 31 | 34 | 14 | 1 | 137 |
-| n/a | 64 | 119 | 153 | 135 | 172 | 643 |
+| remake-invented | 59 | 31 | 34 | 15 | 1 | 140 |
+| n/a | 64 | 121 | 155 | 136 | 174 | 650 |
 
 <!-- provenance:end -->

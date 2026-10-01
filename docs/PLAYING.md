@@ -20,6 +20,15 @@
 
 用 `tools/play.sh` 启动时，P 和 N 是开发用的停格键：P 冻住整个游戏，N 往前走一帧，再按 P 继续，左上角会写「停格中」。不想要它就设 `HSL_DEBUG_PAUSE=0` 再启动。
 
+### 触屏
+
+手机、平板浏览器和触屏笔记本可以只用手指玩，这是重制新加的，原版只有键鼠。没有触摸屏的电脑完全不受影响，触屏笔记本上鼠标照常可用。
+
+- 一指点按等于左键点击，在抬手那一刻生效；按住不动一小会儿或按住拖动，等于按住左键拖。
+- 两指轻点等于右键：取消，或在战斗里打开系统卷轴，和 Esc、右键一样。
+- 两指按住一起移动就拖动战斗地图和大地图，松手即停。像抓着地图拖：手指往左，地图跟着往左。
+- 两指的手势不会点到手指下面的单位或格子。
+
 ## 存档
 
 存档放在 Godot 的用户数据目录 `HSL Remake` 下：macOS 是 `~/Library/Application Support/Godot/app_userdata/HSL Remake/`，Windows 是 `%APPDATA%\Godot\app_userdata\HSL Remake\`，Linux 是 `~/.local/share/godot/app_userdata/HSL Remake/`。

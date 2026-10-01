@@ -25,6 +25,7 @@ const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const MapSceneConfig = preload("res://game/battle/runtime/MapSceneConfig.gd")
 const WorldMapRuntime = preload("res://game/world/WorldMapRuntime.gd")
 const BattleCameraController = preload("res://game/common/BattleCameraController.gd")
+const TouchInput = preload("res://game/input/TouchControls.gd")
 const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const BattleOpeningCoordinator = preload("res://game/battle/scene/BattleScriptCoordinator.gd")
@@ -326,7 +327,11 @@ func _process(delta: float) -> void:
 		$BattlePresentation.target_vitals.hide()
 	elif interaction_state in Interaction.PLAYER_CONTROL and not has_actor_motion() and not ring_camera_return:
 		var pan := BattleCameraController.scroll_direction(BattleCameraController.edge_direction(pointer_logical_position, pointer_inside_window and get_window().has_focus()))
-		if camera_controller != null and camera_controller.pan(pan, delta, BattleCameraController.edge_scroll_pixels_per_second()):
+		var moved: bool = camera_controller != null and camera_controller.pan(pan, delta, BattleCameraController.edge_scroll_pixels_per_second())
+		# Two-finger pan: the pointer left with the last finger, so the hover follows only a pointer still inside.
+		if camera_controller != null and camera_controller.pan_by(TouchInput.take_pan()) and pointer_inside_window:
+			moved = true
+		if moved:
 			scene_input.update_pointer_hit(pointer_logical_position)
 		$BattlePresentation.preview_target(play_loop, hovered_unit_id, hovered_grid_cell)
 		overlays.refresh_skill_footprint(hovered_grid_cell)

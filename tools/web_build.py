@@ -61,6 +61,17 @@ DEV_ONLY = (
 )
 # The seven movie sheets are lossy WebP sources (21.6 MB); a lossless import inflates them to 104 MB.
 MOVIE_IMPORTS = 'content/imported/hsl/movie/*.webp.import'
+# Touch play (game/input/TouchControls.gd): Godot's shell already has the viewport meta with user-scalable=no and
+# body touch-action: none, and its canvas touch handlers call preventDefault. This adds what phones still do on
+# their own: pull-to-refresh and overscroll, the long-press callout and text selection, the tap highlight, and
+# Safari's pinch zoom (gesture* events, which ignore user-scalable=no). One line, single quotes only: it is a
+# string value in export_presets.cfg.
+HEAD_INCLUDE = (
+    '<style>html, body { overscroll-behavior: none; -webkit-touch-callout: none; -webkit-user-select: none;'
+    ' user-select: none; -webkit-tap-highlight-color: transparent; }</style>'
+    "<script>for (const type of ['gesturestart', 'gesturechange', 'gestureend'])"
+    ' document.addEventListener(type, (event) => event.preventDefault(), { passive: false });</script>'
+)
 PCK_MAGIC = 0x43504447
 
 
@@ -233,7 +244,7 @@ def preset_text(exclude: list[str], dist: Path = DIST) -> str:
         'vram_texture_compression/for_mobile=false',
         'html/export_icon=true',
         'html/custom_html_shell=""',
-        'html/head_include=""',
+        f'html/head_include="{HEAD_INCLUDE}"',
         'html/canvas_resize_policy=2',
         'html/focus_canvas_on_start=true',
         'html/experimental_virtual_keyboard=false',

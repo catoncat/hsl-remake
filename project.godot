@@ -14,6 +14,7 @@ SimplifiedDisplay="*res://game/text/SimplifiedDisplay.gd"
 DebugPause="*res://game/debug/DebugPause.gd"
 GameCursor="*res://game/cursor/GameCursor.gd"
 RemakeOptionsHotkey="*res://game/settings/RemakeOptionsHotkey.gd"
+TouchControls="*res://game/input/TouchControls.gd"
 
 [display]
 

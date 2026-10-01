@@ -4,15 +4,15 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 87,
-    "sources": 477,
+    "sources": 480,
     "sources_by_kind": {
-      "provenance": 193,
+      "provenance": 196,
       "sentence": 84,
       "scope": 102,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 50,
+    "layout_timing_modules": 51,
     "items_by_original_status": {
       "read_complete": 29,
       "read_partial": 39,
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 65,
+    "no_visible_effect_sources": 68,
     "resolved_sources": 20
   },
   "top": [
@@ -2417,6 +2417,18 @@
       {
         "source": "provenance:game/common/InterfaceArt.gd|rules|remake-invented|",
         "reason": "mod 界面图的路径查找；没放 authored 图时返回原路径，画面与原版导入件相同"
+      },
+      {
+        "source": "provenance:game/input/TouchControls.gd|rules|remake-invented|",
+        "reason": "触屏专用输入（手机／平板浏览器、触屏笔记本）；没有触摸屏的桌面不启用，原版纯键鼠操作的画面与规则不变"
+      },
+      {
+        "source": "provenance:game/input/TouchGestureRecognizer.gd|rules|remake-invented|",
+        "reason": "触屏专用输入（手机／平板浏览器、触屏笔记本）；没有触摸屏的桌面不启用，原版纯键鼠操作的画面与规则不变"
+      },
+      {
+        "source": "provenance:game/input/TouchGestureRecognizer.gd|timing|remake-invented|",
+        "reason": "触屏专用输入（手机／平板浏览器、触屏笔记本）；没有触摸屏的桌面不启用，原版纯键鼠操作的画面与规则不变"
       },
       {
         "source": "provenance:game/sim/BattleLoopConfig.gd|rules|remake-invented|",

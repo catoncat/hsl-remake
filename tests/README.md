@@ -88,6 +88,7 @@ python3 tools/verify_runner.py godot && python3 tools/verify_runner.py promote-t
 | [skill_effect_script](run_skill_effect_script_tests.gd) | EFFECTS.TXT 特效脚本、ANIMAL 程序、切入站位与飘字、地图姿势 | `sr/animal_program_execution`、`ro/effect_motion`、`ro/cutin_floaters` |
 | [presentation_contract](run_presentation_contract_tests.gd) | 共享演出合同：对白、身份遮罩、施法叠层、引导、AI 提示镜头 | `sr/native_presentation_helpers`、`ro/menus_ui` |
 | [ui_class_contract](run_ui_class_contract_tests.gd) | 全游戏 UI 类问题（原图不拉伸、亮字对位、断词、字库覆盖）、原版光标、段落标题卡 | `sr/original_dialogue_board`、`ro/game_cursor` |
+| [touch_gesture](run_touch_gesture_tests.gd) | 触屏手势：抬手才点、两指轻点只出右键、两指拖只平移、多余手指不点、按键不卡；桌面不启用 | —（重制自创） |
 | [battle_scene_runtime](run_battle_scene_runtime_tests.gd) | 战斗场景：空间合同、选择／移动／取消与指针输入、切入序列、成长分配、施法与道具 | `ro/menus_ui`、`sr/original_draw_order` |
 | [combat_aftermath](run_combat_aftermath_tests.gd) | 交锋收尾：死亡／经验／终局次序、升级窗弹给谁 | `ro/combat_aftermath`、`sr/original_growth_window` |
 | [battle_reward](run_battle_reward_tests.gd) | 金币／掉落／携带与加倍、领取次序 | `ro/battle_rewards` |
