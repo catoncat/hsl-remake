@@ -187,13 +187,13 @@
       "comfort_value": "original",
       "values": [
         {"id": "original", "label": "原版點陣字", "text": "原版：FONT.24／FONT.15 點陣字。"},
-        {"id": "system", "label": "系統字", "text": "改良：系統字（高分屏更清楚）。已開的畫面下次打開時換字。"}
+        {"id": "system", "label": "黑體", "text": "改良：內建黑體（思源黑體），放大後更清楚。已開的畫面下次打開時換字。"}
       ],
-      "why": "高分屏下系统字更清楚",
+      "why": "点阵字放大后发虚，黑体更清楚；网页上同样可用",
       "save_effect": "none",
       "changeable": "anytime",
       "read_points": [
-        "game/text/OriginalBitmapFont.gd:install（自动加载 SimplifiedDisplay._enter_tree 读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ ThemeDB 默认主题 default_font：原版值＝OriginalBitmapFont.font()（FONT.24／FONT.15 两面），改良值＝game/assets/ui_font.tres"
+        "game/text/OriginalBitmapFont.gd:install（自动加载 SimplifiedDisplay._enter_tree 读一次；重製選項页关闭且有值变了经 remake_options_changed 再读）→ ThemeDB 默认主题 default_font：原版值＝OriginalBitmapFont.font()（FONT.24／FONT.15 两面），改良值＝OriginalBitmapFont.readable()（随包的 game/assets/fonts/NotoSansSC-UI.woff2）"
       ],
       "evidence": ["bitmap-font"],
       "work": "S"
@@ -223,7 +223,7 @@
     ],
     "group_height": 20,
     "first_group_y": 68,
-    "rows": {"pitch": 41, "height": 39, "name_y": 1, "name_font": 16, "tag_font": 11, "segment_y": 3, "segment_font": 14, "segment_height": 20, "segment_padding": 9, "text_y": 21, "text_font": 13},
+    "rows": {"pitch": 41, "height": 39, "name_y": 1, "name_font": 16, "tag_font": 12, "segment_y": 3, "segment_font": 14, "segment_height": 20, "segment_padding": 9, "text_y": 21, "text_font": 14},
     "tags": [
       {"id": "presentation", "label": "演出"},
       {"id": "appearance", "label": "外觀"},

@@ -49,7 +49,7 @@
 | OPT-RETRY ★ | 败北后重来 | 原版败北 → GAME OVER → 回标题，没有重新挑战 → GAME OVER 画面加「重新挑战本战」，用进入本战时的队伍重进 | 没存档就得从回憶錄重走；这相当于原版在首次行动时存一份戰場記錄，不给新能力 | 演出 | S | [原版胜负收尾](evidence_packets/static_reverse/original_battle_end_flow.md)、`game-over-screen`、RESULTPAGE `a6963e2c` |
 | OPT-CURSOR | 光标 | 原版红宝石权杖画进 640×480 画面，跟着窗口放大 → 用系统硬件光标显示同一支权杖（不放大、不晚一帧） | 软件画的光标比鼠标晚至少一帧，大窗口下权杖被放大发糊 | 外观 | S | [游戏光标](evidence_packets/runtime_observations/game_cursor/README.md)、`cursor-hide-item-icon`、CURSOR `84eb5465` |
 | OPT-WORDBREAK | 对白断行 | 原版对白正文每行 38 字节硬断（0x413960，无禁则、无专名保护），「雪｜拉」「通行｜證」等 17 句会切开名字 → 断点落进专名（`protected_words.json`）时整个专名移到下一行 | 名字被切成两行读起来断气 | 外观 | S | `dialogue-line-breaks`、[对白框](evidence_packets/static_reverse/original_dialogue_board.md)；读点 `BattleUISkin.message_rows` |
-| OPT-FONT | 字体 | 原版 FONT.24／FONT.15 位图字 → 系统字 | 高分屏下系统字更清楚。**已接**（lane FONT）：读点 `OriginalBitmapFont.install`（自动加载 SimplifiedDisplay 启动时、重製選項页关闭且有值变了再读）换默认主题字体，新开的界面用新字体 | 外观 | S（字体导入本身 L，另算） | `bitmap-font` |
+| OPT-FONT | 字体 | 原版 FONT.24／FONT.15 位图字 → 黑体（随包的思源黑体子集，`OriginalBitmapFont.readable()`；桌面与网页相同，子集外的字在桌面上回退系统字） | 点阵字放大后发虚，黑体更清楚。**已接**（lane FONT）：读点 `OriginalBitmapFont.install`（自动加载 SimplifiedDisplay 启动时、重製選項页关闭且有值变了再读）换默认主题字体，新开的界面用新字体。重製選項页本身不看这一项，总用黑体 | 外观 | S | `bitmap-font` |
 | OPT-DEV | 开发开关（③层，不进设置页） | 保留环境变量和命令行：`HSL_RNG_SEED`、`HSL_AUTOPLAY_BRAIN`、`HSL_CUTIN_PLAYBACK_SPEED`、`--debug-hud`、`tests/diagnostics/export_enemy_turns.gd`；新增 `HSL_OPTIONS_PRESET` 供冒烟用；**P 停格／N 单步现在是常驻 autoload，谁都能按**：为实玩验收而设，改成开发开关、由 `tools/play.sh` 默认打开 | 正式玩家不该误触调试功能，实玩验收照常可用 | — | S | `debug-pause` |
 
 ## 4. 不做成选项的

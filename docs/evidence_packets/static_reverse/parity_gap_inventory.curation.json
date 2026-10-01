@@ -2377,6 +2377,9 @@
     "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|": {
       "item": "bitmap-font"
     },
+    "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|game/assets/fonts/NotoSansSC-UI.woff2": {
+      "item": "bitmap-font"
+    },
     "provenance:game/text/SimplifiedDisplay.gd|strings|remake-invented|content/generated/hsl/text/simplified_images.json": {
       "item": "simplified-display-gaps"
     },
@@ -2805,6 +2808,9 @@
       "item": "remake-options-page"
     },
     "provenance:game/settings/RemakeOptionsPage.gd|layout|remake-invented|content/authored/options/remake_options.json": {
+      "item": "remake-options-page"
+    },
+    "provenance:game/settings/RemakeOptionsPage.gd|layout|remake-invented|game/text/OriginalBitmapFont.gd": {
       "item": "remake-options-page"
     },
     "provenance:game/settings/RemakeOptionsPage.gd|strings|remake-invented|content/authored/options/remake_options.json": {

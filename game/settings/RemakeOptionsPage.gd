@@ -10,7 +10,10 @@ extends Control
 ## `page` block of content/authored/options/remake_options.json, so the layout can be tuned
 ## there; this script only flows it top to bottom. The window is the original Title031 (回憶錄)
 ## window cut into corners, edges and stone and rebuilt at the page size; the rows sit on its
-## dark slot band. Presentation only: every change goes through GameOptions into GameSettings.
+## dark slot band. Every text on the page draws with the bundled sans font
+## (OriginalBitmapFont.readable()) whatever OPT-FONT says: the page is the remake's own, and the
+## original 15 px bitmap face made its dense rows unreadable once enlarged, on a phone above all.
+## Presentation only: every change goes through GameOptions into GameSettings.
 ## Keys and mouse as in the system scroll: Up／Down pick a row, Left／Right or a click set a
 ## value, Enter steps it, Esc／Tab／right click (or the crumb) go back to 設定選項 — or, when Tab
 ## raised the page over the game (RemakeOptionsHotkey), close it. A close after a change calls
@@ -20,6 +23,7 @@ extends Control
 ##   layout: resource-derived content/imported/hsl/global/title/manifest.json
 ##     (Title031 frame, stone and slot band rebuilt at page size)
 ##   layout: remake-invented content/authored/options/remake_options.json (page layout)
+##   layout: remake-invented game/text/OriginalBitmapFont.gd#readable (the page's font)
 ##   strings: remake-invented content/authored/options/remake_options.json
 ##     (option names, value labels, descriptions, preset buttons)
 
@@ -33,6 +37,7 @@ const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
+const OriginalBitmapFont = preload("res://game/text/OriginalBitmapFont.gd")
 const TITLE_MANIFEST := "res://content/imported/hsl/global/title/manifest.json"
 ## Title031 (466×392) pieces: the ornamented corners, the rim between them (the top rim in two
 ## title-free spans), the stone of the bottom rim that fills the inside, and one slot band.
@@ -52,13 +57,17 @@ const STONE_ROW_SHIFT := 97
 const BAND_MARGIN := 4
 const GOLD := Color(0.91, 0.77, 0.42)
 const INK := Color(0.95, 0.91, 0.82)
-const MUTED := Color(0.72, 0.66, 0.54)
+const MUTED := Color(0.84, 0.79, 0.68)
 const ORIGINAL_TEXT := Color(0.62, 0.92, 0.62)
 const DARK_INK := Color(0.13, 0.10, 0.06)
 const LOCKED := Color(0.5, 0.47, 0.42)
 const SEGMENT_FILL := Color(0.10, 0.09, 0.08, 0.9)
 const SEGMENT_BORDER := Color(0.54, 0.45, 0.27)
 const CURSOR_COLOR := Color(0.95, 0.8, 0.35, 0.16)
+## A dark rim round every text but the dark ink on a lit segment, so the small lines stay legible
+## on the stone and the window's gold rim.
+const OUTLINE := 3
+const OUTLINE_COLOR := Color(0.05, 0.04, 0.03, 0.9)
 
 static var _manifest: Dictionary = {}
 var layout: Dictionary = {}
@@ -358,6 +367,7 @@ func _paint_segment(segment: Dictionary, on: bool, locked: bool) -> void:
 	label.add_theme_color_override("font_color", DARK_INK if on else (LOCKED if locked else INK))
 	label.add_theme_constant_override("shadow_offset_x", 0 if on else 1)
 	label.add_theme_constant_override("shadow_offset_y", 0 if on else 1)
+	label.add_theme_constant_override("outline_size", 0 if on else OUTLINE)
 
 
 func _tag(text: String, at: Vector2, font: int, color: Color) -> void:
@@ -388,6 +398,9 @@ func _tag_label(id: String) -> String:
 
 func _text(text: String, at: Vector2, font: int, color: Color) -> Label:
 	var label := BattleUISkin.label(_fronts, at, font)
+	label.add_theme_font_override("font", OriginalBitmapFont.readable())
+	label.add_theme_constant_override("outline_size", OUTLINE)
+	label.add_theme_color_override("font_outline_color", OUTLINE_COLOR)
 	label.text = text
 	label.add_theme_color_override("font_color", color)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -395,7 +408,7 @@ func _text(text: String, at: Vector2, font: int, color: Color) -> Label:
 
 
 func _width(text: String, font: int) -> float:
-	return get_theme_default_font().get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font).x
+	return OriginalBitmapFont.readable().get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font).x
 
 
 func _layer(layer_name: String) -> Control:

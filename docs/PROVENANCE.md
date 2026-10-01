@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (206 modules, 140 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (206 modules, 142 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (206)
 
@@ -144,7 +144,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GameOptions](../game/settings/GameOptions.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
 | [GameSettings](../game/settings/GameSettings.gd) | static-derived [system_menu/README.md](../docs/evidence_packets/runtime_observations/system_menu/README.md); static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json) | n/a | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | n/a | n/a | n/a | n/a |
-| [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json) | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
+| [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | n/a | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); remake-invented [remake_options.json](../content/authored/options/remake_options.json); remake-invented [OriginalBitmapFont.gd](../game/text/OriginalBitmapFont.gd) `#readable` | remake-invented [remake_options.json](../content/authored/options/remake_options.json) | n/a | n/a |
 
 #### game/sim (91)
 
@@ -258,7 +258,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
-| [OriginalBitmapFont](../game/text/OriginalBitmapFont.gd) | n/a | resource-derived [original_fonts.json](../content/generated/hsl/fonts/original_fonts.json); static-derived [original_bitmap_font.py](../tools/hsltools/assets/original_bitmap_font.py); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented | n/a | n/a | n/a |
+| [OriginalBitmapFont](../game/text/OriginalBitmapFont.gd) | n/a | resource-derived [original_fonts.json](../content/generated/hsl/fonts/original_fonts.json); static-derived [original_bitmap_font.py](../tools/hsltools/assets/original_bitmap_font.py); static-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented; remake-invented [NotoSansSC-UI.woff2](../game/assets/fonts/NotoSansSC-UI.woff2) | n/a | n/a | n/a |
 | [SimplifiedDisplay](../game/text/SimplifiedDisplay.gd) | n/a | n/a | resource-derived [original_font_script/README.md](../docs/evidence_packets/static_reverse/original_font_script/README.md); remake-invented [simplified_images.json](../content/generated/hsl/text/simplified_images.json) | n/a | n/a |
 | [SimplifiedDisplayTranslation](../game/text/SimplifiedDisplayTranslation.gd) | n/a | n/a | resource-derived [glyph_review.json](../docs/evidence_packets/static_reverse/original_font_script/glyph_review.json); remake-invented [simplified_chars.json](../content/generated/hsl/text/simplified_chars.json) `#remake_choices` | n/a | n/a |
 
@@ -290,7 +290,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (140)
+### remake-invented 清单 (142)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -377,6 +377,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GameSettings](../game/settings/GameSettings.gd) | rules | preset／presentation keys hold the 重製選項 choice; an older settings file's volume reads as its nearest tier, non-zero at least tier 1 [OPTIONS.md](../docs/OPTIONS.md) |
 | [RemakeOptionsHotkey](../game/settings/RemakeOptionsHotkey.gd) | rules | Tab opens and closes 重製選項 over any screen and holds the game with the tree pause while it is up; the original binds no key to Tab [OPTIONS.md](../docs/OPTIONS.md) |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | layout | page layout [remake_options.json](../content/authored/options/remake_options.json) |
+| [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | layout | the page's font [OriginalBitmapFont.gd](../game/text/OriginalBitmapFont.gd) `#readable` |
 | [RemakeOptionsPage](../game/settings/RemakeOptionsPage.gd) | strings | option names, value labels, descriptions, preset buttons [remake_options.json](../content/authored/options/remake_options.json) |
 | [BattleLoopConfig](../game/sim/BattleLoopConfig.gd) | rules | configuration／state key partition of the remake's loop dictionary; no original counterpart |
 | [BattleOutcome](../game/sim/BattleOutcome.gd) | rules | result／reason vocabulary of the remake's loop; a reason names the head condition of the deciding winfail status (WinfailScenarioRules.outcome_for) or the dev-battle objective |
@@ -413,6 +414,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleLoopScript](../game/sim/loop/BattleLoopScript.gd) | rules | one-transaction materialization: a failed proposal leaves no partial actors |
 | [BattlePlayLoop](../game/sim/loop/BattlePlayLoop.gd) | rules | one-owner transaction ordering, action-budget hand-off and menu surface — docs/architecture/BATTLE_SYSTEMS.md |
 | [OriginalBitmapFont](../game/text/OriginalBitmapFont.gd) | layout | small line 16 px = 15 px cell + 1; requested sizes as the carrier of the face, SMALL_SIZES／BODY_SIZES, for windows without an original counterpart; aliases ・ − ▶ › drawn as ‧ - → > |
+| [OriginalBitmapFont](../game/text/OriginalBitmapFont.gd) | layout | readable(): Noto Sans SC Medium cut by tools/hsltools/assets/ui_font.py to the characters the game can show [NotoSansSC-UI.woff2](../game/assets/fonts/NotoSansSC-UI.woff2) |
 | [SimplifiedDisplay](../game/text/SimplifiedDisplay.gd) | strings | workteam credits redrawn with FONT.24 glyphs [simplified_images.json](../content/generated/hsl/text/simplified_images.json) |
 | [SimplifiedDisplayTranslation](../game/text/SimplifiedDisplayTranslation.gd) | strings | 職 font bug, 噁 outside the system font, 鍾針魘 unresolved [simplified_chars.json](../content/generated/hsl/text/simplified_chars.json) `#remake_choices` |
 | [CampaignResumePrompt](../game/title/CampaignResumePrompt.gd) | layout | resume prompt placement |
@@ -512,7 +514,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 59 | 31 | 34 | 15 | 1 | 140 |
+| remake-invented | 59 | 33 | 34 | 15 | 1 | 142 |
 | n/a | 64 | 121 | 155 | 136 | 174 | 650 |
 
 <!-- provenance:end -->

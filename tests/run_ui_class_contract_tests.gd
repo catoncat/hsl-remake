@@ -30,10 +30,14 @@ extends "res://tests/support/TestSuite.gd"
 ##                  the project UI font chain (game/assets/ui_font.tres and its fallbacks); on
 ##                  macOS Godot resolves "PingFang SC" to PingFang HK, which lacks 杀敌远… and
 ##                  drew them as missing-glyph boxes until the explicit SC fallback was added.
+##                  The bundled sans font (OriginalBitmapFont.readable(), a cut of Noto Sans SC)
+##                  has them too, and every 重製選項 text: a browser has no system font to fall
+##                  back on, so a character left out of the cut draws as a box there.
 
 const BattleSystemMenu = preload("res://game/battle/scene/BattleSystemMenu.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
+const OriginalBitmapFont = preload("res://game/text/OriginalBitmapFont.gd")
 const RulesReadback = preload("res://tests/support/RulesReadback.gd")
 
 
@@ -400,14 +404,36 @@ func button_size_contracts() -> void:
 
 
 func glyph_coverage_contracts() -> void:
-	var font: Font = load(str(ProjectSettings.get_setting("gui/theme/custom_font")))
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://content/generated/hsl/text/simplified_chars.json"))
-	var missing := PackedStringArray()
-	for shown in (parsed["chars"] as Dictionary).values():
-		var character := String(shown)
-		if not font.has_char(character.unicode_at(0)):
-			missing.append(character)
-	check(missing.is_empty(), "UI font chain draws every simplified display character (missing: %s)" % "".join(missing))
+	var shown := "".join(PackedStringArray((parsed["chars"] as Dictionary).values()))
+	var missing := _missing_glyphs(load(str(ProjectSettings.get_setting("gui/theme/custom_font"))), shown)
+	check(missing.is_empty(), "UI font chain draws every simplified display character (missing: %s)" % missing)
+	var page := "".join(PackedStringArray(_strings(JSON.parse_string(FileAccess.get_file_as_string(GameOptions.REGISTRY_PATH)))))
+	missing = _missing_glyphs(OriginalBitmapFont.readable(), shown + page)
+	check(missing.is_empty(), "the bundled sans font draws every simplified display character and every 重製選項 text (missing: %s; rerun tools/hsltools/assets/ui_font.py)" % missing)
+
+
+func _missing_glyphs(font: Font, text: String) -> String:
+	var missing := ""
+	for index in text.length():
+		var code := text.unicode_at(index)
+		if code >= 0x20 and not font.has_char(code) and not missing.contains(char(code)):
+			missing += char(code)
+	return missing
+
+
+func _strings(value: Variant) -> Array:
+	if value is String:
+		return [value]
+	var found: Array = []
+	if value is Dictionary:
+		for key in value:
+			found.append(str(key))
+			found.append_array(_strings(value[key]))
+	elif value is Array:
+		for item in value:
+			found.append_array(_strings(item))
+	return found
 
 
 func simplified_display_contracts() -> void:

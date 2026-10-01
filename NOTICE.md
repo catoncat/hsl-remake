@@ -33,8 +33,9 @@
 | NumPy | 数值工具 | BSD-3-Clause |
 | unicorn | 可选：原版裁判（CPU 模拟） | GPLv2（以其 COPYING 为准） |
 | FFmpeg | 可选：外部调用做音视频转换 | LGPL／GPL（外部程序，不随仓库分发） |
+| Noto Sans SC（思源黑体） | 重製選項页与「字体＝黑体」的界面字（`game/assets/fonts/NotoSansSC-UI.woff2`，裁成游戏能显示的约 2600 字） | SIL OFL 1.1，见 `game/assets/fonts/OFL.txt` |
 
-界面字体经 `game/assets/ui_font.tres` 的 `SystemFont` 按名字引用系统字体（PingFang SC、Microsoft YaHei、Noto Sans CJK SC 等），仓库不分发字体文件。
+项目默认界面字体 `game/assets/ui_font.tres` 是 `SystemFont`，按名字引用系统字体（PingFang SC、Microsoft YaHei、Noto Sans CJK SC 等），不随仓库分发。
 
 ## 关于文档截图
 

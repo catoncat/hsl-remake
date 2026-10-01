@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 87,
-    "sources": 480,
+    "sources": 482,
     "sources_by_kind": {
-      "provenance": 196,
+      "provenance": 198,
       "sentence": 84,
       "scope": 102,
       "matrix": 85,
@@ -434,7 +434,8 @@
         "matrix:对白正文",
         "provenance:game/battle/scene/BattleDialogue.gd|layout|remake-invented|",
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
-        "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|"
+        "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|",
+        "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|game/assets/fonts/NotoSansSC-UI.woff2"
       ]
     },
     {
@@ -1907,6 +1908,7 @@
         "provenance:game/settings/GameSettings.gd|rules|remake-invented|docs/OPTIONS.md",
         "provenance:game/settings/RemakeOptionsHotkey.gd|rules|remake-invented|docs/OPTIONS.md",
         "provenance:game/settings/RemakeOptionsPage.gd|layout|remake-invented|content/authored/options/remake_options.json",
+        "provenance:game/settings/RemakeOptionsPage.gd|layout|remake-invented|game/text/OriginalBitmapFont.gd",
         "provenance:game/settings/RemakeOptionsPage.gd|strings|remake-invented|content/authored/options/remake_options.json"
       ]
     },

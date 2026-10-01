@@ -10,7 +10,7 @@ extends RefCounted
 ## fallback would grow the 24／16 px lines to the system font's; a character missing from the
 ## atlas (`hsl check original_bitmap_font` counts them) or a size in neither list draws a code box.
 ## install() is the OPT-FONT read point: the default theme font is this font (original value) or
-## the system font (improved value); a browser offers no system font, so the web build keeps this one.
+## readable() (improved value), the bundled sans font that the 重製選項 page always draws with.
 ## provenance:
 ##   layout: resource-derived content/generated/hsl/fonts/original_fonts.json
 ##     (glyph bitmaps, cells and the character → glyph slot table)
@@ -21,12 +21,14 @@ extends RefCounted
 ##   layout: remake-invented
 ##     (small line 16 px = 15 px cell + 1; requested sizes as the carrier of the face, SMALL_SIZES／BODY_SIZES, for
 ##     windows without an original counterpart; aliases ・ − ▶ › drawn as ‧ - → >)
+##   layout: remake-invented game/assets/fonts/NotoSansSC-UI.woff2
+##     (readable(): Noto Sans SC Medium cut by tools/hsltools/assets/ui_font.py to the characters the game can show)
 
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const TABLE_PATH := "res://content/generated/hsl/fonts/original_fonts.json"
 const SCHEMA := "hsl_original_fonts.v2"
-const SYSTEM_FONT := "res://game/assets/ui_font.tres"
+const READABLE_FONT := "res://game/assets/fonts/NotoSansSC-UI.woff2"
 const OPTION := "OPT-FONT"
 const BODY := "FONT24"
 const SMALL := "FONT15"
@@ -39,6 +41,7 @@ const BODY_SIZES := [17, 18, 20, 22, 24, 26, 30]
 
 static var _table: Dictionary = {}
 static var _font: FontFile = null
+static var _readable: FontFile = null
 
 
 static func table() -> Dictionary:
@@ -69,11 +72,24 @@ static func font() -> FontFile:
 ## OPT-FONT read point (SimplifiedDisplay reads it at start and when the 重製選項 page closes
 ## with a change): the default theme font every Control without its own font override draws with.
 static func install() -> void:
-	var wanted: Font = font() if GameOptions.is_original(OPTION) or OS.has_feature("web") else load(SYSTEM_FONT)
+	var wanted: Font = font() if GameOptions.is_original(OPTION) else readable()
 	var theme := ThemeDB.get_default_theme()
 	if theme.default_font != wanted:
 		theme.default_font = wanted
 		ThemeDB.fallback_font = wanted
+
+
+## The bundled sans font: Noto Sans SC cut to every character the game can show
+## (tools/hsltools/assets/ui_font.py), the same on desktop and in a browser, which offers no
+## system font. A character outside it falls back to the system fonts where there are any.
+## Whole pixels, light hinting: the text is drawn into the 640×480 frame and enlarged with it.
+static func readable() -> FontFile:
+	if _readable == null:
+		_readable = load(READABLE_FONT) as FontFile
+		assert(_readable != null, "OriginalBitmapFont: %s not imported" % READABLE_FONT)
+		_readable.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
+		_readable.hinting = TextServer.HINTING_LIGHT
+	return _readable
 
 
 static func _add_face(target: FontFile, face: String, size: int, images: Dictionary) -> void:

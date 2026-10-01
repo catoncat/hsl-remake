@@ -88,7 +88,7 @@ python3 tools/web_cf.py releases               # 另有 rollback 版本号、che
 - `HTTPRequest.download_file` 在网页上不生效，`DirAccess.rename` 对 `user://` 也会失败：下载走 body 加 `FileAccess.store_buffer`。默认 64 KiB 的块把速度压到约 3.7 MB/s，改成 4 MiB。
 - CDN 或反向代理压缩过的响应，浏览器已经解压，Godot 再解一次会报 `RESULT_BODY_DECOMPRESS_FAILED`，所以 `HTTPRequest.accept_gzip = false`。本地不压缩的服务测不出这个。
 - `user://` 是 IndexedDB：存档和资源包缓存在同一处，清站点数据会一起丢；启动时整份读进内存，缓存目前没有上限。
-- 浏览器没有系统字体，网页版固定用原版点阵字（`OriginalBitmapFont`）。
+- 浏览器不给 Godot 系统字体，所以非点阵的字用随包的思源黑体子集（`game/assets/fonts/`，`tools/hsltools/assets/ui_font.py` 裁出游戏能显示的字）：重製選項页总用它，「字体」选黑体时全游戏用它。子集外的字在网页上画成方框，加了新文字要重跑那个脚本。
 - 标题画面的「離開遊戲」在网页上改为重新加载页面，页面不能自己关闭。
 - 触屏：引擎自带的「触摸模拟鼠标」在两指手势的第一指落下时就按下左键，而战斗里左键按下当场选人、移动、攻击，撤不回来，所以有触摸屏时由 `game/input/TouchControls.gd` 关掉它、自己把手势合成成鼠标事件。网页上 Godot 用 `'ontouchstart' in window` 判断有没有触摸屏，带触屏的电脑浏览器也会启用，鼠标照常可用。Godot 自带的页面已有禁止缩放的 viewport 和 `touch-action: none`，`web_build.py` 暂存时再经 `html/head_include` 补上禁止下拉刷新、长按菜单、选中文字和 Safari 双指缩放（`gesture*` 事件）。无头测试多指要用 CDP 的 `Input.dispatchTouchEvent`，Playwright 的 `touchscreen.tap` 只有一指；CDP 的 `touchEnd` 一次放开全部手指，只抬一指要发一个只列剩下手指的 `touchMove`。
 - 无头浏览器测试：Playwright 的 `httpCredentials` 会关掉 HTTP 缓存，量缓存时让门跑在 127.0.0.1 上、用 `web_gate.py --no-auth-for-testing`；系统自带的 Chrome 无头模式在一些机器上会被杀，改用 Playwright 自带的 chromium-headless-shell。
