@@ -76,6 +76,7 @@ const OriginalFade = preload("res://game/common/OriginalFade.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const MoviePlayer = preload("res://game/title/MoviePlayer.gd")
+const WebPacks = preload("res://game/web/PackManager.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
 
@@ -572,18 +573,21 @@ func _set_fade_level(elapsed: float) -> void:
 func _on_fade_finished(scene_path: String) -> void:
 	if str(transition.get("action", "")) == "quit":
 		transition["status"] = "quit"
-		if DisplayServer.get_name() != "headless":
+		if OS.has_feature("web"):
+			JavaScriptBridge.eval("window.location.reload()") # a page cannot close itself
+		elif DisplayServer.get_name() != "headless":
 			get_tree().quit()
 		return
 	if str(transition.get("action", "")) == "new_story" and str(transition.get("start_movie", "")) != "":
-		_play_intro(scene_path, str(transition["start_movie"]))
+		WebPacks.after_groups(["movie:" + str(transition["start_movie"])], _play_intro.bind(scene_path, str(transition["start_movie"])))
 		return
 	_change_scene(scene_path)
 
 
 func _change_scene(scene_path: String) -> void:
 	transition["status"] = "scene_changed"
-	get_tree().change_scene_to_file(scene_path)
+	var scenario := str(transition.get("resume_scenario_path", transition.get("start_scenario_path", "")))
+	WebPacks.after_scenario(scenario, get_tree().change_scene_to_file.bind(scene_path))
 
 
 ## The intro film between the fade and the first scene (campaign.json `start_movie`: the
@@ -598,6 +602,7 @@ func _play_intro(scene_path: String, movie: String) -> void:
 	intro_player.finished.connect(_on_intro_finished.bind(scene_path))
 	transition["status"] = "movie"
 	intro_player.play(movie)
+	WebPacks.prefetch_scenario(str(transition.get("start_scenario_path", "")))
 
 
 func _on_intro_finished(reason: String, scene_path: String) -> void:

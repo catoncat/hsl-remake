@@ -10,7 +10,7 @@
 
 ## 总数
 
-共 **87** 条差异（其中 0 条本轮有 lane 进行中），来自 473 个来源条目：provenance 189、sentence 84、scope 102、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 49 个全部归类。另有 61 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
+共 **87** 条差异（其中 0 条本轮有 lane 进行中），来自 477 个来源条目：provenance 193、sentence 84、scope 102、matrix 85、video 13；layout／timing 含 remake-invented／provisional 的模块 50 个全部归类。另有 65 个来源判为玩家看不到、20 个已做掉（句子是旧状态）。
 
 | 原版状态 | 条数 |
 | --- | --- |
@@ -290,4 +290,4 @@
 | `video:7` | 单位高亮照原版：阵营色、脉动字与 engGLASS＋10/16 加色画法（0x43dcb9，HIGHLIGHT 2026-09-28 Wine 帧，dialogue_death §5） |
 | `video:8` | 对白框顶槽照原版：只有 actShapeMessage／城镇 shape 台词（旗标 0x4000，0x414220）在 y 20，其余在底部，旁白框居中 x 75（R7-DLG 框位提交，original_dialogue_board） |
 
-玩家看不到的来源 61 个（重制内部结构、原版调度顺序等），理由逐条在 JSON 的 `dispositions.no_visible_effect`。
+玩家看不到的来源 65 个（重制内部结构、原版调度顺序等），理由逐条在 JSON 的 `dispositions.no_visible_effect`。

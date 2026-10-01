@@ -6,6 +6,7 @@
 
 - [玩家指南](PLAYING.md) — 操作键、存档位置与格数、三个预设、已知的坑
 - [PLAYTEST](PLAYTEST.md) — 跳到某一关试玩、回报问题的格式
+- [WEB](WEB.md) — 浏览器版：构建、按需分包、私有发布与网页平台的坑
 - [OPTIONS](OPTIONS.md) — 「重製選項」各项、默认值与注册表字段
 - [BATTLE_NAMES](BATTLE_NAMES.md) — 战斗称呼对照：玩家第几场、场景名、文件号
 - [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md) — 与原版的已知差异，逐条登记（生成物）
@@ -15,6 +16,7 @@
 
 - [MODDING](MODDING.md) — 四层结构、换素材、改规则、去掉原版依赖、现在做不到什么
 - [MODDING_LEVELS](MODDING_LEVELS.md) — 加关卡、角色、职业、招式，改剧情流转、换配乐，写续集
+- [原作剧情简报](ORIGINAL_STORY.md) — 世界、势力、人物、主线与三个结局，以及原作提到却没有展开的地方；写外传和续集的故事先读
 - [WINFAIL_TOKENS](WINFAIL_TOKENS.md) — 胜负脚本词表（生成物）
 - [战役总览](evidence_packets/resource_inventory/campaign_overview.md) — 逐关流转（生成物）
 

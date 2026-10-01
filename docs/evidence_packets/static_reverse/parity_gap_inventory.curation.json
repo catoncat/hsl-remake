@@ -3261,6 +3261,18 @@
     "sentence:docs/evidence_packets/runtime_observations/oracle_batch/README.md#5ae1febbb8": {
       "item": "boss-twice-action-after-lead-down",
       "text": "原版的判负时机未读，登记为 `boss-twice-action-after-lead-down`。"
+    },
+    "provenance:game/web/PackManager.gd|rules|remake-invented|": {
+      "no_visible_effect": "仅网页版：按需下载资源包的交付机制；桌面上管理器关闭，场景切换照旧同步完成，与原版一致"
+    },
+    "provenance:game/web/PackManager.gd|layout|remake-invented|": {
+      "no_visible_effect": "仅网页版：下载等待时盖一层进度提示；桌面上不出现，与原版对比的画面没有差异"
+    },
+    "provenance:game/web/PackManager.gd|strings|remake-invented|": {
+      "no_visible_effect": "仅网页版：下载等待提示的文字；桌面上不出现"
+    },
+    "provenance:game/web/PackManager.gd|timing|remake-invented|": {
+      "no_visible_effect": "仅网页版：后台预取的延迟和重试间隔；桌面上不运行，不影响任何演出节拍"
     }
   }
 }

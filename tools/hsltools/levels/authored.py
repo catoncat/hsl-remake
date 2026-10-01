@@ -111,6 +111,23 @@ def _repo(res_path: str) -> Path:
     return ROOT / res_path.removeprefix('res://')
 
 
+def _source_manifest(value) -> dict:
+    """A presentation source: one res:// manifest path, or a list of them merged in order
+    (a level that casts rows from several original battles names each battle's manifest).
+    The dict sections `actors`／`characters`／`sounds` merge entry by entry, the first
+    manifest naming a code wins; every other key comes from the first manifest."""
+    paths = [value] if isinstance(value, str) else list(value)
+    merged = copy.deepcopy(_load_json(_repo(paths[0])))
+    for path in paths[1:]:
+        extra = _load_json(_repo(path))
+        for key in ('actors', 'characters', 'sounds'):
+            if isinstance(extra.get(key), dict):
+                section = merged.setdefault(key, {})
+                for code, entry in extra[key].items():
+                    section.setdefault(code, copy.deepcopy(entry))
+    return merged
+
+
 def load_inputs(level: int) -> dict:
     """The five authored files plus the level profile, validated for shape."""
     base = folder(level)
@@ -356,7 +373,7 @@ def _require_art(level: int, code: str, row: str) -> None:
 
 
 def build_walk_manifest(level: int, manifest: dict, fielded: list[str]) -> dict:
-    base = _load_json(_repo(manifest['presentation']['actor_walk_manifest']))
+    base = _source_manifest(manifest['presentation']['actor_walk_manifest'])
     shared = _load_json(ROOT / 'content/imported/hsl/chapter01/actor_walk_frames/actor_walk_manifest.json')
     rows = _alias_rows(level, manifest, fielded)
     actors = {}
@@ -385,7 +402,7 @@ def build_combat_manifest(level: int, manifest: dict, fielded: list[str]) -> dic
     row without an imported cut-in, or a look whose art.json says `cutin: null`, has no row
     (the runtime plays its no-art clip, as on any chapter-1 level)."""
     source = manifest['presentation']['combat_animation']
-    base = _load_json(_repo(source))
+    base = _source_manifest(source)
     rows = _alias_rows(level, manifest, fielded)
     actors, without = {}, []
     for code in fielded:
@@ -407,7 +424,7 @@ def build_combat_manifest(level: int, manifest: dict, fielded: list[str]) -> dic
 
 
 def build_audio_manifest(level: int, manifest: dict, fielded: list[str]) -> dict:
-    base = _load_json(_repo(manifest['presentation']['actor_audio']))
+    base = _source_manifest(manifest['presentation']['actor_audio'])
     rows = _alias_rows(level, manifest, fielded)
     characters, sounds = {}, copy.deepcopy(base.get('sounds', {}))
     for code in fielded:
@@ -431,7 +448,7 @@ def build_audio_manifest(level: int, manifest: dict, fielded: list[str]) -> dict
 def build_portraits(level: int, manifest: dict, speakers: dict[str, str], names: dict[str, str]) -> dict:
     """actor id -> face for every speaking actor; the authored character shows the source row's
     face under its own name (a new face is a PNG path change here)."""
-    base = _load_json(_repo(manifest['presentation']['portraits']))
+    base = _source_manifest(manifest['presentation']['portraits'])
     shared = _load_json(ROOT / 'content/imported/hsl/chapter01/portraits/manifest.json')
     authored = {row['code'].zfill(3): row for row in authored_characters()}
     rows = _alias_rows(level, manifest, list(speakers))

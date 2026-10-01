@@ -35,6 +35,7 @@ extends Node
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const WebPacks = preload("res://game/web/PackManager.gd")
 const OpeningSelectPrompt = preload("res://game/battle/runtime/opening/OpeningSelectPrompt.gd")
 const OpeningEndCard = preload("res://game/battle/runtime/opening/OpeningEndCard.gd")
 const StoryEffectObjects = preload("res://game/battle/runtime/StoryEffectObjects.gd")
@@ -949,7 +950,7 @@ func _enter_game_clear(next_path: String, source_event_id: String) -> void:
 	var progress: Node = runtime.get_node_or_null("CampaignProgress")
 	if progress != null:
 		progress.reset_campaign()
-	runtime.get_tree().change_scene_to_file(next_path)
+	WebPacks.after_scenario(next_path, runtime.get_tree().change_scene_to_file.bind(next_path))
 
 
 ## actEnterStorageWindow (STORY057 / STORY081 before the finals, winfail045 / 078 win

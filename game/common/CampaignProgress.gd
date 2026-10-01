@@ -13,6 +13,7 @@ extends Node
 const CarryRules = preload("res://game/sim/CampaignCarryRules.gd")
 const WorldScriptActions = preload("res://game/world/WorldScriptActions.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
+const WebPacks = preload("res://game/web/PackManager.gd")
 ## Loaded when the prompt shows, not preloaded: GameOptions preloads this module for
 ## campaign_path and must not pull in the UI skin through it.
 const RESUME_PROMPT := "res://game/title/CampaignResumePrompt.gd"
@@ -545,7 +546,7 @@ func resume_saved_progress(saved: Dictionary) -> void:
 	last_handoff = queue_resume(saved)
 	_close_resume_prompt()
 	if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-		runtime.get_tree().reload_current_scene()
+		WebPacks.after_scenario(str(pending.get("scenario_path", "")), runtime.get_tree().reload_current_scene)
 
 
 func decline_saved_progress() -> void:
@@ -628,7 +629,7 @@ func start_next_battle() -> bool:
 	pending = handoff
 	save_progress(handoff)
 	if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-		runtime.get_tree().reload_current_scene()
+		WebPacks.after_scenario(str(handoff.get("scenario_path", "")), runtime.get_tree().reload_current_scene)
 	return true
 
 
@@ -693,7 +694,7 @@ func start_world_handoff(next_path: String, carry: Dictionary, world: Dictionary
 	pending = handoff
 	save_progress(handoff)
 	if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-		runtime.get_tree().reload_current_scene()
+		WebPacks.after_scenario(next_path, runtime.get_tree().reload_current_scene)
 
 
 ## The big map persists its position after every arrival so a relaunch resumes
@@ -761,7 +762,7 @@ func _enter_game_clear(path: String) -> void:
 	last_handoff = {"schema": SCHEMA, "scenario_path": path, "kind": "game_clear"}
 	pending = {}
 	if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-		runtime.get_tree().change_scene_to_file(path)
+		WebPacks.after_scenario(path, runtime.get_tree().change_scene_to_file.bind(path))
 
 
 ## The fielded controlled units with the roster face table's portrait and name.
@@ -781,7 +782,7 @@ func restart_campaign() -> void:
 	reset_campaign()
 	last_handoff = {}
 	if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-		runtime.get_tree().reload_current_scene()
+		WebPacks.after_scenario(first_scenario_path(campaign), runtime.get_tree().reload_current_scene)
 
 
 func summary() -> Dictionary:

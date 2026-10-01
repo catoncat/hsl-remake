@@ -63,6 +63,7 @@ const MANIFEST_PATH := "res://content/imported/hsl/global/title/manifest.json"
 const TITLE_SCENE_PATH := "res://game/title/TitleScreen.tscn"
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
+const WebPacks = preload("res://game/web/PackManager.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
@@ -1191,7 +1192,7 @@ func _perform(action: String) -> Dictionary:
 					CampaignProgress.queue_battle_record(newest)
 					close()
 					if runtime.is_inside_tree() and runtime.get_tree().current_scene == runtime:
-						runtime.get_tree().reload_current_scene()
+						WebPacks.after_scenario(str(newest.get("scenario_path", "")), runtime.get_tree().reload_current_scene)
 				last_result = result
 				return result
 			"options":

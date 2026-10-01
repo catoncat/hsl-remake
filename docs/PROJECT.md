@@ -4,7 +4,7 @@ Checked: 2026-09-30
 
 ## 现状
 
-在 Godot 4.x 中完整重制《幻世录》。终点两个，按顺序：**① 全部 127 场战斗像原版一样从标题玩到结局**（规则一致、节奏一致、画面手感经人工实玩认可）；**② 这套引擎能写续集**——没有原版数据可导入时，关卡／角色／技能／剧情只靠写数据就能跑。现在整章 127 场战斗、剧情／城镇／大地图交接与三个结局都已注册，从标题可走到章末；规则按"原版程序当裁判"逐项对齐（开局盘面全字段对拍、随机流照原版、AI 行动种类 127 关对拍无可确证的规则差异），演出与界面照原版录屏补齐；续集示范 龍脊隘口（LEVEL200）＋两名新角色只靠 `content/authored/` 数据可玩；公开导出只凭文档能从 `hsl bootstrap` 走到自制一关自动打赢。机器人打关不等于玩家可通关，也不等于原版难度；**已合并项待人工实玩验收，验收前不算"已修好"**。公开仓库 <https://github.com/catoncat/hsl-remake>（三平台 CI 通过）。所有"像原版"的声明都要能追溯到资源、静态分析或原版运行实测，怎么核对见 [METHOD](METHOD.md)。
+在 Godot 4.x 中完整重制《幻世录》。终点两个，按顺序：**① 全部 127 场战斗像原版一样从标题玩到结局**（规则一致、节奏一致、画面手感经人工实玩认可）；**② 这套引擎能写续集**——没有原版数据可导入时，关卡／角色／技能／剧情只靠写数据就能跑。现在整章 127 场战斗、剧情／城镇／大地图交接与三个结局都已注册，从标题可走到章末；规则按"原版程序当裁判"逐项对齐（开局盘面全字段对拍、随机流照原版、AI 行动种类 127 关对拍无可确证的规则差异），演出与界面照原版录屏补齐；续集示范 龍脊隘口（LEVEL200）＋两名新角色只靠 `content/authored/` 数据可玩；公开导出只凭文档能从 `hsl bootstrap` 走到自制一关自动打赢。机器人打关不等于玩家可通关，也不等于原版难度；**已合并项待人工实玩验收，验收前不算"已修好"**。公开仓库 <https://github.com/catoncat/hsl-remake>（三平台 CI 通过）。另有浏览器版（Godot 网页导出，关卡与影片按需下载），已验证到从标题进玩家第 1 场，整章没有在浏览器里走过，见 [WEB](WEB.md)。所有"像原版"的声明都要能追溯到资源、静态分析或原版运行实测，怎么核对见 [METHOD](METHOD.md)。
 
 ## 进度尺
 
@@ -32,7 +32,7 @@ Checked: 2026-09-30
 
 - [README](../README.md) — 项目首页；[CHANGELOG](../CHANGELOG.md) 按日期记录每次发布
 - [docs/README](README.md) — 全部文档索引
-- [PLAYING](PLAYING.md)、[PLAYTEST](PLAYTEST.md) — 玩与试玩
+- [PLAYING](PLAYING.md)、[PLAYTEST](PLAYTEST.md)、[WEB](WEB.md) — 玩与试玩
 - [MODDING](MODDING.md)、[MODDING_LEVELS](MODDING_LEVELS.md) — 改游戏
 - [METHOD](METHOD.md)、[CONTRIBUTING](../CONTRIBUTING.md)、[ARCHITECTURE](ARCHITECTURE.md)、[AGENTS](../AGENTS.md) — 参与开发
 - [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md)、[MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md)、[BATTLE_NAMES](BATTLE_NAMES.md) — 查表

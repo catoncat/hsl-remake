@@ -10,7 +10,7 @@ extends RefCounted
 ## fallback would grow the 24／16 px lines to the system font's; a character missing from the
 ## atlas (`hsl check original_bitmap_font` counts them) or a size in neither list draws a code box.
 ## install() is the OPT-FONT read point: the default theme font is this font (original value) or
-## the system font (improved value).
+## the system font (improved value); a browser offers no system font, so the web build keeps this one.
 ## provenance:
 ##   layout: resource-derived content/generated/hsl/fonts/original_fonts.json
 ##     (glyph bitmaps, cells and the character → glyph slot table)
@@ -69,7 +69,7 @@ static func font() -> FontFile:
 ## OPT-FONT read point (SimplifiedDisplay reads it at start and when the 重製選項 page closes
 ## with a change): the default theme font every Control without its own font override draws with.
 static func install() -> void:
-	var wanted: Font = font() if GameOptions.is_original(OPTION) else load(SYSTEM_FONT)
+	var wanted: Font = font() if GameOptions.is_original(OPTION) or OS.has_feature("web") else load(SYSTEM_FONT)
 	var theme := ThemeDB.get_default_theme()
 	if theme.default_font != wanted:
 		theme.default_font = wanted

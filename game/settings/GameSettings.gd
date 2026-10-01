@@ -125,7 +125,10 @@ static func _bus(bus_name: String) -> String:
 		AudioServer.add_bus()
 		var index := AudioServer.get_bus_count() - 1
 		AudioServer.set_bus_name(index, bus_name)
-		AudioServer.set_bus_send(index, "Master")
+		# A new bus already sends to Master. In a web export (sample playback) the explicit
+		# set_bus_send re-wires the Master bus into the new bus and cuts it off from the output: silence.
+		if not OS.has_feature("web"):
+			AudioServer.set_bus_send(index, "Master")
 		apply()
 	return bus_name
 

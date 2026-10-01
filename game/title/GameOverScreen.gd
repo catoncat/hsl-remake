@@ -43,6 +43,7 @@ const BATTLE_SCENE_PATH := "res://game/battle/scene/BattleSceneRuntime.tscn"
 const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const GameOptions = preload("res://game/settings/GameOptions.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
+const WebPacks = preload("res://game/web/PackManager.gd")
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const InterfaceArt = preload("res://game/common/InterfaceArt.gd")
@@ -255,7 +256,7 @@ func retry() -> Dictionary:
 	tween.tween_property(_fade, "color:a", 1.0, FADE_OUT_SECONDS)
 	tween.finished.connect(func() -> void:
 		transition["status"] = "scene_changed"
-		get_tree().change_scene_to_file(BATTLE_SCENE_PATH))
+		WebPacks.after_scenario(str(CampaignProgress.pending.get("scenario_path", "")), get_tree().change_scene_to_file.bind(BATTLE_SCENE_PATH)))
 	return transition
 
 

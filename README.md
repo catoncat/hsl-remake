@@ -53,6 +53,7 @@ HSL_AUTOPLAY_LEVELS=51 tools/godot.sh --headless --fixed-fps 60 --script res://t
 
 - [玩家指南](docs/PLAYING.md) — 操作键、存档、重製選項预设与已知的坑
 - [PLAYTEST](docs/PLAYTEST.md) — 跳到某一关试玩、回报问题
+- [WEB](docs/WEB.md) — 浏览器版：构建、按需下载与私有发布
 - [OPTIONS](docs/OPTIONS.md) — 重製選項各项与默认值
 - [MODDING](docs/MODDING.md) — 换素材、改规则、去掉原版依赖
 - [MODDING_LEVELS](docs/MODDING_LEVELS.md) — 加关卡、角色、职业、招式，写新战役

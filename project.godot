@@ -9,6 +9,7 @@ config/icon="res://game/assets/icon.svg"
 
 [autoload]
 
+PackManager="*res://game/web/PackManager.gd"
 SimplifiedDisplay="*res://game/text/SimplifiedDisplay.gd"
 DebugPause="*res://game/debug/DebugPause.gd"
 GameCursor="*res://game/cursor/GameCursor.gd"

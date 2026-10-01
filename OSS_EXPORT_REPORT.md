@@ -1,16 +1,16 @@
 # OSS export report
 
-Source: private repository `main` = `ff3cbcfe33174f52f5219bad08464007aaa7e89f` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `6413f41168c2c5ff421dcf81ee594206a5758dce` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1523 files, 66.9 MB**
-- dropped: **19145 files, 610.4 MB**
+- written: **1533 files, 67.0 MB**
+- dropped: **19147 files, 610.5 MB**
 - processed (home path / author e-mail / public .gitignore rules): 18 files
 - residual home paths or author e-mails in the written tree: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1139 | 19.6 |
+| B | 1149 | 19.7 |
 | C | 384 | 47.2 |
 
 ## Dropped (by reason)
@@ -23,7 +23,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/generated tables (EXE / PAK derived) | 420 | 22.7 |
 | A: content/battles assembled level data | 210 | 18.9 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
-| excluded directory docs/internal/ | 8 | 0.3 |
+| excluded directory docs/internal/ | 10 | 0.5 |
 | excluded directory docs/audits/ | 8 | 0.3 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
@@ -49,9 +49,11 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/internal/FIRST_BATTLE_ACCEPTANCE.md`
 - `docs/internal/LANE_TIMELOG.md`
 - `docs/internal/OPEN_SOURCE_PLAN.md`
+- `docs/internal/ORIGINAL_SCRIPT.md`
 - `docs/internal/PLAYABILITY.md`
 - `docs/internal/ROUNDS.md`
 - `docs/internal/SEQUEL_READINESS.md`
+- `docs/internal/WEB_DEPLOY.md`
 - `docs/internal/lane_brief.md`
 - `legal-assets/README.md`
 
