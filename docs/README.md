@@ -17,6 +17,10 @@
 - [MODDING](MODDING.md) — 四层结构、换素材、改规则、去掉原版依赖、现在做不到什么
 - [MODDING_LEVELS](MODDING_LEVELS.md) — 加关卡、角色、职业、招式，改剧情流转、换配乐，写续集
 - [原作剧情简报](ORIGINAL_STORY.md) — 世界、势力、人物、主线与三个结局，以及原作提到却没有展开的地方；写外传和续集的故事先读
+- [原作人物名录](ORIGINAL_CAST.md) — 有名字的反派、友军和九名队员：身份、出场、三个结局里的下场、战斗数值，以及尾聲之后留下的线
+- [原作关卡](ORIGINAL_LEVELS.md) — 127 场战斗怎么出题：胜负条件、增援、事件、地图，以及自制地图和关卡现在能做到哪一步
+- [规则数值手册](NUMBERS.md) — 伤害、命中、经验、调级公式，几下打死的参考表，原作等级曲线，手写数据能设到哪一步
+- [战棋设计方法](SRPG_DESIGN.md) — 人物组合、数值与关卡的方法和出处，末节对到本作的规则
 - [WINFAIL_TOKENS](WINFAIL_TOKENS.md) — 胜负脚本词表（生成物）
 - [战役总览](evidence_packets/resource_inventory/campaign_overview.md) — 逐关流转（生成物）
 

@@ -34,6 +34,7 @@
 | 改机制状态或等价声明 | [机制矩阵](docs/MECHANICS_EVIDENCE_MATRIX.md)、[差异清单](docs/evidence_packets/static_reverse/parity_gap_inventory.md) 及对应证据 |
 | 改游戏：换素材、加关卡、改剧情流转、换配乐、加脚本 opcode 表现 | [MODDING](docs/MODDING.md)＋[加关卡与角色逐步表](docs/MODDING_LEVELS.md)（文件位置、生成命令、改代码入口、验证步骤）＋[战役总览](docs/evidence_packets/resource_inventory/campaign_overview.md) |
 | 写外传、续集或新剧情 | [原作剧情简报](docs/ORIGINAL_STORY.md)（世界、人物、三个结局、原作留白）；逐句台词读 `docs/internal/ORIGINAL_SCRIPT.md`，不必再从导入件抽取 |
+| 设计续集的人物、数值与关卡 | [原作人物名录](docs/ORIGINAL_CAST.md)、[规则数值手册](docs/NUMBERS.md)、[原作关卡](docs/ORIGINAL_LEVELS.md)、[战棋设计方法](docs/SRPG_DESIGN.md)（末节「落到我们的规则」是对到本作的结论），直接读，不重做调查 |
 | 提到某一场战斗 | [战斗称呼对照](docs/BATTLE_NAMES.md)（见「命名口径」） |
 | 派出或承接一条 lane | 下文「三、工作流」＋`docs/internal/lane_brief.md` |
 | 开新机制找原函数、筛长文档、自检证据用语 | TypeSafe Jev 用法（完整文档是私有仓库的第三方镜像；要联网和 key；配方见[工具说明](tools/README.md#typesafe-判断分担与全-exe-函数目录)）：冷启动路由 `jevgrep rank`、证据用语 lint `jevgrep lint --rules tools/typesafe/evidence_lint_rules.json --diff HEAD`、全 EXE 函数候选目录 `PYTHONPATH=tools python3 -m hsltools.checks.function_catalog query`；模型判断只是路由候选，不是证据 |
