@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (206 modules, 142 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (207 modules, 143 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (206)
+### 模块矩阵 (207)
 
 #### game/battle/runtime (18)
 
@@ -272,11 +272,12 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [MoviePlayer](../game/title/MoviePlayer.gd) | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); remake-invented | resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json); remake-invented | n/a | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json) | resource-derived [movie/manifest.json](../content/imported/hsl/movie/manifest.json) |
 | [TitleScreen](../game/title/TitleScreen.gd) | static-derived [original_movies.md](../docs/evidence_packets/resource_inventory/original_movies.md); provisional; remake-invented; static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md) | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); runtime-reference [original_gameplay_reference/README.md](../docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md) `#01`; static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); remake-invented | resource-derived [title/manifest.json](../content/imported/hsl/global/title/manifest.json); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md) | static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md); runtime-measured [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); static-derived [menus_ui/README.md](../docs/evidence_packets/runtime_observations/menus_ui/README.md); provisional | static-derived [original_music.md](../docs/evidence_packets/static_reverse/original_music.md); resource-derived [music/manifest.json](../content/imported/hsl/music/manifest.json); static-derived [original_title_ornaments/README.md](../docs/evidence_packets/runtime_observations/original_title_ornaments/README.md) |
 
-#### game/web (1)
+#### game/web (2)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
 | [PackManager](../game/web/PackManager.gd) | remake-invented | remake-invented | remake-invented | remake-invented | n/a |
+| [WebBoot](../game/web/WebBoot.gd) | remake-invented | n/a | n/a | n/a | n/a |
 
 #### game/world (7)
 
@@ -290,7 +291,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (142)
+### remake-invented 清单 (143)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -432,6 +433,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [PackManager](../game/web/PackManager.gd) | layout | loading overlay |
 | [PackManager](../game/web/PackManager.gd) | strings | loading overlay text |
 | [PackManager](../game/web/PackManager.gd) | timing | prefetch delay, retry backoff |
+| [WebBoot](../game/web/WebBoot.gd) | rules | web delivery of the remake's own build; the original ships one install |
 | [PartyEquipmentScreen](../game/world/PartyEquipmentScreen.gd) | strings | the no-sandbox failure lines |
 | [TownRuntime](../game/world/TownRuntime.gd) | strings | narration lines for gold／item grants, OPT-GUIDE=提示 only, except a displayed teGetGold |
 | [TownShopScreen](../game/world/TownShopScreen.gd) | layout | no ↓ mark; magic／special lists on the plain WINDOW20 board — the original's shape-table boards 5／10 are not read; slide side by node name／centre x; close = last-frame snapshot |
@@ -514,7 +516,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 59 | 33 | 34 | 15 | 1 | 142 |
-| n/a | 64 | 121 | 155 | 136 | 174 | 650 |
+| remake-invented | 60 | 33 | 34 | 15 | 1 | 143 |
+| n/a | 64 | 122 | 156 | 137 | 175 | 654 |
 
 <!-- provenance:end -->

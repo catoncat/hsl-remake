@@ -24,6 +24,8 @@ extends Node
 
 const RemakeOptionsPage = preload("res://game/settings/RemakeOptionsPage.gd")
 const TOGGLE_KEY := KEY_TAB
+## The web export's start scene: the page's art and tables are not mounted until it hands over.
+const WEB_BOOT_SCENE := "res://game/web/WebBoot.tscn"
 ## Above every game layer (the highest is 20), below the debug freeze badge (128), the popup
 ## canvas (1024) and the drawn cursor (GameCursor, 1025).
 const CANVAS_LAYER := 100
@@ -54,10 +56,15 @@ func _input(event: InputEvent) -> void:
 	var key := event as InputEventKey
 	if key == null or not key.pressed or key.echo or key.keycode != TOGGLE_KEY:
 		return
-	if _other_page_open():
+	if _other_page_open() or _web_booting():
 		return
 	get_viewport().set_input_as_handled()
 	open()
+
+
+func _web_booting() -> bool:
+	var scene := get_tree().current_scene
+	return scene != null and scene.scene_file_path == WEB_BOOT_SCENE
 
 
 func open() -> void:

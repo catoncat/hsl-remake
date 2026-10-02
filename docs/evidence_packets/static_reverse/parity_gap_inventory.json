@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 87,
-    "sources": 482,
+    "sources": 483,
     "sources_by_kind": {
-      "provenance": 198,
+      "provenance": 199,
       "sentence": 84,
       "scope": 102,
       "matrix": 85,
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 68,
+    "no_visible_effect_sources": 69,
     "resolved_sources": 20
   },
   "top": [
@@ -2531,6 +2531,10 @@
       {
         "source": "provenance:game/web/PackManager.gd|timing|remake-invented|",
         "reason": "仅网页版：后台预取的延迟和重试间隔；桌面上不运行，不影响任何演出节拍"
+      },
+      {
+        "source": "provenance:game/web/WebBoot.gd|rules|remake-invented|",
+        "reason": "仅网页版：开机先挂好基础包再进标题；桌面的主场景仍是标题，不经过它"
       },
       {
         "source": "scope:docs/evidence_packets/resource_inventory/bigmap_performances.md|negative-evidence|无 STORY／WINFAIL 关卡以大地图为底图",

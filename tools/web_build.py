@@ -43,6 +43,7 @@ DIST = WORK / 'dist'
 TEMPLATES = WORK / 'templates'
 PLAN = WORK / 'plan.json'
 PACKS_TOOL = ROOT / 'tools' / 'web_packs.py'
+WEB_BOOT_SCENE = 'res://game/web/WebBoot.tscn'
 
 GODOT_RELEASE = '4.7.2-stable'
 TPZ_URL = f'https://github.com/godotengine/godot/releases/download/{GODOT_RELEASE}/Godot_v{GODOT_RELEASE}_export_templates.tpz'
@@ -52,7 +53,7 @@ TEMPLATE_FILES = ('web_nothreads_release.zip', 'web_nothreads_debug.zip')
 # tests/ and tools/ are not game files; nothing under game/ refers to them.
 STAGE_PATHS = ('project.godot', 'game', 'content', '.godot')
 # Dev-only data that nothing under game/ reads (grep-checked): the original-derived manifest, the function
-# catalog, development outputs and the resource reference index.
+# catalog, development outputs and the resource reference index. The stage drops them (the export excludes them too).
 DEV_ONLY = (
     'content/generated/hsl/original_derived_manifest.json',
     'content/generated/hsl/static/hsl01/function_catalog.json',
@@ -264,6 +265,10 @@ def cmd_stage(args: argparse.Namespace) -> int:
     for name in STAGE_PATHS:
         clone(ROOT / name, STAGE / name)
     say(f'cloned {", ".join(STAGE_PATHS)} {time.time() - started:.0f}s')
+    # Off the stage before the pack plan sees them: the base packs take every other content file.
+    for pattern in DEV_ONLY:
+        for path in STAGE.glob(pattern):
+            shutil.rmtree(path) if path.is_dir() else path.unlink()
 
     if not args.no_minify:
         before, after, skipped = minify_json(STAGE / 'content')
@@ -280,6 +285,8 @@ def cmd_stage(args: argparse.Namespace) -> int:
         if run_tool([sys.executable, str(PACKS_TOOL), 'plan', '--project', str(STAGE), '--out', str(PLAN)]) != 0:
             return 1
         core_exclude = json.loads(PLAN.read_text(encoding='utf-8'))['core_exclude']
+        # The title-side art and data are base packs now: the export starts on the scene that mounts them.
+        set_params(STAGE / 'project.godot', {'run/main_scene': f'"{WEB_BOOT_SCENE}"'})
     (STAGE / 'export_presets.cfg').write_text(preset_text([*DEV_ONLY, *core_exclude, *args.exclude]), encoding='utf-8')
     say(f'stage done {time.time() - started:.0f}s ({"core + packs" if core_exclude else "single pack"})')
     return 0

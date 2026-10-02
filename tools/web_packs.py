@@ -8,8 +8,11 @@ plan   Scans a project directory (a checkout or a web staging copy; same layout)
        scene:<path>), plus the scenario path → group map and the next-scenario hints the
        runtime prefetches. Ownership goes by directory: a level's battleNNN/ tree, its scenario
        JSON, seed, terrain and treasure tables are level_NNN; the film sheets and sound are
-       movie_<name>; every music track but the title's is music_<stem>; the rest stays core. A
-       pack depends on every other pack its JSON files name by res:// path (a level borrowing
+       movie_<name>; every music track but the title's is music_<stem>; the content the autoloads
+       read before the web boot scene runs (BOOT_CORE) stays core; the rest goes to the base
+       packs (BASE_PACKS) of the `boot` group, which game/web/WebBoot.gd mounts before the title,
+       so a fix to the code ships a core of a few MB and leaves the art and data packs as they
+       were. A pack depends on every other pack its JSON files name by res:// path (a level borrowing
        another level's map, the music its timeline plays, the film a movie_play event names);
        a reference to another scenario file is a hand-off, not a dependency. The plan checks and
        prints its invariants: each game file is core or in exactly one pack, the exclude
@@ -58,6 +61,25 @@ LEVEL_RULES = [
 # big map) and the GameClear showcase may draw, but no title-side screen does: one pack every
 # level and scene group depends on, so the title needs only core.
 BATTLE_COMMON = ("content/imported/hsl/chapter01/combat_animation/", "content/generated/hsl/skills/effect_motion.json")
+# Content the autoloads read before the web boot scene has mounted the boot group (2026-10-02 probe:
+# the staged project run on an empty scene with content/ hidden — GameOptions' registry,
+# SimplifiedDisplay's character table, OriginalBitmapFont's atlases, GameCursor's shapes). It stays
+# in the core; nothing else of content/ does.
+BOOT_CORE = (
+    "content/authored/options/",
+    "content/generated/hsl/text/",
+    "content/generated/hsl/fonts/",
+    "content/imported/hsl/shared/game_cursor/",
+)
+# The rest of the old core content, split by how often it changes: original art and data (only a
+# re-import rewrites them), generated rule tables, the remake's own data. First prefix wins.
+BASE_PACKS = (
+    ("content/imported/hsl/shared/", "base_shared"),
+    ("content/imported/", "base_imported"),
+    ("content/generated/", "base_generated"),
+    ("content/", "base_data"),
+)
+BOOT_GROUP = "boot"
 DEST_RE = re.compile(r'^dest_files=\[(.*)\]', re.M)
 IMPORTER_RE = re.compile(r'^importer="([^"]*)"', re.M)
 
@@ -207,7 +229,12 @@ def plan(root: Path) -> dict:
             else:
                 if source in named_levels:
                     pack = "level_%03d" % named_levels[source]
+        if pack == "core" and not source.startswith(BOOT_CORE):
+            pack = next(name for prefix, name in BASE_PACKS if source.startswith(prefix))
         owner[source] = pack
+    # Mounted before the title and never unmounted: like the core, no pack lists them as a
+    # dependency, and their JSON names other packs the way core JSON does (a scene group asks).
+    resident = {"core"} | {name for _, name in BASE_PACKS}
     music_dirs = defaultdict(set)
     for source, pack in owner.items():
         if pack.startswith("music_"):
@@ -275,16 +302,16 @@ def plan(root: Path) -> dict:
         pack = owner[source]
         for target in targets:
             target_pack = owner[target]
-            if target_pack in ("core", pack):
+            if target_pack in resident or target_pack == pack:
                 continue
             if is_scenario(target):
                 handoffs[source].add(target)
                 continue
-            if pack == "core":
+            if pack in resident:
                 core_into_packs[source].add(target_pack)
             else:
                 packs[pack]["deps"].add(target_pack)
-        if pack != "core":
+        if pack not in resident:
             packs[pack]["deps"].update("movie_" + m for m in movies)
     for pack, row in packs.items():
         if pack.startswith("level_"):
@@ -303,7 +330,7 @@ def plan(root: Path) -> dict:
     def scene_group(source: str) -> list[str]:
         """Packs a core scene file (a world map JSON, the GameClear title-manifest section) needs."""
         targets, movies = json_refs.get(source, (set(), set()))
-        seed = {owner[t] for t in targets if owner[t] != "core" and not is_scenario(t)}
+        seed = {owner[t] for t in targets if owner[t] not in resident and not is_scenario(t)}
         return closure(seed | {"movie_" + m for m in movies} | {"battle_common"})
 
     groups: dict[str, list[str]] = {}
@@ -314,8 +341,9 @@ def plan(root: Path) -> dict:
             groups["movie:" + pack[len("movie_"):]] = closure({pack})
         elif pack.startswith("music_"):
             groups["music:" + pack[len("music_"):]] = closure({pack})
-    clear_refs = {owner[t] for s in _strings(title.get("game_clear", {})) for t in resolve(s) if owner[t] != "core"}
+    clear_refs = {owner[t] for s in _strings(title.get("game_clear", {})) for t in resolve(s) if owner[t] not in resident}
     groups["scene:game_clear"] = closure(clear_refs | {"battle_common"})
+    groups[BOOT_GROUP] = sorted(p for p in packs if p in resident)
 
     scenarios: dict[str, str] = {}
     for source, pack in owner.items():
@@ -336,7 +364,7 @@ def plan(root: Path) -> dict:
             if not scenario or scenario not in units:
                 continue
             res = "res://" + scenario
-            if owner[scenario] == "core":
+            if owner[scenario] in resident:
                 group = "scene:" + scenario.removesuffix(".json")
                 groups[group] = scene_group(scenario)
                 scenarios[res] = group
@@ -357,7 +385,7 @@ def plan(root: Path) -> dict:
     # Development scenarios outside every campaign (trials, the first_battle fixture) borrow
     # level art too; a direct launch of one asks for its scene group.
     for source, pack in owner.items():
-        if is_scenario(source) and pack == "core" and source != CAMPAIGN and "res://" + source not in scenarios:
+        if is_scenario(source) and pack in resident and source != CAMPAIGN and "res://" + source not in scenarios:
             group = "scene:" + source.removesuffix(".json")
             groups[group] = scene_group(source)
             scenarios["res://" + source] = group
@@ -406,7 +434,7 @@ def _next_level_events(data) -> list[int]:
 
 
 def _exclude_patterns(owner: dict[str, str]) -> list[str]:
-    """Shortest wildcard list: a directory whose every game file is one pack's becomes `dir/*`."""
+    """Shortest wildcard list: a directory none of whose game files is core becomes `dir/*`."""
     dir_owners: dict[str, set] = defaultdict(set)
     for source, pack in owner.items():
         parts = source.split("/")
@@ -422,7 +450,7 @@ def _exclude_patterns(owner: dict[str, str]) -> list[str]:
         chosen = source
         for i in range(2, len(parts)):
             directory = "/".join(parts[:i])
-            if dir_owners[directory] == {pack}:
+            if "core" not in dir_owners[directory]:
                 chosen = directory + "/*"
                 break
         if chosen not in covered:

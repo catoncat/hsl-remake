@@ -3280,6 +3280,9 @@
     "provenance:game/web/PackManager.gd|timing|remake-invented|": {
       "no_visible_effect": "仅网页版：后台预取的延迟和重试间隔；桌面上不运行，不影响任何演出节拍"
     },
+    "provenance:game/web/WebBoot.gd|rules|remake-invented|": {
+      "no_visible_effect": "仅网页版：开机先挂好基础包再进标题；桌面的主场景仍是标题，不经过它"
+    },
     "provenance:game/input/TouchControls.gd|rules|remake-invented|": {
       "no_visible_effect": "触屏专用输入（手机／平板浏览器、触屏笔记本）；没有触摸屏的桌面不启用，原版纯键鼠操作的画面与规则不变"
     },
