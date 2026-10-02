@@ -20,14 +20,17 @@ class PlaytestKitGenerateTests(unittest.TestCase):
     def test_failed_walk_returns_exit_code_and_preserves_existing_package(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            campaign = root / "content" / "battles" / "campaign.json"
+            campaign.parent.mkdir(parents=True)
+            campaign.write_text('{"battles":{}}', encoding="utf-8")
             kit = root / "kit"
             saves = kit / "saves"
             saves.mkdir(parents=True)
             saved_slot = saves / "memoir_00.json"
-            saved_bytes = b'{"schema":"previous-good-slot","keep":"byte for byte"}\\n'
+            saved_bytes = b'{"schema":"previous-good-slot","keep":"byte for byte"}\n'
             saved_slot.write_bytes(saved_bytes)
             manifest = kit / "kit.json"
-            manifest_bytes = b'{"schema":"previous-good-kit","generation":17}\\n'
+            manifest_bytes = b'{"schema":"previous-good-kit","generation":17}\n'
             manifest.write_bytes(manifest_bytes)
             process = types.SimpleNamespace(returncode=7, poll=lambda: 7)
             args = types.SimpleNamespace(tries=1, budget=1, force_win=False)
@@ -84,4 +87,3 @@ class PlaytestKitGenerateTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
