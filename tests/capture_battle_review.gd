@@ -24,6 +24,12 @@ func _initialize() -> void:
 
 
 func run() -> void:
+	# reset_campaign() below deletes the campaign save in user://: refuse the real user directory
+	# (tools/play.sh sets HSL_REAL_HOME=1; windowed tools/godot.sh keeps HOME); HOME must sit under ignored/.
+	if not OS.get_user_data_dir().begins_with(ProjectSettings.globalize_path("res://ignored/")):
+		push_error("Battle review clears the campaign save in user://: run it as HOME=\"$PWD/ignored/lane-home\" tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=N")
+		quit(2)
+		return
 	if DisplayServer.get_name() == "headless":
 		push_error("Battle review requires a rendering window")
 		quit(2)

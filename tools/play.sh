@@ -39,5 +39,14 @@ export HSL_DEBUG_PAUSE="${HSL_DEBUG_PAUSE:-1}"
 # refreshed and logged as HSL_SELF_HEAL instead of stopping the battle. Tests and autoplay (which
 # never come through here) stay strict; HSL_SELF_HEAL=0 turns it off here too.
 export HSL_SELF_HEAL="${HSL_SELF_HEAL:-1}"
+# Script-driven windows (the tests/capture_*.gd review drivers) reset campaign progress and other
+# user:// files, so they get their own HOME under ignored/ and never delete the player's real saves.
+case " $* " in
+  *" --script "*|*" --script="*|*" -s "*)
+    if [[ "${HOME:-}" != "$ROOT/ignored/"* ]]; then
+      export HOME="$ROOT/ignored/script-home"
+      mkdir -p "$HOME"
+    fi ;;
+esac
 unset __CFBundleIdentifier  # see tools/godot.sh: keep the game window out of the terminal's Dock entry
 exec "$GODOT_BIN" --path "$ROOT" "$@"

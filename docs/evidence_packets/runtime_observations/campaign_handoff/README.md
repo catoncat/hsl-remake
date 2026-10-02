@@ -65,7 +65,7 @@
 
 ## 复现
 
-`tools/godot.sh --headless --script res://tests/run_campaign_tests.gd`（承接合同）；各关回执 `tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=N`。
+`tools/godot.sh --headless --script res://tests/run_campaign_tests.gd`（承接合同）；各关回执 `HOME="$PWD/ignored/lane-home" tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=N`。
 
 ## 边界
 

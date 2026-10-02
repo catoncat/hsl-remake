@@ -221,7 +221,7 @@ tools/godot.sh --headless --script res://tests/run_authored_level_tests.gd      
 python3 tools/hsl.py affected --since <基线提交> --check                                      # 只跑改动命中的任务
 ```
 
-- **注册后自动覆盖**：`tests/run_battle_sweep_tests.gd`（开场 → 首次控制 → 强制胜利 → 交接；胜利条件不是清敌时，在 `levels/NNN.json` 写 `sweep_fixture`）和 `tests/run_autoplay_sweep_tests.gd` 会自动测到新关。窗口化截图：`tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=200`。
+- **注册后自动覆盖**：`tests/run_battle_sweep_tests.gd`（开场 → 首次控制 → 强制胜利 → 交接；胜利条件不是清敌时，在 `levels/NNN.json` 写 `sweep_fixture`）和 `tests/run_autoplay_sweep_tests.gd` 会自动测到新关。窗口化截图：`HOME="$PWD/ignored/lane-home" tools/godot.sh --script res://tests/capture_battle_review.gd -- --level=200`（它会清掉 user:// 里的战役存档，所以只在 ignored/ 下的 HOME 里跑）。
 - **自动对局结果文件** `content/generated/hsl/development/autoplay/results.json` 要补一行：跑一次全量 `tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，它会重写结果文件，并因"新增了一关"报一次不一致，看过重写结果后提交即可。`HSL_AUTOPLAY_LEVELS=200` 只跑这一关，**不写**结果文件，适合调试；`HSL_RNG_SEED=7` 换种子（同样不写）。两个扫关套件读的是当前战役的 `campaign.json`（默认第一章），只登记在你自己战役里的关要加上战役 id 才找得到：`HSL_CAMPAIGN=sequel_demo HSL_AUTOPLAY_LEVELS=200 tools/godot.sh --headless --fixed-fps 60 --script res://tests/run_autoplay_sweep_tests.gd`，输出 `AUTOPLAY level=200 outcome=win …` 即自动打到了胜利。
 - **改了剧情流转、大地图或城镇**：`tests/run_story_scene_tests.gd`（全部注册剧情场景：启动 → 跑完 → 交接）、`run_town_scene_tests.gd`，用法同上；大地图与流转改动按需跑 `run_story_mode_explorer_tests.gd`（约 20 分钟，自动走全图）。
 - **原版链的关**（有原版时）：`python3 tools/hsl.py list '*:37'` 列出第 37 关的全部任务，`python3 tools/hsl.py check '*:37'` 只跑它们。
