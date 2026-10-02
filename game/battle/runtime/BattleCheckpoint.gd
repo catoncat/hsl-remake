@@ -158,6 +158,9 @@ static func _loop_shape_error(loop: Dictionary) -> String:
 		if not loop.get(key) is Dictionary: return "missing_saved_dictionary"
 	for key in ["units", "rewarded_unit_ids", "event_log", "reinforcement_templates", LoopKeys.KNOWN_UNIT_IDS]:
 		if not loop.get(key) is Array: return "missing_saved_array"
+	# Carried known rows: absent in saves written before 2026-10 (none carried then).
+	var known_rows: Variant = loop.get(BattlePlayLoop.CampaignCarryRules.KNOWN_ACTORS, [])
+	if not known_rows is Array or known_rows.any(func(row): return not row is String): return "invalid_saved_known_actors"
 	if loop[LoopKeys.UNITS].is_empty() or loop[LoopKeys.UNITS].size() > 4096 or not loop[LoopKeys.GIVE_SESSION].is_empty(): return "unsupported_saved_roster"
 	# Before the placement checks: they read the map through the saved edits.
 	var terrain_error := BattlePlayLoop.TerrainEdits.state_error(loop)

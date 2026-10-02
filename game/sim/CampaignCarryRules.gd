@@ -12,7 +12,10 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 ##   rules: runtime-measured docs/evidence_packets/static_reverse/original_stamina.md
 ##     (carried ST 0 at 0x407632, kept after actKeepPlayerST)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_identity_bar.md
+##     (known bytes 0x4c6d80 cleared only by new game 0x42c7e0 and kept in the save: known rows go on)
 
+const ActorRoleRules = preload("res://game/sim/ActorRoleRules.gd")
 const BattleLoopConfig = preload("res://game/sim/BattleLoopConfig.gd")
 const ProgressionRules = preload("res://game/sim/ProgressionRules.gd")
 const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
@@ -47,6 +50,12 @@ const RESERVE := "reserve_units"
 ## registered (0x4c4360 has no un-fielded state; 0x4075e0 refills every registered slot), so
 ## capture passes them on and a script `registered_player` insert takes the record.
 const UNFIELDED := "unfielded_units"
+## The PLAYERS rows (actor ids) the campaign knows, sorted: the original's known bytes
+## 0x4c6d80 belong to the save, not to a battle — only new game clears them (0x42c7e0) — so an
+## enemy row fought in one level reads known in every later level. The carry holds them under
+## this key and the next loop under the same key (BattlePlayLoop.unit_known); a carry without
+## it (written before 2026-10) starts from none.
+const KNOWN_ACTORS := "known_actor_ids"
 const VITAL_KEYS := ["hp", "mp", "stamina"]
 const DEFAULT_POLICY := {
 	"roles": ["player_controlled"],
@@ -95,6 +104,7 @@ static func capture(loop: Dictionary, policy: Dictionary = DEFAULT_POLICY) -> Di
 		"claim_limit": "Remake campaign policy; original inter-level persistence is not proven.",
 	}
 	keep_damage_stream(carry, loop)
+	keep_known_actors(carry, loop)
 	var reserve := _reserve_forward(loop)
 	if not reserve.is_empty(): carry[RESERVE] = reserve
 	if keep:
@@ -145,6 +155,7 @@ static func separate_party_carry(incoming: Dictionary, loop: Dictionary) -> Dict
 	var carry := pass_level_entry(incoming, keeps_stamina(loop)) if not incoming.is_empty() else {}
 	if carry.get("schema") != SCHEMA: carry = {"schema": SCHEMA, "units": {}, "loop": {}, "restore_vitals": true}
 	keep_damage_stream(carry, loop)
+	keep_known_actors(carry, loop)
 	# The 倉庫 tables are one per save (0x44f720), not per party: what this battle stored goes on.
 	if loop.has("party_storage"):
 		if not carry.get("loop") is Dictionary: carry["loop"] = {}
@@ -191,6 +202,29 @@ static func keep_damage_stream(carry: Dictionary, loop: Dictionary) -> void:
 		carry[DamageRandomStream.LOOP_KEY] = (loop[DamageRandomStream.LOOP_KEY] as Array).duplicate()
 
 
+## The rows this battle leaves known (with `also`): those known on entry, every row a target
+## confirmation or death marked here (known_unit_ids, 0x430020／0x43ef5b) and every pmPlayer
+## unit's row (born known, 0x407e01) — the same reading as BattlePlayLoop.unit_known.
+static func known_actor_ids(loop: Dictionary, also: Array = []) -> Array:
+	var rows := {}
+	for actor_id in loop.get(KNOWN_ACTORS, []) + also: rows[str(actor_id)] = true
+	var marked: Array = loop.get("known_unit_ids", [])
+	for unit in loop.get("units", []):
+		if unit is Dictionary and str(unit.get("actor_id", "")) != "" and (marked.has(str(unit.get("id", ""))) or ActorRoleRules.side_mask(unit) == ActorRoleRules.SIDE_PLAYER):
+			rows[str(unit["actor_id"])] = true
+	var out := rows.keys()
+	out.sort()
+	return out
+
+
+## The known rows belong to the campaign, like the damage stream: a carry that passes a
+## party through keeps its rows and adds what this battle revealed.
+static func keep_known_actors(carry: Dictionary, loop: Dictionary) -> void:
+	if carry.get("schema") != SCHEMA: return
+	var rows := known_actor_ids(loop, carry.get(KNOWN_ACTORS, []))
+	if not rows.is_empty(): carry[KNOWN_ACTORS] = rows
+
+
 static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 	var next := BattleLoopConfig.copy(loop)
 	var receipt: Dictionary = {"schema": SCHEMA, "applied_unit_ids": [], "skipped_unit_ids": [], "loop_keys": [], "errors": []}
@@ -212,6 +246,13 @@ static func apply(loop: Dictionary, carry: Dictionary) -> Dictionary:
 			return next
 		next[DamageRandomStream.LOOP_KEY] = words
 		receipt[DamageRandomStream.LOOP_KEY] = words.duplicate()
+	if carry.has(KNOWN_ACTORS):
+		var rows: Variant = carry[KNOWN_ACTORS]
+		if not rows is Array or (rows as Array).any(func(row): return not row is String):
+			receipt["errors"].append("invalid_carry_known_actor_ids")
+			next["campaign_carry_receipt"] = receipt
+			return next
+		next[KNOWN_ACTORS] = (rows as Array).duplicate()
 	var carried_units: Dictionary = carry.get("units", {})
 	# A carried member was registered before: the construction copies no template (0x407ec0)
 	# and the level entry clears its ST (0x407632) unless the previous script kept it.
@@ -363,12 +404,15 @@ static func _apply_carried_unit(next: Dictionary, carry: Dictionary, unit: Dicti
 
 
 static func initialization_only(carry: Dictionary) -> Dictionary:
-	# A separate party inherits the campaign's damage stream, never the other party's
-	# actors, wallet or vitals (the global stream is the process's, not the carry's). Older
-	# carries without the stream keep their baseline.
-	if not carry.has(DamageRandomStream.LOOP_KEY): return {}
-	return {"schema":carry.get("schema"),"units":{},"loop":{},"restore_vitals":false,
-		"from_scenario_id":carry.get("from_scenario_id",""), DamageRandomStream.LOOP_KEY: _copy(carry[DamageRandomStream.LOOP_KEY])}
+	# A separate party inherits the campaign's damage stream and known rows, never the other
+	# party's actors, wallet or vitals (the global stream is the process's, not the carry's).
+	# Older carries without them keep the battle's baseline.
+	var kept := {}
+	for key in [DamageRandomStream.LOOP_KEY, KNOWN_ACTORS]:
+		if carry.has(key): kept[key] = _copy(carry[key])
+	if kept.is_empty(): return {}
+	kept.merge({"schema":carry.get("schema"),"units":{},"loop":{},"restore_vitals":false,"from_scenario_id":carry.get("from_scenario_id","")})
+	return kept
 
 
 static func _copy(value: Variant) -> Variant:

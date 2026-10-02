@@ -879,6 +879,8 @@ static func unit(loop: Dictionary, unit_id: String) -> Dictionary:
 ## keeps recording the marked unit ids; the judgement asks whether any known unit shares
 ## the actor_id, so the storage and checkpoint v3 key are unchanged. `known_ids` reads an
 ## earlier snapshot of the set instead (an exchange receipt's `strip_known_ids`).
+## The bytes outlive the battle (only new game clears them, 0x42c7e0): rows known in earlier
+## levels arrive with the campaign carry as `known_actor_ids` (CampaignCarryRules.KNOWN_ACTORS).
 static func unit_known(loop: Dictionary, unit_id: String, known_ids: Variant = null) -> bool:
 	var target := unit_ref(loop, unit_id)
 	if target.is_empty():
@@ -891,6 +893,8 @@ static func unit_known(loop: Dictionary, unit_id: String, known_ids: Variant = n
 	var actor_id := str(target.get("actor_id", ""))
 	if actor_id == "":
 		return false
+	if (loop.get(CampaignCarryRules.KNOWN_ACTORS, []) as Array).has(actor_id):
+		return true
 	for known_id in known:
 		if str(unit_ref(loop, str(known_id)).get("actor_id", "")) == actor_id:
 			return true

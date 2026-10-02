@@ -170,7 +170,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [BattleRewardRules](../game/sim/BattleRewardRules.gd) | static-derived [battle_reward_inputs.md](../docs/evidence_packets/static_reverse/battle_reward_inputs.md); static-derived [original_ai_navigation.md](../docs/evidence_packets/static_reverse/original_ai_navigation.md); static-derived [original_skill_function_bits.md](../docs/evidence_packets/static_reverse/original_skill_function_bits.md); static-derived [original_player_mode.md](../docs/evidence_packets/static_reverse/original_player_mode.md); provisional; resource-derived [rewards.json](../content/generated/hsl/combat/rewards.json); runtime-measured [_reward_rng_trace.py](../tools/hsltools/probes/_reward_rng_trace.py); remake-invented | n/a | n/a | n/a | n/a |
 | [BattleScenario](../game/sim/BattleScenario.gd) | remake-invented | n/a | n/a | n/a | n/a |
 | [BattleScenarioRuleAdapter](../game/sim/BattleScenarioRuleAdapter.gd) | remake-invented | n/a | n/a | n/a | n/a |
-| [CampaignCarryRules](../game/sim/CampaignCarryRules.gd) | static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_town_job_up.md](../docs/evidence_packets/static_reverse/original_town_job_up.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [original_stamina.md](../docs/evidence_packets/static_reverse/original_stamina.md) | n/a | n/a | n/a | n/a |
+| [CampaignCarryRules](../game/sim/CampaignCarryRules.gd) | static-derived [original_campaign_actors.md](../docs/evidence_packets/static_reverse/original_campaign_actors.md); remake-invented; static-derived [original_town_job_up.md](../docs/evidence_packets/static_reverse/original_town_job_up.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md); static-derived [original_enemy_turn.md](../docs/evidence_packets/static_reverse/original_enemy_turn.md); runtime-measured [original_stamina.md](../docs/evidence_packets/static_reverse/original_stamina.md); static-derived [original_identity_bar.md](../docs/evidence_packets/static_reverse/original_identity_bar.md) | n/a | n/a | n/a | n/a |
 | [CombatSequenceRules](../game/sim/CombatSequenceRules.gd) | static-derived [original_extra_attack.md](../docs/evidence_packets/static_reverse/original_extra_attack.md) | n/a | n/a | n/a | n/a |
 | [ConditionalPartyRules](../game/sim/ConditionalPartyRules.gd) | static-derived [original_player_install.md](../docs/evidence_packets/static_reverse/original_player_install.md); remake-invented | n/a | n/a | n/a | n/a |
 | [ContentPaths](../game/sim/ContentPaths.gd) | remake-invented | n/a | n/a | n/a | n/a |
@@ -507,7 +507,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | Tag | rules | layout | strings | timing | audio | total |
 | --- | --- | --- | --- | --- | --- | --- |
 | resource-derived | 32 | 74 | 42 | 10 | 29 | 187 |
-| static-derived | 259 | 119 | 20 | 124 | 26 | 548 |
+| static-derived | 260 | 119 | 20 | 124 | 26 | 549 |
 | runtime-measured | 17 | 32 | 3 | 16 | 2 | 70 |
 | user-confirmed | 1 | 0 | 0 | 0 | 0 | 1 |
 | user-hypothesis | 0 | 0 | 0 | 0 | 0 | 0 |

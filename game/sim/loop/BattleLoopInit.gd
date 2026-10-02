@@ -168,6 +168,8 @@ static func _initial_loop(active_scenario: Dictionary, roster: Array, terrain: D
 		"gold": 0,
 		"rewarded_unit_ids": [],
 		"known_unit_ids": [],
+		# Rows known before this battle; a campaign carry fills it (CampaignCarryRules.KNOWN_ACTORS).
+		"known_actor_ids": [],
 		"settlement": {},
 		"last_attack": {},
 		"action_attacker_id": "",

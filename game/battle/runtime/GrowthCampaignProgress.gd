@@ -62,5 +62,6 @@ func prepare_handoff() -> Dictionary:
 		carry = {"schema":CarryRules.SCHEMA,"units":{},"loop":{},"restore_vitals":true}
 	if carry.get("schema") == CarryRules.SCHEMA:
 		CarryRules.keep_damage_stream(carry, runtime.play_loop)
+		CarryRules.keep_known_actors(carry, runtime.play_loop)
 		handoff["carry"] = carry
 	return handoff

@@ -82,7 +82,8 @@ class RegistryTaskSetTests(unittest.TestCase):
         # The task packages hold nothing but task modules and their helpers (`_`-prefixed, or
         # hsltools.schema.validate, the validator shared with game/sim/UnitSchema.gd).
         # hsltools.levels.scenario: the shared winfail readers of the scenario assemblers.
-        helpers = {'hsltools.schema.validate', 'hsltools.levels.scenario'}
+        # hsltools.assets.ui_font: the maintainer's font cutter, run by hand on a downloaded OTF.
+        helpers = {'hsltools.schema.validate', 'hsltools.levels.scenario', 'hsltools.assets.ui_font'}
         public = sorted(info.name for package_name in registry.TASK_PACKAGES
                         for info in pkgutil.iter_modules(importlib.import_module(package_name).__path__, package_name + '.')
                         if not info.name.rsplit('.', 1)[1].startswith('_'))

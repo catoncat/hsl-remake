@@ -52,7 +52,12 @@ find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
 (cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)
 python3 -c 'import shutil, sys; shutil.rmtree(sys.argv[1], ignore_errors=True)' "${NEW}"
 git -C "${PUB}" add -A
-if git -C "${PUB}" diff --cached --quiet; then echo "OSS_SYNC_OK ref=${head} (public tree unchanged)"; exit 0; fi
+if git -C "${PUB}" diff --cached --quiet; then
+  # Unchanged since the last sync, but that sync's push may have failed (a transient HTTP2 error):
+  # push what is committed and not yet on origin, or the retry would report OK with origin behind.
+  if [ -n "$(git -C "${PUB}" rev-list origin/main..HEAD 2>/dev/null)" ]; then git -C "${PUB}" push -q origin main; fi
+  echo "OSS_SYNC_OK ref=${head} (public tree unchanged)"; exit 0
+fi
 # Public commit message: every source commit since the previously synced source commit (read back from
 # the public HEAD's trailer), bookkeeping commits dropped, so the public history says what changed.
 # The previous source commit: the `Source:` trailer, else the older `sync: hsl-fork main <sha>` subject,

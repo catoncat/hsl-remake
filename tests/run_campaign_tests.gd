@@ -114,8 +114,11 @@ func _test_pure_carry() -> void:
 	first["scenario_id"] = "battle_051_cannon_fodder"
 	first["next_level_event"] = [52, 52] # the fixture carries no script; WINFAIL051's hand-off is asserted on battle_051 in run_tests
 	_assert_eq(CampaignProgress.next_scenario_path(campaign, first), "res://content/battles/battle_052.json", "next scenario resolves from next_level_event")
+	# The known bytes 0x4c6d80 outlive the battle (only new game 0x42c7e0 clears them).
+	BattlePlayLoop.mark_known(first, "enemy021_1")
 
 	var carry := CampaignCarryRules.capture(first, campaign["carry_policy"])
+	_assert_eq(carry[CampaignCarryRules.KNOWN_ACTORS], ["001", "021", "023", "024"], "carried known rows: the fought 021 and every pmPlayer row")
 	_assert_true(carry["units"].has("leonard") and not carry["units"].has("enemy021_1"), "only controlled units are carried")
 	_assert_eq(int(carry["units"]["leonard"]["level"]), 3, "carried level")
 	_assert_eq(int(carry["units"]["leonard"]["attributes"]["str"]), int(leonard["combat_profile"]["str"]), "carried str attribute")
@@ -136,6 +139,7 @@ func _test_pure_carry() -> void:
 	_assert_eq(int(carried["hp"]), int(carried["max_hp"]), "HP restores to the refreshed maximum")
 	_assert_eq(int(carried["stamina"]), 0, "a carried member enters at 0 ST (0x407632), not the PLAYERS template's 20")
 	_assert_eq(int(applied["gold"]), 120, "gold applied to the new loop")
+	_assert_true(BattlePlayLoop.unit_known(applied, "enemy021_8") and not BattlePlayLoop.unit_known(applied, "enemy026_1"), "a row fought in level 51 reads known in level 52; an unfought row stays ???")
 	_assert_eq(int(_unit(applied, "emperor025")["hp"]), boss_hp, "other units untouched")
 	_assert_eq(applied["campaign_carry_receipt"]["errors"], [], "no carry errors")
 	_assert_eq(str(applied.get("interaction", "")), "idle", "carry does not start the battle")
