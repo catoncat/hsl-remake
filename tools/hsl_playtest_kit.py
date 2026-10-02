@@ -113,7 +113,7 @@ def walk(args: argparse.Namespace) -> int:
     # The chapter walk rewrites the tracked chapter.json; the kit must not leave that behind.
     subprocess.run(["git", "checkout", "--", "content/generated/hsl/development/autoplay/chapter.json"], cwd=ROOT, check=False)
     print(f"PLAYTEST_KIT_WALK snapshots={count} exit={proc.returncode}")
-    return 0
+    return proc.returncode
 
 
 def select(args: argparse.Namespace) -> int:
