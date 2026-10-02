@@ -48,6 +48,15 @@ PY
 if [ "${personal}" != 0 ] || [ "${media}" != 0 ] || [ "${original_audio}" != 0 ] || [ "${original_ui}" != 0 ]; then
   echo "OSS_SYNC_FAIL rescan personal_hits=${personal} media_outside=${media} original_audio=${original_audio} original_ui=${original_ui} out=${NEW}"; exit 1
 fi
+# A pull request merged on the public repo (2026-10-02: #2) is not in hsl-fork: syncing over it would
+# undo it, and the push is refused anyway. Stop and name the commits to port first.
+git -C "${PUB}" fetch -q origin main
+upstream="$(git -C "${PUB}" log --format='%h %s' HEAD..origin/main)"
+if [ -n "${upstream}" ]; then
+  printf '%s\n' "${upstream}"
+  echo "OSS_SYNC_FAIL upstream: the public main has commits hsl-fork lacks — port them (git -C ${PUB} format-patch -1 SHA --stdout | git am, on pipeline-line), then git -C ${PUB} reset --hard origin/main and publish again"
+  exit 1
+fi
 find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
 (cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)
 python3 -c 'import shutil, sys; shutil.rmtree(sys.argv[1], ignore_errors=True)' "${NEW}"

@@ -34,8 +34,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from web_release import (DIST, THREADS, WORK, cache_control, content_type, dist_files, hash_files, is_blob, json_bytes, mb,
-                         new_release_id, now_iso, object_keys, orphaned_blobs, release_record, referenced_keys, say)
+from web_release import (DIST, THREADS, WORK, cache_control, content_type, dist_files, encode_blobs, hash_files, is_blob, json_bytes,
+                         mb, new_release_id, now_iso, object_keys, orphaned_blobs, release_record, referenced_keys, say, stored_files)
 
 TOOLS = Path(__file__).resolve().parent
 WORKER = TOOLS / 'web_cf_worker.js'
@@ -232,8 +232,10 @@ def sweep(cfg: dict, release: dict, auth: str) -> list[str]:
             return f'{row["path"]}: HTTP {error.code}'
         except OSError as error:
             return f'{row["path"]}: {error}'
-        # a compressed answer carries no Content-Length for a text file; only the big ones are compared
-        return None if size in (row['size'], -1) else f'{row["path"]}: {size} bytes, expected {row["size"]}'
+        # a compressed answer carries no Content-Length for a text file; only the big ones are compared (an encoded blob
+        # by its stored, encoded size)
+        expected = row.get('stored_size', row['size'])
+        return None if size in (expected, -1) else f'{row["path"]}: {size} bytes, expected {expected}'
     with concurrent.futures.ThreadPoolExecutor(THREADS) as pool:
         return [problem for problem in pool.map(head, release['files']) if problem]
 
@@ -245,8 +247,10 @@ def cmd_push(args: argparse.Namespace) -> int:
     rid, git = new_release_id(dist)
     started = time.time()
     sums = hash_files(files)
-    keys = object_keys(files, sums, rid)
-    sizes = {rel: files[rel].stat().st_size for rel in files}
+    encoded = encode_blobs(files, sums)
+    stored = stored_files(files, encoded)
+    keys = object_keys(files, sums, rid, encoded)
+    sizes = {rel: stored[rel].stat().st_size for rel in files}
     ensure_login()
     index = read_index(cfg)
     previous = (r2_get_json(cfg, 'latest.json') or {}).get('release')
@@ -264,10 +268,10 @@ def cmd_push(args: argparse.Namespace) -> int:
         for start in range(0, len(todo), 40):  # the OAuth token is refreshed between batches, never inside a parallel one
             ensure_login()
             batch = todo[start:start + 40]
-            for _ in pool.map(lambda rel: r2_put(cfg, keys[rel], files[rel], content_type(rel), cache_control(rel)), batch):
+            for _ in pool.map(lambda rel: r2_put(cfg, keys[rel], stored[rel], content_type(rel), cache_control(rel)), batch):
                 done_count += 1
             say(f'  {done_count}/{len(todo)} uploaded  ({time.time() - started:.0f}s)')
-    release = release_record(rid, git, files, sums, keys)
+    release = release_record(rid, git, files, sums, keys, encoded)
     r2_put_json(cfg, f'releases/{rid}/release.json', release)
     write_index(cfg, sorted(set(index) | {rid}))
     r2_put_json(cfg, 'latest.json', {'release': rid, 'updated': release['created']})

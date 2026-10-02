@@ -3,14 +3,17 @@
 
 A release is the dist/ tree of web_build.py. Its small files (page, loader script, icons, pack manifest) sit under
 releases/<id>/<path>; every .wasm and .pck sits once under blobs/<sha256 prefix>/<name> and is shared by all releases that
-carry it. releases/<id>/release.json lists every file {path, size, sha256, key}; latest.json {release, updated} is written
-last and is the only switch. This module holds the parts that must not differ between stores: file discovery, hashing, keys,
+carry it. A blob that gzip shrinks by a tenth or more (the engine, the data and level packs; not the films, the music or the
+code-only core) is stored gzip-encoded under <key>.gz and served with Content-Encoding: gzip, so the browser inflates it and
+the game reads the plain bytes the manifest describes. releases/<id>/release.json lists every file {path, size, sha256, key,
+and for an encoded blob encoding and stored_size}; latest.json {release, updated} is written last and is the only switch. This module holds the parts that must not differ between stores: file discovery, hashing, keys,
 the cache policy, the release record and which blobs a pruned release leaves behind. It has no side effects of its own.
 """
 from __future__ import annotations
 
 import concurrent.futures
 import datetime
+import gzip
 import hashlib
 import json
 import subprocess
@@ -19,6 +22,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 WORK = ROOT / 'ignored' / 'web'
 DIST = WORK / 'dist'
+GZIP_CACHE = WORK / 'gz'
+# Stored gzip-encoded when that saves at least a tenth (2026-10-02: engine 39.5 -> 10.1 MB, base_generated 5.5 -> 0.7 MB,
+# battle_common 46.4 -> 33.3 MB, level packs about a quarter; films, music and the core save under 5%).
+GZIP_RATIO = 0.9
 BLOB_SUFFIXES = ('.wasm', '.pck')
 REQUIRED = ('index.html', 'index.pck', 'packs/manifest.json')
 TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.wasm': 'application/wasm',
@@ -54,9 +61,35 @@ def is_blob(rel: str) -> bool:
     return rel.endswith(BLOB_SUFFIXES)
 
 
-def blob_key(sha: str, rel: str) -> str:
+def blob_key(sha: str, rel: str, encoded: bool = False) -> str:
     """Big files live under their content hash, shared by every release that carries them."""
-    return f'blobs/{sha[:20]}/{Path(rel).name}'
+    return f'blobs/{sha[:20]}/{Path(rel).name}' + ('.gz' if encoded else '')
+
+
+def gzip_blob(path: Path, sha: str) -> Path | None:
+    """The gzip-encoded copy of a blob, cached by content hash under ignored/web/gz/; None when it would save too little."""
+    out = GZIP_CACHE / f'{sha[:20]}-{path.name}.gz'
+    skip = GZIP_CACHE / f'{sha[:20]}-{path.name}.raw'  # marker: measured, not worth encoding
+    if out.exists() or skip.exists():
+        return out if out.exists() else None
+    GZIP_CACHE.mkdir(parents=True, exist_ok=True)
+    data = path.read_bytes()
+    packed = gzip.compress(data, compresslevel=9, mtime=0)
+    if len(packed) > GZIP_RATIO * len(data):
+        skip.touch()
+        return None
+    part = out.with_name(out.name + '.part')
+    part.write_bytes(packed)
+    part.replace(out)
+    return out
+
+
+def encode_blobs(files: dict[str, Path], sums: dict[str, str]) -> dict[str, Path]:
+    """The blobs this release stores gzip-encoded, each with its encoded file."""
+    blobs = [rel for rel in files if is_blob(rel)]
+    with concurrent.futures.ThreadPoolExecutor(THREADS) as pool:
+        stored = dict(zip(blobs, pool.map(lambda rel: gzip_blob(files[rel], sums[rel]), blobs)))
+    return {rel: path for rel, path in stored.items() if path is not None}
 
 
 def cache_control(rel: str) -> str:
@@ -92,14 +125,27 @@ def new_release_id(dist: Path) -> tuple[str, str]:
     return datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M') + '-' + git, git
 
 
-def object_keys(files: dict[str, Path], sums: dict[str, str], rid: str) -> dict[str, str]:
-    return {rel: blob_key(sums[rel], rel) if is_blob(rel) else f'releases/{rid}/{rel}' for rel in files}
+def object_keys(files: dict[str, Path], sums: dict[str, str], rid: str, encoded: dict[str, Path] | None = None) -> dict[str, str]:
+    encoded = encoded or {}
+    return {rel: blob_key(sums[rel], rel, rel in encoded) if is_blob(rel) else f'releases/{rid}/{rel}' for rel in files}
 
 
-def release_record(rid: str, git: str, files: dict[str, Path], sums: dict[str, str], keys: dict[str, str]) -> dict:
+def stored_files(files: dict[str, Path], encoded: dict[str, Path]) -> dict[str, Path]:
+    """What goes into the store for each path: the encoded copy of an encoded blob, else the file itself."""
+    return {rel: encoded.get(rel, path) for rel, path in files.items()}
+
+
+def release_record(rid: str, git: str, files: dict[str, Path], sums: dict[str, str], keys: dict[str, str],
+                   encoded: dict[str, Path] | None = None) -> dict:
+    encoded = encoded or {}
     sizes = {rel: files[rel].stat().st_size for rel in files}
-    return {'id': rid, 'git': git, 'created': now_iso(), 'bytes': sum(sizes.values()),
-            'files': [{'path': rel, 'size': sizes[rel], 'sha256': sums[rel], 'key': keys[rel]} for rel in files]}
+    rows = []
+    for rel in files:
+        row = {'path': rel, 'size': sizes[rel], 'sha256': sums[rel], 'key': keys[rel]}
+        if rel in encoded:
+            row.update(encoding='gzip', stored_size=encoded[rel].stat().st_size)
+        rows.append(row)
+    return {'id': rid, 'git': git, 'created': now_iso(), 'bytes': sum(sizes.values()), 'files': rows}
 
 
 def referenced_keys(releases: list[dict]) -> set[str]:

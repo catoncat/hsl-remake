@@ -40,8 +40,8 @@ try:
 except ImportError:
     raise SystemExit('web_deploy.py talks to COS through its S3 API and needs boto3: pip install boto3')
 
-from web_release import (DIST, THREADS, WORK, cache_control, content_type, dist_files, hash_files, is_blob, json_bytes, mb,
-                         new_release_id, now_iso, object_keys, release_record, say)
+from web_release import (DIST, THREADS, WORK, cache_control, content_type, dist_files, encode_blobs, hash_files, is_blob, json_bytes,
+                         mb, new_release_id, now_iso, object_keys, release_record, say, stored_files)
 
 CONFIG = Path(os.environ['HSL_DEPLOY_CONFIG']) if os.environ.get('HSL_DEPLOY_CONFIG') else WORK / 'deploy.json'
 
@@ -116,18 +116,22 @@ def cmd_push(args: argparse.Namespace) -> int:
     rid, git = new_release_id(dist)
     started = time.time()
     sums = hash_files(files)
+    encoded = encode_blobs(files, sums)
+    stored = stored_files(files, encoded)
     latest = get_json(s3, bucket, 'latest.json')
     previous = (get_json(s3, bucket, f'releases/{latest["release"]}/release.json') if latest else None) or {'files': []}
-    # where each content already lives (a blob, or a file of the previous release written before blobs existed)
-    known = {row['sha256']: row.get('key') or f'releases/{previous.get("id", "")}/{row["path"]}' for row in previous['files']}
+    # where each content already lives (a blob, or a file of the previous release written before blobs existed), by its
+    # encoding: a plain object must not be copied under an encoded key
+    known = {(row['sha256'], row.get('encoding', '')): row.get('key') or f'releases/{previous.get("id", "")}/{row["path"]}' for row in previous['files']}
     blobs = {o['Key']: o['Size'] for page in s3.get_paginator('list_objects_v2').paginate(Bucket=bucket, Prefix='blobs/') for o in page.get('Contents', [])}
-    keys = object_keys(files, sums, rid)
-    size_of = {rel: files[rel].stat().st_size for rel in files}
+    keys = object_keys(files, sums, rid, encoded)
+    size_of = {rel: stored[rel].stat().st_size for rel in files}
+    encoding = {rel: 'gzip' if rel in encoded else '' for rel in files}
     plan = {}
     for rel in files:
         if is_blob(rel) and blobs.get(keys[rel]) == size_of[rel]:
             plan[rel] = 'reuse'
-        elif is_blob(rel) and sums[rel] in known:
+        elif is_blob(rel) and (sums[rel], encoding[rel]) in known:
             plan[rel] = 'copy'
         else:
             plan[rel] = 'upload'
@@ -139,13 +143,15 @@ def cmd_push(args: argparse.Namespace) -> int:
     transfer = TransferConfig(multipart_threshold=32 << 20, multipart_chunksize=16 << 20, max_concurrency=4)
 
     def headers(rel: str) -> dict:
-        return {'ContentType': content_type(rel), 'CacheControl': cache_control(rel), 'Metadata': {'sha256': sums[rel]}}
+        extra = {'ContentEncoding': 'gzip'} if encoding[rel] else {}
+        return {'ContentType': content_type(rel), 'CacheControl': cache_control(rel), 'Metadata': {'sha256': sums[rel]}, **extra}
 
     def put(rel: str) -> str:
         if plan[rel] == 'copy':
-            s3.copy_object(Bucket=bucket, Key=keys[rel], CopySource={'Bucket': bucket, 'Key': known[sums[rel]]}, MetadataDirective='REPLACE', **headers(rel))
+            source = known[(sums[rel], encoding[rel])]
+            s3.copy_object(Bucket=bucket, Key=keys[rel], CopySource={'Bucket': bucket, 'Key': source}, MetadataDirective='REPLACE', **headers(rel))
         elif plan[rel] == 'upload':
-            s3.upload_file(str(files[rel]), bucket, keys[rel], Config=transfer, ExtraArgs=headers(rel))
+            s3.upload_file(str(stored[rel]), bucket, keys[rel], Config=transfer, ExtraArgs=headers(rel))
         return rel
 
     with concurrent.futures.ThreadPoolExecutor(THREADS) as pool:
@@ -159,7 +165,7 @@ def cmd_push(args: argparse.Namespace) -> int:
     wrong = [rel for rel in files if remote.get(keys[rel]) != size_of[rel]]
     if wrong:
         raise SystemExit(f'verification failed for {len(wrong)} files, e.g. {wrong[:3]}; latest.json left as it was')
-    release = release_record(rid, git, files, sums, keys)
+    release = release_record(rid, git, files, sums, keys, encoded)
     put_json(s3, bucket, f'releases/{rid}/release.json', release)
     put_json(s3, bucket, 'latest.json', {'release': rid, 'updated': release['created']})
     say(f'latest.json -> {rid}  ({time.time() - started:.0f}s)')

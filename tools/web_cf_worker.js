@@ -112,7 +112,7 @@ async function currentRelease(env) {
       const info = await tableObject.json();
       // older releases may carry no per-file key: their objects sit under releases/<id>/
       release.files = new Map(info.files.map((row) => [row.path, {
-        size: row.size, sha256: row.sha256 || '', key: row.key || `releases/${latest.release}/${row.path}`,
+        size: row.size, sha256: row.sha256 || '', key: row.key || `releases/${latest.release}/${row.path}`, encoding: row.encoding || '',
       }]));
       release.id = latest.release;
     }
@@ -138,10 +138,14 @@ function parseRange(header, size) {
   return { offset: first, length: end - first + 1 };
 }
 
+// An encoded blob (web_release.py: stored gzip-encoded, the table says `encoding`) goes out as stored with Content-Encoding and
+// encodeBody 'manual', so the runtime neither compresses it again nor inflates it; the browser does. No ranges on those.
 async function serve(request, env, path, entry) {
   const policy = cacheControl(path);
   const etag = policy === 'no-store' || !entry.sha256 ? '' : `"${entry.sha256.slice(0, 32)}"`;
-  const headers = new Headers({ 'Cache-Control': policy, 'Accept-Ranges': 'bytes', 'Content-Type': TYPES[extension(path)] || 'application/octet-stream' });
+  const headers = new Headers({ 'Cache-Control': policy, 'Content-Type': TYPES[extension(path)] || 'application/octet-stream' });
+  if (entry.encoding) headers.set('Content-Encoding', entry.encoding);
+  else headers.set('Accept-Ranges', 'bytes');
   if (etag) headers.set('ETag', etag);
   const seen = (request.headers.get('If-None-Match') || '').split(',').map((tag) => tag.trim().replace(/^W\//, ''));
   if (etag && seen.includes(etag)) {
@@ -154,7 +158,7 @@ async function serve(request, env, path, entry) {
     headers.set('Content-Length', String(head.size));
     return new Response(null, { status: 200, headers });
   }
-  const wanted = parseRange(request.headers.get('Range'), entry.size);
+  const wanted = entry.encoding ? null : parseRange(request.headers.get('Range'), entry.size);
   if (wanted === 'unsatisfiable') return reply(416, 'range not satisfiable', { 'Content-Range': `bytes */${entry.size}` });
   const object = await env.RELEASES.get(entry.key, wanted ? { range: wanted } : {});
   if (!object) return reply(404, 'object missing');
@@ -164,7 +168,7 @@ async function serve(request, env, path, entry) {
     return new Response(object.body, { status: 206, headers });
   }
   headers.set('Content-Length', String(object.size));
-  return new Response(object.body, { status: 200, headers });
+  return new Response(object.body, entry.encoding ? { status: 200, headers, encodeBody: 'manual' } : { status: 200, headers });
 }
 
 export default {
