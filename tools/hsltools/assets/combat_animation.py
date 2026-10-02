@@ -382,7 +382,7 @@ def build(pak, selected=None):
         result['background'] = default_background(result['backdrops'])
         result['opening'] = import_opening(read)
         result['hit_flashes'] = import_hit_flashes(read)
-    (ROOT / 'manifest.json').write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
+    _write_manifest(result)
 
 
 def import_opening(read):
@@ -391,6 +391,15 @@ def import_opening(read):
     write_shp_preview(data, parse_shp(data), target)
     return {'res_path': 'res://' + target.as_posix(), 'source_member': OPENING_MEMBER, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)),
             'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target), 'note': OPENING_NOTE}
+
+
+def _write_manifest(result):
+    """Write manifest.json with `backdrops` as its last key — the order the --backdrops append produced in the
+    tracked file — so a whole rebuild (a public clone's bootstrap) is byte-identical to it (original_derived_manifest)."""
+    result = bind_programs(result)
+    if 'backdrops' in result:
+        result['backdrops'] = result.pop('backdrops')
+    (ROOT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
 
 
 def backdrop_res_path(member):
@@ -452,7 +461,7 @@ def append_opening(pak, hit_flashes=False, backdrops=False):
         result['hit_flashes'] = import_hit_flashes(read)
     else:
         result['opening'] = import_opening(read)
-    path.write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
+    _write_manifest(result)
 
 
 def check():
@@ -562,8 +571,6 @@ if __name__ == '__main__':
         append_opening(args.pak, backdrops=True)
         print('COMBAT_BACKDROP_IMPORT_PASS')
     elif args.bind_programs:
-        path = ROOT / 'manifest.json'
-        result = bind_programs(json.loads(path.read_text()))
-        path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+        _write_manifest(json.loads((ROOT / 'manifest.json').read_text()))
         print('COMBAT_PROGRAM_BINDING_PASS')
     else: build(args.pak,args.actors)
