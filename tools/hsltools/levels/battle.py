@@ -41,7 +41,7 @@ from hsltools.data.equipment import build as equipment_data
 from hsltools.data.treasures import chest_hidden
 from hsltools.legacy import ENCOUNTER_RANGE, assembled_battle_levels
 from hsltools.levels import profile as level_profile
-from hsltools.levels.scenario import SHARED_RESOURCES, apply_terrain_overrides, impassable, status_timelines, terrain_overrides
+from hsltools.levels.scenario import SHARED_RESOURCES, apply_terrain_overrides, combat_backdrop_resource, impassable, status_timelines, terrain_overrides
 from hsltools.levels.timeline import level_table_music
 from hsltools.model.jobs import ATTRIBUTES, calculate
 from hsltools.native.sources import sources
@@ -1313,6 +1313,7 @@ def build(level: int) -> dict:
     for key in ['attack_ranges', 'progression', 'consumables', 'combat_animation', 'interface_audio', 'fire_animation']:
         resources[key] = first['resources'].get(key, SHARED_RESOURCES[key])
     resources['battle_seed'] = f'res://content/generated/hsl/chapter01/battle{level:03d}_seed.json'
+    resources['combat_backdrop'] = combat_backdrop_resource(level, seed)
     if profile.get('treasures', True):
         resources['treasures'] = 'res://' + treasure_path(level).relative_to(ROOT).as_posix()
     evidence = _load(ROOT / resources['message_text_evidence'].removeprefix('res://'))
@@ -1489,6 +1490,7 @@ def build_encounter(level: int) -> dict:
     for key in ['attack_ranges', 'progression', 'consumables', 'combat_animation', 'interface_audio', 'fire_animation']:
         resources[key] = first['resources'].get(key, SHARED_RESOURCES[key])
     resources['battle_seed'] = 'res://' + seed_path.relative_to(ROOT).as_posix()
+    resources['combat_backdrop'] = combat_backdrop_resource(level, seed)
     for key in ('map_texture', 'terrain', 'opening_timeline', 'message_text_evidence', 'map_objects'):
         if not (ROOT / str(resources[key]).removeprefix('res://')).exists():
             raise ValueError(f'encounter {level}: missing resource {key}: {resources[key]}')
@@ -1644,6 +1646,7 @@ class LevelBattleTask(GeneratedFilesTask):
         story = () if level in ENCOUNTERS else (f'content/battles/story_{tag}.json',)
         self.inputs = (f'content/generated/hsl/chapter01/battle{tag}_seed.json', *story, *level_profile.input_path(level),
                        f'content/imported/hsl/chapter01/battle{tag}/', 'content/battles/first_battle.json', unit_schema.SCHEMA_PATH,
+                       SHARED_RESOURCES['combat_animation'].removeprefix('res://'),
                        'content/battles/campaign.json', 'content/generated/hsl/actors/', 'content/imported/hsl/global/tables/',
                        'content/authored/roles/job_formulas.json',
                        'content/imported/hsl/global/world_map/world_map.json', 'content/imported/hsl/story_corpus/scripts/',

@@ -10,7 +10,7 @@ Checked: 2026-09-30
 
 | 尺 | 最新值 | 从哪量 |
 | --- | --- | --- |
-| 和原版还差什么 | 87 条（2026-09-30） | [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md)（`hsl check parity_inventory`），汇报"还剩多少"按它 |
+| 和原版还差什么 | 88 条（2026-10-02） | [差异清单](evidence_packets/static_reverse/parity_gap_inventory.md)（`hsl check parity_inventory`），汇报"还剩多少"按它 |
 | 128 场自动对局 | win 20／fail 108／dead_end 0（2026-09-29）；前瞻驾驭同种子 win 50／fail 76／dead_end 1，另 1 场限时未打完（2026-09-30）。是难度信号，不是原版平衡证据 | `content/generated/hsl/development/autoplay/results.json`；前瞻 `brain_sweep.json` |
 | 整章播种走查 | 40 场走到通关（`game_clear=true`）：自然胜 19、强判胜 21，没有规则拒绝 | 实玩包生成日志（`tools/hsl_playtest_kit.py generate --force-win`，不入库） |
 | 剧情可达 | explorer 走遍 22 段注册剧情，三个结局都到 GameClear | 深门 `tests/run_story_mode_explorer_tests.gd` |

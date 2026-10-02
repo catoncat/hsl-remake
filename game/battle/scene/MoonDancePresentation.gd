@@ -121,7 +121,7 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	show()
 	for sprite in pool: sprite.hide()
 	host.blade.hide();host.flash_sprite.hide()
-	host.scenery.texture = load(host.manifest["background"]["res_path"])
+	host.scenery.texture = host.backdrop
 	var segments: Array = clip["strike"]["special_segments"]
 	var target_count := segments.size() / RepeatedSpecialRules.PULSES
 	var duration := float(data["source_duration"]) * scaled_tick_seconds

@@ -4,6 +4,9 @@ hsltools.levels.battle (level_battle:N), hsltools.levels.authored and the two ha
 scenarios (hsltools.data.ohm_village / gol_road) import from here:
 
   SHARED_RESOURCES   the chapter-wide resource paths every battle scenario points at
+  combat_backdrop_resource
+                     the level's close-up backdrop PNG (resources.combat_backdrop) from the seed's
+                     obj-NNN.obs binding and the combat manifest's backdrops table
   status_timelines   per winfail status, the result action chain compiled into opening-timeline
                      events for BattleOpeningCoordinator's cutscene mode
 
@@ -13,7 +16,10 @@ of its WINFAIL any more; the interpreter reads the seed (WinfailScenarioRules).
 """
 from __future__ import annotations
 
+import json
+
 from hsltools.data.winfail_coverage import support_sets
+from hsltools.paths import ROOT
 from hsltools.levels.timeline import _event_from_action, canonical_action_name
 
 CHAPTER = 'res://content/imported/hsl/chapter01'
@@ -28,6 +34,25 @@ SHARED_RESOURCES = {
     'interface_audio': f'{CHAPTER}/interface_audio/manifest.json',
     'fire_animation': f'{CHAPTER}/fire_animation/manifest.json',
 }
+
+
+def combat_backdrop_resource(level: int, seed: dict) -> str:
+    """The res:// path of the level's close-up backdrop: the ANIMAL\\BGnnn.SHP its obj-NNN.obs binds
+    to object 199 `BG` (seed `cutin_backdrop`, hsltools.levels.seed._cutin_backdrop) resolved through
+    the chapter combat manifest's `backdrops` table (hsltools.assets.combat_animation). A battle seed
+    without a binding, or a member the manifest did not import, is an error — no scenario falls back
+    to another level's backdrop."""
+    binding = seed.get('cutin_backdrop')
+    if not binding:
+        raise ValueError(f'level {level}: the seed records no cutin_backdrop (obj-{level:03d}.obs binds no ANIMAL\\BG shape)')
+    manifest = json.loads((ROOT / SHARED_RESOURCES['combat_animation'].removeprefix('res://')).read_text(encoding='utf-8'))
+    members = manifest.get('backdrops', {}).get('members', {})
+    member = str(binding['source_member'])
+    if member not in members:
+        raise ValueError(f'level {level}: the combat manifest imports no backdrop {member}; regenerate the combat_animation task')
+    return str(members[member]['res_path'])
+
+
 # WRD cell word: bits 24..31 the source height (255 = cliff), bits 12..23 map flags.
 # 0x74000 refuses entry to every ground mode and 0x4000 even to flying (static-derived,
 # docs/evidence_packets/static_reverse/original_movement.md and original_actor_traversal.md);

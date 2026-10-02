@@ -42,7 +42,7 @@ ANIMAL.H 定义 `aniOver=0`、`aniDelay=1`、`aniSetShape=7`、`aniSetZoom=9`、
 | PLAYER5（行 83–85） | 六条 aniSetZoom `0x00011000`..`0x00016000`，中间无 aniDelay | 每条各占一次调用（下文） |
 | 其他 | PLAYER7 换帧多次回到 0／1；PLAYER9 旧闪光偏移被注释，有效值 `[-300,-60]`；Enemy026 的 m_shape／m_number／m_action 全被注释；Enemy024 无有效 fh_shape 但有 aniInsertAttackFlash | 不排序去重、不导入被注释的程序、事件与贴图绑定分开 |
 
-第一战五类角色（SID_PLAYER0、SID_ENEMY021／023／024／026）的 `ANIMAL\Pnnn_001.SHP` 各 5 帧；第五帧（后仰／失衡）由重制绑定为受击姿态，是图像判读，不是原版受击 handler（provisional）。`obj-051.obs` 对象 199 绑定 `ANIMAL\BG051.SHP`（640×320，一帧），重制作第一战切入背景、y=80 不拉伸，上下黑边与结果位置是重制布局（provisional）。
+第一战五类角色（SID_PLAYER0、SID_ENEMY021／023／024／026）的 `ANIMAL\Pnnn_001.SHP` 各 5 帧；第五帧（后仰／失衡）由重制绑定为受击姿态，是图像判读，不是原版受击 handler（provisional）。每关 `obj-NNN.obs` 的对象 199 `BG`（planeEffect1、defProcReturn、Shape_Number 1）绑定一张 `ANIMAL\BGnnn.SHP`（640×320，一帧；PAK 共 42 张，157 个 OBS 中 153 个各绑一张，obj-000／049／998／999 没有）：多数战斗图绑本关号，借图的关绑所借图的（55／56／61／62／64／66–70 绑 BG051，58／60／63／71 绑 BG054，76–79／81／82 绑 BG058），遭遇战 5NN 绑所在点的（resource-derived，`hsltools/levels/seed.py` 记为 `cutin_backdrop`）。重制按这张绑定图作该关切入背景（第一战即 BG051，与录像一致）；原版把切入底图装进 `0x4c1e00` 缓冲的路径未读，绑定图即底图是推定（provisional）；y=80 不拉伸、上下黑边与结果位置是重制布局（provisional）。
 
 ### EXE 分派（static-derived）
 

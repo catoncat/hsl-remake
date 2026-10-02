@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 
 from hsltools.levels.battle import apply_story_word_writes
-from hsltools.levels.scenario import SHARED_RESOURCES, impassable, status_timelines
+from hsltools.levels.scenario import SHARED_RESOURCES, combat_backdrop_resource, impassable, status_timelines
 from hsltools.native.sources import sources
 from hsltools.levels.timeline import level_table_music
 from hsltools.probes.player_install import PACKET as INSTALL_PACKET, check as check_install
@@ -91,6 +91,7 @@ def build() -> dict:
                 'combat_animation', 'interface_audio', 'fire_animation']:
         resources[key] = first['resources'].get(key, SHARED_RESOURCES[key])
     resources['battle_seed'] = 'res://' + SEED.relative_to(ROOT).as_posix()
+    resources['combat_backdrop'] = combat_backdrop_resource(2, seed)
     resources['treasures'] = 'res://content/generated/hsl/treasures/battles.json'
     evidence = json.loads((ROOT / resources['message_text_evidence'].removeprefix('res://')).read_text())
     timelines = status_timelines(2, seed, evidence)
@@ -135,7 +136,7 @@ class GolRoadDataTask(GeneratedFilesTask):
     family = 'scenarios'
     inputs = ('content/imported/hsl/global/tables/', 'docs/evidence_packets/static_reverse/original_player_install.json',
               'content/battles/first_battle.json', SEED.relative_to(ROOT).as_posix(), PREVIEW.relative_to(ROOT).as_posix(),
-              'content/imported/hsl/chapter01/battle002/', 'content/generated/hsl/actors/')
+              'content/imported/hsl/chapter01/battle002/', 'content/generated/hsl/actors/', SHARED_RESOURCES['combat_animation'].removeprefix('res://'))
     outputs = (OUT.relative_to(ROOT).as_posix(),)
     replaces = ('tools/hsl_gol_road_data.py --check',)
     scripts = ('tools/hsltools/data/gol_road.py', 'tools/hsltools/probes/player_install.py', 'tools/hsltools/levels/scenario.py', 'tools/hsltools/data/ohm_village.py')

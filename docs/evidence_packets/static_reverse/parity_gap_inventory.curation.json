@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30",
+  "updated": "2026-10-02",
   "video_diff_classes": {
     "1": {
       "title": "镜头滚动",
@@ -538,6 +538,25 @@
       ],
       "original_status": "read_partial",
       "visibility": "rare",
+      "effort": "S",
+      "category": "特写与施法演出"
+    },
+    {
+      "id": "cutin-backdrop",
+      "difference": "特写底图已按各关 obj-NNN.obs 对象 199 `BG` 绑定的 ANIMAL\\BGnnn.SHP 取（PAK 42 张；营地／王座廳剧情关与遭遇战借主关的），此前全章只用第 1 场的 BG051；剩原版把切入底图装进 0x4c1e00 缓冲的路径未读，绑定图即底图是按第 1 场录像推定",
+      "original": "每关 OBS 对象 199 `BG`（planeEffect1、defProcReturn、Shape_Number 1）绑一张 ANIMAL\\BGnnn.SHP，157 个 OBS 中 153 个有（obj-000／049／998／999 没有）；切入帧体 0x42d280 在叠层段 blit [0x4c1e00] 缓冲，缓冲的装入路径未追",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/animal_program_execution.md",
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "导入器把 42 张导到 combat_animation/backdrops/，种子记 cutin_backdrop，场景 resources.combat_backdrop 指向该图；BattleCombatCutin.configure 装入，普通切入与绝技脚本／月花圓舞 收尾都还原到它",
+      "remake_code": [
+        "game/battle/scene/BattleCombatCutin.gd:configure",
+        "tools/hsltools/levels/seed.py:_cutin_backdrop",
+        "tools/hsltools/levels/scenario.py:combat_backdrop_resource"
+      ],
+      "original_status": "read_partial",
+      "visibility": "every_battle",
       "effort": "S",
       "category": "特写与施法演出"
     },
@@ -3291,6 +3310,14 @@
     },
     "provenance:game/input/TouchGestureRecognizer.gd|timing|remake-invented|": {
       "no_visible_effect": "触屏专用输入（手机／平板浏览器、触屏笔记本）；没有触摸屏的桌面不启用，原版纯键鼠操作的画面与规则不变"
+    },
+    "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#619f30f96c": {
+      "item": "cutin-backdrop",
+      "text": "原版把切入底图装进 `0x4c1e00` 缓冲的路径未读，绑定图即底图是推定（provisional）；"
+    },
+    "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#80db4de4cb": {
+      "item": "cutin-backdrop",
+      "text": "未读（保留 provisional）：`0x4c1e00` 切入底图缓冲的装入路径。"
     }
   }
 }

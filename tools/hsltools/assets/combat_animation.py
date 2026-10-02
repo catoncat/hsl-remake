@@ -1,6 +1,6 @@
 """Import current chapter battle attack cut-ins from ANIMAL.TXT and original SHP frames.
 
-Registry task combat_animation (family assets): outputs manifest.json, background.png and the
+Registry task combat_animation (family assets): outputs manifest.json, backdrops/ (the 42 close-up backdrops) and the
 per-actor frame PNG directories under content/imported/hsl/chapter01/combat_animation/. The
 program source ANIMAL.TXT in the same directory is the animal_programs task's import (read here,
 never written; a PAK whose member differs from the tracked copy is refused). Bodies moved verbatim
@@ -87,6 +87,21 @@ HIT_FLASH_NOTE = ('shapes[i] = ANIMAL\\ATTACK_FLASH00(i+1).SHP for weapon ITEM i
                   'defender is pmPlayer; engADDCOLOR_MIX level 9, 6 held ticks, one level per 2 ticks, 12 tail ticks (0x4041a4..0x4041db). '
                   'static-derived, docs/evidence_packets/static_reverse/original_map_strike.md.')
 ITEM_ICON_CLASSES = ('itemIconStaff', 'itemIconSword', 'itemIconBow', 'itemIconAxe', 'itemIconSpear', 'itemIconDagger', 'itemIconClaw', 'itemIconSting')
+# The close-up backdrops (resource-derived): every ANIMAL\BGnnn.SHP of hsl.pak, 42 members of 640×320, one
+# frame each. A level's obj-NNN.obs binds one of them to its object 199 `BG` (planeEffect1, defProcReturn,
+# Shape_Number 1): most battle maps their own number, the alias levels the borrowed map's (55／56／61／62／
+# 64／66–70 → BG051, 58／60／63／71 → BG054, 76–79／81／82 → BG058), the 5NN encounters their point's; 153 of
+# the 157 OBS files bind one (obj-000／049／998／999 none). hsltools.levels.seed records the binding as
+# cutin_backdrop, the scenario assemblers name the PNG as resources.combat_backdrop.
+BACKDROP_NUMBERS = (1, 2, 3, 5, 6, 7, 8, 9, 10, 13, 15, 17, 18, 19, 21, 22, 24, 26, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40,
+                    41, 43, 44, 45, 51, 52, 53, 54, 57, 58, 59, 80)
+BACKDROP_MEMBERS = tuple(f'ANIMAL\\BG{number:03d}.SHP' for number in BACKDROP_NUMBERS)
+DEFAULT_BACKDROP_MEMBER = 'ANIMAL\\BG051.SHP'
+BACKDROP_NOTE = ('members[m] = the decoded ANIMAL\\BGnnn.SHP close-up backdrop (640x320, one frame) for every BG shape of hsl.pak; '
+                 'a level\'s obj-NNN.obs binds one to its object 199 `BG` (planeEffect1, defProcReturn), the battle seed records it as '
+                 'cutin_backdrop and the scenario names its PNG as resources.combat_backdrop. `background` is the backdrop of a scenario '
+                 'that declares none: BG051, the first battle\'s. That the original draws this object as the close-up backdrop is read '
+                 'from the binding and the first battle\'s recordings; the 0x4c1e00 backdrop buffer load path is not located (provisional).')
 MAGIC_FRAMES_POLICY = ('Every actor carries magic_frames: the imported ANIMAL m_shape strip (002/005/006/009/053 base rows, '
                        '010/011/014/015/019/020 up-title rows, 025/056/058/059/060/068 monsters) or [] meaning no strip is imported '
                        '(018 has no combat row, the rest declare no m_action) and the magic cut-in keeps the '
@@ -363,11 +378,8 @@ def build(pak, selected=None):
     result['special_frames_policy'] = SPECIAL_FRAMES_POLICY
     result['magic_frames_policy'] = MAGIC_FRAMES_POLICY
     if selected is None:
-        member = 'ANIMAL\\BG051.SHP'
-        data = read(member)
-        target = ROOT / 'background.png'
-        write_shp_preview(data, parse_shp(data), target)
-        result['background'] = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'png_sha256': png_sha256(target)}
+        result['backdrops'] = import_backdrops(read)
+        result['background'] = default_background(result['backdrops'])
         result['opening'] = import_opening(read)
         result['hit_flashes'] = import_hit_flashes(read)
     (ROOT / 'manifest.json').write_text(json.dumps(bind_programs(result), ensure_ascii=False, indent=2) + '\n')
@@ -379,6 +391,29 @@ def import_opening(read):
     write_shp_preview(data, parse_shp(data), target)
     return {'res_path': 'res://' + target.as_posix(), 'source_member': OPENING_MEMBER, 'draw_origin': list(struct.unpack_from('<ii', data, 0x1c)),
             'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target), 'note': OPENING_NOTE}
+
+
+def backdrop_res_path(member):
+    return 'res://' + (ROOT / 'backdrops' / (member.rsplit('\\', 1)[-1].rsplit('.', 1)[0].upper() + '.png')).as_posix()
+
+
+def import_backdrops(read):
+    members = {}
+    for member in BACKDROP_MEMBERS:
+        data = read(member)
+        meta = parse_shp(data)
+        target = Path(backdrop_res_path(member).removeprefix('res://'))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        write_shp_preview(data, meta, target)
+        members[member] = {'res_path': 'res://' + target.as_posix(), 'source_member': member, 'size': [int(meta['width']), int(meta['height'])],
+                           'sha256': hashlib.sha256(data).hexdigest(), 'png_sha256': png_sha256(target)}
+    return {'members': members, 'note': BACKDROP_NOTE}
+
+
+def default_background(backdrops):
+    """`background`: the backdrop of a scenario that declares no resources.combat_backdrop (the first battle's BG051)."""
+    shape = backdrops['members'][DEFAULT_BACKDROP_MEMBER]
+    return {key: shape[key] for key in ('res_path', 'source_member', 'png_sha256')}
 
 
 def weapon_icon_classes():
@@ -399,8 +434,8 @@ def import_hit_flashes(read):
     return {'shapes': shapes, 'weapon_icon_class': weapon_icon_classes(), 'note': HIT_FLASH_NOTE}
 
 
-def append_opening(pak, hit_flashes=False):
-    """Import only the opening shape (or the hit flashes) into the existing manifest; every actor frame stays as verified."""
+def append_opening(pak, hit_flashes=False, backdrops=False):
+    """Import only the opening shape (or the hit flashes, or the backdrops) into the existing manifest; every actor frame stays as verified."""
     packages = find_decoded_paks_packages(pak)
     def read(name):
         for package in packages:
@@ -410,7 +445,10 @@ def append_opening(pak, hit_flashes=False):
         raise ValueError('missing ' + name)
     path = ROOT / 'manifest.json'
     result = json.loads(path.read_text())
-    if hit_flashes:
+    if backdrops:
+        result['backdrops'] = import_backdrops(read)
+        result['background'] = default_background(result['backdrops'])
+    elif hit_flashes:
         result['hit_flashes'] = import_hit_flashes(read)
     else:
         result['opening'] = import_opening(read)
@@ -426,8 +464,11 @@ def check():
     assert manifest.get('magic_frames_policy') == MAGIC_FRAMES_POLICY
     assert manifest.get('magic_cast_program_policy') == MAGIC_CAST_PROGRAM_POLICY
     assert hashlib.sha256((ROOT / 'ANIMAL.TXT').read_bytes()).hexdigest() == manifest['source_sha256']
-    background = manifest['background']
-    assert png_sha256(Path(background['res_path'].removeprefix('res://'))) == background['png_sha256']
+    backdrops = manifest['backdrops']
+    assert backdrops['note'] == BACKDROP_NOTE and tuple(backdrops['members']) == BACKDROP_MEMBERS
+    for shape in backdrops['members'].values():
+        assert shape['res_path'] == backdrop_res_path(shape['source_member']) and png_sha256(Path(shape['res_path'].removeprefix('res://'))) == shape['png_sha256']
+    assert manifest['background'] == default_background(backdrops)
     opening = manifest['opening']
     assert opening['source_member'] == OPENING_MEMBER and opening['note'] == OPENING_NOTE and len(opening['draw_origin']) == 2
     assert png_sha256(Path(opening['res_path'].removeprefix('res://'))) == opening['png_sha256']
@@ -480,7 +521,7 @@ class CombatAnimationTask(ScriptCheckTask):
     name = 'combat_animation'
     family = 'assets'
     inputs = (PROGRAMS.as_posix(), (ROOT / 'ANIMAL.TXT').as_posix(), 'content/imported/hsl/global/tables/ITEM.TXT')
-    outputs = tuple(path.as_posix() for path in (ROOT / 'manifest.json', ROOT / 'background.png', ROOT / 'opening_ball.png')) + (f'{ROOT.as_posix()}/hit_flash/',) + tuple(f'{ROOT.as_posix()}/{actor}/' for actor in ACTORS)
+    outputs = tuple(path.as_posix() for path in (ROOT / 'manifest.json', ROOT / 'opening_ball.png')) + (f'{ROOT.as_posix()}/hit_flash/', f'{ROOT.as_posix()}/backdrops/') + tuple(f'{ROOT.as_posix()}/{actor}/' for actor in ACTORS)
     replaces = ('tools/hsl_combat_animation.py --check',)
     scripts = ('tools/hsltools/assets/combat_animation.py',)
 
@@ -505,6 +546,7 @@ if __name__ == '__main__':
     parser.add_argument('--bind-programs', action='store_true', help='Bind validated ordinary program data without reimporting any SHP assets')
     parser.add_argument('--opening', action='store_true', help='Import only the opening shape (MAGIC\\BALL001.SHP) into the existing manifest')
     parser.add_argument('--hit-flashes', action='store_true', help='Import only the hit flashes (ANIMAL\\ATTACK_FLASH001-008.SHP) into the existing manifest')
+    parser.add_argument('--backdrops', action='store_true', help='Import only the close-up backdrops (ANIMAL\\BGnnn.SHP, BACKDROP_MEMBERS) into the existing manifest')
     args = parser.parse_args()
     if args.check: check()
     elif args.opening:
@@ -515,6 +557,10 @@ if __name__ == '__main__':
         if not args.pak: parser.error('--hit-flashes requires --pak')
         append_opening(args.pak, hit_flashes=True)
         print('COMBAT_HIT_FLASH_IMPORT_PASS')
+    elif args.backdrops:
+        if not args.pak: parser.error('--backdrops requires --pak')
+        append_opening(args.pak, backdrops=True)
+        print('COMBAT_BACKDROP_IMPORT_PASS')
     elif args.bind_programs:
         path = ROOT / 'manifest.json'
         result = bind_programs(json.loads(path.read_text()))

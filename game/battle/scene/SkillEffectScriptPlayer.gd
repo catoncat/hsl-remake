@@ -915,7 +915,7 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	if backdrop != "":
 		host.scenery.texture = texture(backdrop)
 	else:
-		host.scenery.texture = load(host.manifest["background"]["res_path"])
+		host.scenery.texture = host.backdrop
 		if not attack_phase and not bool(timeline["no_dark_bg"]):
 			host.scenery.modulate = Color(0.45, 0.45, 0.5)
 	if attack_phase:

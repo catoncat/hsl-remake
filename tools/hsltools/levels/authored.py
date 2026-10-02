@@ -559,6 +559,10 @@ def build_battle(level: int, inputs: dict, seed: dict, evidence: dict, paths: di
         'message_text_evidence': 'res://' + paths['message_text_evidence'],
     }
     resources['combat_animation'] = 'res://' + paths['combat_animation']
+    # Optional close-up backdrop (a res:// PNG, 640×320 like the imported ANIMAL\BGnnn); a level that
+    # declares none shows the combat manifest's `background` (BG051 of the first battle).
+    if manifest['presentation'].get('combat_backdrop'):
+        resources['combat_backdrop'] = str(manifest['presentation']['combat_backdrop'])
     for key in ('attack_ranges', 'consumables', 'interface_audio', 'fire_animation'):
         resources[key] = first['resources'].get(key, SHARED_RESOURCES[key])
     resources['progression'] = 'res://' + paths['progression']

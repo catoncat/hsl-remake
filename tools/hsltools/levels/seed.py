@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -236,6 +237,28 @@ def _map_manager_shape(objects: dict[str, Any]) -> str | None:
     for obj in objects.get("objects", []):
         if isinstance(obj, dict) and str(obj.get("obj_process_code") or "") == "defProcIconBG":
             return str(obj.get("obj_shape_name") or "") or None
+    return None
+
+
+BACKDROP_SHAPE = re.compile(r"^ANIMAL\\BG\d{3}\.SHP$", re.I)
+
+
+def _cutin_backdrop(objects: dict[str, Any]) -> dict[str, Any] | None:
+    """The obj-<code>.obs record binding the level's close-up backdrop: object `BG` (code 199,
+    planeEffect1, defProcReturn, Shape_Number 1) names ANIMAL\\BGnnn.SHP — the level's own number on
+    most battle maps, the borrowed map's on alias levels (55／56／61／62／64／66–70 -> BG051, 58／60／63／71
+    -> BG054, 76–79／81／82 -> BG058), the point's on the 5NN encounters. obj-000／049／998／999 have none.
+    hsltools.levels.scenario.combat_backdrop_resource resolves it to the imported PNG."""
+    for obj in objects.get("objects", []):
+        if isinstance(obj, dict) and BACKDROP_SHAPE.match(str(obj.get("obj_shape_name") or "")):
+            return {
+                "source_member": str(obj["obj_shape_name"]),
+                "object_code": _integer(obj.get("obj_code")),
+                "object_name": str(obj.get("obj_name") or ""),
+                "object_plane": str(obj.get("obj_plane") or ""),
+                "object_process": str(obj.get("obj_process_code") or ""),
+                "claim_limit": "resource-derived from the obs record; that the engine draws this object as the close-up backdrop is read from the binding and the first battle's recordings (BG051), the 0x4c1e00 backdrop buffer load path is not located (provisional)",
+            }
     return None
 
 
@@ -734,6 +757,7 @@ def build(level: int, pak: Path, seed_path: Path, terrain_path: Path | None, map
             "decoded_png_sha256": png_sha256(map_path),
             "rows_decode": bool(map_metadata.get("all_rows_decode", False)),
         },
+        "cutin_backdrop": _cutin_backdrop(objects),
         "terrain": {
             "packet": "res://" + terrain_path.as_posix(),
             **({"shared_packet_of_level": int(alias["alias_of_level"])} if "terrain" in shared else {}),

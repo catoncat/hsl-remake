@@ -709,9 +709,12 @@ func _cutin_unit(actor_id: String) -> Dictionary:
 func _test_combat_cutin_sequence() -> void:
 	var cutin = load("res://game/battle/scene/BattleCombatCutin.gd").new()
 	root.add_child(cutin)
-	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json")
+	cutin.configure("res://content/imported/hsl/chapter01/combat_animation/manifest.json", "res://content/imported/hsl/chapter01/combat_animation/backdrops/BG001.png")
 	await process_frame
 	cutin.set_process(false)
+	# The scenario's combat_backdrop (the ANIMAL\BG its obj-NNN.obs binds: BG001 on 歐姆村) is the close-up
+	# scenery; a cut-in configured without one shows the manifest's BG051, the first battle's.
+	_assert_true(str(cutin.scenery.texture.resource_path).ends_with("/combat_animation/backdrops/BG001.png"), "the declared combat_backdrop is the close-up scenery")
 	var impacts := [0]
 	cutin.impact.connect(func(_strike, _attacker, _defender, _counter): impacts[0] += 1)
 	# A primary strike answered by a counter: the exchange opens on the primary and closes
@@ -982,6 +985,8 @@ func _test_special_skill() -> void:
 	_assert_eq(empty_page["interaction"], "special_select", "insufficient ST still opens the skill page to read it")
 	_assert_eq(scene.BattlePlayLoop.choose_special(empty_page, "special:magicOTHER:magicCode01")["interaction"], "special_select", "insufficient ST cannot leave the page into target selection")
 	var cutin = scene.get_node("BattlePresentation").cutin
+	# BattleSceneRuntime hands the scenario's combat_backdrop to the cut-in (the first battle binds BG051).
+	_assert_true(str(cutin.scenery.texture.resource_path).ends_with("/combat_animation/backdrops/BG051.png"), "the scene's combat_backdrop reaches the cut-in")
 	cutin.set_process(false)
 	cutin.play(fired["last_attack"], player, scene.BattlePlayLoop.unit(fired, target_id), false)
 	# 雷歐納德's ANIMAL s_action cast lead (140 ticks, AnimalCastLead: banner over the shadowed

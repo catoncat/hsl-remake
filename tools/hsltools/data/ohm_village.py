@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from hsltools.probes.ohm_growth import PACKET, check as check_native
 from hsltools.levels.battle import apply_story_word_writes
-from hsltools.levels.scenario import impassable, status_timelines, SHARED_RESOURCES
+from hsltools.levels.scenario import combat_backdrop_resource, impassable, status_timelines, SHARED_RESOURCES
 from hsltools.levels.timeline import level_table_music
 from hsltools.data import json_bytes
 from hsltools.data.first_battle_formation import actor_templates
@@ -114,6 +114,7 @@ def build():
     for key in ['attack_ranges','progression','consumables','combat_animation','interface_audio','fire_animation']:
         resources[key]=first['resources'][key] if key in first['resources'] else SHARED_RESOURCES[key]
     resources['battle_seed']='res://content/generated/hsl/chapter01/battle001_seed.json'
+    resources['combat_backdrop']=combat_backdrop_resource(1,seed)
     resources['treasures']='res://content/generated/hsl/treasures/battles.json'
     evidence=json.loads((ROOT/'content/imported/hsl/chapter01/battle001/message_text_evidence.json').read_text())
     result=dict(schema='hsl_ohm_village_battle.v1',id='battle_004_level1',level=1,level_kind='battle',title='歐姆村 · 獸族的襲擊',
@@ -143,7 +144,8 @@ class OhmVillageDataTask(GeneratedFilesTask):
     family = 'scenarios'
     inputs = ('content/imported/hsl/global/tables/', 'docs/evidence_packets/static_reverse/original_ohm_growth.json',
               'content/battles/first_battle.json', SEED.relative_to(ROOT).as_posix(), PREVIEW.relative_to(ROOT).as_posix(),
-              'content/imported/hsl/chapter01/battle001/', 'content/generated/hsl/roles/profiles.json', 'content/generated/hsl/equipment/items.json')
+              'content/imported/hsl/chapter01/battle001/', 'content/generated/hsl/roles/profiles.json', 'content/generated/hsl/equipment/items.json',
+              SHARED_RESOURCES['combat_animation'].removeprefix('res://'))
     outputs = (OUT.relative_to(ROOT).as_posix(), *(f'content/generated/hsl/actors/{code}.json' for code in ACTORS))
     replaces = ('tools/hsl_ohm_village_data.py --check',)
     scripts = ('tools/hsltools/data/ohm_village.py', 'tools/hsltools/probes/ohm_growth.py', 'tools/hsltools/levels/scenario.py', 'tools/hsltools/data/first_battle_formation.py')

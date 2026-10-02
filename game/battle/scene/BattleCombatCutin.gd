@@ -7,7 +7,7 @@ extends CanvasLayer
 ##     (0x40418a hit flash)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_tick_counts.md#7-普攻切入的攻方开场
 ##   layout: runtime-reference docs/evidence_packets/runtime_observations/original_gameplay_reference/README.md#12
-##     (one full-size actor per shot over BG051; frame_001 whited-out board)
+##     (one full-size actor per shot over the level's BG; frame_001 whited-out board)
 ##   layout: static-derived docs/evidence_packets/runtime_observations/cutin_floaters/README.md
 ##   layout: runtime-measured docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##     (the zoom grows over the battlefield map, centred (320,240), before the white-out)
@@ -104,6 +104,11 @@ var skill: Dictionary
 var blade: Sprite2D
 var ability_sound: AudioStreamPlayer
 var scenery: TextureRect
+## The close-up backdrop: the scenario's `resources.combat_backdrop` (the ANIMAL\BGnnn.SHP the level's
+## obj-NNN.obs binds to its object 199 `BG`, hsltools.levels.seed cutin_backdrop); a scenario that declares
+## none shows the manifest's `background` (BG051, the first battle's — the fixtures and authored levels).
+## Every ordinary shot and every presenter's restore puts it back on `scenery`.
+var backdrop: Texture2D
 var stage: Control
 var vitals: Control
 var sparks: Array[Sprite2D] = []
@@ -290,10 +295,10 @@ func _build_skill_layers() -> void:
 	presenters.append(skill_effects)
 
 
-## Loads the scene's combat manifest (`resources.combat_animation`). Call after the node is
-## in the tree. A path that does not parse is reported and leaves the cut-in unconfigured
-## (no other manifest is tried).
-func configure(path: String) -> bool:
+## Loads the scene's combat manifest (`resources.combat_animation`) and the scene's close-up backdrop
+## (`resources.combat_backdrop`; "" = the manifest's `background`). Call after the node is in the tree.
+## A path that does not parse is reported and leaves the cut-in unconfigured (no other manifest is tried).
+func configure(path: String, backdrop_path: String = "") -> bool:
 	manifest_path = path
 	manifest = {}
 	cast_leads.clear()
@@ -302,7 +307,11 @@ func configure(path: String) -> bool:
 		push_error("Combat cut-in manifest missing or invalid: %s" % path)
 		return false
 	manifest = parsed
-	scenery.texture = load(manifest["background"]["res_path"])
+	var backdrop_res := backdrop_path if backdrop_path != "" else str(manifest["background"]["res_path"])
+	backdrop = load(backdrop_res)
+	if backdrop == null:
+		push_error("Combat cut-in backdrop missing: %s" % backdrop_res)
+	scenery.texture = backdrop
 	_apply_source_frame(opening_ball, manifest["opening"])
 	return true
 
@@ -721,7 +730,7 @@ func _process(delta: float) -> void:
 		_process_borrowed_skill(clip)
 		return
 	blade.hide()
-	scenery.texture = load(manifest["background"]["res_path"])
+	scenery.texture = backdrop
 	var actor: Dictionary = manifest["actors"][clip["attacker"]]
 	var schedule := Timing.ordinary(actor, clip["strike"], bool(clip["first_shot"]), bool(clip["last_shot"]))
 	var strike_time: float = schedule["release"]

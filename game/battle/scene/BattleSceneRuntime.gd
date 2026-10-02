@@ -874,10 +874,11 @@ func _bootstrap_runtime() -> void:
 	$BattlePresentation.dialogue_manifest = message_text_evidence
 	$BattlePresentation.audio_manifest = actor_audio_manifest
 	$BattlePresentation.shared_audio_manifest = shared_actor_audio_manifest
-	# The cut-in draws from the scene's own combat manifest; a scene without one (story
+	# The cut-in draws from the scene's own combat manifest and the level's close-up backdrop
+	# (resources.combat_backdrop, the obj-NNN.obs binding); a scene without a manifest (story
 	# scenes, the big map) plays no combat.
 	if first_battle_scenario.get("resources", {}).has("combat_animation"):
-		$BattlePresentation.cutin.configure(BattleScenario.resource_path(first_battle_scenario, "combat_animation"))
+		$BattlePresentation.cutin.configure(BattleScenario.resource_path(first_battle_scenario, "combat_animation"), BattleScenario.resource_path(first_battle_scenario, "combat_backdrop"))
 	_configure_camera()
 	if is_story_scene() or _is_world_map():
 		# Story-only levels and the big map have no battle: the coordinator (or

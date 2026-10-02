@@ -1,13 +1,13 @@
 {
   "schema": "hsl_parity_gap_inventory.v1",
-  "updated": "2026-09-30",
+  "updated": "2026-10-02",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
-    "items": 87,
-    "sources": 483,
+    "items": 88,
+    "sources": 485,
     "sources_by_kind": {
       "provenance": 199,
-      "sentence": 84,
+      "sentence": 86,
       "scope": 102,
       "matrix": 85,
       "video": 13
@@ -15,12 +15,12 @@
     "layout_timing_modules": 51,
     "items_by_original_status": {
       "read_complete": 29,
-      "read_partial": 39,
+      "read_partial": 40,
       "unread": 2,
       "no_original_code": 17
     },
     "items_by_visibility": {
-      "every_battle": 15,
+      "every_battle": 16,
       "some_levels": 32,
       "rare": 35,
       "invisible": 5
@@ -37,7 +37,7 @@
       "对白": 2,
       "战斗规则": 12,
       "标题与过场": 4,
-      "特写与施法演出": 8,
+      "特写与施法演出": 9,
       "重制新增（原版没有）": 16,
       "镜头": 1,
       "面板与界面": 6,
@@ -65,10 +65,10 @@
     "cast-strip-missing",
     "shop-hand-cursor",
     "bitmap-font",
+    "cutin-backdrop",
     "move-path-overlay",
     "panel-captions",
-    "status-page-extras",
-    "wait-cue"
+    "status-page-extras"
   ],
   "items": [
     {
@@ -436,6 +436,29 @@
         "provenance:game/common/BattleUISkin.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|",
         "provenance:game/text/OriginalBitmapFont.gd|layout|remake-invented|game/assets/fonts/NotoSansSC-UI.woff2"
+      ]
+    },
+    {
+      "id": "cutin-backdrop",
+      "difference": "特写底图已按各关 obj-NNN.obs 对象 199 `BG` 绑定的 ANIMAL\\BGnnn.SHP 取（PAK 42 张；营地／王座廳剧情关与遭遇战借主关的），此前全章只用第 1 场的 BG051；剩原版把切入底图装进 0x4c1e00 缓冲的路径未读，绑定图即底图是按第 1 场录像推定",
+      "original": "每关 OBS 对象 199 `BG`（planeEffect1、defProcReturn、Shape_Number 1）绑一张 ANIMAL\\BGnnn.SHP，157 个 OBS 中 153 个有（obj-000／049／998／999 没有）；切入帧体 0x42d280 在叠层段 blit [0x4c1e00] 缓冲，缓冲的装入路径未追",
+      "original_evidence": [
+        "docs/evidence_packets/static_reverse/animal_program_execution.md",
+        "docs/evidence_packets/static_reverse/original_tick_counts.md"
+      ],
+      "remake": "导入器把 42 张导到 combat_animation/backdrops/，种子记 cutin_backdrop，场景 resources.combat_backdrop 指向该图；BattleCombatCutin.configure 装入，普通切入与绝技脚本／月花圓舞 收尾都还原到它",
+      "remake_code": [
+        "game/battle/scene/BattleCombatCutin.gd:configure",
+        "tools/hsltools/levels/seed.py:_cutin_backdrop",
+        "tools/hsltools/levels/scenario.py:combat_backdrop_resource"
+      ],
+      "original_status": "read_partial",
+      "visibility": "every_battle",
+      "effort": "S",
+      "category": "特写与施法演出",
+      "sources": [
+        "sentence:docs/evidence_packets/static_reverse/animal_program_execution.md#619f30f96c",
+        "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#80db4de4cb"
       ]
     },
     {
