@@ -27,7 +27,7 @@ python3 tools/web_build.py serve             # 本机 127.0.0.1:8060 试玩；--
 
 `tools/web_packs.py plan` 扫暂存目录，按目录决定归属：
 
-- 一关的 `battleNNN/` 树、关卡 JSON、种子、地形和宝箱表是 `level_NNN` 包；
+- 一关的 `battleNNN/` 树、关卡 JSON、种子、地形和宝箱表，以及自制战役的关卡地图（`content/authored/<战役>/maps/levelNNN.png`），是 `level_NNN` 包；
 - 影片图集和音效是 `movie_<名>` 包；除标题曲外，每首音乐是 `music_<名>` 包；
 - 自动加载在开机场景之前就读的内容留在核心：重製選項注册表、简体字表、点阵字库、光标（`BOOT_CORE`；办法是把暂存工程的 `content/` 藏起来跑一个空场景，看报缺哪些文件，加了在开机时读数据的 autoload 要重新量）；
 - 其余内容按变动频率分进四个基础包（`BASE_PACKS`）：原版共用美术、其余原版导入件、生成的规则表、重制自己的数据。它们组成 `boot` 组，开机场景先挂好再进标题；和核心一样常驻，不算任何包的依赖。

@@ -56,6 +56,7 @@ LEVEL_RULES = [
     re.compile(r"^content/generated/hsl/treasures/battle_(\d+)\.json$"),
     re.compile(r"^content/generated/hsl/authored/battle(\d+)(?:/|_seed\.json$)"),
     re.compile(r"^content/authored/level(\d+)/"),
+    re.compile(r"^content/authored/[^/]+/maps/level(\d+)\.png$"),  # an authored campaign's battle maps
 ]
 # Battle-only presentation data every scene in BattleSceneRuntime (battles, stories, towns, the
 # big map) and the GameClear showcase may draw, but no title-side screen does: one pack every
