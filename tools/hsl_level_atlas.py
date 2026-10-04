@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Level atlas: per-level reference material for whoever designs levels, built outside the repository.
+"""Level atlas: per-level reference material for whoever designs levels, kept in the project local reference directory.
 
   python3 tools/hsl_level_atlas.py capture  [--levels 51,1,501] [--out DIR] [--screen N]
   python3 tools/hsl_level_atlas.py assemble [--out DIR]
@@ -12,8 +12,8 @@ keeps the raw output in DIR/_capture/LEVELnnn/ (map.png, opening.png, units.json
 DIR/_capture/summary.json. Without --levels it takes every original
 battle and story scene in content/battles/campaign.json (not the authored sequel level, not the ending
 screen). assemble reads only those captures and repository data and rebuilds the per-level folders,
-README.md and index.html in seconds. DIR defaults to ~/hsl-levels; the material is original-derived and
-never enters the repository (CONTRIBUTING §5). Godot runs with HOME under ignored/ so no real save is
+README.md and index.html in seconds. DIR defaults to the primary checkout ignored/level-atlas; the material is original-derived and
+never enters Git (CONTRIBUTING §5). Godot runs with HOME under ignored/ so no real save is
 touched; on macOS the run holds a caffeinate -i assertion.
 """
 from __future__ import annotations
@@ -42,7 +42,11 @@ OPENING_CHOICE = {900: 1}
 
 
 def default_out() -> Path:
-    return Path(os.path.expanduser('~/hsl-levels'))
+    common = subprocess.check_output(
+        ['git', '-C', str(ROOT), 'rev-parse', '--path-format=absolute', '--git-common-dir'],
+        text=True,
+    ).strip()
+    return Path(common).parent / 'ignored' / 'level-atlas'
 
 
 def campaign_levels() -> dict[int, dict]:
@@ -204,7 +208,7 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('command', choices=['capture', 'assemble', 'build'])
     parser.add_argument('--levels', help='comma-separated level numbers (default: every original battle and story scene)')
-    parser.add_argument('--out', type=Path, default=default_out(), help='atlas directory (default ~/hsl-levels)')
+    parser.add_argument('--out', type=Path, default=default_out(), help='atlas directory (default primary checkout ignored/level-atlas)')
     parser.add_argument('--screen', type=int, help='Godot screen index for the capture window (default: the built-in display)')
     parser.add_argument('--jobs', type=int, default=1, help='Godot processes capturing in parallel, windows staggered (default 1)')
     parser.add_argument('--only', choices=['levels', 'maps'], help='capture only the per-level renders, or only the clean maps (default both)')

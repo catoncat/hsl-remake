@@ -12,7 +12,7 @@
 | `doctor.sh` | 只读环境与仓库检查；`--original` 加查 Wine 与原作 | `tools/doctor.sh` |
 | `godot.sh`／`godot.ps1` | Godot 共用入口：导入资源、跑定向测试 | `tools/godot.sh --headless --import` |
 | `playtest.sh`／`hsl_playtest_kit.py` | 人工验收：独立存档，一条命令跳过标题直达某一关（`HSL_SKIP_TITLE=1`） | `tools/playtest.sh <槽名>` |
-| `hsl_level_atlas.py` | 关卡参考素材库：逐关整张地图、开局布阵（开场演完、谁都没动）、标注图、说明、原始脚本，加去掉人物与特效的地图原图和总索引；写到仓库外（默认 `~/hsl-levels`，原版派生物不进仓库），`--levels` 拍单关，`assemble` 只重排版 | `python3 tools/hsl_level_atlas.py build --jobs 3` |
+| `hsl_level_atlas.py` | 关卡参考素材库：逐关整张地图、开局布阵（开场演完、谁都没动）、标注图、说明、原始脚本，加去掉人物与特效的地图原图和总索引；写到主检出的 `ignored/level-atlas/`（原版派生物不进 Git，工作树共享同一份参考资料），`--levels` 拍单关，`assemble` 只重排版 | `python3 tools/hsl_level_atlas.py build --jobs 3` |
 | `hsl.py` | 生成器／检查器注册表的唯一 CLI（`list`／`check`／`generate`／`affected`） | `python3 tools/hsl.py list` |
 | `verify.sh`／`verify_runner.py`／`verify_slot.sh` | 完整非 GUI 验证 | `tools/verify.sh` |
 | 任务 `level_battle:N` | 原版关卡组装成正式战斗 `content/battles/battle_NNN.json` | `python3 tools/hsl.py generate level_battle:N` |
