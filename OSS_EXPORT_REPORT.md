@@ -1,10 +1,10 @@
 # OSS export report
 
-Source: private repository `main` = `956a38e1361fc72f6eb800a4a47edeff6b8f868e` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `a8298bfb3371d90706886e2817affd5338a4f573` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1556 files, 68.0 MB**
-- dropped: **19188 files, 620.3 MB**
+- dropped: **19212 files, 620.4 MB**
 - processed (home path / author e-mail / public .gitignore rules): 18 files
 - residual home paths or author e-mails in the written tree: 0
 
@@ -23,7 +23,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/generated tables (EXE / PAK derived) | 420 | 22.8 |
 | A: content/battles assembled level data | 210 | 18.9 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
-| excluded directory docs/internal/ | 10 | 0.5 |
+| excluded directory docs/internal/ | 34 | 0.6 |
 | excluded directory docs/audits/ | 8 | 0.3 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
@@ -49,12 +49,36 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/internal/FIRST_BATTLE_ACCEPTANCE.md`
 - `docs/internal/LANE_TIMELOG.md`
 - `docs/internal/OPEN_SOURCE_PLAN.md`
+- `docs/internal/ORIGINAL_COMPLAINTS.md`
 - `docs/internal/ORIGINAL_SCRIPT.md`
 - `docs/internal/PLAYABILITY.md`
 - `docs/internal/ROUNDS.md`
 - `docs/internal/SEQUEL_READINESS.md`
 - `docs/internal/WEB_DEPLOY.md`
 - `docs/internal/lane_brief.md`
+- `docs/internal/tools/project_hub/build.py`
+- `docs/internal/web/README.md`
+- `docs/internal/web/fetch_templates.py`
+- `docs/internal/web/node/audio.mjs`
+- `docs/internal/web/node/blank.mjs`
+- `docs/internal/web/node/blank2.mjs`
+- `docs/internal/web/node/cache_check.mjs`
+- `docs/internal/web/node/cache_check_hdr.mjs`
+- `docs/internal/web/node/file_scheme.mjs`
+- `docs/internal/web/node/insecure.mjs`
+- `docs/internal/web/node/package-lock.json`
+- `docs/internal/web/node/package.json`
+- `docs/internal/web/node/packs_smoke.mjs`
+- `docs/internal/web/node/persist.mjs`
+- `docs/internal/web/node/smoke.mjs`
+- `docs/internal/web/node/throttle.mjs`
+- `docs/internal/web/node/touch-e2e/analyze.py`
+- `docs/internal/web/node/touch-e2e/explore.js`
+- `docs/internal/web/node/touch-e2e/main.js`
+- `docs/internal/web/pckprobe/make_big.gd`
+- `docs/internal/web/pckprobe/make_pack.gd`
+- `docs/internal/web/publish.sh`
+- `docs/internal/web/webp_probe.py`
 - `legal-assets/README.md`
 
 ## Processed files

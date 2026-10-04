@@ -213,7 +213,7 @@ lane 这一侧：
 **lane 里怎么跑命令**
 
 - 直接跑 `tools/godot.sh` 与 `tools/lane_verify.sh`，不设 HOME、不 source 环境文件（`tools/godot.sh` 自己隔离 HOME）。
-- 一次调用只放一条简单命令；git 一律 `git -C`；多行 Python 先写成 `ignored/*.py` 再运行。
+- 一次调用只放一条简单命令；git 一律 `git -C`；一次性的多行 Python 先写成 `ignored/*.py` 再运行。会再用的脚本、配方、提示词当场放进受管目录并提交（公开的放 `tools/`，只给维护者用的放 `docs/internal/`）；`ignored/` 只留截图、录像、日志、大批试作图和缓存。
 - 验证只用 `tools/lane_verify.sh`，不自写脚本跑整套；收尾前台跑一次（Bash timeout 600000），不放后台轮询；中途用定向套件。
 
 **自动对局与走查**
