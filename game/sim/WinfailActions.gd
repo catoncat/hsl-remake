@@ -142,6 +142,7 @@ static func apply_actions(next: Dictionary, status: Dictionary, context: String,
 				(fired.back() as Dictionary)["chain_stop_index"] = action_index + (status.get("conditions", []) as Array).size()
 				break
 			continue
+		c["action_index"] = action_index
 		var handler: Callable = ACTION_HANDLERS.get(name, Callable())
 		if handler.is_valid():
 			handler.call(c, name, args)
@@ -288,7 +289,7 @@ static func _act_set_next_play_level_event(c: Dictionary, _name: String, args: A
 
 
 static func _act_set_player_mode(c: Dictionary, _name: String, args: Array) -> void:
-	apply_player_mode(c["next"], c["runtime"], c["key"], args)
+	apply_player_mode(c["next"], c["runtime"], c["key"], args, [], _firing(c), int(c["action_index"]))
 
 
 static func _act_player_job_up_process(c: Dictionary, _name: String, args: Array) -> void:
@@ -300,7 +301,7 @@ static func _act_set_player_walk_shape(c: Dictionary, _name: String, args: Array
 
 
 static func _act_set_player_exec_mode(c: Dictionary, _name: String, args: Array) -> void:
-	_apply_player_exec_mode(c["next"], c["runtime"], c["key"], args)
+	apply_player_exec_mode(c["next"], c["runtime"], c["key"], args, [], _firing(c), int(c["action_index"]))
 
 
 static func _act_random_set_sys_arrive_pos(c: Dictionary, _name: String, args: Array) -> void:
@@ -320,11 +321,14 @@ static func _act_exec_win_fail_process(c: Dictionary, _name: String, _args: Arra
 
 
 static func _act_set_player_undead(c: Dictionary, _name: String, args: Array) -> void:
-	_apply_player_undead(c["next"], c["runtime"], c["key"], args)
+	apply_player_undead(c["next"], c["runtime"], c["key"], args, [], _firing(c), int(c["action_index"]))
 
 
 static func _act_set_player_fix_pos(c: Dictionary, _name: String, args: Array) -> void:
-	_apply_player_fix_pos(c["next"], c["runtime"], c["key"], args)
+	if not fix_pos_args_valid(args):
+		c["runtime"]["unsupported_encountered"].append({"key": c["key"], "name": "actSetPlayerFixPos", "args": args.duplicate(), "reason": "invalid_arguments"})
+		return
+	write_fix_pos(c["next"], c["runtime"], c["key"], args, WinfailConditions.units_for_token(c["next"], _arg(args, 0), _int_arg(args, 1)), _firing(c), int(c["action_index"]))
 
 
 static func _act_set_player_fly(c: Dictionary, _name: String, args: Array) -> void:
@@ -591,7 +595,7 @@ static func apply_story_player_state(next: Dictionary, seed: Dictionary) -> void
 				if name == "actSetPlayerMode":
 					apply_player_mode(next, runtime, "story_%d_mode" % int(section.get("index", 0)), args)
 				else:
-					_apply_player_undead(next, runtime, "story_%d_undead" % int(section.get("index", 0)), args)
+					apply_player_undead(next, runtime, "story_%d_undead" % int(section.get("index", 0)), args)
 
 
 static func _apply_player_job_up(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
@@ -665,7 +669,7 @@ static func _apply_player_walk_shape(next: Dictionary, runtime: Dictionary, key:
 		WinfailConditions.unit(next, str(unit_id))["walk_shape_serial"] = serial
 
 
-static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
+static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array, already_applied: Array = [], firing_index: int = -1, action_index: int = -1) -> void:
 	if args.size() < 4 or not _arg(args, 1).is_valid_int() or not _arg(args, 3).is_valid_int():
 		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerMode", "args": args.duplicate(), "reason": "invalid_arguments"})
 		return
@@ -673,7 +677,7 @@ static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String
 	var serial := _int_arg(args, 1)
 	var mode := _player_mode_arg(_arg(args, 2))
 	var role: String = PLAYER_MODE_ROLES.get(mode, "")
-	var ids := WinfailConditions.units_for_token(next, token, serial)
+	var ids := WinfailConditions.units_for_token(next, token, serial).filter(func(id): return not already_applied.has(id))
 	# 0x45073c: every call flips the found object's side-swap bit (+0xa0 ^= 8) before it
 	# compares the mode — also when the mode is unchanged or unsupported here; 0x446be0 reads
 	# the bit to mirror the object's close-up (BattleCombatCutin.side_swapped).
@@ -683,7 +687,7 @@ static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String
 		if not unit.is_empty():
 			unit["side_swapped"] = not bool(unit.get("side_swapped", false))
 			swapped.append(unit["side_swapped"])
-	var receipt := {"key": key, "actor_token": token, "serial": serial, "mode": mode, "flag": _int_arg(args, 3), "unit_ids": ids.duplicate(), "role": role, "side_swapped": swapped}
+	var receipt := {"key": key, "actor_token": token, "serial": serial, "mode": mode, "flag": _int_arg(args, 3), "unit_ids": ids.duplicate(), "role": role, "side_swapped": swapped, "firing_index": firing_index, "action_index": action_index}
 	(runtime["mode_changes"] as Array).append(receipt)
 	if role == "":
 		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerMode", "args": args.duplicate(), "reason": "unsupported_mode"})
@@ -697,15 +701,15 @@ static func apply_player_mode(next: Dictionary, runtime: Dictionary, key: String
 		unit["player_mode"] = mode
 
 
-static func _apply_player_exec_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
+static func apply_player_exec_mode(next: Dictionary, runtime: Dictionary, key: String, args: Array, already_applied: Array = [], firing_index: int = -1, action_index: int = -1) -> void:
 	if args.size() < 3 or not _arg(args, 1).is_valid_int() or not _arg(args, 2).is_valid_int():
 		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerExecMode", "args": args.duplicate(), "reason": "invalid_arguments"})
 		return
 	var token := _arg(args, 0)
 	var serial := _int_arg(args, 1)
 	var mode := _int_arg(args, 2)
-	var ids := WinfailConditions.units_for_token(next, token, serial)
-	var receipt := {"key": key, "actor_token": token, "serial": serial, "mode": mode, "native_state": 3 if mode == 0 else 5, "unit_ids": ids.duplicate()}
+	var ids := WinfailConditions.units_for_token(next, token, serial).filter(func(id): return not already_applied.has(id))
+	var receipt := {"key": key, "actor_token": token, "serial": serial, "mode": mode, "native_state": 3 if mode == 0 else 5, "unit_ids": ids.duplicate(), "firing_index": firing_index, "action_index": action_index}
 	(runtime["exec_mode_changes"] as Array).append(receipt)
 	for unit_id in ids:
 		var unit := WinfailConditions.unit(next, str(unit_id))
@@ -752,10 +756,12 @@ static func _player_mode_arg(value: Variant) -> int:
 	}.get(text, 0)
 
 
-static func _apply_player_fix_pos(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
-	if args.size() < 5 or not _arg(args, 1).is_valid_int() or not _arg(args, 2).is_valid_int() or not _arg(args, 3).is_valid_int() or not _arg(args, 4).is_valid_int():
-		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerFixPos", "args": args.duplicate(), "reason": "invalid_arguments"})
-		return
+static func fix_pos_args_valid(args: Array) -> bool:
+	return args.size() >= 5 and _arg(args, 1).is_valid_int() and _arg(args, 2).is_valid_int() and _arg(args, 3).is_valid_int() and _arg(args, 4).is_valid_int()
+
+
+## Writes the actSetPlayerFixPos anchor onto the resolved units `ids` and records the receipt.
+static func write_fix_pos(next: Dictionary, runtime: Dictionary, key: String, args: Array, ids: Array, firing_index: int, action_index: int) -> void:
 	var token := _arg(args, 0)
 	var serial := _int_arg(args, 1)
 	var x := _int_arg(args, 2)
@@ -767,11 +773,10 @@ static func _apply_player_fix_pos(next: Dictionary, runtime: Dictionary, key: St
 	# fixed-point walk (0x43fbd6 -> 0x411080) that carries it toward the anchor on its own
 	# turns, and an anchor beyond the map edge (WINFAIL012 round 8: -160,1824 etc.) is a
 	# retreat point the unit walks toward until actWalkAndDelete removes it two rounds later.
-	var ids := WinfailConditions.units_for_token(next, token, serial)
 	var map_size: Vector2i = next.get("map_size", Vector2i(0, 0))
 	var coord := Vector2i(floori(float(x) / float(WinfailConditions.cell_size(next))), floori(float(y) / float(WinfailConditions.cell_size(next))))
 	var off_map := map_size.x <= 0 or map_size.y <= 0 or coord.x < 0 or coord.y < 0 or coord.x >= map_size.x or coord.y >= map_size.y
-	var receipt := {"key": key, "actor_token": token, "serial": serial, "pixel": [x, y], "coord": coord, "distance": distance, "unit_ids": ids.duplicate(), "off_map": off_map}
+	var receipt := {"key": key, "actor_token": token, "serial": serial, "pixel": [x, y], "coord": coord, "distance": distance, "unit_ids": ids.duplicate(), "off_map": off_map, "firing_index": firing_index, "action_index": action_index}
 	(runtime["fixed_position_changes"] as Array).append(receipt)
 	for unit_id in ids:
 		var unit := WinfailConditions.unit(next, str(unit_id))
@@ -997,15 +1002,15 @@ static func _apply_drop_lightning(next: Dictionary, request: Dictionary, symbol:
 	request["drop_lightning"] = DropLightningRules.strike(next, focus, int(bolts[symbol]), cell_size, next.get("presentation_view"))
 
 
-static func _apply_player_undead(next: Dictionary, runtime: Dictionary, key: String, args: Array) -> void:
+static func apply_player_undead(next: Dictionary, runtime: Dictionary, key: String, args: Array, already_applied: Array = [], firing_index: int = -1, action_index: int = -1) -> void:
 	if args.size() < 3 or not _arg(args, 1).is_valid_int() or not _arg(args, 2).is_valid_int():
 		runtime["unsupported_encountered"].append({"key": key, "name": "actSetPlayerUndead", "args": args.duplicate(), "reason": "invalid_arguments"})
 		return
 	var token := _arg(args, 0)
 	var serial := _int_arg(args, 1)
 	var enabled := _int_arg(args, 2) != 0
-	var ids := WinfailConditions.units_for_token(next, token, serial)
-	(runtime["undead"] as Array).append({"key": key, "actor_token": token, "serial": serial, "mode": _int_arg(args, 2), "enabled": enabled, "unit_ids": ids.duplicate()})
+	var ids := WinfailConditions.units_for_token(next, token, serial).filter(func(id): return not already_applied.has(id))
+	(runtime["undead"] as Array).append({"key": key, "actor_token": token, "serial": serial, "mode": _int_arg(args, 2), "enabled": enabled, "unit_ids": ids.duplicate(), "firing_index": firing_index, "action_index": action_index})
 	for unit_id in ids:
 		var unit := WinfailConditions.unit(next, str(unit_id))
 		if not unit.is_empty():

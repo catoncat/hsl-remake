@@ -77,6 +77,10 @@ func run() -> void:
 	_level_twelve_opcode_actions()
 	_lane_k_token_actions()
 	_script_dead_message_words()
+	_inserted_actor_mode()
+	_inserted_actor_fix_pos()
+	_inserted_actor_undead()
+	_inserted_actor_exec_mode()
 	_random_position_family()
 	_select_event_status_branches()
 	_exec_mode_and_system_arrival()
@@ -1927,3 +1931,49 @@ func _cast_on_gem(loop: Dictionary, caster: String, skill: String, gem_id: Strin
 
 func _alive_of(loop: Dictionary, actor_ids: Array) -> Array:
 	return loop["units"].filter(func(unit): return str(unit["actor_id"]) in actor_ids and WinfailConditions.unit_alive(loop, str(unit["id"])))
+
+
+# WINFAIL036 event 1 inserts 克羅蒂 and turns the new actor hostile in the same chain: the
+# original VM constructs an insert at once (case 0x12 → 0x407ec0; a SID_PLAYERn registers inside
+# the constructor), so case 0x42's 0x44fad0 lookup finds the actor.
+func _inserted_actor_mode() -> void:
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_036.json"))
+	loop["event_statuses"] = [1]
+	loop["turn"] = 8
+	loop = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(loop))
+	var claudie := BattlePlayLoop.unit_ref(loop, "claudie")
+	_assert_eq([claudie.get("battle_actor_role"), claudie.get("player_commandable"), claudie.get("side_swapped")], ["enemy_ai", false, true], "the inserted 克羅蒂 takes actSetPlayerMode(SID_克羅蒂,1,pmEnemy,0) from the same chain, flipped once")
+
+
+# WINFAIL902 event 5 inserts 嚎 and sets the new actor's guard anchor in the same chain. The
+# original VM constructs an insert at once (case 0x12 → 0x407ec0; a SID_PLAYERn registers inside
+# the constructor, an NPC on its first tick), so case 0x54's 0x44fad0 lookup finds the actor.
+func _inserted_actor_fix_pos() -> void:
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_902.json"))
+	loop["event_statuses"] = [5]
+	loop["turn"] = 3
+	loop = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(loop))
+	var howl := BattlePlayLoop.unit_ref(loop, "howl")
+	_assert_eq([howl.get("ai_home_coord"), howl.get("ai_fixed_radius")], [Vector2i(29, 16), 6], "the inserted 嚎 takes actSetPlayerFixPos(SID_嚎,1,928,512,6) from the same chain")
+
+
+# WINFAIL034 event 0 inserts five 023 and makes the fifth undead right after its insert (case
+# 0x40 → 0x44fad0; the chain's actDelay lets the new NPC register on its first tick first).
+func _inserted_actor_undead() -> void:
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_034.json"))
+	loop["event_statuses"] = [0]
+	loop["turn"] = 6
+	loop = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(loop))
+	var soldiers: Array = loop["units"].filter(func(unit): return str(unit["actor_id"]) == "023")
+	_assert_eq(soldiers.map(func(unit): return bool(unit.get("undead", false))), [false, false, false, false, true], "actSetPlayerUndead(SID_ENEMY023,5,1) reaches the fifth 023 its own chain inserted")
+
+
+# WINFAIL017 event 2 inserts 嚎 and sets the new actor's execution state to 1 (native 5) in the
+# same chain (case 0x53 → 0x44fad0; a SID_PLAYERn registers inside the constructor).
+func _inserted_actor_exec_mode() -> void:
+	var loop := BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_017.json"))
+	loop["event_statuses"] = [2]
+	loop["turn"] = 8
+	loop = BattlePlayLoop.resolve_outcome(WinfailScenarioRules.run_event_hooks(loop))
+	var howl := BattlePlayLoop.unit_ref(loop, "howl")
+	_assert_eq([howl.get("player_exec_mode"), howl.get("player_exec_mode_native")], [1, 5], "the inserted 嚎 takes actSetPlayerExecMode(SID_嚎,1,1) from the same chain")

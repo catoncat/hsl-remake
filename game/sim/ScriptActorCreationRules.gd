@@ -108,6 +108,7 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 	var departed: Array = []
 	var touched: Array = []
 	var births: Array = []
+	var anchors: Array = []
 	var previous := ""
 	var insert_number := 0
 	var requests: Array = runtime["inserts"].filter(func(row): return row.get("key") == status["key"] and int(row.get("firing_index", -1)) == firing)
@@ -165,6 +166,35 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		elif name in MOVE_ABSOLUTE + MOVE_RELATIVE + MOVE_TO_ACTOR + DEPART:
 			var moved := _motion_row(loop, runtime, status, firing, receipt, positions, touched, departed, row, name, args)
 			if not moved["ok"]: return moved
+		elif name == "actSetPlayerMode" and args.size() >= 4:
+			# The VM runs before insert transactions. Apply this exact command only to
+			# actors it could not resolve then; existing actors must not flip sides twice.
+			var applied := _vm_resolved(runtime["mode_changes"], firing, action_index)
+			var missing := WinfailConditions.units_for_token(loop, str(args[0]), int(args[1])).filter(func(id): return not applied.has(id))
+			if not missing.is_empty():
+				WinfailActions.apply_player_mode(loop, runtime, status["key"], args, applied, firing, action_index)
+		elif name == "actSetPlayerFixPos" and WinfailActions.fix_pos_args_valid(args):
+			# Same for the guard anchor (case 0x54 finds an inserted object through 0x44fad0:
+			# WINFAIL902 event 5 anchors the 嚎 it just inserted). Written after placement,
+			# which homes a created actor on its landing cell.
+			var anchored := _vm_resolved(runtime["fixed_position_changes"], firing, action_index)
+			var unanchored := WinfailConditions.units_for_token(loop, str(args[0]), int(args[1])).filter(func(id): return not anchored.has(id))
+			if not unanchored.is_empty():
+				anchors.append({"args": args, "ids": unanchored, "action_index": action_index})
+		elif name == "actSetPlayerUndead" and args.size() >= 3:
+			# Same for the undead bit (case 0x40 finds the object through 0x44fad0: the bosses
+			# WINFAIL021／030／032／037／077 insert, the fifth 023 of WINFAIL034, 克羅蒂 in WINFAIL036).
+			var spared := _vm_resolved(runtime["undead"], firing, action_index)
+			var mortal := WinfailConditions.units_for_token(loop, str(args[0]), int(args[1])).filter(func(id): return not spared.has(id))
+			if not mortal.is_empty():
+				WinfailActions.apply_player_undead(loop, runtime, status["key"], args, spared, firing, action_index)
+		elif name == "actSetPlayerExecMode" and args.size() >= 3:
+			# Same for the execution state (case 0x53 finds the object through 0x44fad0: WINFAIL017
+			# event 2 and WINFAIL902 event 5 set mode 1 on the 嚎 they just inserted).
+			var handled := _vm_resolved(runtime["exec_mode_changes"], firing, action_index)
+			var unhandled := WinfailConditions.units_for_token(loop, str(args[0]), int(args[1])).filter(func(id): return not handled.has(id))
+			if not unhandled.is_empty():
+				WinfailActions.apply_player_exec_mode(loop, runtime, status["key"], args, handled, firing, action_index)
 		elif name == "actSetDeadMessage" and WinfailActions.dead_message_args_valid(args):
 			# 0x452197 addresses the object like the walks above: a same-chain insert (level 6's
 			# second 隊長 969, the party members WINFAIL007／010／017／019 install) already exists here.
@@ -180,6 +210,8 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		receipt["actions"].append(row)
 	var placed := _place_touched(loop, runtime, receipt, positions, touched, departed)
 	if not placed["ok"]: return placed
+	for anchor in anchors:
+		WinfailActions.write_fix_pos(loop, runtime, status["key"], anchor["args"], anchor["ids"], firing, anchor["action_index"])
 	# An NPC (SID_ENEMY, +0xa0 >= 0x14) is born on its first object tick, after the VM has run
 	# the chain's tokens and their 0x44fbd0 landings; only SID < 0x14 players are born inside
 	# the constructor (0x407ec0 calls the process at 0x40809e), and their birth draws nothing here.
@@ -187,6 +219,15 @@ static func _apply_status(loop: Dictionary, status: Dictionary, firing: int) -> 
 		var born := _npc_birth(loop, pending["unit_id"], pending["request"])
 		if not born["ok"]: return born
 	return {"ok": true, "receipt": receipt}
+
+
+## Units the VM pass already resolved for this exact command (receipts carry firing／action index).
+static func _vm_resolved(changes: Array, firing: int, action_index: int) -> Array:
+	var ids: Array = []
+	for change in changes:
+		if int(change.get("firing_index", -1)) == firing and int(change.get("action_index", -1)) == action_index:
+			ids.append_array(change["unit_ids"])
+	return ids
 
 
 ## An installing insert: installs the template actor and records the row; a created
