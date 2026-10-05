@@ -258,6 +258,12 @@ static func resolve_skill(loop: Dictionary, attacker_id: String, defender_id: St
 	BattleLoopRewards.award_experience(loop, strike)
 	strike["sequence"] = int(loop.get("last_combat", {}).get("sequence", 0)) + 1
 	BattleLoopRewards.commit_rewards(loop, strike)
+	# Rewards and experience above settled the lethal result (the kill sections read HP <= 0
+	# before the revive); the receipt then shows the revived HP, as the exchange path does, so
+	# the map does not play a death fade for a target that still stands.
+	for receipt in [strike] + strike.get("affected_targets", []):
+		if receipt.has("defender_id") and revived.has(str(receipt["defender_id"])):
+			receipt["defender_hp_after"] = 1
 	loop["last_combat"] = strike
 	return strike
 

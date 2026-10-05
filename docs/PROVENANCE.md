@@ -10,9 +10,9 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (207 modules, 143 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (208 modules, 144 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
-### 模块矩阵 (207)
+### 模块矩阵 (208)
 
 #### game/battle/runtime (18)
 
@@ -124,10 +124,11 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | --- | --- | --- | --- | --- | --- |
 | [GameCursor](../game/cursor/GameCursor.gd) | remake-invented [OPTIONS.md](../docs/OPTIONS.md) | resource-derived [game_cursor/manifest.json](../content/imported/hsl/shared/game_cursor/manifest.json); static-derived [game_cursor/README.md](../docs/evidence_packets/runtime_observations/game_cursor/README.md) | n/a | resource-derived [game_cursor/manifest.json](../content/imported/hsl/shared/game_cursor/manifest.json); static-derived [game_cursor/README.md](../docs/evidence_packets/runtime_observations/game_cursor/README.md); runtime-measured [game_cursor/README.md](../docs/evidence_packets/runtime_observations/game_cursor/README.md) | n/a |
 
-#### game/debug (1)
+#### game/debug (2)
 
 | Module | rules | layout | strings | timing | audio |
 | --- | --- | --- | --- | --- | --- |
+| [BattleJournal](../game/debug/BattleJournal.gd) | remake-invented | n/a | n/a | n/a | n/a |
 | [DebugPause](../game/debug/DebugPause.gd) | remake-invented | remake-invented | remake-invented | remake-invented | n/a |
 
 #### game/input (2)
@@ -291,7 +292,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (143)
+### remake-invented 清单 (144)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -367,6 +368,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [CampaignProgress](../game/common/CampaignProgress.gd) | rules | one-shot hand-off, resume prompt, play-time counter, not-remade chapter end returns to the title; the carry stands in for the original slot table; per-campaign save folders |
 | [InterfaceArt](../game/common/InterfaceArt.gd) | rules | mod override lookup; the replaced images keep their own provenance |
 | [GameCursor](../game/cursor/GameCursor.gd) | rules | OPT-CURSOR=系統硬體游標 only: the OS pointer shows the sceptre [OPTIONS.md](../docs/OPTIONS.md) |
+| [BattleJournal](../game/debug/BattleJournal.gd) | rules | playtest journal behind the HSL_JOURNAL_DIR development switch; it only observes the battle loop, the original has no such log |
 | [DebugPause](../game/debug/DebugPause.gd) | rules | debug freeze and single-frame step behind the HSL_DEBUG_PAUSE development switch; the original has no such control |
 | [DebugPause](../game/debug/DebugPause.gd) | layout | top-left badge |
 | [DebugPause](../game/debug/DebugPause.gd) | strings | 「停格中」badge |
@@ -516,7 +518,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 60 | 33 | 34 | 15 | 1 | 143 |
-| n/a | 64 | 122 | 156 | 137 | 175 | 654 |
+| remake-invented | 61 | 33 | 34 | 15 | 1 | 144 |
+| n/a | 64 | 123 | 157 | 138 | 176 | 658 |
 
 <!-- provenance:end -->

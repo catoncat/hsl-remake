@@ -95,6 +95,9 @@ const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const BattleScenarioRuleAdapter = preload("res://game/sim/BattleScenarioRuleAdapter.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
+const BattleJournal = preload("res://game/debug/BattleJournal.gd")
+## Playtest journal (HSL_JOURNAL_DIR); null when the variable is unset.
+var journal: BattleJournal = null
 
 const MOVE_CELL_PRESENTATION_SECONDS := ActorRuntime.WALK_CELL_SECONDS  # 8 ticks × 16 ms per cell
 ## Recording 2026-09-24 12.03.22 (first-battle win): the dialogue board closes ≈515.8 s, the
@@ -830,6 +833,7 @@ func _bootstrap_runtime() -> void:
 	if BattleScenarioRuleAdapter.adapter_id(first_battle_scenario) == "":
 		push_error("Unsupported battle scenario adapter: %s" % str(first_battle_scenario.get("schema", "")))
 		return
+	journal = BattleJournal.open_for(first_battle_scenario)
 	map_texture_path = BattleScenario.resource_path(first_battle_scenario, "map_texture")
 	map_objects_path = BattleScenario.resource_path(first_battle_scenario, "map_objects")
 	map_object_alignment_path = BattleScenario.resource_path(first_battle_scenario, "map_object_alignment")
@@ -950,10 +954,13 @@ func _configure_play_loop() -> void:
 ## and last attack — follow in the same call. Actors mid-walk keep their tween; start
 ## a receipt's walk before applying its loop.
 func apply_loop(next: Dictionary, reason: String) -> void:
+	var prev := play_loop
 	play_loop = next
 	loop_write_reason = reason
 	GlobalRandomStream.remember(next)
 	_sync_from_play_loop()
+	if journal != null:
+		journal.observe(prev, next, reason)
 
 
 ## The scene's interaction state follows the loop's after a rule operation; only the

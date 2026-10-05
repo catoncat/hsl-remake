@@ -2255,6 +2255,9 @@
     "provenance:game/battle/scene/SkillPresenter.gd|rules|remake-invented|": {
       "no_visible_effect": "演出合同只保证 released／impact 各触发一次，没有自己的时钟"
     },
+    "provenance:game/debug/BattleJournal.gd|rules|remake-invented|": {
+      "no_visible_effect": "只在设了 HSL_JOURNAL_DIR 时写日志文件；纯观察，不改状态，画面不变"
+    },
     "provenance:game/debug/DebugPause.gd|layout|remake-invented|": {
       "item": "debug-pause"
     },

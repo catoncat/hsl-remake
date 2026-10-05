@@ -4,6 +4,7 @@ const BattleLoopCombat = preload("res://game/sim/loop/BattleLoopCombat.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const TestSuite = preload("res://tests/support/TestSuite.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
+const BattleAftermath = preload("res://game/battle/scene/BattleAftermath.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const LevelUpStars = preload("res://game/battle/scene/LevelUpStars.gd")
 const GlobalRandomStream = preload("res://game/sim/GlobalRandomStream.gd")
@@ -103,6 +104,7 @@ func run() -> void:
 			await lethal_case(command, fps)
 	await counter_defeat()
 	await map_magic()
+	await map_magic_undead()
 	await map_magic_lead_pose()
 	await multi_target()
 	await terminal_victory()
@@ -497,6 +499,25 @@ func installed_dead_message() -> void:
 		check(BattlePlayLoop.unit(scene.play_loop, "enemy021_1")["defeated"] and scene.play_loop == settled, "the installed word never changes committed state")
 		scene.queue_free()
 		await process_frame
+
+
+## A lethal map spell on an undead target (level 3 漢克斯, story bosses) revives it at 1 HP like
+## the exchange path: the receipt shows the revived HP, so the map plays no death fade for it.
+func map_magic_undead() -> void:
+	var scene := fixture()
+	var caster := BattlePlayLoop.unit_ref(scene.play_loop, "enemy026_1")
+	var target := BattlePlayLoop.unit_ref(scene.play_loop, "enemy023_1")
+	target["hp"] = 1
+	target["undead"] = true
+	target["coord"] = caster["coord"] + Vector2i.RIGHT
+	caster["mp"] = 100
+	var id := "magic:magicFIRE:magicCode01"
+	var receipt := BattleLoopCombat.resolve_skill(scene.play_loop, caster["id"], target["id"], id, BattlePlayLoop.skill_fields(scene.play_loop, id), caster["coord"], func(_n): return 0)
+	check(not receipt.is_empty() and receipt["undead_revived"] == [target["id"]], "the lethal spell revives the undead target")
+	check(int(receipt["defender_hp_after"]) == 1 and int(BattlePlayLoop.unit_ref(scene.play_loop, target["id"])["hp"]) == 1, "the spell receipt shows the revived 1 HP")
+	check(BattleAftermath.defeated_ids(receipt).is_empty(), "no death fade or last words for a revived spell target")
+	scene.queue_free()
+	await process_frame
 
 
 ## A caster whose art row carries an imported m_shape lead (025 here) poses when the lead ends —
