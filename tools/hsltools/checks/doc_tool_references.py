@@ -7,12 +7,16 @@ this task closes the gap it leaves: a README that tells the reader to run a dele
 an unregistered task passed every gate before (T1's ablation of hsl_combat_resolution_probe.py).
 
 Scope: the Markdown the reader is told to act on — the root *.md, docs/, tests/, tools/ — minus
-docs/external/ (vendored documentation names its own paths). Generated READMEs under content/ are the
-generators' output and are not documentation (their strings change only with a regeneration).
+docs/external/ (vendored documentation names its own paths) and minus superseded documents (kept only
+for the record: the first line after the title is a blockquote opening with 已取代, or the README.md of
+an enclosing directory is). Generated READMEs under content/ are the generators' output and are not
+documentation (their strings change only with a regeneration).
 Rules, per code span or code-block line:
 
-  tools/<path>.{py,sh,swift,c,json}   the file exists (paths containing shell metacharacters or
-                                      placeholders — `*`, `$`, `<`, `{` — are skipped)
+  tools/<path>.{py,sh,swift,c,json}   the file exists under the tools/ folder nearest above the document
+                                      (a maintainer's folder keeps its own tools/ beside its documents),
+                                      else under the repository's tools/ (paths containing shell
+                                      metacharacters or placeholders — `*`, `$`, `<`, `{` — are skipped)
   hsl_<name>.py (bare)                tools/hsl_<name>.py exists (the stand-alone tools are named
                                       bare in the tools/README.md table and in evidence packets)
   python3 -m hsltools.a.b             tools/hsltools/a/b.py or tools/hsltools/a/b/__init__.py exists
@@ -23,11 +27,11 @@ Rules, per code span or code-block line:
                                       select. Options, option values (--exe PATH, -j N, --root DIR,
                                       --since REF), placeholders (`[PATTERN...]`, `<name>`, ALL-CAPS
                                       words) and everything after a shell / prose terminator (#, |,
-                                      ;, ), a non-ASCII token) are not arguments. `hsl affected`
+                                      ;, ), a backslash, a non-ASCII token) are not arguments. `hsl affected`
                                       takes no task arguments.
 
 Registry task docs:tool_references (family docs, CheckTask, replaces=()).
-PASS line: DOC_TOOL_REFERENCES_PASS files=N paths=N modules=N task_args=N.
+PASS line: DOC_TOOL_REFERENCES_PASS files=N paths=N modules=N task_args=N [superseded=N].
 """
 from __future__ import annotations
 
@@ -48,10 +52,37 @@ CODE_SPAN = re.compile(r'(`+)(.+?)\1')
 OPTIONS_WITH_VALUE = ('--exe', '-j', '--root', '--since', '--profile')
 # Where the argument list ends: a shell operator, a closing bracket, anything non-ASCII (prose).
 # A pipe ends it only as its own token: `story_scene:902|903` is the documentation's alternative shorthand.
-TERMINATOR = re.compile(r'#|;|&|\)|\]|`|<-|[^\x20-\x7e]|^\|')
+# A backslash starts a line continuation or a table cell's escaped pipe.
+TERMINATOR = re.compile(r'#|;|&|\)|\]|`|<-|[^\x20-\x7e]|^\||^\\')
 PLACEHOLDER = re.compile(r'^(?:\[.*|<.*|\.\.\.|[A-Z][A-Z0-9_]*(?:\.\.\.)?|\$\{?[A-Za-z_]\w*\}?.*)$')
 # `level_battle:N`, `battle_seed:5NN`, `original_save:<preset>`: a family with a shorthand suffix.
 SHORTHAND_SUFFIX = re.compile(r'^[^:]+:(?:.*[A-Z<>].*)$')
+SUPERSEDED_MARK = re.compile(r'\s*>\s*已取代')
+
+
+class Superseded:
+    """Documents kept only for the record (tools/hsl_docs_check.py keeps live documents from pointing at
+    them): a file whose first line after its title is a blockquote opening with 已取代, and everything
+    below a directory whose README.md is so marked."""
+
+    def __init__(self, files: list[Path]) -> None:
+        self.files: set[Path] = set()
+        for path in files:
+            try:
+                head = path.read_text(encoding='utf-8', errors='replace')[:4096]
+            except OSError:
+                continue
+            first = next((line for line in head.splitlines() if line.strip() and not line.lstrip().startswith('#')), '')
+            if SUPERSEDED_MARK.match(first):
+                self.files.add(path.resolve())
+        self.directories = {path.parent for path in self.files if path.name == 'README.md'}
+
+    def __contains__(self, path: Path) -> bool:
+        path = path.resolve()
+        return path in self.files or any(folder == path or folder in path.parents for folder in self.directories)
+
+    def __len__(self) -> int:
+        return len(self.files)
 
 
 def markdown_files(root: Path) -> list[Path]:
@@ -114,6 +145,14 @@ def path_is_literal(path: str) -> bool:
     return not any(character in path for character in '*$<>{}')
 
 
+def tool_exists(root: Path, document: Path, path: str) -> bool:
+    """`tools/…` named in `document`: under the nearest folder above it that has a tools/, else the root."""
+    folder = document.parent
+    while folder != root and root in folder.parents and not (folder / 'tools').is_dir():
+        folder = folder.parent
+    return (folder / path).exists() or (root / path).exists()
+
+
 def selects_task(tasks: list[Task], argument: str) -> bool:
     """registry.select's rule (name, family, fnmatch glob) plus the documentation shorthands."""
     if any(task.name == argument or task.family == argument or fnmatch.fnmatchcase(task.name, argument)
@@ -132,14 +171,18 @@ def selects_task(tasks: list[Task], argument: str) -> bool:
 def scan(root: Path, files: list[Path], tasks: list[Task]) -> tuple[list[str], dict[str, int]]:
     issues: list[str] = []
     counts = {'paths': 0, 'modules': 0, 'task_args': 0}
+    superseded = Superseded(files)
     for path in files:
+        if path in superseded:
+            counts['superseded'] = counts.get('superseded', 0) + 1
+            continue
         label = path.relative_to(root).as_posix()
         for number, code in code_lines(path.read_text(encoding='utf-8')):
             for match in TOOL_PATH.finditer(code):
                 if not path_is_literal(match[1]):
                     continue
                 counts['paths'] += 1
-                if not (root / match[1]).exists():
+                if not tool_exists(root, path, match[1]):
                     issues.append(f'{label}:{number}: tool path does not exist: {match[1]}')
             for match in BARE_SCRIPT.finditer(code):
                 counts['paths'] += 1
@@ -165,7 +208,8 @@ def check(root: Path, tasks: list[Task] | None = None) -> str:
     if issues:
         raise ValueError(f'{len(issues)} stale tool reference(s) in documentation code:\n  ' + '\n  '.join(issues))
     return (f'DOC_TOOL_REFERENCES_PASS files={len(files)} paths={counts["paths"]} '
-            f'modules={counts["modules"]} task_args={counts["task_args"]}')
+            f'modules={counts["modules"]} task_args={counts["task_args"]}'
+            + (f' superseded={counts["superseded"]}' if counts.get('superseded') else ''))
 
 
 class DocToolReferencesTask(CheckTask):

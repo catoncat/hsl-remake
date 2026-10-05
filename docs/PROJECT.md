@@ -30,7 +30,7 @@ Checked: 2026-09-30
 
 ## 文档地图
 
-- 原作逐关参考：主检出的 `ignored/level-atlas/README.md`；《归处》制作源文件已收入 `dlc-guichu` 分支的 `docs/internal/guichu/README.md`，该分支尚未并入主线。
+- 原作逐关参考：主检出的 `ignored/level-atlas/README.md`。
 - [README](../README.md) — 项目首页；[CHANGELOG](../CHANGELOG.md) 按日期记录每次发布
 - [docs/README](README.md) — 全部文档索引
 - [PLAYING](PLAYING.md)、[PLAYTEST](PLAYTEST.md)、[WEB](WEB.md) — 玩与试玩

@@ -1,12 +1,13 @@
 # OSS export report
 
-Source: private repository `main` = `fa5ac71c90c30dc19959da557b93ee9774ddaa81` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `50b4658e232679dba3e5ff8c84a73ed33ebffd96` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
 - written: **1558 files, 68.0 MB**
 - dropped: **19212 files, 620.4 MB**
-- processed (home path / author e-mail / public .gitignore rules): 18 files
+- processed (home path / author e-mail / public .gitignore rules): 19 files
 - residual home paths or author e-mails in the written tree: 0
+- files naming unreleased work (`docs/internal/unreleased_names.txt`): 0; internal marker lines left: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
@@ -56,7 +57,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/internal/SEQUEL_READINESS.md`
 - `docs/internal/WEB_DEPLOY.md`
 - `docs/internal/lane_brief.md`
-- `docs/internal/tools/project_hub/build.py`
+- `docs/internal/unreleased_names.txt`
 - `docs/internal/web/README.md`
 - `docs/internal/web/fetch_templates.py`
 - `docs/internal/web/node/audio.mjs`
@@ -84,6 +85,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 ## Processed files
 
 - `.gitignore`
+- `docs/PROJECT.md`
 - `tools/oss_sync.sh`
 - `docs/OPTIONS.md`
 - `docs/PROVENANCE.md`

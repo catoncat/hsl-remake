@@ -153,6 +153,8 @@ Raw 发现只有压缩成可复跑工具输出、imported/generated data 或 cur
 - 不要用 Steam 文件覆盖原作目录；Steam 登录只由用户本人操作。
 - 不得用长时间无监督 playthrough 占用用户鼠标键盘，也不得截整个桌面。
 - 不提交原版派生物、密钥、会话 id 和本机绝对路径（写成 `$HSL_ORIGINAL_DIR`、`$WINEPREFIX`、`~` 或 `ignored/`）。
+- 仓库文件、任务书、提交说明不转述用户的话，也不写「用户说／拍板」这类说法，规则用中性说法写（`tools/hsl_docs_check.py` 会拦 Markdown 里的这类说法）。
+- 提交标题和正文会被 `tools/oss_sync.sh` 原样抄进公开仓库，不写未公开内容的名字；名单在 `docs/internal/unreleased_names.txt`，导出和同步遇到名单里的名字就失败。
 
 ---
 
@@ -170,7 +172,7 @@ Raw 发现只有压缩成可复跑工具输出、imported/generated data 或 cur
 - 实玩报的问题按**类**处理（当成共性问题，不只解决报出的那一处）：写根因线索、盘点全游戏同类实例、在共享层修、加覆盖全部实例的检查，报告写找到／修了／剩余。截图只是样本。
 - **实验用探针（≤5 场代表性战斗），回归用全量**；说"久"必须说已跑多久、预计多久、卡在哪一步。
 
-文档按职责更新：[PROJECT](docs/PROJECT.md) 只保留一屏当前状态（现状、进度尺、1.0 的条件、文档地图），不追加历史日报，也不新增另一份 TODO／STATUS／HANDOFF；每轮收口的流水进 `docs/internal/ROUNDS.md`；架构存现行合同；evidence packet 存来源和具体回执。结构或代码路径变化同步修复链接。公开文档（`docs/internal/`、`docs/audits/` 之外）不得链接内部文档，`tools/hsl_docs_check.py` 会拦；需要提到时写成代码样式的路径。
+文档按用途分事实、做法、记录三类，事实和做法只写现在（[CONTEXT「文档怎么写」](CONTEXT.md#文档怎么写)）。文档按职责更新：[PROJECT](docs/PROJECT.md) 只保留一屏当前状态（现状、进度尺、1.0 的条件、文档地图），不追加历史日报，也不新增另一份 TODO／STATUS／HANDOFF；每轮收口的流水进 `docs/internal/ROUNDS.md`；架构存现行合同；evidence packet 存来源和具体回执。结构或代码路径变化同步修复链接。公开文档（`docs/internal/`、`docs/audits/` 之外）不得链接内部文档，`tools/hsl_docs_check.py` 会拦；需要提到时写成代码样式的路径。内部状态（未公开内容的入口和阶段）写进 PROJECT 的内部段：单独成行的 `<!-- internal -->` 与 `<!-- /internal -->` 之间，公开导出时整段去掉。
 
 ### Lane 协议
 
@@ -213,6 +215,7 @@ lane 这一侧：
 **lane 里怎么跑命令**
 
 - 直接跑 `tools/godot.sh` 与 `tools/lane_verify.sh`，不设 HOME、不 source 环境文件（`tools/godot.sh` 自己隔离 HOME）。
+- 开窗口跑 `--script`（审看、试演、截图脚本）一律走 `tools/play.sh --script <脚本>`，它把 HOME 换到 `ignored/script-home`；`tools/godot.sh` 只给 `--headless` 隔离 HOME，开窗口直接跑的脚本会动到真实存档。
 - 一次调用只放一条简单命令；git 一律 `git -C`；一次性的多行 Python 先写成 `ignored/*.py` 再运行。会再用的脚本、配方、提示词当场放进受管目录并提交（公开的放 `tools/`，只给维护者用的放 `docs/internal/`）；`ignored/` 只留截图、录像、日志、大批试作图和缓存。
 - 验证只用 `tools/lane_verify.sh`，不自写脚本跑整套；收尾前台跑一次（Bash timeout 600000），不放后台轮询；中途用定向套件。
 
@@ -301,5 +304,5 @@ Wine 仅用于 targeted validation。执行前：
 | 环境诊断 | `tools/doctor.sh [--original]` |
 | 开游戏／试玩某一关 | `tools/play.sh`／`tools/playtest.sh <槽名>`（[PLAYTEST](docs/PLAYTEST.md)） |
 | 文档链接检查 | `python3 tools/hsl_docs_check.py`；代码块里的工具路径 `python3 tools/hsl.py check docs:tool_references` |
-| 公开导出 | `tools/oss_export.sh OUT_DIR [REF]`（去掉原版派生物、`docs/internal/`、`docs/audits/` 等） |
+| 公开导出 | `tools/oss_export.sh OUT_DIR [REF]`（去掉原版派生物、`docs/internal/`、`docs/audits/`、Markdown 的内部段等；残留未公开内容的名字就失败） |
 | 证据用语自检 | `jevgrep lint --rules tools/typesafe/evidence_lint_rules.json --diff HEAD`（要联网和 key） |

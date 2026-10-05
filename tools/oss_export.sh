@@ -9,7 +9,10 @@
 #             links the mirrored pages), docs/internal/ and docs/audits/ (process docs), legal-assets/,
 #             asset-dumps/, ignored/, .claude/
 #   processed text files: /Users/<name> home paths -> ~, author e-mail addresses -> <author e-mail>;
-#             .gitignore gains the rules that keep a player's import out of commits
+#             .gitignore gains the rules that keep a player's import out of commits; in Markdown, an
+#             internal segment (from a line `<!-- internal -->` to a line `<!-- /internal -->`) is cut
+#   refused   a written file that still names unreleased work (docs/internal/unreleased_names.txt at REF,
+#             one name per line; in its path or text) or keeps an internal marker line: residual, exit 1
 #   added     OSS_EXPORT_REPORT.md (file counts, MB, dropped list by subclass, processed files)
 # OUT_DIR must not exist or be empty. It is a plain directory: no git history, no author metadata — the
 # new repository's first commit is made by the user. Nothing is pushed or created on GitHub.
@@ -45,6 +48,11 @@ DROPPED_PREFIXES = ('legal-assets/', 'asset-dumps/', 'ignored/', '.claude/', 'do
                     'docs/internal/', 'docs/audits/')
 HOME_PATH = re.compile(rb'/Users/[A-Za-z0-9._-]+')
 EMAIL = re.compile(rb'[A-Za-z0-9._-]+@(?:chen\.rs|[A-Za-z0-9-]+\.local)')  # maintainer addresses; the local-host form is not spelled out here
+# State of unreleased work kept in a public document (docs/PROJECT.md) sits between two marker lines; the
+# segment goes with the blank line before it, so the text around it closes up.
+INTERNAL = re.compile(rb'(?:^[ \t]*\r?\n)?^[ \t]*<!-- internal -->[ \t]*\r?\n.*?^[ \t]*<!-- /internal -->[ \t]*(?:\r?\n|\Z)', re.M | re.S)
+INTERNAL_MARK = re.compile(rb'^[ \t]*<!-- /?internal -->[ \t]*\r?$', re.M)
+UNRELEASED_NAMES = 'docs/internal/unreleased_names.txt'
 PUBLIC_IGNORE = '''
 # Original-derived content (NOTICE.md): imported locally from the player's own copy with
 # `HSL_ORIGINAL_DIR=... python3 tools/hsl.py generate ...`, never committed. Checked against the tracked
@@ -66,6 +74,12 @@ PUBLIC_IGNORE += '# Placeholder art recoloured from original frames by bootstrap
     {f"/{path.rsplit('/', 1)[0]}/*.{path.rsplit('.', 1)[1]}\n" for path in DemoActorArtTask.outputs}))
 
 sha = subprocess.run(['git', 'rev-parse', ref], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
+# Names of unreleased work, read at REF (the working tree's list when REF predates it).
+names_text = subprocess.run(['git', 'show', f'{ref}:{UNRELEASED_NAMES}'], cwd=root, capture_output=True).stdout
+if not names_text and (root / UNRELEASED_NAMES).is_file():
+    names_text = (root / UNRELEASED_NAMES).read_bytes()
+unreleased_names = [line.strip().lower() for line in names_text.decode('utf-8').splitlines()
+                    if line.strip() and not line.lstrip().startswith('#')]
 # Original-derived files outside content/ (evidence frames and records an import task writes into docs/): one
 # exact rule per class-A path of the manifest at REF, so no import leaves one of them for `git add -A`.
 # `python3 tools/hsl.py check oss_guard` reports any that is tracked or not ignored.
@@ -109,6 +123,8 @@ for path, mode, obj, size, klass, subclass in kept:
         continue
     if b'\0' not in data[:8192]:
         changed = EMAIL.sub(b'<author e-mail>', HOME_PATH.sub(b'~', data))
+        if path.endswith('.md'):
+            changed = INTERNAL.sub(b'', changed)
         if path == '.gitignore':
             changed = changed.rstrip(b'\n') + b'\n' + PUBLIC_IGNORE.encode()
         if changed != data:
@@ -127,9 +143,24 @@ sys.path.insert(0, str(root / 'tools'))
 from oss_screenshots import export_text  # noqa: E402
 processed += [path for path in export_text(out) if path not in processed]
 
-# Residual scan of what was written: no home path, no author e-mail.
-residual = [path for path, *_ in kept if (out / path).is_file() and not (out / path).is_symlink()
-            and (HOME_PATH.search((out / path).read_bytes()) or EMAIL.search((out / path).read_bytes()))]
+# Residual scan of what was written: no home path, no author e-mail, no name of unreleased work (path or
+# text), no internal marker line left behind (an unclosed segment).
+residual, unreleased, markers = [], [], []
+for path, *_ in kept:
+    target = out / path
+    named = any(name in path.lower() for name in unreleased_names)
+    if target.is_file() and not target.is_symlink():
+        data = target.read_bytes()
+        if HOME_PATH.search(data) or EMAIL.search(data):
+            residual.append(path)
+        if b'\0' not in data[:8192]:
+            lowered = data.lower()
+            named = named or any(name.encode('utf-8') in lowered for name in unreleased_names)
+            if INTERNAL_MARK.search(data):
+                markers.append(path)
+    if named:
+        unreleased.append(path)
+failed = residual or unreleased or markers
 
 mb = lambda n: f'{n / 1048576:.1f}'
 by_class = Counter()
@@ -152,6 +183,7 @@ lines = [
     f'- dropped: **{len(dropped)} files, {mb(sum(s for _p, s, _r in dropped))} MB**',
     f'- processed (home path / author e-mail / public .gitignore rules): {len(processed)} files',
     f'- residual home paths or author e-mails in the written tree: {len(residual)}',
+    f'- files naming unreleased work (`{UNRELEASED_NAMES}`): {len(unreleased)}; internal marker lines left: {len(markers)}',
     '',
     '| 类别 | 文件数 | MB |',
     '| --- | ---: | ---: |',
@@ -173,10 +205,16 @@ lines = [
     *[f'- `{path}`' for path in processed],
     '',
 ]
-if residual:
-    lines += ['## Residual (must be fixed before publishing)', '', *[f'- `{path}`' for path in residual], '']
+if failed:
+    lines += ['## Residual (must be fixed before publishing)', '',
+              *[f'- `{path}`' for path in residual],
+              *[f'- `{path}` (names unreleased work)' for path in unreleased],
+              *[f'- `{path}` (internal marker line left)' for path in markers], '']
 (out / 'OSS_EXPORT_REPORT.md').write_text('\n'.join(lines), encoding='utf-8')
-print(f'OSS_EXPORT_{"FAIL" if residual else "PASS"} ref={sha[:8]} written={len(kept)} mb={mb(written_bytes)} '
-      f'dropped={len(dropped)} processed={len(processed)} residual={len(residual)} out={out}')
-sys.exit(1 if residual else 0)
+print(f'OSS_EXPORT_{"FAIL" if failed else "PASS"} ref={sha[:8]} written={len(kept)} mb={mb(written_bytes)} '
+      f'dropped={len(dropped)} processed={len(processed)} residual={len(residual)} unreleased={len(unreleased)} '
+      f'markers={len(markers)} out={out}')
+for path in unreleased:
+    print(f'OSS_EXPORT_UNRELEASED {path}', file=sys.stderr)
+sys.exit(1 if failed else 0)
 PY

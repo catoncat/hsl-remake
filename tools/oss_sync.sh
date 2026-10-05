@@ -57,16 +57,6 @@ if [ -n "${upstream}" ]; then
   echo "OSS_SYNC_FAIL upstream: the public main has commits hsl-fork lacks — port them (git -C ${PUB} format-patch -1 SHA --stdout | git am, on pipeline-line), then git -C ${PUB} reset --hard origin/main and publish again"
   exit 1
 fi
-find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
-(cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)
-python3 -c 'import shutil, sys; shutil.rmtree(sys.argv[1], ignore_errors=True)' "${NEW}"
-git -C "${PUB}" add -A
-if git -C "${PUB}" diff --cached --quiet; then
-  # Unchanged since the last sync, but that sync's push may have failed (a transient HTTP2 error):
-  # push what is committed and not yet on origin, or the retry would report OK with origin behind.
-  if [ -n "$(git -C "${PUB}" rev-list origin/main..HEAD 2>/dev/null)" ]; then git -C "${PUB}" push -q origin main; fi
-  echo "OSS_SYNC_OK ref=${head} (public tree unchanged)"; exit 0
-fi
 # Public commit message: every source commit since the previously synced source commit (read back from
 # the public HEAD's trailer), bookkeeping commits dropped, so the public history says what changed.
 # The previous source commit: the `Source:` trailer, else the older `sync: hsl-fork main <sha>` subject,
@@ -74,8 +64,10 @@ fi
 prev="$(git -C "${PUB}" log -1 --format=%B 2>/dev/null | sed -n -e 's/^Source: hsl-fork \([0-9a-f]*\).*/\1/p' -e 's/^sync: hsl-fork main \([0-9a-f]*\).*/\1/p' | head -1)"
 prev="${HSL_OSS_SYNC_PREV:-${prev}}"
 msgfile="$(mktemp /tmp/oss-sync-msg.XXXXXX)"
-python3 - "${ROOT}" "${REF}" "${prev}" "${head}" >"${msgfile}" <<'PY'
-import subprocess, sys, re
+# A name of unreleased work (docs/internal/unreleased_names.txt) anywhere in it stops the sync before the
+# public checkout is touched: the subjects and bodies are copied verbatim into the public history.
+if ! python3 - "${ROOT}" "${REF}" "${prev}" "${head}" >"${msgfile}" <<'PY'
+import os, subprocess, sys, re
 root, ref, prev, head = sys.argv[1:5]
 rng = f"{prev}..{ref}" if prev and subprocess.run(["git","-C",root,"cat-file","-e",prev],capture_output=True).returncode == 0 else "-1 " + ref
 raw = subprocess.run(["git","-C",root,"log","--format=%x1e%s%x1f%b", *rng.split()],capture_output=True,text=True).stdout
@@ -99,7 +91,30 @@ for subject, body in entries:
     if body:
         for l in body.splitlines(): print("  " + l)
 print(); print(f"Source: hsl-fork {head}")
+listed = f"{root}/docs/internal/unreleased_names.txt"  # read at REF, as tools/oss_export.sh does
+names = subprocess.run(["git","-C",root,"show",f"{ref}:docs/internal/unreleased_names.txt"],capture_output=True,text=True).stdout
+names = names or (open(listed, encoding="utf-8").read() if os.path.isfile(listed) else "")
+names = [n.strip().lower() for n in names.splitlines() if n.strip() and not n.lstrip().startswith("#")]
+hits = [subject for subject, body in entries if any(n in f"{subject}\n{body}".lower() for n in names)]
+if hits:
+    sys.stderr.write("".join(f"OSS_SYNC_UNRELEASED {h}\n" for h in hits)); sys.exit(3)
 PY
+then
+  rm -f "${msgfile}"
+  echo "OSS_SYNC_FAIL message: a source commit since ${prev:-the last sync} names unreleased work (docs/internal/unreleased_names.txt); fix it on pipeline-line, or skip past it with HSL_OSS_SYNC_PREV=<sha>"
+  exit 1
+fi
+find "${PUB}" -mindepth 1 -maxdepth 1 -not -name .git -exec rm -rf {} +
+(cd "${NEW}" && tar cf - .) | (cd "${PUB}" && tar xf -)
+python3 -c 'import shutil, sys; shutil.rmtree(sys.argv[1], ignore_errors=True)' "${NEW}"
+git -C "${PUB}" add -A
+if git -C "${PUB}" diff --cached --quiet; then
+  # Unchanged since the last sync, but that sync's push may have failed (a transient HTTP2 error):
+  # push what is committed and not yet on origin, or the retry would report OK with origin behind.
+  if [ -n "$(git -C "${PUB}" rev-list origin/main..HEAD 2>/dev/null)" ]; then git -C "${PUB}" push -q origin main; fi
+  rm -f "${msgfile}"
+  echo "OSS_SYNC_OK ref=${head} (public tree unchanged)"; exit 0
+fi
 git -C "${PUB}" -c user.name="${NAME}" -c user.email="${EMAIL}" commit -q -F "${msgfile}"
 rm -f "${msgfile}"
 git -C "${PUB}" push -q origin main

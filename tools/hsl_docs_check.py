@@ -3,6 +3,14 @@
 Checks inline links/images, explicit reference links, and Markdown heading/HTML
 anchors. Fenced/indented code and inline code examples are not navigation. Bare
 paths in prose or code are deliberately not interpreted as links or live inputs.
+
+Three content rules ride along:
+- A superseded document (first line after its title a blockquote opening with 已取代; a
+  directory's README.md so marked covers the directory) is kept only for the record: a live
+  document may not point at it by link or code-style path unless that line says 已取代.
+- A document whose file name contains 守则 (a standing rule set) carries no dates or commit ids.
+- No document quotes the user (用户原话, 用户说「…」, 用户拍板 and the like in prose; code
+  examples excluded, so a rule can name the phrases in code style): rules are written neutrally.
 """
 from __future__ import annotations
 
@@ -18,6 +26,7 @@ from urllib.parse import unquote, urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hsltools import original_content  # noqa: E402
+from hsltools.checks.doc_tool_references import Superseded  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 # Docs that tools/oss_export.sh leaves out of the public tree (its DROPPED_PREFIXES: process docs and the
@@ -31,6 +40,11 @@ REFERENCE = re.compile(r'!?\[([^\]\n]*)\]\[([^\]\n]*)\]')
 DEFINITION = re.compile(r'^ {0,3}\[([^\]]+)\]:\s*' + DESTINATION + TITLE + r'\s*$')
 HEADING = re.compile(r'^ {0,3}#{1,6}\s+(.+?)(?:\s+#+)?\s*$')
 HTML_ANCHOR = re.compile(r'''<(?:a|h[1-6])\b[^>]*\b(?:id|name)=["']([^"']+)["']''', re.I)
+SUPERSEDED_WORD = '已取代'
+CODE_SPAN = re.compile(r'(`+)(.+?)\1')
+USER_QUOTE = re.compile(r'用[户戶]的?原[话話]|用[户戶][说說]\s*[「“"：:]|用[户戶]拍板')
+GUIDE_DATE = re.compile(r'20\d\d\s*[-/.年]\s*\d{1,2}|(?<![\d.])(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])(?!\d)|\d{1,2}\s*月\s*\d{1,2}\s*日')
+COMMIT_ID = re.compile(r'(?<![0-9A-Za-z_])(?=[0-9a-f]*[a-f])(?=[0-9a-f]*\d)[0-9a-f]{7,40}(?![0-9A-Za-z_])')
 
 
 def prose_lines(text: str) -> list[tuple[int, str]]:
@@ -108,10 +122,60 @@ def markdown_files(root: Path) -> list[Path]:
     return sorted((path for path in paths if path.is_file()), key=Path.as_posix)
 
 
-def check_files(root: Path, files: list[Path], absent: list[str] | None = None) -> tuple[list[str], int]:
+def code_path(root: Path, source: Path, token: str) -> Path | None:
+    """A path written in code style, resolved against the document's folder, then each folder above it
+    (a folder's documents name its files from the folder: 剧本/draft/), then the root; None when nothing
+    exists there."""
+    token = token.strip('''"'()[]（）「」''').rstrip('.,;:。，；：、')
+    if not token or token.startswith(('/', '~')) or '://' in token or any(c in token for c in '*$<>{}'):
+        return None
+    if '/' not in token and not token.endswith('.md'):
+        return None
+    folder = source.parent
+    while True:
+        candidate = folder / token
+        if candidate.exists():
+            return candidate.resolve()
+        if folder == root or root not in folder.parents:
+            return None
+        folder = folder.parent
+
+
+def rule_errors(root: Path, files: list[Path], superseded: Superseded) -> list[str]:
+    """The content rules of the module docstring: superseded references by code-style path (links are
+    checked in check_files), dates and commit ids in a 守则 document, quoting the user."""
+    errors = []
+    for path in files:
+        source = path.resolve()
+        label = source.relative_to(root).as_posix()
+        text = source.read_text(encoding="utf-8")
+        if '守则' in source.name:
+            for number, line in enumerate(text.splitlines(), 1):
+                found = GUIDE_DATE.search(line) or COMMIT_ID.search(line)
+                if found:
+                    errors.append(f"{label}:{number}: a 守则 document carries no date or commit id: {found[0]}")
+        live = source not in superseded
+        for number, line in prose_lines(text):
+            quote = USER_QUOTE.search(CODE_SPAN.sub('', line))
+            if quote:
+                errors.append(f"{label}:{number}: quotes the user ({quote[0]}): write the rule neutrally")
+            if not live or SUPERSEDED_WORD in line:
+                continue
+            for span in CODE_SPAN.finditer(line):
+                for token in span[2].split():
+                    target = code_path(root, source, token)
+                    if target is not None and target in superseded:
+                        errors.append(f"{label}:{number}: points at a superseded document (say 已取代 on the line, "
+                                      f"or point at what replaced it): {token}")
+    return errors
+
+
+def check_files(root: Path, files: list[Path], absent: list[str] | None = None,
+                superseded: Superseded | None = None) -> tuple[list[str], int]:
     """(errors, links). A link to an original-derived target that this checkout lacks but the
     original-derived manifest lists (a public checkout before the import, hsltools.original_content)
-    is not an error: it is appended to `absent`."""
+    is not an error: it is appended to `absent`. With `superseded`, a live document's link to a
+    superseded one is an error unless its line says 已取代."""
     root = root.resolve()
     errors = []
     count = 0
@@ -124,7 +188,10 @@ def check_files(root: Path, files: list[Path], absent: list[str] | None = None) 
             continue
         label = source.relative_to(root).as_posix()
         try:
-            links, reference_errors = navigation(source.read_text(encoding="utf-8"))
+            text = source.read_text(encoding="utf-8")
+            text_lines = text.splitlines()
+            live = superseded is not None and source not in superseded
+            links, reference_errors = navigation(text)
             errors.extend(f"{label}:{error}" for error in reference_errors)
             for line, raw in links:
                 count += 1
@@ -144,6 +211,9 @@ def check_files(root: Path, files: list[Path], absent: list[str] | None = None) 
                     absent.append(f"{label}:{line}: {raw}")
                 elif not target.exists():
                     errors.append(f"{label}:{line}: missing target: {raw}")
+                elif live and target in superseded and SUPERSEDED_WORD not in text_lines[line - 1]:
+                    errors.append(f"{label}:{line}: links a superseded document (say 已取代 on the line, "
+                                  f"or link what replaced it): {raw}")
                 elif parts.fragment and target.suffix.lower() == '.md':
                     if target not in anchors:
                         anchors[target] = heading_anchors(target.read_text(encoding="utf-8"))
@@ -162,14 +232,17 @@ def main() -> int:
     try:
         files = markdown_files(root)
         absent: list[str] = []
-        errors, count = check_files(root, files, absent)
+        superseded = Superseded(files)
+        errors, count = check_files(root, files, absent, superseded)
+        errors += rule_errors(root, files, superseded)
     except (OSError, subprocess.CalledProcessError) as error:
         print(f"DOC_LINKS_FAIL: {error}", file=sys.stderr)
         return 1
     if errors:
         print("DOC_LINKS_FAIL\n" + '\n'.join(errors), file=sys.stderr)
         return 1
-    print(f"DOC_LINKS_PASS files={len(files)} links={count}" + (f" skipped_original_absent={len(absent)}" if absent else ""))
+    print(f"DOC_LINKS_PASS files={len(files)} links={count}" + (f" skipped_original_absent={len(absent)}" if absent else "")
+          + (f" superseded={len(superseded)}" if len(superseded) else ""))
     return 0
 
 
