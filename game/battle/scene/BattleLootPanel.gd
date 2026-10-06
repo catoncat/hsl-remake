@@ -21,6 +21,7 @@ const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 const BattleItemText = preload("res://game/battle/scene/BattleItemText.gd")
 const BattleEquipmentView = preload("res://game/battle/scene/BattleEquipmentView.gd")
 const BattleSkillScrollBar = preload("res://game/battle/scene/BattleSkillScrollBar.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 ## Recipient bag: WINDOW20 at (12,168), eight 32 px rows; icon anchor (44, 184+32i), name (68, 176+32i).
 const BAG_AT := Vector2(12, 168)
 const BAG_ROW := 32
@@ -311,7 +312,7 @@ func _rebuild_rows() -> void:
 		button.set_meta("item_code", code)
 		button.set_meta("entry_id", group["entry_ids"][0])
 		BattleUISkin.anchored_asset(button, str(details["icon"]), Vector2(24, 6))
-		var usable := job >= 80 and job <= 100 and (int(details["job_mask"]) & (1 << (job - 80))) != 0
+		var usable := JobStatsRules.has_job(job) and (int(details["job_mask"]) & JobStatsRules.job_mask_bit(job)) != 0
 		# 0x414c00 row colour: important @6, usable by the recipient's job @1, otherwise @2.
 		var color := BattleUISkin.TEXT_IVORY if bool(details["important"]) else (BattleUISkin.TEXT_WHITE if usable else BattleUISkin.TEXT_RED)
 		var label := BattleUISkin.text(button, Vector2(48, 0), color, BattleUISkin.FONT_BODY, Vector2(168, LIST_ROW))

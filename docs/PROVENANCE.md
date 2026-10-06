@@ -10,7 +10,7 @@
 - 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [METHOD「写结论的规矩」](METHOD.md#写结论的规矩)）。
 
 <!-- provenance:start -->
-_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (208 modules, 144 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
+_Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (208 modules, 145 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._
 
 ### 模块矩阵 (208)
 
@@ -193,7 +193,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [InventoryRules](../game/sim/InventoryRules.gd) | static-derived [original_inventory_equipment.md](../docs/evidence_packets/static_reverse/original_inventory_equipment.md); static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md) | n/a | n/a | n/a | n/a |
 | [ItemResolutionRules](../game/sim/ItemResolutionRules.gd) | static-derived [original_tactical_items.md](../docs/evidence_packets/static_reverse/original_tactical_items.md); static-derived [original_damage_random.md](../docs/evidence_packets/static_reverse/original_damage_random.md); static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md) | n/a | n/a | n/a | n/a |
 | [ItemUseRules](../game/sim/ItemUseRules.gd) | static-derived [original_tactical_items.md](../docs/evidence_packets/static_reverse/original_tactical_items.md); static-derived [original_item_actions.md](../docs/evidence_packets/static_reverse/original_item_actions.md) | n/a | n/a | n/a | n/a |
-| [JobStatsRules](../game/sim/JobStatsRules.gd) | resource-derived [job_formulas.json](../content/generated/hsl/roles/job_formulas.json); static-derived [original_job_stats.md](../docs/evidence_packets/static_reverse/original_job_stats.md); static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); runtime-measured [battle_053/README.md](../docs/evidence_packets/runtime_observations/battle_053/README.md); static-derived [original_job_stats_91_99.md](../docs/evidence_packets/static_reverse/original_job_stats_91_99.md); static-derived [original_mobile_jobs.md](../docs/evidence_packets/static_reverse/original_mobile_jobs.md) | n/a | n/a | n/a | n/a |
+| [JobStatsRules](../game/sim/JobStatsRules.gd) | resource-derived [job_formulas.json](../content/generated/hsl/roles/job_formulas.json); static-derived [original_job_stats.md](../docs/evidence_packets/static_reverse/original_job_stats.md); static-derived [original_player_mode_sides.md](../docs/evidence_packets/static_reverse/original_player_mode_sides.md); runtime-measured [battle_053/README.md](../docs/evidence_packets/runtime_observations/battle_053/README.md); static-derived [original_job_stats_91_99.md](../docs/evidence_packets/static_reverse/original_job_stats_91_99.md); static-derived [original_mobile_jobs.md](../docs/evidence_packets/static_reverse/original_mobile_jobs.md); remake-invented | n/a | n/a | n/a | n/a |
 | [JobUpRules](../game/sim/JobUpRules.gd) | static-derived [original_town_job_up.md](../docs/evidence_packets/static_reverse/original_town_job_up.md); static-derived [original_level37_tokens.md](../docs/evidence_packets/static_reverse/original_level37_tokens.md); resource-derived [OBJ-ALL.H](../content/imported/hsl/global/tables/OBJ-ALL.H); negative-evidence | n/a | n/a | n/a | n/a |
 | [LearningRules](../game/sim/LearningRules.gd) | static-derived [original_growth_lifecycle.md](../docs/evidence_packets/static_reverse/original_growth_lifecycle.md) | n/a | n/a | n/a | n/a |
 | [LoopKeys](../game/sim/LoopKeys.gd) | remake-invented | n/a | n/a | n/a | n/a |
@@ -292,7 +292,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [WorldPartyRules](../game/world/WorldPartyRules.gd) | static-derived [original_shop_transaction.md](../docs/evidence_packets/static_reverse/original_shop_transaction.md); remake-invented | n/a | resource-derived [EXTRAS.H](../content/imported/hsl/global/tables/EXTRAS.H) | n/a | n/a |
 | [WorldScriptActions](../game/world/WorldScriptActions.gd) | resource-derived [ACTION.H](../content/imported/hsl/global/tables/ACTION.H); provisional | n/a | n/a | n/a | n/a |
 
-### remake-invented 清单 (144)
+### remake-invented 清单 (145)
 
 每一格都是重制自己决定、原版没有对应证据的内容；用户允许改善，但必须在这里可见。
 
@@ -396,6 +396,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | [GlobalRandomStream](../game/sim/GlobalRandomStream.gd) | rules | the session holder and loop key plumbing; HSL_RNG_SEED stands in for the clock headless |
 | [InitialRosterGrowthRules](../game/sim/InitialRosterGrowthRules.gd) | rules | creation order among players and among NPCs, fill to maxima |
 | [Interaction](../game/sim/Interaction.gd) | rules | state vocabulary of the remake's turn loop; the original's mode words are not recovered |
+| [JobStatsRules](../game/sim/JobStatsRules.gd) | rules | a formula row's optional equip_as lends it another job's job_mask bit |
 | [LoopKeys](../game/sim/LoopKeys.gd) | rules | dictionary field names of the remake's loop |
 | [PartyEquipmentRules](../game/sim/PartyEquipmentRules.gd) | rules | sandbox PlayLoop transaction mirroring change_equipment between battles; no original between-battle transaction located |
 | [ProgressionRules](../game/sim/ProgressionRules.gd) | rules | a multi-level award settles into one pending pool reserving the capacity left, split one window per level by BattleGrowthPanel; the original counts each as it opens |
@@ -518,7 +519,7 @@ _Generated from each module's `## provenance:` block by `python3 tools/hsl.py ge
 | provisional | 28 | 14 | 0 | 12 | 2 | 56 |
 | negative-evidence | 1 | 0 | 0 | 0 | 0 | 1 |
 | runtime-reference | 1 | 13 | 1 | 0 | 0 | 15 |
-| remake-invented | 61 | 33 | 34 | 15 | 1 | 144 |
+| remake-invented | 62 | 33 | 34 | 15 | 1 | 145 |
 | n/a | 64 | 123 | 157 | 138 | 176 | 658 |
 
 <!-- provenance:end -->

@@ -10,6 +10,7 @@ const CoreTurnQueue = preload("res://game/sim/CoreTurnQueue.gd")
 const BattleFixture = preload("res://tests/support/BattleFixture.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const PartyEquipmentRules = preload("res://game/sim/PartyEquipmentRules.gd")
+const JobStatsRules = preload("res://game/sim/JobStatsRules.gd")
 var failures: Array[String] = []
 var checks := 0
 
@@ -171,6 +172,25 @@ func equipment_cases() -> void:
 	var wrong_job := actor.duplicate(true)
 	wrong_job["growth_profile"]["job_code"] = 83
 	check(EquipmentRules.replace(wrong_job, "weapon", 1, 3, original["equipment_items"])["reason"] == "wrong_job", "class eligibility is checked before replacement")
+	var formula_rows := JobStatsRules.jobs()
+	var own_row: Dictionary = formula_rows["83"]
+	var lent_row := own_row.duplicate(true)
+	lent_row["equip_as"] = "80"
+	formula_rows["83"] = lent_row
+	check(bool(EquipmentRules.replace(wrong_job, "weapon", 1, 3, original["equipment_items"])["ok"]), "a formula row's equip_as lends it that job's equipment bit")
+	var bow_holder := wrong_job.duplicate(true)
+	bow_holder["inventory"][4] = 61
+	check(EquipmentRules.replace(bow_holder, "weapon", 4, 61, original["equipment_items"])["reason"] == "wrong_job", "equip_as replaces the job's own bit: 83 lent 80's bit cannot hold its own 長弓")
+	formula_rows["83"] = own_row
+	# 101 龍騎士 equips as 80 (its row's equip_as): the demo's 蕾雅 takes off her 闊刃劍 and wears it again.
+	var demo: Dictionary = BattlePlayLoop.initialize_roster_growth(BattlePlayLoop.create([], "", BattlePlayLoop.BattleScenario.load_file("res://content/battles/battle_200.json")))
+	var reia := BattlePlayLoop.unit(demo, "reia")
+	var blade := EquipmentRules.equipped_code(reia["equipment"], "weapon")
+	var taken_off := EquipmentRules.replace(reia, "weapon", -1, 0, demo["equipment_items"])
+	var bare := reia.duplicate(true)
+	bare.merge({"inventory": taken_off.get("inventory", []), "equipment": taken_off.get("equipment", [])}, true)
+	var worn_again := EquipmentRules.replace(bare, "weapon", bare["inventory"].find(blade), blade, demo["equipment_items"]) if bool(taken_off.get("ok", false)) else taken_off
+	check(int(reia["growth_profile"]["job_code"]) == 101 and blade == 2 and bool(worn_again.get("ok", false)), "龍騎士 蕾雅 takes off her 闊刃劍 and wears it again: " + str(worn_again.get("reason", "ok")))
 	var enemy := original.duplicate(true)
 	BattlePlayLoop.unit_ref(enemy, "leonard")["player_commandable"] = false
 	check(BattlePlayLoop.change_equipment(enemy, "weapon", 1, 3) == enemy, "non-commandable actor rejects equipment mutation")

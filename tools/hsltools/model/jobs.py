@@ -102,6 +102,11 @@ def validate_row(job: int, row: dict) -> None:
     quota = row.get('allocation_quota')
     if not isinstance(quota, list) or len(quota) != 4 or not all(isinstance(v, int) and v >= 0 for v in quota):
         raise ValueError(f'{FORMULAS}: job {job} allocation_quota must be four non-negative integers')
+    # Optional: the job equips by another job's items.json job_mask bit (JobStatsRules.job_mask_bit);
+    # only the TYPE.H jobs 80..100 own a bit.
+    equip_as = row.get('equip_as')
+    if equip_as is not None and not (isinstance(equip_as, str) and equip_as.isdecimal() and 80 <= int(equip_as) <= 100):
+        raise ValueError(f'{FORMULAS}: job {job} equip_as {equip_as!r} must be the code of a job 80..100 as a string, such as "80"')
 
 
 def caps_of(job: int) -> list[int]:

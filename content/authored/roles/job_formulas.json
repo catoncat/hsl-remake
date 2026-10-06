@@ -2711,6 +2711,7 @@
     "101": {
       "symbol": "jobDragonLord",
       "name_text": "龍騎士",
+      "equip_as": "80",
       "caps": {
         "str": 96,
         "dex": 86,

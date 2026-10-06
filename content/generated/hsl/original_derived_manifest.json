@@ -560,7 +560,7 @@
     "content/generated/hsl/roles/actor_portraits.json": {"sha256": "57ac0aad2b3435c94a43e2c8405fb8ca3aeb7aeeb62729e63dd765d34ba19385", "task": "roster_portraits"},
     "content/generated/hsl/roles/entry_growth.json": {"sha256": "93bdc78521fe757e7899c99020d2e9f0dc8dc705218a44e239acf7c7975bb5bd", "task": "entry_growth_data"},
     "content/generated/hsl/roles/growth_lifecycle.json": {"sha256": "ac1822feaec556c727de06b5cc9ea6be3d68f0a0bba587ce3d04c441354c674f", "task": "growth_lifecycle_data"},
-    "content/generated/hsl/roles/job_formulas.json": {"sha256": "1f619ce6e27685ef0bbb37e3753c44dd73108e3acd9be4754a22011678e4ff1d", "task": "job_formulas"},
+    "content/generated/hsl/roles/job_formulas.json": {"sha256": "f84e0088c18dc1caa8ecac18d8969b9f374728c867ca3005049cc1fc0623713d", "task": "job_formulas"},
     "content/generated/hsl/roles/profiles.json": {"sha256": "0bc66eac6981876d6687f930054478632d1e115903abb4cedd8510eb04841d23", "task": "role_data"},
     "content/generated/hsl/skills/authored_effect_scripts.json": {"sha256": "214c90a9161512274f1c15ee7ce07bb0bc3e11dfc1fba816d356c4d28089b32a", "task": "authored_effect_scripts"},
     "content/generated/hsl/skills/coverage.json": {"sha256": "942b285af297f7b639199e0b7b63de600612c7d2268b457c7c5d96b4821df8d8", "task": "skill_coverage"},

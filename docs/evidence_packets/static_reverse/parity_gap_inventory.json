@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 88,
-    "sources": 486,
+    "sources": 487,
     "sources_by_kind": {
-      "provenance": 200,
+      "provenance": 201,
       "sentence": 86,
       "scope": 102,
       "matrix": 85,
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 70,
+    "no_visible_effect_sources": 71,
     "resolved_sources": 20
   },
   "top": [
@@ -2498,6 +2498,10 @@
       {
         "source": "provenance:game/sim/Interaction.gd|rules|remake-invented|",
         "reason": "回合循环的状态词表，是重制内部命名"
+      },
+      {
+        "source": "provenance:game/sim/JobStatsRules.gd|rules|remake-invented|",
+        "reason": "职业行的 equip_as 只让自制职业借原版职业的装备位；原版 80–100 的行不写它，装备资格不变"
       },
       {
         "source": "provenance:game/sim/LoopKeys.gd|rules|remake-invented|",

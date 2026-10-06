@@ -10,6 +10,7 @@ extends RefCounted
 ##   rules: runtime-measured docs/evidence_packets/runtime_observations/battle_053/README.md (swapped L1 023 = 28 HP)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_job_stats_91_99.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_mobile_jobs.md
+##   rules: remake-invented (a formula row's optional equip_as lends it another job's job_mask bit)
 const ContentPaths = preload("res://game/sim/ContentPaths.gd")
 const MODEL := "native_job_stats_v1"
 const FORMULAS_PATH := "res://content/generated/hsl/roles/job_formulas.json"
@@ -56,8 +57,10 @@ static func allocation_quota(job: int) -> Array:
 	return result
 
 
+## The job's items.json job_mask bit: its own (job - JOB_MASK_BASE), or that of the job its row
+## names in `equip_as` (an authored job that equips like 劍士 writes "80").
 static func job_mask_bit(job: int) -> int:
-	var shift := job - JOB_MASK_BASE
+	var shift := str(jobs().get(str(job), {}).get("equip_as", job)).to_int() - JOB_MASK_BASE
 	return (1 << shift) if shift >= 0 and shift < 32 else 0
 
 

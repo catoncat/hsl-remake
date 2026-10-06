@@ -3321,6 +3321,9 @@
     "sentence:docs/evidence_packets/static_reverse/original_tick_counts.md#80db4de4cb": {
       "item": "cutin-backdrop",
       "text": "未读（保留 provisional）：`0x4c1e00` 切入底图缓冲的装入路径。"
+    },
+    "provenance:game/sim/JobStatsRules.gd|rules|remake-invented|": {
+      "no_visible_effect": "职业行的 equip_as 只让自制职业借原版职业的装备位；原版 80–100 的行不写它，装备资格不变"
     }
   }
 }
