@@ -257,10 +257,18 @@ def build_seed(level: int, inputs: dict, terrain: dict, map_size: list[int], pat
                         'shape_resource': None, 'role_from_process': role, 'object_data_fields': fields, 'serial': serials[unit['id']]})
     objects = manifest.get('objects', {})
     defines = {symbol: str(len(manifest['units']) + 1 + index) for index, symbol in enumerate(objects)}
-    script_objects = [{'symbol': symbol, 'object_code': int(defines[symbol]), 'join_status': 'joined', 'object_name': symbol, 'object_process': 'defProcEnemy',
-                       'shape_resource': None, 'role_from_process': 'enemy_object',
+    # An object with `player` is a party member who joins mid-battle (the original's
+    # obj_Story_PlayerN install, defProcPlayerInstall): the engine installs it as a registered
+    # player under that unit id, so it takes a carried record and is carried on after the battle.
+    script_objects = [{'symbol': symbol, 'object_code': int(defines[symbol]), 'join_status': 'joined',
+                       'object_name': spec['player'] if spec.get('player') else symbol,
+                       'object_process': 'defProcPlayerInstall' if spec.get('player') else 'defProcEnemy',
+                       'shape_resource': None, 'role_from_process': 'player_install' if spec.get('player') else 'enemy_object',
                        'object_data_fields': {'obj_Data6': spec['token'], 'obj_Data7': str(int(spec['actor']))}}
                       for symbol, spec in objects.items()]
+    for symbol, spec in objects.items():
+        if spec.get('player') and any(unit['id'] == spec['player'] for unit in manifest['units']):
+            raise ValueError(f'level{level:03d}: object {symbol} installs player {spec["player"]} who is already a placed unit')
     inserted = {command['args'][0] for _, command in _commands(_compact_script(winfail)) if str(command.get('name', '')).lower().startswith('actinsert') and command.get('args') and str(command['args'][0]).startswith('obj_')}
     unknown = sorted(inserted - set(objects))
     if unknown:
@@ -540,6 +548,21 @@ def build_battle(level: int, inputs: dict, seed: dict, evidence: dict, paths: di
     for spec in script_actor_templates.values():
         spec['actor'] = _strip_ledgers(spec['actor'])
         spec['evidence'] = 'level.json objects (token / actor) and the role chain template'
+    # A `player` object installs a registered party member (ScriptActorCreationRules.install_actor
+    # with kind registered_player: the unit id is the roster id, a carried record is taken over,
+    # the member is carried on after the battle). Its class id matches the compiler's insert
+    # class (Player<code>) so the insert settles like any reinforcement.
+    for symbol, spec in manifest.get('objects', {}).items():
+        if not spec.get('player'):
+            continue
+        code = str(spec['actor']).zfill(3)
+        actor = copy.deepcopy(source[code])
+        actor.update(id=str(spec['player']), class_id='Player' + code, battle_actor_role='player_controlled',
+                     player_commandable=True, source_object_kind=3, coord=[0, 0])
+        for key, value in spec.get('initial_state', {}).items():
+            actor[key] = copy.deepcopy(value)
+        script_actor_templates[symbol] = {'kind': 'registered_player', 'actor': actor, 'token': spec['token'], 'aliases': [],
+                                          'source_actor_id': code, 'evidence': 'level.json objects (player / token / actor) and the role chain template'}
     fielded = codes
     speaking = {}
     for token in evidence['speaker_names']:

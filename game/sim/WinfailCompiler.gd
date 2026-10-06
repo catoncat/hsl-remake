@@ -379,7 +379,9 @@ static func _insert_class_id(seed: Dictionary, symbol: String) -> String:
 		var fields: Dictionary = object.get("object_data_fields", {})
 		var actor := str(fields.get("obj_Data7", ""))
 		if actor.is_valid_int():
-			return "Enemy%03d" % int(actor)
+			# A party-member install (defProcPlayerInstall) is born Player<code>, so its spawn
+			# count is read under that class and the insert settles.
+			return ("Player%03d" if str(object.get("object_process", "")) == "defProcPlayerInstall" else "Enemy%03d") % int(actor)
 		var sid := str(fields.get("obj_Data6", ""))
 		if sid.begins_with("SID_ENEMY") and sid.trim_prefix("SID_ENEMY").is_valid_int():
 			return "Enemy%03d" % int(sid.trim_prefix("SID_ENEMY"))

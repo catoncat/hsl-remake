@@ -161,8 +161,11 @@ action = actWalkPrevInsertObject,512,288,4
 
 ```json
 {"id": "reia", "actor": "102", "token": "SID_蕾雅", "role": "player_controlled", "cell": [8, 9]}
-"objects": {"obj_Level200_Wolf": {"actor": "036", "token": "SID_ENEMY036"}}
+"objects": {"obj_Level200_Wolf": {"actor": "036", "token": "SID_ENEMY036"},
+            "obj_Level200_Hu": {"actor": "003", "token": "SID_琥", "player": "hu"}}
 ```
+
+物件行多写 `player`（队员 id）就是战中入队的队员：`actInsertObject` 把它当队伍成员装进来（原作 obj_Story_PlayerN 那种安装），用这个 id 承接之前的记录，打完也随队伍带走；`initial_state` 同单位行。它入场前不要武装「某某倒下」的失败条件（人不在场即判倒下），在装他的那条事件里再 `actInsertFailStatus`。
 
 `learning_tables.json` 的新职业行（魔法、绝技的 id 是 MAGIC.TXT／SPECIAL.TXT 或你的招式表的 `channel:type:code`，名字在生成时解析）：
 
