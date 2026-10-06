@@ -25,7 +25,7 @@
 | --- | --- | --- |
 | 改动中 | `tools/lane_verify.sh affected <基线提交>` | 只跑改动命中的注册表检查、Python 测试与 Godot 套件；收尾跑一次即可 |
 | 只改文档 | `python3 tools/hsl.py check docs`、`python3 tools/hsl_docs_check.py` | 代码块里的工具路径；链接与标题锚点 |
-| 合并前 | `tools/verify.sh` | 快门：全部检查＋Godot 套件，热导入缓存 |
+| 合并时 | `tools/lane_merge.sh gate` | 按改动范围自动选档：只改文档秒级、不碰规则的 affected 档几分钟、碰规则跑快门（`tools/verify.sh`：全部检查＋Godot 套件，热导入缓存） |
 | 阶段收口 | `tools/verify.sh --full`／`--deep` | 冷导入／加跑剧情 explorer 与整章自动对局 |
 
 没有原版文件时，读原版的检查应当显式跳过并标明原因，不能静默通过；公开 CI（`.github/workflows/portability.yml`，Windows／Linux／macOS）就按这个口径跑 doctor、`hsl check --all` 与 Python 单测。`hsl check --all` 等于 `--profile=maintainer`，改动涉及原版等价或证据流程时以它为准；只动自己游戏数据时可先跑 `--profile=modder`（它会打印一行被跳过的 parity／maintainer 任务数）。测试只在两种情形下写：守住一条已照原版落地的规则，或复现一个真实回归（[AGENTS 测试政策](AGENTS.md)）。
@@ -45,7 +45,7 @@
 
 ## 5. 不提交原版派生物
 
-`.gitignore` 挡住 bootstrap 写出的全部原版派生文件：`content/` 生成层、写进 `content/authored/actors/` 的示范角色换色图，以及原版派生文件清单里 `content/` 之外的每一条（`docs/evidence_packets/` 下的原版录像帧与记录）。提交前（`git add` 之后）再跑一次：
+`.gitignore` 挡住 bootstrap 写出的全部原版派生文件：`content/` 生成层、写进 `content/authored/actors/` 的示范角色换色图，以及原版派生文件清单里 `content/` 之外的每一条（`docs/evidence_packets/` 下的原版录像帧与记录）。新增图片、音视频时（`git add` 之后）再跑一次：
 
 ```sh
 python3 tools/hsl.py check oss_guard

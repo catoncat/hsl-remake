@@ -42,4 +42,4 @@ R1–R8 逐轮流水与合并回执在内部文档 `docs/internal/ROUNDS.md`（�
 
 <a id="validation"></a>
 
-门禁口径：[CONTRIBUTING §2](../CONTRIBUTING.md) 的表为准，按改动选检查见[测试路由](../tests/README.md)；lane 与合并流程见 [AGENTS](../AGENTS.md)。
+门禁口径：[AGENTS「门禁」](../AGENTS.md) 为准（按改动范围自动选档），按改动选检查见[测试路由](../tests/README.md)；lane 与合并流程见 [AGENTS](../AGENTS.md)。
