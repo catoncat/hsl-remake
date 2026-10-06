@@ -100,6 +100,19 @@ func _input(event: InputEvent) -> void:
 			if is_instance_valid(row) and Rect2(row.position, row.size).has_point(point): covered = true
 		if covered: get_viewport().set_input_as_handled()
 		if hit >= 0 and _scroll + hit < _groups.size(): _press_row(_groups[_scroll + hit])
+	elif visible and _drawn and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		# Remake convenience, not an original input (0x43a640 only reads the three buttons): right
+		# click is 離開 with an empty hand, like the right-click cancel of the other windows. With an
+		# item in hand it does nothing, as the button would.
+		get_viewport().set_input_as_handled()
+		_finish()
+
+
+## 離開: needs an empty hand and stores whatever is left in the pool (0x42aad0).
+func _finish() -> void:
+	if not visible or holding(): return
+	var request := _request({"store_rest": true})
+	if accepts(request): finish_requested.emit(request)
 
 
 func close() -> void:

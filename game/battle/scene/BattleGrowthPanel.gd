@@ -120,13 +120,15 @@ func _message_box(resource: String, at: Vector2) -> Control:
 
 
 ## Modal input while allocating (BattleSceneRuntime.modal_panels dispatch): every event is
-## swallowed. Right click / Esc do not close it — the original's mode 10 root carries flag
-## 0x400 (0x43bbd3) and its close branch skips on that flag (0x438839), with no message or
-## sound; only OK, shown once every point is placed, closes the window. OPT-GROWTH=合成一窗，
-## 可暫緩 closes it there without spending points.
+## swallowed. Right click / Esc do not close it while points remain — the original's mode 10
+## root carries flag 0x400 (0x43bbd3) and its close branch skips on that flag (0x438839), with
+## no message or sound; only OK, shown once every point is placed, closes the window. Remake
+## convenience: once OK is lit, right click / Esc press it (the other windows' right-click
+## cancel). OPT-GROWTH=合成一窗，可暫緩 closes it there without spending points.
 func handle_input(event: InputEvent) -> bool:
 	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT) or (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE):
 		if postpone_allowed: hide()
+		elif not confirm_button.disabled: _confirm()
 		get_viewport().set_input_as_handled()
 		return true
 	return false
