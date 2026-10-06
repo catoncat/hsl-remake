@@ -574,6 +574,11 @@ func remake_options_changed() -> void:
 ## the last (BattleCombatCutin.play). `known_ids`: the exchange's known set at target
 ## confirmation (receipt `strip_known_ids`), which every shot's strip reads; null reads the
 ## loop's current set (a cast marks its targets before it settles).
+## A script special over several receivers plays one clip per receipt of `affected_targets`, in
+## its order: the defense script's aniOver takes the next target (0x403d3d → 0x4104d0(1)) and
+## reopens the defense page for it, so the cast lead and the attack page play once, on the first
+## clip; the later clips are `defense_page`s (SkillEffectScriptPlayer._present_special) and only
+## the last closes. Each clip's impact puts its own receiver's number on the map.
 func _show_strike(strike: Dictionary, loop: Dictionary, map_config: RefCounted, counter: bool, first_shot: bool = true, last_shot: bool = true, known_ids: Variant = null) -> void:
 	var units: Array = loop.get(LoopKeys.UNITS, [])
 	var attacker: Dictionary = {}
@@ -599,10 +604,18 @@ func _show_strike(strike: Dictionary, loop: Dictionary, map_config: RefCounted, 
 	# (月花圓舞), each participant the presenter shows in turn — the same 0x434d10 mask.
 	# OPT-INFO=公開 (read once per shot) shows every strip unmasked.
 	var public := not GameOptions.is_original("OPT-INFO")
-	var known := {}
-	for unit in [attacker, defender] + (units if strike.has("special_segments") else []):
-		known[str(unit["id"])] = public or BattlePlayLoop.unit_known(loop, str(unit["id"]), known_ids)
-	cutin.play(strike, attacker, defender, counter, get_parent().world_to_logical_position(target_world), get_parent().world_to_logical_position(caster_world), affected_positions, units if strike.has("special_segments") else [], known, first_shot, last_shot)
+	# The script player's specials only: 毒魔箭 and 月花圓舞 play their receivers in their own modules.
+	var pages: Array = [strike]
+	if str(strike.get("skill_id", "")).begins_with("special:") and cutin.skill_effects.matches(strike) and strike.get("affected_targets", []).size() > 1:
+		pages = strike["affected_targets"]
+	for index in range(pages.size()):
+		var target: Dictionary = defender if pages.size() == 1 else BattlePlayLoop.unit(loop, str(pages[index]["defender_id"]))
+		var known := {}
+		for unit in [attacker, target] + (units if strike.has("special_segments") else []):
+			known[str(unit["id"])] = public or BattlePlayLoop.unit_known(loop, str(unit["id"]), known_ids)
+		cutin.play(pages[index], attacker, target, counter, get_parent().world_to_logical_position(target_world), get_parent().world_to_logical_position(caster_world), affected_positions, units if strike.has("special_segments") else [], known, first_shot and index == 0, last_shot and index == pages.size() - 1)
+		if index > 0:
+			cutin.clips.back()["defense_page"] = true
 	if str(strike.get("skill_id", "")).begins_with("magic:"):
 		_note_caster(cutin.clips.back(), str(attacker["id"]))
 

@@ -208,6 +208,7 @@ func run() -> void:
 	await cast_overlay_contracts()
 	await lead_in_contracts()
 	await ai_cue_camera_area_contracts()
+	await area_special_contracts()
 	sprite_key_contracts()
 	identity_mask_contracts()
 	aftermath_contracts()
@@ -1152,5 +1153,87 @@ func ai_cue_camera_area_contracts() -> void:
 		scene._process((cue.target_ticks - 1) * TICK)
 		check(cue.stage() == "target" and scene.camera.position == held, "%s: the view holds during the target stage" % kind)
 		reference_camera.free()
+		scene.queue_free()
+		await process_frame
+
+
+## A script special over several receivers (風狼葬天擊's cross over three enemies) plays a clip per
+## receiver in the receipt's order, the defense script's aniOver reopening the page for the next
+## target (0x403d3d → 0x4104d0(1)): the cast lead and the attack page (its SP00_001 panel) on the
+## first clip only, the close on the last only, each page's result its own receiver's damage. Each
+## page's impact adds that receiver's number to the map, one at a time — with the close-up hidden
+## (OPT-PACE 極快) too.
+func area_special_contracts() -> void:
+	const GameOptions = preload("res://game/settings/GameOptions.gd")
+	const GameSettings = preload("res://game/settings/GameSettings.gd")
+	var id := "special:magicAIR:magicCode02"
+	for hidden in [false, true]:
+		if hidden:
+			var settings: Dictionary = GameSettings.load_settings()
+			settings["presentation"] = {"OPT-PACE": BattleCombatCutin.Timing.PACE_HIDDEN_CUTIN}
+			GameSettings._cache = settings
+			GameOptions.environment_preset = GameOptions.PRESET_CUSTOM
+		var scene = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
+		scene.scenario_path = BattleFixture.PATH; scene.startup_mode = "dev_first_control"
+		root.add_child(scene)
+		await process_frame
+		scene.start_dev_first_control_harness()
+		scene.set_process(false)
+		var view = scene.get_node("BattlePresentation")
+		var cutin = view.cutin
+		cutin.set_process(false)
+		var loop: Dictionary = scene.play_loop
+		var caster: Dictionary = BattlePlayLoop.unit_ref(loop, "leonard")
+		caster["stamina"] = 60
+		TestSuite.own(loop, "skill_book")["actors"]["001"]["supported_initial_ids"].append(id)
+		# Three in a row two cells above 雷歐納德, the cross on the middle one; HP caps tell the damages apart.
+		var row: Vector2i = caster["coord"] + Vector2i(0, -2)
+		for entry in [["enemy021_1", Vector2i.LEFT, 1], ["enemy021_2", Vector2i.ZERO, 2], ["enemy021_3", Vector2i.RIGHT, 200]]:
+			var enemy: Dictionary = BattlePlayLoop.unit_ref(loop, entry[0])
+			enemy["coord"] = row + entry[1]
+			enemy["hp"] = entry[2]
+		var receipt := BattleLoopCombat.resolve_skill(loop, "leonard", "enemy021_2", id, BattlePlayLoop.skill_fields(loop, id), caster["coord"], func(_n): return 0)
+		var targets: Array = receipt.get("affected_targets", [])
+		var ids: Array = targets.map(func(target): return str(target["defender_id"]))
+		var damages: Array = targets.map(func(target): return str(int(target["actual_damage"])))
+		check(targets.size() == 3 and damages[0] != damages[1] and damages[1] != damages[2] and damages[0] != damages[2], "fixture: 風狼葬天擊 settles three receivers with distinct damage (%s)" % str(damages))
+		scene.apply_loop(loop, "test")
+		scene._process(0)
+		check(cutin.clips.map(func(clip): return str(clip["strike"]["defender_id"])) == ids, "one clip per receiver, in the receipt's order")
+		check(cutin.clips.map(func(clip): return [clip.get("defense_page", false), clip["first_shot"], clip["last_shot"]]) == [[false, true, false], [true, false, false], [true, false, true]], "the first clip opens, the later two are defense pages, the last one closes")
+		var frame := [0]
+		var impacts: Array = []
+		cutin.impact.connect(func(strike, _attacker, _defender, _counter):
+			var shown: Array = []
+			for child in view.get_children():
+				var digits: Node = child.get_node_or_null("DamageDigits")
+				if digits != null: shown.append(str(digits.digits))
+			impacts.append([frame[0], str(strike["defender_id"]), shown])
+		)
+		var pages: Array = [{}, {}, {}]
+		var current: Dictionary = cutin.clips[0] if cutin.busy() else {}
+		var page := 0
+		while cutin.busy() and frame[0] < 3000:
+			frame[0] += 1
+			cutin._process(TICK)
+			if not cutin.busy(): break
+			if not is_same(cutin.clips[0], current):
+				current = cutin.clips[0]
+				page = mini(page + 1, 2)
+			var seen: Dictionary = pages[page]
+			if cutin.stage.size == Vector2(640, 480): seen["lead"] = true
+			if cutin.scenery.visible and cutin.scenery.texture != null and cutin.scenery.texture.resource_path.ends_with("sp00_001.shp.png"): seen["attack_page"] = true
+			if cutin.transition_shade.visible: seen["close"] = true
+			if RuntimeReadback.result_text(cutin) != "": seen["result"] = RuntimeReadback.result_text(cutin)
+		check(not cutin.busy(), "the three pages play out (%d frames)" % frame[0])
+		check(impacts.map(func(entry): return entry[1]) == ids and impacts.map(func(entry): return entry[2]) == [damages.slice(0, 1), damages.slice(0, 2), damages], "each page's impact adds its own receiver's number to the map: one, then two, then three (%s)" % str(impacts))
+		check(impacts.size() == 3 and impacts[0][0] < impacts[1][0] and impacts[1][0] < impacts[2][0], "the three map numbers come on three different frames")
+		if hidden:
+			check(cutin.cutin_hidden and not cutin.visible, "OPT-PACE 極快 keeps the close-up hidden")
+		else:
+			check(pages.map(func(seen): return [seen.get("lead", false), seen.get("attack_page", false), seen.get("close", false)]) == [[true, true, false], [false, false, false], [false, false, true]], "the cast lead and the SP00_001 attack page on the first page only, the darken and lighten on the last only (%s)" % str(pages))
+			check(pages.map(func(seen): return seen.get("result", "")) == damages, "each page's result is its own receiver's damage (%s)" % str(pages))
+		GameOptions.environment_preset = ""
+		GameSettings._cache = {}
 		scene.queue_free()
 		await process_frame

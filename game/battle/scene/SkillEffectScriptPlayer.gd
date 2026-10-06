@@ -534,7 +534,9 @@ static func _finish_timeline(timeline: Dictionary, cursor: int) -> void:
 		event["arrive"] = arrive
 		event["expire"] = arrive + event["frames"].size() * int(event["frame_ticks"])
 	# The clip ends when the script and the readable result are done; object lifetimes do not
-	# hold it. The defense script's aniOver (0x403d3d) goes straight to phase 101 (0x403d7a):
+	# hold it. The defense script's aniOver (0x403d3d) takes the next target (0x4104d0(1)) and
+	# reopens the defense page for it with the teardown bit set (the next receiver's clip, a
+	# `defense_page`, takes over at `darken_tick`); with none left it goes to phase 101 (0x403d7a):
 	# sub 0 requests the 16-tick darken (0x404b23), sub 1 then sets the teardown bit
 	# 0x4c1404 |= 1 and deletes the 0x4c1400 objects (0x401370, 0x404ada); every cutin effect
 	# object (slots 36–38: 0x404ffa, 0x4050a0, 0x4051d0) deletes itself on that bit — no
@@ -857,6 +859,9 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 		var last_strike := {} if parts.is_empty() else {"damage": int(parts.back()["actual_damage"]),
 			"experience": parts.reduce(func(sum, part): return sum + int(part.get("experience_points", 0)), 0)}
 		clip["effect_timeline"] = compile_row(skill_id, bool(strike["hit"]), seed, strike_hits, last_strike)
+		if clip.get("defense_page", false):
+			# The attack page and its sounds played once, on the first receiver's clip.
+			clip["effect_timeline"]["events"] = clip["effect_timeline"]["events"].filter(func(event): return event["phase"] != "attack")
 	if str(clip["effect_timeline"]["kind"]) == "effect":
 		return _present_effect(host, clip, elapsed)
 	return _present_special(host, clip, elapsed)
@@ -873,14 +878,18 @@ func present(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 ## readable for RESULT_HOLD_TICKS. A lead replaces the EMPTY_ATTACK_LEAD_TICKS stand-in of
 ## an empty attack script. The script clock runs in real seconds (the host's
 ## Timing.PLAYBACK_SPEED is undone), 62.5 ticks/s.
+## A later receiver's clip (`defense_page`, BattlePresentation._show_strike) has no lead or attack
+## page: its script clock starts at `release_tick`. A clip with a receiver after it (not
+## `last_shot`) ends at `darken_tick`, with neither the darken nor the return to the map.
 func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bool:
 	var timeline: Dictionary = clip["effect_timeline"]
 	var seconds: float = elapsed / Timing.PLAYBACK_SPEED
 	var tick := seconds * TICKS_PER_SECOND
 	var hit: bool = clip["strike"]["hit"]
+	var defense_page: bool = clip.get("defense_page", false)
 	host.blade.hide()
 	host.flash_sprite.hide()
-	var lead: Dictionary = host.cast_lead(clip)
+	var lead: Dictionary = {} if defense_page else host.cast_lead(clip)
 	var lead_ticks := int(lead.get("complete_tick", 0))
 	# No name caption over the lead or the script: the original captions a skill only while
 	# its range is drawn (BattleAttackCue.caption). The result line appears at aniShowHitResult.
@@ -893,6 +902,13 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 		return false
 	# The script's own clock: after the lead; an empty attack script yields at once.
 	var script_tick := tick - float(lead_ticks) + (float(EMPTY_ATTACK_LEAD_TICKS) if lead_ticks > 0 and bool(timeline["empty_attack"]) else 0.0)
+	if defense_page:
+		script_tick = tick + float(timeline["release_tick"])
+	# 0x403d3d: with a receiver left, aniOver reopens the defense page for it — this page's last
+	# frame is `darken_tick`.
+	var reopens := not bool(clip["last_shot"]) and script_tick >= float(timeline["darken_tick"])
+	if reopens:
+		script_tick = float(timeline["darken_tick"])
 	var attack_phase := script_tick < float(timeline["release_tick"])
 	var spawns := strike_spawns(clip["strike"], timeline, host.result_spawns(clip["strike"]))
 	var closing := clip_closing_tick(timeline, spawns)
@@ -944,9 +960,9 @@ func _present_special(host: CanvasLayer, clip: Dictionary, elapsed: float) -> bo
 	if shown:
 		host.show_result(clip["strike"], script_tick - float(timeline["result_tick"]), host.SCRIPT_NUMBER_POINT, spawns)
 	# 0x404b23: the defense page's phase 101 darkens 16 ticks over the running shot.
-	if script_tick >= float(timeline["darken_tick"]):
+	if script_tick >= float(timeline["darken_tick"]) and not reopens:
 		host._show_closing_darken(script_tick - float(timeline["darken_tick"]))
-	return false
+	return reopens
 
 
 ## The defender object 0x4038a0's drawn point at script tick `tick`: its shot anchor (x 480

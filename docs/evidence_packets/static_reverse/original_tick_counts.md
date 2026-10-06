@@ -5,7 +5,7 @@
 ## 结论
 
 - 原版以主循环 tick 计的演出计数已从对象过程与 STORY VM 状态机读出：地图数字 kind 1–6 寿命 46 tick（第 32 tick 放行），红色伤害数字 10×位数＋34；章节标题 582 tick（任意键最短 263）；边缘滚动 12 px/tick（按住任一 Shift 24）；脚本行走（含 actMoveDispWait）speed→1／2／4／8 px/tick；剧情压黑每 3 tick 一级、16 级（48 tick），actDarkScreen／actDeleteDarkScreen 都不等待；普攻守方中立 32 tick、命中停留 68＋10×位数、落空 56，屏幕过渡变暗／变亮各 16、之间无停留，收尾镜头在子 0 起第 33 tick 交接（有续击的镜头第 2 tick）；攻方开场 24 tick 缩放＋32 tick 叠层＋1 tick 查挂起（static-derived）。
-- 绝技特写收尾：守方 EFFECTS 脚本的 aniOver 直接进 phase 101（变暗 16 → 拆场 → 回地图变亮 16），不查场上对象是否还活着；未完的特写对象在拆场位 `0x4c1404` 置位的那一 tick 自删（static-derived，§9）。
+- 绝技特写收尾：守方 EFFECTS 脚本的 aniOver 先取范围内下一目标，有则为它重开守方页（攻方页只演一次），没有了才进 phase 101（变暗 16 → 拆场 → 回地图变亮 16），不查场上对象是否还活着；未完的特写对象在拆场位 `0x4c1404` 置位的那一 tick 自删（static-derived，§9）。
 - 重制 `CombatPresentationTiming`、`OpeningCinematics`／`BattleOpeningCoordinator`、`BattleCameraController`／`WorldMapRuntime`、`BattleCombatCutin` 按这些计数经 `OriginalTick`（16 ms/tick）换算（static-derived）。
 - 差异：对象 700 每级明暗已读出——每个 565 分量取 ⌊c·(16−n)／16⌋，重制黑层 alpha n／16 与之线性等价，只差 5／6 位截断的末位（static-derived）；击中闪光寿命已读（defProcAttackFlash `0x401140`：刀光级 16、停 10、每 2 call 降一级、第 54 call 自删并清父 `+0x88`，见 [original_effect_motion.md](original_effect_motion.md) 第 77 行）；施法 phase 102 子状态 4 的 16＋11 call 与 `0x4c1408` 释放已读并照做（见 [original_cast_overlays.md](original_cast_overlays.md)「证据」）（`mapobjFlash` 已读，见 [地图物件闪烁](original_map_object_flash.md)）；像素混合未逐像素对照（provisional）。
 
