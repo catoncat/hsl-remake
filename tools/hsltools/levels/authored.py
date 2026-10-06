@@ -67,6 +67,12 @@ EVIDENCE_SCHEMA = 'hsl_authored_message_text_evidence.v1'
 MESSAGE_STATUS = 'resolved_from_authored_messages'
 TIER = unit_schema.AUTHORED_TIER
 CELL = level_battle.CELL
+# Authored chests: the original chest shape and its native SHP draw origin (as every
+# chapter01 map_object_alignment.json lists it); an EVEF chest stands on its cell's corner.
+CHEST_SHAPE = 'BOX0001.SHP'
+CHEST_DRAW_ORIGIN = [7, 3]
+CHEST_ITEMS = 8
+ITEMS_CATALOG = 'content/generated/hsl/equipment/items.json'
 ROLES = ('player_controlled', 'friendly_ai', 'enemy_ai')
 INPUT_FILES = ('level.json', 'story.txt', 'winfail.txt', 'messages.json', 'terrain.txt')
 # STORY / winfail tokens that name a message id (and its argument index).
@@ -93,8 +99,17 @@ def outputs(level: int) -> dict[str, str]:
         'actor_audio': f'{GENERATED}/battle{tag}/actor_audio.json',
         'portraits': f'{GENERATED}/battle{tag}/portraits.json',
         'combat_animation': f'{GENERATED}/battle{tag}/combat_animation.json',
+        **({'treasures': f'{GENERATED}/battle{tag}/treasures.json',
+            'map_objects': f'{GENERATED}/battle{tag}/map_objects.json',
+            'map_object_alignment': f'{GENERATED}/battle{tag}/map_object_alignment.json'} if _declared_treasures(level) else {}),
         'battle': f'content/battles/battle_{tag}.json',
     }
+
+
+def _declared_treasures(level: int) -> list:
+    """level.json `treasures`: chests as {"cell": [x, y], "items": [item codes], "hidden": bool}."""
+    path = folder(level) / 'level.json'
+    return list(_load_json(path).get('treasures', [])) if path.is_file() else []
 
 
 def _sha(data: bytes) -> str:
@@ -590,6 +605,9 @@ def build_battle(level: int, inputs: dict, seed: dict, evidence: dict, paths: di
         resources[key] = first['resources'].get(key, SHARED_RESOURCES[key])
     resources['progression'] = 'res://' + paths['progression']
     resources['battle_seed'] = 'res://' + paths['seed']
+    for key in ('treasures', 'map_objects', 'map_object_alignment'):   # only when level.json lists chests
+        if key in paths:
+            resources[key] = 'res://' + paths[key]
     timelines = status_timelines(level, seed, evidence)
     for program in timelines.values():
         for event in program['events']:
@@ -628,6 +646,39 @@ def build_battle(level: int, inputs: dict, seed: dict, evidence: dict, paths: di
     return result, fielded, speaking
 
 
+def build_treasures(level: int, manifest: dict, grid: list, paths: dict[str, str]) -> dict[str, dict]:
+    """level.json `treasures` as the three documents the treasure chain reads: the source
+    (TreasureRules: id `level:record_index`, ≤8 known item codes, a passable cell), the
+    map-object placements that draw the visible boxes, and their SHP alignment."""
+    catalog = _load_json(ROOT / ITEMS_CATALOG)['items']
+    chests, placements = [], []
+    for index, spec in enumerate(manifest['treasures'], start=1):
+        x, y = (int(value) for value in spec['cell'])
+        items = [int(code) for code in spec['items']]
+        if not (0 <= y < len(grid) and 0 <= x < len(grid[0])) or impassable(grid[y][x]):
+            raise ValueError(f'level{level:03d}: treasure {index} stands on a blocked or outside cell {[x, y]}')
+        if not 1 <= len(items) <= CHEST_ITEMS or any(str(code) not in catalog for code in items):
+            raise ValueError(f'level{level:03d}: treasure {index} needs 1–{CHEST_ITEMS} known item codes, got {items}')
+        hidden = bool(spec.get('hidden', False))
+        chests.append({'id': f'{level}:{index}', 'record_index': index, 'coord': [x, y], 'items': items, 'shape_resource_id': CHEST_SHAPE, 'hidden': hidden})
+        if not hidden:
+            placements.append({'record_index': index, 'role': 'treasure_box', 'process': 'defProcTreasureBox', 'object_name': '寶藏',
+                               'shape_resource_id': CHEST_SHAPE, 'candidate_x': x * CELL, 'candidate_y': y * CELL,
+                               'object_fields': {'obj_Attribute': {'value': 'objattrATTACKFLAG'}}, 'runtime_layer_hint': 'back'})
+    digest = _sha(json.dumps(manifest['treasures'], ensure_ascii=False, sort_keys=True).encode('utf-8'))
+    return {
+        paths['treasures']: {'schema': 'hsl_battle_treasures.v1', 'evidence_tier': TIER,
+                             'levels': {str(level): {'level': level, 'level_sha256': _sha((folder(level) / 'level.json').read_bytes()),
+                                                     'obs_sha256': digest, 'chests': chests}},
+                             'limits': ['Authored chests: level.json `treasures` in order (record_index = position); the two digests name the authored inputs, no OBS exists.']},
+        paths['map_objects']: {'schema': 'hsl_chapter01_map_objects.v1', 'level': level, 'evidence_tier': TIER, 'placements': placements,
+                               'combined_placements': [], 'note': 'Authored: only the visible chests of level.json `treasures`.'},
+        paths['map_object_alignment']: {'schema': 'hsl_chapter01_map_object_alignment.v1', 'level': level, 'evidence_tier': TIER,
+                                        'path': 'res://' + paths['map_object_alignment'], 'calibrations': [], 'not_proven': [],
+                                        'shapes': {CHEST_SHAPE: {'draw_origin': CHEST_DRAW_ORIGIN}}},
+    }
+
+
 def build_progression(level: int, fielded: list[str], players: dict) -> dict:
     actors = {code: {'level': int(players[code].get('level', 1)), 'exp': int(players[code].get('exp', 0)), 'kill_exp': int(players[code].get('kill_exp', 0)),
                      'stamina': int(players[code].get('stamina', 0))}
@@ -659,6 +710,7 @@ def render_level(level: int) -> dict[str, dict]:
         paths['actor_audio']: build_audio_manifest(level, manifest, fielded),
         paths['portraits']: build_portraits(level, manifest, speaking, speaking),
         paths['combat_animation']: build_combat_manifest(level, manifest, fielded),
+        **(build_treasures(level, manifest, terrain['grid'], paths) if 'treasures' in paths else {}),
         paths['battle']: battle,
     }
 

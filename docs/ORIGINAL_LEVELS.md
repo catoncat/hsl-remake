@@ -238,7 +238,7 @@
 | 想做的 | 卡在哪 | 改哪里 |
 | --- | --- | --- |
 | 战中开门、塌方、毒气、落雷 | 这些靠带 obj_Data9 种类的剧情物件（mapobjClearWall、mapobjBlock、defProcPoisonGas、defProcDropLightn）；手写关的 `objects` 只能声明 actor＋token 的单位（推断） | `tools/hsltools/levels/authored.py` 的 `script_objects` |
-| 宝箱和其他地图物件 | 原版关有 `map_objects`／`treasures`；手写关档案只有 `treasures: false`，生成器不产地图物件（推断） | 同上 |
+| 宝箱和其他地图物件 | 宝箱：手写关 `level.json` 列 `treasures`（格、道具代号、是否暗箱）即产出箱子，走原版的开箱链（`docs/MODDING_LEVELS.md`）；其他地图物件生成器仍不产 | 同上 |
 | 挡飞行和射程的墙、能过不能停的格 | `terrain.txt` 只能写可走的高度和 `#` | `authored.py` 的 `terrain_packet`（把新字符映射到 0x4000／0x100000） |
 | 高度 >9 | 一格一个字符 | 同上 |
 | 战中归队并沿用队伍成长（原作的队伍槽插入） | `objects` 一律建成 `defProcEnemy`，生成器不产 `obj_Story_PlayerN`；变通办法是插入后接 `actSetPlayerMode`，按模板出生（数据可做，未实跑，2.4 第 3 条） | `authored.py` 的 `build_seed` |
