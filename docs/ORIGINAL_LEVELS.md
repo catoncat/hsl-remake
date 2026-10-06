@@ -2,7 +2,7 @@
 
 > 依据：本仓库的数据与代码。文中的「文件:行号」只帮助定位，代码一改行号就会漂，按同处写的函数名或常量名查，不按行号。数字由一次性脚本从下列文件算出：`content/battles/campaign.json` 登记的正式战斗、各场 battle JSON（`playable_units` 的 `battle_actor_role`、`resources.terrain`、`resources.map_texture`）、`content/imported/hsl/story_corpus/scripts/` 的 `WINFAILnnn.json` 与 `STORYnnn.json`。标"推断"的是读代码得出、没有实跑过的结论。
 
-逐场的设计拆解（每场的决定、棋盘、节奏、打法、手法）见 [原作关卡的设计](ORIGINAL_LEVEL_DESIGN.md)；这份只记统计和能力核对。
+逐场的设计拆解（每场的决定、棋盘、节奏、打法、手法）见 [原作关卡的设计](ORIGINAL_LEVEL_DESIGN.md)；这份只记统计和能力核对。 拆解时有三处和本文对不上（龍之息的盘山路、黃昏之丘・陽的塌方范围、古代神殿遺跡的机关条件），记在那份的「未核与存疑」里，待回原版核对后再改本文。
 
 ## 速览
 
