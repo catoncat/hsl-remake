@@ -801,16 +801,31 @@ class Atlas:
         terrain = self.scenarios[level].get('resources', {}).get('terrain', '')
         return read_json(res(terrain)).get('grid', []) if terrain and res(terrain).exists() else []
 
-    @staticmethod
-    def blocked(cell: dict) -> bool:
-        return bool(int(cell.get('b', 0))) or int(cell.get('h', 0)) >= 255
+    # WRD 格字（cell['t']）的两个标记位，读法同引擎 game/sim/ActorTraversalRules.gd：
+    # 0x4000 硬阻挡（房屋底下、柱脚、洞壁；连飞行单位和射程都挡），0x100000 能经过不能停。
+    HARD_BLOCK = 0x4000
+    NO_STOP = 0x100000
+
+    @classmethod
+    def hard(cls, cell: dict) -> bool:
+        return bool(int(cell.get('t', 0)) & cls.HARD_BLOCK)
+
+    @classmethod
+    def no_stop(cls, cell: dict) -> bool:
+        return bool(int(cell.get('t', 0)) & cls.NO_STOP)
+
+    @classmethod
+    def blocked(cls, cell: dict) -> bool:
+        return bool(int(cell.get('b', 0))) or int(cell.get('h', 0)) >= 255 or cls.hard(cell)
 
     def terrain_text(self, level: int, grid: list[list[dict]]) -> str:
-        rows, clamped = [], 0
+        rows, clamped, hard, no_stop = [], 0, 0, 0
         for row in grid:
             chars = []
             for cell in row:
                 height = int(cell.get('h', 0))
+                hard += self.hard(cell)
+                no_stop += self.no_stop(cell) and not self.blocked(cell)
                 if self.blocked(cell):
                     chars.append('#')
                 elif height == 0:
@@ -821,10 +836,11 @@ class Atlas:
             rows.append(''.join(chars))
         width, height = len(grid[0]), len(grid)
         header = [f'; {self.name(level)}（LEVEL{level:03d}）的地形：{width}×{height} 格，每格 32 px；一行一排（y），一个字符一格（x），从左上角 (0,0) 起',
-                  '; # 不能走（悬崖、墙、房子、水）；. 能走，高度 0；1–9 能走，数字是高度（相邻两格高差 ≥3 走不通）',
+                  '; # 不能走（悬崖、墙、房子、水，含房屋底下连飞行和射程都挡的硬阻挡）；. 能走，高度 0；1–9 能走，数字是高度（相邻两格高差 ≥3 走不通）',
                   '; 格式同自制地图的 terrain.txt（docs/ORIGINAL_LEVELS.md 2.1）'
                   + (f'；原版高度超过 9 的可走格有 {clamped} 格，这里写成 9' if clamped else '')
-                  + '；原版另有「房屋底下硬阻挡」「能经过不能停」两种格标记，这个格式写不出']
+                  + (f'；硬阻挡 {hard} 格（地形图上涂紫）' if hard else '')
+                  + (f'；「能经过不能停」{no_stop} 格，这个格式写不出（地形图上画黄框）' if no_stop else '')]
         return '\n'.join(header + rows) + '\n'
 
     def terrain_image(self, src: Path, dst: Path, grid: list[list[dict]]) -> None:
@@ -834,8 +850,13 @@ class Atlas:
         draw = ImageDraw.Draw(red)
         for y, row in enumerate(grid):
             for x, cell in enumerate(row):
-                if self.blocked(cell):
-                    draw.rectangle((x * CELL, y * CELL, x * CELL + CELL - 1, y * CELL + CELL - 1), fill=(255, 0, 0, 110))
+                box = (x * CELL, y * CELL, x * CELL + CELL - 1, y * CELL + CELL - 1)
+                if self.hard(cell):
+                    draw.rectangle(box, fill=(130, 0, 170, 150))   # 硬阻挡：紫，连飞行和射程都挡
+                elif self.blocked(cell):
+                    draw.rectangle(box, fill=(255, 0, 0, 110))
+                elif self.no_stop(cell):
+                    draw.rectangle(box, outline=(255, 220, 0, 220), width=3)   # 能经过不能停：黄框
         image = Image.alpha_composite(Image.alpha_composite(image, red), self.grid_overlay(image.size))
         image.save(dst)
 
@@ -894,7 +915,7 @@ class Atlas:
             lines = [f'# {self.name(first)}（LEVEL{first:03d} 的地图）', '', f'用到这张图的关：{self.usage_line(group["levels"])}。', '',
                      f'- {w}×{h} 格' + (f'，底图 {px[0]}×{px[1]} px' if px else '') + f"；不能走的格 {sum(self.blocked(c) for row in grid for c in row)} 个。",
                      '- `整图.png`：地面加上静态地图物件，背景透明；没有单位、界面、光标和临时特效' + (f"（这张图藏掉的：{'、'.join(hidden)}）" if hidden else '') + '。',
-                     '- `地面层.png`：map_texture 原样。`地形.png`：整图上把不能走的格涂成半透明红色。`地形.txt`：自制地图 terrain.txt 格式。', '']
+                     '- `地面层.png`：map_texture 原样。`地形.png`：整图上把不能走的格涂成半透明红色，房屋底下连飞行和射程都挡的硬阻挡涂紫色，能经过不能停的格画黄框。`地形.txt`：自制地图 terrain.txt 格式（硬阻挡也写成 #）。', '']
             (target / '说明.md').write_text('\n'.join(lines), encoding='utf-8')
             files.append('说明.md')
             written[group['key']] = files
@@ -1000,7 +1021,7 @@ class Atlas:
         md += ['## 目录约定', '',
                '- `地图原图/<场景名>_LEVELnnn/`：每张不同的地图一个（按底图像素去重），以游玩时第一个用到它的关命名。',
                '  - `整图.png`：地面加上静态地图物件（房子、树、栅栏、水井……），背景透明；不带单位、界面、光标，也不带临时特效（视差天空、云与云影、雾、闪光、火，以及剧情脚本插进来的雨、烟、火）。',
-               '  - `地面层.png`：`resources.map_texture` 原样。`地形.png`：整图上把不能走的格涂成半透明红色，叠格子与坐标。`地形.txt`：同一份地形，写成自制地图 terrain.txt 的格式。',
+               '  - `地面层.png`：`resources.map_texture` 原样。`地形.png`：整图上把不能走的格涂成半透明红色，房屋底下连飞行和射程都挡的硬阻挡涂紫色，能经过不能停的格画黄框，叠格子与坐标。`地形.txt`：同一份地形，写成自制地图 terrain.txt 的格式（硬阻挡也写成 #）。',
                '  - `说明.md`：这张图被哪些关用到。',
                '- `剧情战/第NN场_场景名_LEVELnnn/`：NN 是玩家第几场（按游玩顺序数剧情战，不数过场和遭遇战）。',
                '  - `地图.png`：整张地图（含地图物件和演出特效），不带单位、光标、界面。宽高＝格数×32 px；例外是王座廳那张 960×720 的底图（LEVEL058／060／063／071／076–079／081／082），比 30×22 格多出下方 16 px，图按底图原尺寸出。带视差天空的图按「镜头看到哪一块，就按那时的镜头摆天空」逐块拼成。',
