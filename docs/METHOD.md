@@ -27,7 +27,14 @@
 - `provisional`：重制暂定。原版还没读到，写明范围和缺什么证据，以后换掉。
 - `negative-evidence`：查过某个来源，没找到支持；只拦错误说法，不证明相反的机制成立。
 
-测试通过只说明实现没回归，不说明和原版一样；写结论的其他规矩见 [CONTEXT](../CONTEXT.md#claim-rules)。
+### 写结论的规矩
+
+- 测试通过只说明实现合同没回归，不说明和原版一样。
+- 文件名不是语义：资源文件名、临时批次编号、截图名和反编译时起的临时函数名只是定位线索。
+- 导入资源不是机制：有了角色帧、界面图或地形格，不等于方向、命中、阻挡、时序已经恢复。
+- 混合来源拆开写：不把 `resource-derived`、`user-confirmed`、`provisional` 压成一句模糊的"已确认"；`user-confirmed` 不冒充静态分析或运行实测。
+- 每个 `provisional` 写明范围、不支持的结论，以及换掉它要哪类证据。
+- 运行实测只回答窄问题：新采样写清路线、窗口、时刻、证据编号和它不支持的结论。
 
 `game/` 下每个模块开头有一段 `## provenance:`，按规则、布局、文字、时序、声音五个维度各写一行等级和出处。照录屏目测的写 `runtime-reference`，原版没有、重制自己加的写 `remake-invented`。`resource-derived`、`static-derived`、`runtime-measured`、`runtime-reference` 这四种必须指向仓库里存在的证据文件，门禁会查。格式见 [ARCHITECTURE](ARCHITECTURE.md#provenance-headers)，全部模块的汇总在 [PROVENANCE](PROVENANCE.md)。
 

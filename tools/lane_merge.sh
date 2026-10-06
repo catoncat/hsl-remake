@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lead merge helper for lane branches — AGENTS.md「Lane 协议」合并节拍 in four steps.
+# Lead merge helper for lane branches — docs/internal/LANE_WORKFLOW.md 合并节拍 in four steps.
 #   tools/lane_merge.sh merge REF MSGFILE   merge one lane commit into pipeline-line (--no-ff); conflicts only in
 #                                           generated docs are resolved by re-rendering them (always re-rendered)
 #   tools/lane_merge.sh gate [--deep|--fast|--affected]

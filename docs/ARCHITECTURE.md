@@ -12,8 +12,6 @@
 
 攻防增益／退魔：`StatEnhancementRules`保存packed正向状态合同，`StatMagicRules`生成单目标变化；既有`SkillResolutionRules`／PlayLoop负责一次MP付款、贡献／EXP与当前派生值提交。AI援助桶5、驱散进攻桶、末次计时v4及Checkpoint共同读取当前来源。表现为`SkillEffectScriptPlayer`（effCode27／06／33 脚本）／Vitals／状态页／TurnEndCue，入口`game/battle/development/StatMagicTrial.tscn`，定向`tests/run_support_magic_tests.gd`（stat 部分；试验场景启动在`run_battle_scene_runtime_tests.gd`）；[证据与边界](evidence_packets/static_reverse/original_stat_magic.md)。
 
-Checked: 2026-09-17
-
 本文描述当前 live code 与接手入口。历史实现、截图和验证过程留在各 evidence packet／Git 历史，不作为现行代码合同；产品优先级只看 PROJECT。
 
 ## Task routing
@@ -276,7 +274,7 @@ tools/                  generators/checkers/capture tools
 ```
 
 - 维度五个、按此顺序：`rules`（规则语义）、`layout`（位置尺寸／窗体资源）、`strings`（文字）、`timing`（时序／动效）、`audio`；模块不涉及的维度省略（即 n/a），至少有一行来源。
-- 一行一个来源 `##   <维度>: <标签> [<仓库相对路径>[#锚点]] [(<备注>)]`，同一维度有几个来源就写几行（相邻）；每行不超过 120 字符，长备注折到 `##     ` 续行；同一标签可对不同路径重复，同一路径不重复。旧写法（`n/a` 行、一行内 `;` 分隔多项）检查器仍能读，只为旧夹具保留，`game/` 不再用。标签 = [AGENTS「Evidence language」](../AGENTS.md#evidence-language)的七个层级 ＋ `runtime-reference`（按原版参考帧目测复刻，无量测）＋ `remake-invented`（重制自己决定，原版无对应证据；用户允许改善但必须可见）。
+- 一行一个来源 `##   <维度>: <标签> [<仓库相对路径>[#锚点]] [(<备注>)]`，同一维度有几个来源就写几行（相邻）；每行不超过 120 字符，长备注折到 `##     ` 续行；同一标签可对不同路径重复，同一路径不重复。旧写法（`n/a` 行、一行内 `;` 分隔多项）检查器仍能读，只为旧夹具保留，`game/` 不再用。标签 = [METHOD「证据分级」](METHOD.md#证据分级)的七个层级 ＋ `runtime-reference`（按原版参考帧目测复刻，无量测）＋ `remake-invented`（重制自己决定，原版无对应证据；用户允许改善但必须可见）。
 - `resource-derived`／`static-derived`／`runtime-measured`／`runtime-reference` 必须带路径且文件存在（来源可定位）；其余标签路径可选。`#锚点` 是自由文本（章节或行号），不校验。
 - 备注写疑点或决定：生成页会把每个 `provisional` 与 `remake-invented` 的备注列成清单。
 - 头只登记来源，不改行为；新增模块没有该块，门禁 FAIL。改了头之后 `python3 tools/hsl.py generate provenance` 更新生成块。

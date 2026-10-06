@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Assemble the public repository tree (docs/internal/OPEN_SOURCE_PLAN.md 方案甲) into OUT_DIR:
+# Assemble the public repository tree (docs/internal/records/OPEN_SOURCE_PLAN.md 方案甲) into OUT_DIR:
 #
 #   tools/oss_export.sh OUT_DIR [REF]      REF defaults to HEAD
 #
@@ -138,7 +138,7 @@ batch.stdin.close()
 batch.wait()
 
 # Original measurement frames / resource renders are not exported: their links become text + archive id
-# (docs/internal/OPEN_SOURCE_PLAN.md §2.2; the private repository keeps the links).
+# (docs/internal/records/OPEN_SOURCE_PLAN.md §2.2; the private repository keeps the links).
 sys.path.insert(0, str(root / 'tools'))
 from oss_screenshots import export_text  # noqa: E402
 processed += [path for path in export_text(out) if path not in processed]

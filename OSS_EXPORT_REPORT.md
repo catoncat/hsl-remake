@@ -1,17 +1,17 @@
 # OSS export report
 
-Source: private repository `main` = `d8c37b6151188feeed522cb87e92010de279a9fd` (committed tree only), exported by `tools/oss_export.sh`.
+Source: private repository `main` = `053254e8f9b5978453e9faba68627d92f566f758` (committed tree only), exported by `tools/oss_export.sh`.
 No git history or author metadata is carried; the first commit of the public repository is made by hand.
 
-- written: **1558 files, 68.0 MB**
-- dropped: **19212 files, 620.4 MB**
-- processed (home path / author e-mail / public .gitignore rules): 19 files
+- written: **1557 files, 68.0 MB**
+- dropped: **19213 files, 620.4 MB**
+- processed (home path / author e-mail / public .gitignore rules): 20 files
 - residual home paths or author e-mails in the written tree: 0
 - files naming unreleased work (`docs/internal/unreleased_names.txt`): 0; internal marker lines left: 0
 
 | 类别 | 文件数 | MB |
 | --- | ---: | ---: |
-| B | 1174 | 20.8 |
+| B | 1173 | 20.7 |
 | C | 384 | 47.2 |
 
 ## Dropped (by reason)
@@ -24,7 +24,7 @@ No git history or author metadata is carried; the first commit of the public rep
 | A: content/generated tables (EXE / PAK derived) | 420 | 22.8 |
 | A: content/battles assembled level data | 210 | 18.9 |
 | A: content/authored placeholder art (recoloured original frames) | 73 | 0.9 |
-| excluded directory docs/internal/ | 34 | 0.6 |
+| excluded directory docs/internal/ | 35 | 0.6 |
 | excluded directory docs/audits/ | 8 | 0.3 |
 | A: original saves / runtime memory dumps | 12 | 0.1 |
 | A: content/generated README / report (migrate) | 5 | 0.0 |
@@ -46,17 +46,18 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 - `docs/audits/STATE_COVERAGE_2026-09-28.md`
 - `docs/audits/TOOLS_AUDIT_2026-09-27.md`
 - `docs/external/typesafe/README.md`
-- `docs/internal/CONSOLIDATION.md`
-- `docs/internal/FIRST_BATTLE_ACCEPTANCE.md`
 - `docs/internal/LANE_TIMELOG.md`
-- `docs/internal/OPEN_SOURCE_PLAN.md`
+- `docs/internal/LANE_WORKFLOW.md`
 - `docs/internal/ORIGINAL_COMPLAINTS.md`
 - `docs/internal/ORIGINAL_SCRIPT.md`
-- `docs/internal/PLAYABILITY.md`
 - `docs/internal/ROUNDS.md`
-- `docs/internal/SEQUEL_READINESS.md`
 - `docs/internal/WEB_DEPLOY.md`
 - `docs/internal/lane_brief.md`
+- `docs/internal/records/CONSOLIDATION.md`
+- `docs/internal/records/FIRST_BATTLE_ACCEPTANCE.md`
+- `docs/internal/records/OPEN_SOURCE_PLAN.md`
+- `docs/internal/records/PLAYABILITY.md`
+- `docs/internal/records/SEQUEL_READINESS.md`
 - `docs/internal/unreleased_names.txt`
 - `docs/internal/web/README.md`
 - `docs/internal/web/fetch_templates.py`
@@ -85,6 +86,7 @@ The per-file list of original-derived files is `content/generated/hsl/original_d
 ## Processed files
 
 - `.gitignore`
+- `CLAUDE.md`
 - `docs/PROJECT.md`
 - `tools/oss_sync.sh`
 - `docs/OPTIONS.md`

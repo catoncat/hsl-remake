@@ -8,7 +8,7 @@ from __future__ import annotations
 #
 # Every task replaces exactly one ledger command and names its hsltools module in `scripts`; the
 # CLI (`hsl check <task>`) prints the PASS line check() returns, and every GeneratedFilesTask
-# must render the tracked outputs byte for byte (lane P1-data oracle, docs/internal/CONSOLIDATION.md P1).
+# must render the tracked outputs byte for byte (lane P1-data oracle, docs/internal/records/CONSOLIDATION.md P1).
 import sys
 import unittest
 from pathlib import Path

@@ -215,7 +215,7 @@ def check(root: Path, tasks: list[Task] | None = None) -> str:
 class DocToolReferencesTask(CheckTask):
     name = 'docs:tool_references'
     family = 'docs'
-    inputs = ('docs/', 'tests/README.md', 'tools/README.md', 'README.md', 'AGENTS.md', 'CONTEXT.md', 'content/')
+    inputs = ('docs/', 'tests/README.md', 'tools/README.md', 'README.md', 'AGENTS.md', 'content/')
     replaces = ()  # born as a registry task: no historical command to replace
     scripts = ('tools/hsltools/checks/doc_tool_references.py',)
 

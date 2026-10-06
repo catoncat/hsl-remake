@@ -22,8 +22,8 @@
 
 ## 使用原则
 
-- 先查 `CONTEXT.md`、`docs/MECHANICS_EVIDENCE_MATRIX.md`、`docs/PROJECT.md` 和当前资源/静态/runtime 证据,再决定是否需要问用户。
+- 先查 `docs/METHOD.md`、`docs/MECHANICS_EVIDENCE_MATRIX.md`、`docs/PROJECT.md` 和当前资源/静态/runtime 证据,再决定是否需要问用户。
 - 只问会改变模型边界、资产分类、命令身份、证据路线或可见复刻优先级的问题。
 - 不要让原版知情者逐项确认战棋常识,不要把 broad gameplay narration 当作证据包目标。
-- 答案应回灌到 `CONTEXT.md`、`docs/MECHANICS_EVIDENCE_MATRIX.md`、Godot 数据或后续 evidence task,并保留 unresolved 分支。
+- 答案应回灌到 `docs/METHOD.md`、`docs/MECHANICS_EVIDENCE_MATRIX.md`、Godot 数据或后续 evidence task,并保留 unresolved 分支。
 - 证据问答服务玩家可见复刻,不是默认要求 Godot 显示 evidence dashboard。

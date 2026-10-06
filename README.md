@@ -57,13 +57,12 @@ HSL_AUTOPLAY_LEVELS=51 tools/godot.sh --headless --fixed-fps 60 --script res://t
 - [OPTIONS](docs/OPTIONS.md) — 重製選項各项与默认值
 - [MODDING](docs/MODDING.md) — 换素材、改规则、去掉原版依赖
 - [MODDING_LEVELS](docs/MODDING_LEVELS.md) — 加关卡、角色、职业、招式，写新战役
-- [WINFAIL_TOKENS](docs/WINFAIL_TOKENS.md) — 胜负脚本词表
 - [ARCHITECTURE](docs/ARCHITECTURE.md) — 代码分层与模块地图
-- [CONTRIBUTING](CONTRIBUTING.md) — 开发环境、测试、提交规范
 - [METHOD](docs/METHOD.md) — 怎么拿原版程序核对，证据分级与差异清单怎么读
-- [证据包](docs/evidence_packets/README.md) — 原版机制的逆向分析与实测记录
+- [CONTRIBUTING](CONTRIBUTING.md) — 开发环境、测试、提交规范
 - [PROJECT](docs/PROJECT.md) — 当前进度与 1.0 的条件
 - [CHANGELOG](CHANGELOG.md) — 按日期记录每次发布
+- [全部文档](docs/README.md) — 按用途分组的完整索引（证据包、原版研究、词表）
 
 ## 许可
 

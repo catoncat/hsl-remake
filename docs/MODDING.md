@@ -179,4 +179,4 @@ tools/godot.sh --headless --script res://tests/run_all.gd -- run_job_stats_tests
 
 ## 现在做不到的（需要先改代码或工具）
 
-- 规则类选项：存档与锁定的底座（[OPTIONS §9](OPTIONS.md#9-实施计划) B2）还没建，现有卡都是演出／外观类。
+- 规则类选项：存档与锁定的规则底座（[OPTIONS §9](OPTIONS.md#9-各卡的读点与分支)）还没建，现有卡都是演出／外观类。

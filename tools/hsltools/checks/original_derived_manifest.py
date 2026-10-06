@@ -2,7 +2,7 @@
 the published EXE-derived rule data (original_content.PUBLISHED_EXE_DATA) as path + hash + the registry task whose outputs cover it ('' when no generator owns it). A PNG is
 hashed by its decoded pixels (`rgba_sha256`: SHA-256 of b'<width>x<height>\n' + the RGBA bytes), every
 other file by its bytes (`sha256`): a player's importer may encode the same image with different PNG
-chunks / zlib settings than the tracked file (docs/internal/OPEN_SOURCE_PLAN.md §8).
+chunks / zlib settings than the tracked file (docs/internal/records/OPEN_SOURCE_PLAN.md §8).
 
 It carries no original content, so the public repository tracks it in place of the files: a
 player's import is proved equal to ours by `hsl check original_derived_manifest`, and the

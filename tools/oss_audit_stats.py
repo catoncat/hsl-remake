@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open-source audit statistics (docs/internal/OPEN_SOURCE_PLAN.md): classify every tracked file.
+"""Open-source audit statistics (docs/internal/records/OPEN_SOURCE_PLAN.md): classify every tracked file.
 
   A  original-derived: decoded assets, original text/source files, saves, EXE-derived tables,
      screenshots / recordings / renders of the original game, recoloured original frames

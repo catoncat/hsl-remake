@@ -15,7 +15,7 @@ them). Three shapes exist:
                        regenerates from the original PAK when it is installed
 
 Every task runs in-process. all_tasks() is the complete gate check set of `hsl check --all`
-(docs/internal/CONSOLIDATION.md P1); its invariant is the command ledger of hsltools.legacy: every
+(docs/internal/records/CONSOLIDATION.md P1); its invariant is the command ledger of hsltools.legacy: every
 ledger command is `replaces`d by exactly one task and every `replaces` names a ledger
 command, so the PASS-line set is fixed by the ledger and a task cannot silently drop out.
 """

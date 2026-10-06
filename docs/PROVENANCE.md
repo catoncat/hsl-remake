@@ -1,13 +1,13 @@
 # Module Provenance
 
-每个 `game/**/*.gd` 模块在文件头用 `## provenance:` 块按维度（rules／layout／strings／timing／audio，不涉及的省略）一行一个来源地声明出处；格式与词汇见 [ARCHITECTURE「Provenance headers」](ARCHITECTURE.md#provenance-headers)，词汇本身见 [AGENTS「Evidence language」](../AGENTS.md#evidence-language)。`python3 tools/hsl.py check provenance` 在门禁里强制：缺块、词汇不对、引用的文件不存在或本页生成块过期都 FAIL；`python3 tools/hsl.py generate provenance` 重写下方生成块。
+每个 `game/**/*.gd` 模块在文件头用 `## provenance:` 块按维度（rules／layout／strings／timing／audio，不涉及的省略）一行一个来源地声明出处；格式与词汇见 [ARCHITECTURE「Provenance headers」](ARCHITECTURE.md#provenance-headers)，词汇本身见 [METHOD「证据分级」](METHOD.md#证据分级)。`python3 tools/hsl.py check provenance` 在门禁里强制：缺块、词汇不对、引用的文件不存在或本页生成块过期都 FAIL；`python3 tools/hsl.py generate provenance` 重写下方生成块。
 
 读法：
 
 - `remake-invented` 清单是重制自己决定、原版没有对应证据的全部内容——用户允许改善交互、规则与配乐，但每一项都要在这里可见。
 - `provisional` 疑点是暂定读法；note 写疑点或替换所需的证据。
 - `runtime-reference` 表示按原版参考帧目测复刻（有帧、无量测）；`runtime-measured` 才是量得的。
-- 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [CONTEXT「Claim rules」](../CONTEXT.md#claim-rules)）。
+- 本页只登记来源，不证明原版等价：测试绿只证明当前合同（见 [METHOD「写结论的规矩」](METHOD.md#写结论的规矩)）。
 
 <!-- provenance:start -->
 _Generated from each module's `## provenance:` block by `python3 tools/hsl.py generate provenance` (208 modules, 144 remake-invented cells, 56 provisional cells; `hsl check provenance` runs in the gate). Edit the module header, not this block._

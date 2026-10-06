@@ -30,16 +30,8 @@ Checked: 2026-09-30
 
 ## 文档地图
 
-- 原作逐关参考：主检出的 `ignored/level-atlas/README.md`。
-- [README](../README.md) — 项目首页；[CHANGELOG](../CHANGELOG.md) 按日期记录每次发布
-- [docs/README](README.md) — 全部文档索引
-- [PLAYING](PLAYING.md)、[PLAYTEST](PLAYTEST.md)、[WEB](WEB.md) — 玩与试玩
-- [MODDING](MODDING.md)、[MODDING_LEVELS](MODDING_LEVELS.md) — 改游戏
-- [METHOD](METHOD.md)、[CONTRIBUTING](../CONTRIBUTING.md)、[ARCHITECTURE](ARCHITECTURE.md)、[AGENTS](../AGENTS.md) — 参与开发
-- [KNOWLEDGE_INDEX](KNOWLEDGE_INDEX.md)、[MECHANICS_EVIDENCE_MATRIX](MECHANICS_EVIDENCE_MATRIX.md)、[BATTLE_NAMES](BATTLE_NAMES.md) — 查表
-
-R1–R8 逐轮流水与合并回执在内部文档 `docs/internal/ROUNDS.md`（不随公开导出）。
+全部文档按用途列在[文档索引](README.md)。逐轮流水与合并回执在内部文档 `docs/internal/ROUNDS.md`（不随公开导出）。
 
 <a id="validation"></a>
 
-门禁口径：[AGENTS「门禁」](../AGENTS.md) 为准（按改动范围自动选档），按改动选检查见[测试路由](../tests/README.md)；lane 与合并流程见 [AGENTS](../AGENTS.md)。
+门禁口径见 [CONTRIBUTING §2](../CONTRIBUTING.md#2-门禁口径)，按改动选检查见[测试路由](../tests/README.md)。

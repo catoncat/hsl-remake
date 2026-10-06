@@ -8,7 +8,7 @@ Commons Attribution 4.0 International License (CC BY 4.0):
 
   - docs/ (prose, tables and diagrams written for this project) and the
     Markdown files in the repository root (README.md, NOTICE.md,
-    CONTRIBUTING.md, AGENTS.md, CONTEXT.md);
+    CONTRIBUTING.md, AGENTS.md);
   - the remake-composed soundtrack in content/generated/hsl/remake_music/
     (audio rendered by this repository's tools/compose_*.py synthesizers,
     no third-party samples or melodies) and its README.

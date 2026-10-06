@@ -6,7 +6,7 @@ battleNNN directory and each assembled battle level: tracked content/battles/bat
 a content/battles/levels/NNN.json `battle` profile) plus the literal
 list below. Nothing runs these commands any more: they are provenance, and
 hsltools.registry.all_tasks() enforces that every one of them is `replaces`d by exactly one
-task (docs/internal/CONSOLIDATION.md P1). The level enumeration helpers here are shared with
+task (docs/internal/records/CONSOLIDATION.md P1). The level enumeration helpers here are shared with
 hsltools.levels so the per-level tasks and the ledger enumerate the same levels.
 """
 from __future__ import annotations
@@ -169,7 +169,7 @@ LITERAL_CHECKS = (
     "tools/hsl_story_corpus.py --check",
     "tools/hsl_opening_choreography_packet_check.py",
     "tools/hsl_evidence_index.py --check",
-    # Born as a registry task (docs/internal/PLAYABILITY.md R1); the ledger entry is its CLI form.
+    # Born as a registry task (docs/internal/records/PLAYABILITY.md R1); the ledger entry is its CLI form.
 )
 
 

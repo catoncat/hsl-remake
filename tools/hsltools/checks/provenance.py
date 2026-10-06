@@ -1,7 +1,7 @@
 """Provenance headers on every game/**/*.gd module: check them and render docs/PROVENANCE.md.
 
 Every GDScript module under game/ declares, in its header comment, where each of its dimensions
-came from — the vocabulary AGENTS.md「Evidence language」uses for conclusions, plus two tags for
+came from — the vocabulary AGENTS.md「证据用语」uses for conclusions, plus two tags for
 what the remake itself decided:
 
     ## provenance:
