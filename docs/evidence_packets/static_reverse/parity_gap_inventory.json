@@ -4,10 +4,10 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 88,
-    "sources": 487,
+    "sources": 486,
     "sources_by_kind": {
       "provenance": 201,
-      "sentence": 86,
+      "sentence": 85,
       "scope": 102,
       "matrix": 85,
       "video": 13
@@ -1196,7 +1196,6 @@
         "scope:docs/evidence_packets/static_reverse/original_line_ranges.md|provisional|角色分支用 ACTOR 标记代替",
         "scope:docs/evidence_packets/static_reverse/original_skill_function_bits.md|provisional|",
         "scope:docs/evidence_packets/static_reverse/original_skill_targets.md|provisional|敌我 role 适配与 AI 候选策略",
-        "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e",
         "sentence:docs/evidence_packets/static_reverse/original_skill_targets.md#e70a1b321e"
       ]
     },

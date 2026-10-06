@@ -3085,10 +3085,6 @@
       "item": "skill-area-policies",
       "text": "大体型与全部地图标志的生命周期未读。"
     },
-    "sentence:docs/evidence_packets/static_reverse/original_poison_arrow.md#f6aa67864e": {
-      "item": "skill-area-policies",
-      "text": "原全区对象遍历顺序未读，不由单目标前段推论。"
-    },
     "sentence:docs/evidence_packets/static_reverse/original_status_application.md#3e0e306c9d": {
       "item": "unimplemented-abilities",
       "text": "原版死亡与战斗结束时的全局状态清理调用者未读。"

@@ -33,5 +33,4 @@
 ## 边界
 
 - 整次原施放、整场战斗与原墙钟未执行。
-- 原全区对象遍历顺序未读，不由单目标前段推论。
 - 毒的计时与毒伤见 [original_status_application.md](original_status_application.md)。

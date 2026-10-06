@@ -806,7 +806,7 @@ func _area_matrix_battle_504() -> void:
 	var before := int(BattlePlayLoop.unit(casting, "actor036_2")["hp"])
 	var cast := BattlePlayLoop.attack_target(casting, "actor036_1", func(_n): return 0, Vector2i(7, 14))
 	var hit: Array = cast.get("last_attack", {}).get("affected_targets", []).map(func(receipt): return receipt["defender_id"])
-	check(cast.get("last_attack_reject", {}).is_empty() and hit == ["actor036_1", "actor036_3"], "地龍震 settles on the two foes inside the area (got %s)" % [hit])
+	check(cast.get("last_attack_reject", {}).is_empty() and hit == ["actor036_3", "actor036_1"], "地龍震 settles on the two foes inside the area, in the 0x4104d0 walk (x rising on row 14) (got %s)" % [hit])
 	check(int(BattlePlayLoop.unit(cast, "actor036_2")["hp"]) == before, "the foe at (7,16) past the wall-side stop keeps its HP")
 	_assert_eq(hit, _foes_on(casting, area), "地龍震: the settled targets are the foes on the previewed area")
 
@@ -863,10 +863,12 @@ func _autoplay_destination() -> void:
 
 
 ## The living foes standing on `cells`, in roster order.
+## The living foes standing on `cells`, in the order of `cells`.
 func _foes_on(loop: Dictionary, cells: Array) -> Array:
 	var result: Array = []
-	for unit in loop["units"]:
-		if int(unit["hp"]) > 0 and cells.has(unit["coord"]) and unit.get("battle_actor_role") == "enemy_ai": result.append(unit["id"])
+	for cell in cells:
+		for unit in loop["units"]:
+			if int(unit["hp"]) > 0 and unit["coord"] == cell and unit.get("battle_actor_role") == "enemy_ai": result.append(unit["id"])
 	return result
 
 

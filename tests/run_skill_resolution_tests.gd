@@ -1301,12 +1301,12 @@ func run_skill_target() -> void:
 	var rained := BattlePlayLoop.attack_target(rain_picked, "enemy021_1", func(_n): return 0)
 	var rained_ids: Array = rained.get("last_attack", {}).get("affected_targets", []).map(func(receipt): return receipt["defender_id"])
 	check(rained["attacked_this_action"] and BattlePlayLoop.unit(rained, "leonard")["stamina"] == 20 and rained["last_attack"].get("cast_center") == Vector2i(8, 8), "self-centered special pays its source cost once from the caster's cell")
-	check(rained_ids == ["enemy021_1", "enemy021_2"] and BattlePlayLoop.unit(rained, "enemy021_3")["hp"] == 400 and BattlePlayLoop.unit(rained, "leonard")["hp"] == rain_caster["hp"], "only the ring enemies are affected; the caster inside the footprint is skipped")
+	check(rained_ids == ["enemy021_2", "enemy021_1"] and BattlePlayLoop.unit(rained, "enemy021_3")["hp"] == 400 and BattlePlayLoop.unit(rained, "leonard")["hp"] == rain_caster["hp"], "only the ring enemies are affected, in the 0x4104d0 walk (row 8 before row 9); the caster inside the footprint is skipped")
 	var ring_damage: int = 400 - BattlePlayLoop.unit(rained, "enemy021_1")["hp"]
 	var ring_two_damage: int = 400 - BattlePlayLoop.unit(rained, "enemy021_2")["hp"]
 	# 慌雨斬 settles one 0x40b8f0 per op 72 (5 strikes, 0x4047e9): resistance scales each strike.
-	var ring_parts: Array = rained["last_attack"]["affected_targets"][0]["hit_segments"]
-	var ring_two_parts: Array = rained["last_attack"]["affected_targets"][1]["hit_segments"]
+	var ring_parts: Array = rained["last_attack"]["affected_targets"][1]["hit_segments"]
+	var ring_two_parts: Array = rained["last_attack"]["affected_targets"][0]["hit_segments"]
 	check(ring_damage > 0 and ring_parts.size() == 5 and ring_two_parts.size() == 5 and range(5).all(func(i): return int(ring_two_parts[i]["damage"]) == int(ring_parts[i]["damage"]) * 20 / 100) and ring_two_damage == ring_two_parts.reduce(func(sum, part): return sum + int(part["damage"]), 0), "each footprint target applies its own water resistance to each strike's special roll")
 	# magicOTHER damage magic (滅): the 0x40a7b0 type switch has no case 5, so no resistance
 	# slot is read; MP, hit equipment and the level/mind/magic-attack terms follow the magic path.
@@ -1454,6 +1454,15 @@ func run_skill_target() -> void:
 	var void_result := Resolution.resolve_cast(void_caster, void_center, [void_caster, void_center, void_second, void_outside], void_id, void_fields, void_loop["skill_book"], void_loop["skill_target_data"], void_loop["equipment_items"], void_caster["coord"], void_loop["map_size"], func(_n): return 0, void_center["coord"])
 	var void_ids: Array = void_result.get("receipt", {}).get("affected_targets", []).map(func(receipt): return receipt["defender_id"])
 	check(void_result.get("ok", false) and void_ids == ["leonard", "enemy023_1"] and void_result["caster_changes"]["stamina"] == 20 and void_result["targets"].all(func(change): return int(change["changes"]["hp"]) < 900), "虛空無轉 hits both units in the footprint, skips the one outside and pays its 3-expend ST once")
+	# The receivers come in 0x4104d0's walk of the effect window — rows from the top, x rising within
+	# a row — not in roster order, and the miss compensation passes along that walk: the first one's
+	# miss lifts the second's hit by 10, whose hit clears it for the third (original_skill_targets.md).
+	void_second["coord"] = Vector2i(11, 8)
+	void_outside["coord"] = Vector2i(13, 7)
+	void_caster["hit_bonus_accum"] = 0
+	var walk_result := Resolution.resolve_cast(void_caster, void_center, [void_caster, void_center, void_second, void_outside], void_id, void_fields, void_loop["skill_book"], void_loop["skill_target_data"], void_loop["equipment_items"], void_caster["coord"], void_loop["map_size"], func(n): return n - 1, void_center["coord"])
+	var walk_receipts: Array = walk_result.get("receipt", {}).get("affected_targets", [])
+	check(walk_receipts.map(func(receipt): return [receipt["defender_id"], int(receipt["hit_rate"]), receipt["hit"]]) == [["enemy023_2", 90, false], ["enemy023_1", 100, true], ["leonard", 90, false]], "虛空無轉's three receivers come row by row from the top, x rising, not in roster order, and the miss compensation follows that walk (%s)" % str(walk_receipts.map(func(receipt): return [receipt["defender_id"], receipt["hit_rate"], receipt["hit"]])))
 	# 極 (magic:magicOTHER:magicCode03, 059／060 initial): the third magicOTHER damage magic walks the
 	# same OtherMagicRules path as 滅／裁 — 120 MP, range5CellCircle cast, range3CellCircle footprint,
 	# no resistance slot.

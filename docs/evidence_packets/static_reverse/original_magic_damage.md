@@ -101,6 +101,7 @@
 - `game/sim/SkillResolutionRules.gd` `available`／`prepare`／`resolve`：按稳定 ID 核对定义、初始拥有权、已支持 function／范围、资格、MP／ST 与抗性；非法字段在 RNG 前拒绝；只返回 `{ok, caster_changes, target_changes, receipt}` 提案，不改输入。
 - PlayLoop `_resolve_skill`：玩家特殊技与法师 AI 的唯一资源／HP 提交点；所有目标资格与数值准备好后才抽样；一次提交付款、全目标状态、连续数与最终经验；缺抗性等坏数据以 `scenario_error` 停下，不改用物理攻击。
 - `MagicImpactPresentation`：所有带 `magic_key` 的地图法术（`is_relayed`；回复、状态、增益、解除与伤害同样）受者逐个接力，`SkillEffectScriptPlayer` 的 Local 效果据同一判定只放在首个受者；第 2 人起在前一人撤条那 tick 以 `BattleCameraController.scroll_to`（战斗步长）滑向他，滑完才往下；Local 再用 `SkillEffectScriptPlayer.draw` 在他格中心重放施法的效果时间线，条在重放的脚本走到 op 0（`script_end_tick`）出，首个受者相对施法效果同此（原版 `0x1a` 在 `0x443091` 等解释器状态字）；条与数字每帧按镜头重算屏幕位置。`MapHitState.begin` 由接力在每人结算那 tick 只对 `MapHitState.hurt` 的受者调（命中且伤害 >0 或负面状态施加成功、受者未死；`BattlePresentation._present_impact` 不再全体同起）；击杀受者扣血后 30 tick `death_released` 放行，`BattleAftermath.advance` 在接力进行中只起已放行的死亡任务，EXP／$ 仍等接力结束。每人用 `BattleItemUsePresentation` 的小条常量与 BAR_HP4..6 画两条，先示前态 HP／MP（不可变收据 `defender_before`）24 tick，第 24 tick 两条换后态（HP 取 `defender_hp_after`；MP 与两条上限取收据 `defender_after`——`BattleLoopCombat.resolve_skill` 在全部提案落账后、发经验前给每个受者盖的只读快照，与普攻交换同口径；旧收据没有它时回落为 MP 加 `restored_mp`、上限不变）并按 `settle_number` 出数——收据 `actual_damage` >0 红字，否则技能行 function 含 `magicFun_Heal` 出绿 `healing`（含 0），否则 `native_contribution` 为 0 且 `immediate_contributions` 为空出 MISS，其余不出数；OPT-INFO=公開 时 `captions` 回调（`BattlePresentation._present_receiver_captions`）在同一 tick 把状态名、免疫／未生效与 HP／MP 字排在该受者数字上方，原版路径不出这些字；再 40 tick 撤条（击杀 +30 再 +8／+16，按技能行 `effect_proc`）（`BEFORE_TICKS`／`AFTER_TICKS`／`KILL_*`，按 16 ms/tick 播放）；之后遗言／淡出 → KILL 连续数 → 最终 EXP → 金币／领取 → 成长／交接。
+- 受者顺序按收据 `affected_targets`，即 `0x4104d0` 对效果窗口的逐行扫描顺序（`FootprintRules.scan_order`，见 [original_skill_targets.md](original_skill_targets.md)「目标枚举」）。
 - 共享规则能处理注册允许的区域攻击，但风火本身保持单体；多目标支援使用原驱毒范围。
 
 ## 复现
@@ -115,7 +116,6 @@
 - 施法者自己是受者、且本次施法升级时，原版条会不会读到升级后的上限，取决于 `0x40a5d0` 经验换算的时刻（`0x40b49e` 是立即换算，另有尾部换算），不在本读法内；重制的 `defender_after` 按「结算后、发经验前」取值。施法者自己是受者时，`defender_before` 取付费前、`defender_after` 取付费后，MP 条在换值 tick 会掉一次本次消耗；原版扣 MP 的时刻相对出条未读。
 - Local 重放只画效果时间线的对象与声音；`[0x4c1b00]` 0x1000000 在 0x19 重新置位，重制的位从首个受者撑到最后一人撤条，压暗不中断，结果相同。OtherBBall1 镜头轨迹与 IconBGSet／FireBGSet 波纹只出现在 Global 法术里，Local 重放碰不到。重放的条与首个受者一样等效果脚本走到 op 0 才出，清位随最后一人撤条，照原版（见 [original_cast_overlays.md](original_cast_overlays.md) 边界）。
 - 死亡受者的入口 `0x43eff9` 也调 `0x43bf30(受者)` 等镜头，与施法例程滑向下一受者同帧争镜头时谁先到未读；重制死亡任务不滑镜头。台词窗期间接力照走（原版台词由受者过程 `+0x9c` 轮询关闭，施法例程不等它）。
-- 受者顺序按收据 `affected_targets`；`0x4104d0` 的遍历顺序未与之逐一对照。
 - 结算分派在重制侧由收据推断（sim 不改）：`native_contribution`／`immediate_contributions` 代 `0x4c13fc`／本地 EXP；收据分不出回复抽判落空与满血，重制凡 Heal 位一律出绿字，按 MAGIC.TXT 回复法术 hit_ratio 均为 100、proc1 不会落空推断。
 - 麻痹／中毒／封魔／虚弱层数已 9 时原版出 MISS 却仍进受击态；重制 MISS 相同（贡献 0），受击态依收据 `status_effects` 的 `applied`，sim 对这一情形怎么记未逐一对照。
 - 受者提亮闪光（`MagicImpactPresentation` 按命中提亮）只有伤害法术录屏为据，原版条件未读；现在接力扩到全部地图法术，回复、增益、解除的受者也会提亮。

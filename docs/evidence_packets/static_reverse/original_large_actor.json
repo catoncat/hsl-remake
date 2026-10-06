@@ -10187,6 +10187,82 @@
       "normal_returns": 3,
       "instructions": 1423,
       "actor_unchanged": true
+    },
+    {
+      "input": {
+        "actors": [
+          {
+            "coord": [
+              2,
+              2
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              3,
+              1
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          },
+          {
+            "coord": [
+              1,
+              2
+            ],
+            "large": 0,
+            "no_block": false,
+            "hp": 100,
+            "registered": true
+          }
+        ],
+        "dimension": 5,
+        "center": [
+          2,
+          2
+        ],
+        "mask": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "native": [
+        1,
+        2,
+        0
+      ],
+      "normal_returns": 4,
+      "instructions": 37503,
+      "actor_unchanged": true
     }
   ],
   "stats": [

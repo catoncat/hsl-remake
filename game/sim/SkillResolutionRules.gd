@@ -4,6 +4,8 @@ extends RefCounted
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_function_bits.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_magic_damage.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_targets.md
+##     (area targets in the 0x4104d0 walk order)
 ##   rules: provisional (area policies over the current grid)
 const Status = preload("res://game/sim/StatusEffectRules.gd")
 const StatusApplication = preload("res://game/sim/StatusApplicationRules.gd")
@@ -35,7 +37,8 @@ const Combat = preload("res://game/sim/CoreCombatRules.gd")
 ##   resolve           func(caster, target, skill_id, descriptor, ready, rng, equipment) -> Dictionary:
 ##                     {"ok", "caster_changes", "target_changes", "receipt"} for one target.
 ##   ready_key         key the proposal travels under in ready (resolve reads ready[ready_key]).
-##   area              true: every living unit inside the effect footprint is a target, in roster order;
+##   area              true: every living unit inside the effect footprint is a target, in the 0x4104d0
+##                     walk order (FootprintRules.scan_order: rows from the top, x rising within a row);
 ##                     false: the clicked target only.
 ##   hit_bonus_input   area casts copy the running hit_bonus_accum into ready[ready_key][this] before each
 ##                     target ("": resolve reads the caster's hit_bonus_accum itself).
@@ -497,9 +500,10 @@ static func prepare_cast(caster: Dictionary, center: Dictionary, units: Array, s
 	var ready_key: String = effect["ready_key"]
 	var subset: bool = effect.get("subset", false)
 	var useful := false
-	# Stable roster order is the current adapter policy; the original engine's
-	# cross-object visitation order is not inferred from RANGE occupancy values.
-	for unit in units:
+	# The targets come in 0x4104d0's walk of the effect cells — row by row from the top, x rising
+	# within a row, each actor once at its first covered cell — so the hit compensation and the
+	# experience accumulate in that order (original_skill_targets.md).
+	for unit in SkillTargetRules.Footprint.scan_order(units, footprint):
 		if not unit is Dictionary or not unit.get("coord") is Vector2i:
 			return {"ok": false, "reason": "invalid_skill_roster"}
 		if not SkillTargetRules.Footprint.overlaps(unit, footprint) or not BattlePresenceRules.living(unit): continue

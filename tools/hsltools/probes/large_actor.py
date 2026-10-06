@@ -270,6 +270,8 @@ def fixtures():
     # A second large object blocks every occupied cell, not just its center.
     floods += [dict(common,large=large,origin=[2,4],occupants=[dict(coord=[6,4],large=1,side=0x20000,no_block=False)]) for large in [0,1]]
     enums=[dict(actors=[dict(giant,coord=[2,2]),dict(giant,large=0,coord=[4,4])],dimension=5,center=[2,2],mask=mask) for mask in [[1]*25,[int(i==6) for i in range(25)],[int(i in [6,7,8,11,12,13,16,17,18,24]) for i in range(25)]]]
+    # Three one-cell actors whose row-major (1, 2, 0), column-major (2, 0, 1) and table (0, 1, 2) orders all differ.
+    enums.append(dict(actors=[dict(giant,large=0,coord=[2,2]),dict(giant,large=0,coord=[3,1]),dict(giant,large=0,coord=[1,2])],dimension=5,center=[2,2],mask=[1]*25))
     return dict(lookup=queries,marking=marks,flood=floods,enumeration=enums)
 
 def stat_cases():
