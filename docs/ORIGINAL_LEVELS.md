@@ -2,6 +2,8 @@
 
 > 依据：本仓库的数据与代码。文中的「文件:行号」只帮助定位，代码一改行号就会漂，按同处写的函数名或常量名查，不按行号。数字由一次性脚本从下列文件算出：`content/battles/campaign.json` 登记的正式战斗、各场 battle JSON（`playable_units` 的 `battle_actor_role`、`resources.terrain`、`resources.map_texture`）、`content/imported/hsl/story_corpus/scripts/` 的 `WINFAILnnn.json` 与 `STORYnnn.json`。标"推断"的是读代码得出、没有实跑过的结论。
 
+逐场的设计拆解（每场的决定、棋盘、节奏、打法、手法）见 [原作关卡的设计](ORIGINAL_LEVEL_DESIGN.md)；这份只记统计和能力核对。
+
 ## 速览
 
 - 127 场＝49 场剧情战（LEVEL001–080 里 44 场＋LEVEL900–904）＋78 场遭遇战（LEVEL501–578）。遭遇战全是"全灭／雷歐納德死亡"，借剧情战地图，没有事件；关卡设计的花样都在 49 场剧情战里。
