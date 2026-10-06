@@ -47,21 +47,37 @@ GUIDE_DATE = re.compile(r'20\d\d\s*[-/.年]\s*\d{1,2}|(?<![\d.])(?:0[1-9]|1[0-2]
 COMMIT_ID = re.compile(r'(?<![0-9A-Za-z_])(?=[0-9a-f]*[a-f])(?=[0-9a-f]*\d)[0-9a-f]{7,40}(?![0-9A-Za-z_])')
 
 
+LIST_ITEM = re.compile(r'\s*(?:[-*+]|\d+[.)])\s')
+
+
 def prose_lines(text: str) -> list[tuple[int, str]]:
-    """Keep line numbers for actionable diagnostics, excluding code blocks."""
+    """Keep line numbers for actionable diagnostics, excluding code blocks.
+
+    An indented line is an indented code block only when it follows a blank line and the
+    last non-blank line was not a list item; an indented line inside or right after a list
+    (a nested item, a continuation paragraph) is prose and its links are checked."""
     result = []
     fence = ""
     fence_length = 0
+    prev_blank = True
+    last_list = False
     for number, line in enumerate(text.splitlines(), 1):
         marker = re.match(r'^ {0,3}(`{3,}|~{3,})(.*)$', line)
         if fence:
             if marker and marker[1][0] == fence and len(marker[1]) >= fence_length and not marker[2].strip():
                 fence = ""
             continue
+        indented = line.startswith(("    ", "\t"))
         if marker:
             fence, fence_length = marker[1][0], len(marker[1])
-        elif not line.startswith(("    ", "\t")):
+        elif not indented or LIST_ITEM.match(line) or not prev_blank or last_list:
             result.append((number, line))
+        if line.strip():
+            prev_blank = False
+            if not indented or LIST_ITEM.match(line):
+                last_list = bool(LIST_ITEM.match(line))
+        else:
+            prev_blank = True
     return result
 
 
