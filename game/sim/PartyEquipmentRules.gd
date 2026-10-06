@@ -84,6 +84,18 @@ static func sandbox(loop: Dictionary, carry: Dictionary) -> Dictionary:
 	var errors: Array = receipt.get("errors", [])
 	if not errors.is_empty():
 		return {"ok": false, "loop": applied, "error": "carry_apply:" + str(errors[0])}
+	# The menus list the registered party only (0x4c4360 slot codes): a scenario member the
+	# carry does not hold — a 有才產生 slot never carried, a deregistered member — is not in
+	# the party and must not show up as its template.
+	var carried: Dictionary = carry.get("units", {}) if carry.get("units") is Dictionary else {}
+	if not carried.is_empty():
+		var kept: Array = []
+		for unit_value in applied.get("units", []):
+			var unit: Dictionary = unit_value if typeof(unit_value) == TYPE_DICTIONARY else {}
+			if str(unit.get("battle_actor_role", "")) == ROLE_PLAYER and not carried.has(str(unit.get("id", ""))):
+				continue
+			kept.append(unit_value)
+		applied["units"] = kept
 	return {"ok": true, "loop": applied, "error": ""}
 
 

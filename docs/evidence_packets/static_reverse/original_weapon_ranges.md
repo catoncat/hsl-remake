@@ -1,6 +1,6 @@
 # 武器射程：武器字来源、RANGE 掩码与地形传播
 
-> evidence: static-derived; resource-derived: EVEF 装备字为零 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40c9a0, 0x40cca0, 0x40d340, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x4119f0, 0x411a30, 0x411b90, 0x42bd50, 0x43f79b, 0x441779, 0x441a73, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_autoplay_sweep_tests.gd, run_tests.gd · updated: 2026-09-29
+> evidence: static-derived; resource-derived: EVEF 装备字为零 · status: live · functions: 0x409090, 0x40bab0, 0x40bb00, 0x40c9a0, 0x40cca0, 0x40d340, 0x40eb80, 0x40f5d0, 0x40f8b0, 0x40fa80, 0x40fab0, 0x40fb20, 0x40fc90, 0x40fdc0, 0x4100e0, 0x4119f0, 0x411a30, 0x411b90, 0x42bd50, 0x43f79b, 0x441779, 0x441a73, 0x4423c0, 0x442a90, 0x4477c0, 0x44b980, 0x44cb10 · tools: audit_range_propagation_impact.gd, hsltools/data/attack_ranges.py, hsltools/probes/range_terrain.py, run_ai_navigation_tests.gd, run_autoplay_sweep_tests.gd, run_tests.gd · updated: 2026-10-06
 
 ## 结论
 
@@ -12,7 +12,7 @@
 
 ## 证据
 
-**static-derived**（`hsl01.exe` sha256 `f0b5f835…`；[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar／large 四张 15×15 格子上完整执行 368 次：武器 138、矩阵区域 104、直线 126）
+**static-derived**（`hsl01.exe` sha256 `f0b5f835…`；[original_range_terrain.json](original_range_terrain.json) 在 open／wall／pillar／large 四张 15×15 格子上完整执行 368 次：武器 138、矩阵区域 104、直线 126；其中施放 mode −1 的 48 次随后以施法者格调光标检查 `0x40fab0`，48／48 返回中心字节 half+1，记为 `origin_in_range`）
 
 武器字来源：
 
@@ -29,7 +29,7 @@
 | 规则 | 原版做法 |
 | --- | --- |
 | 地图字 `0x4c0928` | 每格一个 DWORD：WRD `movement_flags & 0x4000` 或上占位者侧位（P `0x10000`、E `0x20000`、N `0x40000`，pmALL `0x70000`，pmMagicAttack `0x800000`）；高度（h 255、blocks_movement）不参与 |
-| 起点 | `0x40f8b0`（包装 `0x40fa80`：`0x40fa93`／`0x40fa96` 取角色 +8／+4 像素作起点）：起点写 `half+1`，除非命中 `0x40fa48[mode]` 排除位；局部框宽高＝min(size, 地图宽／高)（`0x40f8f0..0x40f917`），中心＝框宽高的一半，与起点位置无关；`0x4100e0` 矩阵：中心写 `half+1`，除非命中 `0x410498[mode]` 且非 pmALL，或是无角色的 `0x850000` 字；中心不查 `0x4000` 与 RANGE 值 |
+| 起点 | `0x40f8b0`（包装 `0x40fa80`：`0x40fa93`／`0x40fa96` 取角色 +8／+4 像素作起点）：起点写 `half+1`，除非命中 `0x40fa48[mode]` 排除位；局部框宽高＝min(size, 地图宽／高)（`0x40f8f0..0x40f917`），中心＝框宽高的一半，与起点位置无关；`0x4100e0` 矩阵：中心写 `half+1`，除非命中 `0x410498[mode]` 且非 pmALL，或是无角色的 `0x850000` 字；中心不查 `0x4000` 与 RANGE 值；mode −1（玩家与 AI 施放）在两张表里都没有项，施放范围总含施法者格 |
 | 方向与顺序 | 起点四邻各调一次 `0x40f5d0`（上、下、左、右，power＝half）；每步写完深度优先：上→上、左，再转右；下→下、左，再转右；左→上、下，再继续左；右→上、下，再继续右 |
 | 每步次序 | 越界停；含 `0x4000` 停；RANGE 值 0 停；已写 ≥ power 停；值 > 0 写 power（被排除则不写）并做前方检查；power−1 到 0 停；值 < 0 只传递、不写、不查前方 |
 | 前方检查 | `0x40eb80(x, y, dir, 0x4000)`：正前方与左右两侧三格任一带 `0x4000` 时本格照写、power 置 0；越界按 0 读；只在步进表 check 位为 1 的 mode 做（`0x40f874`：2、3、7、8、9、10；`0x4100a0`：除 0、1、4、5 外） |

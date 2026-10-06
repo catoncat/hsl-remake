@@ -203,7 +203,7 @@ static func approach_goals(loop: Dictionary, actor: Dictionary, foes: Array, fie
 			for center in SkillTargetRules.candidate_centers(actor, [target], fields, loop["skill_target_data"], loop["map_size"], actor["coord"]):
 				for y in range(int(range_data["size"])):
 					for x in range(int(range_data["size"])):
-						if int(range_data["data"][y][x]) <= 0 or (x == half and y == half and not SkillTargetRules.self_centered(fields)): continue
+						if int(range_data["data"][y][x]) <= 0: continue
 						goals[center - Vector2i(x - half, y - half)] = true
 		result[target["id"]] = goals
 	return {"ok": true, "goals": result}

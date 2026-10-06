@@ -1139,7 +1139,7 @@ func ai_cue_camera_area_contracts() -> void:
 		if kind == "cast":
 			check(followed, "cast: every glide tick frames the cursor's point as center_on_point does, clamped to the map (0x43c0f0)")
 			check(areas_match, "cast: every glide tick draws the effect area centred on the cursor's cell (0x4100e0 pixel >> 5)")
-			check(area_outside_range, "cast: the area is drawn while the cursor's cell is outside the cast range (no range test)")
+			check(range_cells.has(actor["coord"]) and not area_outside_range, "cast: the glide starts on the caster's own cell, itself a cast-range cell (0x40f8b0 mode -1 writes the origin), so every tick's area sits on the range")
 		else:
 			check(followed, "attack: every glide tick moves the view by the cursor's step, clamped (0x42dc50 → 0x46bede)")
 			check(areas_match, "attack: an attack draws no effect area")

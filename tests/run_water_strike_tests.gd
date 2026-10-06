@@ -35,6 +35,7 @@ func run() -> void:
 	if not loop["skill_book"]["skills"].has(WATER):return
 	native_cases()
 	large_and_equipment()
+	own_cell_centre()
 
 func native_cases():
 	var packet:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://docs/evidence_packets/static_reverse/original_water_strike.json"))
@@ -80,3 +81,18 @@ func large_and_equipment():
 	actor["equipment"].append({"slot":"accessory1","item_code":232})
 	actor.merge(BattlePlayLoop.ProgressionRules.refresh_growth_stats(actor,loop["equipment_items"]),true)
 	check(cast(loop,zero)["last_attack"].get("skill_id")==WATER,"current movement ring permits the same water action after moving")
+
+## The caster's own cell is in 水剎's cast range: the original floods it from the caster with
+## 0x40f8b0 mode -1, which writes the origin (no mode -1 entry in 0x40fa48), and the cursor check
+## 0x40fab0 accepts it (original_range_terrain.json origin_in_range). Ringed by enemies, 緹娜 casts
+## on her own cell; the cross leaves her P cell out (0x4100e0 mode 2), the four cells around remain.
+func own_cell_centre():
+	var loop:=fixture()
+	BattlePlayLoop.unit_ref(loop,"companion")["coord"]=Vector2i(10,13)
+	BattlePlayLoop.unit_ref(loop,"enemy021_1")["coord"]=Vector2i(11,16)
+	BattlePlayLoop.unit_ref(loop,"enemy021_2")["coord"]=Vector2i(9,16)
+	var picked:=selected(loop)
+	var own:Vector2i=BattlePlayLoop.unit(picked,"tina")["coord"]
+	check(BattlePlayLoop.attack_cells(picked).has(own) and BattlePlayLoop.Combat.skill_cast_footprint(picked,own)==[own+Vector2i.UP,own+Vector2i.LEFT,own+Vector2i.RIGHT,own+Vector2i.DOWN],"水剎 offers 緹娜's own cell and its footprint there is the four cells around her")
+	var after:=BattlePlayLoop.attack_coord(picked,own,zero)
+	check(after["attacked_this_action"] and after["last_attack"].get("cast_center")==own and after["last_attack"]["affected_targets"].size()==2 and BattlePlayLoop.unit(after,"tina")["hp"]==BattlePlayLoop.unit(picked,"tina")["hp"],"cast on her own cell settles on both adjacent enemies, never on 緹娜")

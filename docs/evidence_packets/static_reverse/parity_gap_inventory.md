@@ -1,6 +1,6 @@
 # 原版与重制差异总清单（parity gap inventory）
 
-> evidence: provisional: 归类、可见度与工作量是人工判断，原版证据在每条的链接里 · status: record-only · tools: hsltools/checks/parity_inventory.py · updated: 2026-10-02
+> evidence: provisional: 归类、可见度与工作量是人工判断，原版证据在每条的链接里 · status: record-only · tools: hsltools/checks/parity_inventory.py · updated: 2026-10-06
 
 本页由 `python3 tools/hsl.py generate parity_inventory` 生成（lane R7-INV），全量数据在同名 [parity_gap_inventory.json](parity_gap_inventory.json)，人工归类在 [parity_gap_inventory.curation.json](parity_gap_inventory.curation.json)。汇报"还剩多少"按本页的总数。
 
@@ -240,7 +240,7 @@
 
 | id | 玩家看到的差异 | 原版怎样 | 重制怎样 | 原版状态 | 可见度 | 量 | 来源 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `carry-model` | carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序 | 注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；已移除注册的记录不经入口<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)、[original_campaign_actors.md](../../../docs/evidence_packets/static_reverse/original_campaign_actors.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 已读完只差照做 | 少见 | S | provenance 2、sentence 2、scope 4、matrix 1 |
+| `carry-model` | carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；脚本注销（actDeletePlayerCode）在交接时让成员离队，mode 0 记录进 reserve、非 0 清掉（深淵之沼（LEVEL015）选「不救」时的咕嚕）；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序、开场剧情里的注销只作防御（原版剧本没有这种用法）；装备与商店菜单只列承接名单里的人 | 注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；0x42caf0 注销清槽、mode 非 0 才清记录，已移除注册的记录不经入口<br>[original_check_targets.md](../../../docs/evidence_packets/static_reverse/original_check_targets.md)、[campaign_handoff/README.md](../../../docs/evidence_packets/runtime_observations/campaign_handoff/README.md)、[original_campaign_actors.md](../../../docs/evidence_packets/static_reverse/original_campaign_actors.md) | CampaignCarryRules／ConditionalPartyRules<br>[CampaignCarryRules.gd](../../../game/sim/CampaignCarryRules.gd)、[ConditionalPartyRules.gd](../../../game/sim/ConditionalPartyRules.gd)、[ScriptActorCreationRules.gd](../../../game/sim/ScriptActorCreationRules.gd) | 已读完只差照做 | 少见 | S | provenance 2、sentence 2、scope 4、matrix 1 |
 
 ### 镜头（1）
 

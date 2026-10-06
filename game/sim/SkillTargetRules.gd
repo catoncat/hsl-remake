@@ -11,6 +11,7 @@ const BattlePresenceRules = preload("res://game/sim/BattlePresenceRules.gd")
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_skill_targets.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_line_ranges.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_weapon_ranges.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_range_terrain.json
 ##   rules: resource-derived content/generated/hsl/skills/targeting.json
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_player_mode_sides.md
 ##   rules: provisional (battle-role adapter, support same-side as overlap, unsupported effects refused)
@@ -185,19 +186,21 @@ static func candidate_centers(caster: Dictionary, units: Array, fields: Dictiona
 
 
 ## The cast range. With `terrain` the cells are the 0x40f8b0 coverage (mode `cast_mode`,
-## flag 0): walls stop it, occupants never do; the origin keeps the remake rule below.
+## flag 0): walls stop it, occupants never do. The caster's own cell is in it like any other
+## non-zero RANGE cell: 0x40f8b0 writes the origin half+1 (table 0x40fa48 has no mode -1
+## entry) and the cast states' cursor check 0x40fab0 reads that byte, so an offensive spell
+## or special may be centred on the caster (original_range_terrain.json `origin_in_range`).
 static func cells(origin: Vector2i, fields: Dictionary, data: Dictionary, map_size: Vector2i, terrain: Dictionary = {}) -> Array:
 	if definition_error(fields, data) != "" or not inside(origin, map_size):
 		return []
 	var pattern: Dictionary = data["ranges"][fields["range"]]
-	var support := is_support(fields, data)
 	var half := int(pattern["size"]) / 2
 	var reached := RangePropagationRules.weapon_coverage(pattern["data"], origin, terrain["words"], map_size, int(terrain.get("cast_mode", RangePropagationRules.PLAYER_CAST_MODE)), false) if terrain.has("words") else {}
 	var result: Array = []
 	for y in range(int(pattern["size"])):
 		for x in range(int(pattern["size"])):
 			var point := origin + Vector2i(x - half, y - half)
-			if int(pattern["data"][y][x]) > 0 and (point != origin or support or self_centered(fields)) and inside(point, map_size) and (not terrain.has("words") or reached.has(point)):
+			if int(pattern["data"][y][x]) > 0 and inside(point, map_size) and (not terrain.has("words") or reached.has(point)):
 				result.append(point)
 	return result
 

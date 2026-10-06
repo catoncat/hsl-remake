@@ -643,7 +643,21 @@ func start_story_handoff(next_path: String, carry: Dictionary, story_records: Ar
 	# The story was a level entry too: it consumes a kept ST unless it ran actKeepPlayerST itself
 	# (STORY057／STORY081).
 	var keep := story_records.any(func(row): return row is Dictionary and row.get("kind") == "player_stamina_keep")
-	start_world_handoff(next_path, CarryRules.pass_level_entry(carry, keep) if not carry.is_empty() else carry, _placed_world(world_after_story(story_records), destination))
+	var passed := CarryRules.pass_level_entry(carry, keep) if not carry.is_empty() else carry
+	# Its actDeletePlayerCode deregisters members of the party it passes on.
+	passed = CarryRules.deregister(passed, CarryRules.story_deletions(story_records, _scene_bindings()))
+	start_world_handoff(next_path, passed, _placed_world(world_after_story(story_records), destination))
+
+
+## The running scene's token bindings (`<token>/<serial>`): its opening's, plus the script
+## interpreter's in a battle level (registered-player install tokens).
+func _scene_bindings() -> Dictionary:
+	var opening: Variant = runtime.first_battle_scenario.get("opening", {})
+	var bindings: Dictionary = (opening["actor_bindings"] as Dictionary).duplicate() if opening is Dictionary and opening.get("actor_bindings") is Dictionary else {}
+	var script_runtime: Variant = runtime.play_loop.get("winfail_runtime", {})
+	if script_runtime is Dictionary and script_runtime.get("actor_bindings") is Dictionary:
+		bindings.merge(script_runtime["actor_bindings"], true)
+	return bindings
 
 
 ## A battle-opening preview whose player skips the not-yet-remade battle continues

@@ -877,7 +877,10 @@ func run_skill_footprint_preview() -> void:
 		var reason := ""
 		for center in centers:
 			var preview: Array = BattlePlayLoop.Combat.skill_cast_footprint(preview_loop, center)
-			check(not preview.is_empty(), "%s previews a footprint at legal center %s" % [skill_id, center])
+			# The caster's own cell is a legal centre of every cast range (0x40f8b0 mode -1 writes the
+			# origin); an offensive area leaves the caster's P cell out (mode 2), so a one-cell footprint
+			# there is empty, as the original's 0x4100e0 leaves it.
+			check(not preview.is_empty() or (center == ORIGIN and not support), "%s previews a footprint at legal center %s" % [skill_id, center])
 			var expected := {}
 			for cell in preview:
 				if cell != ORIGIN or support: expected[cell] = true
@@ -1130,7 +1133,7 @@ func run_skill_target() -> void:
 				for x in range(9):
 					var point := Vector2i(x,y)
 					var offset: Vector2i = point-origin+Vector2i(half,half)
-					var allowed: bool = point!=origin and offset.x>=0 and offset.y>=0 and offset.x<int(pattern["size"]) and offset.y<int(pattern["size"])
+					var allowed: bool = offset.x>=0 and offset.y>=0 and offset.x<int(pattern["size"]) and offset.y<int(pattern["size"])
 					if allowed: allowed = pattern["data"][offset.y][offset.x]>0
 					check(cells.has(point)==allowed,"cast coverage follows each original source cell including map clipping")
 	var caster := BattlePlayLoop.unit_ref(loop,"leonard")
@@ -1433,7 +1436,7 @@ func run_skill_target() -> void:
 	void_caster["coord"] = Vector2i(8, 8)
 	var void_fields := BattlePlayLoop.skill_fields(void_loop, void_id)
 	var void_cells := SkillTargetRules.cells(Vector2i(8, 8), void_fields, data, map)
-	check(void_cells.has(Vector2i(12, 8)) and void_cells.has(Vector2i(10, 10)) and not void_cells.has(Vector2i(11, 10)) and not void_cells.has(Vector2i(8, 8)), "虛空無轉 casts anywhere within Manhattan distance 4 except the caster's cell")
+	check(void_cells.has(Vector2i(12, 8)) and void_cells.has(Vector2i(10, 10)) and not void_cells.has(Vector2i(11, 10)) and void_cells.has(Vector2i(8, 8)), "虛空無轉 casts anywhere within Manhattan distance 4, the caster's cell included (0x40f8b0 mode -1 writes the origin)")
 	var void_footprint := SkillTargetRules.effect_cells(Vector2i(12, 8), void_fields, data, map, Vector2i(8, 8))
 	check(void_footprint.has(Vector2i(13, 9)) and void_footprint.has(Vector2i(14, 8)) and not void_footprint.has(Vector2i(15, 8)), "its footprint is the range2CellCircle around the chosen cell")
 	var void_center := BattlePlayLoop.unit_ref(void_loop, "leonard")

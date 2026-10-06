@@ -13,6 +13,11 @@ instructions (bounds, 0x4000 stop, zero cell stop, coverage>=power stop, side-ma
 gate, onward 0x40eb80 wall check, DFS order). The actor list 0x4c34c0 is empty, so 0x40fc90
 finds nobody and the 0x850000 skip depends on the word only; heights are not read.
 
+Every cast-mode weapon case (mode -1, flag5 0) then runs the cursor check of the player's cast
+states, 0x40fab0(px, py) (0x444ed3 magic／0x4450ab special), on the caster's own cell: it reads
+the same buffer at the local centre, which the flood writes half+1 because table 0x40fa48 has no
+mode -1 entry, so the caster's own cell is inside the cast range (`origin_in_range`).
+
 Registry task range_terrain (family probe, hsltools.probes._base.ProbeTask).
 """
 from __future__ import annotations
@@ -37,6 +42,8 @@ WEAPON_STEP = {2: (P, True), 3: (E, True), 4: (P, False), 5: (E, False), 6: (0, 
 AREA_STEP = {0: (0, False), 1: (0, False), 2: (P, True), 3: (E, True), 4: (P, False), 5: (E, False), 6: (0, True),
              7: (N, True), 8: (0x60000, True), 9: (0x50000, True), 10: (0x30000, True)}  # 0x4100a0, default (0, True)
 LINE_CODES = {'range3CellDir': 21, 'range4CellDir': 22, 'range5CellDir': 23}
+CAST_MODE = -1  # player cast range 0x444eb7／0x445075／0x44508f and AI 0x40cfb0／0x40d459: mode -1, flag5 0
+CURSOR_CHECK = (0x40fab0, 0x40fb20)  # 0x40fab0(px, py): signed coverage byte of 0x4c1b48 at the cell, 0 off the local frame
 GRIDS = {
     'open': dict(size=15, words=[]),
     # Walls east/north-west/south of (7,7); occupants of every side around it; the caster word sits at (7,7).
@@ -220,7 +227,7 @@ AREA_RANGES = [(0x4100e0, 0x4104a0), (0x40fdc0, 0x4100e0), (0x40fc90, 0x40fdb3),
 
 def execute(base, mapped, c):
     from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_BLOCK
-    from unicorn.x86_const import UC_X86_REG_EIP, UC_X86_REG_ESP
+    from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EIP, UC_X86_REG_ESP
     m = Uc(UC_ARCH_X86, UC_MODE_32); m.mem_map(base, len(mapped)); m.mem_write(base, bytes(mapped)); m.mem_map(0x10000000, 0x20000)
     obj, actor, grid, coverage, table, shape, stack, stop = 0x10001000, 0x10002000, 0x10003000, 0x10005000, 0x10006000, 0x10007000, 0x1001ff00, 0x10000000
     w, words = words_for(c['grid']); rec = record(c['code'])
@@ -239,7 +246,7 @@ def execute(base, mapped, c):
     index = LINE_CODES.get(c['code'], 0)
     if c['builder'] == 'weapon':
         px, py = [v * 32 + 16 for v in c['origin']]
-        args, entry, allowed = [stop, px, py, index, c['mode'], c['flag5']], 0x40f8b0, WEAPON_RANGES
+        args, entry, allowed = [stop, px, py, index, c['mode'], c['flag5']], 0x40f8b0, list(WEAPON_RANGES)
     else:
         put(obj + 4, c['caster'][0] * 32 + 16); put(obj + 8, c['caster'][1] * 32 + 16); put(obj + 0xa4, 0); put(actor + 0xd8, 30)
         px, py = [v * 32 + 16 for v in c['target']]
@@ -257,6 +264,17 @@ def execute(base, mapped, c):
     m.emu_start(entry, stop, count=2000000)
     if m.reg_read(UC_X86_REG_EIP) != stop or m.reg_read(UC_X86_REG_ESP) != stack + 4:
         raise ValueError(f'Range propagation did not return: {c}')
+    built, extra = blocks, {}
+    if c['builder'] == 'weapon' and c['mode'] == CAST_MODE:
+        # The cast states' cursor check on the caster's own cell (px, py are its pixel centre).
+        allowed.append(CURSOR_CHECK)
+        m.mem_write(stack, struct.pack('<3I', stop, px, py)); m.reg_write(UC_X86_REG_ESP, stack)
+        m.emu_start(CURSOR_CHECK[0], stop, count=1000)
+        if m.reg_read(UC_X86_REG_EIP) != stop or m.reg_read(UC_X86_REG_ESP) != stack + 4:
+            raise ValueError(f'Cursor check did not return: {c}')
+        value = m.reg_read(UC_X86_REG_EAX) & 0xffffffff
+        extra['origin_in_range'] = value - (1 << 32) if value & 0x80000000 else value
+        blocks = built
     lw, lh, _ox, _oy = local_frame(c)
     if c['builder'] == 'area':
         width = struct.unpack('<2I', bytes(m.mem_read(0x476b3c, 8)))
@@ -270,7 +288,7 @@ def execute(base, mapped, c):
     if before != bytes(m.mem_read(actor, 0x1fc)) + bytes(m.mem_read(grid, w * w * 4)):
         raise ValueError('Range propagation changed actor/map')
     return dict(input=c, normal_return=True, entry=hex(entry), blocks=blocks, frame=list(local_frame(c)),
-                coverage=bytes(v & 255 for v in cov).hex(), actor_and_map_unchanged=True)
+                coverage=bytes(v & 255 for v in cov).hex(), actor_and_map_unchanged=True, **extra)
 
 
 def check(packet):
@@ -287,6 +305,9 @@ def check(packet):
             raise ValueError(f'Range terrain native frame differs: {c}')
         if cov != model(c):
             raise ValueError(f'Range terrain native coverage differs from model: {c}')
+        cast = c['builder'] == 'weapon' and c['mode'] == CAST_MODE
+        if cast != ('origin_in_range' in r) or (cast and r['origin_in_range'] != cov[(lh // 2) * lw + lw // 2]):
+            raise ValueError(f'Cursor check on the caster cell differs from the coverage centre: {c}')
 
 
 def execute_packet(exe: Path) -> dict:
@@ -298,7 +319,7 @@ def execute_packet(exe: Path) -> dict:
                 limits=['Grids are 15x15 map words only: 0x4000 wall and occupant side bits; heights are never read by these builders.',
                         'Actor list 0x4c34c0 is empty, so 0x40fc90 finds nobody; actor-driven clearing of the word is not exercised.',
                         'Maps smaller than the RANGE record (clamped local frame) are not exercised.',
-                        'Callers, cursor validation and whole action dispatch are separate.'])
+                        'The cursor check 0x40fab0 runs on the caster cell of the cast-mode cases only; callers and whole action dispatch are separate.'])
 
 
 def summary_line(packet: dict, executed_now: bool) -> str:
@@ -306,8 +327,10 @@ def summary_line(packet: dict, executed_now: bool) -> str:
     for r in packet['cases']:
         c = r['input']; key = 'line' if c['code'] in LINE_CODES else c['builder']
         kinds[key] = kinds.get(key, 0) + 1
+    cast = [r for r in packet['cases'] if 'origin_in_range' in r]
+    inside = sum(1 for r in cast if r['origin_in_range'] > 0)
     return (f'RANGE_TERRAIN_NATIVE_PASS returns={len(packet["cases"])} weapon={kinds.get("weapon", 0)} '
-            f'area={kinds.get("area", 0)} line={kinds.get("line", 0)} executed_now={executed_now}')
+            f'area={kinds.get("area", 0)} line={kinds.get("line", 0)} cast_origin_in_range={inside}/{len(cast)} executed_now={executed_now}')
 
 
 TASK = ProbeTask('range_terrain', PACKET, check, execute_packet, summary_line, replaces=(), render=compact_json_text)

@@ -1,6 +1,6 @@
 # 职业：主线角色模板、四种新增职业刷新与学习来源
 
-> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段; provisional: 模板坐标、reserve 状态字、HP≤0 重装与名单排序 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42c7e0, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4348f0, 0x4373f0, 0x437970, 0x437a40, 0x4483c0, 0x448840, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-09-28
+> evidence: static-derived; resource-derived: PLAYERS／OBJ 源字段; provisional: 模板坐标、reserve 状态字、HP≤0 重装与名单排序 · status: live · functions: 0x4075e0, 0x407ec0, 0x4080b0, 0x42c640, 0x42c700, 0x42c7e0, 0x42caa0, 0x42cac0, 0x42caf0, 0x42cb30, 0x4348f0, 0x4373f0, 0x437970, 0x437a40, 0x4483c0, 0x448840, 0x44cb10 · tools: hsltools/data/campaign_actors.py, hsltools/probes/campaign_actor.py, run_campaign_tests.gd, run_growth_lifecycle_tests.gd, run_job_stats_tests.gd, test_hsl_level_battle.py · updated: 2026-10-06
 
 ## 结论
 
@@ -26,7 +26,7 @@
 - 学习：`0x4373f0` 以存储等级+1 查魔法；`0x437a40` 选职业特殊表，`0x437970` 返回第一项未持有且满足基础属性／tier 的技能。初始 mask 来自 PLAYERS 与 mag-spc.h。
 - 066（第 37 关守卫，`jobCrazyWarrior`、pmEnemy、`hit_point -10000`）与 067（柱子寶石，`jobCrazyWarrior`、pmMagicAttack、`no_attack 1`、`hit_point -10000`）：源 HP 半字 `+0x1b6` 按有符号读，公式值加 −10000 后公共收尾夹到 **最大 HP 1**；再由 STORY037 `actSetPlayerUndead` 设不死身，普通攻击「毫無效果」（WINFAIL037 2096）。`0x40e870` 同样按有符号 16 位读该半字。
 - 068（第 80 关怨念體，`jobPriestMaster` 86、pmEnemy、`size_type 1`、1200 HP、move 0）：1 级最大 HP 1293、MP 92；源魔法 8 种都是已支持技能 id。
-- 注册移除（opcode 71）：跳表项 `0x450dd0` 以脚本两参数 `(slot, clear)` 调 `0x42caf0`；`0x42cafa` 无条件把 `0x4c4360[slot]` 写 0，`0x42cb05` 在 `clear == 0` 时直接返回，否则 `0x42cb09..0x42cb21` 把 `*0x4c1bc8 + (slot+1)×0x1fc` 的 127 个双字清零。全部剧本只有两处：WINFAIL053 win 0（`SID_PLAYER1, 0`，记录保留）与 WINFAIL015 event 4（`SID_咕嚕, 1`，记录清零）（resource-derived，`content/imported/hsl/story_corpus/scripts/`）。
+- 注册移除（opcode 71）：跳表项 `0x450dd0` 以脚本两参数 `(slot, clear)` 调 `0x42caf0`；`0x42cafa` 无条件把 `0x4c4360[slot]` 写 0，`0x42cb05` 在 `clear == 0` 时直接返回，否则 `0x42cb09..0x42cb21` 把 `*0x4c1bc8 + (slot+1)×0x1fc` 的 127 个双字清零。全部剧本只有两处：WINFAIL053 win 0（`SID_PLAYER1, 0`，记录保留）与 WINFAIL015 event 4（`SID_咕嚕, 1`，记录清零）（注册与离队为 static-derived：`0x4080b0`／`0x42caf0`；脚本出处 resource-derived，`content/imported/hsl/story_corpus/scripts/`）。WINFAIL015 的 event 4 是 event 2（第 27 回合）选项「2.不救」的分支；event 2 先 `actInsertStoryObject obj_Story_Player8` 装入咕嚕，OBJ-015.OBS 的 code 13（`obj_Story_Player8`，OBJ-ALL.H）是 `defProcPlayerInstall`、`obj_Data9 = 7`、无 Data8 的普通安装，经 `0x42cb30` 注册槽 7，所以 event 4 注销的是已注册的咕嚕：选「不救」后他不再是队员、记录清空；选「1.救」走 event 3，不注销（resource-derived，原 PAK `@:\data\obj-015.obs`）。
 - 重装：构造器 `0x407ec0` 对玩家对象只在 live 工作属性 `+0x4c..+0x58` 全零时走模板复制 `0x44cb10(slot, 1)`，否则只写本次安装参数并 `0x448840` 刷新（[original_level37_tokens.md](original_level37_tokens.md)）；魔法位在记录里，随记录保留。第 2 关 STORY002 event0 的 OBJ-002（`defProcPlayerInstall`、`obj_Data9=1`，[original_player_install.md](original_player_install.md)）经 `0x42cb30` 重新注册空槽 1（801）后进构造器。
 **注册表字段与交接写回**（static-derived，r2 读 `0x42c7e0`／`0x42c640`／`0x4075e0`／`0x4080b0`／`0x407ec0` 与注册表全部访问点）：
 

@@ -1,6 +1,6 @@
 {
   "schema": "hsl_parity_gap_inventory.v1",
-  "updated": "2026-10-02",
+  "updated": "2026-10-06",
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 88,
@@ -1370,8 +1370,8 @@
     },
     {
       "id": "carry-model",
-      "difference": "carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序",
-      "original": "注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；已移除注册的记录不经入口",
+      "difference": "carry 照注册表传下全体已加入成员（含未上场、阵亡），入口回满 HP／MP、ST 归零（actKeepPlayerST 保留），脚本插入与 53 关 緹娜 的 reserve 沿用记录；脚本注销（actDeletePlayerCode）在交接时让成员离队，mode 0 记录进 reserve、非 0 清掉（深淵之沼（LEVEL015）选「不救」时的咕嚕）；剩余：reserve 不带状态字、HP≤0 记录重装删对象未建模、城镇名单按 carry 序而非槽序、开场剧情里的注销只作防御（原版剧本没有这种用法）；装备与商店菜单只列承接名单里的人",
+      "original": "注册表 0x4c4360 只存槽码，阵亡不注销；入口 0x4075e0 对已注册槽回满 HP／MP、[0x4c1af0]==0 时 ST 清零；0x407ec0 对工作属性非零的记录不复制模板、HP≤0 删对象；0x42caf0 注销清槽、mode 非 0 才清记录，已移除注册的记录不经入口",
       "original_evidence": [
         "docs/evidence_packets/static_reverse/original_check_targets.md",
         "docs/evidence_packets/runtime_observations/campaign_handoff/README.md",

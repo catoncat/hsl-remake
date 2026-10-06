@@ -52,6 +52,7 @@ func _run() -> void:
 	_test_pure_carry()
 	_test_town_job_up_carry()
 	_test_battle_job_up_carry()
+	_test_deregistered_members()
 	_test_destinations()
 	await _test_battle_job_up_runtime_handoff()
 	await _test_separate_party_loot_gate()
@@ -274,6 +275,50 @@ func _test_battle_job_up_carry() -> void:
 
 
 var _battle_job_up_carry: Dictionary = {}
+
+
+## actDeletePlayerCode [slot][mode] (opcode 71 → 0x42caf0, original_campaign_actors.md): the
+## member is no longer registered, so the carry leaves him out of the party (conditional slots,
+## town), and only a non-zero mode zeroes his live record. WINFAIL015 event 2 installs 咕嚕
+## (OBJ-015 code 13, a plain defProcPlayerInstall: slot 7 registered); choice 2 不救 fires
+## event 4 → `SID_咕嚕, 1`. A mode-0 record rides as a reserve record the next install of the
+## member takes; a story scene's own deletion (player_code_delete story record) reads the same.
+func _test_deregistered_members() -> void:
+	var Winfail = preload("res://game/sim/WinfailScenarioRules.gd")
+	var Conditional = preload("res://game/sim/ConditionalPartyRules.gd")
+	var campaign := CampaignProgress.load_campaign()
+	var scenario15 := BattleScenario.load_file("res://content/battles/battle_015.json")
+	var level15 := BattlePlayLoop.create([], "", scenario15, 7)
+	var install: Dictionary = BattlePlayLoop.ScriptActors.install_actor(level15, level15["script_actor_source"]["templates"]["obj_Story_Player8"], "obj_Story_Player8", 0, 0, {})
+	_assert_true(bool(install.get("ok", false)), "WINFAIL015 event 2 installs 咕嚕")
+	var saved := CampaignCarryRules.capture(Winfail.select_event_status(level15, 3), campaign["carry_policy"])
+	_assert_true(saved["units"].has("gulu"), "choice 1 救 (event 3): 咕嚕 stays a party member")
+	var left := CampaignCarryRules.capture(Winfail.select_event_status(level15, 4), campaign["carry_policy"])
+	_assert_true(not left["units"].has("gulu") and not (left.get(CampaignCarryRules.RESERVE, {}) as Dictionary).has("gulu") and left["units"].has("leonard"), "choice 2 不救 (event 4, mode 1): 咕嚕 leaves the party and his record is gone; the others ride on")
+	_assert_eq(Conditional.apply(BattleScenario.load_file("res://content/battles/battle_037.json"), left)["receipt"]["skipped"], ["gulu"], "level 37's 有才產生 slot no longer fields 咕嚕")
+	var PartyEquipment = preload("res://game/sim/PartyEquipmentRules.gd")
+	var menus: Dictionary = PartyEquipment.sandbox(BattlePlayLoop.create([], "", BattleScenario.load_file("res://content/battles/battle_037.json")), left)
+	var listed: Array = PartyEquipment.members(menus["loop"]).map(func(unit): return str(unit["id"]))
+	_assert_true(bool(menus["ok"]) and not listed.has("gulu") and listed.has("leonard"), "the town's equipment and shop menus list the party the carry holds, not the scenario's 咕嚕 template")
+	# Mode 0 on a fielded member: out of the party, her live record kept with the HP she left with.
+	var fought := BattlePlayLoop.create([], "", scenario15, 7)
+	_unit(fought, "shera")["kill_count"] = 4
+	_unit(fought, "shera")["hp"] = 5
+	fought["winfail_runtime"]["deleted_player_codes"].append({"key": "event_0", "actor_token": "SID_雪拉", "mode": 0, "unit_ids": ["shera"]})
+	var reserved := CampaignCarryRules.capture(fought, campaign["carry_policy"])
+	var record: Dictionary = (reserved.get(CampaignCarryRules.RESERVE, {}) as Dictionary).get("shera", {})
+	_assert_true(not reserved["units"].has("shera") and int(record.get("kill_count", 0)) == 4 and int(record.get("hp", 0)) == 5, "mode 0: 雪拉 leaves the party; her record rides as a reserve record")
+	_assert_true(not (WorldPartyRules.party_from_carry(reserved, {})["member_ids"] as Array).has("shera"), "the town party no longer lists her")
+	_assert_true((Conditional.apply(BattleScenario.load_file("res://content/battles/battle_540.json"), reserved)["receipt"]["skipped"] as Array).has("shera"), "an encounter's 有才產生 slot no longer fields her")
+	# The next install of the same member takes the record (0x407ec0 copies no template over it).
+	var rejoined := BattlePlayLoop.apply_campaign_carry(BattlePlayLoop.create([], "", scenario15, 7), reserved)
+	_assert_eq([int(_unit(rejoined, "shera")["kill_count"]), int(_unit(rejoined, "shera")["hp"])], [4, 5], "re-installed 雪拉 takes her reserve record")
+	var again := CampaignCarryRules.capture(rejoined, campaign["carry_policy"])
+	_assert_true(again["units"].has("shera") and not again.has(CampaignCarryRules.RESERVE), "the install registers her again and uses up the reserve record")
+	# A level that hands off from its opening: the story's own actDeletePlayerCode.
+	var story := [{"kind": "player_code_delete", "params": {"id": "SID_雪拉", "mode": 0}, "status": "recorded_no_handler"}]
+	var passed := CampaignCarryRules.deregister(again, CampaignCarryRules.story_deletions(story, scenario15["opening"]["actor_bindings"]))
+	_assert_true(not passed["units"].has("shera") and (passed.get(CampaignCarryRules.RESERVE, {}) as Dictionary).has("shera"), "a story scene's deletion deregisters through its opening bindings")
 
 
 ## The same carry through the product path: a pending hand-off into level 38 fields the

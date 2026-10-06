@@ -739,7 +739,7 @@ func _walled_pocket_battle_504() -> void:
 
 
 ## battle_003 opening: 胡's 毒魔箭 cast range range3CellThrust through the player's
-## selection (mode -1, flag 0: walls stop, no side exclusion) and the settled cast check.
+## selection (mode -1, flag 0: walls stop, no side exclusion, the origin written) and the settled cast check.
 func _cast_range_battle_003() -> void:
 	var loop := _loop("battle_003")
 	var hu := BattlePlayLoop.unit(loop, "hu")
@@ -751,7 +751,7 @@ func _cast_range_battle_003() -> void:
 	var cells := BattlePlayLoop.attack_cells(selecting, "hu")
 	check(flat.has(Vector2i(4, 7)) and flat.has(Vector2i(4, 6)) and not cells.has(Vector2i(4, 7)) and not cells.has(Vector2i(4, 6)), "毒魔箭 from (4,9): the 0x4000 cell (4,7) and (4,6) behind it are not castable")
 	check(cells.has(Vector2i(4, 8)) and cells.has(Vector2i(3, 10)), "毒魔箭 from (4,9): (4,8) before the wall and the ally cell (3,10) stay castable")
-	_assert_eq(cells, [Vector2i(4, 8), Vector2i(5, 8), Vector2i(5, 9), Vector2i(6, 9), Vector2i(7, 9), Vector2i(3, 10), Vector2i(4, 10), Vector2i(5, 10), Vector2i(4, 11), Vector2i(4, 12)], "毒魔箭 cast cells from (4,9)")
+	_assert_eq(cells, [Vector2i(4, 8), Vector2i(5, 8), Vector2i(4, 9), Vector2i(5, 9), Vector2i(6, 9), Vector2i(7, 9), Vector2i(3, 10), Vector2i(4, 10), Vector2i(5, 10), Vector2i(4, 11), Vector2i(4, 12)], "毒魔箭 cast cells from (4,9), 胡's own cell included")
 	var caster: Dictionary = hu.duplicate(true)
 	caster["stamina"] = 60
 	var walled := SkillResolutionRules.prepare_cast(caster, caster, loop["units"], POISON_ARROW, fields, loop["skill_book"], loop["skill_target_data"], loop["equipment_items"], caster["coord"], loop["map_size"], Vector2i(4, 7), {"range_terrain": BattlePlayLoop.skill_terrain(loop)})

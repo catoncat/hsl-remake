@@ -1,6 +1,6 @@
 # 范围格：ICONBOX 半透明填充、I_rect 边框帧与逐 tick 脉动
 
-> evidence: static-derived; resource-derived; runtime-measured · status: live · functions: 0x40fa80, 0x4100e0, 0x411200, 0x411480, 0x4116a0, 0x444fb3, 0x445256, 0x4504d0, 0x450d4b, 0x450d69, 0x4684b6 · tools: hsl_original_control.py, hsl_win32_memread.c, hsltools/assets/range_cells.py · updated: 2026-09-27
+> evidence: static-derived; resource-derived; runtime-measured · status: live · functions: 0x40fa80, 0x4100e0, 0x411200, 0x411480, 0x4116a0, 0x444fb3, 0x445256, 0x4504d0, 0x450d4b, 0x450d69, 0x4684b6 · tools: hsl_original_control.py, hsl_win32_memread.c, hsltools/assets/range_cells.py, hsltools/probes/range_terrain.py · updated: 2026-10-06
 
 ## 结论
 
@@ -29,7 +29,7 @@
 | 脉动 `0x411442..0x41145e` | 绘制后 `counter >= 0` 时 +1，`ramp[counter] == 0` 则 `counter = 1 - counter`；`counter < 0` 时仅 +1；序列 `0,1,…,8,-8,…,-1`，17 tick 一周；四张 ramp 由亮到暗（移动 `0x529f → 0x295a`） |
 | 选目标叠画 | 玩家魔法态 `0x79`：`0x444eb7` 调 `0x40fa80`→`0x40f8b0` 把射程写进 `*0x4c1b48`，`0x444f08`／`0x444f1b` 调 `0x4100e0` 把光标格脚印写进 `*0x4c1b4c`；每 tick `0x444fb3` 调 `0x411480`（红），随后 `0x444fca` 调 `0x4116a0(x, y, 0, 0)`。绝技态 `0x98`：`0x445075`／`0x44508f` 写射程、`0x4450e0`／`0x4450f4` 写脚印，`0x445256` 画红、`0x44526b` 调 `0x4116a0(…, 1)`。AI 起手同序：魔法 `0x441779`／`0x4418fd` 写、`0x44198f` 红→`0x4419a5` 黄；绝技 `0x441a73`／`0x441c02` 写、`0x441c84` 红→`0x441c9b` 青绿 |
 | 计数器归属 | 三个脉动计数器 `0x4c1a7c`／`0x4c1a80`／`0x4c1a84` 与三组帧计时（字 `0x476bf8`／`0x476c14`／`0x476c44`，帧 `0x476bfc`／`0x476c18`／`0x476c48`）在全 EXE 的引用只在各自绘制函数体内（`0x411248..0x41146c`、`0x4114bc..0x411692`、`0x411709..0x4118f1`）：不在别处复位，各层只在自己被画的 tick 前进一格；魔法与绝技脚印共用 `0x4116a0` 的一组 |
-| 自中心绝技射程层 | 绝技态写射程前 `0x445026` 调 `0x409830` 取该绝技的射程，`0x445075`／`0x44508f` 以施法者为原点 `0x40fa80(施法者, 射程, -1, 0)`——自中心绝技（射程 `range0Cell`）也一样，红层只有传播后的施法者格；`0x4450ab` 以 `0x40fab0` 查光标格在射程缓冲里才 `0x4450e0` 以光标格调 `0x4100e0` 写脚印，否则 `0x4450f4` 清空 |
+| 施法者格在射程层里 | 绝技态写射程前 `0x445026` 调 `0x409830` 取该绝技的射程，`0x445075`／`0x44508f` 以施法者为原点 `0x40fa80(施法者, 射程, -1, 0)`；mode −1 不排除原点，所有魔法／绝技的红层都含施法者格（原生执行见 [original_range_terrain.json](original_range_terrain.json) 的 `origin_in_range`），自中心绝技（射程 `range0Cell`）的红层只有这一格；`0x4450ab` 以 `0x40fab0` 查光标格在射程缓冲里才 `0x4450e0` 以光标格调 `0x4100e0` 写脚印，否则 `0x4450f4` 清空 |
 | 帧计时 `0x4113ff..0x411438` | `delay -= 1`，到 0 重装为字 `0x476bfa` = 8，`frame = (frame+1) mod` 字 `0x476bfe` = 8；初始 delay 8、frame 0 |
 
 tick 定义见 [original_tick_rate](../runtime_observations/original_tick_rate/README.md)。

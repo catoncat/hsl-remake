@@ -4,7 +4,7 @@ extends RefCounted
 ## one, refresh derived stats through the shared progression/mobility rules.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_campaign_actors.md
-##     (registry 0x4c4360: members go on fielded or not; entry 0x4075e0; reserve 0x42caf0, 0x407ec0)
+##     (registry 0x4c4360: members go on fielded or not; entry 0x4075e0; deregistration and reserve 0x42caf0, 0x407ec0)
 ##   rules: remake-invented
 ##     (a carry dictionary stands in for the slot table: member order, reserve status words)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_town_job_up.md
@@ -38,8 +38,9 @@ const SCHEMA := "hsl_campaign_carry.v1"
 ## then holds its `stamina`. Without it (every older carry too) a carried member enters at 0.
 const KEEP_STAMINA := "keep_stamina"
 ## Live records of members whose registration a script removed without clearing the record
-## (level 53: WINFAIL053 win 0 `actDeletePlayerCode SID_PLAYER1, 0` -> 0x42caf0(1, 0) zeroes only
-## the slot code; the record at live index 2 is zeroed only when the second argument is non-zero).
+## (`actDeletePlayerCode [slot] 0`, see deregister; level 53: WINFAIL053 win 0
+## `actDeletePlayerCode SID_PLAYER1, 0` -> 0x42caf0(1, 0) zeroes only the slot code; the record
+## at live index 2 is zeroed only when the second argument is non-zero).
 ## They are not party members (no town, no conditional installs), but the next install of the
 ## same member -- a scenario unit or a script `registered_player` insert -- takes the record,
 ## as 0x407ec0 copies no template over a record whose working attributes are non-zero.
@@ -68,28 +69,8 @@ const DEFAULT_POLICY := {
 
 
 static func capture(loop: Dictionary, policy: Dictionary = DEFAULT_POLICY) -> Dictionary:
-	var units: Dictionary = {}
 	var keep := keeps_stamina(loop)
-	for unit_value in loop.get("units", []):
-		if typeof(unit_value) != TYPE_DICTIONARY:
-			continue
-		var unit: Dictionary = unit_value
-		if str(unit.get("battle_actor_role", "")) not in policy.get("roles", DEFAULT_POLICY["roles"]):
-			continue
-		var record: Dictionary = {"actor_id": str(unit.get("actor_id", "")), "attributes": {}}
-		for key in policy.get("unit_keys", DEFAULT_POLICY["unit_keys"]):
-			if unit.has(key):
-				record[key] = _copy(unit[key])
-		var profile: Dictionary = unit.get("combat_profile", {})
-		for key in policy.get("attribute_keys", DEFAULT_POLICY["attribute_keys"]):
-			if profile.has(key):
-				record["attributes"][key] = int(profile[key])
-		if keep:
-			record["stamina"] = int(unit.get("stamina", 0))
-		units[str(unit.get("id", ""))] = record
-	var forwarded := _unfielded_forward(loop, keep)
-	for unit_id in forwarded:
-		if not units.has(unit_id): units[unit_id] = forwarded[unit_id]
+	var units := _registered_units(loop, policy, keep)
 	var loop_values: Dictionary = {}
 	for key in policy.get("loop_keys", DEFAULT_POLICY["loop_keys"]):
 		if loop.has(key):
@@ -111,7 +92,113 @@ static func capture(loop: Dictionary, policy: Dictionary = DEFAULT_POLICY) -> Di
 		carry[KEEP_STAMINA] = true
 	var pending := BattleRewardRules.carry_pending(loop)
 	if not pending.is_empty(): carry["pending_rewards"] = pending
-	return carry
+	return deregister(carry, battle_deletions(loop), loop)
+
+
+## The members registered when the battle's scripts are done, before their deregistrations:
+## every unit of a carried role it fielded or inserted, and every carried member it never
+## fielded (_unfielded_forward).
+static func _registered_units(loop: Dictionary, policy: Dictionary, keep: bool) -> Dictionary:
+	var units: Dictionary = {}
+	for unit_value in loop.get("units", []):
+		if typeof(unit_value) != TYPE_DICTIONARY:
+			continue
+		var unit: Dictionary = unit_value
+		if str(unit.get("battle_actor_role", "")) not in policy.get("roles", DEFAULT_POLICY["roles"]):
+			continue
+		var record: Dictionary = {"actor_id": str(unit.get("actor_id", "")), "attributes": {}}
+		for key in policy.get("unit_keys", DEFAULT_POLICY["unit_keys"]):
+			if unit.has(key):
+				record[key] = _copy(unit[key])
+		var profile: Dictionary = unit.get("combat_profile", {})
+		for key in policy.get("attribute_keys", DEFAULT_POLICY["attribute_keys"]):
+			if profile.has(key):
+				record["attributes"][key] = int(profile[key])
+		if keep:
+			record["stamina"] = int(unit.get("stamina", 0))
+		units[str(unit.get("id", ""))] = record
+	var forwarded := _unfielded_forward(loop, keep)
+	for unit_id in forwarded:
+		if not units.has(unit_id): units[unit_id] = forwarded[unit_id]
+	return units
+
+
+## actDeletePlayerCode [slot][mode] (opcode 71 -> 0x42caf0(slot, mode)): 0x42cafa zeroes the
+## slot's registration, so the member is no party member any more -- not carried into the next
+## level, not in the town, not fielded by a conditional install -- and only a non-zero mode
+## also zeroes his live record (0x42cb09..0x42cb21; a later install copies the template).
+## Mode 0 keeps the record as a RESERVE record with the HP／MP／ST it had then: a unit `loop`
+## fielded leaves its own, a member it never fielded the entry's (full HP／MP, the receipt's
+## unfielded ST); without a loop (a story scene) the passed record is kept as it is.
+## `deletions`: [{mode, unit_ids}] in script order (battle_deletions, story_deletions).
+static func deregister(carry: Dictionary, deletions: Array, loop: Dictionary = {}) -> Dictionary:
+	if deletions.is_empty() or carry.get("schema") != SCHEMA or not carry.get("units") is Dictionary:
+		return carry
+	var next := carry.duplicate(true)
+	var units: Dictionary = next["units"]
+	var reserve: Dictionary = next[RESERVE] if next.get(RESERVE) is Dictionary else {}
+	for deletion in deletions:
+		for unit_id in deletion["unit_ids"]:
+			var record: Variant = units.get(unit_id)
+			units.erase(unit_id)
+			if int(deletion["mode"]) != 0:
+				reserve.erase(unit_id)
+			elif record is Dictionary:
+				reserve[unit_id] = _left_record(loop, unit_id, record)
+	next.erase(RESERVE)
+	if not reserve.is_empty(): next[RESERVE] = reserve
+	return next
+
+
+## The deregistrations this battle's scripts ran: WinfailActions records each
+## actDeletePlayerCode in winfail_runtime.deleted_player_codes with the units its token
+## resolved to on the field; the scenario's binding of the token adds a member it never fielded.
+static func battle_deletions(loop: Dictionary) -> Array:
+	var runtime: Dictionary = loop["winfail_runtime"] if loop.get("winfail_runtime") is Dictionary else {}
+	var bindings: Dictionary = runtime["actor_bindings"] if runtime.get("actor_bindings") is Dictionary else {}
+	var deletions := []
+	for entry in runtime.get("deleted_player_codes", []):
+		if entry is Dictionary:
+			deletions.append({"mode": int(entry.get("mode", 0)), "unit_ids": _named_units(str(entry.get("actor_token", "")), entry.get("unit_ids", []), bindings)})
+	return deletions
+
+
+## A scene's STORY deregistrations: the opening timeline keeps each actDeletePlayerCode it
+## plays (compiled player_code_delete, params {id, mode}) as a story record; `bindings` are the
+## scene's `<token>/<serial>` -> unit id (or {unit_id}) bindings. Records of a winfail chain's
+## cutscene are left out: the script interpreter already recorded those (battle_deletions).
+static func story_deletions(story_records: Array, bindings: Dictionary) -> Array:
+	var deletions := []
+	for row in story_records:
+		if row is Dictionary and row.get("kind") == "player_code_delete" and row.get("status") == "recorded_no_handler" and row.get("params") is Dictionary:
+			deletions.append({"mode": int(row["params"].get("mode", 0)), "unit_ids": _named_units(str(row["params"].get("id", "")), [], bindings)})
+	return deletions
+
+
+## The units a deregistration names: those resolved on the field and every unit `bindings` bind
+## to its token -- 0x42caf0 clears the slot whether or not its member stands in the level.
+static func _named_units(token: String, resolved: Array, bindings: Dictionary) -> Array:
+	var ids := []
+	for unit_id in resolved:
+		if not ids.has(str(unit_id)): ids.append(str(unit_id))
+	for key in bindings:
+		if token == "" or not str(key).begins_with(token + "/"): continue
+		var unit_id := str(bindings[key].get("unit_id", "")) if bindings[key] is Dictionary else str(bindings[key])
+		if unit_id != "" and not ids.has(unit_id): ids.append(unit_id)
+	return ids
+
+
+## The record a mode-0 deregistration leaves behind (RESERVE) with its HP／MP／ST at that point.
+static func _left_record(loop: Dictionary, unit_id: String, record: Dictionary) -> Dictionary:
+	var left := record.duplicate(true)
+	var unit := _unit_of(loop, unit_id)
+	if not unit.is_empty():
+		for key in VITAL_KEYS: left[key] = int(unit.get(key, 0))
+		return left
+	var receipt: Dictionary = loop["campaign_carry_receipt"] if loop.get("campaign_carry_receipt") is Dictionary else {}
+	var stamina: Variant = receipt["unfielded_stamina"].get(unit_id) if receipt.get("unfielded_stamina") is Dictionary else null
+	if stamina != null: left["stamina"] = int(stamina)
+	return left
 
 
 ## Reserve records this battle received and did not install go on unchanged.
@@ -161,7 +248,8 @@ static func separate_party_carry(incoming: Dictionary, loop: Dictionary) -> Dict
 		if not carry.get("loop") is Dictionary: carry["loop"] = {}
 		carry["loop"]["party_storage"] = _copy(loop["party_storage"])
 	var reserve: Dictionary = (carry[RESERVE] as Dictionary).duplicate(true) if carry.get(RESERVE) is Dictionary else {}
-	var own: Dictionary = capture(loop)["units"]
+	# Every own member, the one WINFAIL053 deregisters included (capture would take her out).
+	var own := _registered_units(loop, DEFAULT_POLICY, keeps_stamina(loop))
 	for unit_id in own:
 		if (carry.get("units", {}) as Dictionary).has(unit_id): continue
 		var record: Dictionary = own[unit_id]

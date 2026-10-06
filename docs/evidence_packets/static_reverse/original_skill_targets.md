@@ -1,10 +1,11 @@
 # 技能目标：function 到目标模式、覆盖构建与共享来源范围
 
-> evidence: static-derived; resource-derived: RANGE 矩阵; runtime-measured: 重制侧选格回执; provisional: 敌我 role 适配与 AI 候选策略 · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd · updated: 2026-09-28
+> evidence: static-derived; resource-derived: RANGE 矩阵; runtime-measured: 重制侧选格回执; provisional: 敌我 role 适配与 AI 候选策略 · status: live · functions: 0x407800, 0x409850, 0x409870, 0x40ba80, 0x40c9a0, 0x40f8b0, 0x40fab0, 0x40fc90, 0x4100e0, 0x4104d0, 0x446b30 · tools: hsltools/data/skill_targeting.py, hsltools/probes/range_terrain.py, hsltools/probes/skill_target.py, run_skill_resolution_tests.gd, run_water_strike_tests.gd · updated: 2026-10-06
 
 ## 结论
 
 - 原版：玩家施放按技能 function 选目标模式——Magic 用掩码 `0xf62`、Special 用 `0x18f62`，命中为 mode3（排除 pmEnemy），否则 mode2（排除 pmPlayer）；HealMP、ActiveAgain 在 Magic 下是 mode2、在 Special 下是 mode3；覆盖由 `0x4100e0` 按 RANGE 结构写缓冲，`0x4104d0` 去重枚举角色（static-derived；32 组单格夹具完整返回）。
+- 原版：魔法／绝技的施放范围含施法者自己的格。玩家（`0x444eb7`／`0x445075`／`0x44508f`）与 AI（`0x40cfb0`／`0x40d459`）都以 `0x40f8b0(…, −1, 0)` 从施法者传播，`0x40f98a` 的无符号边界检查让 mode −1 越过 `0x40fa48` 跳转表、掩码保持 0，原点写 half+1（原生执行 48／48，见下）；施法态每 tick 的光标检查 `0x40fab0`（魔法 `0x444ed3`、绝技 `0x4450ab`）读到非零就按效果范围写脚印，左键时 `0x4104d0` 取到目标即施放；AI 选中心 `0x40c9a0` 扫射程缓冲的全部非零格，不跳过原点。攻击技能以自身格为中心时，效果覆盖按 mode 2 不写施法者自己的 P 格：水剎（range3CellCircle→range1Cell）被围时脚印是身边四格，单格作用的攻击技能在自身格上没有目标、不能确认（static-derived：左键取目标 `0x444f2d..0x444f3c`／`0x44511b..0x44512a` 经 `0x4104d0` 收不到角色就落空；作用范围不写施法者格见下表 area 例）。
 - 重制：`SkillTargetRules` 由玩家特殊技、法师 AI 与战斗预告共用来源 RANGE 矩阵；`definition_error` 按 function 掩码白名单放行，源数据出现的组合都在白名单内（技能无拒绝项，差异清单 `unimplemented-abilities`），白名单外的组合明确报错（static-derived）。
 - 差异：敌我判断走重制 role 适配，不是原全部 pm 组合；AI 候选顺序与随机抽选是重制策略（provisional）。
 
@@ -17,6 +18,7 @@
 | function getter | Magic `0x409850`（`0x4c2ca0`，记录 +0x24）；Special `0x409870`（`0x4c3920`，+0x28） | 当前氣刃斬、風刃、幻火均为 `magicFun_Attack=1` |
 | Magic 模式 | `0x444e8e` 调 getter，function=0 拒绝；`0x444e9e..0x444eb2` `(function & 0xf62)!=0` → mode3，否则 mode2 | — |
 | Special 模式 | `0x44503a` 调 getter；`0x44504a` 掩码 `0x18f62`；`0x445053`／`0x44507f` 写 mode3／2 | ActiveAgain 另进 `0x40ba80` 相关调用 |
+| 施放范围 | Magic `0x444eb7`、Special `0x445075`／`0x44508f` 调 `0x40fa80(角色, range, −1, 0)` → `0x40f8b0`；`0x40fab0(x, y)` 按局部框读 `0x4c1b48` 的有符号字节，框外返回 0；`0x444ed3`／`0x4450ab` 为 0 时以 range −1 清脚印（`0x444f1b`／`0x4450f4`） | 原点写 half+1，mode −1 不排除任何侧位：施法者格在范围内 |
 | 覆盖构建 | Magic `0x444f08`、Special `0x4450e0` 调 `0x4100e0(角色, XY, effect_range, mode)`；分发表 `0x410498`：mode2 → `0x410155` 排除 0x10000，mode3 → `0x410161` 排除 0x20000 | pmPlayer 0x10000、pmEnemy 0x20000、pmNPC 0x40000 |
 | 单格 center | `0x4103cc` 查排除位，0x70000 组合例外；`0x40fc90` 在角色指针非零时清临时地图位，`0x410410` 查 0x850000 标记 | 地图位与有无角色共同决定覆盖 |
 | `0x446b30` | actor+0xa0 的 0x10 位 | 语义未命名 |
@@ -29,6 +31,8 @@
 | HealMP、ActiveAgain | 2 | 3 |
 
 执行：32 个 1×1 地图／range0Cell 夹具（mode2／3 × 八种地图位 × 有无角色），每例完整执行一次 `0x4100e0`、两次 `0x4104d0`，均正常返回，后继枚举为 0，角色与地图不变；无 stub，8192 指令上限。
+
+施放范围原点（[original_range_terrain.json](original_range_terrain.json)，`hsltools/probes/range_terrain.py`）：16 种 RANGE 矩阵 × 空地／带墙／柱子三张 15×15 格，`0x40f8b0(7,7, range, −1, 0)` 后以施法者格调 `0x40fab0`，48／48 返回中心字节 half+1；带墙格的施法者格带 P 侧位字（玩家施法者）也一样。range3CellCircle 三张格均返回 4。结果行：`RANGE_TERRAIN_NATIVE_PASS returns=368 weapon=138 area=104 line=126 cast_origin_in_range=48/48 executed_now=True`。
 
 **resource-derived**：`range2Cell` 两格十字，`range3CellCircle` 三格菱形，`range0Cell` 单格；矩阵非零值即范围，不按名字推半径。
 
@@ -44,7 +48,7 @@
 
 ## 复现
 
-`python3 tools/hsl.py check skill_target`；`python3 tools/hsl.py check skill_target_data`；重制侧 `tools/godot.sh --headless --script tests/run_skill_resolution_tests.gd`。
+`python3 tools/hsl.py check skill_target`；`python3 tools/hsl.py check skill_target_data`；施放范围原点 `python3 tools/hsl.py check range_terrain`（复跑 `uv run --no-project --with unicorn==2.1.4 --python /opt/homebrew/bin/python3 python3 tools/hsl.py generate range_terrain --exe $HSL_ORIGINAL_DIR/hsl01.exe`）；重制侧 `tools/godot.sh --headless --script tests/run_skill_resolution_tests.gd`。
 
 ## 边界
 
