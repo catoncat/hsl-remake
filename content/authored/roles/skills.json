@@ -1,7 +1,7 @@
 {
   "schema": "hsl_authored_skills.v1",
   "evidence_tier": "authored",
-  "note": "續集招式表：每行一招，欄位與 SPECIAL.TXT（channel special，絕技，耗 ST）／MAGIC.TXT（channel magic，魔法，耗 MP）的行相同，另加 channel 與 name_text（顯示名；原表用 RESOURCE.TXT 編號）。code 以 authored 開頭，id = channel:type:code。function 目前只收 magicFun_Attack（兩個通道的原生傷害公式）；其他效果族需要運行時決定。表現：special 的 attack_code／defense_code、magic 的 effect_code 指 EFFECTS.TXT 已有的腳本段，或本表 scripts 裡以 authored 開頭的新段（只能用 SkillEffectScriptPlayer 已實作的 ani*／eff* opcode 與已導入的物件、音效）。角色在對應的聲明欄位寫招式名即初始學會（龍炎斬 → special_fire），學習表 learning_tables.json 也可引用這些 id。tools/hsltools/data/authored_skills.py 驗證並長出 initial_book.json 的行與 authored_effect_scripts.json。",
+  "note": "續集招式表：每行一招，欄位與 SPECIAL.TXT（channel special，絕技，耗 ST）／MAGIC.TXT（channel magic，魔法，耗 MP）的行相同，另加 channel 與 name_text（顯示名；原表用 RESOURCE.TXT 編號）。code 以 authored 開頭，id = channel:type:code。function 收 magicFun_Attack（兩個通道的原生傷害公式），special 另收 magicFun_CancelActive（取消目標本回合尚未進行的行動，同獅子吼）與 magicFun_ActiveAgain（讓本回合已行動的己方在回合末再行動一次，同天鳴覺醒）；其他效果族需要運行時決定。表現：special 的 attack_code／defense_code、magic 的 effect_code 指 EFFECTS.TXT 已有的腳本段，或本表 scripts 裡以 authored 開頭的新段（只能用 SkillEffectScriptPlayer 已實作的 ani*／eff* opcode 與已導入的物件、音效）。角色在對應的聲明欄位寫招式名即初始學會（龍炎斬 → special_fire），學習表 learning_tables.json 也可引用這些 id。tools/hsltools/data/authored_skills.py 驗證並長出 initial_book.json 的行與 authored_effect_scripts.json。",
   "scripts": {
     "authoredDragonBreath": [
       "effPlaySound,WAV\\FIRE0006.WAV",

@@ -835,7 +835,7 @@ D=1..4 时目标均值≈c，D=0 或 ≥5 时≈c+0.5；散布宽度约 c−min(
 |---|---|---|
 | 新职业的公式、四维上限、自动配额、魔攻、抗性 | 只写数据（#11） | `content/authored/roles/job_formulas.json` 的 `jobs` 加一行，项的写法同第 1 节职业公式总表；标 `"evidence_tier": "authored"` |
 | 新职业学什么魔法、特殊技 | 只写数据（#11、§5） | `learning_tables.json` 的 `jobs["<代号>"]`：魔法按等级、特殊技按四维阈值 |
-| 全新招式 | 只写数据，效果族限原版伤害（#13、§4） | `skills.json`；`function` 目前只收 `magicFun_Attack`。新的治疗、状态、增益类效果族要改代码（逐步表 §8） |
+| 全新招式 | 只写数据，效果限原版伤害、取消行动、再行动（#13、§4） | `skills.json`；`function` 两个通道都收 `magicFun_Attack`（原版伤害），绝技另收 `magicFun_CancelActive`（取消目标这回合还没做的行动，同獅子吼）和 `magicFun_ActiveAgain`（让这回合行动过的己方在回合末再行动一次，同天鳴覺醒）。新的治疗、状态、增益类效果族要改代码（逐步表 §8） |
 | 新职业能装什么 | 部分只写数据 | 可装备表是 `items.json` 的 `job_mask` 位（位＝职业代号−80）：101 读第 21 位；112 以上没有位，任何装备都装不上（逐步表 §10）。改某件装备的 `job_mask`／数值用覆盖层 `content/authored/overrides/ITEM.json`（全局生效）；**新增装备代号**不支持（覆盖层不收表里没有的 code，`docs/MODDING.md`），要改工具 |
 
 ### 4.3 敌人的等级与数值

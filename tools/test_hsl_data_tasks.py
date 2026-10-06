@@ -91,6 +91,8 @@ MAGIC = {'channel': 'magic', 'code': 'authoredTestBolt', 'name_text': '試炎', 
          'effect_range': 'range1Cell', 'expend': '9', 'damage': '20,30', 'hit_ratio': '90', 'function': 'magicFun_Attack',
          'use_ratio': '90', 'effect_proc': 'eff_proc_Local', 'effect_code': 'authoredTestScript'}
 SCRIPT = ['effPlaySound,WAV\\FIRE0006.WAV', 'effInsertObject,obj_Effect_FireBomb2,0,0,effWait,50']
+SHOUT = dict(SPECIAL, code='authoredTestShout', name_text='試吼', type='magicOTHER', range='range2Cell', function='magicFun_CancelActive',
+             attack_code='specCode79', defense_code='specCode80')
 
 
 class AuthoredSkillTests(unittest.TestCase):
@@ -115,7 +117,7 @@ class AuthoredSkillTests(unittest.TestCase):
             self.assertEqual(row['presentation'], 'script')
 
     def test_rows_become_book_entries_and_presentation_rows(self):
-        self.use([SPECIAL, MAGIC], {'authoredTestScript': SCRIPT})
+        self.use([SPECIAL, MAGIC, SHOUT], {'authoredTestScript': SCRIPT})
         book = build_book()
         special = book['skills']['special:magicFIRE:authoredTestSlash']
         magic = book['skills']['magic:magicFIRE:authoredTestBolt']
@@ -126,6 +128,9 @@ class AuthoredSkillTests(unittest.TestCase):
         self.assertEqual(rows['magic:magicFIRE:authoredTestBolt']['actions'], {'authoredTestScript': SCRIPT})
         self.assertEqual(rows['magic:magicFIRE:authoredTestBolt']['objects'], ['obj_Effect_FireBomb2'])
         self.assertEqual(rows['special:magicFIRE:authoredTestSlash']['opcodes'][0], 'aniDelay')
+        # A CancelActive row resolves through the runtime's utility family, as 獅子吼 does.
+        self.assertEqual((book['skills']['special:magicOTHER:authoredTestShout']['damage_policy'], rows['special:magicOTHER:authoredTestShout']['damage_policy']),
+                         ('native_special_utility', 'native_special_utility'))
         # The chapter-1 inventory keeps only original rows.
         from hsltools.data.special_effect_scripts import render_inventory
         self.assertFalse([key for key in render_inventory()['rows'] if 'authored' in key])
