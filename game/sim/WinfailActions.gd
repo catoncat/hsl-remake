@@ -158,7 +158,7 @@ static func _firing(c: Dictionary) -> int:
 
 
 static func _act_message(c: Dictionary, _name: String, args: Array) -> void:
-	if args.size() >= 3:
+	if args.size() >= 3 and _speaker_in_chain(c, _arg(args, 0)):
 		_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), _arg(args, 2))
 
 
@@ -172,7 +172,7 @@ static func _act_message_if_exist(c: Dictionary, _name: String, args: Array) -> 
 		if 5 + offset < args.size() and not WinfailConditions.alive_units_for_token(c["next"], _arg(args, 5 + offset)).is_empty():
 			chosen = _arg(args, 2)
 			break
-	if chosen != "" and chosen != "0":
+	if chosen != "" and chosen != "0" and _speaker_in_chain(c, _arg(args, 0)):
 		_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), chosen)
 
 
@@ -1045,6 +1045,30 @@ static func _record_wait(battle: Dictionary, key: String, name: String, args: Ar
 	runtime["wait_requests"].append({"key": key, "name": name, "args": args.duplicate(), "kind": kind,
 		"actor_token": _arg(args, 0), "unit_ids": ids,
 		"insert_index": insert_index, "rounds": value, "firing_index": firing_index})
+
+
+## actMessage／actMessageIfExist push nothing when 0x44fad0(code, serial) finds no live object
+## of the speaking code (0x451a6a; fallen, departed or never placed — original_check_targets);
+## defNoOne (-3) always speaks. A token the remake cannot resolve keeps its line.
+static func speaker_present(battle: Dictionary, token: String) -> bool:
+	if WinfailConditions.token_source(battle, token) in ["narration", "unresolved"]:
+		return true
+	return not WinfailConditions.alive_units_for_token(battle, token).is_empty()
+
+
+## speaker_present at this row of a running chain: a unit an earlier row inserts counts (the
+## PlayLoop places script actors after this pass, ScriptActorCreationRules).
+static func _speaker_in_chain(c: Dictionary, token: String) -> bool:
+	if speaker_present(c["next"], token):
+		return true
+	var templates: Dictionary = (c["next"].get("script_actor_source", {}) as Dictionary).get("templates", {})
+	var actions: Array = (c["status"] as Dictionary).get("actions", [])
+	for index in range(mini(int(c.get("action_index", 0)), actions.size())):
+		var action: Dictionary = actions[index]
+		if str(action["name"]).begins_with("actInsert") and not (action["args"] as Array).is_empty() \
+				and str((templates.get(str(action["args"][0]), {}) as Dictionary).get("token", "")) == token:
+			return true
+	return false
 
 
 static func _push_dialogue(runtime: Dictionary, key: String, token: String, message_id: String) -> void:

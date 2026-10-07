@@ -359,7 +359,7 @@ static func story_dialogue_messages(battle: Dictionary) -> Array[Dictionary]:
 		if str(action["name"]) != "actMessage" or (action["args"] as Array).size() < 3:
 			continue
 		var record := {"key": TERMINAL_DIALOGUE_KEY, "actor_token": _arg(action["args"], 0), "message_id": _arg(action["args"], 2)}
-		if WinfailActions.dialogue_has(already, TERMINAL_DIALOGUE_KEY, record["message_id"]):
+		if WinfailActions.dialogue_has(already, TERMINAL_DIALOGUE_KEY, record["message_id"]) or not WinfailActions.speaker_present(battle, record["actor_token"]):
 			continue
 		_append_message(result, record, TERMINAL_DIALOGUE_KEY, speakers)
 	return result

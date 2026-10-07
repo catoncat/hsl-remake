@@ -3,6 +3,7 @@ extends "res://game/battle/runtime/BattleOpeningCoordinator.gd"
 ## Re-arming the same script may select another registered instance of a code.
 ## provenance:
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_wait.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
 ##   rules: provisional (re-arming may pick another registered instance)
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 const BattlePoisonGasPresentation = preload("res://game/battle/scene/BattlePoisonGasPresentation.gd")
@@ -108,6 +109,20 @@ func tick(delta: float) -> void:
 func advance(trigger: String = "confirm") -> Dictionary:
 	if active and not story_mode and runtime.scene_timeline.current_event().get("kind") == "actor_action_wait" and _target_busy(): return summary()
 	return super.advance(trigger)
+
+func speaking_binding(token: String, serial: int) -> Dictionary:
+	# A script cutscene speaks through its own chain: the receipt numbers each token's live
+	# units 1..n at this row (an empty TOKEN/1 when none is), the 0x44fad0 count.
+	var row: Dictionary = {} if runtime == null or not cutscene_mode or story_mode else runtime.scene_timeline.current_event().get("script_actor_receipt", {})
+	if not row.get("bindings", {}).has("%s/1" % token): return super.speaking_binding(token, serial)
+	var live: Array = []
+	var number := 1
+	while row["bindings"].has("%s/%d" % [token, number]):
+		var binding: Dictionary = row["bindings"]["%s/%d" % [token, number]]
+		if str(binding.get("unit_id", "")) != "": live.append(binding)
+		number += 1
+	if live.is_empty(): return {}
+	return live[serial - 1] if serial >= 1 and serial <= live.size() else live.back()
 
 func binding_for_token(actor_token: String, instance: String) -> Dictionary:
 	var base := super.binding_for_token(actor_token, instance)

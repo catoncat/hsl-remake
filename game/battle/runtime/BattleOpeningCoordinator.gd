@@ -843,14 +843,18 @@ func _show_dialogue(event: Dictionary) -> void:
 		runtime.opening_overlay.show_face_message(str(event.get("id", "")), str(event.get("speaker_name", "")), face_body, str(event.get("face_member", "")))
 		return
 	var token := str(event.get("actor_token", ""))
-	var instance := str(args[1]) if args.size() > 1 else "1"
-	var binding := binding_for_token(token, instance)
-	var actor_id := str(binding.get("actor_id", ""))
 	var speaker := str(event.get("speaker_name", runtime.message_text_evidence.get("speaker_names", {}).get(token, token)))
 	var body := str(event.get("message_text", runtime.message_text_evidence.get("messages", {}).get(str(event.get("message_id", "")), "")))
 	if bool(event.get("narration", false)) and body != "":
 		runtime.opening_overlay.show_narration(str(event.get("id", "")), body)
 		return
+	var binding := speaking_binding(token, int(args[1]) if args.size() > 1 and str(args[1]).is_valid_int() else 1)
+	if binding.is_empty():
+		# 0x451a6a: no object of the speaking code on stage (fallen, departed, not yet or
+		# never placed) — the line is not pushed and the chain goes on.
+		skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "dialogue_message_id", "reason": "speaker_absent"})
+		return
+	var actor_id := str(binding.get("actor_id", ""))
 	if actor_id == "" or body == "":
 		skipped_records.append({"source_event_id": str(event.get("id", "")), "kind": "dialogue_message_id", "reason": "missing_binding_or_text"})
 		return
@@ -1139,13 +1143,29 @@ func _show_dialogue_if_exist(event: Dictionary) -> void:
 
 
 func _token_on_stage(token: String) -> bool:
-	## Any instance of the token bound to a live, visible actor.
+	return not speaking_binding(token, 1).is_empty()
+
+
+## The object actMessage／actMessageIfExist speak through: 0x44fad0(code, serial) counts only
+## live objects of the code in slot order and returns the serial-th, the last one when fewer
+## are live, -1 when none is (original_check_targets). Here a live object is a bound actor
+## still shown on stage, in instance order; {} when there is none.
+func speaking_binding(token: String, serial: int) -> Dictionary:
+	var numbers: Array = []
 	for key in bindings:
-		if str(key).begins_with(token + "/"):
-			var actor: Node = runtime.actor_node_for_unit(str((bindings[key] as Dictionary).get("unit_id", "")))
-			if actor != null and actor.visible:
-				return true
-	return false
+		var parts := str(key).split("/")
+		if parts.size() == 2 and parts[0] == token and parts[1].is_valid_int():
+			numbers.append(int(parts[1]))
+	numbers.sort()
+	var live: Array = []
+	for number in numbers:
+		var binding: Dictionary = bindings["%s/%d" % [token, number]]
+		var actor: Node = runtime.actor_node_for_unit(str(binding.get("unit_id", "")))
+		if actor != null and actor.visible:
+			live.append(binding)
+	if live.is_empty():
+		return {}
+	return live[serial - 1] if serial >= 1 and serial <= live.size() else live.back()
 
 
 func _wait_bound_actor(event: Dictionary) -> void:

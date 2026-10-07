@@ -59,7 +59,7 @@ const KNOWN_UNSUPPORTED_CONDITIONS := []
 ## Result-action tokens whose effect reaches the loop dictionary or a record the
 ## PlayLoop consumes (statuses, inserts, departures, messages, carry).
 const APPLIED_ACTIONS := [
-	"actMessage",  # 推入一句对白（actor token、message id），同 status 内按 id 去重
+	"actMessage",  # 推入一句对白（actor token、message id），说话对象不在场（倒下、离场、没上场）不推、defNoOne 总推；同 status 内按 id 去重
 	"actMessageIfExist",  # 前 check number 个 code 有一个还有在场单位就推 true id，否则（含 check number 为 0）推 false id；选中的是 0 或空不推
 	"actGetItem",  # 向受控角色的队伍背包放入 number 个 item id；无效或背包满则 scenario_error
 	"actInsertObject",  # 请求在像素 (x,y) 插入 code 对应的增援；class 由 script_objects obj_Data7 决定

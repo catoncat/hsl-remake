@@ -877,6 +877,15 @@ func _native_action_tokens() -> void:
 	], [_command("actInsertEventStatus", [0])])
 	var branch_loop: Dictionary = WinfailScenarioRules.run_event_hooks(WinfailScenarioRules.initialize_script_state(battle, scenario, branch_seed))
 	_assert_eq(_projected(WinfailScenarioRules.story_dialogue_messages(branch_loop)), [["0", "810"], ["0", "813"]], "099 absent but 023 alive → 810; check number 0 → 813; true id 0 → nothing")
+	# 0x451a6a: a speaker with no live object of its code says nothing, narration always speaks.
+	var speaker_seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actMessage", ["SID_ENEMY023", 1, "820"]), _command("actMessage", ["defNoOne", 1, "821"]), _command("actMessage", ["SID_PLAYER0", 1, "822"])]),
+	], [_command("actInsertEventStatus", [0])])
+	var speaker_loop: Dictionary = WinfailScenarioRules.initialize_script_state(battle, scenario, speaker_seed)
+	for unit_id in ["foe_1", "foe_2", "friend_1"]:
+		_kill(speaker_loop, unit_id)
+	speaker_loop = WinfailScenarioRules.run_event_hooks(speaker_loop)
+	_assert_eq(WinfailScenarioRules.story_dialogue_messages(speaker_loop).map(func(message): return message["message_id"]), ["821", "822"], "every 023 fallen: its line is dropped, narration and the player still speak")
 
 	# Inserts: class join, wait round on the insert record, per-class accounting, self re-arm guard.
 	var insert_seed := _seed([
