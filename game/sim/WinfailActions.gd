@@ -163,18 +163,17 @@ static func _act_message(c: Dictionary, _name: String, args: Array) -> void:
 
 
 static func _act_message_if_exist(c: Dictionary, _name: String, args: Array) -> void:
-	# [player code][serial][true id][false id][check number][check codes...]
-	if args.size() >= 5:
-		var count := int(_arg(args, 4))
-		var all_alive := true
-		for offset in range(count):
-			var index := 5 + offset
-			if index >= args.size() or WinfailConditions.alive_units_for_token(c["next"], _arg(args, index)).is_empty():
-				all_alive = false
-				break
-		var chosen := _arg(args, 2) if all_alive else _arg(args, 3)
-		if chosen != "" and chosen != "0":
-			_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), chosen)
+	# [player code][serial][true id][false id][check number][check codes...] (0x450840 case 0xb,
+	# 0x4519c5): the false id unless any of the check-number codes still has a living unit
+	# (0x44fad0(code, 1)), then the true id; check number 0 keeps the false id; a chosen 0
+	# pushes nothing (0x451a1c) — original_check_targets.
+	var chosen := _arg(args, 3)
+	for offset in range(_int_arg(args, 4)):
+		if 5 + offset < args.size() and not WinfailConditions.alive_units_for_token(c["next"], _arg(args, 5 + offset)).is_empty():
+			chosen = _arg(args, 2)
+			break
+	if chosen != "" and chosen != "0":
+		_push_dialogue(c["runtime"], c["message_key"], _arg(args, 0), chosen)
 
 
 static func _act_get_item(c: Dictionary, _name: String, args: Array) -> void:

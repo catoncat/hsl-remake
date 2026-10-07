@@ -1,10 +1,11 @@
-# 脚本条件 actCheckEnemy／actCheckPlayer／actCheckEnemyNumber 的目标计数、全灭判负与 winfail 台词的脸
+# 脚本条件 actCheckEnemy／actCheckPlayer／actCheckEnemyNumber 的目标计数、全灭判负、winfail 台词的脸与 actMessageIfExist 的分支
 
-> evidence: static-derived; negative-evidence: 非脚本全灭判负; resource-derived: EXTRAS.H token 与剧本出现处; runtime-measured: 重制自动对局死路; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-09-28
+> evidence: static-derived; negative-evidence: 非脚本全灭判负; resource-derived: EXTRAS.H token 与剧本出现处; runtime-measured: 重制自动对局死路; provisional: 重制 carry 模型 · status: live · functions: 0x407299, 0x4072b0, 0x407720, 0x4080b0, 0x4145b4, 0x42c700, 0x42caf0, 0x42cbd0, 0x44ecb0, 0x44ee20, 0x44fa80, 0x44fad0, 0x44fb90, 0x450840, 0x4519c5, 0x453a80, 0x453ac0 · tools: hsltools/levels/battle.py, hsltools/probes/check_player.py, run_autoplay_sweep_tests.gd, run_battle_sweep_tests.gd, run_winfail_rules_tests.gd · updated: 2026-10-08
 
 ## 结论
 
 - 原版 `actCheckEnemy`／`actCheckPlayer`（case 0x23／0x26）在所列 id 全部经 `0x44fad0(code,1)` 找不到时成立——已删除、已阵亡出表与从未插入不可区分；`actCheckEnemyNumber` 是登记数严格小于 num；原版没有非脚本的全灭判负（static-derived，含有界原生执行；negative-evidence）。
+- 原版 `actMessageIfExist`（case 0xb，`0x4519c5`）先取假分支编号，所列前 n 个 code 只要有一个经 `0x44fad0(code,1)` 找得到就换成真分支，不是全部在场才换；n 为 0 时保持假分支；选中的编号为 0 时不推讯息、链接着往下走（static-derived）。重制 `WinfailActions._act_message_if_exist` 与 `BattleOpeningCoordinator._show_dialogue_if_exist` 照此；原作列了两个 code 的四处见「原作里列了两个 code 的四处」（resource-derived）。
 - 重制 `game/sim/WinfailConditions.gd` `condition_holds` 照此计数，遭遇战组装器把 `SID_雷歐納德` 等名字 token 绑定到上场单位；另有两条重制规则：绑定存在而本战无该单位时不计入、全队阵亡判负（`PARTY_WIPE_POLICY = remake_party_wipe_defeat_v1`）。
 - 差异：两条重制规则不是原版等价；carry 已照注册表传下未上场的已加入成员，「未上场不计入」只对 carry 之外的缺席者起作用（provisional，差异清单 `carry-model`）。
 
@@ -60,6 +61,40 @@ goto code_r0x004527a0;                        // 无一在场：条件成立，�
 78 场遭遇战 501–578 的 fail 段全部是 `actCheckPlayer 1 SID_雷歐納德`（`content/generated/hsl/chapter01/battle5NN_seed.json` `scripts.winfail.sections[fail]`），而 `content/battles/battle_5NN.json` 的 `opening.actor_bindings` 为空，`WinfailScenarioRules.token_source` 对该 token 报 `unresolved` → 按上节读法不计 → 全队阵亡后 fail 永不成立，敌军无限行动（重制全量自动对局 `party_wiped_no_defeat`，runtime-measured）。
 
 token 数值来源（resource-derived）：`DATA\EXTRAS.H`（导入为 `content/imported/hsl/global/tables/EXTRAS.H`，摘要 `content/imported/hsl/story_corpus/index.json extras_sid_defines`）定义九个受控槽 `SID_雷歐納德 0、SID_緹娜 1、SID_琥 2、SID_漢克斯 3、SID_雪拉 4、SID_雷特 5、SID_嚎 6、SID_咕嚕 7、SID_克羅蒂 8`；`SHAPEDEF.H` 的 `SID_PLAYER0..8` 同为 0..8。两组 define 对 `0x450840 case 0x26` 传给 `fcn.0044fad0(code, 1)` 的是同一个 code，原作里 `SID_雷歐納德` 与 `SID_PLAYER0` 没有区别；脚本文本用哪个拼写只是作者习惯（主线 WINFAIL0NN 同样写 `SID_雷歐納德`）。
+
+### static-derived：`actMessageIfExist`（case 0xb）的分支选择
+
+`ACTION.H`：`actMessageIfExist 11 // [player code][serial][(true)message id][(false)message id 2][check number][ check player code list ...]`。`0x450840` 的 opcode 跳表 `0x4537f4` 第 0xb 项是 `0x4519c5`（第 0xa 项 `actMessage` 是 `0x451892`，两者在 `0x451a6a` 汇合）：
+
+```
+0x4519c5  [vm+0x8c] := 0xa0000            ; 阶段 10，推讯息的阶段与 actMessage 相同
+          [vm+0x94] := serial；edi := code；ebx := 真分支编号
+          [vm+0xa4] := 假分支编号          ; 先取假分支
+          n := [pc+0x10]；pc += 0x14；n ≤ 0 直接到 0x451a1c
+0x4519f4  循环 n 次：code_i := *pc++
+          0x44fad0(code_i, 1) != -1 → [vm+0xa4] := 真分支编号   ; 找到一个就换，后面找不到也不换回
+0x451a1c  [vm+0xa4] == 0 → pc 写回、阶段清 0、返回            ; 不推讯息，链往下走
+0x451a42  说话对象 0x44fad0(code, serial)；-1（0x451a6a）→ 同样阶段清 0、不推
+0x451a8b  [vm+0x98] := 对象槽号，返回；阶段 10 照 actMessage 推 [vm+0xa4]
+```
+
+- 真分支的条件是**所列 code 有一个还在场**：`0x44fad0(code,1)` 与上节一样，等于「该 code 有任一在场实例」；全部找不到才用假分支。
+- n ≤ 0 不进循环，保持假分支。原作脚本没有 n 为 0 的用法。
+- 编号 0 是「这一支不说话」，选中 0 就不推。原作 23 处用法里假分支写 0 的 18 处，真分支写 0 的 3 处（WINFAIL022／034／044），两支都有编号的 2 处。
+- 说话对象自己不在场时也不推，和 actMessage 同一个出口。
+
+### resource-derived：原作里列了两个 code 的四处
+
+原作 story／winfail 脚本里 `actMessageIfExist` 共 23 处，n 都是 1 或 2；n 为 1 的 19 处，「有一个在场」和「全部在场」是一回事。n 为 2 的四处只在「两种 code 一种还有人、一种已经没人」时结果不同：
+
+| 战斗与时机 | 用法 | 一种还有人、一种没人时，原版（重制照改） | 重制原先 |
+| --- | --- | --- | --- |
+| 亞修頓大橋（LEVEL044）event 4，雷歐納德走到撤离点 | 緹娜 `2261／2260`，查 021、022（她的部下） | 2261「你們一定要活下去！這是命令！」 | 2260「我......我知道。」 |
+| 棄卒 · 死守與撤離（LEVEL051）event 2，第 4 回合 | 雷歐納德 `397／0`，查 023 一般兵、024 重裝兵 | 397「各位弟兄，勝利就在眼前，支撐下去！在援軍到來之前不可以給我倒下！！」 | 不说 |
+| 同上 event 3，第 6 回合传令兵报中计之后 | 雷歐納德 `369／370`，查 023、024 | 369「..............原來..............弟兄們！你們也聽到了，我們已經被捨棄了……想活命的就跟著我!!」 | 370「什麼？！............原來如此............把我當成捨棄的棋子嗎？……」 |
+| 菲納斯河畔　伏擊（LEVEL901）event 2，伏兵登场 | ENEMY031 `1143／0`，查 023、024 | 1143「沒用的傢伙，閃一邊去！」 | 不说 |
+
+重制原先两条路径都比原版严：剧情演出（`_show_dialogue_if_exist`，战中脚本过场也走它）要每个 code 的 1 号绑定都活着可见，规则侧（`_act_message_if_exist`）要每个 code 各有一个活着的单位。所以在棄卒，原先只要一般兵 1 号或重裝兵 1 号倒下，雷歐納德就把还活着的弟兄当成不在：第 4 回合那句打气不说，第 6 回合说成只剩自己的 370。亞修頓大橋和菲納斯河畔重制还只有开场预览，这两处在战斗段里，玩家现在碰不到。
 
 ### static-derived（有界原生执行）：-1 路径、全灭与 53 关对白脸
 
@@ -133,12 +168,17 @@ carry 只带上一战上场者的旧模型下，剧情模式探索在 34 沙羅�
 
 覆盖：`run_winfail_rules_tests.gd _encounter_fail_resolves_player_name_token`（真实 571 ＋ 四人 carry：未上场不判负、全灭判负、脚本撤退不计、win 成立优先、无死亡台词／看板标签）；定向自动对局 `HSL_AUTOPLAY_PARTY=hu,tina,hanks,shera HSL_AUTOPLAY_LEVELS=543,546,549,550,552,555,556,557` 八场全部 `outcome=fail battle_outcome=defeat_leonard result_page=true`（4–7 回合被全灭，非首回合瞬败）。
 
+### 重制：actMessageIfExist
+
+`game/sim/WinfailActions.gd` `_act_message_if_exist`（规则侧的讯息队列）与 `game/battle/runtime/BattleOpeningCoordinator.gd` `_show_dialogue_if_exist`（剧情演出与战中脚本过场）同一读法：前 n 个 code 有一个在场（规则侧看该 token 有没有活着的单位，演出侧看该 token 任一绑定的演员是否活着可见，`_token_on_stage`）就用真分支，n 为 0 用假分支，选中 0 或空不推。生成器 `tools/hsltools/levels/timeline.py` 把真分支的 0 写成空 `message_id`，不再把 0 号讯息「雷歐納德」挂进 22／34／44 关的场景数据。覆盖：`run_winfail_rules_tests.gd _native_action_tokens`（两个 code 只一个在场取真分支、n 为 0 取假分支、真分支 0 不推）。
+
 ## 复现
 
-`python3 tools/hsl.py check check_player`（离线校验有界执行回执）；重制侧 `tools/godot.sh --headless --script res://tests/run_all.gd -- run_winfail_rules_tests.gd`
+`python3 tools/hsl.py check check_player`（离线校验有界执行回执）；`r2 -q -c 'pxw 4 @ 0x453820; s 0x4519c5; pd 60' $HSL_ORIGINAL_DIR/hsl01.exe`（`actMessageIfExist` 的跳表项与 case 0xb 全段）；重制侧 `tools/godot.sh --headless --script res://tests/run_all.gd -- run_winfail_rules_tests.gd`
 
 ## 边界
 
 - opcode 的执行时机见 original_round_display；`0x44fad0` 负 code 分支（-1／-2／-3）的调用方未逐一追。
 - 已登记但禁用槽位在原版不可达（注册表没有写禁用位的调用者，见[原安装分支](original_player_install.md)）；`conditional_party` 的 carry 读法不需要代表它。
 - 未上场不计入与全队阵亡判负是重制规则，不声称原版等价。
+- `actMessageIfExist`／`actMessage` 的说话对象不在场时原版不推（`0x451a6a`）；重制两条对白路径对说话人是否在场的处理没有逐条核过。

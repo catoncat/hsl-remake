@@ -567,6 +567,8 @@ def _event_from_action(
             event["narration"] = event["actor_token"] == "defNoOne"
             false_id = str(event["params"].get("message_id_false", ""))
             event["message_id_false"] = false_id if false_id.isdigit() and int(false_id) > 0 else ""
+            if str(event.get("message_id", "")) == "0":
+                event["message_id"] = ""  # 0 pushes nothing (actMessageIfExist true id); only the false id speaks
             if messages is not None and event["message_id_false"]:
                 false_text = messages.get("messages", {}).get(event["message_id_false"])
                 if false_text is None:

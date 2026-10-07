@@ -60,7 +60,7 @@ const KNOWN_UNSUPPORTED_CONDITIONS := []
 ## PlayLoop consumes (statuses, inserts, departures, messages, carry).
 const APPLIED_ACTIONS := [
 	"actMessage",  # 推入一句对白（actor token、message id），同 status 内按 id 去重
-	"actMessageIfExist",  # check codes 全部在场则推 true id，否则推 false id；0 或空不推
+	"actMessageIfExist",  # 前 check number 个 code 有一个还有在场单位就推 true id，否则（含 check number 为 0）推 false id；选中的是 0 或空不推
 	"actGetItem",  # 向受控角色的队伍背包放入 number 个 item id；无效或背包满则 scenario_error
 	"actInsertObject",  # 请求在像素 (x,y) 插入 code 对应的增援；class 由 script_objects obj_Data7 决定
 	"actInsertObjectRandomPos",  # 随机槽 pos id 的锚点加位移所在格插入增援，不抽随机数（0x450f2c）

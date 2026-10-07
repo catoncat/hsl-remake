@@ -870,6 +870,13 @@ func _native_action_tokens() -> void:
 	_assert_eq(hp_loop.get("event_statuses", []), [], "the departed second soldier leaves one enemy so the next scan fires event1")
 	_assert_eq(_projected(WinfailScenarioRules.story_dialogue_messages(hp_loop)), [["0", "800"], ["0", "803"]], "true branch 800 (023 alive), false branch 803 (no 099), duplicate 803 collapsed")
 	_assert_eq(hp_loop["winfail_runtime"]["departed_unit_ids"], ["foe_2"], "actDeleteObject serial 2 departs the second living unit of the class")
+	# actMessageIfExist (0x4519c5, original_check_targets): one listed code alive is enough for the
+	# true id, check number 0 keeps the false id, a chosen 0 pushes nothing.
+	var branch_seed := _seed([
+		_section("event", 0, [_command("actTRUE"), _command("actMessageIfExist", ["SID_PLAYER0", 1, "810", "811", 2, "SID_ENEMY099", "SID_ENEMY023"]), _command("actMessageIfExist", ["SID_PLAYER0", 1, "812", "813", 0]), _command("actMessageIfExist", ["SID_PLAYER0", 1, "0", "814", 1, "SID_ENEMY023"])]),
+	], [_command("actInsertEventStatus", [0])])
+	var branch_loop: Dictionary = WinfailScenarioRules.run_event_hooks(WinfailScenarioRules.initialize_script_state(battle, scenario, branch_seed))
+	_assert_eq(_projected(WinfailScenarioRules.story_dialogue_messages(branch_loop)), [["0", "810"], ["0", "813"]], "099 absent but 023 alive → 810; check number 0 → 813; true id 0 → nothing")
 
 	# Inserts: class join, wait round on the insert record, per-class accounting, self re-arm guard.
 	var insert_seed := _seed([

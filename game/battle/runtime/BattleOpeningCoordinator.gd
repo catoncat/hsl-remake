@@ -16,6 +16,7 @@ extends Node
 ##   rules: static-derived docs/evidence_packets/static_reverse/second_battle_opening_script.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_script_walk_path.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
 ##   rules: remake-invented
 ##     (confirm outside dialogue fast-forwards walks and scrolls under OPT-PACE 快／極快 only — the original has no skip)
 ##   rules: provisional
@@ -1098,28 +1099,21 @@ func _show_shape_message(event: Dictionary) -> void:
 
 
 func _show_dialogue_if_exist(event: Dictionary) -> void:
-	## actMessageIfExist,code,serial,true_id,false_id,check_number,check codes...:
-	## spoken by [code][serial]; shows true_id when every checked unit (instance 1 of
-	## each listed code, or the speaker itself when the list is empty) has a live,
-	## visible actor, otherwise false_id (0 = nothing). The resolved message is
-	## written back into the timeline as an ordinary dialogue_message_id so the shared
-	## confirm/paging path applies; the record keeps the branch that was taken.
-	var args: Array = event.get("args", [])
+	## actMessageIfExist,code,serial,true_id,false_id,check_number,check codes... (0x450840
+	## case 0xb, 0x4519c5): spoken by [code][serial]; false_id unless any of the first
+	## check_number codes has a live, visible actor (0x44fad0(code, 1) finds any live
+	## instance), then true_id; check_number 0 keeps false_id; a chosen 0 shows nothing
+	## (0x451a1c) — original_check_targets. The resolved message is written back into the
+	## timeline as an ordinary dialogue_message_id so the shared confirm/paging path
+	## applies; the record keeps the branch that was taken.
 	var params: Dictionary = event.get("params", {})
 	var speaker_token := str(event.get("actor_token", ""))
-	var checks: Array = (params.get("check_player_codes", []) as Array).duplicate()
-	if checks.is_empty():
-		checks = [speaker_token]
+	var codes: Array = params.get("check_player_codes", [])
 	var checked: Array[String] = []
-	var exists := true
-	for code in checks:
-		var token := str(code)
-		var instance := str(args[1]) if token == speaker_token and args.size() > 1 else "1"
-		var binding := binding_for_token(token, instance)
-		var actor: Node = runtime.actor_node_for_unit(str(binding.get("unit_id", "")))
-		checked.append(token)
-		if actor == null or not actor.visible:
-			exists = false
+	var exists := false
+	for code in codes.slice(0, maxi(0, int(params.get("check_number", 0)))):
+		checked.append(str(code))
+		exists = exists or _token_on_stage(str(code))
 	var message_id := str(event.get("message_id", "")) if exists else str(event.get("message_id_false", ""))
 	var record := {"kind": "dialogue_message_if_exist", "source_event_id": str(event.get("id", "")), "speaker_token": speaker_token, "checked_tokens": checked, "exists": exists, "message_id": message_id}
 	if message_id == "" or message_id == "0":
@@ -1142,6 +1136,16 @@ func _show_dialogue_if_exist(event: Dictionary) -> void:
 	record["status"] = "resolved_to_dialogue"
 	story_records.append(record)
 	_show_dialogue(resolved)
+
+
+func _token_on_stage(token: String) -> bool:
+	## Any instance of the token bound to a live, visible actor.
+	for key in bindings:
+		if str(key).begins_with(token + "/"):
+			var actor: Node = runtime.actor_node_for_unit(str((bindings[key] as Dictionary).get("unit_id", "")))
+			if actor != null and actor.visible:
+				return true
+	return false
 
 
 func _wait_bound_actor(event: Dictionary) -> void:
