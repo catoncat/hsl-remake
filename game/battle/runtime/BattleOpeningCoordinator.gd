@@ -314,6 +314,7 @@ func start() -> Dictionary:
 	_pending_deletes = []
 	_blocking_motion = true
 	cinematics._ensure_title()
+	cinematics.cover_if_opening_darkens(runtime.scene_timeline.events)
 	if story_mode:
 		story_objects._spawn_story_actors()
 	else:

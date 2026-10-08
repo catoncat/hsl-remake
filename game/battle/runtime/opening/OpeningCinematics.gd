@@ -21,6 +21,8 @@ extends RefCounted
 ##   timing: static-derived docs/evidence_packets/runtime_observations/original_tick_rate/README.md
 ##   timing: provisional
 ##     (dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits)
+##   timing: provisional docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (an opening that darkens first starts dark: a level comes up out of black, no remake fade-in)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (§3.4: the film player stops the music and nothing resumes it)
 
@@ -36,6 +38,9 @@ const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 ## 0x10000, again with no wait: the level falls by one every 3 ticks to 0 and the object deletes.
 const DARK_SCREEN_LEVELS := 16
 const DARK_SCREEN_TICKS_PER_LEVEL := 3
+## Opening tokens that put nothing new on screen over time: the music and the instant camera
+## placements (actSetBGToPos／actSetBGToObject).
+const OPENING_SETUP_KINDS: Array[String] = ["music_track", "opening_music", "default_level_music", "camera_position_set", "background_object_target"]
 const BattleUISkin = preload("res://game/common/BattleUISkin.gd")
 ## actShowSectionName (opcode 12, original_tick_counts.md §2): 0x452f32 steps sub-state
 ## +0x8c once per tick and then draws two layers at the view's (0x140, 0xf0):
@@ -383,20 +388,41 @@ func _scroll_camera_to_position(event: Dictionary) -> void:
 
 
 func _darken_screen(event: Dictionary) -> void:
+	_ensure_dark_screen()
+	var seconds := _step_dark_screen(DARK_SCREEN_LEVELS)
+	coordinator.story_records.append({"kind": "screen_darken", "source_event_id": str(event.get("id", "")), "seconds": seconds})
+
+
+func _ensure_dark_screen() -> void:
 	## Dark level n draws as black alpha n／16. The original (0x4699fd, op 4 over the all-black
 	## shape [0x4bbb4e]) writes floor(c·(16−n)／16) per 565 channel: the same linear ratio, only
 	## the 5／6-bit truncation differs (original_tick_counts.md §5).
-	if _dark_screen == null:
-		_dark_screen = ColorRect.new()
-		_dark_screen.name = "StoryDarkScreen"
-		_dark_screen.color = Color(0, 0, 0, 0)
-		_dark_screen.size = Vector2(640, 480)
-		_dark_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var ui: Node = runtime.get_node("UI")
-		ui.add_child(_dark_screen)
-		ui.move_child(_dark_screen, 0)
-	var seconds := _step_dark_screen(DARK_SCREEN_LEVELS)
-	coordinator.story_records.append({"kind": "screen_darken", "source_event_id": str(event.get("id", "")), "seconds": seconds})
+	if _dark_screen != null:
+		return
+	_dark_screen = ColorRect.new()
+	_dark_screen.name = "StoryDarkScreen"
+	_dark_screen.color = Color(0, 0, 0, 0)
+	_dark_screen.size = Vector2(640, 480)
+	_dark_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var ui: Node = runtime.get_node("UI")
+	ui.add_child(_dark_screen)
+	ui.move_child(_dark_screen, 0)
+
+
+## A level comes up out of black: the original fades the finished map to black, holds it and
+## fades the next level in (original_battle_end_flow.md, recording 516.0–516.9 s). An opening
+## whose first act is actDarkScreen — only OPENING_SETUP_KINDS before it — darkens a screen that
+## is still black, so its dark level is full from the first frame instead of the scene showing
+## lit and fading out. No original opening starts so (STORY058 darkens mid-scene).
+func cover_if_opening_darkens(events: Array) -> void:
+	for event in events:
+		var kind := str((event as Dictionary).get("kind", "")) if typeof(event) == TYPE_DICTIONARY else ""
+		if kind == "screen_darken":
+			_ensure_dark_screen()
+			_dark_screen.color = Color(0, 0, 0, 1)
+			return
+		if not OPENING_SETUP_KINDS.has(kind):
+			return
 
 
 ## Steps the dark level from its current value to `to_level`, one level per 3 ticks; returns

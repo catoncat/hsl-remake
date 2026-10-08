@@ -51,6 +51,7 @@ func _run_all() -> void:
 	_test_grid_projection_round_trip_is_single_contract()
 	_test_actor_runtime_consumes_real_walk_manifest_frames()
 	await _test_battle_scene_runtime_scene_loads_with_camera_and_spatial_gate()
+	await _test_opening_walkers_start_on_evef_cells()
 	await _test_battle_scene_select_move_cancel_loop()
 	await _test_battle_scene_pointer_input_hit_test_loop()
 	await _test_fire_animation_live_scene()
@@ -390,6 +391,23 @@ func _dispatch_key(scene: Node, keycode: Key) -> void:
 	event.keycode = keycode
 	event.pressed = true
 	scene.call("_input", event)
+
+
+## STORY012 marches the 038 soldiers in from off the map, some with actWalkDisp and some with
+## actWalkDispWait: the original installs each on its EVEF cell (0x407cc0 rounds to the cell
+## centre) and both forms walk on from there (0x44fd90), so the opening's first frame has them
+## on those cells, not on the cells they end the walk on.
+func _test_opening_walkers_start_on_evef_cells() -> void:
+	var scene: Node = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
+	scene.scenario_path = "res://content/battles/battle_012.json"
+	root.add_child(scene)
+	scene.set_process(false)
+	await process_frame
+	for expected in [["actor038_1", Vector2(-48, 1264), "actWalkDisp"], ["actor038_2", Vector2(-80, 1136), "actWalkDispWait"]]:
+		var actor: Node2D = scene.actor_node_for_unit(expected[0])
+		_assert_eq(actor.position if actor != null else Vector2.INF, expected[1], "%s (%s) starts the opening on its EVEF cell" % [expected[0], expected[2]])
+	scene.queue_free()
+	await process_frame
 
 
 func _test_fire_animation_live_scene() -> void:

@@ -2019,6 +2019,9 @@
     "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|": {
       "item": "dark-screen-fade"
     },
+    "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|docs/evidence_packets/static_reverse/original_battle_end_flow.md": {
+      "no_visible_effect": "只在开场第一件事就是 actDarkScreen（之前只有配乐和瞬时镜头定位）时生效，是自制关卡的写法；原版各关开场没有（actDarkScreen 只在 STORY058 中段），画面与原版相同"
+    },
     "provenance:game/battle/runtime/opening/OpeningEndCard.gd|layout|remake-invented|": {
       "item": "opening-end-card"
     },

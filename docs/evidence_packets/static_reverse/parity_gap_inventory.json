@@ -4,9 +4,9 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 88,
-    "sources": 486,
+    "sources": 487,
     "sources_by_kind": {
-      "provenance": 201,
+      "provenance": 202,
       "sentence": 85,
       "scope": 102,
       "matrix": 85,
@@ -45,7 +45,7 @@
       "飘字与数字": 2
     },
     "in_progress": 0,
-    "no_visible_effect_sources": 71,
+    "no_visible_effect_sources": 72,
     "resolved_sources": 20
   },
   "top": [
@@ -2409,6 +2409,10 @@
       {
         "source": "provenance:game/battle/runtime/StoryEffectObjects.gd|layout|remake-invented|",
         "reason": "回退闪光只给没有原生 objcomd 轨迹的新关卡数据对象；现有各关 defProcObjectMove 对象都有原生轨迹，不走回退"
+      },
+      {
+        "source": "provenance:game/battle/runtime/opening/OpeningCinematics.gd|timing|provisional|docs/evidence_packets/static_reverse/original_battle_end_flow.md",
+        "reason": "只在开场第一件事就是 actDarkScreen（之前只有配乐和瞬时镜头定位）时生效，是自制关卡的写法；原版各关开场没有（actDarkScreen 只在 STORY058 中段），画面与原版相同"
       },
       {
         "source": "provenance:game/battle/scene/BattleItemUsePresentation.gd|timing|remake-invented|",
