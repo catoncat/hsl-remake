@@ -97,7 +97,7 @@ func run() -> void:
 
 func _select_event_status_branches() -> void:
 	## The formal battle choice inserts exactly the selected unconditional event
-	## status and marks its fired presentation as inlined for the open prompt.
+	## status and marks its fired presentation (and only that one) as inlined for the open prompt.
 	var sections := [
 		_section("event", 2, [_command("actTRUE"), _command("actSelectInsertEvent", ["SID_PLAYER0", 1, 2, 1810, 3, 1811, 4])]),
 		_section("event", 3, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, 1812])]),
@@ -116,6 +116,22 @@ func _select_event_status_branches() -> void:
 		_assert_eq(fired.size(), 2, "selected event %d fires event 2 then selected branch" % selected_code)
 		_assert_eq(str(fired[1].get("key", "")), "event_%d" % selected_code, "selected event %d is the inserted branch" % selected_code)
 		_assert_true(bool(fired[1].get("presentation_inlined", false)), "selected event %d presentation is inlined" % selected_code)
+	# A branch ending on actExecWinFailProcess: case 0x4f and that action set the same rescan
+	# flag 0x4c1d44, and the event the rescan starts runs as an ordinary chain — only the
+	# chosen branch is spliced into the choice cutscene, the next one plays on its own.
+	var rescan_sections := [
+		_section("event", 2, [_command("actTRUE"), _command("actSelectInsertEvent", ["SID_PLAYER0", 1, 2, 1810, 3, 1811, 6])]),
+		_section("event", 6, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, 1814]), _command("actInsertEventStatus", [7]), _command("actExecWinFailProcess")]),
+		_section("event", 7, [_command("actTRUE"), _command("actMessage", ["SID_PLAYER0", 1, 1815])]),
+	]
+	var rescan_seed := _seed(rescan_sections, [_command("actInsertEventStatus", [2])])
+	var rescan_scenario := {"scenario_rules": {}, "opening": {"actor_bindings": {"SID_PLAYER0/1": {"unit_id": "p0", "actor_id": "001"}}}}
+	var rescan_battle := {"player_unit_id": "p0", "turn": 1, "units": [_unit("p0", "Player001", Vector2i(1, 1), 10, "player_controlled")]}
+	var rescanned: Dictionary = WinfailScenarioRules.initialize_script_state(rescan_battle, rescan_scenario, rescan_seed)
+	rescanned = WinfailScenarioRules.select_event_status(WinfailScenarioRules.run_event_hooks(rescanned), 6)
+	var chain: Array = rescanned.get("winfail_runtime", {}).get("fired", [])
+	_assert_eq(chain.map(func(entry): return str(entry.get("key", ""))), ["event_2", "event_6", "event_7"], "the chosen branch's rescan starts the next event in the same choice")
+	_assert_true(bool(chain[1].get("presentation_inlined", false)) and not bool(chain[2].get("presentation_inlined", false)), "only the chosen branch is inlined; the rescanned event plays as its own cutscene")
 
 
 ## ---------------------------------------------------------------------------

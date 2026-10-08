@@ -52,7 +52,7 @@
 
 - `game/sim/WinfailScenarioRules.gd` `select_event_status`：追加事件码、求值其 `actTRUE` 分支并记录请求。
 - `game/common/EventSelectWindow.gd`：对象 704 选择窗，城镇与战斗共用（板、行位、悬停色、ACCEPT01、淡入淡出，版式见 [original_world_town](../runtime_observations/original_world_town/README.md)「select 选择窗」）。
-- `game/battle/runtime/opening/OpeningSelectPrompt.gd`：关对白板，按 `[id][serial]` 绑定取头像（无则居中），无「離開」行；鼠标点行后窗淡出再交回；键盘上下／回车与脚本直调 `choose_select_option` 立即交回。`BattleOpeningCoordinator` 保存 `select_options`；新触发的状态标 `presentation_inlined`，`BattleSceneRuntime` 不再把同一分支作第二段过场重播。
+- `game/battle/runtime/opening/OpeningSelectPrompt.gd`：关对白板，按 `[id][serial]` 绑定取头像（无则居中），无「離開」行；鼠标点行后窗淡出再交回；键盘上下／回车与脚本直调 `choose_select_option` 立即交回。`BattleOpeningCoordinator` 保存 `select_options`；所选状态标 `presentation_inlined`，`BattleSceneRuntime` 不再把同一分支作第二段过场重播；同一次结算里所选链之后重扫发出的状态（以及当场判定的胜负段）不标，按触发顺序各演一段过场，同原版（case 0x4f 与 actExecWinFailProcess 置的是同一个重扫旗 `0x4c1d44`，其后各次重扫启动的链都是普通链）。
 
 ## 复现
 

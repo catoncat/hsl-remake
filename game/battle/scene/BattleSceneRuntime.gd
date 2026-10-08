@@ -587,6 +587,8 @@ func maybe_start_script_cutscene() -> bool:
 	while script_cutscene_consumed < fired.size():
 		var entry: Dictionary = fired[script_cutscene_consumed]
 		script_cutscene_consumed += 1
+		# Only a chosen actSelectInsertEvent branch is inlined (spliced into its choice
+		# cutscene); what that choice's evaluation fired after it plays here in order.
 		if bool(entry.get("presentation_inlined", false)):
 			continue
 		var key := str(entry.get("key", ""))

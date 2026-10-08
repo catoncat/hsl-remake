@@ -22,6 +22,7 @@ extends RefCounted
 ##   rules: resource-derived content/imported/hsl/global/tables/ACTION.H
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_check_targets.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_round_display.md
+##   rules: static-derived docs/evidence_packets/static_reverse/original_select_insert_event.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/winfail_claim_limits.md
 ##   rules: provisional
 ##     (MAX_PASSES bound, a fail chain with waiting actions read as ending first — ids in
@@ -209,8 +210,14 @@ static func run_event_hooks(battle: Dictionary, attacked: bool = false) -> Dicti
 static func select_event_status(battle: Dictionary, event_code: int) -> Dictionary:
 	## Resolve a formal-battle actSelectInsertEvent choice. The event status is
 	## inserted into the same loop before its unconditional chain is evaluated;
-	## presentation marks the resulting fired entry as inlined because the
+	## only the chosen event's fired entry is marked inlined, because the
 	## coordinator splices that status timeline into the open choice cutscene.
+	## Statuses the evaluation fires after it (a rescan its actExecWinFailProcess
+	## asks for, the deciding win／fail) stay ordinary entries the runtime plays as
+	## their own cutscenes: case 0x4f sets the same rescan flag 0x4c1d44 as
+	## actExecWinFailProcess, and every chain the following rescans start runs in the
+	## VM like any other (original_select_insert_event.md, original_round_display.md
+	## «Scan shape»).
 	var next := BattleLoopConfig.copy(battle)
 	var rules: Dictionary = next.get("winfail_script_rules", {})
 	var runtime: Dictionary = next.get("winfail_runtime", {})
@@ -229,8 +236,9 @@ static func select_event_status(battle: Dictionary, event_code: int) -> Dictiona
 	var selected_runtime: Dictionary = next.get("winfail_runtime", {})
 	var fired: Array = selected_runtime.get("fired", [])
 	for index in range(before, fired.size()):
-		if typeof(fired[index]) == TYPE_DICTIONARY:
+		if typeof(fired[index]) == TYPE_DICTIONARY and str((fired[index] as Dictionary).get("key", "")) == key:
 			(fired[index] as Dictionary)["presentation_inlined"] = true
+			break
 	next["winfail_runtime"] = selected_runtime
 	return next
 
