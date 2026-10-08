@@ -285,7 +285,32 @@ static func load_progress(path: String = "") -> Dictionary:
 		return {}
 	if typeof(record.get("carry")) != TYPE_DICTIONARY:
 		return {}
+	if typeof(record.get("world")) == TYPE_DICTIONARY:
+		record["world"] = _whole_numbers(record["world"])
 	return record
+
+
+## JSON reads every number back as a float (141 → 141.0). The world state holds whole numbers
+## only (points, events, menu codes, modes, counters, ratios), and the town rules find menu codes
+## with Array.has / erase, which never match an int among floats: after a load a played option
+## would stay, an added one would be listed twice and every teCheckTEExist would fail. Whole
+## floats go back to int, recursively.
+static func _whole_numbers(value: Variant) -> Variant:
+	match typeof(value):
+		TYPE_FLOAT:
+			var number: float = value
+			return int(number) if number == floorf(number) and absf(number) < 9.0e15 else number
+		TYPE_ARRAY:
+			var items: Array = []
+			for item in value:
+				items.append(_whole_numbers(item))
+			return items
+		TYPE_DICTIONARY:
+			var table := {}
+			for key in value:
+				table[key] = _whole_numbers(value[key])
+			return table
+	return value
 
 
 static func clear_progress(path: String = "") -> void:

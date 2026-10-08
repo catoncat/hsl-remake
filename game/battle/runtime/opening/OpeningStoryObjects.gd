@@ -24,9 +24,7 @@ extends RefCounted
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_draw_order.md
 ##     (defProcObjectMove objects keep obj_Plane depth)
 ##   layout: static-derived docs/evidence_packets/static_reverse/actor_placement_initialization.md
-##     (an opening walker whose walks are all relative starts on its EVEF cell centre: 0x407cc0／0x4080b0)
-##   layout: provisional
-##     (an actor that also takes an absolute walk starts on its final cell minus its Wait walks)
+##     (an opening walker starts on its EVEF cell centre, whatever its walks: 0x407cc0／0x4080b0)
 ##   layout: static-derived docs/evidence_packets/static_reverse/original_range_cells.md
 ##   timing: static-derived docs/evidence_packets/static_reverse/actor_animation_groups.md
 ##     (actChangeShape: script delay + 1 ticks a frame; actRestoreShape restarts the stand loop)
@@ -116,58 +114,45 @@ func _shape_set_for_member(first_member: String) -> Dictionary:
 	return {}
 
 
-## Opening walks measured from the walker's own pixel (0x44fd90: destination = current pixel +
-## displacement), Wait or not.
-const RELATIVE_WALK_KINDS: Array[String] = ["actor_walk_disp", "actor_walk_disp_wait", "actor_move_disp_wait"]
-## The other walks of a bound actor: absolute destinations, follows, walk-and-delete.
-const OTHER_WALK_KINDS: Array[String] = ["actor_walk", "actor_walk_wait", "actor_walk_follow", "actor_walk_follow_wait", "actor_walk_and_delete", "actor_walk_and_delete_wait"]
+## The walks of a bound actor an opening plays: relative ones (0x44fd90: destination = current
+## pixel + displacement, Wait or not), absolute destinations, follows and walk-and-delete.
+const WALK_KINDS: Array[String] = ["actor_walk_disp", "actor_walk_disp_wait", "actor_move_disp_wait", "actor_walk", "actor_walk_wait", "actor_walk_follow", "actor_walk_follow_wait", "actor_walk_and_delete", "actor_walk_and_delete_wait"]
 
 
-func _walk_events_for_binding() -> Dictionary:
-	## unit_id -> {wait: accumulated actWalkDispWait delta in world pixels, placement: the
-	## binding's placement_xy, other: it also takes a walk of OTHER_WALK_KINDS} for every
-	## actor with a relative walk.
+func _opening_walkers() -> Dictionary:
+	## unit_id -> placement_xy (from any of the unit's bindings) for every actor an opening walk
+	## names; a player slot installed on a story object has none.
+	var placements: Dictionary = {}
+	for binding_value in coordinator.bindings.values():
+		var binding: Dictionary = binding_value
+		if binding.has("placement_xy"):
+			placements[str(binding.get("unit_id", ""))] = binding["placement_xy"]
 	var walkers: Dictionary = {}
-	var others: Dictionary = {}
 	for item in runtime.opening_timeline_manifest.get("events", []):
-		if typeof(item) != TYPE_DICTIONARY:
+		if typeof(item) != TYPE_DICTIONARY or not WALK_KINDS.has(str(item.get("kind", ""))):
 			continue
-		var kind := str(item.get("kind", ""))
 		var args: Array = item.get("args", [])
-		if (not RELATIVE_WALK_KINDS.has(kind) and not OTHER_WALK_KINDS.has(kind)) or args.size() < 4:
+		if args.size() < 2:
 			continue
-		var binding: Dictionary = coordinator.binding_for_token(str(args[0]), str(args[1]))
-		var unit_id := str(binding.get("unit_id", ""))
-		if unit_id == "":
-			continue
-		if OTHER_WALK_KINDS.has(kind):
-			others[unit_id] = true
-			continue
-		var walker: Dictionary = walkers.get_or_add(unit_id, {"wait": Vector2.ZERO, "placement": binding.get("placement_xy", [])})
-		if kind == "actor_walk_disp_wait":
-			walker["wait"] += Vector2(float(str(args[2])), float(str(args[3])))
-	for unit_id in walkers.keys():
-		walkers[unit_id]["other"] = others.has(unit_id)
+		var unit_id := str(coordinator.binding_for_token(str(args[0]), str(args[1])).get("unit_id", ""))
+		if placements.has(unit_id):
+			walkers[unit_id] = placements[unit_id]
 	return walkers
 
 
-## Where the opening shows each relative walker first. One whose walks are all relative starts
-## on its placement pixel (the EVEF record, an authored level's cell), where the original
-## constructs it: actWalkDisp and actWalkDispWait alike walk on from there and end on the cell
-## PlayLoop has. One that also takes another walk stands on its final cell less its Wait walks.
+## Every actor an opening walks starts on its placement pixel (the EVEF record, an authored
+## level's cell), where the original constructs it (0x407cc0／0x4080b0): its walks set off from
+## there, relative or absolute, and end on the cell PlayLoop has. A player slot installed on a
+## story object stays hidden until its insert places it.
 func _prepare_actor_positions() -> void:
 	var cleared_inserts: Array[String] = []
 	coordinator._inserted_unit_ids = cleared_inserts
-	var walkers := _walk_events_for_binding()
+	var walkers := _opening_walkers()
 	for unit_id in walkers.keys():
 		var actor: Node = runtime.actor_node_for_unit(str(unit_id))
 		if actor == null:
 			continue
-		var walker: Dictionary = walkers[unit_id]
-		var placement: Array = walker["placement"]
-		var start: Vector2 = _story_world(placement) if not walker["other"] and placement.size() == 2 \
-			else runtime.actor_world_position_for_grid(runtime.unit_grid_coord(unit_id)) - walker["wait"]
-		actor.move_along([start], 0.0)
+		actor.move_along([_story_world(walkers[unit_id])], 0.0)
 		actor.play_state("idle", "0")
 	for key in coordinator.bindings.keys():
 		var binding: Dictionary = coordinator.bindings[key]

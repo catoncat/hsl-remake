@@ -394,18 +394,25 @@ func _dispatch_key(scene: Node, keycode: Key) -> void:
 
 
 ## STORY012 marches the 038 soldiers in from off the map, some with actWalkDisp and some with
-## actWalkDispWait: the original installs each on its EVEF cell (0x407cc0 rounds to the cell
-## centre) and both forms walk on from there (0x44fd90), so the opening's first frame has them
-## on those cells, not on the cells they end the walk on.
+## actWalkDispWait, and walks 雷特 to (576,896) with actWalkWait: the original installs each on
+## its EVEF cell (0x407cc0 rounds to the cell centre) and every walk sets off from there
+## (0x44fd90 relative, 0x44fcf0 absolute), so the opening's first frame has them on those cells,
+## not on the cells they end the walk on.
 func _test_opening_walkers_start_on_evef_cells() -> void:
 	var scene: Node = load("res://game/battle/scene/BattleSceneRuntime.tscn").instantiate()
 	scene.scenario_path = "res://content/battles/battle_012.json"
 	root.add_child(scene)
 	scene.set_process(false)
 	await process_frame
-	for expected in [["actor038_1", Vector2(-48, 1264), "actWalkDisp"], ["actor038_2", Vector2(-80, 1136), "actWalkDispWait"]]:
+	for expected in [["actor038_1", Vector2(-48, 1264), "actWalkDisp"], ["actor038_2", Vector2(-80, 1136), "actWalkDispWait"], ["rett", Vector2(656, 1136), "actWalkWait"]]:
 		var actor: Node2D = scene.actor_node_for_unit(expected[0])
 		_assert_eq(actor.position if actor != null else Vector2.INF, expected[1], "%s (%s) starts the opening on its EVEF cell" % [expected[0], expected[2]])
+	# The level comes up out of black (0x4609c0(2)): black on the first frame, lit after 16 levels × 2 ticks.
+	var fade: ColorRect = scene.find_child("LevelEntryFade", true, false)
+	_assert_true(fade != null and fade.color.a == 1.0, "the level's first frame is black under the entry fade")
+	scene.set_process(true)
+	await create_timer(0.7).timeout
+	_assert_true(scene.find_child("LevelEntryFade", true, false) == null, "the entry fade is gone after 32 ticks")
 	scene.queue_free()
 	await process_frame
 

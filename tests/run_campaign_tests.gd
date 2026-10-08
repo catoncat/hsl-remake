@@ -50,6 +50,7 @@ func _unit(loop: Dictionary, unit_id: String) -> Dictionary:
 
 func _run() -> void:
 	_test_pure_carry()
+	_test_saved_world_whole_numbers()
 	_test_town_job_up_carry()
 	_test_battle_job_up_carry()
 	_test_deregistered_members()
@@ -430,6 +431,28 @@ func _test_separate_party_loot_gate() -> void:
 ## A new launch (empty statics) of the first battle with a persisted position
 ## further along pauses under the resume prompt; declining clears the save and
 ## resumes the opening, accepting re-enters the saved scenario with the carry.
+## A world state read back from its JSON save runs the town rules as without the save in
+## between (JSON hands numbers back as floats, CampaignProgress.load_progress restores the whole
+## ones): 米蘭多's traveller (14) talks once — teDeleteSelfTE 7,1,14 takes him out of the tavern,
+## teAddSelfTE 7,1,15 lists his second line once even when it is already there — and a menu node
+## is found where teCheckTEExist looks.
+func _test_saved_world_whole_numbers() -> void:
+	var towndef := TownEventRules.load_towndef("res://content/imported/hsl/global/world_map/towndef.json")
+	var world := {"schema": "hsl_world_state.v1", "towns": TownEventRules.initial_town_state(towndef, TownEventRules.load_initial_trees("res://content/world/town_initial_trees.json"))}
+	world = TownEventRules.apply_script_town_actions(world, [{"name": "actAddTE", "args": ["town_米蘭多", "7", "1", "15"]}], towndef)["state"]
+	var path := "user://campaign_tests_world_numbers.json"
+	CampaignProgress.save_progress({"scenario_path": "res://content/world/world_map_scene.json", "carry": {}, "from_scenario_id": "test", "world": world}, path)
+	var loaded: Dictionary = CampaignProgress.load_progress(path).get("world", {})
+	CampaignProgress.clear_progress(path)
+	var run := TownEventRules.begin_event(loaded, {}, towndef, 4, 14)
+	for _step in range(20):
+		if run.get("pending") == null or bool(run.get("done", false)):
+			break
+		run = TownEventRules.resume(run, null)
+	_assert_eq(((run.get("state", {}) as Dictionary).get("towns", {}) as Dictionary).get("4", {}).get("tree", {}).get("7"), [8, 12, 13, 15], "after a save, the traveller who talked leaves the tavern and his second line is listed once")
+	_assert_true(TownEventRules._tree_has_child(loaded, 4, 7, 13), "after a save, a menu node is found where teCheckTEExist looks")
+
+
 func _test_saved_progress() -> void:
 	CampaignProgress.reset_campaign()
 	var carry := {"schema": "hsl_campaign_carry.v1", "units": {"leonard": {"actor_id": "001", "level": 3, "exp": 0, "pending_stat_points": 0, "equipment": [], "weapon_code": 0, "inventory": [], "kill_count": 4, "attributes": {"str": 9, "dex": 8, "mind": 6, "con": 8}}}, "loop": {"gold": 120}}

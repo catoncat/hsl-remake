@@ -2031,12 +2031,6 @@
     "provenance:game/battle/runtime/opening/OpeningEndCard.gd|strings|remake-invented|": {
       "item": "opening-end-card"
     },
-    "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|": {
-      "item": [
-        "script-walk-path",
-        "level-specific-placement"
-      ]
-    },
     "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|": {
       "item": [
         "script-walk-path",

@@ -6,6 +6,7 @@ extends Node2D
 ##   layout: static-derived docs/evidence_packets/runtime_observations/camera_panel_motion/README.md
 ##   strings: resource-derived content/imported/hsl/chapter01/battle051/message_text_evidence.json
 ##   timing: static-derived docs/evidence_packets/static_reverse/original_battle_end_flow.md
+##     (level entry included: 0x4609c0(2), out of black one level every 2 ticks)
 ##   timing: runtime-measured docs/evidence_packets/static_reverse/original_battle_end_flow.md (≈0.2 s fade to black)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (silent at scene start; plays on past the battle end until the level is left; 讀取戰場記錄 restarts the table track)
@@ -81,12 +82,17 @@ var _end_fade_seconds := 0.0
 var _end_hold_seconds := 0.0
 var _end_fade: ColorRect
 var _battle_left := false
+## The level's entry fade (_advance_entry_fade): seconds into it and its top-layer rect, null once
+## the level is lit.
+var _entry_fade_seconds := 0.0
+var _entry_fade: ColorRect
 ## Harness seam: a review／capture host that inspects the finished battle and restarts or hands
 ## off by itself sets this; the product never does. Headless tests that do not make the runtime
 ## the tree's current scene never leave either.
 static var hold_finished_battle := false
 
 const ActorRuntime = preload("res://game/battle/runtime/ActorRuntime.gd")
+const OriginalTick = preload("res://game/common/OriginalTick.gd")
 const SceneTimeline = preload("res://game/battle/runtime/SceneTimeline.gd")
 const MapObjectPlacement = preload("res://game/battle/runtime/MapObjectPlacement.gd")
 const OpeningStoryObjects = preload("res://game/battle/runtime/opening/OpeningStoryObjects.gd")
@@ -242,6 +248,13 @@ func _ready() -> void:
 	_end_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_end_fade.hide()
 	end_layer.add_child(_end_fade)
+	if startup_mode == STARTUP_MODE_PRODUCT_OPENING and opening_coordinator != null:
+		_entry_fade = ColorRect.new()
+		_entry_fade.name = "LevelEntryFade"
+		_entry_fade.size = Vector2(640, 480)
+		_entry_fade.color = Color(0, 0, 0, 1)
+		_entry_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		end_layer.add_child(_entry_fade)
 	settlement_controller = preload("res://game/battle/scene/BattleSettlementController.gd").new()
 	settlement_controller.runtime = self
 	add_child(settlement_controller)
@@ -273,6 +286,7 @@ func _notification(what: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_advance_entry_fade(delta)
 	advance_camera(delta)
 	sync_view_depth()
 	stamp_presentation_view()
@@ -1215,6 +1229,27 @@ func advance_camera(delta: float) -> void:
 func play_growth_sound(growth: Dictionary) -> void:
 	if not growth.is_empty() and int(growth["level_after"]) > int(growth["level_before"]):
 		play_ui_sound("level_up")
+
+
+## A level comes up out of black: after the level load (0x42ec10) the original asks for
+## 0x42dca0(2) → 0x4609c0(2), the screen transition drawn over everything (0x460a06) from level
+## 16 down one level every 2 ticks, while its main loop (0x42dbf5) runs every object — the
+## opening plays on under the fade. At most one level a frame, so a long first frame (the scene
+## load) cannot skip it, as the original steps its transition one tick a frame.
+const ENTRY_FADE_LEVELS := 16
+const ENTRY_FADE_TICKS_PER_LEVEL := 2
+
+
+func _advance_entry_fade(delta: float) -> void:
+	if _entry_fade == null:
+		return
+	_entry_fade_seconds += minf(delta, OriginalTick.seconds(ENTRY_FADE_TICKS_PER_LEVEL))
+	var level := ENTRY_FADE_LEVELS - int(_entry_fade_seconds / OriginalTick.TICK_SECONDS + 0.001) / ENTRY_FADE_TICKS_PER_LEVEL
+	if level <= 0:
+		_entry_fade.queue_free()
+		_entry_fade = null
+		return
+	_entry_fade.color.a = float(level) / ENTRY_FADE_LEVELS
 
 
 ## The finished battle (BattlePresentation.battle_finished) fades to black and leaves by

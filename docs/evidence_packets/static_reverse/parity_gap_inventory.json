@@ -4,15 +4,15 @@
   "generated_by": "python3 tools/hsl.py generate parity_inventory",
   "counts": {
     "items": 88,
-    "sources": 487,
+    "sources": 486,
     "sources_by_kind": {
-      "provenance": 202,
+      "provenance": 201,
       "sentence": 85,
       "scope": 102,
       "matrix": 85,
       "video": 13
     },
-    "layout_timing_modules": 51,
+    "layout_timing_modules": 50,
     "items_by_original_status": {
       "read_complete": 29,
       "read_partial": 40,
@@ -285,7 +285,6 @@
       "effort": "S",
       "category": "剧情走位",
       "sources": [
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|docs/evidence_packets/static_reverse/original_random_position.md"
       ]
     },
@@ -1157,7 +1156,6 @@
       "sources": [
         "matrix:Leonard 开场移动",
         "matrix:round 6 objective switch",
-        "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|layout|provisional|",
         "provenance:game/battle/runtime/opening/OpeningStoryObjects.gd|rules|provisional|",
         "provenance:game/sim/ScriptActorCreationRules.gd|rules|provisional|",
         "provenance:game/sim/ScriptWalkPath.gd|rules|remake-invented|",

@@ -22,7 +22,7 @@ extends RefCounted
 ##   timing: provisional
 ##     (dark level n: 0x4699fd floors each 565 channel to c·(16−n)／16; black alpha n／16 is that ratio at 8 bits)
 ##   timing: provisional docs/evidence_packets/static_reverse/original_battle_end_flow.md
-##     (an opening that darkens first starts dark: a level comes up out of black, no remake fade-in)
+##     (an opening that darkens first stays black; the original darkens under the level fade-in)
 ##   audio: static-derived docs/evidence_packets/static_reverse/original_music.md
 ##     (§3.4: the film player stops the music and nothing resumes it)
 
@@ -409,11 +409,11 @@ func _ensure_dark_screen() -> void:
 	ui.move_child(_dark_screen, 0)
 
 
-## A level comes up out of black: the original fades the finished map to black, holds it and
-## fades the next level in (original_battle_end_flow.md, recording 516.0–516.9 s). An opening
-## whose first act is actDarkScreen — only OPENING_SETUP_KINDS before it — darkens a screen that
-## is still black, so its dark level is full from the first frame instead of the scene showing
-## lit and fading out. No original opening starts so (STORY058 darkens mid-scene).
+## A level comes up out of black (BattleSceneRuntime's entry fade, 0x4609c0(2)). An opening whose
+## first act is actDarkScreen — only OPENING_SETUP_KINDS before it — would darken while the level
+## fades in and show the scene dimly for a moment, as the original's would; it starts at its full
+## dark level instead and goes from black straight to its first line. No original opening starts
+## so (STORY058 darkens mid-scene).
 func cover_if_opening_darkens(events: Array) -> void:
 	for event in events:
 		var kind := str((event as Dictionary).get("kind", "")) if typeof(event) == TYPE_DICTIONARY else ""
