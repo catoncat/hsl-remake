@@ -107,6 +107,12 @@ class GeneratedFilesTask(Task):
 
     def check(self, ctx: Context) -> str:
         rendered = self.render(ctx)
+        # A rendered path outside the declared outputs is invisible to `affected` and to the
+        # derived manifest's owner lookup (an output folder, `.../`, declares everything under it).
+        undeclared = [path for path in rendered
+                      if path not in self.outputs and not any(out.endswith('/') and path.startswith(out) for out in self.outputs)]
+        if undeclared:
+            raise CheckFailed(f'{self.name}: renders {", ".join(undeclared)} outside its declared outputs — add them to `outputs`')
         stale = [path for path, data in rendered.items()
                  if not (ctx.root / path).exists() or (ctx.root / path).read_bytes() != data]
         if stale:

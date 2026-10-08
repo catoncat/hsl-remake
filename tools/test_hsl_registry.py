@@ -122,14 +122,11 @@ class ParityTests(unittest.TestCase):
         for task in tasks:
             self.assertEqual(task.check(registry.Context()), cli[task.name], task.name)
 
-    def test_initial_skill_book(self):
-        self.assert_parity('initial_skill_book')
-
-    def test_job_up_learning(self):
-        self.assert_parity('job_up_learning')
-
-    def test_level_battle(self):
-        self.assert_parity('level_battle:37', 'level_battle:501')
+    def test_cli_prints_what_check_returns(self):
+        # One CLI process for a data task and two level tasks: the CLI path is the same for every
+        # task (run_tasks -> run_task prints check()'s return last); every task's check itself
+        # runs in the gate's checks stage.
+        self.assert_parity('job_up_learning', 'level_battle:37', 'level_battle:501')
 
     def test_check_is_byte_for_byte_against_tracked_outputs(self):
         for name in ('initial_skill_book', 'level_battle:6', 'level_battle:578'):

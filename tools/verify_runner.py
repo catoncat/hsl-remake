@@ -48,6 +48,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -185,13 +186,33 @@ def run_one(argv: list[str], env: dict[str, str], timeout: int = 1800) -> tuple[
         return 124, output + f"\n[timeout after {timeout}s]", time.monotonic() - started
 
 
-def run_parallel(label: str, jobs: list[tuple[str, list[str], dict[str, str]]], workers: int, summary_line, timeout_for=None) -> int:
+def run_parallel(label: str, jobs: list[tuple[str, list[str], dict[str, str]]], workers: int, summary_line, timeout_for=None,
+                 boost_after: Path | None = None) -> int:
     """argv jobs on the shared deterministic runner (hsltools.runner). timeout_for(name)
     gives a per-job budget in seconds (default 1800); a job past it exits 124 with
-    "[timeout after Ns]" in its log instead of holding the gate."""
+    "[timeout after Ns]" in its log instead of holding the gate. boost_after: once that file
+    exists (the caller's other stages, which ran next to this one, have finished) the stage
+    takes their workers too, twice `workers` in all."""
     def budget(name: str) -> int:
         return int(timeout_for(name)) if timeout_for is not None else 1800
-    return run_jobs(label, [(name, (lambda argv=argv, env=env, seconds=budget(name): run_one(argv, env, seconds))) for name, argv, env in jobs], workers, summary_line)
+    gate = None
+    if boost_after is not None:
+        gate = threading.Semaphore(workers)
+
+        def boost() -> None:
+            while not boost_after.exists():
+                time.sleep(0.5)
+            for _ in range(workers):
+                gate.release()
+        threading.Thread(target=boost, daemon=True).start()
+
+    def run(argv: list[str], env: dict[str, str], seconds: int) -> tuple[int, str, float]:
+        if gate is None:
+            return run_one(argv, env, seconds)
+        with gate:
+            return run_one(argv, env, seconds)
+    return run_jobs(label, [(name, (lambda argv=argv, env=env, seconds=budget(name): run(argv, env, seconds))) for name, argv, env in jobs],
+                    workers * 2 if gate is not None else workers, summary_line)
 
 
 def base_env() -> dict[str, str]:
@@ -385,7 +406,10 @@ def cmd_godot(args) -> int:
         # the 30-minute default: 8× the remembered wall time, floor 3 min, cap 30 min.
         return min(1800.0, max(180.0, expected(name) * 8))
 
-    code = run_parallel("GODOT_SUITES", jobs, args.jobs, summary, budget)
+    # tools/verify.sh runs this stage next to the Python unit tests and the checks and creates
+    # HSL_GODOT_BOOST_AFTER when they are done: the suites then take their workers as well.
+    boost = os.environ.get("HSL_GODOT_BOOST_AFTER", "")
+    code = run_parallel("GODOT_SUITES", jobs, args.jobs, summary, budget, Path(boost) if boost else None)
     if durations:
         timings.update(durations)
         write_timings(TIMINGS, timings)

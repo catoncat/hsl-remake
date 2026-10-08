@@ -102,26 +102,65 @@ step_started=$SECONDS
 tools/doctor.sh
 echo "DOCTOR_STEP_PASS seconds=$((SECONDS - step_started))"
 
+# The Godot import and suites, the longest stage, run in the background next to the Python unit
+# tests and the checks: none of them writes what another reads (the checks only render and
+# compare, the suites write their own HOMEs under ignored/gate-homes), so the gate takes about as
+# long as the Godot stage instead of the sum of the three. Peak parallelism is twice --jobs: while
+# the Python stages run they and the suites have --jobs workers each, and once they are done the
+# suites take both shares (HSL_GODOT_BOOST_AFTER). The Godot output is held in a file and printed
+# after the Python stages, one block per stage as before; a failing stage no longer stops the
+# others, the gate reports every failure and fails at the end.
+failed=()
+godot_log=""
+godot_boost=""
+godot_pid=""
+stop_godot_stage() {  # an interrupted gate stops the background stage: its shell and every process under it
+  [[ -n "$godot_pid" ]] && kill -0 "$godot_pid" 2>/dev/null || return 0
+  local pids=("$godot_pid") index=0 child
+  while [[ $index -lt ${#pids[@]} ]]; do
+    while IFS= read -r child; do pids+=("$child"); done < <(pgrep -P "${pids[$index]}" || true)
+    index=$((index + 1))
+  done
+  kill "${pids[@]}" 2>/dev/null || true
+}
+if [[ "$ORIGINAL_PRESENT" == 1 ]]; then
+  godot_log="$(mktemp "${TMPDIR:-/tmp}/verify-godot.XXXXXX")"
+  godot_boost="${godot_log}.python-done"
+  trap 'stop_godot_stage; rm -f "$godot_log" "$godot_boost"; verify_slot_release' EXIT  # keeps the slot release tools/verify_slot.sh set
+  (
+    echo "== Godot asset import ($MODE) =="
+    if [[ "$MODE" == full ]]; then
+      cleanup_generated_cache
+      export HSL_GODOT_SEED=0  # prove the cold import: tools/godot.sh must not seed .godot from another worktree
+    fi
+    step_started=$SECONDS
+    run_godot --headless --import
+    echo "GODOT_IMPORT_PASS mode=$MODE seconds=$((SECONDS - step_started))"
+
+    echo "== Godot headless suites =="
+    GODOT_BIN="$GODOT_BIN" HSL_GODOT_BOOST_AFTER="$godot_boost" "$PYTHON_BIN" tools/verify_runner.py godot ${JOBS[@]+"${JOBS[@]}"}
+  ) >"$godot_log" 2>&1 &
+  godot_pid=$!
+fi
+
 echo "== Python unit tests =="
-"$PYTHON_BIN" tools/verify_runner.py python-tests ${JOBS[@]+"${JOBS[@]}"}
+"$PYTHON_BIN" tools/verify_runner.py python-tests ${JOBS[@]+"${JOBS[@]}"} || failed+=("python-tests")
 
 echo "== source, evidence and importer checks =="
-"$PYTHON_BIN" tools/verify_runner.py checks ${JOBS[@]+"${JOBS[@]}"}
+"$PYTHON_BIN" tools/verify_runner.py checks ${JOBS[@]+"${JOBS[@]}"} || failed+=("checks")
 
-if [[ "$ORIGINAL_PRESENT" == 1 ]]; then
-  echo "== Godot asset import ($MODE) =="
-  if [[ "$MODE" == full ]]; then
-    cleanup_generated_cache
-    export HSL_GODOT_SEED=0  # prove the cold import: tools/godot.sh must not seed .godot from another worktree
-  fi
-  step_started=$SECONDS
-  run_godot --headless --import
-  echo "GODOT_IMPORT_PASS mode=$MODE seconds=$((SECONDS - step_started))"
-
-  echo "== Godot headless suites =="
-  GODOT_BIN="$GODOT_BIN" "$PYTHON_BIN" tools/verify_runner.py godot ${JOBS[@]+"${JOBS[@]}"}
+if [[ -n "$godot_pid" ]]; then
+  : >"$godot_boost"
+  wait "$godot_pid" || failed+=("godot")
+  godot_pid=""
+  cat "$godot_log"
 else
   echo "GODOT_SUITES_SKIP original-absent (the Godot import and suites load content/: import the original first)"
+fi
+
+if [[ ${#failed[@]} -gt 0 ]]; then
+  echo "VERIFY_FAIL mode=$MODE stages=$(IFS=,; echo "${failed[*]}") seconds=$((SECONDS - started))"
+  exit 1
 fi
 
 if [[ "$MODE" == deep && "$ORIGINAL_PRESENT" == 1 ]]; then

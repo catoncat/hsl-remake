@@ -35,14 +35,6 @@ class AssetsFamilyTests(unittest.TestCase):
             for path in task.outputs:
                 self.assertTrue((ROOT / path).exists(), f'{task.name}: {path}')
 
-    def test_check_prints_the_cli_pass_line(self):
-        ctx = registry.Context()
-        tasks = family_tasks()
-        cli = registry.cli_check_lines([task.name for task in tasks])
-        for task in tasks:
-            with self.subTest(task=task.name):
-                self.assertEqual(task.check(ctx), cli[task.name])
-
     def test_generate_is_not_generatable_without_the_original_archive(self):
         ctx = registry.Context(original_exe=Path('/nonexistent/hsl01.exe'))
         for task in family_tasks():

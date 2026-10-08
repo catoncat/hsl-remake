@@ -6,9 +6,10 @@ from __future__ import annotations
 # ---- from test_hsl_data_tasks.py ----
 # hsltools.data / hsltools.checks: the migrated generators and checkers behind the registry.
 #
-# Every task replaces exactly one ledger command and names its hsltools module in `scripts`; the
-# CLI (`hsl check <task>`) prints the PASS line check() returns, and every GeneratedFilesTask
-# must render the tracked outputs byte for byte (lane P1-data oracle, docs/internal/records/CONSOLIDATION.md P1).
+# Every task replaces at most one ledger command and names its hsltools module in `scripts`. That
+# every GeneratedFilesTask renders its tracked outputs byte for byte, inside its declared outputs,
+# is GeneratedFilesTask.check, run for every task by the gate's checks stage; CLI parity
+# (`hsl check <task>` prints what check() returns) is test_hsl_registry.ParityTests.
 import sys
 import unittest
 from pathlib import Path
@@ -21,9 +22,6 @@ from hsltools.paths import ROOT  # noqa: E402
 
 # family -> module registered for it; every task of these families is exercised below
 DATA_FAMILIES = ('actors', 'items', 'skills', 'trials', 'scenarios', 'world', 'static', 'checks')
-# tasks whose check is slow (original-source archives, many files) or depends on a large
-# in-process build; CLI parity is still asserted, but only for this sample
-CLI_SUBPROCESS_SAMPLE = ('progression_data',)
 
 
 def data_tasks() -> list[registry.Task]:
@@ -45,27 +43,6 @@ class DataTaskRegistrationTests(unittest.TestCase):
                 self.assertTrue((ROOT / script).is_file(), f'{task.name}: {script}')
             for path in task.inputs:
                 self.assertTrue((ROOT / path).exists(), f'{task.name}: input {path} is not tracked')
-
-    def test_generated_tasks_render_the_tracked_outputs_byte_for_byte(self):
-        for task in data_tasks():
-            if not isinstance(task, registry.GeneratedFilesTask):
-                continue
-            with self.subTest(task=task.name):
-                rendered = task.render(registry.Context())
-                self.assertTrue(set(rendered) <= set(task.outputs), task.name)  # asset folders are outputs check validates but render does not write
-                for path, data in rendered.items():
-                    self.assertEqual((ROOT / path).read_bytes(), data, f'{task.name}: {path}')
-
-
-class DataTaskParityTests(unittest.TestCase):
-    """The CLI (`hsl check <task>`) prints the same PASS line the in-process check() returns."""
-
-    def test_sampled_tasks_match_the_cli(self):
-        tasks = {task.name: task for task in data_tasks()}
-        cli = registry.cli_check_lines(CLI_SUBPROCESS_SAMPLE)
-        for name in CLI_SUBPROCESS_SAMPLE:
-            with self.subTest(task=name):
-                self.assertEqual(tasks[name].check(registry.Context()), cli[name])
 
 
 # ---- from test_hsl_authored_skills.py ----

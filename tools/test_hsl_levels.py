@@ -19,22 +19,17 @@ from hsltools import registry  # noqa: E402
 from hsltools.legacy import check_commands  # noqa: E402
 from hsltools.paths import ROOT  # noqa: E402
 
-# family -> (ledger script name, sample ledger commands whose task's PASS line must match the CLI's)
-FAMILIES: dict[str, tuple[str, tuple[str, ...]]] = {
-    'battle_seed': ('tools/hsl_battle_seed.py', ('tools/hsl_battle_seed.py --level 37 --check', 'tools/hsl_battle_seed.py --level 501 --check')),
-    'opening_timeline_compile': ('tools/hsl_opening_timeline_compile.py', (
-        'tools/hsl_opening_timeline_compile.py --check',
-        'tools/hsl_opening_timeline_compile.py content/generated/hsl/chapter01/battle037_seed.json --message-evidence content/imported/hsl/chapter01/battle037/message_text_evidence.json --output content/imported/hsl/chapter01/battle037/opening_timeline.json --check')),
-    'opening_timeline_check': ('tools/hsl_opening_timeline_check.py', (
-        'tools/hsl_opening_timeline_check.py',
-        'tools/hsl_opening_timeline_check.py content/imported/hsl/chapter01/battle578/opening_timeline.json --source-script story578')),
-    'message_text_evidence_check': ('tools/hsl_message_text_evidence_check.py', (
-        'tools/hsl_message_text_evidence_check.py', 'tools/hsl_message_text_evidence_check.py --level 37')),
-    'level_map_objects': ('tools/hsl_level_map_objects.py', ('tools/hsl_level_map_objects.py --level 1 --check', 'tools/hsl_level_map_objects.py --level 12 --check')),
-    'level_sounds': ('tools/hsl_level_sounds.py', ('tools/hsl_level_sounds.py --level 22 --check',)),
-    'level_source_texts': ('tools/hsl_level_source_texts.py', ('tools/hsl_level_source_texts.py --level 22 --check',)),
-    'level_actors': ('tools/hsl_level_actors.py', ('tools/hsl_level_actors.py --level 53 --check', 'tools/hsl_level_actors.py --level 500 --check')),
-    'story_scene': ('tools/hsl_story_scene.py', ('tools/hsl_story_scene.py --level 1 --check', 'tools/hsl_story_scene.py --level 73 --check')),
+# family -> ledger script name
+FAMILIES: dict[str, str] = {
+    'battle_seed': 'tools/hsl_battle_seed.py',
+    'opening_timeline_compile': 'tools/hsl_opening_timeline_compile.py',
+    'opening_timeline_check': 'tools/hsl_opening_timeline_check.py',
+    'message_text_evidence_check': 'tools/hsl_message_text_evidence_check.py',
+    'level_map_objects': 'tools/hsl_level_map_objects.py',
+    'level_sounds': 'tools/hsl_level_sounds.py',
+    'level_source_texts': 'tools/hsl_level_source_texts.py',
+    'level_actors': 'tools/hsl_level_actors.py',
+    'story_scene': 'tools/hsl_story_scene.py',
 }
 
 
@@ -49,7 +44,7 @@ class LevelFamilyTests(unittest.TestCase):
         return [task for task in self.tasks if task.family == family]
 
     def test_every_family_command_is_replaced(self):
-        for family, (script, _) in FAMILIES.items():
+        for family, script in FAMILIES.items():
             with self.subTest(family=family):
                 native = self.native(family)
                 replaced = sorted(command for task in native for command in task.replaces)
@@ -65,14 +60,6 @@ class LevelFamilyTests(unittest.TestCase):
         self.assertEqual(sorted(task.level for task in self.native('level_source_texts')), story)
         self.assertEqual(sorted(task.level for task in self.native('level_actors')), sorted(story + [500]))
         self.assertEqual(sorted(task.level for task in self.native('story_scene')), story)
-
-    def test_native_check_line_matches_the_cli(self):
-        by_replaces = {command: task for task in self.tasks for command in task.replaces}
-        sampled = [by_replaces[command] for _, samples in FAMILIES.values() for command in samples]
-        cli = registry.cli_check_lines([task.name for task in sampled])
-        for task in sampled:
-            with self.subTest(task=task.name):
-                self.assertEqual(task.check(self.ctx), cli[task.name])
 
     def test_generated_families_render_the_tracked_bytes(self):
         for name in ('opening_timeline_compile:51', 'opening_timeline_compile:578', 'story_scene:53', 'story_scene:52', 'level_battle:52', 'level_battle:53'):

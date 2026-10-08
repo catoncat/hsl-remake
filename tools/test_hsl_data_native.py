@@ -92,8 +92,9 @@ from hsltools.data.growth_lifecycle_trial import build as trial, OUT as TRIAL
 
 class GrowthLifecycleTests(unittest.TestCase):
     def test_native_returns_and_call_boundaries(self):
+        # The tracked packet passing check_growth_lifecycle is the registry check `growth_lifecycle`
+        # (gate checks stage); this test keeps the packet's shape and the check's tamper rejections.
         packet = json.loads(PACKET_growth_lifecycle.read_text())
-        check_growth_lifecycle(packet)
         self.assertTrue(packet['rewards'])
         self.assertTrue(packet['learning'])
         self.assertTrue(all(not row['draws'] for row in packet['rewards'] + packet['learning']))
@@ -639,7 +640,8 @@ import hsltools.data.tactical_items as data_tactical_items
 
 class TacticalItemsTests(unittest.TestCase):
     def test_native_application_random_scan_and_boundaries(self):
-        packet=json.loads(native_tactical_items.PACKET.read_text());native_tactical_items.check(packet)
+        # The tracked packet passing check is the registry check `tactical_items` (gate checks stage).
+        packet=json.loads(native_tactical_items.PACKET.read_text())
         for mutation in ['boundary','derived','draw','bytes']:
             bad=copy.deepcopy(packet)
             if mutation=='boundary':bad['applications'][0]['normal_return']=True

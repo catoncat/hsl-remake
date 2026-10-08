@@ -19,51 +19,53 @@
 
 ## 全部场景名（取自 content/battles/*.json 的 title）
 
+一关既有开场预览（story_NNN.json）又有战役里登记的正式战斗时，列正式战斗那份的 title，类型写 battle。
+
 | 文件号 | 场景名 | 类型 |
 |---|---|---|
-| LEVEL001 | 歐姆村（開場預覽） | story |
-| LEVEL002 | 戈爾山道（開場預覽） | story |
-| LEVEL003 | 盜賊洞窟（開場預覽） | story |
-| LEVEL005 | 呼嘯平原（開場預覽） | story |
-| LEVEL006 | 席達鎮（開場預覽） | story |
-| LEVEL007 | 寧靜之森（開場預覽） | story |
+| LEVEL001 | 歐姆村 · 獸族的襲擊 | battle |
+| LEVEL002 | 戈爾山道 · 緹娜的追兵 | battle |
+| LEVEL003 | 盜賊洞窟 · 影牙隊長 | battle |
+| LEVEL005 | 呼嘯平原 · 殺出一條血路 | battle |
+| LEVEL006 | 席達鎮 · 士兵的追捕 | battle |
+| LEVEL007 | 寧靜之森 · 妖精的加入 | battle |
 | LEVEL008 | 菲納斯河畔 | story |
 | LEVEL009 | 廢都　曼多利亞 | story |
-| LEVEL010 | 帕尼西亞城　廢墟（開場預覽） | story |
-| LEVEL012 | 巴瀚納海峽（開場預覽） | story |
-| LEVEL013 | 龍之息（火山）（開場預覽） | story |
-| LEVEL015 | 深淵之沼（開場預覽） | story |
-| LEVEL017 | 艾瓦台地（開場預覽） | story |
-| LEVEL018 | 那可那魯邊境（開場預覽） | story |
-| LEVEL019 | 利魯瑪山地（開場預覽） | story |
-| LEVEL021 | 回音之谷（開場預覽） | story |
-| LEVEL022 | 尼布魯瀑布（開場預覽） | story |
-| LEVEL024 | 哈莫特沙漠（開場預覽） | story |
-| LEVEL026 | 日沒灣（開場預覽） | story |
-| LEVEL028 | 眾神的宮殿遺址（開場預覽） | story |
-| LEVEL029 | 約瑟河（開場預覽） | story |
-| LEVEL030 | 絕望之谷（開場預覽） | story |
-| LEVEL031 | 漆黑之森（開場預覽） | story |
-| LEVEL032 | 拉格納沼地（開場預覽） | story |
-| LEVEL033 | 黃昏之丘　陰（開場預覽） | story |
-| LEVEL034 | 沙羅尼亞近郊（開場預覽） | story |
-| LEVEL036 | 薩魯司海岸（開場預覽） | story |
-| LEVEL037 | 古代神殿遺跡（開場預覽） | story |
-| LEVEL038 | 幽闇墳場（開場預覽） | story |
-| LEVEL039 | 黃昏之丘　陽（開場預覽） | story |
-| LEVEL040 | 聖靈之森（開場預覽） | story |
-| LEVEL041 | 悲嘆之湖（開場預覽） | story |
-| LEVEL043 | 大地的裂縫（開場預覽） | story |
-| LEVEL044 | 亞修頓大橋（開場預覽） | story |
-| LEVEL045 | 克萊恩城（開場預覽） | story |
-| LEVEL051 | 棄卒（開場預覽） | story |
-| LEVEL052 | 惡夢的終曲（開場預覽） | story |
-| LEVEL053 | 逃出克萊恩城（開場預覽） | story |
+| LEVEL010 | 帕尼西亞城　廢墟 · 廢墟中的雷雨 | battle |
+| LEVEL012 | 巴瀚納海峽 · 風雨中的船戰 | battle |
+| LEVEL013 | 龍之息（火山） · 火山突圍 | battle |
+| LEVEL015 | 深淵之沼 · 沼澤魔物 | battle |
+| LEVEL017 | 艾瓦台地 · 嚎的歸隊 | battle |
+| LEVEL018 | 那可那魯邊境 · 邊境之門 | battle |
+| LEVEL019 | 利魯瑪山地 · 山地的阻擊 | battle |
+| LEVEL021 | 回音之谷 · 追擊與現身 | battle |
+| LEVEL022 | 尼布魯瀑布 · 敵軍已清除 | battle |
+| LEVEL024 | 哈莫特沙漠 · 魔騎士團 | battle |
+| LEVEL026 | 亞雷比斯 · 海上的亡靈 | battle |
+| LEVEL028 | 眾神的宮殿遺址 · 神殿守衛 | battle |
+| LEVEL029 | 約瑟河 · 沙羅尼亞的追兵 | battle |
+| LEVEL030 | 絕望之谷 · 不死軍團 | battle |
+| LEVEL031 | 漆黑之森 · 黑暗騎士的伏擊 | battle |
+| LEVEL032 | 拉格納沼地 · 毒霧中的戰鬥 | battle |
+| LEVEL033 | 黃昏之丘　陰 · 不死軍團 | battle |
+| LEVEL034 | 沙羅尼亞近郊 · 突圍前夕 | battle |
+| LEVEL036 | 薩魯司海岸 · 克羅蒂的覺醒 | battle |
+| LEVEL037 | 古代神殿遺跡 · 守護者之戰 | battle |
+| LEVEL038 | 幽闇墳場 · 成功撤離 | battle |
+| LEVEL039 | 黃昏之丘　陽 · 敵軍已清除 | battle |
+| LEVEL040 | 聖靈之森 · 傲的再臨 | battle |
+| LEVEL041 | 悲嘆之湖 · 兄弟的抉擇 | battle |
+| LEVEL043 | 大地的裂縫 · 敵軍已清除 | battle |
+| LEVEL044 | 亞修頓大橋 · 橋上的決戰 | battle |
+| LEVEL045 | 克萊恩城 · 城門攻防 | battle |
+| LEVEL051 | 棄卒 · 死守與撤離 | battle |
+| LEVEL052 | 惡夢的終曲 / Level 52 | battle |
+| LEVEL053 | 逃出克萊恩城 / Level 53 | battle |
 | LEVEL055 | 營地・黃昏 | story |
 | LEVEL056 | 營地・清晨 | story |
 | LEVEL057 | 自覺與宿命・塔克斯之死 | story |
 | LEVEL058 | 沃斯菲塔王座廳 | story |
-| LEVEL059 | 劫數・地劫神（開場預覽） | story |
+| LEVEL059 | 劫數 · 地劫神 | battle |
 | LEVEL060 | 王座廳・俘虜 | story |
 | LEVEL061 | 營地・漢克斯的報告 | story |
 | LEVEL062 | 營地・漢克斯的警告 | story |
@@ -79,12 +81,12 @@
 | LEVEL072 | 沙羅尼亞・海濱步道 | story |
 | LEVEL073 | 悲嘆之湖・兄弟的抉擇（劇情預覽） | story |
 | LEVEL074 | 斐達克旅館・出發前夜 | story |
-| LEVEL075 | 自覺與宿命・塔克斯（開場預覽） | story |
-| LEVEL076 | 最終的序曲・妖精王（開場預覽） | story |
-| LEVEL077 | 破滅的命運・席德爾（開場預覽） | story |
-| LEVEL078 | 接觸・妖精王（開場預覽） | story |
-| LEVEL079 | 終焉・咕嚕最終型態（開場預覽） | story |
-| LEVEL080 | 禁忌之魂・墳場地下（開場預覽） | story |
+| LEVEL075 | 自覺與宿命 · 塔克斯 | battle |
+| LEVEL076 | 最終的序曲 · 妖精王 | battle |
+| LEVEL077 | 破滅的命運 · 毀滅天使 | battle |
+| LEVEL078 | 接觸・妖精王 · 地劫神的終局 | battle |
+| LEVEL079 | 終焉 · 咕嚕最終型態 | battle |
+| LEVEL080 | 禁忌之魂 · 敵軍已清除 | battle |
 | LEVEL081 | 妖精王的告白 | story |
 | LEVEL082 | 破滅的命運・終幕 | story |
 | LEVEL200 | 龍脊隘口 | battle |
@@ -166,8 +168,8 @@
 | LEVEL576 | 幽闇墳場 · 遭遇戰 | battle |
 | LEVEL577 | 幽闇墳場 · 遭遇戰 | battle |
 | LEVEL578 | 幽闇墳場 · 遭遇戰 | battle |
-| LEVEL900 | 曼多力亞　對峙（開場預覽） | story |
-| LEVEL901 | 菲納斯河畔　伏擊（開場預覽） | story |
-| LEVEL902 | 艾瓦台地・尋（開場預覽） | story |
-| LEVEL903 | 哈莫特沙漠・魔騎士團（開場預覽） | story |
-| LEVEL904 | 利魯瑪山地・再訪（開場預覽） | story |
+| LEVEL900 | 曼多力亞 · 對峙 | battle |
+| LEVEL901 | 菲納斯河畔 · 伏擊 | battle |
+| LEVEL902 | 艾瓦台地　尋 · 失落的通路 | battle |
+| LEVEL903 | 哈莫特沙漠　魔騎士團 | battle |
+| LEVEL904 | 利魯瑪山地 · 再訪 | battle |
