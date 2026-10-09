@@ -18,6 +18,9 @@ const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
 const WorldMapRules = preload("res://game/world/WorldMapRules.gd")
 const BattleOutcome = preload("res://game/sim/BattleOutcome.gd")
 const GameSettings = preload("res://game/settings/GameSettings.gd")
+const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
+const BattleScenario = preload("res://game/sim/BattleScenario.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 
 var failures: Array[String] = []
 
@@ -41,6 +44,7 @@ func _run() -> void:
 	await _run_battle_record_without_save()
 	await _run_battle_record_resume()
 	await _run_battle_record_checkpoint()
+	await _run_battle_record_entry()
 	await _run_new_story()
 	await _run_game_over_screen()
 	await _run_defeat_leaves_for_game_over()
@@ -232,6 +236,62 @@ func _run_battle_record_checkpoint() -> void:
 	DirAccess.remove_absolute("user://battle_051_cannon_fodder.save")
 	await process_frame
 	await process_frame
+
+
+## A 戰場記錄 keeps the campaign entry it was saved under (HSLBAT.SAV holds the campaign with the
+## battle): loading it enters with that party and world after the auto-saved position moved on,
+## and a retry starts from that party. A record its battle can no longer restore (the level
+## changed since) starts the battle over with the party it saved, not the auto-saved one.
+func _run_battle_record_entry() -> void:
+	CampaignProgress.reset_campaign()
+	var path := "res://content/battles/battle_051.json"
+	var template := BattlePlayLoop.create([], "", BattleScenario.load_file(path))
+	BattlePlayLoop.unit_ref(template, "leonard")["inventory"] = [246, 247, 0, 0, 0, 0, 0, 0]
+	var entry := {"schema": CampaignProgress.SCHEMA, "scenario_path": path, "carry": BattlePlayLoop.CampaignCarryRules.capture(template), "from_scenario_id": "entry_scene", "world": {"current_point": 7}}
+	CampaignProgress.pending = entry.duplicate(true)
+	var probe = RuntimeScene.instantiate()
+	root.add_child(probe)
+	current_scene = probe
+	await process_frame
+	probe.start_dev_first_control_harness()
+	probe.set_process(false)
+	var bag := [246, 247, 241, 0, 0, 0, 0, 0]
+	BattlePlayLoop.unit_ref(probe.play_loop, "leonard")["inventory"] = bag.duplicate() # picked up mid-battle
+	_assert_true(bool(probe.settlement_controller.save_battle().get("ok", false)), "a record of the entered battle is written")
+	var record_path: String = probe.settlement_controller.checkpoint_path
+	probe.queue_free()
+	await process_frame
+	await process_frame
+	# The auto-saved position has moved on since: another scene, no party, another world.
+	CampaignProgress.save_progress({"schema": CampaignProgress.SCHEMA, "scenario_path": "res://content/battles/story_002.json", "carry": {"schema": "hsl_campaign_carry.v1", "units": {}}, "from_scenario_id": "later", "world": {"current_point": 9}})
+	for stale in [false, true]:
+		if stale: # the level changed after the save: the record no longer matches the battle
+			var bytes := FileAccess.get_file_as_bytes(record_path)
+			var snapshot: Dictionary = bytes_to_var(bytes.slice(BattleCheckpoint.MAGIC.length() + 65))
+			snapshot["configuration"] = "0".repeat(64)
+			var payload := var_to_bytes(snapshot)
+			var signed := (BattleCheckpoint.MAGIC + BattleCheckpoint.digest(payload) + "\n").to_utf8_buffer()
+			signed.append_array(payload)
+			var file := FileAccess.open(record_path, FileAccess.WRITE)
+			file.store_buffer(signed)
+			file.close()
+		CampaignProgress.queue_battle_record(CampaignProgress.battle_record_entries()[0])
+		var runtime = RuntimeScene.instantiate()
+		root.add_child(runtime)
+		current_scene = runtime
+		for i in 3:
+			await process_frame
+		var label := "stale record" if stale else "record"
+		_assert_eq(str(runtime.runtime_entrypoint) == "restored_battle_checkpoint", not stale, "%s: restored only while its battle is unchanged" % label)
+		_assert_eq(BattlePlayLoop.unit(runtime.play_loop, "leonard")["inventory"], bag, "%s: the bag is the saved one" % label)
+		_assert_eq(runtime.campaign_handoff.get("world"), entry["world"], "%s: the world is the record's entry, not the auto-saved position's" % label)
+		_assert_eq(CampaignProgress.last_entry.get("carry", {}).get("units", {}).get("leonard", {}).get("inventory"), entry["carry"]["units"]["leonard"]["inventory"] if not stale else bag, "%s: a retry starts from the %s" % [label, "saved party" if stale else "record's entry party"])
+		_assert_eq(runtime.settlement_controller.notice.text == runtime.settlement_controller.RECORD_RESTARTED_NOTICE, stale, "%s: the fresh start is announced" % label)
+		runtime.queue_free()
+		await process_frame
+		await process_frame
+	DirAccess.remove_absolute(record_path)
+	CampaignProgress.reset_campaign()
 
 
 func _run_new_story() -> void:

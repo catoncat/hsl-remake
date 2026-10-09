@@ -7,6 +7,12 @@ const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
 const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const Interaction = preload("res://game/sim/Interaction.gd")
 const LoopKeys = preload("res://game/sim/LoopKeys.gd")
+const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
+const NOTICE_SECONDS := 3.0
+## A 戰場記錄 its battle could not restore (CampaignProgress.RECORD_RESTARTED): said once, held
+## longer than a save notice since it lands while the level fades in.
+const RECORD_RESTARTED_NOTICE := "關卡已更新，這場戰鬥從頭開始；隊伍與物品保留存檔時的狀態。"
+const RECORD_RESTARTED_SECONDS := 8.0
 var runtime: Node
 var panel: Control
 var checkpoint_path := "user://battle.save" # CampaignProgress._ready sets the scenario's own slot
@@ -47,19 +53,22 @@ func _ready() -> void:
 	layer.add_child(notice)
 	_notice_timer = Timer.new()
 	_notice_timer.one_shot = true
-	_notice_timer.wait_time = 3.0
+	_notice_timer.wait_time = NOTICE_SECONDS
 	_notice_timer.timeout.connect(_clear_notice)
 	add_child(_notice_timer)
 
 
 ## 讀取戰場記錄 from the title / world scroll: the hand-off asks the battle to resume its
 ## saved checkpoint at once. Runs on the first battle frame, before the opening coordinator
-## takes the frame (the restored battle replaces the opening).
+## takes the frame (the restored battle replaces the opening). A record the battle could not
+## restore has already become a fresh start (CampaignProgress.enter_record): only the notice.
 func autoload_checkpoint() -> void:
-	if _checkpoint_autoload_done or not bool(runtime.campaign_handoff.get("load_checkpoint", false)):
+	if _checkpoint_autoload_done:
 		return
 	_checkpoint_autoload_done = true
-	if FileAccess.file_exists(checkpoint_path):
+	if bool(runtime.campaign_handoff.get(CampaignProgress.RECORD_RESTARTED, false)):
+		announce(RECORD_RESTARTED_NOTICE, RECORD_RESTARTED_SECONDS)
+	elif bool(runtime.campaign_handoff.get("load_checkpoint", false)) and FileAccess.file_exists(checkpoint_path):
 		load_battle()
 
 
@@ -186,6 +195,8 @@ func save_battle(announce: bool = true) -> Dictionary:
 		"growth_offered_levels": runtime.growth_offered_levels.duplicate(),
 		"script_cutscene_consumed": runtime.script_cutscene_consumed,
 		"treasure_presented_sequence": runtime.treasure_view.shown_sequence if runtime.treasure_view != null else 0}
+	var entry := BattleCheckpoint.entry_of(runtime.campaign_handoff)
+	if not entry.is_empty(): meta[BattleCheckpoint.ENTRY_KEY] = entry
 	return _report(BattleCheckpoint.write(checkpoint_path, runtime.play_loop, meta), "戰鬥已保存（F9 讀取）。" if announce else "")
 
 
@@ -247,14 +258,14 @@ func _report(result: Dictionary, success: String = "") -> Dictionary:
 	var reason := str(result.get("reason", ""))
 	var explanations := {"save_not_found": "尚未保存這場戰鬥。", "incompatible_save_configuration": "存檔使用的關卡或規則版本不同。", "save_checksum_mismatch": "存檔不完整，請保留原檔並重新選擇。", "save_replace_failed": "無法寫入存檔，原有存檔已保留。"}
 	notice.text = success if result["ok"] else "存讀檔未完成：" + str(explanations.get(reason, reason))
-	_notice_timer.start()
+	_notice_timer.start(NOTICE_SECONDS)
 	return result
 
 
 ## A line in the notice slot (GrowthCampaignProgress: why a separate party's pool reopened).
-func announce(text: String) -> void:
+func announce(text: String, seconds := NOTICE_SECONDS) -> void:
 	notice.text = text
-	_notice_timer.start()
+	_notice_timer.start(seconds)
 
 
 func _clear_notice() -> void:

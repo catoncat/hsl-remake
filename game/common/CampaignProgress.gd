@@ -493,7 +493,8 @@ static func battle_record_entries(campaign_data: Dictionary = {}, id: Variant = 
 
 
 ## Arms a hand-off into the record's battle scenario that loads its checkpoint on boot
-## (BattleSettlementController.tick honours load_checkpoint once).
+## (BattleSettlementController.tick honours load_checkpoint once). The party and world queued
+## here are the auto-saved position's; the battle swaps in the record's own (enter_record).
 static func queue_battle_record(record: Dictionary) -> Dictionary:
 	var saved := load_progress()
 	pending = {
@@ -504,6 +505,35 @@ static func queue_battle_record(record: Dictionary) -> Dictionary:
 		"load_checkpoint": true,
 	}
 	return pending.duplicate(true)
+
+
+## Hand-off key: the 戰場記錄 could not be restored (its battle changed since it was saved) and
+## the battle starts over instead (enter_record); the battle says so once, retries do not.
+const RECORD_RESTARTED := "record_restarted"
+
+
+## The hand-off a 戰場記錄 load (load_checkpoint) enters its battle with, kept as the retry
+## baseline (last_entry) too. `handoff` is the queued one, built from the auto-saved position,
+## which may have moved on since or be gone; `record` is BattleCheckpoint.peek of the battle's
+## record, whose own campaign entry (party, world) replaces it. A stale record — the level, rule
+## or script data changed since it was saved, so the battle cannot be restored — starts the battle
+## over with the party it saved, taken as at a battle end; a separate party's battle keeps the
+## incoming party it passes on (its own members are the scenario's).
+static func enter_record(handoff: Dictionary, record: Dictionary, scenario: Dictionary, separate: bool, campaign_data: Dictionary) -> Dictionary:
+	var next := handoff.duplicate(true)
+	var stale := not record.is_empty() and bool(record["stale"])
+	if not record.is_empty():
+		next.merge((record["entry"] as Dictionary).duplicate(true), true)
+	if stale:
+		next.erase("load_checkpoint")
+		if not separate:
+			var saved: Dictionary = (record["loop"] as Dictionary).duplicate()
+			saved["scenario_id"] = str(scenario.get("id", ""))
+			next["carry"] = CarryRules.capture(saved, campaign_data.get("carry_policy", CarryRules.DEFAULT_POLICY))
+	last_entry = next.duplicate(true)
+	if stale:
+		next[RECORD_RESTARTED] = true
+	return next
 
 
 static func scenario_save_path(scenario: Dictionary, id: Variant = null) -> String:

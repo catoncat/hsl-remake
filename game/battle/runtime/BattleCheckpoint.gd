@@ -6,7 +6,11 @@ extends RefCounted
 ## saved: the restored loop keeps the running battle's live words, so the AI's choices
 ## after a load may differ from the ones before the save.
 ## provenance:
-##   rules: remake-invented (versioned checksummed single-battle save format; the original has no in-battle save)
+##   rules: remake-invented
+##     (versioned checksummed save format, one record per battle; a record whose battle configuration changed starts
+##     that battle over with the saved party)
+##   rules: static-derived docs/evidence_packets/static_reverse/original_save_format.md
+##     (HSLBAT.SAV holds the campaign tables and party records with the battle: a record keeps its campaign entry)
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_damage_random.md
 ##   rules: static-derived docs/evidence_packets/static_reverse/original_enemy_turn.md
 const BattlePlayLoop = preload("res://game/sim/loop/BattlePlayLoop.gd")
@@ -40,6 +44,13 @@ const MAX_BYTES := 16 * 1024 * 1024
 const SCHEMA := "hsl_battle_checkpoint.v6"
 const RETIRED_SCHEMAS := ["hsl_battle_checkpoint.v1", "hsl_battle_checkpoint.v2", "hsl_battle_checkpoint.v3", "hsl_battle_checkpoint.v4", "hsl_battle_checkpoint.v5"]
 const CONFIG_KEYS := BattlePlayLoop.CONFIG_KEYS
+## The campaign entry a record keeps in its view: the carried party, world state and source of
+## the hand-off its battle was entered with. The original 戰場記錄 (HSLBAT.SAV) holds the whole
+## campaign, not only the battle, so a load enters with the record's own entry
+## (CampaignProgress.enter_record), never with the auto-saved position, which may have moved on
+## or be gone. A record written without it borrows the auto-saved position as before.
+const ENTRY_KEY := "campaign_entry"
+const ENTRY_FIELDS := ["carry", "world", "from_scenario_id"]
 
 
 static func digest(bytes: PackedByteArray) -> String:
@@ -301,14 +312,21 @@ static func encode(loop: Dictionary, view: Dictionary) -> Dictionary:
 	return {"ok": true, "bytes": bytes}
 
 
-## Returns {ok, snapshot} with `snapshot.loop` already joined to `current`'s configuration.
-static func decode(bytes: PackedByteArray, current: Dictionary) -> Dictionary:
+## The header and checksum checked, the payload decoded: {ok, snapshot} or {ok, reason}.
+static func _open(bytes: PackedByteArray) -> Dictionary:
 	var start := MAGIC.length() + 65
 	if bytes.size() < start + 4 or bytes.size() > MAX_BYTES or bytes.slice(0, MAGIC.length()) != MAGIC.to_utf8_buffer(): return {"ok": false, "reason": "invalid_save_header"}
 	var payload := bytes.slice(start)
 	if bytes[MAGIC.length() + 64] != 10 or digest(payload) != bytes.slice(MAGIC.length(), start - 1).get_string_from_ascii(): return {"ok": false, "reason": "save_checksum_mismatch"}
 	if (payload.decode_u32(0) & 0xffff) != TYPE_DICTIONARY: return {"ok": false, "reason": "invalid_save_payload"}
-	var snapshot: Variant = bytes_to_var(payload) # Objects are never instantiated.
+	return {"ok": true, "snapshot": bytes_to_var(payload)} # Objects are never instantiated.
+
+
+## Returns {ok, snapshot} with `snapshot.loop` already joined to `current`'s configuration.
+static func decode(bytes: PackedByteArray, current: Dictionary) -> Dictionary:
+	var opened := _open(bytes)
+	if not opened["ok"]: return opened
+	var snapshot: Variant = opened["snapshot"]
 	var error := validate(snapshot, current)
 	if error != "": return {"ok": false, "reason": error}
 	snapshot["loop"] = restored(snapshot["loop"], current)
@@ -340,3 +358,24 @@ static func read(path: String, current: Dictionary) -> Dictionary:
 	var bytes := file.get_buffer(file.get_length())
 	file.close()
 	return decode(bytes, current)
+
+
+## The hand-off fields a record keeps (ENTRY_FIELDS); {} when they are not plain data.
+static func entry_of(handoff: Dictionary) -> Dictionary:
+	var entry := {}
+	for key in ENTRY_FIELDS:
+		if handoff.has(key): entry[key] = handoff[key]
+	return entry.duplicate(true) if plain(entry) else {}
+
+
+## A record read without the running battle's checks: {loop, entry, stale}, or {} when it is
+## missing, damaged or of a retired format. `stale`: `current`'s configuration (the level, rule and
+## script data) is no longer the one the record was written against, so it cannot be restored.
+static func peek(path: String, current: Dictionary) -> Dictionary:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null or file.get_length() > MAX_BYTES: return {}
+	var snapshot: Variant = _open(file.get_buffer(file.get_length())).get("snapshot")
+	file.close()
+	if not snapshot is Dictionary or snapshot.get("schema") != SCHEMA or not plain(snapshot) or not snapshot.get("loop") is Dictionary or not snapshot.get("view") is Dictionary: return {}
+	var entry: Variant = snapshot["view"].get(ENTRY_KEY, {})
+	return {"loop": snapshot["loop"], "entry": entry if entry is Dictionary else {}, "stale": snapshot.get("configuration") != configuration(current)}

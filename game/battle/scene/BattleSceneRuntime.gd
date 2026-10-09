@@ -31,6 +31,7 @@ const BattleScenario = preload("res://game/sim/BattleScenario.gd")
 const WrdTerrainTiles = preload("res://game/sim/WrdTerrainTiles.gd")
 const BattleOpeningCoordinator = preload("res://game/battle/scene/BattleScriptCoordinator.gd")
 const CampaignProgress = preload("res://game/common/CampaignProgress.gd")
+const BattleCheckpoint = preload("res://game/battle/runtime/BattleCheckpoint.gd")
 const ConditionalPartyRules = preload("res://game/sim/ConditionalPartyRules.gd")
 const ActorSpriteKey = preload("res://game/battle/runtime/ActorSpriteKey.gd")
 const BattleSceneInput = preload("res://game/battle/scene/BattleSceneInput.gd")
@@ -955,9 +956,15 @@ func _configure_play_loop() -> void:
 	var seed := _loop_seed()
 	# The battle continues the process's global stream (not per battle, not carried).
 	var loop := BattlePlayLoop.create([], "", first_battle_scenario, seed, GlobalRandomStream.session())
+	var campaign := CampaignProgress.load_campaign()
+	var separate := CampaignProgress.separate_party(campaign, str(scenario_path))
+	if bool(campaign_handoff.get("load_checkpoint", false)):
+		# 戰場記錄: the record's own party and world, or a fresh start when its battle changed.
+		var record := BattleCheckpoint.peek(CampaignProgress.scenario_save_path(first_battle_scenario), loop)
+		campaign_handoff = CampaignProgress.enter_record(campaign_handoff, record, first_battle_scenario, separate, campaign)
 	if not campaign_handoff.is_empty():
 		var carry: Dictionary = campaign_handoff.get("carry", {})
-		if CampaignProgress.separate_party(CampaignProgress.load_campaign(), str(scenario_path)):
+		if separate:
 			carry = BattlePlayLoop.CampaignCarryRules.initialization_only(carry)
 		loop = BattlePlayLoop.apply_campaign_carry(loop, carry)
 	unit_grid_coords.clear()
